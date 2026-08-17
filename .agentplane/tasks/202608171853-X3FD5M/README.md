@@ -4,7 +4,7 @@ title: "Harden autonomous authority recovery and Hermes dialog approvals"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -29,9 +29,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-17T19:25:21.439Z"
+  updated_at: "2026-08-17T19:56:39.103Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
   state: "rework"
@@ -74,6 +74,7 @@ execution_route:
     - "effect_publish"
     - "effect_release_metadata"
     - "effect_security_boundary"
+    - "observed_effect_schema"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -121,28 +122,53 @@ execution_contract:
     schema_version: 2
     scope_roots: []
   observed:
-    authority_violations: []
+    authority_violations:
+      - "repository_effect:documentation"
+      - "repository_effect:schema"
+      - "repository_effect:tests"
     changed_components:
+      - "docs"
       - "packages/agentplane"
       - "packages/core"
+      - "packages/spec"
+      - "schemas"
     changed_paths:
+      - "docs/recipes/hermes-agentplane.mdx"
       - "packages/agentplane/src/commands/pr/branch-publication.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts"
       - "packages/agentplane/src/commands/pr/integrate/internal/github-protection.ts"
+      - "packages/agentplane/src/commands/shared/declared-check.test.ts"
       - "packages/agentplane/src/commands/shared/declared-check.ts"
+      - "packages/agentplane/src/commands/shared/pr-meta.test.ts"
+      - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
       - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
       - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+      - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
       - "packages/agentplane/src/commands/task/agent-action-packet.ts"
+      - "packages/agentplane/src/commands/task/authority-grant.command.test.ts"
       - "packages/agentplane/src/commands/task/authority-grant.command.ts"
       - "packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts"
       - "packages/agentplane/src/commands/task/plan-approve.command.ts"
       - "packages/agentplane/src/commands/task/plan.ts"
+      - "packages/agentplane/src/commands/task/user-approval-receipt.test.ts"
       - "packages/agentplane/src/commands/task/user-approval-receipt.ts"
+      - "packages/core/schemas/config.schema.json"
+      - "packages/core/schemas/workflow.schema.json"
+      - "packages/core/src/config/config.test.ts"
       - "packages/core/src/config/schema.impl.ts"
+      - "packages/core/src/runner/supervisor-execution-episode.test.ts"
       - "packages/core/src/runner/supervisor-execution-episode.ts"
+      - "packages/spec/schemas/config.schema.json"
+      - "packages/spec/schemas/workflow.schema.json"
+      - "schemas/config.schema.json"
+      - "schemas/workflow.schema.json"
     external_effects: []
     repository_effects:
+      - "documentation"
       - "repository_write"
+      - "schema"
       - "source_code"
+      - "tests"
     verification_results:
       -
         id: "recorded-check-1"
@@ -162,11 +188,15 @@ execution_contract:
       -
         id: "recorded-check-6"
         result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_publish"
     - "effect_release_metadata"
     - "effect_security_boundary"
+    - "observed_effect_schema"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -186,10 +216,13 @@ execution_contract:
           - "external_effect:network_read"
           - "external_effect:publish"
           - "hosted_integration"
+          - "repository_effect:documentation"
           - "repository_effect:release_metadata"
           - "repository_effect:repository_write"
+          - "repository_effect:schema"
           - "repository_effect:security_boundary"
           - "repository_effect:source_code"
+          - "repository_effect:tests"
           - "task_outcome"
         external_effects:
           - "network_read"
@@ -203,14 +236,24 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:155af110965bcd7b88ea1c77612dbf81a2c13a6bd73433fe592f437fd22b5aad"
+      digest: "sha256:a154edb26036c6a10471dab336cbfdcacc2845492a89babea795475b023d339f"
       escalation_reasons:
+        - "central_path:packages/agentplane/src/commands/shared/declared-check.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/declared-check.ts"
+        - "central_path:packages/agentplane/src/commands/shared/pr-meta.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/side-effect-authority.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+        - "central_path:packages/core/schemas/config.schema.json"
+        - "central_path:packages/core/schemas/workflow.schema.json"
+        - "central_path:packages/core/src/config/config.test.ts"
         - "central_path:packages/core/src/config/schema.impl.ts"
+        - "central_path:packages/core/src/runner/supervisor-execution-episode.test.ts"
         - "central_path:packages/core/src/runner/supervisor-execution-episode.ts"
+        - "central_path:schemas/config.schema.json"
+        - "central_path:schemas/workflow.schema.json"
         - "effect_release_metadata"
+        - "effect_schema"
         - "effect_security_boundary"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -221,26 +264,48 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
+          - "docs"
           - "packages/agentplane"
           - "packages/core"
+          - "packages/spec"
+          - "schemas"
         changed_files:
+          - "docs/recipes/hermes-agentplane.mdx"
           - "packages/agentplane/src/commands/pr/branch-publication.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts"
           - "packages/agentplane/src/commands/pr/integrate/internal/github-protection.ts"
+          - "packages/agentplane/src/commands/shared/declared-check.test.ts"
           - "packages/agentplane/src/commands/shared/declared-check.ts"
+          - "packages/agentplane/src/commands/shared/pr-meta.test.ts"
+          - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
           - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
           - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+          - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
           - "packages/agentplane/src/commands/task/agent-action-packet.ts"
+          - "packages/agentplane/src/commands/task/authority-grant.command.test.ts"
           - "packages/agentplane/src/commands/task/authority-grant.command.ts"
           - "packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts"
           - "packages/agentplane/src/commands/task/plan-approve.command.ts"
           - "packages/agentplane/src/commands/task/plan.ts"
+          - "packages/agentplane/src/commands/task/user-approval-receipt.test.ts"
           - "packages/agentplane/src/commands/task/user-approval-receipt.ts"
+          - "packages/core/schemas/config.schema.json"
+          - "packages/core/schemas/workflow.schema.json"
+          - "packages/core/src/config/config.test.ts"
           - "packages/core/src/config/schema.impl.ts"
+          - "packages/core/src/runner/supervisor-execution-episode.test.ts"
           - "packages/core/src/runner/supervisor-execution-episode.ts"
+          - "packages/spec/schemas/config.schema.json"
+          - "packages/spec/schemas/workflow.schema.json"
+          - "schemas/config.schema.json"
+          - "schemas/workflow.schema.json"
         external_effects: []
         repository_effects:
+          - "documentation"
           - "repository_write"
+          - "schema"
           - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -252,6 +317,7 @@ execution_contract:
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "docs_contract"
         - "full_regression"
         - "hosted_integration"
         - "real_e2e"
@@ -271,13 +337,16 @@ execution_contract:
       - "external_effect:network_read"
       - "external_effect:publish"
       - "hosted_integration"
+      - "repository_effect:documentation"
       - "repository_effect:release_metadata"
       - "repository_effect:repository_write"
+      - "repository_effect:schema"
       - "repository_effect:security_boundary"
       - "repository_effect:source_code"
+      - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "590e2564fe9a80830c8e676cd907891c9e31eb03"
+  hash: "03b46b67e67b48caa0d1409d9afb18cd29c08f98"
   message: "🚧 X3FD5M task: apply external agent result"
 comments:
   -
@@ -289,6 +358,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 590e2564fe9a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 03b46b67e67b. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -319,8 +391,22 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-17T19:55:31.191Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 03b46b67e67b. CLI accepted one state-bound external-agent semantic result."
+    commit: "03b46b67e67b48caa0d1409d9afb18cd29c08f98"
+  -
+    type: "verify"
+    at: "2026-08-17T19:56:39.103Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-17T19:25:25.497Z"
+doc_updated_at: "2026-08-17T19:56:41.780Z"
 doc_updated_by: "SUPERVISOR"
 description: "Recover the AgentPlane authority release after an unavailable GitHub protection lookup selected a local merge; fail closed on unavailable provider protection, repair supervisor replay/concurrency regressions, and define a verifiable Hermes-to-AgentPlane user approval receipt so the user approves in dialogue while the integration layer executes exact state-bound commands. Preserve mandatory primary plan approval and operator-owned provider merge semantics."
 sections:
@@ -362,6 +448,78 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
     Scope: branch_pr task 202608171853-X3FD5M Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171853-X3FD5M Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171853-X3FD5M Verification Contract check hosted_integration
+
+    Check: real_e2e
+    Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171853-X3FD5M Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171853-X3FD5M Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171853-X3FD5M-harden-autonomous-authority-recovery-and-hermes/.agentplane/tasks/202608171853-X3FD5M/blueprint/resolved-snapshot.json
+    - old_digest: da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8
+    - current_digest: da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608171853-X3FD5M
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608171853-X3FD5M
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-17T19:56:39.103Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d3ea9d1b0233fc005c39c29e6fb1eb6ed23070236ccc66392cc78b2f652d61bc, input_digest=sha256:c3d1e48e96dffea04ac9fc8ec263f8636390b1d779b761ca12aecd89780656c3
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171853-X3FD5M Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171853-X3FD5M Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608171853-X3FD5M Verification Contract check docs_contract
 
     Check: full_regression
     Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
@@ -465,6 +623,78 @@ Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/p
 Result: pass
 Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
 Scope: branch_pr task 202608171853-X3FD5M Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171853-X3FD5M Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171853-X3FD5M Verification Contract check hosted_integration
+
+Check: real_e2e
+Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171853-X3FD5M Verification Contract check real_e2e
+
+Check: task_outcome
+Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171853-X3FD5M Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171853-X3FD5M-harden-autonomous-authority-recovery-and-hermes/.agentplane/tasks/202608171853-X3FD5M/blueprint/resolved-snapshot.json
+- old_digest: da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8
+- current_digest: da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608171853-X3FD5M
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608171853-X3FD5M
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-17T19:56:39.103Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d3ea9d1b0233fc005c39c29e6fb1eb6ed23070236ccc66392cc78b2f652d61bc, input_digest=sha256:c3d1e48e96dffea04ac9fc8ec263f8636390b1d779b761ca12aecd89780656c3
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171853-X3FD5M Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171853-X3FD5M Verification Contract check critical_paths
+
+Check: docs_contract
+Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608171853-X3FD5M Verification Contract check docs_contract
 
 Check: full_regression
 Command: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs
