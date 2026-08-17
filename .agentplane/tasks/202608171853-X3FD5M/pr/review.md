@@ -6,14 +6,14 @@ Created: 2026-08-17T18:59:25.035Z
 
 - Task: `202608171853-X3FD5M`
 - Title: Harden autonomous authority recovery and Hermes dialog approvals
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608171853-X3FD5M/harden-autonomous-authority-recovery-and-hermes`
 - Canonical task record: `.agentplane/tasks/202608171853-X3FD5M/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Hosted Core CI Compatibility baseline failed because the reviewed v0.7 compatibility candidate and ratchet did not include the signed approval-receipt CLI/schema delta; preserve the three scoped repair files and re-run verification.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,6 +30,7 @@ Created: 2026-08-17T18:59:25.035Z
 
 ```text
  docs/recipes/hermes-agentplane.mdx                 |  37 +++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
  .../src/commands/pr/branch-publication.ts          |  23 +-
  .../integrate/internal/github-protection.test.ts   |  58 +++++
  .../pr/integrate/internal/github-protection.ts     |  16 ++
@@ -58,7 +59,10 @@ Created: 2026-08-17T18:59:25.035Z
  packages/spec/schemas/workflow.schema.json         |  84 +++++++
  schemas/config.schema.json                         |  49 +++-
  schemas/workflow.schema.json                       |  84 +++++++
- 29 files changed, 1541 insertions(+), 90 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |  72 ++++--
+ scripts/bench/capture-compatibility-candidate.mjs  |  35 +++
+ .../check-compatibility-contract-baseline.mjs      |  56 ++++-
+ 33 files changed, 1690 insertions(+), 115 deletions(-)
 ```
 
 </details>
