@@ -36,7 +36,12 @@ export async function recordIssuedExternalAgentEpisode(opts: {
     });
     let journal = opened.journal;
     let replacementAuthorized = false;
-    if (journal.status === "stopped" && journal.stop?.reason === "operation_failed") {
+    const latestOperation = journal.operations.at(-1);
+    const recoverableFailedOperation =
+      journal.status === "stopped" &&
+      latestOperation?.status === "failed" &&
+      (journal.stop?.reason === "operation_failed" || journal.stop?.reason === "stale_state");
+    if (recoverableFailedOperation) {
       if (!opts.replace_failed_operation) {
         throw new CliError({
           code: "E_RUNTIME",

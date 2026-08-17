@@ -436,6 +436,17 @@ export function recoverSupervisorExecutionEpisodeJournal(opts: {
   // be. The caller must refresh and advance it before another operation; a
   // changed fingerprint is expected at this exact checkpoint, not stale work.
   if (journal.cursor.phase === "completed") return journal;
+  if (
+    journal.cursor.phase === "ready" &&
+    journal.cursor.replacement_of_operation_key !== undefined &&
+    journal.operations.at(-1)?.status === "failed"
+  ) {
+    return refreshPendingReplacementSupervisorExecutionEpisode({
+      journal,
+      state_fingerprint_digest: opts.state_fingerprint_digest,
+      now,
+    });
+  }
   if (journal.state_fingerprint_digest !== opts.state_fingerprint_digest) {
     return stoppedJournal({ journal, reason: "stale_state", at: now });
   }
@@ -964,15 +975,19 @@ export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
   const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
   const now = opts.now ?? new Date().toISOString();
   const last = journal.operations.at(-1);
+  const isTerminalFailure =
+    journal.stop?.reason === "operation_failed" &&
+    journal.stop.operation_key === last?.operation_key;
+  const isFailedReplacementWithRouteDrift =
+    journal.stop?.reason === "stale_state" && last?.status === "failed";
   if (
     journal.status !== "stopped" ||
-    journal.stop?.reason !== "operation_failed" ||
+    (!isTerminalFailure && !isFailedReplacementWithRouteDrift) ||
     journal.cursor.phase !== "stopped" ||
-    last?.status !== "failed" ||
-    journal.stop?.operation_key !== last?.operation_key
+    last?.status !== "failed"
   ) {
     throw new Error(
-      "Supervisor episode replacement requires a stopped operation_failed journal with a failed latest operation.",
+      "Supervisor episode replacement requires a stopped operation_failed journal or a stale_state journal with a failed latest operation.",
     );
   }
   const exhausted = exhaustedDimensions({
