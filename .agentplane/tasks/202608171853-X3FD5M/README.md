@@ -1,10 +1,11 @@
 ---
 id: "202608171853-X3FD5M"
 title: "Harden autonomous authority recovery and Hermes dialog approvals"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -66,6 +67,20 @@ quality_review:
     - "Supervisor verification is recorded for implementation 03b46b67e, the full fast suite reports 565 passing files and 4161 passing tests with one expected skip, and an independent focused rerun passed 88 tests across six changed security and recovery surfaces."
     - "Residual risk: End-to-end behavior depends on the follow-on Hermes plugin consuming operator_action.approval_receipt exactly and requesting a fresh packet after every accepted receipt."
     - "Residual risk: Provider merge remains intentionally outside the generic receipt-backed side-effect command and requires a dedicated operator/provider executor implementation."
+token_usage:
+  agent_runs: 6
+  input_tokens: null
+  journal_digest: "sha256:4468845453267f23da554da48a0b75ae910b1ad272989a3dcb9927afe2697ec3"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-17T19:58:34.371Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -345,8 +360,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "03b46b67e67b48caa0d1409d9afb18cd29c08f98"
-  message: "🚧 X3FD5M task: apply external agent result"
+  hash: "e91066c256d3e8ad52d8e8b995feb1a67294b9bd"
+  message: "🚧 X3FD5M task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -360,6 +375,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 03b46b67e67b. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -404,9 +422,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-17T19:58:34.371Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "e91066c256d3e8ad52d8e8b995feb1a67294b9bd"
 doc_version: 3
-doc_updated_at: "2026-08-17T19:56:41.780Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-17T19:58:34.381Z"
+doc_updated_by: "CODER"
 description: "Recover the AgentPlane authority release after an unavailable GitHub protection lookup selected a local merge; fail closed on unavailable provider protection, repair supervisor replay/concurrency regressions, and define a verifiable Hermes-to-AgentPlane user approval receipt so the user approves in dialogue while the integration layer executes exact state-bound commands. Preserve mandatory primary plan approval and operator-owned provider merge semantics."
 sections:
   Summary: |-
@@ -569,6 +595,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "03b46b67e67b48caa0d1409d9afb18cd29c08f98"
+    message: "🚧 X3FD5M task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "e22f17ffad89f8fe9c3e41abc9c483c2c5fc2c78"
     version: 1
@@ -746,3 +775,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/6` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:4468845453267f23da554da48a0b75ae910b1ad272989a3dcb9927afe2697ec3`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-17T19:58:34.371Z`
