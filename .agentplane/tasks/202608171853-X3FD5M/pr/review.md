@@ -6,7 +6,7 @@ Created: 2026-08-17T18:59:25.035Z
 
 - Task: `202608171853-X3FD5M`
 - Title: Harden autonomous authority recovery and Hermes dialog approvals
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608171853-X3FD5M/harden-autonomous-authority-recovery-and-hermes`
 - Canonical task record: `.agentplane/tasks/202608171853-X3FD5M/README.md`
 
