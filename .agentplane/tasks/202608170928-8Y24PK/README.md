@@ -4,7 +4,7 @@ title: "Upgrade the Hermes AgentPlane bridge protocol across the three approved 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +29,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-17T21:49:37.986Z"
-  updated_by: "USER"
-  note: "Rework required after AgentPlane autonomous-authority merge: update the Hermes bridge and plugin to consume signed approval receipts and execute policy-authorized post-plan side effects without user terminal commands; retain explicit primary-plan approval and operator-owned merge boundaries."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-17T21:57:07.329Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -342,7 +342,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "6c81acdd0cfd4b0442f77cf665dc68f6202670ce"
+  message: "🚧 8Y24PK task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -353,6 +355,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 5164cfd3b09b. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 6c81acdd0cfd. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -401,8 +406,22 @@ events:
     author: "USER"
     state: "needs_rework"
     note: "Rework required after AgentPlane autonomous-authority merge: update the Hermes bridge and plugin to consume signed approval receipts and execute policy-authorized post-plan side effects without user terminal commands; retain explicit primary-plan approval and operator-owned merge boundaries."
+  -
+    type: "status"
+    at: "2026-08-17T21:57:01.077Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 6c81acdd0cfd. CLI accepted one state-bound external-agent semantic result."
+    commit: "6c81acdd0cfd4b0442f77cf665dc68f6202670ce"
+  -
+    type: "verify"
+    at: "2026-08-17T21:57:07.329Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-17T21:49:39.257Z"
+doc_updated_at: "2026-08-17T21:57:08.314Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 0.2.0, and current Hermes worker-lane dispatch. Scope roots are /Users/densmirnov/Github/agentplane, /Users/densmirnov/Github/agentplane-hermes-plugin, and /Users/densmirnov/Github/hermes-agent. Required effects include source, tests, docs, public API, schema, CI/release metadata, security boundary, network reads, hosted external writes, and publication through explicit authority. Prove PLANNER/approval/EXECUTOR/EVALUATOR, retry, stale-run, and terminal attestation without direct kanban.db writes. Existing D5MAJ3 and failed structured-intake DDW1J5 are superseded and must not be implemented or published."
 sections:
@@ -662,6 +681,78 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-17T21:57:07.329Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8559ac20d950c1601ef1434555ed99c5da9a5c52304a4f16ad1abdb9862d0ce0, input_digest=sha256:6782f7aebce02bb4311a3a30baca9274741417ecd2d89ee865586a5f47cd290a
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608170928-8Y24PK Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608170928-8Y24PK Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608170928-8Y24PK Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608170928-8Y24PK Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608170928-8Y24PK Verification Contract check hosted_integration
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608170928-8Y24PK Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608170928-8Y24PK Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608170928-8Y24PK-upgrade-the-hermes-agentplane-bridge-protocol-ac/.agentplane/tasks/202608170928-8Y24PK/blueprint/resolved-snapshot.json
+    - old_digest: 4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb
+    - current_digest: 4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608170928-8Y24PK
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608170928-8Y24PK
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -945,6 +1036,78 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-17T21:57:07.329Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8559ac20d950c1601ef1434555ed99c5da9a5c52304a4f16ad1abdb9862d0ce0, input_digest=sha256:6782f7aebce02bb4311a3a30baca9274741417ecd2d89ee865586a5f47cd290a
+
+Details:
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608170928-8Y24PK Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608170928-8Y24PK Verification Contract check critical_paths
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608170928-8Y24PK Verification Contract check docs_contract
+
+Check: full_regression
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608170928-8Y24PK Verification Contract check full_regression
+
+Check: hosted_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608170928-8Y24PK Verification Contract check hosted_integration
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608170928-8Y24PK Verification Contract check real_e2e
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608170928-8Y24PK Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608170928-8Y24PK-upgrade-the-hermes-agentplane-bridge-protocol-ac/.agentplane/tasks/202608170928-8Y24PK/blueprint/resolved-snapshot.json
+- old_digest: 4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb
+- current_digest: 4701eb33f28b822c416856c61d87a8cefcc84a824b74b67f0436b905147694fb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608170928-8Y24PK
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608170928-8Y24PK
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

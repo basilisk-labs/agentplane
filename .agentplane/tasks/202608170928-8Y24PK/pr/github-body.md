@@ -15,14 +15,8 @@ Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework required after AgentPlane autonomous-authority merge: update the Hermes bridge and plugin to
-consume signed approval receipts and execute policy-authorized post-plan side effects without user
-terminal commands; retain explicit primary-plan approval and operator-owned merge boundaries.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
