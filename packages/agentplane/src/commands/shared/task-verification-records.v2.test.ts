@@ -208,6 +208,17 @@ describe("content-addressed verification records", () => {
       accepted: true,
       reason: "verification_current",
     });
+
+    const lifecycleSha = await commitPath(
+      root,
+      `.agentplane/tasks/${TASK_ID}/README.md`,
+      "lifecycle-only change after verification\n",
+      "record lifecycle after verification",
+    );
+    await expect(assess(root, task(), lifecycleSha)).resolves.toMatchObject({
+      accepted: true,
+      reason: "verification_reused_equivalent_input",
+    });
   });
 
   it("reports missing structured check details separately from task metadata drift", async () => {
