@@ -8,6 +8,7 @@ import { createCapabilityScopedCommandContext } from "../command-catalog/command
 import { TASK_ROUTE_REQUIREMENTS } from "../command-catalog/task-capability-profiles.js";
 import type {
   TaskLifecycleSession,
+  TaskPlanApprovalSession,
   TaskReadSession,
   TaskRouteLifecycleSession,
   TaskRouteLocalSession,
@@ -359,7 +360,7 @@ export const loadTaskPlanSetSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/plan-set.command.js").then((m) =>
     m.makeRunTaskPlanSetHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskPlanApproveSpec = (session: TaskWriteSession) =>
+export const loadTaskPlanApproveSpec = (session: TaskPlanApprovalSession) =>
   import("../../../commands/task/plan-approve.command.js").then((m) =>
     m.makeRunTaskPlanApproveHandler(getSessionContext(session, "task.write")),
   );

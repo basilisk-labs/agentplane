@@ -6,14 +6,14 @@ Created: 2026-08-17T18:59:25.035Z
 
 - Task: `202608171853-X3FD5M`
 - Title: Harden autonomous authority recovery and Hermes dialog approvals
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608171853-X3FD5M/harden-autonomous-authority-recovery-and-hermes`
 - Canonical task record: `.agentplane/tasks/202608171853-X3FD5M/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Hosted packaged-mixed-scope-lifecycle failed because receipt-backed task plan approve calls git.headCommit through an undeclared git.head capability; add the least-privilege plan-approval capability profile and regression coverage.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -32,6 +32,10 @@ Created: 2026-08-17T18:59:25.035Z
  docs/recipes/hermes-agentplane.mdx                 |  37 +++
  docs/user/cli-reference.generated.mdx              |   5 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
+ .../src/cli/run-cli/command-catalog.test.ts        |  11 +-
+ .../command-catalog/task-capability-profiles.ts    |  10 +
+ .../src/cli/run-cli/command-catalog/task.ts        |   3 +-
+ .../src/cli/run-cli/command-loaders/task.ts        |   3 +-
  .../src/commands/pr/branch-publication.ts          |  23 +-
  .../integrate/internal/github-protection.test.ts   |  58 +++++
  .../pr/integrate/internal/github-protection.ts     |  16 ++
@@ -63,7 +67,7 @@ Created: 2026-08-17T18:59:25.035Z
  .../baselines/v0.7-compatibility-candidate.json    |  72 ++++--
  scripts/bench/capture-compatibility-candidate.mjs  |  35 +++
  .../check-compatibility-contract-baseline.mjs      |  56 ++++-
- 34 files changed, 1693 insertions(+), 117 deletions(-)
+ 38 files changed, 1717 insertions(+), 120 deletions(-)
 ```
 
 </details>
