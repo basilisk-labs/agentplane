@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 89f760183da24c5a768dfe97e6c4c2fb67bd1478..658fc6caf08dfad385fe436cf4ef950382a8442e",
+      "command": "git diff --check 30143e0c4460b3a3a6f743a9c869c1ad8dccf3b1..9b38443da39b55c2915f19a93e36d7d16e2992b8",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,276 +13,71 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 89f760183da24c5a768dfe97e6c4c2fb67bd1478..658fc6caf08dfad385fe436cf4ef950382a8442e",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 30143e0c4460b3a3a6f743a9c869c1ad8dccf3b1..9b38443da39b55c2915f19a93e36d7d16e2992b8",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202608171106-XFN696/README.md",
-        "A\t.agentplane/tasks/202608171106-XFN696/blueprint/resolved-snapshot.json",
-        "A\t.agentplane/tasks/202608171106-XFN696/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202608171106-XFN696/pr/github-body.md",
-        "A\t.agentplane/tasks/202608171106-XFN696/pr/github-title.txt",
-        "A\t.agentplane/tasks/202608171106-XFN696/pr/meta.json",
-        "A\t.agentplane/tasks/202608171106-XFN696/pr/review.md",
-        "M\tdocs/recipes/hermes-agentplane.mdx",
-        "M\tdocs/user/configuration.mdx",
+        "M\t.agentplane/tasks/202608171106-XFN696/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608171106-XFN696/pr/github-body.md",
+        "M\t.agentplane/tasks/202608171106-XFN696/pr/meta.json",
+        "M\t.agentplane/tasks/202608171106-XFN696/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-reducer.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step.test.ts",
         "M\tpackages/agentplane/src/commands/task/advance.command.ts",
-        "M\tpackages/agentplane/src/commands/task/authority-grant.command.test.ts",
-        "M\tpackages/agentplane/src/commands/task/authority-grant.command.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.ts",
-        "A\tpackages/agentplane/src/commands/task/configured-authority.test.ts",
-        "A\tpackages/agentplane/src/commands/task/configured-authority.ts",
-        "M\tpackages/core/schemas/config.schema.json",
-        "M\tpackages/core/schemas/workflow.schema.json",
-        "M\tpackages/core/src/config/config.test.ts",
-        "M\tpackages/core/src/config/config.ts",
-        "M\tpackages/core/src/config/index.ts",
-        "M\tpackages/core/src/config/schema.impl.ts",
-        "M\tpackages/core/src/config/workflow-contract.ts",
-        "M\tpackages/core/src/config/workflow-file.ts",
-        "M\tpackages/spec/schemas/config.schema.json",
-        "M\tpackages/spec/schemas/workflow.schema.json",
-        "M\tschemas/config.schema.json",
-        "M\tschemas/workflow.schema.json"
+        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
       ]
     },
     {
       "command": "git status --short --untracked-files=all",
       "id": "final-repository-status",
       "result": "pass",
-      "stdout": [
-        " M .agentplane/tasks/202608171106-XFN696/README.md",
-        " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
-        " M packages/agentplane/src/commands/shared/workflow-step-reducer.ts",
-        " M packages/agentplane/src/commands/shared/workflow-step.test.ts",
-        " M packages/agentplane/src/commands/task/advance.command.ts",
-        " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
-        "?? .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json",
-        "?? .agentplane/tasks/202608171106-XFN696/supervision/implementation-evidence.json"
-      ]
+      "stdout": []
     }
   ],
-  "execution_base_commit": "89f760183da24c5a768dfe97e6c4c2fb67bd1478",
-  "implementation_commit": "658fc6caf08dfad385fe436cf4ef950382a8442e",
+  "execution_base_commit": "30143e0c4460b3a3a6f743a9c869c1ad8dccf3b1",
+  "implementation_commit": "9b38443da39b55c2915f19a93e36d7d16e2992b8",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M docs/recipes/hermes-agentplane.mdx",
-      " M docs/user/configuration.mdx",
+      " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-reducer.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step.test.ts",
       " M packages/agentplane/src/commands/task/advance.command.ts",
-      " M packages/agentplane/src/commands/task/authority-grant.command.test.ts",
-      " M packages/agentplane/src/commands/task/authority-grant.command.ts",
-      " M packages/agentplane/src/commands/task/branch-task-supervisor.ts",
-      " M packages/core/schemas/config.schema.json",
-      " M packages/core/schemas/workflow.schema.json",
-      " M packages/core/src/config/config.test.ts",
-      " M packages/core/src/config/config.ts",
-      " M packages/core/src/config/index.ts",
-      " M packages/core/src/config/schema.impl.ts",
-      " M packages/core/src/config/workflow-contract.ts",
-      " M packages/core/src/config/workflow-file.ts",
-      " M packages/spec/schemas/config.schema.json",
-      " M packages/spec/schemas/workflow.schema.json",
-      " M schemas/config.schema.json",
-      " M schemas/workflow.schema.json",
-      "?? .agentplane/tasks/202608171106-XFN696/README.md",
-      "?? .agentplane/tasks/202608171106-XFN696/blueprint/resolved-snapshot.json",
-      "?? .agentplane/tasks/202608171106-XFN696/pr/diffstat.txt",
-      "?? .agentplane/tasks/202608171106-XFN696/pr/github-body.md",
-      "?? .agentplane/tasks/202608171106-XFN696/pr/github-title.txt",
-      "?? .agentplane/tasks/202608171106-XFN696/pr/meta.json",
-      "?? .agentplane/tasks/202608171106-XFN696/pr/review.md",
-      "?? packages/agentplane/src/commands/task/configured-authority.test.ts",
-      "?? packages/agentplane/src/commands/task/configured-authority.ts"
+      " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
     ],
     "classification": [
       {
-        "classification": "introduced_during_execution",
-        "line": " M .agentplane/tasks/202608171106-XFN696/README.md"
-      },
-      {
-        "classification": "introduced_during_execution",
+        "classification": "removed_during_execution",
         "line": " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
       },
       {
-        "classification": "introduced_during_execution",
+        "classification": "removed_during_execution",
         "line": " M packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
       },
       {
-        "classification": "introduced_during_execution",
+        "classification": "removed_during_execution",
         "line": " M packages/agentplane/src/commands/shared/workflow-step.test.ts"
       },
       {
-        "classification": "preexisting_before_execution",
+        "classification": "removed_during_execution",
         "line": " M packages/agentplane/src/commands/task/advance.command.ts"
       },
       {
-        "classification": "introduced_during_execution",
+        "classification": "removed_during_execution",
         "line": " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
-      },
-      {
-        "classification": "introduced_during_execution",
-        "line": "?? .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json"
-      },
-      {
-        "classification": "introduced_during_execution",
-        "line": "?? .agentplane/tasks/202608171106-XFN696/supervision/implementation-evidence.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M docs/recipes/hermes-agentplane.mdx"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M docs/user/configuration.mdx"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/authority-grant.command.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/authority-grant.command.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/branch-task-supervisor.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/schemas/config.schema.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/schemas/workflow.schema.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/config/config.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/config/config.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/config/index.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/config/schema.impl.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/config/workflow-contract.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/config/workflow-file.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/spec/schemas/config.schema.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/spec/schemas/workflow.schema.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M schemas/config.schema.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M schemas/workflow.schema.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608171106-XFN696/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608171106-XFN696/blueprint/resolved-snapshot.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608171106-XFN696/pr/diffstat.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608171106-XFN696/pr/github-body.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608171106-XFN696/pr/github-title.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608171106-XFN696/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608171106-XFN696/pr/review.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/task/configured-authority.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/task/configured-authority.ts"
       }
     ],
-    "final": [
-      " M .agentplane/tasks/202608171106-XFN696/README.md",
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
       " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
       " M packages/agentplane/src/commands/shared/workflow-step-reducer.ts",
       " M packages/agentplane/src/commands/shared/workflow-step.test.ts",
       " M packages/agentplane/src/commands/task/advance.command.ts",
-      " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
-      "?? .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202608171106-XFN696/supervision/implementation-evidence.json"
+      " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
     ],
-    "introduced_after_execution_baseline": [
-      " M .agentplane/tasks/202608171106-XFN696/README.md",
-      " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
-      " M packages/agentplane/src/commands/shared/workflow-step-reducer.ts",
-      " M packages/agentplane/src/commands/shared/workflow-step.test.ts",
-      " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
-      "?? .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202608171106-XFN696/supervision/implementation-evidence.json"
-    ],
-    "removed_after_execution_baseline": [
-      " M docs/recipes/hermes-agentplane.mdx",
-      " M docs/user/configuration.mdx",
-      " M packages/agentplane/src/commands/task/authority-grant.command.test.ts",
-      " M packages/agentplane/src/commands/task/authority-grant.command.ts",
-      " M packages/agentplane/src/commands/task/branch-task-supervisor.ts",
-      " M packages/core/schemas/config.schema.json",
-      " M packages/core/schemas/workflow.schema.json",
-      " M packages/core/src/config/config.test.ts",
-      " M packages/core/src/config/config.ts",
-      " M packages/core/src/config/index.ts",
-      " M packages/core/src/config/schema.impl.ts",
-      " M packages/core/src/config/workflow-contract.ts",
-      " M packages/core/src/config/workflow-file.ts",
-      " M packages/spec/schemas/config.schema.json",
-      " M packages/spec/schemas/workflow.schema.json",
-      " M schemas/config.schema.json",
-      " M schemas/workflow.schema.json",
-      "?? .agentplane/tasks/202608171106-XFN696/README.md",
-      "?? .agentplane/tasks/202608171106-XFN696/blueprint/resolved-snapshot.json",
-      "?? .agentplane/tasks/202608171106-XFN696/pr/diffstat.txt",
-      "?? .agentplane/tasks/202608171106-XFN696/pr/github-body.md",
-      "?? .agentplane/tasks/202608171106-XFN696/pr/github-title.txt",
-      "?? .agentplane/tasks/202608171106-XFN696/pr/meta.json",
-      "?? .agentplane/tasks/202608171106-XFN696/pr/review.md",
-      "?? packages/agentplane/src/commands/task/configured-authority.test.ts",
-      "?? packages/agentplane/src/commands/task/configured-authority.ts"
-    ],
-    "unchanged_from_execution_baseline": [
-      " M packages/agentplane/src/commands/task/advance.command.ts"
-    ]
+    "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
   "task_id": "202608171106-XFN696"
