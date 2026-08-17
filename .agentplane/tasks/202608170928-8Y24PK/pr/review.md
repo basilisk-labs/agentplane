@@ -6,7 +6,7 @@ Created: 2026-08-17T09:29:36.876Z
 
 - Task: `202608170928-8Y24PK`
 - Title: Upgrade the Hermes AgentPlane bridge protocol across the three approved repositories
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608170928-8Y24PK/upgrade-the-hermes-agentplane-bridge-protocol-ac`
 - Canonical task record: `.agentplane/tasks/202608170928-8Y24PK/README.md`
 
