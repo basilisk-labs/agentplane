@@ -4,7 +4,7 @@ title: "Automate next patch beta version after release"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -240,11 +240,19 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "ea3b7ac45a49d7119c405e8312754c69c12b8c75"
+  message: "✨ BJ837W task: automate next patch beta version"
 comments:
   -
     author: "CODER"
     body: "Start: recover the approved next patch beta automation implementation and complete verification."
+  -
+    author: "CODER"
+    body: "Implementation committed after recovery; required local verification passed."
+  -
+    author: "EVALUATOR"
+    body: "Local verification evidence: focused release suites 44 passed, 0 failed; release:parity passed at 0.7.7-beta.1; package:install-smoke passed with 8 migration scenarios; ci:contract passed including compatibility, schemas, docs, ESLint, architecture, clone, knip, and coverage; hosted_integration remains pending until provider publication."
 events:
   -
     type: "status"
@@ -253,9 +261,22 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: recover the approved next patch beta automation implementation and complete verification."
+  -
+    type: "status"
+    at: "2026-08-17T15:57:57.735Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed after recovery; required local verification passed."
+    commit: "ea3b7ac45a49d7119c405e8312754c69c12b8c75"
+  -
+    type: "comment"
+    at: "2026-08-17T15:58:36.443Z"
+    author: "EVALUATOR"
+    body: "Local verification evidence: focused release suites 44 passed, 0 failed; release:parity passed at 0.7.7-beta.1; package:install-smoke passed with 8 migration scenarios; ci:contract passed including compatibility, schemas, docs, ESLint, architecture, clone, knip, and coverage; hosted_integration remains pending until provider publication."
 doc_version: 3
-doc_updated_at: "2026-08-17T15:50:15.929Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-17T15:58:36.443Z"
+doc_updated_by: "EVALUATOR"
 description: "After a successful stable AgentPlane publish and hosted-evidence follow-up, atomically advance all semantic version surfaces to the next patch prerelease (for example 0.7.6 to 0.7.7-beta.1), keep the operation idempotent, teach release planning to finalize that prerelease as 0.7.7 instead of proposing 0.7.8, update generated and lockfile surfaces, add focused and packaged-install regression coverage, document the lifecycle, and perform the one-time current-main transition to 0.7.7-beta.1 without rewriting historical version references."
 sections:
   Summary: |-
