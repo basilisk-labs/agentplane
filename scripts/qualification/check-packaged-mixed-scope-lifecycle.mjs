@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { generateKeyPairSync, sign } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -64,6 +65,73 @@ function parseJson(text, label) {
   } catch (error) {
     fail("invalid_public_json", `${label} did not emit JSON: ${error.message}`);
   }
+}
+
+function canonicalizeJson(value) {
+  if (Array.isArray(value)) return value.map((item) => canonicalizeJson(item));
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value)
+        .toSorted(([left], [right]) => left.localeCompare(right))
+        .map(([key, item]) => [key, canonicalizeJson(item)]),
+    );
+  }
+  return value;
+}
+
+function createApprovalSigner() {
+  const { publicKey, privateKey } = generateKeyPairSync("ed25519");
+  return {
+    issuer: "qualification-bridge",
+    privateKey,
+    publicKeySpki: publicKey.export({ format: "der", type: "spki" }).toString("base64"),
+  };
+}
+
+function configureApprovalSigner(repo, signer) {
+  const configPath = path.join(repo, ".agentplane", "config.json");
+  const config = parseJson(readFileSync(configPath, "utf8"), "fixture AgentPlane config");
+  config.authority = config.authority ?? {};
+  config.authority.approval_receipts = {
+    trusted_issuers: [{ id: signer.issuer, public_key_spki: signer.publicKeySpki }],
+    max_ttl_minutes: 15,
+    clock_skew_seconds: 5,
+  };
+  writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf8");
+}
+
+function signedApprovalArgv(operatorAction, signer) {
+  const request = operatorAction?.approval_receipt?.request;
+  if (!request || !Array.isArray(operatorAction.argv)) {
+    fail("missing_approval_request", "approval packet omitted its receipt request or exact argv");
+  }
+  const issuedAt = new Date();
+  const receipt = {
+    schema_version: 1,
+    kind: "agentplane.user_approval_receipt",
+    receipt_id: `qualification-${issuedAt.getTime()}`,
+    issuer: signer.issuer,
+    subject: "qualification-user",
+    decision: "approved",
+    approval_type: request.approval_type,
+    task_id: request.task_id,
+    authority_reference: request.authority_reference,
+    state_fingerprint: request.state_fingerprint,
+    operation_id: request.operation_id ?? null,
+    operation_digest: request.operation_digest ?? null,
+    state_scope_digest: request.state_scope_digest ?? null,
+    issued_at: issuedAt.toISOString(),
+    expires_at: new Date(issuedAt.getTime() + 5 * 60_000).toISOString(),
+    signature: "pending",
+  };
+  const { signature: _signature, ...unsigned } = receipt;
+  receipt.signature = sign(
+    null,
+    Buffer.from(JSON.stringify(canonicalizeJson(unsigned)), "utf8"),
+    signer.privateKey,
+  ).toString("base64url");
+  const encoded = Buffer.from(JSON.stringify(receipt), "utf8").toString("base64url");
+  return operatorAction.argv.map((arg) => (arg === "<base64url-receipt>" ? encoded : arg));
 }
 
 function runInstalledJson(run, cli, cwd, argv, label) {
@@ -482,6 +550,7 @@ function applyProductChange(accessLog, repo) {
 function runFixture({ run, cli, packages, tempRoot }) {
   const repo = path.join(tempRoot, "fixture");
   const accessLog = [];
+  const approvalSigner = createApprovalSigner();
   buildFixture(run, repo, accessLog);
 
   run(process.execPath, [cli, "--version"], { cwd: repo });
@@ -512,6 +581,7 @@ function runFixture({ run, cli, packages, tempRoot }) {
     ],
     { cwd: repo },
   );
+  configureApprovalSigner(repo, approvalSigner);
   commitAllIfDirty(run, repo, "chore: initialize AgentPlane fixture");
 
   const created = runInstalledJson(
@@ -617,7 +687,7 @@ function runFixture({ run, cli, packages, tempRoot }) {
     run,
     cli,
     approval.operator_action.cwd ?? repo,
-    approval.operator_action.argv,
+    signedApprovalArgv(approval.operator_action, approvalSigner),
     "plan approval",
   );
   commitAllIfDirty(run, repo, `chore: approve ${taskId} plan`);

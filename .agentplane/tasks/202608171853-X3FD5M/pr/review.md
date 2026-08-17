@@ -67,7 +67,8 @@ Created: 2026-08-17T18:59:25.035Z
  .../baselines/v0.7-compatibility-candidate.json    |  72 ++++--
  scripts/bench/capture-compatibility-candidate.mjs  |  35 +++
  .../check-compatibility-contract-baseline.mjs      |  56 ++++-
- 38 files changed, 1717 insertions(+), 120 deletions(-)
+ .../check-packaged-mixed-scope-lifecycle.mjs       |  72 +++++-
+ 39 files changed, 1788 insertions(+), 121 deletions(-)
 ```
 
 </details>
