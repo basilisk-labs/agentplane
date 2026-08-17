@@ -1,11 +1,15 @@
  docs/recipes/hermes-agentplane.mdx                 |  30 ++++++
  docs/user/configuration.mdx                        |  48 +++++++++
- .../src/commands/task/advance.command.ts           |  16 +++
+ ...n-cli.core.task-advance-effect-recovery.test.ts |  21 ++++
+ .../src/commands/shared/workflow-step-reducer.ts   |  12 ++-
+ .../src/commands/shared/workflow-step.test.ts      |  34 +++++++
+ .../src/commands/task/advance.command.ts           |  20 +++-
  .../commands/task/authority-grant.command.test.ts  |  26 +++++
  .../src/commands/task/authority-grant.command.ts   |  23 ++++-
  .../src/commands/task/branch-task-supervisor.ts    |  26 +++--
  .../src/commands/task/configured-authority.test.ts |  56 +++++++++++
  .../src/commands/task/configured-authority.ts      | 108 +++++++++++++++++++++
+ .../task/external-agent-supervisor-recovery.ts     |  62 ++++++++++++
  packages/core/schemas/config.schema.json           |  45 +++++++++
  packages/core/schemas/workflow.schema.json         |  76 +++++++++++++++
  packages/core/src/config/config.test.ts            |  44 +++++++++
@@ -18,4 +22,4 @@
  packages/spec/schemas/workflow.schema.json         |  76 +++++++++++++++
  schemas/config.schema.json                         |  45 +++++++++
  schemas/workflow.schema.json                       |  76 +++++++++++++++
- 20 files changed, 768 insertions(+), 11 deletions(-)
+ 24 files changed, 897 insertions(+), 15 deletions(-)

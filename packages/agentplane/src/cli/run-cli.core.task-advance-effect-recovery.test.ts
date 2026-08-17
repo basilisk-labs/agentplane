@@ -27,6 +27,7 @@ import {
   validateExternalAgentResultEnvelope,
   type ExternalAgentExchange,
 } from "../commands/task/external-agent-exchange.js";
+import { requiresPlanningRecoveryReplacement } from "../commands/task/external-agent-supervisor-recovery.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
 import { readRouteFingerprint } from "./run-cli.core.task-advance.testkit.js";
@@ -120,6 +121,26 @@ async function writePlanningResult(packet: AgentPacket, summary: string): Promis
 }
 
 describe("task advance effect recovery", () => {
+  it("requires replacement when a non-planning result predates an explicit PLANNER reset", () => {
+    const stateFingerprint = `sha256:${"a".repeat(64)}`;
+    const planningFingerprint = `sha256:${"b".repeat(64)}`;
+    expect(
+      requiresPlanningRecoveryReplacement({
+        decision: {
+          workflowStep: {
+            kind: "agent_episode",
+            episode: { purpose: "planning" },
+            preconditionFingerprint: { digest: planningFingerprint },
+          },
+        } as never,
+        exchange: {
+          purpose: "implementation",
+          state_fingerprint: stateFingerprint,
+        } as ExternalAgentExchange,
+      }),
+    ).toBe(true);
+  });
+
   it("retires a drifted result-less exchange and issues one exact-key replacement", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
