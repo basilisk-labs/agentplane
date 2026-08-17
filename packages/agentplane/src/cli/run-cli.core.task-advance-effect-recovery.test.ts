@@ -20,6 +20,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   createSupervisorEpisodeStore,
+  preparePersistedSupervisorReplacementAfterFailure,
   resolveSupervisorExecutionEpisodePath,
 } from "../commands/shared/supervisor-execution-episode.js";
 import {
@@ -391,6 +392,79 @@ describe("task advance effect recovery", () => {
           status: "intent",
           replacement_of_operation_key: failedOperation.operation_key,
         },
+      ],
+    });
+  });
+
+  it("refreshes a pending exact-key replacement after route state changes", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root);
+    const issued = await readAgentPacket(root, taskId);
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    const journal = validateSupervisorExecutionEpisodeJournal(await store.read());
+    const failedOperation = journal.operations.at(-1);
+    if (!failedOperation) throw new Error("expected issued operation");
+    await store.write(
+      completeSupervisorExecutionEpisode({
+        journal,
+        operation_key: failedOperation.operation_key,
+        result: { classification: "known_pre_result_failure" },
+        failed: true,
+      }),
+    );
+    expect(
+      await preparePersistedSupervisorReplacementAfterFailure({
+        git_root: root,
+        task_id: taskId,
+        state_fingerprint_digest: issued.state_fingerprint,
+      }),
+    ).toBe("prepared");
+
+    const doc = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "task",
+          "doc",
+          "set",
+          taskId,
+          "--section",
+          "Summary",
+          "--text",
+          "Changed after replacement reservation.",
+          "--updated-by",
+          "CODER",
+          "--root",
+          root,
+        ]),
+        doc.stderr,
+      ).toBe(0);
+    } finally {
+      doc.restore();
+    }
+
+    const replacement = captureStdIO();
+    try {
+      expect(
+        await runCli(["task", "advance", taskId, "--replacement", "--agent-json", "--root", root]),
+        replacement.stderr,
+      ).toBe(0);
+    } finally {
+      replacement.restore();
+    }
+    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
+      status: "running",
+      cursor: { phase: "intent_recorded" },
+      operations: [
+        { operation_key: failedOperation.operation_key, status: "failed" },
+        { status: "intent", replacement_of_operation_key: failedOperation.operation_key },
       ],
     });
   });
