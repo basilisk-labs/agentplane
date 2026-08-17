@@ -91,27 +91,19 @@ function createApprovalSigner() {
 function configureApprovalSigner(repo, signer) {
   const workflowPath = path.join(repo, ".agentplane", "WORKFLOW.md");
   const workflow = readFileSync(workflowPath, "utf8");
-  const defaultReceipts = [
-    "  approval_receipts:",
-    "    trusted_issuers: []",
-    "    max_ttl_minutes: 15",
-    "    clock_skew_seconds: 30",
-  ].join("\n");
-  if (workflow.split(defaultReceipts).length !== 2) {
+  const emptyIssuers = "    trusted_issuers: []";
+  if (workflow.split(emptyIssuers).length !== 2) {
     fail(
       "approval_trust_config_failed",
-      "fixture WORKFLOW.md did not contain exactly one default approval-receipts mapping",
+      "fixture WORKFLOW.md did not contain exactly one empty trusted-issuers mapping",
     );
   }
-  const approvalReceipts = [
-    "  approval_receipts:",
+  const trustedIssuers = [
     "    trusted_issuers:",
     `      - id: ${signer.issuer}`,
     `        public_key_spki: ${signer.publicKeySpki}`,
-    "    max_ttl_minutes: 15",
-    "    clock_skew_seconds: 5",
   ].join("\n");
-  writeFileSync(workflowPath, workflow.replace(defaultReceipts, approvalReceipts), "utf8");
+  writeFileSync(workflowPath, workflow.replace(emptyIssuers, trustedIssuers), "utf8");
 }
 
 function signedApprovalArgv(operatorAction, signer) {
