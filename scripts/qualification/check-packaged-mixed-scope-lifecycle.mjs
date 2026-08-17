@@ -89,15 +89,30 @@ function createApprovalSigner() {
 }
 
 function configureApprovalSigner(repo, signer) {
-  const configPath = path.join(repo, ".agentplane", "config.json");
-  const config = parseJson(readFileSync(configPath, "utf8"), "fixture AgentPlane config");
-  config.authority = config.authority ?? {};
-  config.authority.approval_receipts = {
-    trusted_issuers: [{ id: signer.issuer, public_key_spki: signer.publicKeySpki }],
-    max_ttl_minutes: 15,
-    clock_skew_seconds: 5,
-  };
-  writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf8");
+  const workflowPath = path.join(repo, ".agentplane", "WORKFLOW.md");
+  const workflow = readFileSync(workflowPath, "utf8");
+  const workspaceMarker = "\nworkspace:\n";
+  if (!workflow.includes(workspaceMarker) || /^authority:/mu.test(workflow)) {
+    fail(
+      "approval_trust_config_failed",
+      "fixture WORKFLOW.md omitted the expected workspace anchor or already defines authority",
+    );
+  }
+  const authority = [
+    "",
+    "authority:",
+    "  approval_receipts:",
+    "    trusted_issuers:",
+    `      - id: ${signer.issuer}`,
+    `        public_key_spki: ${signer.publicKeySpki}`,
+    "    max_ttl_minutes: 15",
+    "    clock_skew_seconds: 5",
+  ].join("\n");
+  writeFileSync(
+    workflowPath,
+    workflow.replace(workspaceMarker, `${authority}${workspaceMarker}`),
+    "utf8",
+  );
 }
 
 function signedApprovalArgv(operatorAction, signer) {
