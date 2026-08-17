@@ -2,10 +2,10 @@
 id: "202608170928-8Y24PK"
 title: "Upgrade the Hermes AgentPlane bridge protocol across the three approved repositories"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 42
 origin:
   system: "manual"
 depends_on: []
@@ -66,9 +66,9 @@ quality_review:
     - "Residual provider risk remains until the new implementation head is published and a fresh hosted CI run succeeds."
     - "Residual risk: The reviewed implementation commit is not yet the hosted PR head; publication and hosted CI remain required."
 token_usage:
-  agent_runs: 14
+  agent_runs: 16
   input_tokens: null
-  journal_digest: "sha256:7f39aa8b4049fd083be1308ceef90893aed005948cce7bfd6f222fd34ab56625"
+  journal_digest: "sha256:7d23b93cb9d0df73e88f30845d28d160e5183106a359379c03b068585dafe4f8"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -78,7 +78,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-17T23:05:38.682Z"
+  updated_at: "2026-08-17T23:14:12.743Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -361,8 +361,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "e2036e54fdd87203aa4e84834dd557d92740c535"
-  message: "🚧 8Y24PK task: apply external agent result"
+  hash: "bb4cff913eb5b73aadd130dfc8b0d51da64fcf25"
+  message: "🚧 8Y24PK task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -415,6 +415,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: e2036e54fdd8. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -617,9 +620,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-17T23:14:12.743Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "bb4cff913eb5b73aadd130dfc8b0d51da64fcf25"
 doc_version: 3
-doc_updated_at: "2026-08-17T23:13:53.978Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-17T23:14:12.771Z"
+doc_updated_by: "CODER"
 description: "Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 0.2.0, and current Hermes worker-lane dispatch. Scope roots are /Users/densmirnov/Github/agentplane, /Users/densmirnov/Github/agentplane-hermes-plugin, and /Users/densmirnov/Github/hermes-agent. Required effects include source, tests, docs, public API, schema, CI/release metadata, security boundary, network reads, hosted external writes, and publication through explicit authority. Prove PLANNER/approval/EXECUTOR/EVALUATOR, retry, stale-run, and terminal attestation without direct kanban.db writes. Existing D5MAJ3 and failed structured-intake DDW1J5 are superseded and must not be implemented or published."
 sections:
   Summary: |-
@@ -1387,7 +1398,7 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "96ba85f6d91318717e6bf32a58248941e8232877"
+    hash: "e2036e54fdd87203aa4e84834dd557d92740c535"
     message: "🚧 8Y24PK task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "89f760183da24c5a768dfe97e6c4c2fb67bd1478"
@@ -2174,12 +2185,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/14` agent runs
+- Completeness: `0/16` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:7f39aa8b4049fd083be1308ceef90893aed005948cce7bfd6f222fd34ab56625`
+- Journal digest: `sha256:7d23b93cb9d0df73e88f30845d28d160e5183106a359379c03b068585dafe4f8`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-17T23:05:38.682Z`
+- Updated at: `2026-08-17T23:14:12.743Z`
