@@ -10,6 +10,7 @@ export {
   type ExecutionProfile,
   type LoadedConfig,
   type ReasoningEffort,
+  type SideEffectAuthorityConfig,
   type TextVerbosity,
   type RunnerAdapterId,
   type RunnerCustomConfig,
