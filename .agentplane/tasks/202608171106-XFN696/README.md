@@ -2,10 +2,10 @@
 id: "202608171106-XFN696"
 title: "Add policy-driven autonomous side-effect authority"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 57
+revision: 58
 origin:
   system: "manual"
 depends_on: []
@@ -65,9 +65,9 @@ quality_review:
     - "The earlier runtime-observer regression remains covered, including lifecycle-only commits after verification."
     - "Residual risk: Hosted provider checks must still be rerun for the new PR head before integration can resume."
 token_usage:
-  agent_runs: 16
+  agent_runs: 19
   input_tokens: null
-  journal_digest: "sha256:e71a46a092bc2002f8a46f132ac9ff00f9b9a1c7f6e2580533ffcc39abc01fd1"
+  journal_digest: "sha256:922b75e5e58e96a6424c527e7b35568a8943a8fb5fce1eab4b4f499d0dd3b617"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -77,7 +77,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-17T17:36:03.847Z"
+  updated_at: "2026-08-17T18:03:12.936Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -378,8 +378,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "3d051ce0abf8a6f28a9e732109d4d1abe74756d9"
-  message: "🚧 XFN696 task: apply external agent result"
+  hash: "ed63cae0f2e4864e946b3c6b8efbaca4ab0fa89a"
+  message: "🚧 XFN696 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -429,6 +429,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 3d051ce0abf8. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -653,9 +656,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-17T18:03:12.936Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "ed63cae0f2e4864e946b3c6b8efbaca4ab0fa89a"
 doc_version: 3
-doc_updated_at: "2026-08-17T18:01:19.232Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-17T18:03:12.969Z"
+doc_updated_by: "CODER"
 description: "Implement a repository-configured AgentPlane authority provider with manual, policy allowlist, and explicit all/YOLO modes. Auto-grants must retain operation/state/scope digests, short TTL, durable audit, and a POLICY actor; default behavior remains manual. Fix task authority grant remote/local route drift so stale hosted authority requests return an actionable fresh-route diagnostic instead of incorrectly reporting that no grant is required. Keep model agents unable to impersonate USER and preserve human gates through an explicit deny list."
 sections:
   Summary: |-
@@ -1530,7 +1541,7 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "d55e291c97f1d16ad3b48b3c1acbd503f12b62cf"
+    hash: "3d051ce0abf8a6f28a9e732109d4d1abe74756d9"
     message: "🚧 XFN696 task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "89f760183da24c5a768dfe97e6c4c2fb67bd1478"
@@ -2423,12 +2434,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/16` agent runs
+- Completeness: `0/19` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:e71a46a092bc2002f8a46f132ac9ff00f9b9a1c7f6e2580533ffcc39abc01fd1`
+- Journal digest: `sha256:922b75e5e58e96a6424c527e7b35568a8943a8fb5fce1eab4b4f499d0dd3b617`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-17T17:36:03.847Z`
+- Updated at: `2026-08-17T18:03:12.936Z`
