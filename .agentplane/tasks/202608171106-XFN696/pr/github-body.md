@@ -15,14 +15,8 @@ Implement a repository-configured AgentPlane authority provider with manual, pol
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Verification portability rework: route inspection and authority grants must not invalidate a passing
-record merely because the operator invokes the CLI through Bun/Node 24 instead of the Node 26
-verification process.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
