@@ -16,7 +16,7 @@ Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
