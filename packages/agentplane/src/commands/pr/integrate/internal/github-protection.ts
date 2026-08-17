@@ -1,4 +1,5 @@
 import { resolveDefaultGithubRepo, runGhApiJson } from "../../internal/gh-api.js";
+import { CliError } from "../../../../shared/errors.js";
 
 type GithubBranchProtection = {
   required_pull_request_reviews?: unknown;
@@ -41,5 +42,19 @@ export async function requiresPullRequestMergePath(opts: {
   baseBranch: string;
 }): Promise<boolean> {
   const protection = await resolveGithubBasePullRequestProtection(opts);
+  if (protection.state === "unavailable") {
+    throw new CliError({
+      exitCode: 4,
+      code: "E_HANDOFF",
+      message:
+        `Cannot determine GitHub protection for ${protection.baseBranch}; ` +
+        "refusing to select a local merge path.",
+      context: {
+        reason_code: "provider_base_protection_unavailable",
+        base_branch: protection.baseBranch,
+        provider_reason: protection.reason,
+      },
+    });
+  }
   return protection.state === "protected";
 }
