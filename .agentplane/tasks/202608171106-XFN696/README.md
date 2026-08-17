@@ -2,10 +2,10 @@
 id: "202608171106-XFN696"
 title: "Add policy-driven autonomous side-effect authority"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 45
+revision: 46
 origin:
   system: "manual"
 depends_on: []
@@ -64,9 +64,9 @@ quality_review:
     - "Supervisor verification is ok for implementation commit ce78a4544e1d4ed3f719c3cdb922ddc791670509; full-fast CI completed 5/5 groups with ok=true."
     - "Residual risk: Repository authority remains manual until an authority block is configured; installing the new binary alone does not change that default."
 token_usage:
-  agent_runs: 12
+  agent_runs: 14
   input_tokens: null
-  journal_digest: "sha256:e0237a74a9401d93d0c589bff461640481ae482ead4275b7465501eadd822580"
+  journal_digest: "sha256:6fc0580e9e234dede429be6ed7032ac391ab3c98cf4b969e2faa302e07b66f1a"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -76,7 +76,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-17T16:54:42.172Z"
+  updated_at: "2026-08-17T17:20:05.460Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -371,8 +371,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "ce78a4544e1d4ed3f719c3cdb922ddc791670509"
-  message: "🚧 XFN696 task: apply external agent result"
+  hash: "de4a86a06c6d6465e86ad63ef037da5ee51a932f"
+  message: "🚧 XFN696 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -407,6 +407,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: ce78a4544e1d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -567,9 +570,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-17T17:20:05.460Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "de4a86a06c6d6465e86ad63ef037da5ee51a932f"
 doc_version: 3
-doc_updated_at: "2026-08-17T17:16:25.980Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-17T17:20:05.491Z"
+doc_updated_by: "CODER"
 description: "Implement a repository-configured AgentPlane authority provider with manual, policy allowlist, and explicit all/YOLO modes. Auto-grants must retain operation/state/scope digests, short TTL, durable audit, and a POLICY actor; default behavior remains manual. Fix task authority grant remote/local route drift so stale hosted authority requests return an actionable fresh-route diagnostic instead of incorrectly reporting that no grant is required. Keep model agents unable to impersonate USER and preserve human gates through an explicit deny list."
 sections:
   Summary: |-
@@ -1216,7 +1227,7 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "8009dae228bae5d93aff35d647df592e7f5efa67"
+    hash: "ce78a4544e1d4ed3f719c3cdb922ddc791670509"
     message: "🚧 XFN696 task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "89f760183da24c5a768dfe97e6c4c2fb67bd1478"
@@ -1881,12 +1892,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/12` agent runs
+- Completeness: `0/14` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:e0237a74a9401d93d0c589bff461640481ae482ead4275b7465501eadd822580`
+- Journal digest: `sha256:6fc0580e9e234dede429be6ed7032ac391ab3c98cf4b969e2faa302e07b66f1a`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-17T16:54:42.172Z`
+- Updated at: `2026-08-17T17:20:05.460Z`

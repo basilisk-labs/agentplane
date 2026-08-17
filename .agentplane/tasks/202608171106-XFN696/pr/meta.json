@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:a3af140d4d795f79b4d4bd6fafccb733980c9158ecc53ac0183d28748d9f87cc",
   "pr_number": 4839,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4839",
+  "pre_merge_closure": {
+    "basis_commit": "de4a86a06c6d6465e86ad63ef037da5ee51a932f",
+    "branch": "task/202608171106-XFN696/add-policy-driven-autonomous-side-effect-authori",
+    "pr_number": 4839,
+    "recorded_at": "2026-08-17T17:20:05.534Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608171106-XFN696",
