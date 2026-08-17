@@ -4,7 +4,7 @@ title: "Harden autonomous authority recovery and Hermes dialog approvals"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -33,6 +33,40 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-17T19:26:41.226Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 8 typed finding(s)."
+  evaluated_sha: "590e2564fe9a80830c8e676cd907891c9e31eb03"
+  blueprint_digest: "da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8"
+  evidence_refs:
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-192537708-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-192537708-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/79a94ecdaf6b84d2d15b17ec08a05a6a61687df3486611222643ba35150ebff6.md"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-192537708-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-192537708-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-192537708-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-192537708-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/README.md"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/7c4ff4607e8adcd6a15aeda1d61b73a883f90e2e1f7a08f399f36fa80d586fe1.patch"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/b1db5b1358eda6a8a82b0d9b126c6ca0e067b8dccf67c26d621687237fb99499.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/verification/20260817192521439-574a498d0fc0d048.json"
+    - ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/d23e2ba91c6f8ade44113f76fba3d404cfff656145d05f891c1f8b3d8fd81b37.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The supervisor-owned declared checks passed: typecheck, 45 focused tests, and policy routing are green for implementation head 590e2564f."
+    - "packages/agentplane/src/commands/task/agent-action-packet.test.ts still fails two assertions because it expects --by USER and no approval_receipt request; this is a real contract-test mismatch, not a runtime failure."
+    - "No committed tests currently prove forged signature, untrusted issuer, stale state fingerprint, wrong scope digest, expiry, receipt replay, or fail-closed GitHub protection lookup."
+    - "The config source was extended with approval_receipts but generated schemas and user-facing bridge contract artifacts have not been synchronized, so release validation can drift even though TypeScript passes."
+    - "The approved objective and planner findings require these artifacts, while the legacy execution contract incorrectly lists tests, schema, documentation, and public_api as forbidden; the rework packet must reconcile that contract mismatch rather than silently omit the work."
+    - "Residual risk: Without negative tests, a later parser or route refactor could accept forged or stale user authority."
+    - "Residual risk: Without generated-schema synchronization, installed clients may reject the new configuration or packet surface."
+    - "Residual risk: Provider merge remains a separate operator-owned executor boundary and must not be silently treated as a side-effect grant."
 execution_route:
   frozen: true
   reason_codes:
