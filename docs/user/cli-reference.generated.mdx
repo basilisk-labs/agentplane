@@ -793,12 +793,13 @@ Approve the current task plan (enforces Verify Steps gating when configured).
 Usage:
 
 ```text
-agentplane task plan approve <task-id> --by <id> [options]
+agentplane task plan approve <task-id> [options]
 ```
 
 Options:
 
-- `--by <id>`: Approver id. (required)
+- `--by <id>`: Approver id.
+- `--approval-receipt <base64url>`: Signed user approval receipt from a configured trusted bridge.
 - `--note <text>`: Optional note (stored in plan_approval.note).
 
 Examples:

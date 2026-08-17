@@ -15,8 +15,13 @@ Recover the AgentPlane authority release after an unavailable GitHub protection 
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note:
+
+```text
+Hosted Core CI CLI docs generated-reference check failed after the approved approval-receipt CLI
+options were added; regenerate docs/reference/cli.mdx and re-run verification.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,6 +33,7 @@ Recover the AgentPlane authority release after an unavailable GitHub protection 
 
 ```text
  docs/recipes/hermes-agentplane.mdx                 |  37 +++
+ docs/user/cli-reference.generated.mdx              |   5 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
  .../src/commands/pr/branch-publication.ts          |  23 +-
  .../integrate/internal/github-protection.test.ts   |  58 +++++
@@ -60,7 +66,7 @@ Recover the AgentPlane authority release after an unavailable GitHub protection 
  .../baselines/v0.7-compatibility-candidate.json    |  72 ++++--
  scripts/bench/capture-compatibility-candidate.mjs  |  35 +++
  .../check-compatibility-contract-baseline.mjs      |  56 ++++-
- 33 files changed, 1690 insertions(+), 115 deletions(-)
+ 34 files changed, 1693 insertions(+), 117 deletions(-)
 ```
 
 </details>
