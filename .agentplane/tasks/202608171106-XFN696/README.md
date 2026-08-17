@@ -4,7 +4,7 @@ title: "Add policy-driven autonomous side-effect authority"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +27,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-17T15:57:28.205Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-17T16:13:26.157Z"
+  updated_by: "CODER"
+  note: "Rework: authority grant route validation still diverges from task next-action because the grant command evaluates the WorkOrder through a lifecycle/write-capable CommandContext. Validate the state-bound request through the same read-route capability projection as next-action, then use the write context only to persist the already-validated grant."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -348,9 +348,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit:
-  hash: "e8e5856b5cdb51d5a5d65c5399915401705b0c29"
-  message: "🚧 XFN696 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -465,8 +463,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "verify"
+    at: "2026-08-17T16:13:26.157Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "Rework: authority grant route validation still diverges from task next-action because the grant command evaluates the WorkOrder through a lifecycle/write-capable CommandContext. Validate the state-bound request through the same read-route capability projection as next-action, then use the write context only to persist the already-validated grant."
 doc_version: 3
-doc_updated_at: "2026-08-17T15:57:31.282Z"
+doc_updated_at: "2026-08-17T16:13:27.783Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a repository-configured AgentPlane authority provider with manual, policy allowlist, and explicit all/YOLO modes. Auto-grants must retain operation/state/scope digests, short TTL, durable audit, and a POLICY actor; default behavior remains manual. Fix task authority grant remote/local route drift so stale hosted authority requests return an actionable fresh-route diagnostic instead of incorrectly reporting that no grant is required. Keep model agents unable to impersonate USER and preserve human gates through an explicit deny list."
 sections:
@@ -799,6 +803,36 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
     Scope: branch_pr task 202608171106-XFN696 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171106-XFN696-add-policy-driven-autonomous-side-effect-authori/.agentplane/tasks/202608171106-XFN696/blueprint/resolved-snapshot.json
+    - old_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+    - current_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608171106-XFN696
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-17T16:13:26.157Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: Rework: authority grant route validation still diverges from task next-action because the grant command evaluates the WorkOrder through a lifecycle/write-capable CommandContext. Validate the state-bound request through the same read-route capability projection as next-action, then use the write context only to persist the already-validated grant.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c454ee01251f11e191d3b390e64ff163e8f938e58ca7c9d2bdfef02d14185016, input_digest=sha256:336ac021ec28f1c1ed843bb6ec11f45c95439b9e8780587efd572fb753899f52
+
+    Details:
 
     BlueprintSnapshotRef:
     - state: current
@@ -1168,6 +1202,36 @@ Command: bun run lint:core && bun run typecheck && node node_modules/vitest/vite
 Result: pass
 Evidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks
 Scope: branch_pr task 202608171106-XFN696 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171106-XFN696-add-policy-driven-autonomous-side-effect-authori/.agentplane/tasks/202608171106-XFN696/blueprint/resolved-snapshot.json
+- old_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+- current_digest: b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608171106-XFN696
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-17T16:13:26.157Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: Rework: authority grant route validation still diverges from task next-action because the grant command evaluates the WorkOrder through a lifecycle/write-capable CommandContext. Validate the state-bound request through the same read-route capability projection as next-action, then use the write context only to persist the already-validated grant.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c454ee01251f11e191d3b390e64ff163e8f938e58ca7c9d2bdfef02d14185016, input_digest=sha256:336ac021ec28f1c1ed843bb6ec11f45c95439b9e8780587efd572fb753899f52
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current

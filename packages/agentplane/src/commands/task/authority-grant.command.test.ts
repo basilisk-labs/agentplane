@@ -57,9 +57,17 @@ describe("task authority grant", () => {
     "selects the $selected route context before rebuilding authority",
     async (testCase) => {
       const commandContext = {} as CommandContext;
+      const writeCommandContext = { config: {} } as CommandContext;
       const getLocalContext = vi.fn(() => Promise.resolve(commandContext));
       const getRemoteContext = vi.fn(() => Promise.resolve(commandContext));
-      const run = makeRunTaskAuthorityGrantHandler({ getLocalContext, getRemoteContext });
+      const getLocalWriteContext = vi.fn(() => Promise.resolve(writeCommandContext));
+      const getRemoteWriteContext = vi.fn(() => Promise.resolve(writeCommandContext));
+      const run = makeRunTaskAuthorityGrantHandler({
+        getLocalContext,
+        getRemoteContext,
+        getLocalWriteContext,
+        getRemoteWriteContext,
+      });
 
       await expect(
         run({ cwd: "/repo", rootOverride: null } as CommandCtx, {
@@ -76,6 +84,8 @@ describe("task authority grant", () => {
 
       expect(getLocalContext).toHaveBeenCalledTimes(testCase.remote ? 0 : 1);
       expect(getRemoteContext).toHaveBeenCalledTimes(testCase.remote ? 1 : 0);
+      expect(getLocalWriteContext).not.toHaveBeenCalled();
+      expect(getRemoteWriteContext).not.toHaveBeenCalled();
       expect(mocks.prepareAgentWorkOrder).toHaveBeenCalledWith({
         command_ctx: commandContext,
         cwd: "/repo",
@@ -99,6 +109,8 @@ describe("task authority grant", () => {
     const run = makeRunTaskAuthorityGrantHandler({
       getLocalContext: vi.fn(() => Promise.resolve(commandContext)),
       getRemoteContext: vi.fn(() => Promise.resolve(commandContext)),
+      getLocalWriteContext: vi.fn(() => Promise.resolve(commandContext)),
+      getRemoteWriteContext: vi.fn(() => Promise.resolve(commandContext)),
     });
 
     await expect(
@@ -128,6 +140,8 @@ describe("task authority grant", () => {
     const run = makeRunTaskAuthorityGrantHandler({
       getLocalContext: vi.fn(() => Promise.resolve(commandContext)),
       getRemoteContext: vi.fn(() => Promise.resolve(commandContext)),
+      getLocalWriteContext: vi.fn(() => Promise.resolve(commandContext)),
+      getRemoteWriteContext: vi.fn(() => Promise.resolve(commandContext)),
     });
 
     await expect(

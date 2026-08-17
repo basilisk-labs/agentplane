@@ -150,6 +150,8 @@ function requestedOperation(
 export function makeRunTaskAuthorityGrantHandler(session: {
   getLocalContext: (cmd: string) => Promise<CommandContext>;
   getRemoteContext: (cmd: string) => Promise<CommandContext>;
+  getLocalWriteContext: (cmd: string) => Promise<CommandContext>;
+  getRemoteWriteContext: (cmd: string) => Promise<CommandContext>;
 }) {
   return async (ctx: CommandCtx, parsed: TaskAuthorityGrantParsed): Promise<number> => {
     const commandCtx = await (parsed.remote
@@ -182,13 +184,16 @@ export function makeRunTaskAuthorityGrantHandler(session: {
     const now = new Date();
     const issuedAt = now.toISOString();
     const expiresAt = new Date(now.getTime() + parsed.ttlMinutes * 60_000).toISOString();
+    const writeCommandCtx = await (parsed.remote
+      ? session.getRemoteWriteContext("task authority grant")
+      : session.getLocalWriteContext("task authority grant"));
     const task = await loadTaskFromContext({
-      ctx: commandCtx,
+      ctx: writeCommandCtx,
       taskId: parsed.taskId,
-      preferBranchSnapshot: commandCtx.config.workflow_mode === "branch_pr",
+      preferBranchSnapshot: writeCommandCtx.config.workflow_mode === "branch_pr",
     });
     const loaded = await loadSideEffectAuthorityState({
-      gitRoot: commandCtx.resolvedProject.gitRoot,
+      gitRoot: writeCommandCtx.resolvedProject.gitRoot,
       taskId: parsed.taskId,
       task,
     });
@@ -227,7 +232,7 @@ export function makeRunTaskAuthorityGrantHandler(session: {
       outcome: "approved",
     });
     await persistSideEffectAuthorityState({
-      gitRoot: commandCtx.resolvedProject.gitRoot,
+      gitRoot: writeCommandCtx.resolvedProject.gitRoot,
       taskId: parsed.taskId,
       state: audited,
     });
