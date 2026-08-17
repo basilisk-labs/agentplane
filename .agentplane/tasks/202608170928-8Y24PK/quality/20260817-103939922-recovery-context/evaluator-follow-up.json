@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608170928-8Y24PK-8dd9b4a05b833fd9bbe7db56",
+  "task_id": "202608170928-8Y24PK",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Rework is required before the scoped result can pass quality review: the published AgentPlane head fails the repository static quality gate.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "GitHub Actions Core CI job verify-static fails in packages/agentplane/src/commands/hermes/hermes-environment.ts:28:74 because @typescript-eslint/prefer-nullish-coalescing rejects logical OR in the protocol snapshot fallback.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/d18b63a1ba8962a889c0073593207182dca35e83877aa9e3b161c6b06cfdba7c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "The required change is scoped and mechanical: replace the fallback expression with nullish coalescing, then rerun lint and the Hermes command tests before republishing the task head.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/d18b63a1ba8962a889c0073593207182dca35e83877aa9e3b161c6b06cfdba7c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "The plugin PR is independently green, and the Hermes upstream PR is mergeable; those hosted facts do not override the failing AgentPlane quality gate.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/d18b63a1ba8962a889c0073593207182dca35e83877aa9e3b161c6b06cfdba7c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "Residual risk: The remaining in-progress hosted jobs must complete successfully on the corrected head.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608170928-8Y24PK/quality/objects/sha256/d18b63a1ba8962a889c0073593207182dca35e83877aa9e3b161c6b06cfdba7c.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608170928-8Y24PK/quality/20260817-103939922-recovery-context/evaluator-result.json"
+}
