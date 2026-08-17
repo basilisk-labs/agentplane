@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 8448d3ba9bfa9525143ca404087f7060f55345d8..6c81acdd0cfd4b0442f77cf665dc68f6202670ce",
+      "command": "git diff --check 163b32b7c3587a64a57df85bed40590aafdef7a2..c99c0af74efb9c5281b77305195454980a9be14d",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8448d3ba9bfa9525143ca404087f7060f55345d8..6c81acdd0cfd4b0442f77cf665dc68f6202670ce",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 163b32b7c3587a64a57df85bed40590aafdef7a2..c99c0af74efb9c5281b77305195454980a9be14d",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,14 +22,9 @@
         "M\t.agentplane/tasks/202608170928-8Y24PK/pr/github-body.md",
         "M\t.agentplane/tasks/202608170928-8Y24PK/pr/meta.json",
         "M\t.agentplane/tasks/202608170928-8Y24PK/pr/review.md",
-        "A\t.agentplane/tasks/202608170928-8Y24PK/verification/20260817214937986-e878a1bb41003482.json",
         "M\tdocs/recipes/hermes-agentplane.mdx",
         "M\tdocs/workflow-guides/hermes-kanban.mdx",
-        "M\tintegrations/hermes-agentplane-plugin/README.md",
-        "M\tintegrations/hermes-agentplane-plugin/protocol-v2.schema.json",
-        "M\tpackages/agentplane/src/commands/hermes/hermes-environment.ts",
-        "M\tpackages/agentplane/src/commands/hermes/hermes.command.test.ts",
-        "M\tpackages/agentplane/src/commands/hermes/hermes.command.ts"
+        "M\tintegrations/hermes-agentplane-plugin/README.md"
       ]
     },
     {
@@ -39,47 +34,23 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "8448d3ba9bfa9525143ca404087f7060f55345d8",
-  "implementation_commit": "6c81acdd0cfd4b0442f77cf665dc68f6202670ce",
+  "execution_base_commit": "163b32b7c3587a64a57df85bed40590aafdef7a2",
+  "implementation_commit": "c99c0af74efb9c5281b77305195454980a9be14d",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M .agentplane/tasks/202608170928-8Y24PK/README.md",
-      " M .agentplane/tasks/202608170928-8Y24PK/pr/github-body.md",
-      " M .agentplane/tasks/202608170928-8Y24PK/pr/meta.json",
-      " M .agentplane/tasks/202608170928-8Y24PK/pr/review.md",
-      "?? .agentplane/tasks/202608170928-8Y24PK/verification/20260817214937986-e878a1bb41003482.json"
+      " M .agentplane/tasks/202608170928-8Y24PK/README.md"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202608170928-8Y24PK/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608170928-8Y24PK/pr/github-body.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608170928-8Y24PK/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608170928-8Y24PK/pr/review.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608170928-8Y24PK/verification/20260817214937986-e878a1bb41003482.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202608170928-8Y24PK/README.md",
-      " M .agentplane/tasks/202608170928-8Y24PK/pr/github-body.md",
-      " M .agentplane/tasks/202608170928-8Y24PK/pr/meta.json",
-      " M .agentplane/tasks/202608170928-8Y24PK/pr/review.md",
-      "?? .agentplane/tasks/202608170928-8Y24PK/verification/20260817214937986-e878a1bb41003482.json"
+      " M .agentplane/tasks/202608170928-8Y24PK/README.md"
     ],
     "unchanged_from_execution_baseline": []
   },
