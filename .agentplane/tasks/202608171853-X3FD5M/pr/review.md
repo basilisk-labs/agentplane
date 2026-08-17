@@ -12,8 +12,8 @@ Created: 2026-08-17T18:59:25.035Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted packaged-mixed-scope-lifecycle failed because receipt-backed task plan approve calls git.headCommit through an undeclared git.head capability; add the least-privilege plan-approval capability profile and regression coverage.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
