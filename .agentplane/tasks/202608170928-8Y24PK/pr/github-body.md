@@ -15,13 +15,8 @@ Implement the user-approved plan for AgentPlane 0.7.6, agentplane-hermes-plugin 
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Core CI verify-static failed: HERMES_PLUGIN_PROTOCOL is exported but used only internally; remove
-the unnecessary export and re-run knip/static verification.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
