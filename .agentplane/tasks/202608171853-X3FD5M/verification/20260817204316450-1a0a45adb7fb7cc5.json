@@ -1,0 +1,91 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks\nScope: branch_pr task 202608171853-X3FD5M Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks\nScope: branch_pr task 202608171853-X3FD5M Verification Contract check critical_paths\n\nCheck: docs_contract\nCommand: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks\nScope: branch_pr task 202608171853-X3FD5M Verification Contract check docs_contract\n\nCheck: full_regression\nCommand: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks\nScope: branch_pr task 202608171853-X3FD5M Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks\nScope: branch_pr task 202608171853-X3FD5M Verification Contract check hosted_integration\n\nCheck: real_e2e\nCommand: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks\nScope: branch_pr task 202608171853-X3FD5M Verification Contract check real_e2e\n\nCheck: task_outcome\nCommand: bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks\nScope: branch_pr task 202608171853-X3FD5M Verification Contract check task_outcome",
+  "digest": "sha256:1a0a45adb7fb7cc5630a2ae882779fc16cf6876444645cb20b78da93b03e5f2f",
+  "implementation_sha": "3cdaf96dadfd66bb7fbe92b5eb62a7451c9a527c",
+  "input": {
+    "context": {
+      "digest": "sha256:1d83a78bd7a4d8dc4a0d56864ee5466514423b918b1d18c2714297b8216376d9",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:99c73cc078163e11459dbd9e6204d3a0d78e4c999ac185787e5bcc8d83c0d862",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:3a34b9d2e895376fbe66468932411a1077855f3c64c8cd7321b258ffed9328b9",
+      "digest": "sha256:96347b6e75b46fa770cde46940050dd699eb6b13bd35aa46aa20d15af02b041b",
+      "references": [
+        {
+          "digest": "sha256:748a57c43acb4a5ab5895dd799b1da7ac41993aad5c84440f64627bd65dd5ef4",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "e22f17ffad89f8fe9c3e41abc9c483c2c5fc2c78",
+      "digest": "sha256:e451750e78a62193228c9efc65e19225bf22b09c2019f8dde9af434e6e3fa364",
+      "strategy": "branch_diff",
+      "target_sha": "3cdaf96dadfd66bb7fbe92b5eb62a7451c9a527c"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:3db89fdae129f4117dddc33ca72beea8db700d2db9e2e6c9ce0795e8531f536f",
+    "verify_steps_digest": "sha256:d3ea9d1b0233fc005c39c29e6fb1eb6ed23070236ccc66392cc78b2f652d61bc"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-08-17T20:43:16.450Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Harden autonomous authority recovery and Hermes dialog approvals\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Harden autonomous authority recovery and Hermes dialog approvals\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:d3ea9d1b0233fc005c39c29e6fb1eb6ed23070236ccc66392cc78b2f652d61bc",
+  "task_id": "202608171853-X3FD5M",
+  "verification_command": "agentplane verify 202608171853-X3FD5M --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

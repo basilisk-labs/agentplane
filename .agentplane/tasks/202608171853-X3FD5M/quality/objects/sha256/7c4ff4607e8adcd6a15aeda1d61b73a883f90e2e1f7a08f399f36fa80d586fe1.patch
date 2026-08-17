@@ -1,0 +1,1083 @@
+diff --git a/packages/agentplane/src/commands/pr/branch-publication.ts b/packages/agentplane/src/commands/pr/branch-publication.ts
+index bd1bd08ff..c7e195397 100644
+--- a/packages/agentplane/src/commands/pr/branch-publication.ts
++++ b/packages/agentplane/src/commands/pr/branch-publication.ts
+@@ -1,11 +1,12 @@
+ import { execFileAsync } from "@agentplaneorg/core/process";
+-import { gitEnv, gitRefreshBranchTrackingRef } from "@agentplaneorg/core/git";
++import { gitRefreshBranchTrackingRef } from "@agentplaneorg/core/git";
+ 
+ import { gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
+ import {
+   observeExistingGithubPrByBranch,
+   parseGithubRepoFromRemoteUrl,
+ } from "./internal/sync-github.js";
++import { ghEnv } from "./internal/gh-api.js";
+ 
+ const GIT_OBJECT_ID_PATTERN = /^[0-9a-f]{40}(?:[0-9a-f]{24})?$/i;
+ 
+@@ -13,7 +14,7 @@ async function gitResolveBranchHead(gitRoot: string, branch: string): Promise<st
+   try {
+     const { stdout } = await execFileAsync("git", ["rev-parse", `refs/heads/${branch}`], {
+       cwd: gitRoot,
+-      env: gitEnv(),
++      env: ghEnv(),
+     });
+     const trimmed = stdout.trim();
+     return trimmed.length > 0 ? trimmed : null;
+@@ -33,7 +34,7 @@ async function gitResolveRemoteBranchHead(
+       ["ls-remote", "--heads", remoteTarget, `refs/heads/${branch}`],
+       {
+         cwd: gitRoot,
+-        env: gitEnv(),
++        env: ghEnv(),
+       },
+     );
+     const trimmed = stdout.trim();
+@@ -49,7 +50,7 @@ async function gitResolveRemotePushTarget(gitRoot: string, remote: string): Prom
+   try {
+     const { stdout } = await execFileAsync("git", ["remote", "get-url", "--push", remote], {
+       cwd: gitRoot,
+-      env: gitEnv(),
++      env: ghEnv(),
+     });
+     const trimmed = stdout.trim();
+     return trimmed.length > 0 ? trimmed : remote;
+@@ -66,11 +67,11 @@ async function gitResolveRemoteUrls(opts: {
+     const [{ stdout: fetchStdout }, { stdout: pushStdout }] = await Promise.all([
+       execFileAsync("git", ["remote", "get-url", "--all", opts.remote], {
+         cwd: opts.gitRoot,
+-        env: gitEnv(),
++        env: ghEnv(),
+       }),
+       execFileAsync("git", ["remote", "get-url", "--push", "--all", opts.remote], {
+         cwd: opts.gitRoot,
+-        env: gitEnv(),
++        env: ghEnv(),
+       }),
+     ]);
+     const fetchUrls = fetchStdout
+@@ -107,14 +108,14 @@ async function gitSetBranchUpstream(opts: {
+ }): Promise<void> {
+   await execFileAsync("git", ["config", `branch.${opts.branch}.remote`, opts.remote], {
+     cwd: opts.gitRoot,
+-    env: gitEnv(),
++    env: ghEnv(),
+   });
+   await execFileAsync(
+     "git",
+     ["config", `branch.${opts.branch}.merge`, `refs/heads/${opts.remoteBranch}`],
+     {
+       cwd: opts.gitRoot,
+-      env: gitEnv(),
++      env: ghEnv(),
+     },
+   );
+ }
+@@ -210,7 +211,7 @@ async function pushRebasedBranchWithObservedLease(opts: {
+     ],
+     {
+       cwd: opts.gitRoot,
+-      env: gitEnv(),
++      env: ghEnv(),
+     },
+   );
+   return true;
+@@ -241,7 +242,7 @@ export async function pushTaskBranchUpstreamIfConfigured(opts: {
+     try {
+       await execFileAsync("git", ["remote", "get-url", remote], {
+         cwd: opts.gitRoot,
+-        env: gitEnv(),
++        env: ghEnv(),
+       });
+     } catch {
+       return false;
+@@ -251,7 +252,7 @@ export async function pushTaskBranchUpstreamIfConfigured(opts: {
+       ["push", "--no-verify", "-u", remote, `HEAD:refs/heads/${opts.branch}`],
+       {
+         cwd: opts.gitRoot,
+-        env: gitEnv(),
++        env: ghEnv(),
+       },
+     );
+   } catch (err) {
+diff --git a/packages/agentplane/src/commands/pr/integrate/internal/github-protection.ts b/packages/agentplane/src/commands/pr/integrate/internal/github-protection.ts
+index 0305873b3..3988523f4 100644
+--- a/packages/agentplane/src/commands/pr/integrate/internal/github-protection.ts
++++ b/packages/agentplane/src/commands/pr/integrate/internal/github-protection.ts
+@@ -1,4 +1,5 @@
+ import { resolveDefaultGithubRepo, runGhApiJson } from "../../internal/gh-api.js";
++import { CliError } from "../../../../shared/errors.js";
+ 
+ type GithubBranchProtection = {
+   required_pull_request_reviews?: unknown;
+@@ -41,5 +42,19 @@ export async function requiresPullRequestMergePath(opts: {
+   baseBranch: string;
+ }): Promise<boolean> {
+   const protection = await resolveGithubBasePullRequestProtection(opts);
++  if (protection.state === "unavailable") {
++    throw new CliError({
++      exitCode: 4,
++      code: "E_HANDOFF",
++      message:
++        `Cannot determine GitHub protection for ${protection.baseBranch}; ` +
++        "refusing to select a local merge path.",
++      context: {
++        reason_code: "provider_base_protection_unavailable",
++        base_branch: protection.baseBranch,
++        provider_reason: protection.reason,
++      },
++    });
++  }
+   return protection.state === "protected";
+ }
+diff --git a/packages/agentplane/src/commands/shared/declared-check.ts b/packages/agentplane/src/commands/shared/declared-check.ts
+index b1067e997..01cab18d2 100644
+--- a/packages/agentplane/src/commands/shared/declared-check.ts
++++ b/packages/agentplane/src/commands/shared/declared-check.ts
+@@ -323,6 +323,12 @@ export function resolveDeclaredTaskCheck(command: string): DeclaredTaskCheckReso
+       check: { executable: process.execPath, args: [AGENTPLANE_BIN, "doctor"], script: null },
+     };
+   }
++  if (base === "bunx") {
++    return {
++      ok: true,
++      check: { executable: "bun", args: ["x", ...invocation.args], script: null },
++    };
++  }
+   return {
+     ok: true,
+     check: {
+diff --git a/packages/agentplane/src/commands/shared/side-effect-authority.ts b/packages/agentplane/src/commands/shared/side-effect-authority.ts
+index bd56ad8ca..46f8d62bb 100644
+--- a/packages/agentplane/src/commands/shared/side-effect-authority.ts
++++ b/packages/agentplane/src/commands/shared/side-effect-authority.ts
+@@ -103,6 +103,7 @@ export type SideEffectAuthorityRecord = {
+   stateScopeDigest: string;
+   issuedAt: string;
+   expiresAt: string;
++  evidenceDigest?: string;
+   digest: string;
+ };
+ 
+@@ -183,6 +184,7 @@ function parseGrant(value: unknown): SideEffectAuthorityRecord | null {
+     !isDigest(value.stateScopeDigest) ||
+     !isIsoDate(value.issuedAt) ||
+     !isIsoDate(value.expiresAt) ||
++    (value.evidenceDigest !== undefined && !isDigest(value.evidenceDigest)) ||
+     !isDigest(value.digest)
+   ) {
+     return null;
+@@ -199,6 +201,7 @@ function parseGrant(value: unknown): SideEffectAuthorityRecord | null {
+     stateScopeDigest: value.stateScopeDigest,
+     issuedAt: value.issuedAt,
+     expiresAt: value.expiresAt,
++    ...(typeof value.evidenceDigest === "string" ? { evidenceDigest: value.evidenceDigest } : {}),
+     digest: value.digest,
+   };
+   const { digest: _digest, ...unsigned } = record;
+@@ -331,6 +334,7 @@ export function createSideEffectAuthorityRecord(opts: {
+   fingerprint: StateFingerprint;
+   issuedAt: string;
+   expiresAt: string;
++  evidenceDigest?: string;
+   id?: string;
+ }): SideEffectAuthorityRecord {
+   const requirement = workflowOperationAuthorityRequirement(opts.operation.id);
+@@ -355,6 +359,7 @@ export function createSideEffectAuthorityRecord(opts: {
+     stateScopeDigest: workflowAuthorityStateScopeDigest(opts.fingerprint),
+     issuedAt: opts.issuedAt,
+     expiresAt: opts.expiresAt,
++    ...(opts.evidenceDigest ? { evidenceDigest: opts.evidenceDigest } : {}),
+   };
+   if (!record.actor) throw new Error("Authority actor must be non-empty.");
+   return { ...record, digest: grantDigest(record) };
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+index 11a042404..2334d0585 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+@@ -246,7 +246,12 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
+     ) {
+       return "already_prepared";
+     }
+-    if (journal.status !== "stopped" || journal.stop?.reason !== "operation_failed") {
++    const latest = journal.operations.at(-1);
++    const recoverableFailure =
++      journal.status === "stopped" &&
++      latest?.status === "failed" &&
++      (journal.stop?.reason === "operation_failed" || journal.stop?.reason === "stale_state");
++    if (!recoverableFailure) {
+       return "not_failed";
+     }
+     const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+diff --git a/packages/agentplane/src/commands/task/agent-action-packet.ts b/packages/agentplane/src/commands/task/agent-action-packet.ts
+index 806d223f8..1a11df62e 100644
+--- a/packages/agentplane/src/commands/task/agent-action-packet.ts
++++ b/packages/agentplane/src/commands/task/agent-action-packet.ts
+@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
+ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+ 
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import { userApprovalReceiptRequestForStep } from "./user-approval-receipt.js";
+ 
+ // The packet stays compact, but must fit a normal exchange envelope plus a typed
+ // execution declaration after context refs have been removed.
+@@ -45,6 +46,19 @@ export type AgentActionPacket = {
+     cwd: string | null;
+     argv: string[] | null;
+     authority_reference: string;
++    approval_receipt: {
++      schema_version: 1;
++      format: "base64url-json+ed25519";
++      request: {
++        approval_type: "plan_approval" | "side_effect" | "provider_merge";
++        task_id: string;
++        authority_reference: string;
++        state_fingerprint: string;
++        operation_id: string | null;
++        operation_digest: string | null;
++        state_scope_digest: string | null;
++      };
++    };
+   };
+   exchange?: {
+     directory: string;
+@@ -115,39 +129,65 @@ function operatorActionFor(opts: {
+   const step = opts.decision.workflowStep;
+   if (step.kind !== "approval") return undefined;
+   const cwd = opts.decision.oracle?.authoritativeCheckoutPath ?? null;
++  const receiptRequest = userApprovalReceiptRequestForStep(step);
++  const approvalReceipt = () => ({
++    schema_version: 1 as const,
++    format: "base64url-json+ed25519" as const,
++    request: {
++      approval_type: receiptRequest.approvalType,
++      task_id: receiptRequest.taskId,
++      authority_reference: receiptRequest.authorityReference,
++      state_fingerprint: receiptRequest.stateFingerprint,
++      operation_id: receiptRequest.operationId ?? null,
++      operation_digest: receiptRequest.operationDigest ?? null,
++      state_scope_digest: receiptRequest.stateScopeDigest ?? null,
++    },
++  });
+   if (step.request.type === "plan_approval") {
++    const argv = [
++      "agentplane",
++      "task",
++      "plan",
++      "approve",
++      step.request.taskId,
++      "--approval-receipt",
++      "<base64url-receipt>",
++    ];
+     return {
+       kind: "approve_plan",
+       required_role: "USER",
+       cwd,
+-      argv: ["agentplane", "task", "plan", "approve", step.request.taskId, "--by", "USER"],
++      argv,
+       authority_reference: step.request.authorityRef,
++      approval_receipt: approvalReceipt(),
+     };
+   }
+   if (step.request.type === "side_effect") {
++    const argv = [
++      "agentplane",
++      "task",
++      "authority",
++      "grant",
++      step.request.taskId,
++      ...(opts.remote ? ["--remote"] : []),
++      "--operation",
++      step.request.operationId,
++      "--operation-digest",
++      step.request.operationDigest,
++      "--state-fingerprint",
++      step.request.stateFingerprintDigest,
++      "--state-scope-digest",
++      step.request.stateScopeDigest,
++      "--approval-receipt",
++      "<base64url-receipt>",
++    ];
+     return {
+       kind: "grant_side_effect_authority",
+       required_role: "USER",
+       cwd,
+-      argv: [
+-        "agentplane",
+-        "task",
+-        "authority",
+-        "grant",
+-        step.request.taskId,
+-        ...(opts.remote ? ["--remote"] : []),
+-        "--operation",
+-        step.request.operationId,
+-        "--operation-digest",
+-        step.request.operationDigest,
+-        "--state-fingerprint",
+-        step.request.stateFingerprintDigest,
+-        "--state-scope-digest",
+-        step.request.stateScopeDigest,
+-        "--by",
+-        "USER",
+-      ],
++      argv,
+       authority_reference: step.request.authorityRef,
++      approval_receipt: approvalReceipt(),
+     };
+   }
+   return {
+@@ -156,6 +196,7 @@ function operatorActionFor(opts: {
+     cwd,
+     argv: null,
+     authority_reference: step.request.authorityRef,
++    approval_receipt: approvalReceipt(),
+   };
+ }
+ 
+diff --git a/packages/agentplane/src/commands/task/authority-grant.command.ts b/packages/agentplane/src/commands/task/authority-grant.command.ts
+index 1aa4c5e56..bcdcd2f91 100644
+--- a/packages/agentplane/src/commands/task/authority-grant.command.ts
++++ b/packages/agentplane/src/commands/task/authority-grant.command.ts
+@@ -15,6 +15,10 @@ import {
+   persistSideEffectAuthorityState,
+ } from "../shared/side-effect-authority-store.js";
+ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
++import {
++  userApprovalReceiptRequestForStep,
++  verifyUserApprovalReceipt,
++} from "./user-approval-receipt.js";
+ 
+ export type TaskAuthorityGrantParsed = {
+   taskId: string;
+@@ -22,7 +26,8 @@ export type TaskAuthorityGrantParsed = {
+   operationDigest: string;
+   stateFingerprintDigest: string;
+   stateScopeDigest: string;
+-  by: string;
++  by?: string;
++  approvalReceipt?: string;
+   ttlMinutes: number;
+   remote: boolean;
+ };
+@@ -65,9 +70,14 @@ export const taskAuthorityGrantSpec: CommandSpec<TaskAuthorityGrantParsed> = {
+       kind: "string",
+       name: "by",
+       valueHint: "<actor>",
+-      required: true,
+       description: "Human or policy actor granting the authority.",
+     },
++    {
++      kind: "string",
++      name: "approval-receipt",
++      valueHint: "<base64url>",
++      description: "Signed user approval receipt from a configured trusted bridge.",
++    },
+     {
+       kind: "string",
+       name: "ttl-minutes",
+@@ -93,12 +103,21 @@ export const taskAuthorityGrantSpec: CommandSpec<TaskAuthorityGrantParsed> = {
+       "operation-digest",
+       "state-fingerprint",
+       "state-scope-digest",
+-      "by",
+     ] as const) {
+       if (typeof raw.opts[key] !== "string" || raw.opts[key].trim().length === 0) {
+         throw usageError({ spec: taskAuthorityGrantSpec, message: `Missing required --${key}.` });
+       }
+     }
++    const by = raw.opts.by;
++    const receipt = raw.opts["approval-receipt"];
++    const hasBy = typeof by === "string" && by.trim().length > 0;
++    const hasReceipt = typeof receipt === "string" && receipt.trim().length > 0;
++    if (hasBy === hasReceipt) {
++      throw usageError({
++        spec: taskAuthorityGrantSpec,
++        message: "Provide exactly one of --by or --approval-receipt.",
++      });
++    }
+     const ttl = raw.opts["ttl-minutes"];
+     if (
+       ttl !== undefined &&
+@@ -116,7 +135,11 @@ export const taskAuthorityGrantSpec: CommandSpec<TaskAuthorityGrantParsed> = {
+     operationDigest: String(raw.opts["operation-digest"]).trim(),
+     stateFingerprintDigest: String(raw.opts["state-fingerprint"]).trim(),
+     stateScopeDigest: String(raw.opts["state-scope-digest"]).trim(),
+-    by: String(raw.opts.by).trim(),
++    by: typeof raw.opts.by === "string" ? raw.opts.by.trim() : undefined,
++    approvalReceipt:
++      typeof raw.opts["approval-receipt"] === "string"
++        ? raw.opts["approval-receipt"].trim()
++        : undefined,
+     ttlMinutes: typeof raw.opts["ttl-minutes"] === "string" ? Number(raw.opts["ttl-minutes"]) : 15,
+     remote: raw.opts.remote === true,
+   }),
+@@ -185,9 +208,32 @@ export function makeRunTaskAuthorityGrantHandler(session: {
+           `Inspect the current route with: ${currentRouteCommand(parsed.taskId, parsed.remote)}`,
+       });
+     }
++    const verifiedReceipt = parsed.approvalReceipt
++      ? verifyUserApprovalReceipt({
++          encoded: parsed.approvalReceipt,
++          config: commandCtx.config.authority.approval_receipts,
++          request: userApprovalReceiptRequestForStep(
++            decision.workflowStep as Extract<
++              TaskRouteDecision["workflowStep"],
++              { kind: "approval" }
++            >,
++          ),
++        })
++      : null;
++    const actor = verifiedReceipt?.actor ?? parsed.by ?? "";
+     const now = new Date();
+     const issuedAt = now.toISOString();
+-    const expiresAt = new Date(now.getTime() + parsed.ttlMinutes * 60_000).toISOString();
++    const requestedExpiry = now.getTime() + parsed.ttlMinutes * 60_000;
++    const effectiveExpiry = verifiedReceipt
++      ? Math.min(requestedExpiry, Date.parse(verifiedReceipt.receipt.expires_at))
++      : requestedExpiry;
++    if (effectiveExpiry <= now.getTime()) {
++      throw usageError({
++        spec: taskAuthorityGrantSpec,
++        message: "Approval receipt no longer has a usable authority lifetime.",
++      });
++    }
++    const expiresAt = new Date(effectiveExpiry).toISOString();
+     const writeCommandCtx = await (parsed.remote
+       ? session.getRemoteWriteContext("task authority grant")
+       : session.getLocalWriteContext("task authority grant"));
+@@ -208,12 +254,22 @@ export function makeRunTaskAuthorityGrantHandler(session: {
+           "Existing side-effect authority state is malformed or tampered; repair it before granting authority.",
+       });
+     }
++    if (
++      verifiedReceipt &&
++      loaded.state.grants.some((item) => item.evidenceDigest === verifiedReceipt.digest)
++    ) {
++      throw usageError({
++        spec: taskAuthorityGrantSpec,
++        message: "Approval receipt has already been consumed for this task.",
++      });
++    }
+     const grant = createSideEffectAuthorityRecord({
+-      actor: parsed.by,
++      actor,
+       operation: request.operation,
+       fingerprint: decision.workflowStep.preconditionFingerprint,
+       issuedAt,
+       expiresAt,
++      ...(verifiedReceipt ? { evidenceDigest: verifiedReceipt.digest } : {}),
+     });
+     if (grant.operationDigest !== request.operationDigest) {
+       throw usageError({
+@@ -229,7 +285,7 @@ export function makeRunTaskAuthorityGrantHandler(session: {
+         audit: loaded.state.audit,
+       },
+       at: issuedAt,
+-      actor: parsed.by,
++      actor,
+       operation: request.operation,
+       fingerprint: decision.workflowStep.preconditionFingerprint,
+       authority: grant,
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts b/packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts
+index 1618480e2..7fe47d127 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts
+@@ -36,7 +36,12 @@ export async function recordIssuedExternalAgentEpisode(opts: {
+     });
+     let journal = opened.journal;
+     let replacementAuthorized = false;
+-    if (journal.status === "stopped" && journal.stop?.reason === "operation_failed") {
++    const latestOperation = journal.operations.at(-1);
++    const recoverableFailedOperation =
++      journal.status === "stopped" &&
++      latestOperation?.status === "failed" &&
++      (journal.stop?.reason === "operation_failed" || journal.stop?.reason === "stale_state");
++    if (recoverableFailedOperation) {
+       if (!opts.replace_failed_operation) {
+         throw new CliError({
+           code: "E_RUNTIME",
+diff --git a/packages/agentplane/src/commands/task/plan-approve.command.ts b/packages/agentplane/src/commands/task/plan-approve.command.ts
+index cc630f670..d6fa0b9f9 100644
+--- a/packages/agentplane/src/commands/task/plan-approve.command.ts
++++ b/packages/agentplane/src/commands/task/plan-approve.command.ts
+@@ -1,12 +1,21 @@
+ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
+ import { usageError } from "../../cli/spec/errors.js";
++import {
++  prepareAgentWorkOrder,
++  requirePreparedAgentWorkOrder,
++} from "../../runner/usecases/agent-work-order.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
+ import { cmdTaskPlanApprove } from "./plan.js";
++import {
++  userApprovalReceiptRequestForStep,
++  verifyUserApprovalReceipt,
++} from "./user-approval-receipt.js";
+ 
+ export type TaskPlanApproveParsed = {
+   taskId: string;
+-  by: string;
++  by?: string;
++  approvalReceipt?: string;
+   note?: string;
+ };
+ 
+@@ -20,9 +29,14 @@ export const taskPlanApproveSpec: CommandSpec<TaskPlanApproveParsed> = {
+       kind: "string",
+       name: "by",
+       valueHint: "<id>",
+-      required: true,
+       description: "Approver id.",
+     },
++    {
++      kind: "string",
++      name: "approval-receipt",
++      valueHint: "<base64url>",
++      description: "Signed user approval receipt from a configured trusted bridge.",
++    },
+     {
+       kind: "string",
+       name: "note",
+@@ -38,14 +52,24 @@ export const taskPlanApproveSpec: CommandSpec<TaskPlanApproveParsed> = {
+   ],
+   validateRaw: (raw) => {
+     const by = raw.opts.by;
+-    if (typeof by === "string" && by.trim().length === 0) {
+-      throw usageError({ spec: taskPlanApproveSpec, message: "Invalid value for --by: empty." });
++    const receipt = raw.opts["approval-receipt"];
++    const hasBy = typeof by === "string" && by.trim().length > 0;
++    const hasReceipt = typeof receipt === "string" && receipt.trim().length > 0;
++    if (hasBy === hasReceipt) {
++      throw usageError({
++        spec: taskPlanApproveSpec,
++        message: "Provide exactly one of --by or --approval-receipt.",
++      });
+     }
+   },
+   parse: (raw) => {
+     return {
+       taskId: String(raw.args["task-id"]),
+-      by: String(raw.opts.by),
++      by: typeof raw.opts.by === "string" ? raw.opts.by.trim() : undefined,
++      approvalReceipt:
++        typeof raw.opts["approval-receipt"] === "string"
++          ? raw.opts["approval-receipt"].trim()
++          : undefined,
+       note: typeof raw.opts.note === "string" ? raw.opts.note : undefined,
+     };
+   },
+@@ -53,13 +77,49 @@ export const taskPlanApproveSpec: CommandSpec<TaskPlanApproveParsed> = {
+ 
+ export function makeRunTaskPlanApproveHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+   return async (ctx: CommandCtx, p: TaskPlanApproveParsed): Promise<number> => {
++    const commandCtx = await getCtx("task plan approve");
++    let by = p.by;
++    let note = p.note;
++    let expectedTaskRevision: number | undefined;
++    if (p.approvalReceipt) {
++      const prepared = requirePreparedAgentWorkOrder(
++        await prepareAgentWorkOrder({
++          command_ctx: commandCtx,
++          cwd: ctx.cwd,
++          root_override: ctx.rootOverride ?? null,
++          task_id: p.taskId,
++        }),
++      );
++      const step = prepared.route_decision.workflowStep;
++      if (step.kind !== "approval" || step.request.type !== "plan_approval") {
++        throw usageError({
++          spec: taskPlanApproveSpec,
++          message: "Approval receipt is stale: the current route no longer requests plan approval.",
++        });
++      }
++      const verified = verifyUserApprovalReceipt({
++        encoded: p.approvalReceipt,
++        config: commandCtx.config.authority.approval_receipts,
++        request: userApprovalReceiptRequestForStep(step),
++      });
++      if (step.preconditionFingerprint.task_revision === null) {
++        throw usageError({
++          spec: taskPlanApproveSpec,
++          message: "Approval receipt cannot be applied without a revisioned task state.",
++        });
++      }
++      by = verified.actor;
++      expectedTaskRevision = step.preconditionFingerprint.task_revision;
++      note = [p.note?.trim(), `approval_receipt=${verified.digest}`].filter(Boolean).join("; ");
++    }
+     return await cmdTaskPlanApprove({
+-      ctx: await getCtx("task plan approve"),
++      ctx: commandCtx,
+       cwd: ctx.cwd,
+       rootOverride: ctx.rootOverride,
+       taskId: p.taskId,
+-      by: p.by,
+-      note: p.note,
++      by: by ?? "",
++      note,
++      expectedTaskRevision,
+     });
+   };
+ }
+diff --git a/packages/agentplane/src/commands/task/plan.ts b/packages/agentplane/src/commands/task/plan.ts
+index aae815c33..90e7af574 100644
+--- a/packages/agentplane/src/commands/task/plan.ts
++++ b/packages/agentplane/src/commands/task/plan.ts
+@@ -188,6 +188,7 @@ export async function cmdTaskPlanApprove(opts: {
+   taskId: string;
+   by: string;
+   note?: string;
++  expectedTaskRevision?: number;
+ }): Promise<number> {
+   try {
+     const { ctx, backend } = await loadPlanBackend({
+@@ -212,30 +213,36 @@ export async function cmdTaskPlanApprove(opts: {
+       ctx,
+       local: async (store) => {
+         await store.get(opts.taskId);
+-        await store.patch(opts.taskId, (current) => {
+-          assertTaskMutationPolicy({
+-            ctx,
+-            taskId: opts.taskId,
+-            task: current,
+-            action: "task_plan_approve",
+-            phase: "plan",
+-          });
+-          const currentDoc = ensureDocSections(
+-            String(current.doc ?? ""),
+-            config.tasks.doc.required_sections,
+-          );
+-          assertPlanCanBeApproved({ task: current, config, doc: currentDoc });
+-          return {
+-            task: {
+-              plan_approval: {
+-                state: "approved" as PlanApprovalState,
+-                updated_at: approvedAt,
+-                updated_by: by,
+-                note: note || null,
++        await store.patch(
++          opts.taskId,
++          (current) => {
++            assertTaskMutationPolicy({
++              ctx,
++              taskId: opts.taskId,
++              task: current,
++              action: "task_plan_approve",
++              phase: "plan",
++            });
++            const currentDoc = ensureDocSections(
++              String(current.doc ?? ""),
++              config.tasks.doc.required_sections,
++            );
++            assertPlanCanBeApproved({ task: current, config, doc: currentDoc });
++            return {
++              task: {
++                plan_approval: {
++                  state: "approved" as PlanApprovalState,
++                  updated_at: approvedAt,
++                  updated_by: by,
++                  note: note || null,
++                },
+               },
+-            },
+-          };
+-        });
++            };
++          },
++          opts.expectedTaskRevision === undefined
++            ? undefined
++            : { expectedRevision: opts.expectedTaskRevision },
++        );
+       },
+       remote: async () => {
+         const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
+@@ -250,15 +257,20 @@ export async function cmdTaskPlanApprove(opts: {
+           (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
+         const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
+         assertPlanCanBeApproved({ task, config, doc: baseDoc });
+-        await backend.writeTask({
+-          ...task,
+-          plan_approval: {
+-            state: "approved" as PlanApprovalState,
+-            updated_at: approvedAt,
+-            updated_by: by,
+-            note: note || null,
++        await backend.writeTask(
++          {
++            ...task,
++            plan_approval: {
++              state: "approved" as PlanApprovalState,
++              updated_at: approvedAt,
++              updated_by: by,
++              note: note || null,
++            },
+           },
+-        });
++          opts.expectedTaskRevision === undefined
++            ? undefined
++            : { expectedRevision: opts.expectedTaskRevision },
++        );
+       },
+     });
+     return 0;
+diff --git a/packages/agentplane/src/commands/task/user-approval-receipt.ts b/packages/agentplane/src/commands/task/user-approval-receipt.ts
+new file mode 100644
+index 000000000..e618ebab2
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/user-approval-receipt.ts
+@@ -0,0 +1,249 @@
++import { createHash, createPublicKey, verify } from "node:crypto";
++
++import type { SideEffectAuthorityConfig } from "@agentplaneorg/core/config";
++import { canonicalizeJson } from "@agentplaneorg/core/tasks";
++
++import { CliError } from "../../shared/errors.js";
++import { isRecord } from "../../shared/guards.js";
++import type { WorkflowStep } from "../shared/workflow-step.js";
++
++const RECEIPT_KIND = "agentplane.user_approval_receipt" as const;
++const MAX_ENCODED_RECEIPT_BYTES = 24 * 1024;
++const SUBJECT_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._@-]{0,127}$/u;
++const RECEIPT_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/u;
++const DIGEST_PATTERN = /^sha256:[0-9a-f]{64}$/u;
++const RECEIPT_KEYS = [
++  "approval_type",
++  "authority_reference",
++  "decision",
++  "expires_at",
++  "issued_at",
++  "issuer",
++  "kind",
++  "operation_digest",
++  "operation_id",
++  "receipt_id",
++  "schema_version",
++  "signature",
++  "state_fingerprint",
++  "state_scope_digest",
++  "subject",
++  "task_id",
++] as const;
++
++export type UserApprovalType = "plan_approval" | "side_effect" | "provider_merge";
++
++export type UserApprovalReceipt = {
++  schema_version: 1;
++  kind: typeof RECEIPT_KIND;
++  receipt_id: string;
++  issuer: string;
++  subject: string;
++  decision: "approved";
++  approval_type: UserApprovalType;
++  task_id: string;
++  authority_reference: string;
++  state_fingerprint: string;
++  operation_id: string | null;
++  operation_digest: string | null;
++  state_scope_digest: string | null;
++  issued_at: string;
++  expires_at: string;
++  signature: string;
++};
++
++export type UserApprovalReceiptRequest = {
++  approvalType: UserApprovalType;
++  taskId: string;
++  authorityReference: string;
++  stateFingerprint: string;
++  operationId?: string | null;
++  operationDigest?: string | null;
++  stateScopeDigest?: string | null;
++};
++
++export type VerifiedUserApprovalReceipt = {
++  receipt: UserApprovalReceipt;
++  actor: string;
++  digest: string;
++};
++
++function receiptError(message: string): CliError {
++  return new CliError({ exitCode: 3, code: "E_VALIDATION", message });
++}
++
++function exactKeys(value: Record<string, unknown>): boolean {
++  return Object.keys(value).toSorted().join("\n") === [...RECEIPT_KEYS].toSorted().join("\n");
++}
++
++function isIsoTimestamp(value: unknown): value is string {
++  return typeof value === "string" && Number.isFinite(Date.parse(value));
++}
++
++function parseReceipt(encoded: string): UserApprovalReceipt {
++  const normalized = encoded.trim();
++  if (!normalized || Buffer.byteLength(normalized, "utf8") > MAX_ENCODED_RECEIPT_BYTES) {
++    throw receiptError("Approval receipt is empty or exceeds the 24 KiB encoded limit.");
++  }
++  let value: unknown;
++  try {
++    const decoded = Buffer.from(normalized, "base64url");
++    if (!decoded.length || decoded.toString("base64url") !== normalized.replace(/=+$/u, "")) {
++      throw new Error("non-canonical base64url");
++    }
++    value = JSON.parse(decoded.toString("utf8"));
++  } catch {
++    throw receiptError("Approval receipt must be canonical base64url-encoded JSON.");
++  }
++  if (!isRecord(value) || !exactKeys(value)) {
++    throw receiptError("Approval receipt has an invalid or non-exact field set.");
++  }
++  if (
++    value.schema_version !== 1 ||
++    value.kind !== RECEIPT_KIND ||
++    typeof value.receipt_id !== "string" ||
++    !RECEIPT_ID_PATTERN.test(value.receipt_id) ||
++    typeof value.issuer !== "string" ||
++    !value.issuer.trim() ||
++    typeof value.subject !== "string" ||
++    !SUBJECT_PATTERN.test(value.subject) ||
++    value.decision !== "approved" ||
++    !["plan_approval", "side_effect", "provider_merge"].includes(String(value.approval_type)) ||
++    typeof value.task_id !== "string" ||
++    !value.task_id.trim() ||
++    typeof value.authority_reference !== "string" ||
++    !value.authority_reference.trim() ||
++    typeof value.state_fingerprint !== "string" ||
++    !DIGEST_PATTERN.test(value.state_fingerprint) ||
++    (value.operation_id !== null && typeof value.operation_id !== "string") ||
++    (value.operation_digest !== null &&
++      (typeof value.operation_digest !== "string" ||
++        !DIGEST_PATTERN.test(value.operation_digest))) ||
++    (value.state_scope_digest !== null &&
++      (typeof value.state_scope_digest !== "string" ||
++        !DIGEST_PATTERN.test(value.state_scope_digest))) ||
++    !isIsoTimestamp(value.issued_at) ||
++    !isIsoTimestamp(value.expires_at) ||
++    typeof value.signature !== "string" ||
++    !value.signature.trim()
++  ) {
++    throw receiptError("Approval receipt fields are malformed.");
++  }
++  return value as UserApprovalReceipt;
++}
++
++export function canonicalUserApprovalReceiptPayload(receipt: UserApprovalReceipt): string {
++  const { signature: _signature, ...unsigned } = receipt;
++  const canonical = JSON.stringify(canonicalizeJson(unsigned));
++  if (typeof canonical !== "string")
++    throw receiptError("Approval receipt cannot be canonicalized.");
++  return canonical;
++}
++
++function receiptDigest(receipt: UserApprovalReceipt): string {
++  const canonical = canonicalUserApprovalReceiptPayload(receipt);
++  return `sha256:${createHash("sha256").update(canonical, "utf8").digest("hex")}`;
++}
++
++export function userApprovalReceiptRequestForStep(
++  step: Extract<WorkflowStep, { kind: "approval" }>,
++): UserApprovalReceiptRequest {
++  if (step.request.type === "side_effect") {
++    return {
++      approvalType: "side_effect",
++      taskId: step.request.taskId,
++      authorityReference: step.request.authorityRef,
++      stateFingerprint: step.request.stateFingerprintDigest,
++      operationId: step.request.operationId,
++      operationDigest: step.request.operationDigest,
++      stateScopeDigest: step.request.stateScopeDigest,
++    };
++  }
++  return {
++    approvalType: step.request.type,
++    taskId: step.request.taskId,
++    authorityReference: step.request.authorityRef,
++    stateFingerprint: step.preconditionFingerprint.digest,
++  };
++}
++
++function assertRequestBinding(
++  receipt: UserApprovalReceipt,
++  request: UserApprovalReceiptRequest,
++): void {
++  const expectedOperationId = request.operationId ?? null;
++  const expectedOperationDigest = request.operationDigest ?? null;
++  const expectedScopeDigest = request.stateScopeDigest ?? null;
++  if (
++    receipt.approval_type !== request.approvalType ||
++    receipt.task_id !== request.taskId ||
++    receipt.authority_reference !== request.authorityReference ||
++    receipt.state_fingerprint !== request.stateFingerprint ||
++    receipt.operation_id !== expectedOperationId ||
++    receipt.operation_digest !== expectedOperationDigest ||
++    receipt.state_scope_digest !== expectedScopeDigest
++  ) {
++    throw receiptError("Approval receipt is stale or does not match the current task route.");
++  }
++  if (
++    receipt.approval_type === "side_effect" &&
++    (!receipt.operation_id || !receipt.operation_digest || !receipt.state_scope_digest)
++  ) {
++    throw receiptError("Side-effect approval receipt is missing state-bound operation fields.");
++  }
++  if (
++    receipt.approval_type !== "side_effect" &&
++    (receipt.operation_id !== null ||
++      receipt.operation_digest !== null ||
++      receipt.state_scope_digest !== null)
++  ) {
++    throw receiptError("Semantic approval receipts cannot contain side-effect operation fields.");
++  }
++}
++
++export function verifyUserApprovalReceipt(opts: {
++  encoded: string;
++  config: SideEffectAuthorityConfig["approval_receipts"];
++  request: UserApprovalReceiptRequest;
++  now?: Date;
++}): VerifiedUserApprovalReceipt {
++  const receipt = parseReceipt(opts.encoded);
++  assertRequestBinding(receipt, opts.request);
++  const issuer = opts.config.trusted_issuers.find((item) => item.id === receipt.issuer);
++  if (!issuer) throw receiptError(`Approval receipt issuer is not trusted: ${receipt.issuer}`);
++
++  const now = (opts.now ?? new Date()).getTime();
++  const issuedAt = Date.parse(receipt.issued_at);
++  const expiresAt = Date.parse(receipt.expires_at);
++  const skewMs = opts.config.clock_skew_seconds * 1000;
++  const maxTtlMs = opts.config.max_ttl_minutes * 60_000;
++  if (issuedAt > now + skewMs) throw receiptError("Approval receipt was issued in the future.");
++  if (expiresAt <= now - skewMs) throw receiptError("Approval receipt has expired.");
++  if (expiresAt <= issuedAt || expiresAt - issuedAt > maxTtlMs) {
++    throw receiptError("Approval receipt TTL exceeds the configured trust window.");
++  }
++
++  let valid = false;
++  try {
++    const key = createPublicKey({
++      key: Buffer.from(issuer.public_key_spki, "base64"),
++      format: "der",
++      type: "spki",
++    });
++    valid = verify(
++      null,
++      Buffer.from(canonicalUserApprovalReceiptPayload(receipt), "utf8"),
++      key,
++      Buffer.from(receipt.signature, "base64url"),
++    );
++  } catch {
++    valid = false;
++  }
++  if (!valid) throw receiptError("Approval receipt signature is invalid.");
++
++  return {
++    receipt,
++    actor: `USER:${receipt.subject}@${receipt.issuer}`,
++    digest: receiptDigest(receipt),
++  };
++}
+diff --git a/packages/core/src/config/schema.impl.ts b/packages/core/src/config/schema.impl.ts
+index 05a77fbea..b82227430 100644
+--- a/packages/core/src/config/schema.impl.ts
++++ b/packages/core/src/config/schema.impl.ts
+@@ -132,8 +132,35 @@ const SIDE_EFFECT_AUTHORITY_DEFAULTS = {
+   allow_operations: [] as string[],
+   deny_operations: [] as string[],
+   ttl_minutes: 15,
++  approval_receipts: {
++    trusted_issuers: [] as { id: string; public_key_spki: string }[],
++    max_ttl_minutes: 15,
++    clock_skew_seconds: 30,
++  },
+ };
+ 
++const APPROVAL_RECEIPT_ISSUER_SCHEMA = z
++  .object({
++    id: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._-]*$/u),
++    public_key_spki: z.string().regex(/^[A-Za-z0-9+/]+={0,2}$/u, {
++      message: "Approval receipt public_key_spki must be base64 DER SPKI.",
++    }),
++  })
++  .strict();
++
++const APPROVAL_RECEIPTS_SCHEMA = z
++  .object({
++    trusted_issuers: z.array(APPROVAL_RECEIPT_ISSUER_SCHEMA).default([]),
++    max_ttl_minutes: z.number().int().min(1).max(60).default(15),
++    clock_skew_seconds: z.number().int().min(0).max(300).default(30),
++  })
++  .strict()
++  .default({
++    trusted_issuers: [],
++    max_ttl_minutes: 15,
++    clock_skew_seconds: 30,
++  });
++
+ const SIDE_EFFECT_AUTHORITY_SCHEMA = z
+   .object({
+     mode: z.enum(["manual", "policy", "all"]).default(SIDE_EFFECT_AUTHORITY_DEFAULTS.mode),
+@@ -151,12 +178,17 @@ const SIDE_EFFECT_AUTHORITY_SCHEMA = z
+       .min(1)
+       .max(60)
+       .default(SIDE_EFFECT_AUTHORITY_DEFAULTS.ttl_minutes),
++    approval_receipts: APPROVAL_RECEIPTS_SCHEMA,
+   })
+   .strict()
+   .default({
+     ...SIDE_EFFECT_AUTHORITY_DEFAULTS,
+     allow_operations: [...SIDE_EFFECT_AUTHORITY_DEFAULTS.allow_operations],
+     deny_operations: [...SIDE_EFFECT_AUTHORITY_DEFAULTS.deny_operations],
++    approval_receipts: {
++      ...SIDE_EFFECT_AUTHORITY_DEFAULTS.approval_receipts,
++      trusted_issuers: [],
++    },
+   });
+ 
+ const COMMENT_POLICY_SCHEMA = z
+diff --git a/packages/core/src/runner/supervisor-execution-episode.ts b/packages/core/src/runner/supervisor-execution-episode.ts
+index 0bff0d44e..53d5bb43b 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.ts
+@@ -436,6 +436,17 @@ export function recoverSupervisorExecutionEpisodeJournal(opts: {
+   // be. The caller must refresh and advance it before another operation; a
+   // changed fingerprint is expected at this exact checkpoint, not stale work.
+   if (journal.cursor.phase === "completed") return journal;
++  if (
++    journal.cursor.phase === "ready" &&
++    journal.cursor.replacement_of_operation_key !== undefined &&
++    journal.operations.at(-1)?.status === "failed"
++  ) {
++    return refreshPendingReplacementSupervisorExecutionEpisode({
++      journal,
++      state_fingerprint_digest: opts.state_fingerprint_digest,
++      now,
++    });
++  }
+   if (journal.state_fingerprint_digest !== opts.state_fingerprint_digest) {
+     return stoppedJournal({ journal, reason: "stale_state", at: now });
+   }
+@@ -964,15 +975,19 @@ export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
+   const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+   const now = opts.now ?? new Date().toISOString();
+   const last = journal.operations.at(-1);
++  const isTerminalFailure =
++    journal.stop?.reason === "operation_failed" &&
++    journal.stop.operation_key === last?.operation_key;
++  const isFailedReplacementWithRouteDrift =
++    journal.stop?.reason === "stale_state" && last?.status === "failed";
+   if (
+     journal.status !== "stopped" ||
+-    journal.stop?.reason !== "operation_failed" ||
++    (!isTerminalFailure && !isFailedReplacementWithRouteDrift) ||
+     journal.cursor.phase !== "stopped" ||
+-    last?.status !== "failed" ||
+-    journal.stop?.operation_key !== last?.operation_key
++    last?.status !== "failed"
+   ) {
+     throw new Error(
+-      "Supervisor episode replacement requires a stopped operation_failed journal with a failed latest operation.",
++      "Supervisor episode replacement requires a stopped operation_failed journal or a stale_state journal with a failed latest operation.",
+     );
+   }
+   const exhausted = exhaustedDimensions({

@@ -654,6 +654,90 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     ).toThrow("requires a pending terminal operation_failed authorization");
   });
 
+  it("refreshes a pending failed replacement across fingerprint drift", () => {
+    const first = start({ journal: journal(), kind: "evaluator_episode" });
+    if (first.status !== "started") throw new Error("expected started episode");
+    const failed = completeSupervisorExecutionEpisode({
+      journal: first.journal,
+      operation_key: first.operation_key,
+      result: { classification: "provider_failed_before_typed_result" },
+      failed: true,
+      now: "2026-07-28T00:00:01.000Z",
+    });
+    const failedOperation = failed.operations[0];
+    if (!failedOperation) throw new Error("expected failed operation");
+    const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+      journal: failed,
+      state_fingerprint_digest: NEXT_FINGERPRINT,
+      now: "2026-07-28T00:00:02.000Z",
+    });
+
+    const recovered = recoverSupervisorExecutionEpisodeJournal({
+      journal: replacement,
+      state_fingerprint_digest: FINAL_FINGERPRINT,
+      now: "2026-07-28T00:00:03.000Z",
+    });
+
+    expect(recovered).toMatchObject({
+      status: "running",
+      stop: null,
+      state_fingerprint_digest: FINAL_FINGERPRINT,
+      cursor: {
+        phase: "ready",
+        operation_key: null,
+        replacement_of_operation_key: failedOperation.operation_key,
+      },
+      operations: [failedOperation],
+      previous_digest: replacement.digest,
+    });
+  });
+
+  it("recovers a legacy stale-state stop whose latest operation is a known failure", () => {
+    const first = start({ journal: journal(), kind: "evaluator_episode" });
+    if (first.status !== "started") throw new Error("expected started episode");
+    const failed = completeSupervisorExecutionEpisode({
+      journal: first.journal,
+      operation_key: first.operation_key,
+      result: { classification: "provider_failed_before_typed_result" },
+      failed: true,
+      now: "2026-07-28T00:00:01.000Z",
+    });
+    const failedOperation = failed.operations[0];
+    if (!failedOperation) throw new Error("expected failed operation");
+    const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+      journal: failed,
+      state_fingerprint_digest: NEXT_FINGERPRINT,
+      now: "2026-07-28T00:00:02.000Z",
+    });
+    const stale = startSupervisorExecutionEpisode({
+      journal: replacement,
+      role: "EVALUATOR",
+      kind: "evaluator_episode",
+      operation_identity: { command: "legacy-stale" },
+      precondition_fingerprint_digest: FINAL_FINGERPRINT,
+      now: "2026-07-28T00:00:03.000Z",
+    });
+    if (stale.status !== "stopped") throw new Error("expected stale-state stop");
+
+    const recovered = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+      journal: stale.journal,
+      state_fingerprint_digest: FINAL_FINGERPRINT,
+      now: "2026-07-28T00:00:04.000Z",
+    });
+
+    expect(stale.stop).toMatchObject({ reason: "stale_state" });
+    expect(recovered).toMatchObject({
+      status: "running",
+      stop: null,
+      state_fingerprint_digest: FINAL_FINGERPRINT,
+      cursor: {
+        phase: "ready",
+        replacement_of_operation_key: failedOperation.operation_key,
+      },
+      operations: [failedOperation],
+    });
+  });
+
   it("rejects replacement for effect-in-doubt or an exhausted known failure", () => {
     const first = start({ journal: journal() });
     if (first.status !== "started") throw new Error("expected started episode");

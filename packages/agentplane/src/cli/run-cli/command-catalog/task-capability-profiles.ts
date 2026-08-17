@@ -15,6 +15,13 @@ export const TASK_WRITE_REQUIREMENTS = [
   "approvals",
 ] as const satisfies readonly CommandCapability[];
 
+export const TASK_PLAN_APPROVAL_REQUIREMENTS = [
+  ...TASK_WRITE_REQUIREMENTS,
+  "git.head",
+  "git.diff",
+  "route.local",
+] as const satisfies readonly CommandCapability[];
+
 export const TASK_LIFECYCLE_REQUIREMENTS = [
   ...TASK_WRITE_REQUIREMENTS,
   "git.head",
@@ -46,6 +53,9 @@ export const TASK_ROUTE_LIFECYCLE_REQUIREMENTS = [
 
 export type TaskReadSession = CommandSession<(typeof TASK_READ_REQUIREMENTS)[number]>;
 export type TaskWriteSession = CommandSession<(typeof TASK_WRITE_REQUIREMENTS)[number]>;
+export type TaskPlanApprovalSession = CommandSession<
+  (typeof TASK_PLAN_APPROVAL_REQUIREMENTS)[number]
+>;
 export type TaskLifecycleSession = CommandSession<(typeof TASK_LIFECYCLE_REQUIREMENTS)[number]>;
 export type TaskRouteLocalSession = CommandSession<(typeof TASK_ROUTE_LOCAL_REQUIREMENTS)[number]>;
 export type TaskRouteSession = CommandSession<(typeof TASK_ROUTE_REQUIREMENTS)[number]>;

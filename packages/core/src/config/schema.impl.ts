@@ -126,6 +126,71 @@ const EVALUATOR_SKEPTICISM_LEVELS = ["standard", "strict", "paranoid"] as const;
 
 const ARTIFACTS_LANGUAGE = z.enum(["any", "en"]).default("any");
 
+const SIDE_EFFECT_AUTHORITY_DEFAULTS = {
+  mode: "manual" as const,
+  actor: "POLICY:repository",
+  allow_operations: [] as string[],
+  deny_operations: [] as string[],
+  ttl_minutes: 15,
+  approval_receipts: {
+    trusted_issuers: [] as { id: string; public_key_spki: string }[],
+    max_ttl_minutes: 15,
+    clock_skew_seconds: 30,
+  },
+};
+
+const APPROVAL_RECEIPT_ISSUER_SCHEMA = z
+  .object({
+    id: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._-]*$/u),
+    public_key_spki: z.string().regex(/^[A-Za-z0-9+/]+={0,2}$/u, {
+      message: "Approval receipt public_key_spki must be base64 DER SPKI.",
+    }),
+  })
+  .strict();
+
+const APPROVAL_RECEIPTS_SCHEMA = z
+  .object({
+    trusted_issuers: z.array(APPROVAL_RECEIPT_ISSUER_SCHEMA).default([]),
+    max_ttl_minutes: z.number().int().min(1).max(60).default(15),
+    clock_skew_seconds: z.number().int().min(0).max(300).default(30),
+  })
+  .strict()
+  .default({
+    trusted_issuers: [],
+    max_ttl_minutes: 15,
+    clock_skew_seconds: 30,
+  });
+
+const SIDE_EFFECT_AUTHORITY_SCHEMA = z
+  .object({
+    mode: z.enum(["manual", "policy", "all"]).default(SIDE_EFFECT_AUTHORITY_DEFAULTS.mode),
+    actor: z
+      .string()
+      .regex(/^POLICY:[A-Za-z0-9][A-Za-z0-9._-]*$/u, {
+        message: "Authority actor must be a POLICY:<id> identity and cannot impersonate USER.",
+      })
+      .default(SIDE_EFFECT_AUTHORITY_DEFAULTS.actor),
+    allow_operations: nonEmptyStringArray(SIDE_EFFECT_AUTHORITY_DEFAULTS.allow_operations),
+    deny_operations: nonEmptyStringArray(SIDE_EFFECT_AUTHORITY_DEFAULTS.deny_operations),
+    ttl_minutes: z
+      .number()
+      .int()
+      .min(1)
+      .max(60)
+      .default(SIDE_EFFECT_AUTHORITY_DEFAULTS.ttl_minutes),
+    approval_receipts: APPROVAL_RECEIPTS_SCHEMA,
+  })
+  .strict()
+  .default({
+    ...SIDE_EFFECT_AUTHORITY_DEFAULTS,
+    allow_operations: [...SIDE_EFFECT_AUTHORITY_DEFAULTS.allow_operations],
+    deny_operations: [...SIDE_EFFECT_AUTHORITY_DEFAULTS.deny_operations],
+    approval_receipts: {
+      ...SIDE_EFFECT_AUTHORITY_DEFAULTS.approval_receipts,
+      trusted_issuers: [],
+    },
+  });
+
 const COMMENT_POLICY_SCHEMA = z
   .object({
     prefix: nonEmptyString(),
@@ -203,6 +268,7 @@ export const AgentplaneConfigSchema = z
     status_commit_policy: z.enum(["off", "warn", "confirm"]).default("warn"),
     commit_automation: z.enum(["manual", "finish_only"]).default("manual"),
     finish_auto_status_commit: z.boolean().default(false),
+    authority: SIDE_EFFECT_AUTHORITY_SCHEMA,
     close_commit: z
       .object({
         direct_dirty_policy: z

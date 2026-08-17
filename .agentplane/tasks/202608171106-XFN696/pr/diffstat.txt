@@ -1,0 +1,112 @@
+ .agentplane/tasks/202608171106-XFN696/README.md    | 2445 ++++++++++++++++++++
+ .../blueprint/resolved-snapshot.json               |  580 +++++
+ .../tasks/202608171106-XFN696/pr/diffstat.txt      |   37 +
+ .../tasks/202608171106-XFN696/pr/github-body.md    |   69 +
+ .../tasks/202608171106-XFN696/pr/github-title.txt  |    1 +
+ .agentplane/tasks/202608171106-XFN696/pr/meta.json |   24 +
+ .agentplane/tasks/202608171106-XFN696/pr/review.md |   72 +
+ .../evaluator-evidence-manifest.json               |   55 +
+ .../evaluator-work-order.json                      |  112 +
+ .../evaluator-evidence-manifest.json               |   55 +
+ .../evaluator-opinion.md                           |   25 +
+ .../evaluator-result.json                          |   78 +
+ .../evaluator-work-order.json                      |  112 +
+ .../quality-report.json                            |   28 +
+ .../evaluator-evidence-manifest.json               |   55 +
+ .../evaluator-work-order.json                      |  112 +
+ .../evaluator-evidence-manifest.json               |   55 +
+ .../evaluator-opinion.md                           |   24 +
+ .../evaluator-result.json                          |   67 +
+ .../evaluator-work-order.json                      |  112 +
+ .../quality-report.json                            |   27 +
+ .../evaluator-evidence-manifest.json               |   55 +
+ .../evaluator-opinion.md                           |   24 +
+ .../evaluator-result.json                          |   67 +
+ .../evaluator-work-order.json                      |  112 +
+ .../quality-report.json                            |   27 +
+ .../evaluator-evidence-manifest.json               |   55 +
+ .../evaluator-opinion.md                           |   25 +
+ .../evaluator-result.json                          |   78 +
+ .../evaluator-work-order.json                      |  112 +
+ .../quality-report.json                            |   28 +
+ .../evaluator-evidence-manifest.json               |   55 +
+ .../evaluator-opinion.md                           |   25 +
+ .../evaluator-result.json                          |   78 +
+ .../evaluator-work-order.json                      |  112 +
+ .../quality-report.json                            |   28 +
+ ...4ea52541ea09d8c203bd685ce4891360fbba1f7712.json |  Bin 0 -> 11180 bytes
+ ...ef3d39f25a2a32681bca05ca6a83a6c3c169673eed6e.md |  Bin 0 -> 5030 bytes
+ ...509c63b0514acb814e2aa22cc83a670c2d51551276.json |  Bin 0 -> 12812 bytes
+ ...89bb45b00f6ef98912035b4c8d1afab2257a6779472e.md |  Bin 0 -> 5030 bytes
+ ...e11ae07815a3c24dcb0c599c1474ef6dde5583d027d2.md |  Bin 0 -> 5030 bytes
+ ...e2645ea2e11095e6d0a87ade0dfd56284df9c6410d.json |  Bin 0 -> 14543 bytes
+ ...e679940c764c904afd5af6d6573c1aed92767ab69.patch |  Bin 0 -> 80909 bytes
+ ...644ee2259ed7ed69e6362b73cc15d33e7306cbc15.patch |  Bin 0 -> 65596 bytes
+ ...c33742b75d4c2d8e286c70eabd36be0531ce2ddfc9.json |  Bin 0 -> 10977 bytes
+ ...5054449291ca7fd51fa817b0492e17785c895e6690.json |  Bin 0 -> 10620 bytes
+ ...358d360264a85ee905be64a8723bbdd4ca71e02d4a.json |  Bin 0 -> 3478 bytes
+ ...d27f790022fdb53b42534b30483571b7bb848e71d0.json |  Bin 0 -> 16026 bytes
+ ...2fb4ae18b7559d672b3a74e8a28de52e2d208922f3.json |  Bin 0 -> 10224 bytes
+ ...4fac822a8903cddcf218966eb225d7c756994084b.patch |  Bin 0 -> 77867 bytes
+ ...7c2efa620cdcc797a5ab56dc6537bf168eb14e9e5.patch |  Bin 0 -> 83164 bytes
+ ...a78f26139a7703ba075184feef93c24eb14652b20.patch |  Bin 0 -> 70595 bytes
+ ...a199718dab20a0b98ef87dbd5a35df4d5e27615dd1cd.md |  Bin 0 -> 5030 bytes
+ ...f6be7437551c1a232f7532765f37ceb0c4fd35b8a.patch |  Bin 0 -> 75027 bytes
+ ...ee9442c75f2db4b049213a219b3c5aec8b5de9e4f373.md |  Bin 0 -> 5030 bytes
+ ...4ea9236b9de63301cb3dcecf4ac3fef3576171609935.md |  Bin 0 -> 5030 bytes
+ ...bbaaeb6c036720c676ec3f0fcb2a0f2335ed14fe1a6c.md |  Bin 0 -> 5030 bytes
+ .../supervision/declared-checks.json               |   49 +
+ .../supervision/implementation-evidence.json       |   63 +
+ .../20260817125455481-b73a92717e031649.json        |   91 +
+ .../20260817130134423-af9bab6fb2365756.json        |   91 +
+ .../20260817144625691-8b9c02cad70a7616.json        |   91 +
+ .../20260817145207936-1b1a9c6917381d87.json        |   83 +
+ .../20260817151203088-68e63b9268d183f8.json        |   83 +
+ .../20260817155728205-41e788611edf0ea6.json        |   91 +
+ .../20260817161326157-0e842df8e8a953af.json        |   83 +
+ .../20260817163507633-b2f8a6262d6b46e1.json        |   91 +
+ .../20260817163925260-58ca2948932ac233.json        |   83 +
+ .../20260817165126283-51f842a854213285.json        |   91 +
+ .../20260817165840011-2505735cd2b5d71b.json        |   83 +
+ .../20260817171533187-65f1fda8732a8458.json        |   91 +
+ .../20260817172158058-aa87a9e1cf810407.json        |   83 +
+ .../20260817172934120-159d232264f72946.json        |   91 +
+ .../20260817175704627-548f4952cf3ba4bf.json        |   91 +
+ .../20260817180011257-c87b6b9ec0fd8041.json        |   91 +
+ docs/recipes/hermes-agentplane.mdx                 |   30 +
+ docs/user/configuration.mdx                        |   48 +
+ .../run-cli.core.route-decision.pre-merge.test.ts  |   34 +
+ ...n-cli.core.task-advance-effect-recovery.test.ts |  180 ++
+ ...i.core.task-advance.worktree-resolution.test.ts |    7 +
+ ...-cli.critical.agent-efficiency-baseline.test.ts |    4 +-
+ .../src/cli/run-cli/command-loaders/task.ts        |   31 +-
+ .../commands/shared/task-verification-records.ts   |    1 +
+ .../shared/task-verification-records.v2.test.ts    |   37 +-
+ .../shared/workflow-step-planning-checkout.test.ts |   33 +
+ .../src/commands/shared/workflow-step-reducer.ts   |   12 +-
+ .../src/commands/shared/workflow-step.test.ts      |    3 +
+ .../src/commands/task/advance.command.ts           |   20 +-
+ .../commands/task/authority-grant.command.test.ts  |   98 +-
+ .../src/commands/task/authority-grant.command.ts   |   67 +-
+ .../src/commands/task/branch-task-supervisor.ts    |   26 +-
+ .../src/commands/task/configured-authority.test.ts |   56 +
+ .../src/commands/task/configured-authority.ts      |  108 +
+ .../external-agent-implementation-authority.ts     |   33 +-
+ .../task/external-agent-supervisor-episode.ts      |   15 +
+ .../task/external-agent-supervisor-recovery.ts     |  100 +
+ .../src/runtime/task-routing/resolve.test.ts       |   36 +
+ .../agentplane/src/runtime/task-routing/resolve.ts |    4 +-
+ packages/core/schemas/config.schema.json           |   45 +
+ packages/core/schemas/workflow.schema.json         |   76 +
+ packages/core/src/config/config.test.ts            |   44 +
+ packages/core/src/config/config.ts                 |    1 +
+ packages/core/src/config/index.ts                  |    1 +
+ packages/core/src/config/schema.impl.ts            |   34 +
+ packages/core/src/config/workflow-contract.ts      |    1 +
+ packages/core/src/config/workflow-file.ts          |    2 +
+ packages/spec/schemas/config.schema.json           |   45 +
+ packages/spec/schemas/workflow.schema.json         |   76 +
+ schemas/config.schema.json                         |   45 +
+ schemas/workflow.schema.json                       |   76 +
+ .../baselines/v0.7-compatibility-candidate.json    |    8 +-
+ 111 files changed, 7929 insertions(+), 54 deletions(-)

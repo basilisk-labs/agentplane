@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608171853-X3FD5M",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-17T20:57:12.402Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "b6698767ffbbff30558126ccf78e3c303e96ee6f",
+  "blueprint_digest": "da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8",
+  "findings": [
+    "The clean packaged scenario reached fixture initialization and then failed with ENOENT for .agentplane/config.json.",
+    "AgentPlane loadConfig gives canonical WORKFLOW.md precedence and current init intentionally does not create legacy config.json, so the trusted issuer must be added to WORKFLOW frontmatter.",
+    "The repair should remain fixture setup state and must not weaken the harness prohibition on reading internal lifecycle evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/c8ae07741aaf4336340061d47b88855bf457d093e407c78bde6efd3980a459a4.patch"
+  ],
+  "missing_tests": [
+    "A clean execution of node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs must pass after configuring the signer in canonical WORKFLOW.md."
+  ],
+  "hidden_assumptions": [
+    "The initial implementation assumed init still emitted legacy .agentplane/config.json."
+  ],
+  "residual_risks": [
+    "Rework required. The signer and exact request-bound receipt construction are correct, but the fixture trust bootstrap targets legacy .agentplane/config.json while current init emits canonical .agentplane/WORKFLOW.md only."
+  ]
+}

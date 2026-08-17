@@ -1,0 +1,63 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 220d690df684bec71abde4e1a20ebd7ea57bf068..3d051ce0abf8a6f28a9e732109d4d1abe74756d9",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 220d690df684bec71abde4e1a20ebd7ea57bf068..3d051ce0abf8a6f28a9e732109d4d1abe74756d9",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608171106-XFN696/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608171106-XFN696/pr/github-body.md",
+        "M\t.agentplane/tasks/202608171106-XFN696/pr/meta.json",
+        "M\t.agentplane/tasks/202608171106-XFN696/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "220d690df684bec71abde4e1a20ebd7ea57bf068",
+  "implementation_commit": "3d051ce0abf8a6f28a9e732109d4d1abe74756d9",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608171106-XFN696"
+}

@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "No auto_approve_plan or autoApprovePlan surface remains in source, schemas, generated artifacts, documentation, or tests.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/65bc3e324a8c9b91d16d7b3644ee2259ed7ed69e6362b73cc15d33e7306cbc15.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "resolveConfiguredAuthority rejects non-approval and non-side-effect steps; manual mode and deny_operations fail closed, policy requires allow_operations, and all still honors deny_operations.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/65bc3e324a8c9b91d16d7b3644ee2259ed7ed69e6362b73cc15d33e7306cbc15.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Primary plan approval routes to task plan approve --by USER, while configured authority does not handle plan_approval or provider merge.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/65bc3e324a8c9b91d16d7b3644ee2259ed7ed69e6362b73cc15d33e7306cbc15.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Recorded verification covers lint, typecheck, routing, doctor, targeted authority/config tests, and the full local CI path; git diff --check also passes for the reviewed committed range.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/65bc3e324a8c9b91d16d7b3644ee2259ed7ed69e6362b73cc15d33e7306cbc15.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Manual pr.open authority was accepted with the exact emitted operation digest, state fingerprint, and scope digest, then the task PR was created successfully.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/65bc3e324a8c9b91d16d7b3644ee2259ed7ed69e6362b73cc15d33e7306cbc15.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: GitHub HTTPS publication can still fail when repository dotenv credentials override the valid gh keyring session; this is an external credential-wiring issue and was recovered with process-local credential selection.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/65bc3e324a8c9b91d16d7b3644ee2259ed7ed69e6362b73cc15d33e7306cbc15.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Configured side-effect authority relies on the route reducer continuing to place mandatory primary-plan approval before any side-effect approval step."
+  ]
+}

@@ -1,11 +1,14 @@
-import type { CommandContext } from "../../../commands/shared/task-backend.js";
+import { loadCommandContext, type CommandContext } from "../../../commands/shared/task-backend.js";
 import {
   commandModule,
   type CommandCapability,
   type CommandSession,
 } from "../command-catalog/kernel.js";
+import { createCapabilityScopedCommandContext } from "../command-catalog/command-context-port.js";
+import { TASK_ROUTE_REQUIREMENTS } from "../command-catalog/task-capability-profiles.js";
 import type {
   TaskLifecycleSession,
+  TaskPlanApprovalSession,
   TaskReadSession,
   TaskRouteLifecycleSession,
   TaskRouteLocalSession,
@@ -43,13 +46,34 @@ function getTaskRouteContexts(session: TaskRouteSession) {
   };
 }
 
-function getTaskAuthorityRouteContexts(session: TaskRouteLifecycleSession) {
-  return {
-    getLocalContext: getSessionContext(session, "route.local"),
-    getRemoteContext: async (command: string) => {
-      await session.require("route.remote", command);
-      return await session.require("provider", command);
+function authorityValidationContext(command: CommandContext): CommandContext {
+  return createCapabilityScopedCommandContext({
+    command,
+    allowed: new Set<CommandCapability>(TASK_ROUTE_REQUIREMENTS),
+    deny: (capability, operation) => {
+      throw new Error(
+        `Authority route validation attempted ${operation} without ${capability} capability`,
+      );
     },
+  });
+}
+
+function getTaskAuthorityRouteContexts(session: TaskRouteLifecycleSession) {
+  const getLocalWriteContext = getSessionContext(session, "route.local");
+  const getRemoteWriteContext = async (command: string) => {
+    await session.require("route.remote", command);
+    return await session.require("provider", command);
+  };
+  return {
+    getLocalContext: async (command: string, cwd: string, rootOverride: string | null) => {
+      await session.require("route.local", command);
+      return authorityValidationContext(await loadCommandContext({ cwd, rootOverride }));
+    },
+    getRemoteContext: async (command: string) => {
+      return authorityValidationContext(await getRemoteWriteContext(command));
+    },
+    getLocalWriteContext,
+    getRemoteWriteContext,
   };
 }
 
@@ -336,7 +360,7 @@ export const loadTaskPlanSetSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/plan-set.command.js").then((m) =>
     m.makeRunTaskPlanSetHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskPlanApproveSpec = (session: TaskWriteSession) =>
+export const loadTaskPlanApproveSpec = (session: TaskPlanApprovalSession) =>
   import("../../../commands/task/plan-approve.command.js").then((m) =>
     m.makeRunTaskPlanApproveHandler(getSessionContext(session, "task.write")),
   );

@@ -620,6 +620,42 @@ describe("task execution route", () => {
     );
   });
 
+  it("clears a superseded verification failure after the same check passes", () => {
+    const config = defaultConfig();
+    const initial = resolveTaskExecutionContract({
+      config,
+      task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
+      declaration: {
+        schema_version: 1,
+        preferred_mode: "branch_pr",
+        scope_roots: ["packages/app"],
+        repository_effects: ["repository_write", "source_code"],
+        external_effects: [],
+        uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["verification recovery"],
+      },
+    });
+    const failed = reconcileTaskExecutionContract({
+      contract: initial,
+      changed_paths: ["packages/app/src/feature.ts"],
+      verification_results: [{ id: "unit-tests", result: "fail" }],
+    });
+    const recovered = reconcileTaskExecutionContract({
+      contract: failed.contract,
+      changed_paths: ["packages/app/src/feature.ts"],
+      verification_results: [{ id: "unit-tests", result: "pass" }],
+    });
+
+    expect(recovered.contract.observed.verification_results).toContainEqual({
+      id: "unit-tests",
+      result: "pass",
+    });
+    expect(recovered.contract.observed.authority_violations).not.toContain(
+      "verification:unit-tests:fail",
+    );
+  });
+
   it("records path authority drift even when the observed effect category was declared", () => {
     const config = defaultConfig();
     config.workflow_mode = "direct";

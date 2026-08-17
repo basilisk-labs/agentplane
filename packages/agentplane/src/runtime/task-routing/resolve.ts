@@ -483,7 +483,9 @@ export function reconcileTaskExecutionContract(opts: {
     (effect) => !opts.contract.authority.allowed_external_effects.includes(effect),
   );
   const authorityViolations = uniqueSorted([
-    ...opts.contract.observed.authority_violations,
+    ...opts.contract.observed.authority_violations.filter(
+      (violation) => !violation.startsWith("verification:"),
+    ),
     ...undeclaredRepositoryEffects.map((effect) => `repository_effect:${effect}`),
     ...outOfScopePaths.map((changedPath) => `writable_scope:${changedPath}`),
     ...unauthorizedExternalEffects.map((effect) => `external_effect:${effect}`),

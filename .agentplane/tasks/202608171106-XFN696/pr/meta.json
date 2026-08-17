@@ -1,0 +1,29 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-08-17T18:23:28.061Z",
+  "base": "main",
+  "branch": "task/202608171106-XFN696/add-policy-driven-autonomous-side-effect-authori",
+  "created_at": "2026-08-17T11:57:53.694Z",
+  "diffstat_sha256": "sha256:08f618b27aa93c455e0c212265c08c0503906c55f05817cf82c199fb7de8c9fa",
+  "last_verified_at": "2026-08-17T18:23:28.061Z",
+  "last_verified_diffstat_sha256": "sha256:08f618b27aa93c455e0c212265c08c0503906c55f05817cf82c199fb7de8c9fa",
+  "merge_commit": "568c77dc843f08b1a83f3e474ca0f7ceddaeacb8",
+  "merge_strategy": "merge",
+  "merged_at": "2026-08-17T18:23:28.061Z",
+  "pr_number": 4839,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4839",
+  "pre_merge_closure": {
+    "basis_commit": "ed63cae0f2e4864e946b3c6b8efbaca4ab0fa89a",
+    "branch": "task/202608171106-XFN696/add-policy-driven-autonomous-side-effect-authori",
+    "pr_number": 4839,
+    "recorded_at": "2026-08-17T18:03:13.014Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202608171106-XFN696",
+  "updated_at": "2026-08-17T18:23:28.061Z",
+  "verify": {
+    "status": "pass"
+  }
+}

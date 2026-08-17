@@ -125,16 +125,69 @@ Agentplane task state remains canonical and Git-visible. The Hermes plugin perfo
 consuming bounded PLANNER, EXECUTOR, and EVALUATOR `WorkOrder` episodes; it never synthesizes formal
 Agentplane transitions from prose.
 
-## Unattended operation after plan approval
+## Unattended Hermes operation
 
-The primary plan always requires one explicit user approval. Hermes projects that decision into the
-conversation; a trusted plugin action, not the LLM, signs the current packet's
-`operator_action.approval_receipt.request`, inserts it into the exact `operator_action.argv`, runs
-that argv, and requests a fresh packet. This removes terminal copy/paste without weakening
-state-bound authority.
+Hermes should keep performing the LLM work while AgentPlane remains the invisible formal control
+plane. After the user approves the primary plan, configure repository authority when a Hermes lane
+must progress through routine PR publication boundaries without showing lifecycle prompts:
 
-Afterwards, configure `authority.mode=policy|all` for routine side effects. `policy` permits only
-`allow_operations`; `all` permits every side effect except `deny_operations`; the denylist wins.
-AgentPlane still stops for drift, denied operations, provider merge, destructive or credential
-boundaries, and authority that cannot be reconstructed safely. The bridge signing key is never
-forwarded to a Hermes LLM episode.
+```yaml
+authority:
+  mode: policy
+  actor: POLICY:hermes
+  allow_operations:
+    - pr.open
+    - pr.head.publish
+    - pr.artifacts.update
+    - pr.sync_or_verify
+    - provider.pr.refresh
+    - route.remote.refresh
+  deny_operations:
+    - integration.enqueue
+    - task.pre_merge_close
+  ttl_minutes: 10
+  approval_receipts:
+    trusted_issuers:
+      - id: hermes-dialog
+        public_key_spki: <base64-der-spki>
+    max_ttl_minutes: 10
+    clock_skew_seconds: 30
+```
+
+Hermes consumes fresh `task advance --agent-json` packets and performs only `agent_episode`
+objectives. AgentPlane resolves allowed policy boundaries internally, performs formal transitions,
+and returns the next semantic packet. The primary plan approval remains a mandatory user boundary.
+After that approval, Hermes surfaces another user action only when the current operation is absent
+from the allowlist, present in the denylist, is a provider merge decision, or the state-bound
+authority can no longer be reconstructed safely.
+
+## Conversational user approval
+
+The Hermes bridge may execute an approval command after the user decides in the Hermes dialogue;
+the user should not have to copy state digests into a terminal. This does not authorize Hermes or
+the model to manufacture user authority.
+
+When `task advance --agent-json` returns `approval_required`, its `operator_action` contains an
+`approval_receipt.request` bound to the current task, authority reference, state fingerprint, and,
+for a side effect, the exact operation digest and state-scope digest. A trusted bridge outside the
+LLM must:
+
+1. authenticate the user and display the exact pending decision;
+2. record an explicit approval in the dialogue;
+3. sign a short-lived `agentplane.user_approval_receipt` with its configured Ed25519 identity;
+4. replace `<base64url-receipt>` in the supplied `operator_action.argv` and execute that argv;
+5. request a fresh action packet instead of replaying the previous command.
+
+Agentplane verifies the issuer, signature, exact route binding, expiry, configured TTL, and
+single-use evidence digest. The stored actor is derived as `USER:<subject>@<issuer>` and remains in
+the authority audit. A forged, stale, expired, wrong-scope, or replayed receipt fails closed.
+
+The first semantic plan is still a user-owned decision. `authority.mode=policy|all` applies only to
+eligible side-effect operations after plan approval; it cannot satisfy plan approval or provider
+merge. A provider-merge packet deliberately has `operator_action.argv=null`: the bridge must keep
+that decision in its operator/provider executor boundary rather than translating it into a generic
+side-effect grant.
+
+With this split, Hermes performs all LLM work, Agentplane advances the formal lifecycle and allowed
+effects invisibly, and the user is asked again only for drift, denylisted or unconfigured effects,
+provider merge, destructive or credential boundaries, or a state that cannot be recovered safely.

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608171106-XFN696",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-17T16:07:37.051Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 6 typed finding(s).",
+  "evaluated_sha": "e8e5856b5cdb51d5a5d65c5399915401705b0c29",
+  "blueprint_digest": "b4320e637858fb9b8b9ed0e47ecda14efb4dba09b9d6bf65c3df606e81d667b7",
+  "findings": [
+    "No auto_approve_plan or autoApprovePlan surface remains in source, schemas, generated artifacts, documentation, or tests.",
+    "resolveConfiguredAuthority rejects non-approval and non-side-effect steps; manual mode and deny_operations fail closed, policy requires allow_operations, and all still honors deny_operations.",
+    "Primary plan approval routes to task plan approve --by USER, while configured authority does not handle plan_approval or provider merge.",
+    "Recorded verification covers lint, typecheck, routing, doctor, targeted authority/config tests, and the full local CI path; git diff --check also passes for the reviewed committed range.",
+    "Manual pr.open authority was accepted with the exact emitted operation digest, state fingerprint, and scope digest, then the task PR was created successfully.",
+    "Residual risk: GitHub HTTPS publication can still fail when repository dotenv credentials override the valid gh keyring session; this is an external credential-wiring issue and was recovered with process-local credential selection."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608171106-XFN696/quality/objects/sha256/65bc3e324a8c9b91d16d7b3644ee2259ed7ed69e6362b73cc15d33e7306cbc15.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Configured side-effect authority relies on the route reducer continuing to place mandatory primary-plan approval before any side-effect approval step."
+  ],
+  "residual_risks": []
+}

@@ -1,0 +1,43 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 838c39ef8f5e345226b744adf28ba85bbf10f000..33e46aa3bc171dbd4b2dafbb5a75eb8b06b70b75",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 838c39ef8f5e345226b744adf28ba85bbf10f000..33e46aa3bc171dbd4b2dafbb5a75eb8b06b70b75",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\tpackages/agentplane/src/commands/task/user-approval-receipt.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "838c39ef8f5e345226b744adf28ba85bbf10f000",
+  "implementation_commit": "33e46aa3bc171dbd4b2dafbb5a75eb8b06b70b75",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608171853-X3FD5M"
+}

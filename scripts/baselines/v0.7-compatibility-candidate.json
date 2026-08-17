@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
-      "cli_topology": "049140adaeeec07e19c9ecba8d33831bb9b5784ca98e4a444d2246fe957eb9a4",
+      "cli_topology": "20a9c58073545ec9938c1a52b8d4ca3a164f2b60ec8cf6d5f8b55eec004eb09b",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
-      "workflow_schema": "4714ecc43f394109cd5807ec5e544716abe7c67c20ea18554f8f2b559bf97b21"
+      "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "eb329963bb076054c7c8f1340ba5eb9a086d399e0b1d0f8dd09d20322ae5ee1a"
+    "surface_sha256": "1facd3d0771f9420c47c2144a595a86ae01722dcc14eef06fbce06e6b874ec32"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -525,7 +525,8 @@
                 "required": true,
                 "valueHint": "<sha256>"
               },
-              { "kind": "string", "name": "by", "required": true, "valueHint": "<actor>" },
+              { "kind": "string", "name": "by", "valueHint": "<actor>" },
+              { "kind": "string", "name": "approval-receipt", "valueHint": "<base64url>" },
               { "kind": "string", "name": "ttl-minutes", "valueHint": "<1-60>" },
               { "default": false, "kind": "boolean", "name": "remote", "valueHint": null }
             ],
@@ -992,8 +993,13 @@
           {
             "command": "task authority grant",
             "kind": "string",
+            "name": "approval-receipt",
+            "valueHint": "<base64url>"
+          },
+          {
+            "command": "task authority grant",
+            "kind": "string",
             "name": "by",
-            "required": true,
             "valueHint": "<actor>"
           },
           {
@@ -1158,6 +1164,12 @@
             "kind": "string",
             "name": "route",
             "valueHint": "<repository|auto|direct|branch_pr>"
+          },
+          {
+            "command": "task plan approve",
+            "kind": "string",
+            "name": "approval-receipt",
+            "valueHint": "<base64url>"
           },
           {
             "command": "task run",
@@ -1619,6 +1631,12 @@
           {
             "command": "task authority grant",
             "kind": "option",
+            "name": "approval-receipt",
+            "source_task": "202608171853-X3FD5M"
+          },
+          {
+            "command": "task authority grant",
+            "kind": "option",
             "name": "by",
             "source_task": "202607221849-NWVCAG"
           },
@@ -1657,6 +1675,12 @@
             "kind": "option",
             "name": "ttl-minutes",
             "source_task": "202607221849-NWVCAG"
+          },
+          {
+            "command": "task plan approve",
+            "kind": "option",
+            "name": "approval-receipt",
+            "source_task": "202608171853-X3FD5M"
           },
           {
             "command": "task complete",
@@ -2054,9 +2078,25 @@
               "valueHint": "<queued|done|rework>"
             },
             "identity": "integrate queue release --status"
+          },
+          {
+            "after": {
+              "command": "task plan approve",
+              "kind": "string",
+              "name": "by",
+              "valueHint": "<id>"
+            },
+            "before": {
+              "command": "task plan approve",
+              "kind": "string",
+              "name": "by",
+              "required": true,
+              "valueHint": "<id>"
+            },
+            "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 849 },
+        "option_count": { "from": 767, "to": 851 },
         "positional_count": { "from": 165, "to": 180 },
         "removed_command_descriptors": [],
         "removed_commands": [],
@@ -2091,10 +2131,11 @@
         "202608062023-V3WHE9",
         "202608080805-KPWPAV",
         "202608110235-WCJJRD",
-        "202608112213-NWJCBW"
+        "202608112213-NWJCBW",
+        "202608171853-X3FD5M"
       ],
-      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, compatibility retirement diagnostics, and safe local evidence statistics, compaction, and garbage collection; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; and canonicalizes setup and execution profile selection to standard while retaining legacy init aliases.",
-      "to_sha256": "049140adaeeec07e19c9ecba8d33831bb9b5784ca98e4a444d2246fe957eb9a4"
+      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, and safe local evidence statistics, compaction, and garbage collection; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; and canonicalizes setup and execution profile selection to standard while retaining legacy init aliases.",
+      "to_sha256": "20a9c58073545ec9938c1a52b8d4ca3a164f2b60ec8cf6d5f8b55eec004eb09b"
     },
     {
       "classification": "additive",
@@ -2174,9 +2215,9 @@
       },
       "from_sha256": "f157b9f24020d353142f0eb511828d6fdb1f6b19c7c5a401c2736a8931423bf7",
       "section": "workflow_schema",
-      "source_tasks": ["202607221846-4VB97J", "202608112213-NWJCBW"],
-      "summary": "Replaces the v1-only schema with a v1-or-v2 input union, retaining the finite typed legacy v1 sections, requiring explicit v2 approval flags, preserving the public schema identity, and canonicalizing both versions on the standard execution profile while accepting legacy profile aliases during migration.",
-      "to_sha256": "4714ecc43f394109cd5807ec5e544716abe7c67c20ea18554f8f2b559bf97b21"
+      "source_tasks": ["202607221846-4VB97J", "202608112213-NWJCBW", "202608171853-X3FD5M"],
+      "summary": "Replaces the v1-only schema with a v1-or-v2 input union, retaining the finite typed legacy v1 sections, requiring explicit v2 approval flags, adding trusted signed approval receipt configuration, preserving the public schema identity, and canonicalizing both versions on the standard execution profile while accepting legacy profile aliases during migration.",
+      "to_sha256": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
     {
       "classification": "behavior_preserving_hardening",
@@ -2276,7 +2317,7 @@
     },
     "from_sha256": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
     "section": "package_manifests",
-    "source_tasks": ["202608021231-SHYJGK", "202608112259-T3ZDDM"],
+    "source_tasks": ["202608021231-SHYJGK", "202608112259-T3ZDDM", "202608171853-X3FD5M"],
     "to_sha256": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff"
   },
   "release_version_delta": {
@@ -2295,7 +2336,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "aa230065940bbeca341260cc7bfd453df7cae6b29f758f71c9d0f9286139268f",
+    "surface_sha256": "ab2384feaf78cb4c0a0c0f5c600ea386e5f0376e852122f2d74b97ac1356d414",
     "to_sha256": "ba86d65ec1fe45a4d31d19c537a863e802e8e7a7bbdb0d1b0a301d4c3e82b3ab",
     "to_version": "0.7.6"
   },
@@ -2345,6 +2386,7 @@
     "202608080805-KPWPAV",
     "202608110235-WCJJRD",
     "202608112213-NWJCBW",
-    "202608112259-T3ZDDM"
+    "202608112259-T3ZDDM",
+    "202608171853-X3FD5M"
   ]
 }

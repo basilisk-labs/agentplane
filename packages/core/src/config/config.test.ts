@@ -55,6 +55,85 @@ describe("config", () => {
     });
   });
 
+  it("defaults repository side-effect authority to manual", () => {
+    expect(defaultConfig().authority).toEqual({
+      mode: "manual",
+      actor: "POLICY:repository",
+      allow_operations: [],
+      deny_operations: [],
+      ttl_minutes: 15,
+      approval_receipts: {
+        trusted_issuers: [],
+        max_ttl_minutes: 15,
+        clock_skew_seconds: 30,
+      },
+    });
+  });
+
+  it("validates trusted approval receipt issuers without changing manual authority defaults", () => {
+    const raw = makeConfigRecord();
+    raw.authority = {
+      mode: "manual",
+      actor: "POLICY:repository",
+      allow_operations: [],
+      deny_operations: [],
+      ttl_minutes: 15,
+      approval_receipts: {
+        trusted_issuers: [
+          {
+            id: "hermes-bridge",
+            public_key_spki: "MCowBQYDK2VwAyEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+          },
+        ],
+        max_ttl_minutes: 10,
+        clock_skew_seconds: 5,
+      },
+    };
+
+    expect(validateConfig(raw).authority.approval_receipts).toEqual(
+      (raw.authority as { approval_receipts: unknown }).approval_receipts,
+    );
+  });
+
+  it("validates explicit policy and all authority modes", () => {
+    const policy = makeConfigRecord();
+    policy.authority = {
+      mode: "policy",
+      actor: "POLICY:trusted-ci",
+      allow_operations: ["pr.open", "pr.head.publish"],
+      deny_operations: ["integration.enqueue"],
+      ttl_minutes: 5,
+      approval_receipts: {
+        trusted_issuers: [],
+        max_ttl_minutes: 15,
+        clock_skew_seconds: 30,
+      },
+    };
+    expect(validateConfig(policy).authority).toEqual(policy.authority);
+
+    const all = makeConfigRecord();
+    all.authority = {
+      mode: "all",
+      actor: "POLICY:yolo",
+      allow_operations: [],
+      deny_operations: [],
+      ttl_minutes: 15,
+    };
+    expect(validateConfig(all).authority.mode).toBe("all");
+  });
+
+  it("rejects authority actors that could impersonate a user", () => {
+    const raw = makeConfigRecord();
+    raw.authority = {
+      mode: "all",
+      actor: "USER",
+      allow_operations: [],
+      deny_operations: [],
+      ttl_minutes: 15,
+    };
+    expect(() => validateConfig(raw)).toThrow(/POLICY/);
+  });
+
   it("spec example config validates at runtime", async () => {
     const exampleUrl = new URL("../../../spec/examples/config.json", import.meta.url);
     const text = await readFile(fileURLToPath(exampleUrl), "utf8");

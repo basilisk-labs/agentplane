@@ -188,6 +188,7 @@ export async function cmdTaskPlanApprove(opts: {
   taskId: string;
   by: string;
   note?: string;
+  expectedTaskRevision?: number;
 }): Promise<number> {
   try {
     const { ctx, backend } = await loadPlanBackend({
@@ -212,30 +213,36 @@ export async function cmdTaskPlanApprove(opts: {
       ctx,
       local: async (store) => {
         await store.get(opts.taskId);
-        await store.patch(opts.taskId, (current) => {
-          assertTaskMutationPolicy({
-            ctx,
-            taskId: opts.taskId,
-            task: current,
-            action: "task_plan_approve",
-            phase: "plan",
-          });
-          const currentDoc = ensureDocSections(
-            String(current.doc ?? ""),
-            config.tasks.doc.required_sections,
-          );
-          assertPlanCanBeApproved({ task: current, config, doc: currentDoc });
-          return {
-            task: {
-              plan_approval: {
-                state: "approved" as PlanApprovalState,
-                updated_at: approvedAt,
-                updated_by: by,
-                note: note || null,
+        await store.patch(
+          opts.taskId,
+          (current) => {
+            assertTaskMutationPolicy({
+              ctx,
+              taskId: opts.taskId,
+              task: current,
+              action: "task_plan_approve",
+              phase: "plan",
+            });
+            const currentDoc = ensureDocSections(
+              String(current.doc ?? ""),
+              config.tasks.doc.required_sections,
+            );
+            assertPlanCanBeApproved({ task: current, config, doc: currentDoc });
+            return {
+              task: {
+                plan_approval: {
+                  state: "approved" as PlanApprovalState,
+                  updated_at: approvedAt,
+                  updated_by: by,
+                  note: note || null,
+                },
               },
-            },
-          };
-        });
+            };
+          },
+          opts.expectedTaskRevision === undefined
+            ? undefined
+            : { expectedRevision: opts.expectedTaskRevision },
+        );
       },
       remote: async () => {
         const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
@@ -250,15 +257,20 @@ export async function cmdTaskPlanApprove(opts: {
           (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
         const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
         assertPlanCanBeApproved({ task, config, doc: baseDoc });
-        await backend.writeTask({
-          ...task,
-          plan_approval: {
-            state: "approved" as PlanApprovalState,
-            updated_at: approvedAt,
-            updated_by: by,
-            note: note || null,
+        await backend.writeTask(
+          {
+            ...task,
+            plan_approval: {
+              state: "approved" as PlanApprovalState,
+              updated_at: approvedAt,
+              updated_by: by,
+              note: note || null,
+            },
           },
-        });
+          opts.expectedTaskRevision === undefined
+            ? undefined
+            : { expectedRevision: opts.expectedTaskRevision },
+        );
       },
     });
     return 0;

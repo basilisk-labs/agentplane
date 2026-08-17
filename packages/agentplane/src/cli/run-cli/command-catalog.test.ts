@@ -40,6 +40,7 @@ import {
 } from "./command-catalog/project-capability-profiles.js";
 import {
   TASK_LIFECYCLE_REQUIREMENTS,
+  TASK_PLAN_APPROVAL_REQUIREMENTS,
   TASK_WRITE_REQUIREMENTS,
 } from "./command-catalog/task-capability-profiles.js";
 
@@ -329,7 +330,6 @@ describe("command catalog graph", () => {
       ["task", "new"],
       ["task", "comment"],
       ["task", "plan", "set"],
-      ["task", "plan", "approve"],
       ["task", "doc", "set"],
     ];
     for (const id of taskWriteCommands) {
@@ -345,6 +345,15 @@ describe("command catalog graph", () => {
         "approvals",
       ]);
     }
+
+    const planApprove = findCommandEntry(["task", "plan", "approve"]);
+    expect(planApprove?.requirements).toEqual(TASK_PLAN_APPROVAL_REQUIREMENTS);
+    expect(planApprove?.requirements).toEqual(
+      expect.arrayContaining(["task.write", "git.head", "git.diff", "route.local"]),
+    );
+    expect(planApprove?.requirements).not.toContain("git.mutate");
+    expect(planApprove?.requirements).not.toContain("route.remote");
+    expect(planApprove?.requirements).not.toContain("provider");
 
     const lifecycleCommands = [
       ["commit"],

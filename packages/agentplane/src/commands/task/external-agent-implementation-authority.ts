@@ -89,6 +89,13 @@ function hasChangedTaskArtifacts(statusLines: readonly string[], taskId: string)
   return statusLines.some((line) => pathFromStatusLine(line).startsWith(prefix));
 }
 
+export function requiresImplementationReworkReopen(opts: {
+  purpose: ExternalAgentExchange["purpose"];
+  task_status: string;
+}): boolean {
+  return opts.purpose === "implementation_rework" && opts.task_status === "DONE";
+}
+
 async function recordExternalImplementationVerification(opts: {
   command: CommandContext;
   checkout: string;
@@ -186,9 +193,10 @@ function assertExternalImplementationReturnState(opts: {
     .filter((entry): entry is string => entry !== null);
   const taskPrefix = `.agentplane/tasks/${opts.exchange.task_id}/`;
   const forbidden = changed.filter((entry) => {
-    const protectedTaskArtifact =
-      entry.startsWith(taskPrefix) && !(resolvesDirtyWorktree && baselinePaths.has(entry));
-    return protectedTaskArtifact || !pathAllowed(entry, allowed);
+    const taskArtifact = entry.startsWith(taskPrefix);
+    const baselineTaskArtifact = taskArtifact && resolvesDirtyWorktree && baselinePaths.has(entry);
+    if (baselineTaskArtifact) return false;
+    return taskArtifact || !pathAllowed(entry, allowed);
   });
   if (forbidden.length > 0) {
     throw new CliError({
@@ -242,6 +250,10 @@ export async function applyExternalReadOnlyWorktreeObservation(opts: {
     closeCheckOnly: false,
   });
   if (exitCode !== 0) throw new Error(`External worktree observation commit exited ${exitCode}.`);
+}
+
+export function blockingImplementationAuthorityViolations(violations: readonly string[]): string[] {
+  return violations.filter((violation) => !violation.startsWith("verification:"));
 }
 
 export async function applyExternalImplementationResult(opts: {
@@ -379,8 +391,14 @@ export async function applyExternalImplementationResult(opts: {
         `Implementation committed: ${implementation.evidence.implementation_commit.slice(0, 12)}. ` +
         "CLI accepted one state-bound external-agent semantic result.",
       commit: implementation.evidence.implementation_commit,
-      force: false,
-      yes: false,
+      force: requiresImplementationReworkReopen({
+        purpose: opts.exchange.purpose,
+        task_status: opts.decision.task.status,
+      }),
+      yes: requiresImplementationReworkReopen({
+        purpose: opts.exchange.purpose,
+        task_status: opts.decision.task.status,
+      }),
       commitFromComment: false,
       commitAllow: [],
       commitAutoAllow: false,
@@ -400,8 +418,9 @@ export async function applyExternalImplementationResult(opts: {
     changed_paths: implementation.evidence.changed_paths,
     preserved_commit: implementation.evidence.implementation_commit,
   });
-  const authorityViolations =
-    reconciliation.task.execution_contract?.observed.authority_violations ?? [];
+  const authorityViolations = blockingImplementationAuthorityViolations(
+    reconciliation.task.execution_contract?.observed.authority_violations ?? [],
+  );
   if (authorityViolations.length > 0 && !reconciliation.escalated) {
     throw new CliError({
       code: "E_VALIDATION",

@@ -119,7 +119,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
 
       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
       expect(candidateFreshness).toMatchObject({ exitCode: 0, stderr: "" });
-      expect(compatibility.stdout).toContain("263commands/180args/849options");
+      expect(compatibility.stdout).toContain("263commands/180args/851options");
       expect(compatibility.stdout).toContain(
         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
       );
@@ -216,22 +216,23 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202608110235-WCJJRD",
           "202608112213-NWJCBW",
           "202608112259-T3ZDDM",
+          "202608171853-X3FD5M",
         ],
         candidate: {
-          surface_sha256: "eb329963bb076054c7c8f1340ba5eb9a086d399e0b1d0f8dd09d20322ae5ee1a",
+          surface_sha256: "1facd3d0771f9420c47c2144a595a86ae01722dcc14eef06fbce06e6b874ec32",
           section_digests: {
             agent_facing_context_contracts:
               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
-            cli_topology: "049140adaeeec07e19c9ecba8d33831bb9b5784ca98e4a444d2246fe957eb9a4",
+            cli_topology: "20a9c58073545ec9938c1a52b8d4ca3a164f2b60ec8cf6d5f8b55eec004eb09b",
             machine_output_contract:
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
             package_manifests: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
             tarball_policy: "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
-            workflow_schema: "4714ecc43f394109cd5807ec5e544716abe7c67c20ea18554f8f2b559bf97b21",
+            workflow_schema: "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452",
           },
         },
         pre_release_package_delta: {
-          source_tasks: ["202608021231-SHYJGK", "202608112259-T3ZDDM"],
+          source_tasks: ["202608021231-SHYJGK", "202608112259-T3ZDDM", "202608171853-X3FD5M"],
           classification: "additive",
           section: "package_manifests",
           from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",

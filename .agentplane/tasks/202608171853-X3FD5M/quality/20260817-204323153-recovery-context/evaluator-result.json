@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "TASK_PLAN_APPROVAL_REQUIREMENTS is narrower than the lifecycle profile: it adds git.head, git.diff, and route.local to task write but excludes git.mutate, route.remote, and provider.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/0057c12f65eb16cbdb74016b45b34c6e73d880c70092edbeb6e0fb4dee1bb66f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The typed loader and catalog both consume the dedicated profile, preventing the packaged runtime from denying prepareAgentWorkOrder at git.headCommit.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/0057c12f65eb16cbdb74016b45b34c6e73d880c70092edbeb6e0fb4dee1bb66f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The regression test pins required and forbidden capabilities, directly covering the failure mode reported by packaged-mixed-scope-lifecycle.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/0057c12f65eb16cbdb74016b45b34c6e73d880c70092edbeb6e0fb4dee1bb66f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Typecheck, 27 focused security/catalog tests, all 565 fast-suite files with 4161 passing tests, docs freshness, compatibility ratchets, formatting, and routing checks pass.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/0057c12f65eb16cbdb74016b45b34c6e73d880c70092edbeb6e0fb4dee1bb66f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: The clean-commit packaged-mixed-scope-lifecycle scenario must pass in hosted CI; local qualification correctly refused to package the active AgentPlane episode with uncommitted supervisor artifacts.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/0057c12f65eb16cbdb74016b45b34c6e73d880c70092edbeb6e0fb4dee1bb66f.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

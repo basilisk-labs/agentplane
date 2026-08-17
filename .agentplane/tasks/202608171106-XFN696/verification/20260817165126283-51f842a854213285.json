@@ -1,0 +1,91 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks\nScope: branch_pr task 202608171106-XFN696 Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks\nScope: branch_pr task 202608171106-XFN696 Verification Contract check critical_paths\n\nCheck: docs_contract\nCommand: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks\nScope: branch_pr task 202608171106-XFN696 Verification Contract check docs_contract\n\nCheck: full_regression\nCommand: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks\nScope: branch_pr task 202608171106-XFN696 Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks\nScope: branch_pr task 202608171106-XFN696 Verification Contract check hosted_integration\n\nCheck: task_outcome\nCommand: bun run lint:core && bun run typecheck && node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts && node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks\nScope: branch_pr task 202608171106-XFN696 Verification Contract check task_outcome",
+  "digest": "sha256:51f842a854213285e8aef2dcd634d61a968357c955848cfcaaf75a105e40a3aa",
+  "implementation_sha": "8009dae228bae5d93aff35d647df592e7f5efa67",
+  "input": {
+    "context": {
+      "digest": "sha256:08c76e73a98ca736b41a560072798c836ad546a2a731df57e59dc38b323d7a21",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:11d1a8a64efba4642fceab182006a6435ecc09d674bdac1d28111f73ca2164d8",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:2e7de87f31f32afadc2e56292c48d4072d90ea9af39518eb1664870581fc5eca",
+      "digest": "sha256:28a7954ec60dd25e2f6e7748b3f2c789b5466db7af57a7d5ff1d1471200511ae",
+      "references": [
+        {
+          "digest": "sha256:40c87fed5ea6e813e64ef3c52bca49df75b55bd338cea9d71edaf78879f15a89",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608171106-XFN696/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "89f760183da24c5a768dfe97e6c4c2fb67bd1478",
+      "digest": "sha256:587a61e24c011a770e61af575e76880cb853ae9588fb22ae0846f810ae0627cd",
+      "strategy": "branch_diff",
+      "target_sha": "8009dae228bae5d93aff35d647df592e7f5efa67"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:1d161993a99292072eb59ba2e80900e934fe67023131c8b2c258e220334b94e7",
+    "verify_steps_digest": "sha256:c454ee01251f11e191d3b390e64ff163e8f938e58ca7c9d2bdfef02d14185016"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-17T16:51:26.283Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bunx vitest run packages/agentplane/src/commands/task/authority-grant.command.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/core/src/config/config.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run lint:core`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `node .agentplane/policy/check-routing.mjs`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:c454ee01251f11e191d3b390e64ff163e8f938e58ca7c9d2bdfef02d14185016",
+  "task_id": "202608171106-XFN696",
+  "verification_command": "agentplane verify 202608171106-XFN696 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

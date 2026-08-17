@@ -1,6 +1,7 @@
 import {
   advanceSupervisorExecutionEpisodeState,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
+  refreshPendingReplacementSupervisorExecutionEpisode,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   startSupervisorExecutionEpisode,
   type AgentWorkOrderV2,
@@ -35,7 +36,12 @@ export async function recordIssuedExternalAgentEpisode(opts: {
     });
     let journal = opened.journal;
     let replacementAuthorized = false;
-    if (journal.status === "stopped" && journal.stop?.reason === "operation_failed") {
+    const latestOperation = journal.operations.at(-1);
+    const recoverableFailedOperation =
+      journal.status === "stopped" &&
+      latestOperation?.status === "failed" &&
+      (journal.stop?.reason === "operation_failed" || journal.stop?.reason === "stale_state");
+    if (recoverableFailedOperation) {
       if (!opts.replace_failed_operation) {
         throw new CliError({
           code: "E_RUNTIME",
@@ -121,6 +127,20 @@ export async function recordIssuedExternalAgentEpisode(opts: {
         code: "E_RUNTIME",
         message: "External-agent supervisor is not ready to issue a semantic work order.",
       });
+    }
+    const latest = journal.operations.at(-1);
+    if (
+      journal.state_fingerprint_digest !== fingerprint &&
+      journal.cursor.replacement_of_operation_key &&
+      latest?.status === "failed" &&
+      latest.operation_key === journal.cursor.replacement_of_operation_key
+    ) {
+      const refreshed = refreshPendingReplacementSupervisorExecutionEpisode({
+        journal,
+        state_fingerprint_digest: fingerprint,
+      });
+      if (!(await opened.store.compareAndSwap(journal.digest, refreshed))) continue;
+      journal = refreshed;
     }
     const started = startSupervisorExecutionEpisode({
       journal,
