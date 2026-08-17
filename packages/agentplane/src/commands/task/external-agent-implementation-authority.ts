@@ -89,6 +89,13 @@ function hasChangedTaskArtifacts(statusLines: readonly string[], taskId: string)
   return statusLines.some((line) => pathFromStatusLine(line).startsWith(prefix));
 }
 
+export function requiresImplementationReworkReopen(opts: {
+  purpose: ExternalAgentExchange["purpose"];
+  task_status: string;
+}): boolean {
+  return opts.purpose === "implementation_rework" && opts.task_status === "DONE";
+}
+
 async function recordExternalImplementationVerification(opts: {
   command: CommandContext;
   checkout: string;
@@ -384,8 +391,14 @@ export async function applyExternalImplementationResult(opts: {
         `Implementation committed: ${implementation.evidence.implementation_commit.slice(0, 12)}. ` +
         "CLI accepted one state-bound external-agent semantic result.",
       commit: implementation.evidence.implementation_commit,
-      force: false,
-      yes: false,
+      force: requiresImplementationReworkReopen({
+        purpose: opts.exchange.purpose,
+        task_status: opts.decision.task.status,
+      }),
+      yes: requiresImplementationReworkReopen({
+        purpose: opts.exchange.purpose,
+        task_status: opts.decision.task.status,
+      }),
       commitFromComment: false,
       commitAllow: [],
       commitAutoAllow: false,
