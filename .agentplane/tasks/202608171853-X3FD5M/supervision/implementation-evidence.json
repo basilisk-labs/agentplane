@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 0e915a805640b19a202eaadfcacf11fb998100a9..3cdaf96dadfd66bb7fbe92b5eb62a7451c9a527c",
+      "command": "git diff --check 1d4b940a89237ea7d41c81c89f054d218d174aa9..b6698767ffbbff30558126ccf78e3c303e96ee6f",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,21 +13,15 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 0e915a805640b19a202eaadfcacf11fb998100a9..3cdaf96dadfd66bb7fbe92b5eb62a7451c9a527c",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1d4b940a89237ea7d41c81c89f054d218d174aa9..b6698767ffbbff30558126ccf78e3c303e96ee6f",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202608171853-X3FD5M/README.md",
         "M\t.agentplane/tasks/202608171853-X3FD5M/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608171853-X3FD5M/pr/github-body.md",
-        "M\t.agentplane/tasks/202608171853-X3FD5M/pr/github-title.txt",
         "M\t.agentplane/tasks/202608171853-X3FD5M/pr/meta.json",
         "M\t.agentplane/tasks/202608171853-X3FD5M/pr/review.md",
-        "A\t.agentplane/tasks/202608171853-X3FD5M/verification/20260817203651889-bcb9aa4e59d7f762.json",
-        "M\tpackages/agentplane/src/cli/run-cli/command-catalog.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli/command-catalog/task-capability-profiles.ts",
-        "M\tpackages/agentplane/src/cli/run-cli/command-catalog/task.ts",
-        "M\tpackages/agentplane/src/cli/run-cli/command-loaders/task.ts"
+        "M\tscripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
       ]
     },
     {
@@ -37,54 +31,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "0e915a805640b19a202eaadfcacf11fb998100a9",
-  "implementation_commit": "3cdaf96dadfd66bb7fbe92b5eb62a7451c9a527c",
+  "execution_base_commit": "1d4b940a89237ea7d41c81c89f054d218d174aa9",
+  "implementation_commit": "b6698767ffbbff30558126ccf78e3c303e96ee6f",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M .agentplane/tasks/202608171853-X3FD5M/README.md",
-      " M .agentplane/tasks/202608171853-X3FD5M/pr/github-body.md",
-      " M .agentplane/tasks/202608171853-X3FD5M/pr/github-title.txt",
-      " M .agentplane/tasks/202608171853-X3FD5M/pr/meta.json",
-      " M .agentplane/tasks/202608171853-X3FD5M/pr/review.md",
-      "?? .agentplane/tasks/202608171853-X3FD5M/verification/20260817203651889-bcb9aa4e59d7f762.json"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608171853-X3FD5M/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608171853-X3FD5M/pr/github-body.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608171853-X3FD5M/pr/github-title.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608171853-X3FD5M/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608171853-X3FD5M/pr/review.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608171853-X3FD5M/verification/20260817203651889-bcb9aa4e59d7f762.json"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202608171853-X3FD5M/README.md",
-      " M .agentplane/tasks/202608171853-X3FD5M/pr/github-body.md",
-      " M .agentplane/tasks/202608171853-X3FD5M/pr/github-title.txt",
-      " M .agentplane/tasks/202608171853-X3FD5M/pr/meta.json",
-      " M .agentplane/tasks/202608171853-X3FD5M/pr/review.md",
-      "?? .agentplane/tasks/202608171853-X3FD5M/verification/20260817203651889-bcb9aa4e59d7f762.json"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
