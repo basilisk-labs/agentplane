@@ -29,6 +29,7 @@ Generate and verify the social asset for docs/releases/v0.7.7.md. Add a typed, s
 ```text
  docs/releases/v0.7.7.md                            |  38 +++
  ...un-cli.core.task-advance.blocked-result.test.ts |  78 +++++-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/cli/run-cli/command-catalog/task.ts        |   8 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
  .../src/commands/shared/side-effect-authority.ts   |   7 +
@@ -57,7 +58,7 @@ Generate and verify the social asset for docs/releases/v0.7.7.md. Add a typed, s
  .../check-compatibility-contract-baseline.mjs      | 103 ++++++++
  website/static/img/social/docs/releases/v0.7.7.png | Bin 0 -> 52375 bytes
  website/static/img/social/manifest.json            |   8 +
- 30 files changed, 1638 insertions(+), 29 deletions(-)
+ 31 files changed, 1642 insertions(+), 32 deletions(-)
 ```
 
 </details>
