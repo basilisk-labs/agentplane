@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608181404-CR1F9W-2b46ca8a738107ddb8645704",
+  "prepared_at": "2026-08-18T15:41:21.872Z",
+  "task": {
+    "id": "202608181404-CR1F9W",
+    "revision": 20,
+    "objective": "Add v0.7.7 release social assets and a controlled evaluator rework scope-extension boundary\n\nGenerate and verify the social asset for docs/releases/v0.7.7.md. Add a typed, state-bound, USER-approved path for an evaluator or implementation-rework result to request additional writable roots without silently widening authority; invalidate stale verification and reissue a scoped EXECUTOR packet after approval. Keep the change release-blocking and compatible with branch_pr.",
+    "acceptance_criteria": [
+      "- In scope: Generate and verify the social asset for docs/releases/v0.7.7.md. Add a typed, state-bound, USER-approved path for an evaluator or implementation-rework result to request additional writable roots without silently widening authority; invalidate stale verification and reissue a scoped EXECUTOR packet after approval. Keep the change release-blocking and compatible with branch_pr.\n- Out of scope: unrelated refactors not required for \"Add v0.7.7 release social assets and a controlled evaluator rework scope-extension boundary\".",
+      "Plan the release-blocking remediation in two bounded parts: first add a typed scope-extension request and state-bound USER approval route for blocked evaluator or implementation-rework results, including verification invalidation and a freshly scoped executor packet; then add the 0.7.7 release note and generate its canonical website social image and manifest. Verify schema, supervisor routing, focused regressions, docs site, full static contract, and hosted branch_pr checks before integration.",
+      "PLANNER fallback scaffold for \"Add v0.7.7 release social assets and a controlled evaluator rework scope-extension boundary\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Add v0.7.7 release social assets and a controlled evaluator rework scope-extension boundary\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "7fe66ed8e3a8f099aca5e7e759f9440f453b14b5",
+  "diff_base_sha": "f4fc869fd5ffbafb58c7e33c9f75ac762f3a242f",
+  "blueprint_digest": "e814ba9c904d77ecda4ad71bed97eea32e4aa66684a85a7a429ae6d345afbf2f",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-154121872-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:c27b150f4fb069108d4db4a643286442789c513a6449000d4cdfb6fcd22e6ef2",
+    "prompt_path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/362dab564e22315b44663ed983010261f851c714a340d4f85b3e8eddde65252d.md",
+    "result_schema_path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608181404-CR1F9W/README.md",
+      "sha256": "sha256:8e6f3b079cd8054cb17247d14ddcaa3e78a62530c3b2437a4091016888ff43ba",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/616abdd22420931d4113d09ea248b72f0e1fa6fdb5265be80f1206c4aab04172.patch",
+      "sha256": "sha256:616abdd22420931d4113d09ea248b72f0e1fa6fdb5265be80f1206c4aab04172",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/760e65220453354ccab8e60559ea4f15a2e7bfbabeec2fcb47cadbef11aaf774.json",
+      "sha256": "sha256:760e65220453354ccab8e60559ea4f15a2e7bfbabeec2fcb47cadbef11aaf774",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608181404-CR1F9W/verification/20260818154107890-92e2b540523b88e9.json",
+      "sha256": "sha256:f724f81032fc506128d9f30c6dbcb2b5411c19b8ea22fd78bc878bb2580bd87f",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/b0825e0a70291e02337ad2afed7ec89373e0edd644d4294762a7ca05cf385f47.json",
+      "sha256": "sha256:b0825e0a70291e02337ad2afed7ec89373e0edd644d4294762a7ca05cf385f47",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:47ab8b04f9d747491398390dac415b34aa6d3df0cf0fb61e9924fd3e4851ec48",
+      "required": true
+    }
+  ]
+}
