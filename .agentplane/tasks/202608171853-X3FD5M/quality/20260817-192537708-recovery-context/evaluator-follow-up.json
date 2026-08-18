@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608171853-X3FD5M-456d40a6a2f412969fa1dd71",
+  "task_id": "202608171853-X3FD5M",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Rework is required before the recovery release can pass: the focused declared checks are green, but the new user-approval wire contract and fail-closed protection behavior lack their required negative tests and generated contract synchronization, and two existing packet assertions still encode the obsolete --by USER path.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "The supervisor-owned declared checks passed: typecheck, 45 focused tests, and policy routing are green for implementation head 590e2564f.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/7c4ff4607e8adcd6a15aeda1d61b73a883f90e2e1f7a08f399f36fa80d586fe1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "packages/agentplane/src/commands/task/agent-action-packet.test.ts still fails two assertions because it expects --by USER and no approval_receipt request; this is a real contract-test mismatch, not a runtime failure.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/7c4ff4607e8adcd6a15aeda1d61b73a883f90e2e1f7a08f399f36fa80d586fe1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "No committed tests currently prove forged signature, untrusted issuer, stale state fingerprint, wrong scope digest, expiry, receipt replay, or fail-closed GitHub protection lookup.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/7c4ff4607e8adcd6a15aeda1d61b73a883f90e2e1f7a08f399f36fa80d586fe1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "The config source was extended with approval_receipts but generated schemas and user-facing bridge contract artifacts have not been synchronized, so release validation can drift even though TypeScript passes.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/7c4ff4607e8adcd6a15aeda1d61b73a883f90e2e1f7a08f399f36fa80d586fe1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "summary": "The approved objective and planner findings require these artifacts, while the legacy execution contract incorrectly lists tests, schema, documentation, and public_api as forbidden; the rework packet must reconcile that contract mismatch rather than silently omit the work.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/7c4ff4607e8adcd6a15aeda1d61b73a883f90e2e1f7a08f399f36fa80d586fe1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "summary": "Residual risk: Without negative tests, a later parser or route refactor could accept forged or stale user authority.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/7c4ff4607e8adcd6a15aeda1d61b73a883f90e2e1f7a08f399f36fa80d586fe1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "summary": "Residual risk: Without generated-schema synchronization, installed clients may reject the new configuration or packet surface.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/7c4ff4607e8adcd6a15aeda1d61b73a883f90e2e1f7a08f399f36fa80d586fe1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-8",
+      "summary": "Residual risk: Provider merge remains a separate operator-owned executor boundary and must not be silently treated as a side-effect grant.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/7c4ff4607e8adcd6a15aeda1d61b73a883f90e2e1f7a08f399f36fa80d586fe1.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608171853-X3FD5M/quality/20260817-192537708-recovery-context/evaluator-result.json"
+}

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608171853-X3FD5M",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-17T21:04:32.629Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "d687ecc0081fca3965a7860a9ace12577c4a5088",
+  "blueprint_digest": "da565bb5e104231271b6b8452fb59a1e21b3bb6a73d019e01b9ea3b3827565c8",
+  "findings": [
+    "A disposable init readback showed the published mapping order as clock_skew_seconds, max_ttl_minutes, trusted_issuers within approval_receipts, with quoted actor and mode fields.",
+    "The unique indented trusted_issuers: [] line is the narrow stable mutation point; replacing only that line preserves the published policy and avoids dependence on key ordering.",
+    "The disposable inspection fixture was removed after readback."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/d0fbd45a5a85d6452119a7078b1aaf77575010ac9967528648a13407e4fb3986.patch"
+  ],
+  "missing_tests": [
+    "Clean packaged-mixed-scope-lifecycle must pass after the order-independent trust-list replacement."
+  ],
+  "hidden_assumptions": [
+    "The previous implementation matched saveConfig output before workflow build normalized the published frontmatter."
+  ],
+  "residual_risks": [
+    "Rework required. Canonical workflow publication normalizes and sorts authority keys, so the fixture should replace the unique trusted_issuers empty-list line instead of matching the pre-publication field order."
+  ]
+}

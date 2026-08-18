@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The clean packaged run failed at the explicit fail-closed guard because WORKFLOW.md already contains authority from defaultConfig/saveConfig.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/9ab760b9d00bb7a19aaa595660364bd22c7cc5d410997297a2c90aab7c1849a3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The narrow correction is to replace the canonical default approval_receipts mapping with the fixture issuer, preserving manual authority mode and every unrelated workflow field.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/9ab760b9d00bb7a19aaa595660364bd22c7cc5d410997297a2c90aab7c1849a3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The replacement should require an exact single default marker and fail closed on any unexpected generated shape.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608171853-X3FD5M/quality/objects/sha256/9ab760b9d00bb7a19aaa595660364bd22c7cc5d410997297a2c90aab7c1849a3.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Clean packaged-mixed-scope-lifecycle must pass with the default authority block updated in place."
+  ],
+  "hidden_assumptions": [
+    "The previous correction assumed current init omitted authority when it only omitted legacy config.json."
+  ],
+  "recovery_context": "Rework required. Current init already persists the default authority section, so the fixture must replace its empty approval_receipts trust list rather than reject or duplicate authority."
+}

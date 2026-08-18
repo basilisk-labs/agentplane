@@ -62,7 +62,37 @@ describe("config", () => {
       allow_operations: [],
       deny_operations: [],
       ttl_minutes: 15,
+      approval_receipts: {
+        trusted_issuers: [],
+        max_ttl_minutes: 15,
+        clock_skew_seconds: 30,
+      },
     });
+  });
+
+  it("validates trusted approval receipt issuers without changing manual authority defaults", () => {
+    const raw = makeConfigRecord();
+    raw.authority = {
+      mode: "manual",
+      actor: "POLICY:repository",
+      allow_operations: [],
+      deny_operations: [],
+      ttl_minutes: 15,
+      approval_receipts: {
+        trusted_issuers: [
+          {
+            id: "hermes-bridge",
+            public_key_spki: "MCowBQYDK2VwAyEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+          },
+        ],
+        max_ttl_minutes: 10,
+        clock_skew_seconds: 5,
+      },
+    };
+
+    expect(validateConfig(raw).authority.approval_receipts).toEqual(
+      (raw.authority as { approval_receipts: unknown }).approval_receipts,
+    );
   });
 
   it("validates explicit policy and all authority modes", () => {
@@ -73,6 +103,11 @@ describe("config", () => {
       allow_operations: ["pr.open", "pr.head.publish"],
       deny_operations: ["integration.enqueue"],
       ttl_minutes: 5,
+      approval_receipts: {
+        trusted_issuers: [],
+        max_ttl_minutes: 15,
+        clock_skew_seconds: 30,
+      },
     };
     expect(validateConfig(policy).authority).toEqual(policy.authority);
 

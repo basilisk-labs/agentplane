@@ -149,8 +149,8 @@ describe("pr-meta shell invocations", () => {
     await expect(pending).resolves.toEqual({ code: 0, output: "vitest/4.0.18" });
     expect(startProcess).toHaveBeenCalledWith(
       expect.objectContaining({
-        command: "bunx",
-        args: ["vitest", "--version"],
+        command: "bun",
+        args: ["x", "vitest", "--version"],
       }),
     );
   });

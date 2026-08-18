@@ -1,0 +1,91 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks\nScope: branch_pr task 202608170928-8Y24PK Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks\nScope: branch_pr task 202608170928-8Y24PK Verification Contract check critical_paths\n\nCheck: docs_contract\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks\nScope: branch_pr task 202608170928-8Y24PK Verification Contract check docs_contract\n\nCheck: full_regression\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks\nScope: branch_pr task 202608170928-8Y24PK Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks\nScope: branch_pr task 202608170928-8Y24PK Verification Contract check hosted_integration\n\nCheck: real_e2e\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks\nScope: branch_pr task 202608170928-8Y24PK Verification Contract check real_e2e\n\nCheck: task_outcome\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks\nScope: branch_pr task 202608170928-8Y24PK Verification Contract check task_outcome",
+  "digest": "sha256:5cc6be25d18e71387d5b28710ea4bb763648b4660fc24f687f7c073a56713c36",
+  "implementation_sha": "c99c0af74efb9c5281b77305195454980a9be14d",
+  "input": {
+    "context": {
+      "digest": "sha256:db943969fd6a5db05b4a920d4e5bf19384f5029cacde12d13d48fdf976f3ebfc",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:5aa7938f0bc6a4f209d7d6b35f218216d39dedf65089cec3d6a44a435ee2a737",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:73da6d2010631a0275abe89fb36f154827595f47408bf0ca21913e5e6c16b924",
+      "digest": "sha256:8972c233ea6aefef575d639b73b896d394fd316eb46138696f9fed2e9c19694e",
+      "references": [
+        {
+          "digest": "sha256:659be6f6e0e52928dc6b9b6a6ce78a94dacd5f1412e935bc7b597dabdea5da98",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608170928-8Y24PK/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "e22f17ffad89f8fe9c3e41abc9c483c2c5fc2c78",
+      "digest": "sha256:a666e01713c83d5f50905ea2f686558f3bf68b366347e00df2a11d8eec34adbb",
+      "strategy": "branch_diff",
+      "target_sha": "c99c0af74efb9c5281b77305195454980a9be14d"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:dd4da45c92dc327e3f30c5f18c3e27def1de3b973f012024e9fc3fcc1237ed46",
+    "verify_steps_digest": "sha256:8559ac20d950c1601ef1434555ed99c5da9a5c52304a4f16ad1abdb9862d0ce0"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-17T22:20:37.648Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Upgrade the Hermes AgentPlane bridge protocol across the three approved repositories\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Upgrade the Hermes AgentPlane bridge protocol across the three approved repositories\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:8559ac20d950c1601ef1434555ed99c5da9a5c52304a4f16ad1abdb9862d0ce0",
+  "task_id": "202608170928-8Y24PK",
+  "verification_command": "agentplane verify 202608170928-8Y24PK --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

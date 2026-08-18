@@ -246,7 +246,12 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
     ) {
       return "already_prepared";
     }
-    if (journal.status !== "stopped" || journal.stop?.reason !== "operation_failed") {
+    const latest = journal.operations.at(-1);
+    const recoverableFailure =
+      journal.status === "stopped" &&
+      latest?.status === "failed" &&
+      (journal.stop?.reason === "operation_failed" || journal.stop?.reason === "stale_state");
+    if (!recoverableFailure) {
       return "not_failed";
     }
     const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({

@@ -9,6 +9,7 @@ import {
   collectCompatibilitySurface,
   compatibilitySurfaceDigest,
   createWorktreeSource,
+  diffCliTopology,
   diffJsonPaths,
   hashJson,
   packageSurface,
@@ -106,6 +107,13 @@ function buildCandidate({ baseline, candidate, packageSourceTask }) {
     preReleasePackageManifests,
     "$.package_manifests",
   );
+  const cliTopologyDelta = diffCliTopology(baseSurface, releaseSurface);
+  const addedCommands = cliTopologyDelta.added_command_descriptors.map((command) =>
+    command.id.join(" "),
+  );
+  const removedCommands = cliTopologyDelta.removed_command_descriptors.map((command) =>
+    command.id.join(" "),
+  );
 
   return canonicalizeJson({
     ...candidate,
@@ -134,6 +142,33 @@ function buildCandidate({ baseline, candidate, packageSourceTask }) {
     },
     deltas: candidate.deltas.map((delta) => ({
       ...delta,
+      ...(delta.section === "cli_topology"
+        ? {
+            evidence: {
+              command_count: {
+                from: baseSurface.cli_topology.command_count,
+                to: releaseSurface.cli_topology.command_count,
+              },
+              positional_count: {
+                from: baseSurface.cli_topology.positional_count,
+                to: releaseSurface.cli_topology.positional_count,
+              },
+              option_count: {
+                from: baseSurface.cli_topology.option_count,
+                to: releaseSurface.cli_topology.option_count,
+              },
+              added_commands: addedCommands,
+              removed_commands: removedCommands,
+              added_command_descriptors: cliTopologyDelta.added_command_descriptors,
+              removed_command_descriptors: cliTopologyDelta.removed_command_descriptors,
+              mutated_command_shells: cliTopologyDelta.mutated_command_shells,
+              added_options: cliTopologyDelta.added_options,
+              removed_options: cliTopologyDelta.removed_options,
+              mutated_options: cliTopologyDelta.mutated_options,
+              addition_sources: delta.evidence.addition_sources,
+            },
+          }
+        : {}),
       to_sha256: candidateSectionDigests[delta.section],
     })),
   });

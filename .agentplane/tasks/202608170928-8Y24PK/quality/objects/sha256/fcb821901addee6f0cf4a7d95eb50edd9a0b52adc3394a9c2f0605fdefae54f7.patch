@@ -1,0 +1,823 @@
+diff --git a/docs/recipes/hermes-agentplane.mdx b/docs/recipes/hermes-agentplane.mdx
+index c0e0ade8d..34c13cade 100644
+--- a/docs/recipes/hermes-agentplane.mdx
++++ b/docs/recipes/hermes-agentplane.mdx
+@@ -54,7 +54,8 @@ the `custom` runner adapter with `runner.custom.command=["hermes","agentplane","
+ agentplane init --tool hermes --workflow branch_pr --yes
+ agentplane hermes doctor --json
+ agentplane hermes enqueue <task-id> --board <board> --assignee agentplane-coder --json
+-agentplane hermes supervise <task-id> --execute-step --json
++hermes agentplane supervise --task-id <task-id> --root <repo>
++hermes agentplane approve --task-id <task-id> --root <repo>
+ agentplane task run <task-id>
+ agentplane hermes lifecycle comment --body '<structured projection>' --json
+ agentplane hermes lifecycle complete --body 'Agentplane terminal evidence validated' --json
+@@ -70,6 +71,10 @@ Hermes worker lanes must pass these variables to Agentplane-side commands:
+ 
+ ```bash
+ AGENTPLANE_HERMES_LANE_REGISTRY=/opt/agentplane/lane-registry.json
++AGENTPLANE_HERMES_ALLOWED_ROOTS=/workspace/repo
++AGENTPLANE_HERMES_PLUGIN_PROTOCOL=agentplane.hermes.plugin.v2
++AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API=1
++AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE=1
+ HERMES_KANBAN_TASK=<hermes-card-id>
+ HERMES_KANBAN_BOARD=<board>
+ HERMES_KANBAN_RUN_ID=<run-id>
+@@ -77,14 +82,23 @@ HERMES_KANBAN_WORKSPACE=<repo-workspace>
+ HERMES_KANBAN_CLAIM_LOCK=<claim-lock>
+ ```
+ 
+-`agentplane hermes doctor --json` reports missing Hermes environment values and lane-registry
+-state. The Agentplane side uses `AGENTPLANE_HERMES_LANE_REGISTRY` as the registry input.
++`agentplane hermes doctor --json` fails closed unless the v2 plugin capability, native lane API,
++trusted approval-receipt bridge, lane registry, binaries, `branch_pr`, and non-empty root allowlist
++are proven. It separately reports
++whether the current worker claim is complete. An empty root allowlist denies every workspace.
+ Task-runner invocations also export `AGENTPLANE_RUNNER_TASK_ID` when the run target is an Agentplane
+ task, so Hermes launchers can bind the external worker run back to the canonical task id.
+ 
++The trusted Hermes host reads the base64-encoded Ed25519 PKCS8 DER signing key from
++`AGENTPLANE_HERMES_APPROVAL_PRIVATE_KEY_PKCS8`; the plugin never forwards that variable to worker or
++LLM subprocesses and emits the bridge capability only after loading a valid key. Configure
++`approval_issuer`, `approval_subject`, and `approval_ttl_minutes` in the plugin settings, then pin
++the matching doctor-reported public key under
++`authority.approval_receipts.trusted_issuers` in Agentplane.
++
+ ## Visibility contract
+ 
+-`agentplane hermes enqueue` and `agentplane hermes supervise` return a
++`agentplane hermes enqueue` and the compatibility `agentplane hermes supervise` projection return a
+ `hermes_comment_projection` packet. Hermes plugins should post that packet before block or
+ complete transitions. The packet includes:
+ 
+@@ -93,6 +107,8 @@ complete transitions. The packet includes:
+ - Runner visibility commands: `agentplane task run status`, `inspect`, and event `logs`.
+ - Evidence references for the task README, ACR, and runner artifacts.
+ - The authority boundary that keeps Hermes status projection-only.
++- A canonical `agentplane.hermes.terminal-attestation.v1`; only `terminal/done` permits root-card
++  completion.
+ 
+ ## Expected artifacts
+ 
+@@ -105,4 +121,20 @@ complete transitions. The packet includes:
+ ## Safety model
+ 
+ The recipe does not make Hermes a task backend for Agentplane. Hermes board state is a projection.
+-Agentplane task state remains canonical and Git-visible.
++Agentplane task state remains canonical and Git-visible. The Hermes plugin performs all LLM work by
++consuming bounded PLANNER, EXECUTOR, and EVALUATOR `WorkOrder` episodes; it never synthesizes formal
++Agentplane transitions from prose.
++
++## Unattended operation after plan approval
++
++The primary plan always requires one explicit user approval. Hermes projects that decision into the
++conversation; a trusted plugin action, not the LLM, signs the current packet's
++`operator_action.approval_receipt.request`, inserts it into the exact `operator_action.argv`, runs
++that argv, and requests a fresh packet. This removes terminal copy/paste without weakening
++state-bound authority.
++
++Afterwards, configure `authority.mode=policy|all` for routine side effects. `policy` permits only
++`allow_operations`; `all` permits every side effect except `deny_operations`; the denylist wins.
++AgentPlane still stops for drift, denied operations, provider merge, destructive or credential
++boundaries, and authority that cannot be reconstructed safely. The bridge signing key is never
++forwarded to a Hermes LLM episode.
+diff --git a/docs/workflow-guides/hermes-kanban.mdx b/docs/workflow-guides/hermes-kanban.mdx
+index 26b5b65e3..3b90dee71 100644
+--- a/docs/workflow-guides/hermes-kanban.mdx
++++ b/docs/workflow-guides/hermes-kanban.mdx
+@@ -20,14 +20,9 @@ Hermes owns queueing, assignees, claims, retries, crash detection, comments, das
+ human handoff. Agentplane owns task README/frontmatter, plan approval, route decisions, worktree and
+ branch_pr boundaries, verification, PR artifacts, integration, terminal semantics, and ACR evidence.
+ 
+-This is a design target, not a turnkey Hermes extension point. Hermes documents a worker-lane
+-contract and a plugin-provided spawn path for non-Hermes lanes, but an Agentplane integration must
+-ship the missing glue: lane registration, process spawning, lifecycle API calls, workspace mapping,
+-auth/policy handling, idempotency, and reconcile/doctor behavior.
+-
+-Keep the first implementation in this repository, not in a separate repository. The Agentplane
+-side and the reference Hermes spawn adapter should version together until the Hermes worker-lane
+-API is stable enough to publish a standalone package.
++Protocol v2 uses Hermes' native worker-lane API. The executable plugin is released separately while
++the versioned capability and terminal-attestation contracts remain pinned under
++`integrations/hermes-agentplane-plugin/` in this repository.
+ 
+ ## Why the adapter owns completion
+ 
+@@ -38,14 +33,10 @@ Agents should take tasks to completion, but completion has two levels:
+ | Root task card   | The Agentplane task reached terminal engineering evidence. |
+ | Phase/run card   | One dispatch phase or worker attempt completed.            |
+ 
+-The root card may complete only after the Agentplane terminal gate passes:
+-
+-1. Agentplane task status is `DONE`.
+-2. Required verification is recorded.
+-3. `branch_pr` integration and finish evidence are complete when the repo uses `branch_pr`.
+-4. ACR validation passes when the workflow requires ACR evidence.
+-5. The Hermes run id is still current.
+-6. The final Hermes comment contains evidence pointers, not raw secrets or logs.
++The root card may complete only when the canonical Agentplane route returns a
++`terminal/done` workflow step. That route-owned decision already incorporates the applicable
++verification, provider, integration, finish, ACR, and cleanup gates. The plugin must also prove that
++the Hermes run id and claim are still current before posting the attestation.
+ 
+ Hermes may block or complete a dispatch run. Hermes must not directly complete an Agentplane task.
+ 
+@@ -76,17 +67,16 @@ The repo-local Agentplane side exposes a small integration surface:
+ 
+ ```bash
+ agentplane hermes enqueue <task-id> --json
+-agentplane hermes supervise <task-id> --execute-step --json
++agentplane hermes supervise <task-id> --json
+ agentplane hermes reconcile [--task-id <task-id>] --json
+ agentplane hermes doctor --json
+ ```
+ 
+ - `enqueue` renders the provider-safe card projection that a Hermes plugin should create
+   idempotently.
+-- `supervise` returns the next route-gated Agentplane action packet. With `--execute-step`, it can
+-  execute one allowlisted Agentplane argv step, including the same-task
+-  `agentplane task run <task-id>` launch step. It does not blindly execute raw shell text from a
+-  route string.
++- `supervise` is a compatibility and diagnostic projection. The production plugin uses the compact
++  `task advance --agent-json` protocol directly, so role episodes and approval boundaries remain
++  identical to other external agents.
+ - `reconcile` is read-only diagnostics for stale, duplicate, or false-complete projections.
+ - `doctor` checks the local Agentplane side of the adapter contract.
+ 
+@@ -100,25 +90,20 @@ assignee: agentplane-supervisor | agentplane-coder | agentplane-reviewer | agent
+ spawn_fn(task, workspace, board) -> pid
+ ```
+ 
+-The spawn function should launch:
++The spawn function launches:
+ 
+ ```bash
+-hermes-agentplane-spawn \
+-  --agentplane-task-id <agentplane-task-id> \
+-  --repo <repo-root> \
+-  --hermes-task-id <kanban-card-id> \
+-  --board <board-id> \
+-  --run-id <hermes-run-id> \
+-  --workspace <workspace-root>
++hermes agentplane supervise \
++  --task-id <agentplane-task-id> \
++  --root <repo-root>
+ ```
+ 
+ The live plugin source of truth is
+ [`basilisk-labs/agentplane-hermes-plugin`](https://github.com/basilisk-labs/agentplane-hermes-plugin).
+-The repo-local `integrations/hermes-agentplane-plugin/` directory is documentation-only and must not
+-ship a second dispatcher shim. The plugin is deliberately a thin native worker-lane adapter over
+-`agentplane hermes supervise <task-id> --root <repo> --execute-step --json`; it does not write the
+-Hermes database, publish PRs, merge branches, or infer Agentplane task completion from Hermes card
+-status.
++The repo-local `integrations/hermes-agentplane-plugin/` directory contains the co-versioned protocol
++schema and registry example, not a second dispatcher. The plugin drives fresh Agentplane supervisor
++packets, while Hermes performs every LLM episode. It does not write the Hermes database, publish
++PRs, merge branches, or infer Agentplane completion from board status.
+ 
+ For production, use a Hermes image with the first-class worker-lane registry:
+ 
+@@ -126,12 +111,26 @@ For production, use a Hermes image with the first-class worker-lane registry:
+ ctx.register_worker_lane(match="agentplane-*", spawn_fn=spawn_fn, profile_exists=True)
+ ```
+ 
+-The minimum image/runtime contract is: `/opt/hermes/bin` on `PATH`, plugin-aware dispatch in
++The minimum image/runtime contract is: Hermes on `PATH`, plugin-aware dispatch in
+ gateway/CLI/dashboard paths, registered external lanes treated as spawnable assignees, supported
+ Kanban lifecycle client calls for plugins, structured card metadata access, stale-run guards, an
+ explicit Agentplane binary path, local plugin install support, and a dispatcher test that proves an
+ `agentplane-*` assignee reaches the registered spawn function.
+ 
++The plugin passes an explicit environment allowlist rather than inheriting the parent environment.
++`AGENTPLANE_HERMES_ALLOWED_ROOTS` is mandatory and empty means deny. It also asserts
++`AGENTPLANE_HERMES_PLUGIN_PROTOCOL=agentplane.hermes.plugin.v2` and
++`AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API=1`. It additionally asserts
++`AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE=1` only when the trusted user-approval bridge is
++available; `agentplane hermes doctor --json` fails closed when any installation capability is
++missing.
++
++The trusted host loads its base64-encoded Ed25519 PKCS8 DER key only from
++`AGENTPLANE_HERMES_APPROVAL_PRIVATE_KEY_PKCS8`. The plugin strips that variable from every spawned
++worker and LLM environment even if a forwarding allowlist names it. Its configured issuer and the
++doctor-reported public key must match an Agentplane
++`authority.approval_receipts.trusted_issuers` entry.
++
+ ### Optional MCP wrapper
+ 
+ MCP is useful as a typed model tool surface, especially with allowlisted roots and tool filtering.
+@@ -179,16 +178,21 @@ agent:
+ ```text
+ 1. Read the Hermes root card.
+ 2. Resolve or create the Agentplane task id.
+-3. Run `agentplane task advance <task-id> --agent-json`.
++3. Run `ap task advance <task-id> --agent-json`.
+ 4. When it returns an agent episode, dispatch only the supplied semantic objective and authority.
+ 5. Write the typed result to `exchange.result_path` and resume with the exact
+    `exchange.resume_argv`; `exchange.return_invocation` is compatibility-only.
+-6. At approval, human, hosted/external, stale-state, or effect-in-doubt boundaries, stop and project
+-   the boundary to Hermes without inventing progress.
+-7. Write a structured Hermes comment with run id, previous revision, new revision, and evidence
++6. For a plan or non-policy approval, project the exact pending decision to Hermes. Only a
++   user-authenticated plugin action may sign the packet's approval receipt and execute its exact
++   `operator_action.argv`; the LLM cannot manufacture user authority. AgentPlane resolves eligible
++   post-plan `authority.mode=policy|all` side effects internally.
++7. At human, hosted/external, stale-state, effect-in-doubt, provider-merge, destructive, credential,
++   or denylisted boundaries, stop and project the boundary to Hermes without inventing progress.
++8. Write a structured Hermes comment with run id, previous revision, new revision, and evidence
+    pointers.
+-8. Request a fresh packet.
+-9. Complete the root card only after Agentplane returns terminal engineering evidence.
++9. Request a fresh packet.
++10. Complete the root card only after Agentplane returns
++   `agentplane.hermes.terminal-attestation.v1` with `terminal_outcome=done`.
+ ```
+ 
+ Never execute a raw route string as shell. Use typed action fields and exact argv supplied by
+@@ -232,8 +236,8 @@ not needed.
+ - Do not expose arbitrary repository paths to a model-controlled MCP server.
+ - Do not put secrets, raw logs, OAuth material, or full ACR payloads in Hermes comments or metadata.
+ 
+-## Current scaffold
++## Protocol artifacts
+ 
+-The initial Agentplane side is intentionally local and read-oriented. It establishes the command
+-contract and machine-readable packets that a Hermes plugin can consume. The live Hermes plugin,
+-Kanban API client, and board mutation path are follow-up implementation surfaces.
++The live executable is the external plugin. Agentplane keeps the capability schema, lane-registry
++example, doctor checks, route projection, and canonical terminal attestation in lockstep with the
++runner contract.
+diff --git a/integrations/hermes-agentplane-plugin/README.md b/integrations/hermes-agentplane-plugin/README.md
+index 3e7b60ab1..31ed9ff21 100644
+--- a/integrations/hermes-agentplane-plugin/README.md
++++ b/integrations/hermes-agentplane-plugin/README.md
+@@ -1,36 +1,92 @@
+-# Hermes AgentPlane Plugin
++# Hermes AgentPlane Plugin Contract
+ 
+-The executable Hermes plugin is maintained outside this repository:
++The executable plugin is released from
++[`basilisk-labs/agentplane-hermes-plugin`](https://github.com/basilisk-labs/agentplane-hermes-plugin).
++This directory pins the AgentPlane-side protocol contract used by that plugin.
+ 
+-<https://github.com/basilisk-labs/agentplane-hermes-plugin>
++## Protocol v2
+ 
+-This directory is intentionally documentation-only. The older repo-local shim
+-patched `hermes_cli.kanban_db.dispatch_once`; that path is now removed because
+-Hermes exposes a native worker-lane registration contract:
++Hermes remains the LLM worker and owns board dispatch, the current claim, run lifecycle, retries,
++comments, and dashboard state. AgentPlane owns engineering task state, roles, authority, repository
++routing, verification, publication, integration, and the terminal decision.
+ 
+-```python
+-ctx.register_worker_lane(match="agentplane-*", spawn_fn=spawn_fn, profile_exists=True)
++The plugin exposes four native Hermes commands:
++
++- `hermes agentplane doctor --json` validates plugin discovery, lane registration, executables, and
++  the fail-closed workspace allowlist.
++- `hermes agentplane run` consumes the AgentPlane custom-runner environment, asks Hermes to perform
++  the supplied `WorkOrder`, validates `AgentSemanticResult v2`, and atomically writes the exact
++  `AGENTPLANE_RUNNER_RESULT_PATH`.
++- `hermes agentplane supervise --task-id <id> --root <repo>` repeatedly requests a fresh
++  `ap task advance <id> --agent-json` packet. It executes only `agent_episode`, writes the typed
++  result to the packet's exact `exchange.result_path`, and resumes with the exact
++  `exchange.resume_argv`. It stops at human, external, recovery, or terminal boundaries. A
++  repository-policy side-effect boundary is normally resolved by AgentPlane before it reaches the
++  plugin.
++- `hermes agentplane approve --task-id <id> [--root <repo>]` consumes only the
++  current `operator_action.approval_receipt.request`, signs it with the configured bridge identity,
++  replaces the receipt placeholder in the exact `operator_action.argv`, executes that argv, and
++  requests a fresh packet. Hermes also exposes this trusted operation as a user-invoked dialogue
++  command; the LLM cannot invoke it or access the signing key.
++
++The worker-lane spawn callback must start `hermes agentplane supervise`; it must not call
++`agentplane hermes supervise --execute-step`, infer lifecycle transitions, or write directly to
++`kanban.db`.
++
++## Runtime proof
++
++Every plugin-owned AgentPlane process receives:
++
++```text
++AGENTPLANE_HERMES_PLUGIN_PROTOCOL=agentplane.hermes.plugin.v2
++AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API=1
++AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE=1
++AGENTPLANE_HERMES_ALLOWED_ROOTS=/workspace/repo-a:/workspace/repo-b
+ ```
+ 
+-## Contract
++An empty allowlist is an error. The plugin passes only an explicit environment allowlist plus the
++current Hermes claim fields; it never forwards the complete parent environment.
++
++Configure the non-secret issuer, audited subject, and receipt TTL in the Hermes plugin settings as
++`approval_issuer`, `approval_subject`, and `approval_ttl_minutes`. The trusted Hermes host reads an
++Ed25519 PKCS8 DER private key from the base64-encoded secret environment variable
++`AGENTPLANE_HERMES_APPROVAL_PRIVATE_KEY_PKCS8`. The plugin never forwards that variable, even if it
++is named in `AGENTPLANE_HERMES_FORWARD_ENV`; it emits
++`AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE=1` only after loading a valid key. Configure the matching
++doctor-reported `approval_bridge.public_key_spki` under
++`authority.approval_receipts.trusted_issuers` in the repository.
+ 
+-- Hermes owns dispatch/run lifecycle: board, assignee, claim, run id, retry,
+-  crash detection, comments, and dashboard.
+-- AgentPlane owns engineering lifecycle: task truth, route oracle, `branch_pr`,
+-  verification, PR artifacts, finish, and ACR evidence.
+-- Hermes cards must carry an explicit AgentPlane task id in
+-  `metadata.agentplane.task_id` or `agentplane_task_id`.
+-- The plugin spawns `agentplane hermes supervise <task-id> --root <repo>
+---execute-step --json` with Hermes run context in environment variables.
+-- The plugin must not write directly to `~/.hermes/kanban.db`.
++`agentplane hermes doctor --json` reports `installation_ready=true` only when the v2 capability
++assertion, native lane API, lane registry, both executables, `branch_pr`, and a non-empty allowed
++root set are all proven. `worker_context_ready` additionally requires the current task, board,
++run id, workspace, and claim lock.
+ 
+-## Deployment Variables
++## Approval and unattended operation
+ 
+-```bash
+-export AGENTPLANE_HERMES_LANE_REGISTRY=/opt/agentplane/lane-registry.json
+-export AGENTPLANE_BIN=/usr/local/bin/agentplane
+-export AGENTPLANE_HERMES_ALLOWED_ROOTS=/workspace
++The primary plan always requires an explicit user decision. Hermes presents that decision in the
++conversation and invokes the trusted approval bridge only from a user-authenticated action. The
++bridge never turns model output or an inferred affirmative response into authority.
++
++After plan approval, `authority.mode=policy|all` applies only to side-effect operations. In
++`policy` mode AgentPlane permits only `allow_operations`; in `all` mode it permits all side effects
++except `deny_operations`, and the denylist always wins. Provider merge, destructive and credential
++boundaries remain operator-owned. Every issued or policy-derived authority remains bound to the
++operation digest, state fingerprint, scope digest, TTL, and audited actor.
++
++## Completion
++
++Hermes may complete its root card only when AgentPlane returns
++`agentplane.hermes.terminal-attestation.v1` with:
++
++```json
++{
++  "hermes_root_complete_allowed": true,
++  "terminal_outcome": "done"
++}
+ ```
+ 
+-Use the external plugin README and registry example as the install source of
+-truth.
++The attestation is derived from the canonical route step (`workflowStep.kind=terminal` and
++`workflowStep.outcome.type=done`), not from a local `DONE + verification` approximation.
++
++See [`protocol-v2.schema.json`](./protocol-v2.schema.json) and
++[`lane-registry.example.json`](./lane-registry.example.json).
+diff --git a/integrations/hermes-agentplane-plugin/lane-registry.example.json b/integrations/hermes-agentplane-plugin/lane-registry.example.json
+new file mode 100644
+index 000000000..ab0466dd5
+--- /dev/null
++++ b/integrations/hermes-agentplane-plugin/lane-registry.example.json
+@@ -0,0 +1,19 @@
++{
++  "version": 2,
++  "lanes": [
++    {
++      "name": "agentplane-coder",
++      "match": "agentplane-*",
++      "kind": "agentplane",
++      "spawn": [
++        "hermes",
++        "agentplane",
++        "supervise",
++        "--task-id",
++        "{agentplane_task_id}",
++        "--root",
++        "{workspace_root}"
++      ]
++    }
++  ]
++}
+diff --git a/integrations/hermes-agentplane-plugin/protocol-v2.schema.json b/integrations/hermes-agentplane-plugin/protocol-v2.schema.json
+new file mode 100644
+index 000000000..1bfab8a6a
+--- /dev/null
++++ b/integrations/hermes-agentplane-plugin/protocol-v2.schema.json
+@@ -0,0 +1,39 @@
++{
++  "$schema": "https://json-schema.org/draft/2020-12/schema",
++  "$id": "https://agentplane.dev/schemas/hermes-plugin-protocol-v2.json",
++  "title": "AgentPlane Hermes plugin protocol v2 capability",
++  "type": "object",
++  "additionalProperties": false,
++  "required": [
++    "schema",
++    "protocol",
++    "commands",
++    "native_worker_lane_api",
++    "approval_receipt_bridge"
++  ],
++  "properties": {
++    "schema": { "const": "agentplane.hermes.plugin-capabilities.v1" },
++    "protocol": { "const": "agentplane.hermes.plugin.v2" },
++    "native_worker_lane_api": { "const": true },
++    "approval_receipt_bridge": { "const": true },
++    "commands": {
++      "type": "array",
++      "minItems": 4,
++      "uniqueItems": true,
++      "items": {
++        "enum": [
++          "agentplane approve",
++          "agentplane doctor",
++          "agentplane run",
++          "agentplane supervise"
++        ]
++      },
++      "allOf": [
++        { "contains": { "const": "agentplane approve" } },
++        { "contains": { "const": "agentplane doctor" } },
++        { "contains": { "const": "agentplane run" } },
++        { "contains": { "const": "agentplane supervise" } }
++      ]
++    }
++  }
++}
+diff --git a/packages/agentplane/src/commands/hermes/hermes-environment.ts b/packages/agentplane/src/commands/hermes/hermes-environment.ts
+index 1cbeb6ff9..5ce38b84b 100644
+--- a/packages/agentplane/src/commands/hermes/hermes-environment.ts
++++ b/packages/agentplane/src/commands/hermes/hermes-environment.ts
+@@ -1,4 +1,6 @@
+-import { readFile } from "node:fs/promises";
++import { constants } from "node:fs";
++import { access, readFile } from "node:fs/promises";
++import path from "node:path";
+ import { isRecord } from "../../shared/guards.js";
+ import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
+ 
+@@ -13,6 +15,44 @@ export function hermesEnvSnapshot() {
+   };
+ }
+ 
++export const HERMES_PLUGIN_PROTOCOL = "agentplane.hermes.plugin.v2" as const;
++
++function normalizedPathList(value: string | undefined): string[] {
++  return (value ?? "")
++    .split(path.delimiter)
++    .map((entry) => entry.trim())
++    .filter(Boolean);
++}
++
++export function hermesPluginContractSnapshot() {
++  const protocol = process.env.AGENTPLANE_HERMES_PLUGIN_PROTOCOL?.trim() ?? null;
++  const allowedRoots = normalizedPathList(process.env.AGENTPLANE_HERMES_ALLOWED_ROOTS);
++  return {
++    required_protocol: HERMES_PLUGIN_PROTOCOL,
++    protocol,
++    protocol_valid: protocol === HERMES_PLUGIN_PROTOCOL,
++    native_worker_lane_api: process.env.AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API?.trim() === "1",
++    approval_receipt_bridge: process.env.AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE?.trim() === "1",
++    allowed_roots: allowedRoots,
++    allowed_roots_fail_closed: allowedRoots.length > 0,
++  };
++}
++
++export async function inspectCommandAvailability(command: string) {
++  const candidates = command.includes(path.sep)
++    ? [path.resolve(command)]
++    : normalizedPathList(process.env.PATH).map((entry) => path.join(entry, command));
++  for (const candidate of candidates) {
++    try {
++      await access(candidate, constants.X_OK);
++      return { available: true, resolved_path: candidate };
++    } catch {
++      // Continue through PATH without executing an untrusted binary.
++    }
++  }
++  return { available: false, resolved_path: null };
++}
++
+ export async function loadLaneRegistry() {
+   const rawRegistryPath = process.env.AGENTPLANE_HERMES_LANE_REGISTRY?.trim();
+   const registryPath = rawRegistryPath && rawRegistryPath.length > 0 ? rawRegistryPath : null;
+diff --git a/packages/agentplane/src/commands/hermes/hermes-runtime.ts b/packages/agentplane/src/commands/hermes/hermes-runtime.ts
+index b9800fe4f..f850deef7 100644
+--- a/packages/agentplane/src/commands/hermes/hermes-runtime.ts
++++ b/packages/agentplane/src/commands/hermes/hermes-runtime.ts
+@@ -27,6 +27,8 @@ import type { WorkflowOperation } from "../shared/workflow-step.js";
+ export {
+   currentAgentplaneCommand,
+   hermesEnvSnapshot,
++  hermesPluginContractSnapshot,
++  inspectCommandAvailability,
+   loadLaneRegistry,
+ } from "./hermes-environment.js";
+ export { loadHermesStateSnapshot, reconcileHermesState } from "./hermes-state.js";
+@@ -39,13 +41,22 @@ export type HermesLifecycleAction = (typeof HERMES_LIFECYCLE_ACTIONS)[number];
+ 
+ export type HermesLocalProjection = Awaited<ReturnType<typeof routePacket>>;
+ 
+-function taskTerminalForHermesComplete(task: {
+-  status: string;
+-  verification: string | null;
+-}): boolean {
+-  const statusDone = task.status.trim().toUpperCase() === "DONE";
+-  const verificationState = task.verification?.trim().toLowerCase() ?? "";
+-  return statusDone && verificationState === "ok";
++export function buildHermesTerminalAttestation(
++  decision: TaskRouteDecision,
++  taskRevision: number | null,
++) {
++  const workflowStep = decision.workflowStep;
++  const terminalDone = workflowStep.kind === "terminal" && workflowStep.outcome.type === "done";
++  return {
++    schema: "agentplane.hermes.terminal-attestation.v1",
++    hermes_root_complete_allowed: terminalDone,
++    terminal_outcome: workflowStep.kind === "terminal" ? workflowStep.outcome.type : null,
++    workflow_step_id: workflowStep.id,
++    precondition_fingerprint: workflowStep.preconditionFingerprint,
++    task_revision: taskRevision,
++    required_gate:
++      "AgentPlane route oracle workflowStep.kind=terminal and workflowStep.outcome.type=done",
++  };
+ }
+ 
+ async function runnerVisibilityPacket(opts: {
+@@ -137,11 +148,7 @@ export async function prepareHermesRoute(opts: {
+         taskId: opts.taskId,
+       })
+     : null;
+-  const terminal = {
+-    hermes_root_complete_allowed: taskTerminalForHermesComplete(decision.task),
+-    required_gate:
+-      "Agentplane DONE + verification ok + branch_pr finish/integration evidence + ACR validation",
+-  };
++  const terminal = buildHermesTerminalAttestation(decision, fullTask.revision ?? null);
+   const projectionBoundary = {
+     hermes_authority: "dispatch_run_lifecycle",
+     agentplane_authority: "engineering_task_lifecycle",
+@@ -215,11 +222,11 @@ export function buildHermesLifecycleRecommendation(
+ ) {
+   const base = `agentplane hermes lifecycle`;
+   if (packet.terminal.hermes_root_complete_allowed) {
+-    const body = `Agentplane task ${packet.task.id} is DONE with verification ok.`;
++    const body = JSON.stringify(packet.terminal);
+     return {
+       action: "complete",
+       command: `${base} complete --body ${JSON.stringify(body)}`,
+-      reason: "Agentplane task truth is terminal and verified.",
++      reason: "AgentPlane route oracle emitted the canonical terminal.done attestation.",
+       body,
+     };
+   }
+diff --git a/packages/agentplane/src/commands/hermes/hermes.command.test.ts b/packages/agentplane/src/commands/hermes/hermes.command.test.ts
+index 518710d13..9a7ec8007 100644
+--- a/packages/agentplane/src/commands/hermes/hermes.command.test.ts
++++ b/packages/agentplane/src/commands/hermes/hermes.command.test.ts
+@@ -8,10 +8,14 @@ import {
+   recordCodexProviderUsageForResult,
+ } from "../../runner/adapters/codex-result-transport.js";
+ import * as taskRunUsecases from "../../runner/usecases/task-run.js";
+-import { executeHermesWorkflowOperation, routeNeedsRunnerProjection } from "./hermes-runtime.js";
++import {
++  buildHermesTerminalAttestation,
++  executeHermesWorkflowOperation,
++  routeNeedsRunnerProjection,
++} from "./hermes-runtime.js";
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ import { captureStdIO, mkGitRepoRoot, runCliSilent } from "@agentplane/testkit";
+-import { mkdir, writeFile } from "node:fs/promises";
++import { chmod, mkdir, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ 
+ async function createTask(root: string): Promise<string> {
+@@ -89,6 +93,42 @@ async function createRunnableDirectTask(root: string): Promise<string> {
+ }
+ 
+ describe("hermes adapter commands", () => {
++  it("permits Hermes completion only for the canonical terminal.done route step", () => {
++    const baseStep = {
++      id: "terminal.done",
++      kind: "terminal",
++      outcome: { type: "done", summary: "complete" },
++      preconditionFingerprint: "sha256:terminal-proof",
++    };
++    const done = buildHermesTerminalAttestation(
++      { workflowStep: baseStep } as TaskRouteDecision,
++      17,
++    );
++    const attention = buildHermesTerminalAttestation(
++      {
++        workflowStep: {
++          ...baseStep,
++          id: "terminal.inspect_pr",
++          outcome: { type: "attention_required", summary: "inspect PR" },
++        },
++      } as TaskRouteDecision,
++      18,
++    );
++
++    expect(done).toMatchObject({
++      schema: "agentplane.hermes.terminal-attestation.v1",
++      hermes_root_complete_allowed: true,
++      terminal_outcome: "done",
++      precondition_fingerprint: "sha256:terminal-proof",
++      task_revision: 17,
++    });
++    expect(attention).toMatchObject({
++      hermes_root_complete_allowed: false,
++      terminal_outcome: "attention_required",
++      task_revision: 18,
++    });
++  });
++
+   it("returns the typed nonzero exit code when runner cleanup remains incomplete", async () => {
+     const executed = {
+       invocation: {
+@@ -527,7 +567,7 @@ describe("hermes adapter commands", () => {
+     expect(routeNeedsRunnerProjection(decision)).toBe(true);
+   });
+ 
+-  it("doctor reports the local Agentplane side of the adapter contract", async () => {
++  it("doctor fails closed when the native plugin contract is not proven", async () => {
+     const root = await mkGitRepoRoot();
+     await runCliSilent(["init", "--yes", "--root", root]);
+ 
+@@ -541,15 +581,80 @@ describe("hermes adapter commands", () => {
+         adapter_status: string;
+         missing_hermes_env: string[];
+       };
+-      expect(payload.ok).toBe(true);
++      expect(payload.ok).toBe(false);
+       expect(payload.repo).toBe(root);
+-      expect(payload.adapter_status).toContain("hermes_plugin_required");
++      expect(payload.adapter_status).toContain("not_ready");
+       expect(payload.missing_hermes_env).toContain("task_id");
+     } finally {
+       io.restore();
+     }
+   });
+ 
++  it("doctor accepts a complete protocol-v2 installation contract", async () => {
++    const root = await mkGitRepoRoot();
++    await runCliSilent(["init", "--workflow", "branch_pr", "--yes", "--root", root]);
++    const registryPath = path.join(root, "registry", "lane-registry.json");
++    const binPath = path.join(root, "bin", "hermes-agentplane-test-bin");
++    await mkdir(path.dirname(registryPath), { recursive: true });
++    await mkdir(path.dirname(binPath), { recursive: true });
++    await writeFile(
++      registryPath,
++      JSON.stringify({ lanes: [{ name: "agentplane-coder", kind: "agentplane" }] }),
++    );
++    await writeFile(binPath, "#!/bin/sh\nexit 0\n");
++    await chmod(binPath, 0o755);
++
++    const keys = [
++      "AGENTPLANE_HERMES_LANE_REGISTRY",
++      "AGENTPLANE_BIN",
++      "HERMES_BIN",
++      "AGENTPLANE_HERMES_PLUGIN_PROTOCOL",
++      "AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API",
++      "AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE",
++      "AGENTPLANE_HERMES_ALLOWED_ROOTS",
++    ] as const;
++    const previous = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
++    Object.assign(process.env, {
++      AGENTPLANE_HERMES_LANE_REGISTRY: registryPath,
++      AGENTPLANE_BIN: binPath,
++      HERMES_BIN: binPath,
++      AGENTPLANE_HERMES_PLUGIN_PROTOCOL: "agentplane.hermes.plugin.v2",
++      AGENTPLANE_HERMES_NATIVE_WORKER_LANE_API: "1",
++      AGENTPLANE_HERMES_APPROVAL_RECEIPT_BRIDGE: "1",
++      AGENTPLANE_HERMES_ALLOWED_ROOTS: root,
++    });
++    const io = captureStdIO();
++    try {
++      const code = await runCli(["hermes", "doctor", "--json", "--root", root]);
++      expect(code).toBe(0);
++      const payload = JSON.parse(io.stdout) as {
++        ok: boolean;
++        installation_ready: boolean;
++        worker_context_ready: boolean;
++        plugin_contract: {
++          protocol_valid: boolean;
++          approval_receipt_bridge: boolean;
++          allowed_roots_fail_closed: boolean;
++        };
++      };
++      expect(payload.ok).toBe(true);
++      expect(payload.installation_ready).toBe(true);
++      expect(payload.worker_context_ready).toBe(false);
++      expect(payload.plugin_contract).toMatchObject({
++        protocol_valid: true,
++        approval_receipt_bridge: true,
++        allowed_roots_fail_closed: true,
++      });
++    } finally {
++      io.restore();
++      for (const key of keys) {
++        const value = previous[key];
++        if (value === undefined) delete process.env[key];
++        else process.env[key] = value;
++      }
++    }
++  });
++
+   it("doctor reports the Agentplane Hermes lane registry state when configured", async () => {
+     const root = await mkGitRepoRoot();
+     await runCliSilent(["init", "--yes", "--root", root]);
+diff --git a/packages/agentplane/src/commands/hermes/hermes.command.ts b/packages/agentplane/src/commands/hermes/hermes.command.ts
+index 9b7eb3c37..26884fcd2 100644
+--- a/packages/agentplane/src/commands/hermes/hermes.command.ts
++++ b/packages/agentplane/src/commands/hermes/hermes.command.ts
+@@ -18,6 +18,8 @@ import {
+   HERMES_LIFECYCLE_ACTIONS,
+   hermesCliCommand,
+   hermesEnvSnapshot,
++  hermesPluginContractSnapshot,
++  inspectCommandAvailability,
+   loadHermesStateSnapshot,
+   loadLaneRegistry,
+   prepareHermesRoute,
+@@ -309,6 +311,17 @@ async function runHermesLifecycleCommand(
+       message: `--body is required for Hermes lifecycle action: ${action}`,
+     });
+   }
++  if (
++    !parsed.dryRun &&
++    (!env.task_id || !env.run_id || !env.claim_lock_present || !env.workspace)
++  ) {
++    throw new CliError({
++      code: "E_USAGE",
++      message:
++        "Hermes lifecycle mutation requires the current native worker claim " +
++        "(HERMES_KANBAN_TASK, HERMES_KANBAN_RUN_ID, HERMES_KANBAN_CLAIM_LOCK, and HERMES_KANBAN_WORKSPACE).",
++    });
++  }
+   const result = await runHermesLifecycle(action, {
+     board: env.board,
+     taskId: env.task_id,
+@@ -354,8 +367,30 @@ export function makeRunHermesDoctorHandler(deps: {
+         ? rawAgentplaneBin
+         : currentAgentplaneCommand().command;
+     const hermesBin = hermesCliCommand();
++    const [agentplaneAvailability, hermesAvailability] = await Promise.all([
++      inspectCommandAvailability(agentplaneBin),
++      inspectCommandAvailability(hermesBin),
++    ]);
++    const plugin = hermesPluginContractSnapshot();
++    const installationChecks = {
++      branch_pr_workflow: loadedConfig.config.workflow_mode === "branch_pr",
++      lane_registry_loaded: registry.loaded && registry.error === null,
++      agentplane_lane_registered: registry.agentplane_lanes.length > 0,
++      agentplane_binary_available: agentplaneAvailability.available,
++      hermes_binary_available: hermesAvailability.available,
++      plugin_protocol_v2: plugin.protocol_valid,
++      native_worker_lane_api: plugin.native_worker_lane_api,
++      approval_receipt_bridge: plugin.approval_receipt_bridge,
++      allowed_roots_fail_closed: plugin.allowed_roots_fail_closed,
++    };
++    const installationReady = Object.values(installationChecks).every(Boolean);
++    const workerContextReady =
++      installationReady &&
++      Boolean(env.task_id && env.board && env.run_id && env.workspace && env.claim_lock_present);
+     const payload = {
+-      ok: registry.error === null,
++      ok: installationReady,
++      installation_ready: installationReady,
++      worker_context_ready: workerContextReady,
+       repo: project.gitRoot,
+       workflow_mode: loadedConfig.config.workflow_mode,
+       recommended_workflow_for_multi_agent: "branch_pr",
+@@ -365,17 +400,25 @@ export function makeRunHermesDoctorHandler(deps: {
+         .filter(([key, value]) => key !== "claim_lock_present" && value === null)
+         .map(([key]) => key),
+       lane_registry: registry,
++      plugin_contract: plugin,
++      checks: installationChecks,
+       binaries: {
+         agentplane: agentplaneBin,
+         agentplane_configured: Boolean(process.env.AGENTPLANE_BIN?.trim()),
++        agentplane_available: agentplaneAvailability.available,
++        agentplane_resolved_path: agentplaneAvailability.resolved_path,
+         hermes: hermesBin,
+         hermes_configured: Boolean(process.env.HERMES_BIN?.trim()),
++        hermes_available: hermesAvailability.available,
++        hermes_resolved_path: hermesAvailability.resolved_path,
+       },
+       lifecycle_client: {
+         command: hermesBin,
+         actions: [...HERMES_LIFECYCLE_ACTIONS],
+       },
+-      adapter_status: "agentplane_side_ready; hermes_plugin_required_for_live_board_mutation",
++      adapter_status: installationReady
++        ? "ready_for_agentplane_work_orders"
++        : "not_ready; inspect checks and plugin_contract",
+     };
+     if (parsed.json) {
+       output.json(payload);
+@@ -384,6 +427,8 @@ export function makeRunHermesDoctorHandler(deps: {
+         { label: "repo", value: payload.repo },
+         { label: "workflow_mode", value: payload.workflow_mode },
+         { label: "branch_pr_ready", value: payload.branch_pr_ready },
++        { label: "installation_ready", value: payload.installation_ready },
++        { label: "worker_context_ready", value: payload.worker_context_ready },
+         { label: "adapter_status", value: payload.adapter_status },
+       ]);
+     }

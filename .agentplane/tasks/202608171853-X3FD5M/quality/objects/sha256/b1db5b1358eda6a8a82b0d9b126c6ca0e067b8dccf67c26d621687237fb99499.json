@@ -1,0 +1,236 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run typecheck",
+    "bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "release_metadata",
+        "repository_write",
+        "security_boundary",
+        "source_code"
+      ],
+      "external_effects": [
+        "network_read",
+        "publish"
+      ],
+      "components": [],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "recovery_required"
+      },
+      "evidence_requirements": [
+        "external_effect:network_read",
+        "external_effect:publish",
+        "hosted_integration",
+        "repository_effect:release_metadata",
+        "repository_effect:repository_write",
+        "repository_effect:security_boundary",
+        "repository_effect:source_code",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane",
+        "packages/core"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/commands/pr/branch-publication.ts",
+        "packages/agentplane/src/commands/pr/integrate/internal/github-protection.ts",
+        "packages/agentplane/src/commands/shared/declared-check.ts",
+        "packages/agentplane/src/commands/shared/side-effect-authority.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+        "packages/agentplane/src/commands/task/agent-action-packet.ts",
+        "packages/agentplane/src/commands/task/authority-grant.command.ts",
+        "packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts",
+        "packages/agentplane/src/commands/task/plan-approve.command.ts",
+        "packages/agentplane/src/commands/task/plan.ts",
+        "packages/agentplane/src/commands/task/user-approval-receipt.ts",
+        "packages/core/src/config/schema.impl.ts",
+        "packages/core/src/runner/supervisor-execution-episode.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_path:packages/agentplane/src/commands/shared/declared-check.ts",
+      "central_path:packages/agentplane/src/commands/shared/side-effect-authority.ts",
+      "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+      "central_path:packages/core/src/config/schema.impl.ts",
+      "central_path:packages/core/src/runner/supervisor-execution-episode.ts",
+      "effect_release_metadata",
+      "effect_security_boundary",
+      "external_effect_requires_real_e2e",
+      "reversibility_recovery_required"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": true,
+    "digest": "sha256:155af110965bcd7b88ea1c77612dbf81a2c13a6bd73433fe592f437fd22b5aad"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-17T19:25:21.439Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608171853-X3FD5M/verification/20260817192521439-574a498d0fc0d048.json",
+      "sha256": "sha256:bf01c30feb3105fac8bbd7b508c118bdbd264212eae4872fd1c1d571e3f24688"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 7a157ccbd52f75de896a4c1d7a7870b66df04f4c..590e2564fe9a80830c8e676cd907891c9e31eb03",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 7a157ccbd52f75de896a4c1d7a7870b66df04f4c..590e2564fe9a80830c8e676cd907891c9e31eb03",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608171853-X3FD5M/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608171853-X3FD5M/pr/github-body.md",
+          "M\t.agentplane/tasks/202608171853-X3FD5M/pr/meta.json",
+          "M\t.agentplane/tasks/202608171853-X3FD5M/pr/review.md",
+          "A\t.agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json",
+          "A\t.agentplane/tasks/202608171853-X3FD5M/supervision/implementation-evidence.json",
+          "M\tpackages/agentplane/src/commands/pr/branch-publication.ts",
+          "M\tpackages/agentplane/src/commands/shared/declared-check.ts",
+          "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+          "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-episode.ts",
+          "M\tpackages/core/src/runner/supervisor-execution-episode.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "7a157ccbd52f75de896a4c1d7a7870b66df04f4c",
+    "implementation_commit": "590e2564fe9a80830c8e676cd907891c9e31eb03",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M .agentplane/tasks/202608171853-X3FD5M/pr/meta.json",
+        " M packages/agentplane/src/commands/pr/branch-publication.ts",
+        " M packages/agentplane/src/commands/shared/declared-check.ts",
+        " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+        " M packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts",
+        " M packages/core/src/runner/supervisor-execution-episode.ts",
+        "?? .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json",
+        "?? .agentplane/tasks/202608171853-X3FD5M/supervision/implementation-evidence.json"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608171853-X3FD5M/pr/meta.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/branch-publication.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/shared/declared-check.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/core/src/runner/supervisor-execution-episode.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608171853-X3FD5M/supervision/implementation-evidence.json"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M .agentplane/tasks/202608171853-X3FD5M/pr/meta.json",
+        " M packages/agentplane/src/commands/pr/branch-publication.ts",
+        " M packages/agentplane/src/commands/shared/declared-check.ts",
+        " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+        " M packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts",
+        " M packages/core/src/runner/supervisor-execution-episode.ts",
+        "?? .agentplane/tasks/202608171853-X3FD5M/supervision/declared-checks.json",
+        "?? .agentplane/tasks/202608171853-X3FD5M/supervision/implementation-evidence.json"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608171853-X3FD5M",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608171853-X3FD5M/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

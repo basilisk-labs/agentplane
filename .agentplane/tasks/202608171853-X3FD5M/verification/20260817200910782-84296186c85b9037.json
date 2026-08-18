@@ -1,0 +1,83 @@
+{
+  "details": null,
+  "digest": "sha256:84296186c85b9037033f66abf6e9be6e3d2ce0bc34d4738cc7c5c04a379f2085",
+  "implementation_sha": "03b46b67e67b48caa0d1409d9afb18cd29c08f98",
+  "input": {
+    "context": {
+      "digest": "sha256:1d83a78bd7a4d8dc4a0d56864ee5466514423b918b1d18c2714297b8216376d9",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:e4deb3642a31f2ed24afa16c8ac7c7f4f8d46de202517bc2d5a5103d4a31794b",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "e22f17ffad89f8fe9c3e41abc9c483c2c5fc2c78",
+      "digest": "sha256:61c08321ad74c9a611377911a140fe788e48cdb3e5aae8031553e07dc68f7109",
+      "strategy": "branch_diff",
+      "target_sha": "03b46b67e67b48caa0d1409d9afb18cd29c08f98"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:a154edb26036c6a10471dab336cbfdcacc2845492a89babea795475b023d339f",
+    "verify_steps_digest": "sha256:d3ea9d1b0233fc005c39c29e6fb1eb6ed23070236ccc66392cc78b2f652d61bc"
+  },
+  "kind": "task_verification_record",
+  "note": "Hosted Core CI Compatibility baseline failed because the reviewed v0.7 compatibility candidate and ratchet did not include the signed approval-receipt CLI/schema delta; preserve the three scoped repair files and re-run verification.",
+  "recorded_at": "2026-08-17T20:09:10.782Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Harden autonomous authority recovery and Hermes dialog approvals\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Harden autonomous authority recovery and Hermes dialog approvals\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:d3ea9d1b0233fc005c39c29e6fb1eb6ed23070236ccc66392cc78b2f652d61bc",
+  "task_id": "202608171853-X3FD5M",
+  "verification_command": "agentplane task verify rework 202608171853-X3FD5M --rework --by USER",
+  "verifier": "USER"
+}

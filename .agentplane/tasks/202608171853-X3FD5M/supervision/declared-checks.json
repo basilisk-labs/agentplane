@@ -1,0 +1,33 @@
+{
+  "checks": [
+    {
+      "command": "bun run typecheck",
+      "duration_ms": 93,
+      "exit_code": 0,
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "command": "bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts",
+      "duration_ms": 20455,
+      "exit_code": 0,
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608171853-X3FD5M-harden-autonomous-authority-recovery-and-hermes\n\n\n Test Files  4 passed (4)\n      Tests  47 passed (47)\n   Start at  00:26:26\n   Duration  20.23s (transform 3.18s, setup 0ms, import 3.29s, tests 29.37s, environment 0ms)\n\n"
+    },
+    {
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "duration_ms": 41,
+      "exit_code": 0,
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "policy routing OK\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202608171853-X3FD5M"
+}

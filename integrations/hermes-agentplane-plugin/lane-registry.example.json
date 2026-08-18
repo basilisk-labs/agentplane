@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "lanes": [
+    {
+      "name": "agentplane-coder",
+      "match": "agentplane-*",
+      "kind": "agentplane",
+      "spawn": [
+        "hermes",
+        "agentplane",
+        "supervise",
+        "--task-id",
+        "{agentplane_task_id}",
+        "--root",
+        "{workspace_root}"
+      ]
+    }
+  ]
+}

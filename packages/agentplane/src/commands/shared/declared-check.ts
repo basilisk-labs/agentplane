@@ -323,6 +323,12 @@ export function resolveDeclaredTaskCheck(command: string): DeclaredTaskCheckReso
       check: { executable: process.execPath, args: [AGENTPLANE_BIN, "doctor"], script: null },
     };
   }
+  if (base === "bunx") {
+    return {
+      ok: true,
+      check: { executable: "bun", args: ["x", ...invocation.args], script: null },
+    };
+  }
   return {
     ok: true,
     check: {

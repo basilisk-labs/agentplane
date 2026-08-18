@@ -50,6 +50,57 @@ describe("task authority grant", () => {
     });
   });
 
+  it("accepts a signed receipt in place of a direct actor", () => {
+    expect(
+      parseCommandArgv(taskAuthorityGrantSpec, [
+        "T-1",
+        "--operation",
+        "pr.open",
+        "--operation-digest",
+        "sha256:operation",
+        "--state-fingerprint",
+        "sha256:fingerprint",
+        "--state-scope-digest",
+        "sha256:scope",
+        "--approval-receipt",
+        "signed-receipt",
+      ]),
+    ).toMatchObject({
+      parsed: {
+        taskId: "T-1",
+        approvalReceipt: "signed-receipt",
+        by: undefined,
+      },
+    });
+  });
+
+  it("requires exactly one user-evidence channel", () => {
+    const base = [
+      "T-1",
+      "--operation",
+      "pr.open",
+      "--operation-digest",
+      "sha256:operation",
+      "--state-fingerprint",
+      "sha256:fingerprint",
+      "--state-scope-digest",
+      "sha256:scope",
+    ];
+
+    expect(() => parseCommandArgv(taskAuthorityGrantSpec, base)).toThrow(
+      "exactly one of --by or --approval-receipt",
+    );
+    expect(() =>
+      parseCommandArgv(taskAuthorityGrantSpec, [
+        ...base,
+        "--by",
+        "USER",
+        "--approval-receipt",
+        "signed-receipt",
+      ]),
+    ).toThrow("exactly one of --by or --approval-receipt");
+  });
+
   it.each([
     { remote: false, selected: "local" },
     { remote: true, selected: "remote" },
