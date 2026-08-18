@@ -15,12 +15,12 @@ Unify public positioning across README, docs, website, SEO, demos, comparisons, 
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-All declared checks and focused evaluator regressions pass on implementation commit 17b41294f;
-current evaluator evidence no longer serializes binary payload bodies.
+Address unresolved PR review threads: remove stale launch-domain index link and detect literal
+semantic versions in site-content checks.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -41,6 +41,7 @@ current evaluator evidence no longer serializes binary payload bodies.
  .../wiki/release-docs/concepts/configuration.md    | Bin 6133 -> 6086 bytes
  context/wiki/release-docs/concepts/recipes.md      | Bin 5936 -> 5889 bytes
  context/wiki/release-docs/docs-domains.md          | Bin 4716 -> 4636 bytes
+ context/wiki/release-docs/domains/index.md         | Bin 1359 -> 1316 bytes
  context/wiki/release-docs/domains/launch.md        | Bin 1146 -> 0 bytes
  docs/assets/agentplane-demo.gif                    | Bin 3834539 -> 2682529 bytes
  docs/assets/agentplane-demo.tape                   |   6 +-
@@ -58,7 +59,7 @@ current evaluator evidence no longer serializes binary payload bodies.
  .../commands/evaluator/evaluator-diff-evidence.ts  |   4 +-
  .../evaluator/evaluator-run.command.test.ts        |   3 +-
  website/docusaurus.config.ts                       |  10 +-
- website/scripts/check-site-content.mjs             |   8 +-
+ website/scripts/check-site-content.mjs             |  12 +-
  website/src/data/homepage-content.ts               | 107 +++++++++---------
  website/src/pages/_home.module.css                 |   2 +-
  website/src/pages/index.tsx                        |  49 ++++----
@@ -69,7 +70,7 @@ current evaluator evidence no longer serializes binary payload bodies.
  website/static/img/social/manifest.json            |  32 ------
  website/static/llms-full.txt                       | 125 ++++++++++++---------
  website/static/llms.txt                            |   5 +-
- 37 files changed, 303 insertions(+), 284 deletions(-)
+ 38 files changed, 308 insertions(+), 283 deletions(-)
 ```
 
 </details>

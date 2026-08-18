@@ -2,23 +2,16 @@
   "base": "main",
   "branch": "task/202608181819-Z3GWTA/reposition-agentplane-as-the-git-native-control",
   "created_at": "2026-08-18T18:57:10.614Z",
-  "diffstat_sha256": "sha256:b8b20228c79377f155ff6e8c14c7537537fd0f0c4643acec6b96ef5486fdf458",
-  "last_verified_at": "2026-08-18T20:15:32.985Z",
+  "diffstat_sha256": "sha256:62ca3908ed72c7741862a2b9ba65dd075be7b1210f972d3f7c76ede646b1c512",
+  "last_verified_at": "2026-08-18T20:37:47.036Z",
   "last_verified_diffstat_sha256": "sha256:b8b20228c79377f155ff6e8c14c7537537fd0f0c4643acec6b96ef5486fdf458",
   "pr_number": 4845,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4845",
-  "pre_merge_closure": {
-    "basis_commit": "e4118ebb2d9fface21da676a09e888db4edaafef",
-    "branch": "task/202608181819-Z3GWTA/reposition-agentplane-as-the-git-native-control",
-    "pr_number": 4845,
-    "recorded_at": "2026-08-18T20:18:56.703Z",
-    "state": "closed_before_merge"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608181819-Z3GWTA",
   "updated_at": "2026-08-18T19:20:11.872Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }

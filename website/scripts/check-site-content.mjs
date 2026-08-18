@@ -61,11 +61,17 @@ function checkBrandCasing() {
 
 function checkNoHardcodedProofMetrics() {
   const content = read("src/data/homepage-content.ts");
-  if (/\b\d+ stars\b|\b\d+ releases\b|latestRelease|latestReleaseDate/.test(content)) {
+  if (containsHardcodedProofMetric(content)) {
     errors.push(
       "homepage must not contain hard-coded GitHub stars, release counts, versions, or release dates",
     );
   }
+}
+
+export function containsHardcodedProofMetric(content) {
+  return /\b\d+ stars\b|\b\d+ releases\b|\bv?\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?\b|latestRelease|latestReleaseDate/.test(
+    content,
+  );
 }
 
 checkBlogDates();

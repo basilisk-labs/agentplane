@@ -2,10 +2,10 @@
 id: "202608181819-Z3GWTA"
 title: "Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -30,11 +30,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-18T20:15:32.985Z"
-  updated_by: "TESTER"
-  note: "All declared checks and focused evaluator regressions pass on implementation commit 17b41294f; current evaluator evidence no longer serializes binary payload bodies."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-18T20:37:47.036Z"
+  updated_by: "USER"
+  note: "Address unresolved PR review threads: remove stale launch-domain index link and detect literal semantic versions in site-content checks."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -127,6 +127,7 @@ execution_contract:
     authority_violations:
       - "repository_effect:documentation"
       - "repository_effect:tests"
+      - "verification:verification-record:fail"
     changed_components:
       - ".agentplane"
       - ".gitattributes"
@@ -199,6 +200,9 @@ execution_contract:
       -
         id: "recorded-check-6"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "effect_external_write"
     - "repository_branch_pr_floor"
@@ -336,9 +340,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "e4118ebb2d9fface21da676a09e888db4edaafef"
-  message: "✅ Z3GWTA task: record sanitized quality evidence"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -442,8 +445,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "e4118ebb2d9fface21da676a09e888db4edaafef"
+  -
+    type: "verify"
+    at: "2026-08-18T20:37:47.036Z"
+    author: "USER"
+    state: "needs_rework"
+    note: "Address unresolved PR review threads: remove stale launch-domain index link and detect literal semantic versions in site-content checks."
 doc_version: 3
-doc_updated_at: "2026-08-18T20:18:56.570Z"
+doc_updated_at: "2026-08-18T20:38:01.335Z"
 doc_updated_by: "CODER"
 description: "Unify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth."
 sections:
@@ -919,6 +928,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608181819-Z3GWTA
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-18T20:37:47.036Z — VERIFY — needs_rework
+
+    By: USER
+
+    Note: Address unresolved PR review threads: remove stale launch-domain index link and detect literal semantic versions in site-content checks.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0, input_digest=sha256:51cb0536d7c758829557f1af803422c8ec73bfd9d7a91d1aaf917b4a7980db45
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608181819-Z3GWTA-reposition-agentplane-as-the-git-native-control/.agentplane/tasks/202608181819-Z3GWTA/blueprint/resolved-snapshot.json
+    - old_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+    - current_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181819-Z3GWTA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1421,6 +1460,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608181819-Z3GWTA
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-18T20:37:47.036Z — VERIFY — needs_rework
+
+By: USER
+
+Note: Address unresolved PR review threads: remove stale launch-domain index link and detect literal semantic versions in site-content checks.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0, input_digest=sha256:51cb0536d7c758829557f1af803422c8ec73bfd9d7a91d1aaf917b4a7980db45
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608181819-Z3GWTA-reposition-agentplane-as-the-git-native-control/.agentplane/tasks/202608181819-Z3GWTA/blueprint/resolved-snapshot.json
+- old_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+- current_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181819-Z3GWTA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
