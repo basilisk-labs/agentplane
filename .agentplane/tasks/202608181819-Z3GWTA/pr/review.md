@@ -6,14 +6,14 @@ Created: 2026-08-18T18:57:10.614Z
 
 - Task: `202608181819-Z3GWTA`
 - Title: Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the...
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608181819-Z3GWTA/reposition-agentplane-as-the-git-native-control`
 - Canonical task record: `.agentplane/tasks/202608181819-Z3GWTA/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Address unresolved PR review threads: remove stale launch-domain index link and detect literal semantic versions in site-content checks.
+- State: ok
+- Note: PR review rework is complete: stale launch index link removed and literal semantic versions are rejected by the homepage content guard.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

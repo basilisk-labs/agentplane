@@ -2,10 +2,10 @@
 id: "202608181819-Z3GWTA"
 title: "Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -30,42 +30,43 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-18T20:37:47.036Z"
-  updated_by: "USER"
-  note: "Address unresolved PR review threads: remove stale launch-domain index link and detect literal semantic versions in site-content checks."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-18T20:42:06.126Z"
+  updated_by: "REVIEWER"
+  note: "PR review rework is complete: stale launch index link removed and literal semantic versions are rejected by the homepage content guard."
+  attempts: 0
 quality_review:
   state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-18T20:16:08.072Z"
-  updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 3 typed finding(s)."
-  evaluated_sha: "17b41294f7e560750288c4483ab7f24cfbbfd6b7"
+  provenance: "human_supplied"
+  updated_at: "2026-08-18T20:43:03.740Z"
+  updated_by: "HUMAN"
+  note: "The review rework is correctly scoped and closes both unresolved findings without weakening the positioning or privacy boundary."
+  evaluated_sha: "531c1eb8e4c8354d1011b7b4201e522bbb98b36c"
   blueprint_digest: "55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae"
   evidence_refs:
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-201604971-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-201604971-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/d2ac35e9f6ed91b8cc7baed2af3bf22c470ed2654941d2e5be0f5deb390fcc22.md"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-201604971-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-201604971-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-201604971-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-204301682-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-204301682-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/52b791e4e16e2d70dad33c41dbc10d67b2602812393ba0955cb39032540a1798.md"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-204301682-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-204301682-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181819-Z3GWTA/README.md"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/2abd9847acb9cec18287c4ef70478d2c601d7a0a225abf7c358c400393f3f0ea.patch"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/c7c2ddd3deed447bf1a42d82d9e8cd82254bf7d3403a221c685f61639e0cd9de.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/4186dc54652bc39f2dbd6984e964f48736ee816ae2471277366aed7c4451e2a7.patch"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/92cba3471f4e56e30494728fa21bb91febcd7bf168c6bacb3053f65d302c4630.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/verification/20260818204206126-3cfc6d88d6ddb8a9.json"
     - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/eafed46fee43d017a057933d11cf3e53dcf84df66a33c23ba4fe0d8f0ecf80a8.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.direct.md"
+    - "bun run docs:site:check && bun run lint:website (exit 0)"
+    - "direct predicate assertions for v0.7.6, 0.7.6, v1.2.3-rc.1+build.5, and 2026-08-18"
   findings:
-    - "Public README, docs, website, SEO, comparison, demo, and discovery surfaces consistently lead with Git-native control plane for coding agents and authority/proof in Git."
-    - "Internal Launch Kit and post drafts live in the private marketing repository; public source and derived launch context are removed, and scoped attributes prevent textual deletion diffs."
-    - "Evaluator actual-diff evidence now omits --binary, retaining changed-path and binary-difference visibility without serializing reversible file bodies; focused regression, typecheck, formatting, bootstrap, and declared content checks pass."
+    - "The generated documentation-domain index no longer points to the deleted launch.md page; the docs IA check confirms current references are aligned."
+    - "The homepage guard now rejects literal stable, prerelease, and build-metadata semantic versions while preserving dates and ordinary positioning copy."
 token_usage:
   agent_runs: 3
   input_tokens: null
-  journal_digest: "sha256:1b65b1059cfde6fcb777ac2c0f34f91f998b937df42322a3e02c77f35f37a6e5"
+  journal_digest: "sha256:d6dff919df7fa83ae189da687cd94bf7654cdeff45c466725c5b9f0a7a67091f"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -75,7 +76,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-18T20:18:56.534Z"
+  updated_at: "2026-08-18T20:43:44.308Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -147,6 +148,7 @@ execution_contract:
       - "context/wiki/release-docs/concepts/configuration.md"
       - "context/wiki/release-docs/concepts/recipes.md"
       - "context/wiki/release-docs/docs-domains.md"
+      - "context/wiki/release-docs/domains/index.md"
       - "context/wiki/release-docs/domains/launch.md"
       - "docs/assets/agentplane-demo.gif"
       - "docs/assets/agentplane-demo.tape"
@@ -237,7 +239,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:922606de82cdada8b1098ffdf8b67d7b3bc132fead9dc42ed406ee6e2e053fdc"
+      digest: "sha256:083d171b3e39fb3c0b074907a74886d1ab153bb031e79029484aeed935648f31"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -271,6 +273,7 @@ execution_contract:
           - "context/wiki/release-docs/concepts/configuration.md"
           - "context/wiki/release-docs/concepts/recipes.md"
           - "context/wiki/release-docs/docs-domains.md"
+          - "context/wiki/release-docs/domains/index.md"
           - "context/wiki/release-docs/domains/launch.md"
           - "docs/assets/agentplane-demo.gif"
           - "docs/assets/agentplane-demo.tape"
@@ -341,7 +344,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "531c1eb8e4c8354d1011b7b4201e522bbb98b36c"
+  message: "🐛 Z3GWTA task: address PR review findings"
 comments:
   -
     author: "CODER"
@@ -355,6 +360,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: cbd9d5b3c234. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -451,8 +459,22 @@ events:
     author: "USER"
     state: "needs_rework"
     note: "Address unresolved PR review threads: remove stale launch-domain index link and detect literal semantic versions in site-content checks."
+  -
+    type: "verify"
+    at: "2026-08-18T20:42:06.126Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "PR review rework is complete: stale launch index link removed and literal semantic versions are rejected by the homepage content guard."
+  -
+    type: "status"
+    at: "2026-08-18T20:43:44.308Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "531c1eb8e4c8354d1011b7b4201e522bbb98b36c"
 doc_version: 3
-doc_updated_at: "2026-08-18T20:38:01.335Z"
+doc_updated_at: "2026-08-18T20:43:44.369Z"
 doc_updated_by: "CODER"
 description: "Unify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth."
 sections:
@@ -944,6 +966,54 @@ sections:
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0, input_digest=sha256:51cb0536d7c758829557f1af803422c8ec73bfd9d7a91d1aaf917b4a7980db45
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608181819-Z3GWTA-reposition-agentplane-as-the-git-native-control/.agentplane/tasks/202608181819-Z3GWTA/blueprint/resolved-snapshot.json
+    - old_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+    - current_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181819-Z3GWTA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-18T20:42:06.126Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: PR review rework is complete: stale launch index link removed and literal semantic versions are rejected by the homepage content guard.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0, input_digest=sha256:7fcc42eb5965361252a4b039dbc565f4fa2300a84f17315bd6c50e3b7e3a63ac
+
+    Details:
+
+    Check: requested_outcome
+    Command: git show --stat --oneline 18ec7968a
+    Result: pass
+    Evidence: commit changes only the stale generated-domain link and the hard-coded proof-metric detector
+    Scope: approved PR review rework
+
+    Check: relevant_validation
+    Command: bun run docs:site:check && bun run lint:website
+    Result: pass
+    Evidence: docs IA, generated site content, typecheck, production build, design-language check, and website lint exited 0
+    Scope: website and documentation surfaces
+
+    Check: semantic_version_regression
+    Command: node --input-type=module assertion against containsHardcodedProofMetric
+    Result: pass
+    Evidence: v0.7.6, 0.7.6, and prerelease/build versions are detected; 2026-08-18 is not
+    Scope: website content rule
 
     BlueprintSnapshotRef:
     - state: current
@@ -1496,6 +1566,54 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-18T20:42:06.126Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: PR review rework is complete: stale launch index link removed and literal semantic versions are rejected by the homepage content guard.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0, input_digest=sha256:7fcc42eb5965361252a4b039dbc565f4fa2300a84f17315bd6c50e3b7e3a63ac
+
+Details:
+
+Check: requested_outcome
+Command: git show --stat --oneline 18ec7968a
+Result: pass
+Evidence: commit changes only the stale generated-domain link and the hard-coded proof-metric detector
+Scope: approved PR review rework
+
+Check: relevant_validation
+Command: bun run docs:site:check && bun run lint:website
+Result: pass
+Evidence: docs IA, generated site content, typecheck, production build, design-language check, and website lint exited 0
+Scope: website and documentation surfaces
+
+Check: semantic_version_regression
+Command: node --input-type=module assertion against containsHardcodedProofMetric
+Result: pass
+Evidence: v0.7.6, 0.7.6, and prerelease/build versions are detected; 2026-08-18 is not
+Scope: website content rule
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608181819-Z3GWTA-reposition-agentplane-as-the-git-native-control/.agentplane/tasks/202608181819-Z3GWTA/blueprint/resolved-snapshot.json
+- old_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+- current_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181819-Z3GWTA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1516,6 +1634,6 @@ Observation: the approved branch_pr worktree cannot start because local main is 
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:1b65b1059cfde6fcb777ac2c0f34f91f998b937df42322a3e02c77f35f37a6e5`
+- Journal digest: `sha256:d6dff919df7fa83ae189da687cd94bf7654cdeff45c466725c5b9f0a7a67091f`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-18T20:18:56.534Z`
+- Updated at: `2026-08-18T20:43:44.308Z`

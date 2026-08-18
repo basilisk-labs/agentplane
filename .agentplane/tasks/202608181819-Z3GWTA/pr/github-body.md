@@ -15,12 +15,12 @@ Unify public positioning across README, docs, website, SEO, demos, comparisons, 
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Address unresolved PR review threads: remove stale launch-domain index link and detect literal
-semantic versions in site-content checks.
+PR review rework is complete: stale launch index link removed and literal semantic versions are
+rejected by the homepage content guard.
 ```
 - Canonical workflow state lives in the task README.
 

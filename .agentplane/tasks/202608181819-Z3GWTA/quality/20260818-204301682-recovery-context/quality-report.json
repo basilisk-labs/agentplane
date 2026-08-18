@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608181819-Z3GWTA",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-18T20:43:03.740Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The review rework is correctly scoped and closes both unresolved findings without weakening the positioning or privacy boundary.",
+  "evaluated_sha": "531c1eb8e4c8354d1011b7b4201e522bbb98b36c",
+  "blueprint_digest": "55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae",
+  "findings": [
+    "The generated documentation-domain index no longer points to the deleted launch.md page; the docs IA check confirms current references are aligned.",
+    "The homepage guard now rejects literal stable, prerelease, and build-metadata semantic versions while preserving dates and ordinary positioning copy."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/4186dc54652bc39f2dbd6984e964f48736ee816ae2471277366aed7c4451e2a7.patch",
+    "bun run docs:site:check && bun run lint:website (exit 0)",
+    "direct predicate assertions for v0.7.6, 0.7.6, v1.2.3-rc.1+build.5, and 2026-08-18"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Previously published internal launch material remains recoverable from historical Git commits; removing it from history would require a separately approved coordinated history rewrite."
+  ]
+}
