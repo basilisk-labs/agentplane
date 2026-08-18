@@ -39,6 +39,7 @@ type AgentPacket = {
     result_path: string;
   };
   stop: { reason: string; resume: string };
+  operator_action?: { argv: string[] };
 };
 
 async function createTask(root: string, title: string): Promise<string> {
@@ -83,7 +84,11 @@ async function readAgentPacket(root: string, taskId: string): Promise<AgentPacke
   }
 }
 
-async function writeBlockedResult(packet: AgentPacket, summary: string): Promise<string> {
+async function writeBlockedResult(
+  packet: AgentPacket,
+  summary: string,
+  scopeExtension?: { scopeRoots: string[]; repositoryEffects: string[] },
+): Promise<string> {
   if (!packet.exchange) throw new Error("expected an external-agent exchange");
   const workOrder = JSON.parse(
     await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
@@ -110,6 +115,16 @@ async function writeBlockedResult(packet: AgentPacket, summary: string): Promise
           blocker: {
             summary,
             recommended_action: "Resolve the recorded authority boundary, then resume the task.",
+            ...(scopeExtension
+              ? {
+                  scope_extension_request: {
+                    schema_version: 1,
+                    scope_roots: scopeExtension.scopeRoots,
+                    repository_effects: scopeExtension.repositoryEffects,
+                    rationale: "The required generated artifact is outside the issued scope.",
+                  },
+                }
+              : {}),
           },
         },
       },
@@ -174,6 +189,7 @@ async function prepareBlockedResultTask(opts: {
   title: string;
   plan: string;
   slug: string;
+  authorityAll?: boolean;
 }): Promise<{ taskId: string; taskWorktree: string }> {
   const root = await mkGitRepoRootWithBranch("main");
   await cp(
@@ -183,6 +199,7 @@ async function prepareBlockedResultTask(opts: {
   );
   const config = defaultConfig();
   config.workflow_mode = "branch_pr";
+  if (opts.authorityAll) config.authority.mode = "all";
   await writeConfig(root, config);
   await runCliSilent(["branch", "base", "set", "main", "--root", root]);
   const taskId = await createTask(root, opts.title);
@@ -210,6 +227,65 @@ async function prepareBlockedResultTask(opts: {
 }
 
 describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
+  it("projects explicit USER approval and issues a fresh executor with the exact requested scope", async () => {
+    const { taskId, taskWorktree } = await prepareBlockedResultTask({
+      title: "Structured blocked scope extension",
+      plan: "Request and approve one exact repository scope extension before resuming implementation.",
+      slug: "blocked-scope-extension",
+      authorityAll: true,
+    });
+    const issued = await readAgentPacket(taskWorktree, taskId);
+    const resultPath = await writeBlockedResult(
+      issued,
+      "The release image generator needs one additional writable root.",
+      { scopeRoots: ["website/static/img/social"], repositoryEffects: ["documentation"] },
+    );
+
+    const returned = await returnAgentResult(taskWorktree, taskId, resultPath);
+    expect(returned.code, returned.stderr).toBe(0);
+    const approval = JSON.parse(returned.stdout) as AgentPacket;
+    expect(approval.action.kind, returned.stdout).toBe("approval_required");
+    expect(approval.operator_action?.argv).toEqual(
+      expect.arrayContaining([
+        "task",
+        "authority",
+        "grant",
+        taskId,
+        "--operation",
+        "task.scope.extend",
+      ]),
+    );
+
+    const authorityArgv = [...(approval.operator_action?.argv.slice(1) ?? [])];
+    const receiptIndex = authorityArgv.indexOf("--approval-receipt");
+    if (receiptIndex !== -1) authorityArgv.splice(receiptIndex, 2);
+    await runCliSilent([...authorityArgv, "--by", "USER", "--root", taskWorktree]);
+
+    const resumed = await readAgentPacket(taskWorktree, taskId);
+    expect(resumed.action.kind, JSON.stringify(resumed, null, 2)).toBe("agent_episode");
+    expect(resumed.exchange?.result_path).not.toBe(resultPath);
+    if (!resumed.exchange) throw new Error("expected a fresh executor exchange");
+    const workOrder = JSON.parse(
+      await readFile(
+        path.join(resumed.exchange.directory, resumed.exchange.work_order_ref),
+        "utf8",
+      ),
+    ) as { role: string; authority: { writable_roots: string[] } };
+    expect(workOrder.role).toBe("EXECUTOR");
+    expect(
+      workOrder.authority.writable_roots.some((root) =>
+        root.endsWith("/website/static/img/social"),
+      ),
+    ).toBe(true);
+
+    const readme = await readFile(
+      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(readme).toContain('status: "DOING"');
+    expect(readme).toContain('status: "applied"');
+  });
+
   it("consumes a blocked branch implementation once and waits for an explicit resume", async () => {
     const { taskId, taskWorktree } = await prepareBlockedResultTask({
       title: "Blocked external branch result",

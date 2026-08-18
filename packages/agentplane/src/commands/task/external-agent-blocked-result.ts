@@ -5,6 +5,11 @@ import { cmdCommit } from "../guard/impl/commit.js";
 import { commitRefreshedTaskArtifacts } from "../guard/impl/commit-refresh.js";
 import { refreshBranchPrArtifactsAfterTaskCommit } from "../shared/post-commit-pr-artifacts.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+import {
+  createTaskScopeExtensionRequestState,
+  externalBlockerReceipt,
+  TASK_SCOPE_EXTENSION_REQUEST_KEY,
+} from "../shared/task-scope-extension-request.js";
 
 import type {
   ExternalAgentExchange,
@@ -17,8 +22,30 @@ function blockerSubject(taskId: string): string {
   return `🚧 ${taskId.split("-").at(-1)} task: record external blocker`;
 }
 
-function externalBlockedResultReceipt(exchange: ExternalAgentExchange): string {
-  return `Agentplane receipt: external-agent-blocker/${exchange.transition_id}/${exchange.state_fingerprint}.`;
+function scopeExtensionState(opts: {
+  exchange: ExternalAgentExchange;
+  semantic: ExternalAgentResultEnvelope["result"];
+}) {
+  const request = opts.semantic.blocker?.scope_extension_request;
+  return request
+    ? createTaskScopeExtensionRequestState({
+        request,
+        transition_id: opts.exchange.transition_id,
+        state_fingerprint: opts.exchange.state_fingerprint,
+      })
+    : null;
+}
+
+function externalBlockedResultReceipt(opts: {
+  exchange: ExternalAgentExchange;
+  semantic: ExternalAgentResultEnvelope["result"];
+}): string {
+  const pending = scopeExtensionState(opts);
+  return externalBlockerReceipt({
+    transition_id: opts.exchange.transition_id,
+    state_fingerprint: opts.exchange.state_fingerprint,
+    ...(pending ? { request_digest: pending.request_digest } : {}),
+  });
 }
 
 export function blockedResultBody(opts: {
@@ -26,25 +53,53 @@ export function blockedResultBody(opts: {
   semantic: ExternalAgentResultEnvelope["result"];
 }): string {
   const recommendation = opts.semantic.blocker?.recommended_action?.trim();
+  const pending = scopeExtensionState(opts);
+  const requestedScope = pending
+    ? ` Requested scope: roots=${pending.request.scope_roots.join(",") || "unchanged"}; ` +
+      `repository effects=${pending.request.repository_effects.join(",") || "unchanged"}; ` +
+      `request digest=${pending.request_digest}.`
+    : "";
   return (
     `Blocked: external ${opts.exchange.role} could not complete the scoped implementation. ` +
     `${opts.semantic.summary.trim()}` +
     (recommendation ? ` Recommended action: ${recommendation}` : "") +
-    ` ${externalBlockedResultReceipt(opts.exchange)}`
+    requestedScope +
+    ` ${externalBlockedResultReceipt(opts)}`
   );
 }
 
 export async function isExternalBlockedResultRecorded(opts: {
   command: CommandContext;
   exchange: ExternalAgentExchange;
+  semantic: ExternalAgentResultEnvelope["result"];
 }): Promise<boolean> {
   const task = await loadTaskFromContext({ ctx: opts.command, taskId: opts.exchange.task_id });
-  const receipt = externalBlockedResultReceipt(opts.exchange);
+  const receipt = externalBlockedResultReceipt(opts);
   return Boolean(
     task.status === "BLOCKED" &&
     (task.comments ?? []).some(
       (comment) => comment.author === "SUPERVISOR" && comment.body.includes(receipt),
     ),
+  );
+}
+
+async function persistScopeExtensionRequest(opts: {
+  command: CommandContext;
+  exchange: ExternalAgentExchange;
+  semantic: ExternalAgentResultEnvelope["result"];
+}): Promise<void> {
+  const pending = scopeExtensionState(opts);
+  if (!pending) return;
+  const task = await loadTaskFromContext({ ctx: opts.command, taskId: opts.exchange.task_id });
+  await opts.command.taskBackend.writeTask(
+    {
+      ...task,
+      extensions: {
+        ...(task.extensions ?? {}),
+        [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
+      },
+    },
+    task.revision ? { expectedRevision: task.revision } : undefined,
   );
 }
 
@@ -215,5 +270,6 @@ export async function recordExternalBlockedResult(opts: {
       quiet: true,
     });
   }
+  await persistScopeExtensionRequest(opts);
   await commitExternalBlocker({ command: opts.command, exchange: opts.exchange });
 }

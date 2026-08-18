@@ -189,6 +189,31 @@ describe("Workflow operation projection registry", () => {
           "--yes",
         ],
       },
+      "task.scope.extend": {
+        params: {
+          taskId,
+          requestDigest: adoptionToken,
+          scopeRoots: ["website/static/img/social"],
+          repositoryEffects: ["documentation"],
+        },
+        argv: [
+          "agentplane",
+          "task",
+          "scope",
+          "extend",
+          taskId,
+          "--scope-root",
+          "website/static/img/social",
+          "--repository-effect",
+          "documentation",
+          "--request-digest",
+          adoptionToken,
+          "--state-fingerprint",
+          state.preconditionFingerprint.digest,
+          "--by",
+          "USER",
+        ],
+      },
       "task.start": {
         params: { taskId, author: "CODER", body: "Start: execute." },
         argv: [
@@ -250,7 +275,10 @@ describe("Workflow operation projection registry", () => {
         step.kind === "cli_operation"
           ? step.operation
           : step.kind === "approval" && step.request.type === "side_effect"
-            ? (step.request.operation as WorkflowOperation)
+            ? ({
+                ...step.request.operation,
+                preconditionFingerprint: state.preconditionFingerprint,
+              } as WorkflowOperation)
             : null;
       if (!operation) throw new Error(`expected a projected operation for ${id}`);
       expect(projectWorkflowOperationArgv(operation), id).toEqual(fixture.argv);

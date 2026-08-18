@@ -19,6 +19,7 @@ export function isOperationAuthorizedByPolicy(
   config: SideEffectAuthorityConfig,
   operationId: string,
 ): boolean {
+  if (operationId === "task.scope.extend") return false;
   if (config.mode === "manual" || config.deny_operations.includes(operationId)) return false;
   if (config.mode === "all") return true;
   return config.allow_operations.includes(operationId);

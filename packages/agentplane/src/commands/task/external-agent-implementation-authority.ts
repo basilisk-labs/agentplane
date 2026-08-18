@@ -269,6 +269,7 @@ export async function applyExternalImplementationResult(opts: {
       const alreadyRecorded = await isExternalBlockedResultRecorded({
         command: opts.command,
         exchange: opts.exchange,
+        semantic,
       });
       if (!alreadyRecorded) {
         const [head, status] = await Promise.all([
