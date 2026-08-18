@@ -2,10 +2,10 @@
 id: "202608181404-CR1F9W"
 title: "Add v0.7.7 release social assets and a controlled evaluator rework scope-extension boundary"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -28,7 +28,7 @@ plan_approval:
   note: "User approved all release-blocking remediation needed for 0.7.7, including generated website assets and the controlled authority-bound scope-extension fix."
 verification:
   state: "ok"
-  updated_at: "2026-08-18T14:58:05.314Z"
+  updated_at: "2026-08-18T15:11:32.158Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
@@ -164,6 +164,7 @@ execution_contract:
     changed_paths:
       - "docs/releases/v0.7.7.md"
       - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+      - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
       - "packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
       - "packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
       - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
@@ -284,9 +285,10 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "material"
           reversibility: "recovery_required"
-      digest: "sha256:7f4f99e896d657221d2feda6c1883bc051e97c9e3a0f84e0a733591a3fb33c97"
+      digest: "sha256:cdb666f91f7aeb1457c50879b61931ef39c5867d88d0d638bbe39f4d7f29a648"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
         - "central_path:packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
         - "central_path:packages/agentplane/src/commands/shared/side-effect-authority.ts"
@@ -329,6 +331,7 @@ execution_contract:
         changed_files:
           - "docs/releases/v0.7.7.md"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+          - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
           - "packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
           - "packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
           - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
@@ -409,8 +412,8 @@ execution_contract:
       - "requirements_resolution"
       - "task_outcome"
 commit:
-  hash: "6d46be81810debf1194bad25e538558ad1420821"
-  message: "🚧 CR1F9W task: record external evaluator result"
+  hash: "b020e4b597802053c7c4e664aee9ef584773eafc"
+  message: "🚧 CR1F9W task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -424,6 +427,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: b020e4b59780. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -468,9 +474,23 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "6d46be81810debf1194bad25e538558ad1420821"
+  -
+    type: "status"
+    at: "2026-08-18T15:11:24.985Z"
+    author: "SUPERVISOR"
+    from: "DONE"
+    to: "DOING"
+    note: "Implementation committed: b020e4b59780. CLI accepted one state-bound external-agent semantic result."
+    commit: "b020e4b597802053c7c4e664aee9ef584773eafc"
+  -
+    type: "verify"
+    at: "2026-08-18T15:11:32.158Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-18T14:59:20.507Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-18T15:11:34.592Z"
+doc_updated_by: "SUPERVISOR"
 description: "Generate and verify the social asset for docs/releases/v0.7.7.md. Add a typed, state-bound, USER-approved path for an evaluator or implementation-rework result to request additional writable roots without silently widening authority; invalidate stale verification and reissue a scoped EXECUTOR packet after approval. Keep the change release-blocking and compatible with branch_pr."
 sections:
   Summary: |-
@@ -575,6 +595,84 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e30bbf8802a36cadaad08b89737c97c43385b46dabfbe8fb30253ac4339312a0, input_digest=sha256:ceb1312ca3b36d6287ad8d124ff67547eccd0667c9d52ae8bdd268808ea34e8a
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181404-CR1F9W Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181404-CR1F9W Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181404-CR1F9W Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181404-CR1F9W Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181404-CR1F9W Verification Contract check hosted_integration
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181404-CR1F9W Verification Contract check real_e2e
+
+    Check: requirements_resolution
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181404-CR1F9W Verification Contract check requirements_resolution
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181404-CR1F9W Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181404-CR1F9W-add-v0-7-7-release-social-assets-and-a-controlle/.agentplane/tasks/202608181404-CR1F9W/blueprint/resolved-snapshot.json
+    - old_digest: e814ba9c904d77ecda4ad71bed97eea32e4aa66684a85a7a429ae6d345afbf2f
+    - current_digest: e814ba9c904d77ecda4ad71bed97eea32e4aa66684a85a7a429ae6d345afbf2f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181404-CR1F9W
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608181404-CR1F9W
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-18T15:11:32.158Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e30bbf8802a36cadaad08b89737c97c43385b46dabfbe8fb30253ac4339312a0, input_digest=sha256:1bdb4c85760d1d251d311e9e4dfcc0cd00e77cf73005d7ca73a50b92188d0e4e
 
     Details:
 
@@ -771,6 +869,84 @@ Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e30bbf8802a36cadaad08b89737c97c43385b46dabfbe8fb30253ac4339312a0, input_digest=sha256:ceb1312ca3b36d6287ad8d124ff67547eccd0667c9d52ae8bdd268808ea34e8a
+
+Details:
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181404-CR1F9W Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181404-CR1F9W Verification Contract check critical_paths
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181404-CR1F9W Verification Contract check docs_contract
+
+Check: full_regression
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181404-CR1F9W Verification Contract check full_regression
+
+Check: hosted_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181404-CR1F9W Verification Contract check hosted_integration
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181404-CR1F9W Verification Contract check real_e2e
+
+Check: requirements_resolution
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181404-CR1F9W Verification Contract check requirements_resolution
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181404-CR1F9W Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181404-CR1F9W-add-v0-7-7-release-social-assets-and-a-controlle/.agentplane/tasks/202608181404-CR1F9W/blueprint/resolved-snapshot.json
+- old_digest: e814ba9c904d77ecda4ad71bed97eea32e4aa66684a85a7a429ae6d345afbf2f
+- current_digest: e814ba9c904d77ecda4ad71bed97eea32e4aa66684a85a7a429ae6d345afbf2f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181404-CR1F9W
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608181404-CR1F9W
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-18T15:11:32.158Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e30bbf8802a36cadaad08b89737c97c43385b46dabfbe8fb30253ac4339312a0, input_digest=sha256:1bdb4c85760d1d251d311e9e4dfcc0cd00e77cf73005d7ca73a50b92188d0e4e
 
 Details:
 
