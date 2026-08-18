@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -33,17 +33,36 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
-  updated_at: "2026-08-18T23:21:13.208Z"
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-18T23:54:24.043Z"
   updated_by: "EVALUATOR"
-  note: "Hosted P1: the generic volatile-evidence deletion exemption weakens foreign task ownership globally."
-  evaluated_sha: "6b3d54e01ac3a71e0b0620eff04e6b1ca0e41f63"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "6ed0b4b62b786d389f6a2b0ea3730973238c3985"
   blueprint_digest: "7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce"
   evidence_refs:
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-235329918-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-235329918-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/75c34851f2469ce66d4da656e38d0eae2d7ef80544134baafa777fe71ebe695c.md"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-235329918-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-235329918-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-235329918-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181750-CRZNFC/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/d6629b98f571a9dd8028d2ce11099313b0927e6931c20316304642319549f053.patch"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/da415562db1708aa338e4ec498775707e8eb7387582de15366e57897c044497e.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/verification/20260818235314976-3d722dbe458311b3.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/07d3a2d994a7d0df45d44db46db30e7331200d55b9aea7ba949e473a44d57444.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
   findings:
-    - "Check: hosted-review-thread\nCommand: GitHub review thread on PR #4846\nResult: rework\nEvidence: branch-task-artifact-ownership.ts filters all foreign .log/.jsonl and runs/repro deletions before ownership extraction.\nScope: replace the product-wide exemption with exact task-specific cleanup authority while retaining the T3ZDDM release cleanup."
+    - "The default path no longer exempts foreign .log, .jsonl, runs, or repro deletions; they contribute the foreign task id and fail validation."
+    - "The exception requires both an exact foreign-task descendant root and path containment within that root, preventing task-id prefix and sibling-root widening."
+    - "Only deletion-class volatile artifacts are eligible; modifications, durable JSON reports, and pr/verify.log or pr/notes.jsonl remain ownership-gated."
+    - "Both PR synchronization and integration preparation derive cleanup roots from the current task execution contract authority, which contains the explicitly approved T3ZDDM evidence root for this release task."
+    - "The full repeated release gate passed 105/105 release-ci-base chunks, workflow 50/50, significant 204/204, release-critical 16/16, package policy, eight migration scenarios, and install smoke."
+    - "Residual risk: The task execution contract is treated as the authoritative source of writable roots; its approval and integrity remain enforced by existing scope-extension and task-lifecycle controls."
 token_usage:
   agent_runs: 8
   input_tokens: null
@@ -647,7 +666,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-18T23:53:17.095Z"
+doc_updated_at: "2026-08-18T23:54:24.073Z"
 doc_updated_by: "SUPERVISOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
