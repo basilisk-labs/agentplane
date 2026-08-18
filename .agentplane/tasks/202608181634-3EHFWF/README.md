@@ -4,7 +4,7 @@ title: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -229,7 +229,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "9ae23fb9bad25b85c2edb8eec41283180f26f47e"
+  message: "🚀 3EHFWF task: supersede v0.7.7 release candidate"
 comments:
   -
     author: "CODER"
@@ -240,6 +242,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: .agentplane/WORKFLOW.md, .github/workflows, docs, packages, schemas, scripts, website; repository effects: ci, dependencies, documentation, public_api, release_metadata, repository_write, schema, source_code, tests."
+  -
+    author: "CODER"
+    body: "Implementation committed after protected CI path recovery; full local release matrix passed."
 events:
   -
     type: "status"
@@ -255,9 +260,17 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Implementation cannot start because the caller-supplied legacy release contract permits release metadata only, while the approved plan necessarily changes source, tests, CI, documentation, public API, schema, and dependency version surfaces. Recommended action: Extend the task scope to the listed repository roots and effects, then request a fresh implementation packet. Requested scope: roots=.agentplane/WORKFLOW.md,.github/workflows,docs,packages,schemas,scripts,website; repository effects=ci,dependencies,documentation,public_api,release_metadata,repository_write,schema,source_code,tests; request digest=sha256:585f670ed99c2c408c06d26663703d36e9627546672ffec6ff5dee03af4d856a. Agentplane receipt: external-agent-blocker/tr_89111575729e7a174742659ceb5fb0b9/sha256:ad9e914da67c26f735e612da30159e6656f6292c2c3cc40daf15d21827034b3e/sha256:585f670ed99c2c408c06d26663703d36e9627546672ffec6ff5dee03af4d856a."
+  -
+    type: "status"
+    at: "2026-08-18T16:52:39.712Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed after protected CI path recovery; full local release matrix passed."
+    commit: "9ae23fb9bad25b85c2edb8eec41283180f26f47e"
 doc_version: 3
-doc_updated_at: "2026-08-18T16:37:01.035Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-18T16:52:39.712Z"
+doc_updated_by: "CODER"
 description: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication."
 sections:
   Summary: |-

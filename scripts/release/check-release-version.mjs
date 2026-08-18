@@ -1,10 +1,14 @@
 import fs from "node:fs";
 import { defineCheck, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
 import { assertReleaseParity } from "../lib/release-version-parity.mjs";
+import { parseReleaseSemver } from "../lib/release-semver.mjs";
 
 const parseArgs = (args) => {
-  const { flags } = parseScriptArgs(args, { valueFlags: ["tag"] });
-  return { tagArg: flags.tag ?? null };
+  const { flags } = parseScriptArgs(args, {
+    valueFlags: ["tag"],
+    booleanFlags: ["stable-only"],
+  });
+  return { tagArg: flags.tag ?? null, stableOnly: flags["stable-only"] === true };
 };
 
 const resolveTag = (tagArg) => {
@@ -34,18 +38,27 @@ const main = defineCheck({
   name: "check-release-version",
   parseArgs,
   check({ options }) {
-    const { tagArg } = options;
+    const { stableOnly, tagArg } = options;
     const tag = resolveTag(tagArg);
     if (!tag) {
       throw new Error(
         "Missing release tag. Provide --tag vX.Y.Z[-prerelease][+build] or run under tag ref.",
       );
     }
-    const match = tag.match(/^v(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?)$/);
-    if (!match) {
+    if (!tag.startsWith("v")) {
       throw new Error(`Tag ${tag} does not match vX.Y.Z[-prerelease][+build] format.`);
     }
-    const version = match[1];
+    const version = tag.slice(1);
+    const parsed = parseReleaseSemver(version);
+    if (!parsed) {
+      throw new Error(`Tag ${tag} does not match vX.Y.Z[-prerelease][+build] format.`);
+    }
+    if (stableOnly && parsed.prerelease.length > 0) {
+      throw new Error(
+        `Refusing to publish prerelease ${tag} through the stable release workflow. ` +
+          "Prepare a stable X.Y.Z release version before publishing with npm tag latest.",
+      );
+    }
     return assertReleaseParity(process.cwd(), { requiredVersion: version });
   },
 });

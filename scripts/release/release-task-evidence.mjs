@@ -12,6 +12,7 @@ import {
   taskReadmePath,
 } from "../../packages/core/src/index.ts";
 import { readConfiguredTaskCloseBranchPrefix } from "../lib/workflow-config.mjs";
+import { nextPatchBetaVersion } from "../lib/release-semver.mjs";
 
 const execFileAsync = promisify(execFile);
 
@@ -75,8 +76,10 @@ function shortSha(value) {
   return value.trim().slice(0, 12);
 }
 
-function buildReleaseEvidencePrTitle(taskId) {
-  return `task-evidence: Record hosted publish evidence [${taskId}]`;
+function buildReleaseEvidencePrTitle(taskId, nextDevelopmentVersion) {
+  return nextDevelopmentVersion
+    ? `task-evidence: Record publish evidence and open ${nextDevelopmentVersion} [${taskId}]`
+    : `task-evidence: Record hosted publish evidence [${taskId}]`;
 }
 
 async function git(args) {
@@ -174,10 +177,12 @@ function buildPrepareOutcome({
       pr_title: null,
       pr_body: null,
       readme_path: null,
+      next_development_version: null,
     };
   }
 
   const closureBranch = `${taskCloseBranchPrefix}/${taskId}/${shortSha(releaseSha)}-publish`;
+  const nextDevelopmentVersion = nextPatchBetaVersion(manifest.version);
   const releaseUrl = `https://github.com/${repo}/releases/tag/${manifest.tag}`;
   const publishRunUrl = manifest.job.runId
     ? `https://github.com/${repo}/actions/runs/${manifest.job.runId}`
@@ -195,11 +200,16 @@ function buildPrepareOutcome({
   if (publishRunUrl) {
     prBodyLines.push(`- Publish run: ${publishRunUrl}`);
   }
+  if (nextDevelopmentVersion) {
+    prBodyLines.push(`- Next development version: \`${nextDevelopmentVersion}\``);
+  }
   prBodyLines.push(
     "",
     "## Scope",
     "",
-    "This PR updates only the tracked release task README so canonical task closure includes hosted publish evidence.",
+    nextDevelopmentVersion
+      ? `This PR records hosted publish evidence and atomically opens the next patch development line as \`${nextDevelopmentVersion}\` across every semantic version surface.`
+      : "This PR updates the tracked release task README so canonical task closure includes hosted publish evidence.",
   );
 
   return {
@@ -209,9 +219,10 @@ function buildPrepareOutcome({
     base_ref: baseRef,
     release_sha: releaseSha,
     closure_branch: closureBranch,
-    pr_title: buildReleaseEvidencePrTitle(taskId),
+    pr_title: buildReleaseEvidencePrTitle(taskId, nextDevelopmentVersion),
     pr_body: prBodyLines.join("\n"),
     readme_path: `.agentplane/tasks/${taskId}/README.md`,
+    next_development_version: nextDevelopmentVersion,
   };
 }
 

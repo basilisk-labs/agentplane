@@ -34,6 +34,9 @@ describe("GitHub base protection", () => {
     await expect(
       resolveGithubBasePullRequestProtection({ gitRoot: "/repo", baseBranch: "main" }),
     ).resolves.toEqual({ state: "unprotected", baseBranch: "main" });
+    await expect(
+      requiresPullRequestMergePath({ gitRoot: "/repo", baseBranch: "main" }),
+    ).resolves.toBe(true);
 
     mocks.runGhApiJson.mockRejectedValue(new Error("GitHub 503"));
     await expect(

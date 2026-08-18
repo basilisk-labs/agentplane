@@ -37,6 +37,7 @@ import { requireOpenGithubPrAtHead } from "../../provider-head.js";
 import { ensurePrArtifactsSynced } from "../../internal/sync.js";
 import { normalizeBranchPrBatchTaskIds } from "../../internal/sync-batch-ownership.js";
 import { computePrDiffstat } from "../../internal/sync-branch.js";
+import { assertBranchTaskArtifactOwnership } from "../../internal/branch-task-artifact-ownership.js";
 
 import { readAndValidatePrArtifacts, ensureCommittedPrArtifactsOnBranch } from "../artifacts.js";
 import { computeVerifyState } from "../verify.js";
@@ -213,6 +214,17 @@ export async function prepareIntegrate(opts: {
     taskId: opts.taskId,
     preferBranchSnapshot: true,
     branchSnapshotBranch: branch,
+  });
+  await assertBranchTaskArtifactOwnership({
+    gitRoot: resolved.gitRoot,
+    baseBranch: base,
+    branch,
+    workflowDir: loadedConfig.paths.workflow_dir,
+    tasksPath: loadedConfig.paths.tasks_path,
+    primaryTaskId: opts.taskId,
+    includedTaskIds: normalizeBranchPrBatchTaskIds(task, opts.taskId).filter(
+      (taskId) => taskId !== opts.taskId,
+    ),
   });
   const protectedBaseRequiresPrMerge = await requiresPullRequestMergePath({
     gitRoot: resolved.gitRoot,
