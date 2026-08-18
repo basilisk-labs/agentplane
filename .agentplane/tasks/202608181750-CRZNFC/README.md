@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -466,7 +466,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "3c5ade2462f684a873993cade2d12103036bc160"
+  message: "🚧 CRZNFC task: apply external agent result"
 comments:
   -
     author: "INTEGRATOR"
@@ -498,6 +500,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: package.json; repository effects: release_metadata."
+  -
+    author: "INTEGRATOR"
+    body: "Implementation authority now includes the required root package.json; registering the already verified canonical implementation effect without introducing an artificial semantic diff."
 events:
   -
     type: "status"
@@ -548,9 +553,17 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The 0.7.7 candidate is complete and fully verified, but the release version change to root package.json is outside the persisted writable roots. Recommended action: Approve a state-bound scope extension for exactly package.json, then register the already verified implementation commit and resume independent evaluation. Requested scope: roots=package.json; repository effects=release_metadata; request digest=sha256:ed2c9df6f163e41c815575dec1796699df2aaf333b808e81905e4d24851ea971. Agentplane receipt: external-agent-blocker/tr_2ddae8292f5410a72b53c3f110e13e60/sha256:72a0c5d215806a3582e1c76216ab7d85925df0f027ce7f7809d9eca695e3c43d/sha256:ed2c9df6f163e41c815575dec1796699df2aaf333b808e81905e4d24851ea971."
+  -
+    type: "status"
+    at: "2026-08-18T23:14:50.551Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation authority now includes the required root package.json; registering the already verified canonical implementation effect without introducing an artificial semantic diff."
+    commit: "3c5ade2462f684a873993cade2d12103036bc160"
 doc_version: 3
-doc_updated_at: "2026-08-18T23:13:38.498Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-18T23:14:50.551Z"
+doc_updated_by: "INTEGRATOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
   Summary: |-
