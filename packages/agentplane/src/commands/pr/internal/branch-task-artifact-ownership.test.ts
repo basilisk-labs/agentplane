@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   gitMergeBase: vi.fn(),
   gitBranchExists: vi.fn(),
   gitBranchUpstream: vi.fn(),
+  gitRevParse: vi.fn(),
 }));
 
 vi.mock("@agentplaneorg/core/git", () => ({
@@ -14,6 +15,7 @@ vi.mock("@agentplaneorg/core/git", () => ({
 vi.mock("../../shared/git-ops.js", () => ({
   gitBranchExists: mocks.gitBranchExists,
   gitBranchUpstream: mocks.gitBranchUpstream,
+  gitRevParse: mocks.gitRevParse,
 }));
 
 import { assertBranchTaskArtifactOwnership } from "./branch-task-artifact-ownership.js";
@@ -23,6 +25,7 @@ describe("committed task artifact ownership", () => {
     vi.clearAllMocks();
     mocks.gitBranchExists.mockResolvedValue(true);
     mocks.gitBranchUpstream.mockResolvedValue("origin/main");
+    mocks.gitRevParse.mockResolvedValue("base-sha");
     mocks.gitMergeBase.mockResolvedValue("merge-base-sha");
   });
 
@@ -56,6 +59,9 @@ describe("committed task artifact ownership", () => {
       "merge-base-sha",
       "task/T-PRIMARY/change",
     );
+    expect(mocks.gitRevParse).toHaveBeenCalledWith("/repo", ["--verify", "origin/main^{commit}"]);
+    expect(mocks.gitBranchExists).toHaveBeenCalledTimes(1);
+    expect(mocks.gitBranchExists).toHaveBeenCalledWith("/repo", "task/T-PRIMARY/change");
   });
 
   it("ignores task artifacts introduced only by an advanced base", async () => {

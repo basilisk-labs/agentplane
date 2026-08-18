@@ -6,14 +6,14 @@ Created: 2026-08-18T16:36:10.309Z
 
 - Task: `202608181634-3EHFWF`
 - Title: Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without f...
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608181634-3EHFWF/supersede-pr-4843-with-a-clean-agentplane-0-7-7`
 - Canonical task record: `.agentplane/tasks/202608181634-3EHFWF/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Hosted P1 on PR #4844: branch-task-artifact ownership must accept remote-tracking comparison refs and retain the contamination gate for origin/main; add a regression.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -62,8 +62,8 @@ Created: 2026-08-18T16:36:10.309Z
  .../pr/integrate/internal/github-protection.ts     |   7 +-
  .../commands/pr/integrate/internal/prepare.test.ts |   3 +
  .../src/commands/pr/integrate/internal/prepare.ts  |  12 ++
- .../branch-task-artifact-ownership.test.ts         | 108 +++++++++++++++
- .../pr/internal/branch-task-artifact-ownership.ts  |  76 +++++++++++
+ .../branch-task-artifact-ownership.test.ts         | 114 ++++++++++++++++
+ .../pr/internal/branch-task-artifact-ownership.ts  |  78 +++++++++++
  .../agentplane/src/commands/pr/internal/sync.ts    |  12 ++
  .../release/check-release-version-script.test.ts   |  34 ++++-
  .../open-next-development-version-script.test.ts   | 148 +++++++++++++++++++++
@@ -91,7 +91,7 @@ Created: 2026-08-18T16:36:10.309Z
  scripts/release/open-next-development-version.mjs  |  55 ++++++++
  scripts/release/release-task-evidence.mjs          |  19 ++-
  scripts/release/version-bump.mjs                   |  13 +-
- 62 files changed, 1432 insertions(+), 134 deletions(-)
+ 62 files changed, 1440 insertions(+), 134 deletions(-)
 ```
 
 </details>

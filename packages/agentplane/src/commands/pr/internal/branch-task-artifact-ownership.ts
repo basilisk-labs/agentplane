@@ -2,7 +2,7 @@ import { gitDiffNames, gitMergeBase } from "@agentplaneorg/core/git";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
-import { gitBranchExists, gitBranchUpstream } from "../../shared/git-ops.js";
+import { gitBranchExists, gitBranchUpstream, gitRevParse } from "../../shared/git-ops.js";
 
 function normalizedRoot(value: string | undefined): string {
   if (!value) return "";
@@ -37,7 +37,9 @@ export async function assertBranchTaskArtifactOwnership(opts: {
   // Synthetic and pre-initialized repositories may name a future base before
   // the ref exists. There is no committed base history to contaminate yet.
   const [baseExists, branchExists] = await Promise.all([
-    gitBranchExists(opts.gitRoot, comparisonBase),
+    gitRevParse(opts.gitRoot, ["--verify", `${comparisonBase}^{commit}`])
+      .then(() => true)
+      .catch(() => false),
     gitBranchExists(opts.gitRoot, opts.branch),
   ]);
   if (!baseExists || !branchExists) return;
