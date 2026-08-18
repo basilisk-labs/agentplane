@@ -16,7 +16,7 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,6 +28,7 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
 
 ```text
  .agentplane/WORKFLOW.md                            |   2 +-
+ .agentplane/policy/incidents.md                    |   1 +
  .../risk-e2e/logs/hosted-boundary-matrix.log       |   7 -
  .../risk-e2e/logs/packaged-candidate-flow.log      |   5 -
  .../samples/sample-01.events.jsonl                 |   1 -
@@ -76,6 +77,7 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
  docs/assets/readme-headers/testkit.svg             |   4 +-
  docs/reference/generated-reference.mdx             |  14 +-
  package.json                                       |   2 +-
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  packages/agentplane/package.json                   |   6 +-
  ...run-cli.core.pr-flow.integrate-failures.test.ts |   6 +
  .../run-cli.core.pr-flow.integrate-merge.test.ts   |   6 +
@@ -98,7 +100,7 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
  scripts/README.md                                  |  24 +--
  .../baselines/v0.7-compatibility-candidate.json    |   6 +-
  scripts/checks/run-fast-ci-tests.mjs               |   2 +-
- 71 files changed, 352 insertions(+), 1441 deletions(-)
+ 73 files changed, 354 insertions(+), 1441 deletions(-)
 ```
 
 </details>
