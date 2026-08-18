@@ -12,12 +12,12 @@ import { commitRefreshedTaskArtifacts } from "../guard/impl/commit-refresh.js";
 import { refreshBranchPrArtifactsAfterTaskCommit } from "../shared/post-commit-pr-artifacts.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import {
+  applyApprovedTaskScopeExtension,
   normalizeTaskScopeRoot,
   parseTaskScopeExtensionRequestState,
   scopeExtensionReceiptForState,
-  TASK_SCOPE_EXTENSION_REQUEST_KEY,
 } from "../shared/task-scope-extension-request.js";
-import type { CommandContext } from "../shared/task-backend.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 const output = createCliEmitter();
 
@@ -144,9 +144,9 @@ export async function cmdTaskScopeExtend(opts: {
   quiet?: boolean;
 }): Promise<number> {
   try {
-    const command = opts.ctx;
+    const routeCommand = opts.ctx;
     const decision = await buildTaskRouteDecision({
-      ctx: command,
+      ctx: routeCommand,
       cwd: opts.cwd,
       includeRemote: false,
       rootOverride: null,
@@ -159,6 +159,19 @@ export async function cmdTaskScopeExtend(opts: {
           "Task execution scope extension is stale; recompute task next-action and use its exact state fingerprint.",
       });
     }
+    const checkout = decision.oracle.authoritativeCheckoutPath;
+    if (!checkout) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "Task execution scope extension requires an authoritative task checkout.",
+      });
+    }
+    const command = await loadCommandContext({
+      cwd: checkout,
+      rootOverride: checkout,
+      config: routeCommand.config,
+      preparationTrace: routeCommand.preparationTrace,
+    });
     const task = await command.taskBackend.getTask(opts.taskId);
     if (!task) {
       throw new CliError({
@@ -181,55 +194,17 @@ export async function cmdTaskScopeExtend(opts: {
         message: "Task execution scope extension pending request disappeared before persistence.",
       });
     }
-    const checkout = decision.oracle.authoritativeCheckoutPath;
-    if (!checkout) {
-      throw new CliError({
-        code: "E_VALIDATION",
-        message: "Task execution scope extension requires an authoritative task checkout.",
-      });
-    }
     const now = new Date().toISOString();
     await command.taskBackend.writeTask(
-      {
-        ...task,
-        status: "DOING",
-        commit: null,
-        quality_review: undefined,
-        verification: {
-          state: "pending",
-          attempts: task.verification?.attempts ?? 0,
-          updated_at: now,
-          updated_by: opts.by,
-          note: "Invalidated by USER-approved execution scope extension.",
-        },
-        execution_contract: executionContract,
-        extensions: {
-          ...(task.extensions ?? {}),
-          [TASK_SCOPE_EXTENSION_REQUEST_KEY]: {
-            ...pending,
-            status: "applied",
-            applied_at: now,
-            applied_by: opts.by,
-          },
-        },
-        execution_route: task.execution_route
-          ? {
-              ...task.execution_route,
-              selected_mode: executionContract.selected_mode,
-              repository_mode: executionContract.repository_mode,
-              reason_codes: [...executionContract.reason_codes],
-            }
-          : undefined,
-        comments: [
-          ...(task.comments ?? []),
-          {
-            author: opts.by,
-            body:
-              `Approved state-bound execution scope extension: ${opts.scopeRoots.join(", ")}; ` +
-              `repository effects: ${opts.repositoryEffects.join(", ") || "unchanged"}.`,
-          },
-        ],
-      },
+      applyApprovedTaskScopeExtension({
+        task,
+        executionContract,
+        pending,
+        scopeRoots: opts.scopeRoots,
+        repositoryEffects: opts.repositoryEffects,
+        by: opts.by,
+        now,
+      }),
       task.revision ? { expectedRevision: task.revision } : undefined,
     );
 

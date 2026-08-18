@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608181404-CR1F9W/add-v0-7-7-release-social-assets-and-a-controlle",
   "created_at": "2026-08-18T14:05:34.593Z",
-  "diffstat_sha256": "sha256:caf12ca5aac33f44444bea68a3870be53ed091a46b5c2019c411bc61b435e423",
+  "diffstat_sha256": "sha256:592f2e60d72ec64457f4aa448ce36e9f5533d3103b0e587371a68c369f0a9c2e",
   "last_verified_at": "2026-08-18T15:11:32.158Z",
   "last_verified_diffstat_sha256": "sha256:caf12ca5aac33f44444bea68a3870be53ed091a46b5c2019c411bc61b435e423",
   "pr_number": 4842,
