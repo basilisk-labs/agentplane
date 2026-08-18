@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:de9e25a01a2811b706a32d1eca1314675157ee16b4204a2662cba5f63a52c596",
   "pr_number": 4844,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4844",
+  "pre_merge_closure": {
+    "basis_commit": "324bcdc1bd2188a61f8e6c804e67f56fb735deda",
+    "branch": "task/202608181634-3EHFWF/supersede-pr-4843-with-a-clean-agentplane-0-7-7",
+    "pr_number": 4844,
+    "recorded_at": "2026-08-18T17:39:35.776Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608181634-3EHFWF",

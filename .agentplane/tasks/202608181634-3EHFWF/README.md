@@ -2,10 +2,10 @@
 id: "202608181634-3EHFWF"
 title: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication."
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -59,9 +59,9 @@ quality_review:
     - "The full fast suite passed 570 files and 4,193 tests with one expected skip; contract and release gates also passed."
     - "Residual risk: Only provider-side rerun and merge remain before stable release preparation."
 token_usage:
-  agent_runs: 8
+  agent_runs: 10
   input_tokens: null
-  journal_digest: "sha256:7b8a71c0cdd13f0b6c18044efe082ac334ea07269084ee3aadef87c786db0cb4"
+  journal_digest: "sha256:5a48cb83a408c36f4d206d81a3f035c73a32fac14c61bfd951337e69f7cb6096"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -71,7 +71,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-18T17:23:24.660Z"
+  updated_at: "2026-08-18T17:39:35.708Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -477,8 +477,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "6598f11bc42d11f6f1b5853cf60f6744bd3b9007"
-  message: "✅ 3EHFWF task: align integration ref mocks"
+  hash: "324bcdc1bd2188a61f8e6c804e67f56fb735deda"
+  message: "🚧 3EHFWF task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -507,6 +507,9 @@ comments:
   -
     author: "CODER"
     body: "Align all ordered integration gitRevParse mocks with comparison-base ref resolution; exact failing test and full fast suite pass."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -606,8 +609,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-18T17:39:35.708Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "324bcdc1bd2188a61f8e6c804e67f56fb735deda"
 doc_version: 3
-doc_updated_at: "2026-08-18T17:39:18.543Z"
+doc_updated_at: "2026-08-18T17:39:35.738Z"
 doc_updated_by: "CODER"
 description: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication."
 sections:
@@ -1012,8 +1023,8 @@ extensions:
     status: "applied"
     transition_id: "tr_89111575729e7a174742659ceb5fb0b9"
   implementation_commit:
-    hash: "16457593d821119c1ed447fcbd8b94e1baee8c2f"
-    message: "🛡️ 3EHFWF task: validate remote comparison refs"
+    hash: "6598f11bc42d11f6f1b5853cf60f6744bd3b9007"
+    message: "✅ 3EHFWF task: align integration ref mocks"
   workflow_route_baseline:
     start_head_sha: "374aa33fbca59318205d2dde70ab149710fe566d"
     version: 1
@@ -1405,12 +1416,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/8` agent runs
+- Completeness: `0/10` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:7b8a71c0cdd13f0b6c18044efe082ac334ea07269084ee3aadef87c786db0cb4`
+- Journal digest: `sha256:5a48cb83a408c36f4d206d81a3f035c73a32fac14c61bfd951337e69f7cb6096`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-18T17:23:24.660Z`
+- Updated at: `2026-08-18T17:39:35.708Z`
