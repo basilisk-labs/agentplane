@@ -1,10 +1,11 @@
 ---
 id: "202608181557-DR1T03"
 title: "Consolidate AgentPlane 0.7.7 hardening and repair terminal conflict rework"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -68,6 +69,20 @@ quality_review:
     - "The consolidated branch excludes #4841 task artifacts and is based on the current main that already contains the scope-extension/social-asset remediation."
     - "Residual risk: Release publication is stateful and externally irreversible enough to require exact hosted checks, provider merge confirmation, registry readback, and tag/release verification before cleanup."
     - "Residual risk: The next-beta automation must be verified on the actual stable publish run, not inferred solely from unit tests."
+token_usage:
+  agent_runs: 4
+  input_tokens: null
+  journal_digest: "sha256:e0bf61db542e2d76881375fd9252727efb37ca3e85d5946136d72fa3d90cd37f"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-18T16:26:07.409Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -426,8 +441,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "4e1e8183679d7560b9f074965066ef61bf9aff2e"
-  message: "🚀 DR1T03 task: consolidate v0.7.7 release hardening"
+  hash: "a2164138b9ede23ff68be10441839985f829c0b9"
+  message: "🚧 DR1T03 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -435,6 +450,9 @@ comments:
   -
     author: "CODER"
     body: "Implemented: consolidated current v0.7.7 hardening, fixed merge-base task ownership and verified DONE conflict rework, refreshed release surfaces, and passed local contract, critical, fast, docs, and release gates."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -457,8 +475,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-18T16:26:07.409Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "a2164138b9ede23ff68be10441839985f829c0b9"
 doc_version: 3
-doc_updated_at: "2026-08-18T16:23:30.386Z"
+doc_updated_at: "2026-08-18T16:26:07.417Z"
 doc_updated_by: "CODER"
 description: "Consolidate only the current source and release changes from superseded PR #4841 onto the latest main; fix the terminal DONE-task provider conflict route so a current open conflicting PR can enter controlled semantic rework without an impossible prior queue record; make foreign task-artifact isolation compare branch-introduced changes rather than base-only task artifacts; refresh compatibility and release artifacts; run all local and hosted gates; integrate and release 0.7.7."
 sections:
@@ -538,6 +564,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "ecf3e69579722fe9e6f0b129ee05e4a917ece325"
+    message: "🚀 DR1T03 task: consolidate v0.7.7 release hardening"
   workflow_route_baseline:
     start_head_sha: "374aa33fbca59318205d2dde70ab149710fe566d"
     version: 1
@@ -631,3 +660,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:e0bf61db542e2d76881375fd9252727efb37ca3e85d5946136d72fa3d90cd37f`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-18T16:26:07.409Z`

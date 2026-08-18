@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:2f08ff15f06729ae1c90d833d34a0c6ab13af82acd55f5555ac4407a48bbc141",
   "pr_number": 4843,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4843",
+  "pre_merge_closure": {
+    "basis_commit": "a2164138b9ede23ff68be10441839985f829c0b9",
+    "branch": "task/202608181557-DR1T03/consolidate-agentplane-0-7-7-hardening-and-repai",
+    "pr_number": 4843,
+    "recorded_at": "2026-08-18T16:26:07.468Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608181557-DR1T03",
