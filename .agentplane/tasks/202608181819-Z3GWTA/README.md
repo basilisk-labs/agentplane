@@ -4,7 +4,7 @@ title: "Reposition AgentPlane as the Git-native control plane for coding agents 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -30,42 +30,44 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-18T19:46:33.941Z"
+  updated_at: "2026-08-18T19:59:51.783Z"
   updated_by: "TESTER"
-  note: "All declared checks pass on implementation commit 9a01a6dd4; current public context, docs, and website contain no launch-document metadata outside excluded historical provenance."
+  note: "All declared checks pass on implementation commit cbd9d5b3c; launch-copy bodies are absent from the current tree and suppressed from deletion diffs."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-18T19:40:56.659Z"
+  updated_at: "2026-08-18T20:00:19.012Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "60c6cda2f54343f58fc4053f4256ffe78de1e159"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "cbd9d5b3c234238194cbfb5f5e760129d5b71493"
   blueprint_digest: "55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae"
   evidence_refs:
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-194053418-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-194053418-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/9191b47e597f3d0979b64b233ef685eea7d7fa58365c29e8c761a70f3d7b4782.md"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-194053418-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-194053418-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-194053418-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-194053418-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200015936-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200015936-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/9c1d5d0eac45e966cf027bbcd47867bdfa38e0c58058a052a2e302e283d4bc4b.md"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200015936-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200015936-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200015936-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181819-Z3GWTA/README.md"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/1a2712f2cf117de7dc2d5ca47fa31b77e77848cc58322568b44f4ee5bad5ae14.patch"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/8452612db8ace9c38231d617217c0d63709fc3ad80f8f51008a05a6dba6295b1.json"
-    - ".agentplane/tasks/202608181819-Z3GWTA/verification/20260818193918309-58b5a90aa91ff3e0.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/8ab576362fd5948729d2a8eaad4cc11da1c9c877619159f9b427816ba537fd61.patch"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/75cc40d0471d5b09a63f50b1b3def1cd78252da06047d74e5692aa0f962289f6.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/verification/20260818195951783-a918b69aa0c9a3b5.json"
     - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/eafed46fee43d017a057933d11cf3e53dcf84df66a33c23ba4fe0d8f0ecf80a8.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.direct.md"
   findings:
-    - "Tracked .agentplane/context/derived/reports/release-docs-assimilation.json, release-docs-assimilation.sgr.json, and release-docs-coverage-detail.jsonl still contain docs/launch paths, titles, hashes, and graph summaries after the source files were deleted."
+    - "README, docs, website, SEO, comparison, demo, and generated discovery surfaces use the same category and authority/proof promise without exceeding the source-backed product contract."
+    - "Current-tree searches find no unique internal launch-draft phrases, and docs/launch/** deletions are rendered without textual bodies through .gitattributes."
+    - "The stale rework evidence set containing the pre-suppression textual diff has been removed and is replaced by this current review packet."
 execution_route:
   frozen: true
   reason_codes:
-    - "direct_request_overridden"
+    - "effect_external_write"
     - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
   repository_mode: "branch_pr"
   requested_mode: "direct"
   schema_version: 1
@@ -112,6 +114,7 @@ execution_contract:
       - "repository_effect:documentation"
     changed_components:
       - ".agentplane"
+      - ".gitattributes"
       - "README.md"
       - "context"
       - "docs"
@@ -122,6 +125,7 @@ execution_contract:
       - ".agentplane/context/derived/reports/release-docs-assimilation.json"
       - ".agentplane/context/derived/reports/release-docs-assimilation.sgr.json"
       - ".agentplane/context/derived/reports/release-docs-coverage-detail.jsonl"
+      - ".gitattributes"
       - "README.md"
       - "context/wiki/release-docs/concepts/acr.md"
       - "context/wiki/release-docs/concepts/configuration.md"
@@ -210,13 +214,14 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:6bca5b55caca43de65d899b8c081959841b93e6d7b40c4e07e0b30ae4e81e296"
+      digest: "sha256:8b43a6e0da00cc759499f5c5ba0bf9fdb41e7a33450c9b655f3d3c8dc5a8a18e"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
         - "unknown_path:.agentplane/context/derived/reports/release-docs-assimilation.json"
         - "unknown_path:.agentplane/context/derived/reports/release-docs-assimilation.sgr.json"
         - "unknown_path:.agentplane/context/derived/reports/release-docs-coverage-detail.jsonl"
+        - "unknown_path:.gitattributes"
         - "unknown_path:marketing"
       execution_groups:
         - "docs-schema"
@@ -226,6 +231,7 @@ execution_contract:
       observed:
         changed_components:
           - ".agentplane"
+          - ".gitattributes"
           - "README.md"
           - "context"
           - "docs"
@@ -236,6 +242,7 @@ execution_contract:
           - ".agentplane/context/derived/reports/release-docs-assimilation.json"
           - ".agentplane/context/derived/reports/release-docs-assimilation.sgr.json"
           - ".agentplane/context/derived/reports/release-docs-coverage-detail.jsonl"
+          - ".gitattributes"
           - "README.md"
           - "context/wiki/release-docs/concepts/acr.md"
           - "context/wiki/release-docs/concepts/configuration.md"
@@ -306,7 +313,9 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "task_outcome"
-commit: null
+commit:
+  hash: "cbd9d5b3c234238194cbfb5f5e760129d5b71493"
+  message: "🚧 Z3GWTA task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -317,6 +326,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: cbd9d5b3c234. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -370,9 +382,23 @@ events:
     author: "TESTER"
     state: "ok"
     note: "All declared checks pass on implementation commit 9a01a6dd4; current public context, docs, and website contain no launch-document metadata outside excluded historical provenance."
+  -
+    type: "status"
+    at: "2026-08-18T19:53:57.078Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: cbd9d5b3c234. CLI accepted one state-bound external-agent semantic result."
+    commit: "cbd9d5b3c234238194cbfb5f5e760129d5b71493"
+  -
+    type: "verify"
+    at: "2026-08-18T19:59:51.783Z"
+    author: "TESTER"
+    state: "ok"
+    note: "All declared checks pass on implementation commit cbd9d5b3c; launch-copy bodies are absent from the current tree and suppressed from deletion diffs."
 doc_version: 3
-doc_updated_at: "2026-08-18T19:46:40.610Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-18T19:59:59.903Z"
+doc_updated_by: "SUPERVISOR"
 description: "Unify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth."
 sections:
   Summary: |-
@@ -635,6 +661,72 @@ sections:
     Result: pass
     Evidence: no matches remain outside deliberately excluded historical release provenance and task records; stale disposable release-docs assimilation reports were removed.
     Scope: requested current-tree private-content boundary and positioning outcome.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608181819-Z3GWTA-reposition-agentplane-as-the-git-native-control/.agentplane/tasks/202608181819-Z3GWTA/blueprint/resolved-snapshot.json
+    - old_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+    - current_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181819-Z3GWTA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608181819-Z3GWTA
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-18T19:59:51.783Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: All declared checks pass on implementation commit cbd9d5b3c; launch-copy bodies are absent from the current tree and suppressed from deletion diffs.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0, input_digest=sha256:ed0a9e426313098216820ef43728b2ca3f84999fdb340bbe57cbdc52eb52d11e
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run lint:website
+    Result: pass
+    Evidence: ESLint exited 0 on the current implementation.
+    Scope: touched website implementation.
+
+    Check: critical_paths
+    Command: bun run docs:readme-header:check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: README header artifacts are fresh for v0.7.6 and policy routing is OK.
+    Scope: public README, attributes, and repository policy gateway.
+
+    Check: full_regression
+    Command: bun run release:demo:check
+    Result: pass
+    Evidence: a fresh VHS render completed below the 3,000,000-byte limit; committed GIF bytes were restored after the nondeterministic render.
+    Scope: declared release demo gate.
+
+    Check: hosted_integration
+    Command: agentplane pr open 202608181819-Z3GWTA --author CODER
+    Result: pass
+    Evidence: GitHub PR 4845 exists and is linked in task metadata; publication of the current clean head remains a subsequent lifecycle action.
+    Scope: task branch and hosted PR linkage.
+
+    Check: real_e2e
+    Command: bun run docs:site:check
+    Result: pass
+    Evidence: docs IA, generated artifacts, website typecheck, social-card check, optimized Docusaurus build, navigation check, and design-language check passed.
+    Scope: public documentation and website build.
+
+    Check: task_outcome
+    Command: privacy phrase scan plus git diff check for docs/launch/**
+    Result: pass
+    Evidence: unique internal draft phrases have no current-tree matches; deleted launch files render as Binary files differ because docs/launch/** has diff unset.
+    Scope: requested current-tree private-content boundary and PR diff exposure.
 
     BlueprintSnapshotRef:
     - state: current
@@ -936,6 +1028,72 @@ Command: rg for launch paths and titles in current public context, docs, and web
 Result: pass
 Evidence: no matches remain outside deliberately excluded historical release provenance and task records; stale disposable release-docs assimilation reports were removed.
 Scope: requested current-tree private-content boundary and positioning outcome.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608181819-Z3GWTA-reposition-agentplane-as-the-git-native-control/.agentplane/tasks/202608181819-Z3GWTA/blueprint/resolved-snapshot.json
+- old_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+- current_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181819-Z3GWTA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608181819-Z3GWTA
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-18T19:59:51.783Z — VERIFY — ok
+
+By: TESTER
+
+Note: All declared checks pass on implementation commit cbd9d5b3c; launch-copy bodies are absent from the current tree and suppressed from deletion diffs.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0, input_digest=sha256:ed0a9e426313098216820ef43728b2ca3f84999fdb340bbe57cbdc52eb52d11e
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run lint:website
+Result: pass
+Evidence: ESLint exited 0 on the current implementation.
+Scope: touched website implementation.
+
+Check: critical_paths
+Command: bun run docs:readme-header:check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: README header artifacts are fresh for v0.7.6 and policy routing is OK.
+Scope: public README, attributes, and repository policy gateway.
+
+Check: full_regression
+Command: bun run release:demo:check
+Result: pass
+Evidence: a fresh VHS render completed below the 3,000,000-byte limit; committed GIF bytes were restored after the nondeterministic render.
+Scope: declared release demo gate.
+
+Check: hosted_integration
+Command: agentplane pr open 202608181819-Z3GWTA --author CODER
+Result: pass
+Evidence: GitHub PR 4845 exists and is linked in task metadata; publication of the current clean head remains a subsequent lifecycle action.
+Scope: task branch and hosted PR linkage.
+
+Check: real_e2e
+Command: bun run docs:site:check
+Result: pass
+Evidence: docs IA, generated artifacts, website typecheck, social-card check, optimized Docusaurus build, navigation check, and design-language check passed.
+Scope: public documentation and website build.
+
+Check: task_outcome
+Command: privacy phrase scan plus git diff check for docs/launch/**
+Result: pass
+Evidence: unique internal draft phrases have no current-tree matches; deleted launch files render as Binary files differ because docs/launch/** has diff unset.
+Scope: requested current-tree private-content boundary and PR diff exposure.
 
 BlueprintSnapshotRef:
 - state: current

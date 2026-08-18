@@ -1,0 +1,56 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check ca143028b988c7a95583233ff8ee6e9c146927ed..cbd9d5b3c234238194cbfb5f5e760129d5b71493",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB ca143028b988c7a95583233ff8ee6e9c146927ed..cbd9d5b3c234238194cbfb5f5e760129d5b71493",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608181819-Z3GWTA/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608181819-Z3GWTA/pr/github-body.md",
+        "M\t.agentplane/tasks/202608181819-Z3GWTA/pr/meta.json",
+        "M\t.agentplane/tasks/202608181819-Z3GWTA/pr/review.md",
+        "M\t.gitattributes"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "ca143028b988c7a95583233ff8ee6e9c146927ed",
+  "implementation_commit": "cbd9d5b3c234238194cbfb5f5e760129d5b71493",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .gitattributes"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .gitattributes"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .gitattributes"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608181819-Z3GWTA"
+}

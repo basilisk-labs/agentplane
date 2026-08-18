@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "kind": "evaluator_work_order",
-  "work_order_id": "evaluator-work-order-202608181819-Z3GWTA-774f8acf2386164aaf280a11",
-  "prepared_at": "2026-08-18T19:40:53.418Z",
+  "work_order_id": "evaluator-work-order-202608181819-Z3GWTA-ae2fb2e49926e091571da21c",
+  "prepared_at": "2026-08-18T20:00:15.936Z",
   "task": {
     "id": "202608181819-Z3GWTA",
-    "revision": 11,
+    "revision": 16,
     "objective": "Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\n\nUnify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth.",
     "acceptance_criteria": [
       "bun run docs:readme-header:check",
@@ -18,7 +18,7 @@
       "PLANNER fallback scaffold for \"Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
     ]
   },
-  "evaluated_sha": "60c6cda2f54343f58fc4053f4256ffe78de1e159",
+  "evaluated_sha": "cbd9d5b3c234238194cbfb5f5e760129d5b71493",
   "diff_base_sha": "7d7e964aec30e3551d34c81d3a726f28a6379690",
   "blueprint_digest": "55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae",
   "evaluator": {
@@ -40,9 +40,9 @@
   },
   "result_contract": "sgr.evaluator_result.v1",
   "packet": {
-    "manifest_path": ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-194053418-recovery-context/evaluator-evidence-manifest.json",
-    "manifest_sha256": "sha256:8d47d4064f4962094cecaa50484aceffd2aa711e4cb298bc8b8bd1c039f2f199",
-    "prompt_path": ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/9191b47e597f3d0979b64b233ef685eea7d7fa58365c29e8c761a70f3d7b4782.md",
+    "manifest_path": ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200015936-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:ae064a9210cdab61d87adccec4b849b208ad18930d4d7cf2d205c480e2a81f97",
+    "prompt_path": ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/9c1d5d0eac45e966cf027bbcd47867bdfa38e0c58058a052a2e302e283d4bc4b.md",
     "result_schema_path": ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
   },
   "evidence": [
@@ -50,28 +50,28 @@
       "id": "task-document",
       "kind": "task_document",
       "path": ".agentplane/tasks/202608181819-Z3GWTA/README.md",
-      "sha256": "sha256:db488e973b40128396e1e2e167635cdf994812928bc0db43df81ebe5c982bc62",
+      "sha256": "sha256:dc4d493780c02a79a125d20231e1e9f11d0013b718c91c12e55490d08424aaee",
       "required": true
     },
     {
       "id": "actual-diff",
       "kind": "actual_diff",
-      "path": ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/1a2712f2cf117de7dc2d5ca47fa31b77e77848cc58322568b44f4ee5bad5ae14.patch",
-      "sha256": "sha256:1a2712f2cf117de7dc2d5ca47fa31b77e77848cc58322568b44f4ee5bad5ae14",
+      "path": ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/8ab576362fd5948729d2a8eaad4cc11da1c9c877619159f9b427816ba537fd61.patch",
+      "sha256": "sha256:8ab576362fd5948729d2a8eaad4cc11da1c9c877619159f9b427816ba537fd61",
       "required": true
     },
     {
       "id": "observed-checks",
       "kind": "observed_checks",
-      "path": ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/8452612db8ace9c38231d617217c0d63709fc3ad80f8f51008a05a6dba6295b1.json",
-      "sha256": "sha256:8452612db8ace9c38231d617217c0d63709fc3ad80f8f51008a05a6dba6295b1",
+      "path": ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/75cc40d0471d5b09a63f50b1b3def1cd78252da06047d74e5692aa0f962289f6.json",
+      "sha256": "sha256:75cc40d0471d5b09a63f50b1b3def1cd78252da06047d74e5692aa0f962289f6",
       "required": true
     },
     {
       "id": "verification-record-1",
       "kind": "verification_log",
-      "path": ".agentplane/tasks/202608181819-Z3GWTA/verification/20260818193918309-58b5a90aa91ff3e0.json",
-      "sha256": "sha256:113a12b641bc68002471cd36678fa2c0e0b7004a257fccec48b2210a2b28da72",
+      "path": ".agentplane/tasks/202608181819-Z3GWTA/verification/20260818195951783-a918b69aa0c9a3b5.json",
+      "sha256": "sha256:816be34b8276b46a4f5a9a0f2293b6a9dd4f183ffc4e9bdf758999b1ca0c5816",
       "required": true
     },
     {

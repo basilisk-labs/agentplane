@@ -1,36 +1,36 @@
- .../derived/reports/release-docs-assimilation.json |  7459 ---
- .../reports/release-docs-assimilation.sgr.json     | 54587 -------------------
- .../reports/release-docs-coverage-detail.jsonl     |   210 -
- .gitattributes                                     |     1 +
- README.md                                          |    29 +-
- context/wiki/release-docs/concepts/acr.md          |     6 +-
- .../wiki/release-docs/concepts/configuration.md    |     3 +-
- context/wiki/release-docs/concepts/recipes.md      |     3 +-
- context/wiki/release-docs/docs-domains.md          |     2 -
- context/wiki/release-docs/domains/launch.md        |    45 -
- docs/assets/agentplane-demo.gif                    |   Bin 3834539 -> 2682529 bytes
- docs/assets/agentplane-demo.tape                   |     6 +-
- docs/compare.mdx                                   |    64 +-
- docs/index.mdx                                     |    14 +-
- docs/launch/checklist.md                           |   Bin 2240 -> 0 bytes
- docs/launch/hn.md                                  |   Bin 1543 -> 0 bytes
- docs/launch/reddit.md                              |   Bin 1790 -> 0 bytes
- docs/launch/twitter.md                             |   Bin 1543 -> 0 bytes
- docs/listing.md                                    |    26 +-
- docs/manifesto.mdx                                 |    45 +-
- docs/user/overview.mdx                             |    22 +-
- marketing                                          |     2 +-
- packages/agentplane/README.md                      |    31 +-
- website/docusaurus.config.ts                       |    10 +-
- website/scripts/check-site-content.mjs             |     8 +-
- website/src/data/homepage-content.ts               |   107 +-
- website/src/pages/_home.module.css                 |     2 +-
- website/src/pages/index.tsx                        |    49 +-
- .../static/img/social/docs/launch/checklist.png    |   Bin 53663 -> 0 bytes
- website/static/img/social/docs/launch/hn.png       |   Bin 47742 -> 0 bytes
- website/static/img/social/docs/launch/reddit.png   |   Bin 51743 -> 0 bytes
- website/static/img/social/docs/launch/twitter.png  |   Bin 51565 -> 0 bytes
- website/static/img/social/manifest.json            |    32 -
- website/static/llms-full.txt                       |   125 +-
- website/static/llms.txt                            |     5 +-
- 35 files changed, 300 insertions(+), 62593 deletions(-)
+ .../derived/reports/release-docs-assimilation.json | Bin 181256 -> 0 bytes
+ .../reports/release-docs-assimilation.sgr.json     | Bin 1905857 -> 0 bytes
+ .../reports/release-docs-coverage-detail.jsonl     | Bin 105889 -> 0 bytes
+ .gitattributes                                     |   3 +
+ README.md                                          |  29 +++--
+ context/wiki/release-docs/concepts/acr.md          | Bin 5745 -> 5553 bytes
+ .../wiki/release-docs/concepts/configuration.md    | Bin 6133 -> 6086 bytes
+ context/wiki/release-docs/concepts/recipes.md      | Bin 5936 -> 5889 bytes
+ context/wiki/release-docs/docs-domains.md          | Bin 4716 -> 4636 bytes
+ context/wiki/release-docs/domains/launch.md        | Bin 1146 -> 0 bytes
+ docs/assets/agentplane-demo.gif                    | Bin 3834539 -> 2682529 bytes
+ docs/assets/agentplane-demo.tape                   |   6 +-
+ docs/compare.mdx                                   |  64 ++++++-----
+ docs/index.mdx                                     |  14 ++-
+ docs/launch/checklist.md                           | Bin 2240 -> 0 bytes
+ docs/launch/hn.md                                  | Bin 1543 -> 0 bytes
+ docs/launch/reddit.md                              | Bin 1790 -> 0 bytes
+ docs/launch/twitter.md                             | Bin 1543 -> 0 bytes
+ docs/listing.md                                    |  26 ++---
+ docs/manifesto.mdx                                 |  45 ++++----
+ docs/user/overview.mdx                             |  22 ++--
+ marketing                                          |   2 +-
+ packages/agentplane/README.md                      |  31 +++--
+ website/docusaurus.config.ts                       |  10 +-
+ website/scripts/check-site-content.mjs             |   8 +-
+ website/src/data/homepage-content.ts               | 107 +++++++++---------
+ website/src/pages/_home.module.css                 |   2 +-
+ website/src/pages/index.tsx                        |  49 ++++----
+ .../static/img/social/docs/launch/checklist.png    | Bin 53663 -> 0 bytes
+ website/static/img/social/docs/launch/hn.png       | Bin 47742 -> 0 bytes
+ website/static/img/social/docs/launch/reddit.png   | Bin 51743 -> 0 bytes
+ website/static/img/social/docs/launch/twitter.png  | Bin 51565 -> 0 bytes
+ website/static/img/social/manifest.json            |  32 ------
+ website/static/llms-full.txt                       | 125 ++++++++++++---------
+ website/static/llms.txt                            |   5 +-
+ 35 files changed, 299 insertions(+), 281 deletions(-)

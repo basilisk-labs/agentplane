@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "README, docs, website, SEO, comparison, demo, and generated discovery surfaces use the same category and authority/proof promise without exceeding the source-backed product contract.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/8ab576362fd5948729d2a8eaad4cc11da1c9c877619159f9b427816ba537fd61.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Current-tree searches find no unique internal launch-draft phrases, and docs/launch/** deletions are rendered without textual bodies through .gitattributes.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/8ab576362fd5948729d2a8eaad4cc11da1c9c877619159f9b427816ba537fd61.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "The stale rework evidence set containing the pre-suppression textual diff has been removed and is replaced by this current review packet.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/8ab576362fd5948729d2a8eaad4cc11da1c9c877619159f9b427816ba537fd61.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The requested repository boundary concerns the current public tree and new PR diff; purging already-published historical Git objects is a distinct destructive operation."
+  ]
+}
