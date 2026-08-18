@@ -59,4 +59,10 @@ describe("configured repository authority", () => {
       false,
     );
   });
+
+  it("allows autonomous integration enqueue in all mode unless explicitly denied", () => {
+    expect(isOperationAuthorizedByPolicy(authority({ mode: "all" }), "integration.enqueue")).toBe(
+      true,
+    );
+  });
 });

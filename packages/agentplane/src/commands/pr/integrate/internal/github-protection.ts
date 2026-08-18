@@ -57,5 +57,10 @@ export async function requiresPullRequestMergePath(opts: {
       },
     });
   }
-  return protection.state === "protected";
+  // branch_pr has already established an open provider PR at the exact head.
+  // Finalizing an unprotected base with a separate local squash/merge can leave
+  // that provider PR OPEN while local task metadata is marked MERGED. Use the
+  // provider PR as the sole merge authority for both protected and explicitly
+  // unprotected bases.
+  return true;
 }

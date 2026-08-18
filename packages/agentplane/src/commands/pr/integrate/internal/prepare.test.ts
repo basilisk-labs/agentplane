@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   readFile: vi.fn(),
   ensureGitClean: vi.fn(),
   gitDiffNames: vi.fn(),
+  gitMergeBase: vi.fn(),
   gitDiffStat: vi.fn(),
   gitRefreshBranchTrackingRef: vi.fn(),
   gitBranchExists: vi.fn(),
@@ -42,6 +43,7 @@ vi.mock("../../../guard/index.js", () => ({ ensureGitClean: mocks.ensureGitClean
 vi.mock("@agentplaneorg/core/git", () => ({
   findWorktreeForBranch: mocks.findWorktreeForBranch,
   gitDiffNames: mocks.gitDiffNames,
+  gitMergeBase: mocks.gitMergeBase,
   gitDiffStat: mocks.gitDiffStat,
   gitRefreshBranchTrackingRef: mocks.gitRefreshBranchTrackingRef,
   gitEnv: () => process.env,
@@ -164,6 +166,7 @@ function seedCommon(): void {
   mocks.readAndValidatePrArtifacts.mockResolvedValue({ verifyLogText: "ok" });
   mocks.ensureCommittedPrArtifactsOnBranch.mockResolvedValue();
   mocks.gitDiffNames.mockReset().mockResolvedValue(["src/app.ts"]);
+  mocks.gitMergeBase.mockReset().mockResolvedValue("merge-base");
   mocks.gitDiffStat.mockResolvedValue("src/app.ts | 1 +\n");
   mocks.gitRefreshBranchTrackingRef.mockResolvedValue();
   mocks.gitBranchUpstream.mockImplementation((_gitRoot: string, branch: string) =>

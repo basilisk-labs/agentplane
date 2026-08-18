@@ -196,6 +196,12 @@ const REASON_CODE_MAP: Readonly<Record<string, ReasonCodeMeta>> = {
     summary: "command requires valid git repository context",
     action: "confirm repository root and tracked changes",
   },
+  base_branch_upstream_mismatch: {
+    code: "base_branch_upstream_mismatch",
+    category: "git",
+    summary: "base branch does not exactly match its configured upstream",
+    action: "reconcile the base branch with its upstream before starting task work",
+  },
   integrate_base_checkout_required: {
     code: "integrate_base_checkout_required",
     category: "git",

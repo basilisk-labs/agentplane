@@ -247,7 +247,9 @@ describe("provider conflict rework CLI", () => {
     const taskReadme = await readFile(taskReadmePath, "utf8");
     await writeFile(
       taskReadmePath,
-      taskReadme.replace('verification:\n  state: "pending"', 'verification:\n  state: "ok"'),
+      taskReadme
+        .replace('status: "DOING"', 'status: "DONE"')
+        .replace('verification:\n  state: "pending"', 'verification:\n  state: "ok"'),
       "utf8",
     );
     await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: worktree });

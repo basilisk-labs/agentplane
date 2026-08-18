@@ -481,11 +481,10 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
         cwd: checkout,
       });
       if (!evaluator.operator_action?.argv) throw new Error("expected exact authority argv");
-      await runCommand(
-        evaluator.operator_action.cwd ?? checkout,
-        evaluator.operator_action.argv.slice(1),
-        metrics,
-      );
+      const authorityArgv = evaluator.operator_action.argv.slice(1);
+      const receiptIndex = authorityArgv.indexOf("--approval-receipt");
+      if (receiptIndex !== -1) authorityArgv.splice(receiptIndex, 2, "--by", "USER");
+      await runCommand(evaluator.operator_action.cwd ?? checkout, authorityArgv, metrics);
       evaluator = (await runJson(
         checkout,
         ["task", "advance", taskId, "--agent-json"],
