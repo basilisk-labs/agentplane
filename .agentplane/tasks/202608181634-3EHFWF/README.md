@@ -4,7 +4,7 @@ title: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -29,35 +29,35 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-18T16:55:47.255Z"
+  updated_at: "2026-08-18T17:00:41.659Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 4 typed finding(s)."
-  evaluated_sha: "3c5b50c1ed7101a6696f4902dd53e508704bab64"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "b10d32931b6f74f791d30677d61103cbe15fb38f"
   blueprint_digest: "7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8"
   evidence_refs:
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-165331306-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-165331306-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/fb41f9d8e3f7ab63042bf64d4286784693feeb6851b6923f34cfa04e3689a0ee.md"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-165331306-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-165331306-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-165331306-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-165331306-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-170001715-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-170001715-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/b494e6ffc1ccd88b2f3669de311165fc18b23f81d015c1600995d4e78677e227.md"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-170001715-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-170001715-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-170001715-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181634-3EHFWF/README.md"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/379cd4d761527438e3ffa7c7f6821e6b1af480b2e92141006e22dbac98867cac.patch"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/88544500bf2ea0f04401dc3d6d025c24da58d14e4b2b187da75e9275fb044d86.json"
-    - ".agentplane/tasks/202608181634-3EHFWF/verification/20260818165326215-7ba964c63965a0f2.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/f83e4b370d979dcce33905493f39453f2d519d6b4d46dfb915368ca326a2242b.patch"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/50162db35ce71ddc97634b5247c7f0ee662fed36d7e55dd2975a9f7f300848ff.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/verification/20260818165956280-913d91a95b9390ba.json"
     - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/b758feb8420fb9c7158fdbfaefa7a450b440dd27fb80e91b9e6a0170615f632d.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "Task-owner context resolution now checks ownership of the explicitly resolved task branch before retaining a current worktree context, with a stale-worktree regression."
-    - "Prerelease classification now precedes release-ready, registry, incident, release-note, and npm checks, and the detect step writes the exact checkout SHA."
-    - "The detect job output still declares sha from steps.source.outputs.sha; that step is intentionally skipped for prereleases, so downstream or diagnostic consumers receive an empty SHA despite the detect step emitting one."
-    - "Residual risk: Without the one-line output correction, prerelease automation succeeds but loses exact provenance in the job result."
+    - "The task-backend implementation resolves the task branch explicitly and retains the current context only when its git root owns that branch; the stale-worktree regression exercises a separate live owner worktree."
+    - "The publish workflow classifies prereleases before all stable-only gates, emits should_publish=false with exact version, tag, and SHA, and now exports that SHA from steps.detect.outputs.sha."
+    - "The contract regression requires the detect output and rejects the former stable-only source output reference."
+    - "The candidate records 4,193 passing fast tests plus focused, critical, release-critical, contract, documentation, release payload, and diff-hygiene checks."
+    - "Residual risk: The public release remains dependent on green hosted checks and separately authority-gated integration and publication operations."
 execution_route:
   frozen: true
   reason_codes:
