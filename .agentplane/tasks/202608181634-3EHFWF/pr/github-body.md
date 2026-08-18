@@ -28,7 +28,7 @@ Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports 
 
 ```text
  .agentplane/WORKFLOW.md                            |   2 +-
- .github/workflows/publish.yml                      |  93 +++++++++++--
+ .github/workflows/publish.yml                      |  95 +++++++++++--
  docs/assets/header.svg                             |   4 +-
  docs/assets/readme-headers/adr.svg                 |   4 +-
  docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
@@ -68,7 +68,7 @@ Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports 
  .../src/commands/release/plan.command.ts           |  17 ++-
  .../src/commands/release/plan.helpers.ts           |  91 ++++++++++++-
  .../agentplane/src/commands/release/plan.test.ts   |  85 ++++++++++++
- .../release/publish-workflow-contract.test.ts      |  53 +++++++-
+ .../release/publish-workflow-contract.test.ts      |  55 +++++++-
  .../release/release-task-evidence-script.test.ts   |   8 +-
  .../src/commands/shared/task-backend.test.ts       | 100 +++++++++++++-
  .../agentplane/src/commands/shared/task-backend.ts |  45 ++++++-
@@ -89,7 +89,7 @@ Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports 
  scripts/release/open-next-development-version.mjs  |  55 ++++++++
  scripts/release/release-task-evidence.mjs          |  19 ++-
  scripts/release/version-bump.mjs                   |  13 +-
- 62 files changed, 1429 insertions(+), 133 deletions(-)
+ 62 files changed, 1432 insertions(+), 134 deletions(-)
 ```
 
 </details>

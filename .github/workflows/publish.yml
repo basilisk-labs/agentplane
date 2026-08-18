@@ -40,7 +40,7 @@ jobs:
       version: ${{ steps.detect.outputs.version }}
       tag: ${{ steps.detect.outputs.tag }}
       ref: ${{ steps.ref.outputs.ref }}
-      sha: ${{ steps.source.outputs.sha }}
+      sha: ${{ steps.detect.outputs.sha }}
       core_published: ${{ steps.detect.outputs.core_published }}
       recipes_published: ${{ steps.detect.outputs.recipes_published }}
       cli_published: ${{ steps.detect.outputs.cli_published }}
