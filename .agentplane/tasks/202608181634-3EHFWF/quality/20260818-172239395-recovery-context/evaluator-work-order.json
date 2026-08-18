@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608181634-3EHFWF-b3b9c32cb0b7e3540f05200a",
+  "prepared_at": "2026-08-18T17:22:39.395Z",
+  "task": {
+    "id": "202608181634-3EHFWF",
+    "revision": 17,
+    "objective": "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication.\n\nSupersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication.",
+    "acceptance_criteria": [
+      "- In scope: Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication.\n- Out of scope: unrelated refactors not required for \"Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication.\".",
+      "1. Create an isolated branch_pr worktree from exact main 374aa33fbca59318205d2dde70ab149710fe566d and import the source, documentation, release metadata, generated compatibility baseline, and release assets from PR #4843 head 8bc7bab9c3bf58224b0454c1d4734706d9f4f530 while excluding every foreign .agentplane/tasks artifact. 2. Correct task-owner context resolution so a globally discoverable branch snapshot keeps the current context only when the current checkout owns the resolved task branch; otherwise route to the canonical primary context. Add a stale-worktree regression. 3. Correct publish.yml stable-only detection so prerelease versions exit before release-note and registry checks, and add a workflow-contract regression proving the ordering and skip result. 4. Reconcile generated docs, headers, release note, version surfaces, schemas, social manifest, and compatibility baseline for 0.7.7-beta.1 without unrelated changes. 5. Run focused regressions, routing/policy validation, ci:contract, docs:site:check, release:check, test:release:critical, test:critical, and test:fast; record exact evidence. 6. Submit the candidate to independent evaluation, publish the exact reviewed head, obtain green hosted checks, integrate through AgentPlane, then use the separately authority-gated release lifecycle to publish stable 0.7.7 and verify the automated 0.7.8-beta.1 opening. 7. After public release proof, close superseded PRs/tasks and reconcile the original dirty checkout behind an explicit recovery ref.",
+      "PLANNER fallback scaffold for \"Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "16457593d821119c1ed447fcbd8b94e1baee8c2f",
+  "diff_base_sha": "374aa33fbca59318205d2dde70ab149710fe566d",
+  "blueprint_digest": "7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-172239395-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:29408e2e7fd3b2acc67f9e8419af1493501632a574535e421e6858d009878f33",
+    "prompt_path": ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/afdaab60787b3d1e0d946a342394b16a7f3ca155e88699d75d4056fcc40b8c84.md",
+    "result_schema_path": ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608181634-3EHFWF/README.md",
+      "sha256": "sha256:7d48ec3319be60aa32206d23eee2e2e7dc362fd11d444141b7a2b671e5c0b2e6",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/9798f84e897f3bea91b6090475d5bee98386b0f3d9e47ee183eb39f24aa10350.patch",
+      "sha256": "sha256:9798f84e897f3bea91b6090475d5bee98386b0f3d9e47ee183eb39f24aa10350",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/488d8bb0c427c40db137f2fcb733ff92938f480f42c3234499af536115d85c05.json",
+      "sha256": "sha256:488d8bb0c427c40db137f2fcb733ff92938f480f42c3234499af536115d85c05",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608181634-3EHFWF/verification/20260818172234406-7beef3c912f6ca47.json",
+      "sha256": "sha256:9bce68d05740a34a1839b5a00c8f5f2a75a6af6942a5cd916d120667265cc2f7",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/b758feb8420fb9c7158fdbfaefa7a450b440dd27fb80e91b9e6a0170615f632d.json",
+      "sha256": "sha256:b758feb8420fb9c7158fdbfaefa7a450b440dd27fb80e91b9e6a0170615f632d",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:47ab8b04f9d747491398390dac415b34aa6d3df0cf0fb61e9924fd3e4851ec48",
+      "required": true
+    }
+  ]
+}
