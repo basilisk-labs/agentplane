@@ -85,6 +85,7 @@ Created: 2026-08-18T17:51:51.714Z
  ...n-cli.core.pr-flow.integrate-strategies.test.ts |   6 +
  .../evaluator/evaluator-execute.command.test.ts    |   4 +-
  .../evaluator-qualification-packet.test.ts         |   2 +-
+ .../commands/pr/integrate/internal/prepare.test.ts |   3 +
  .../branch-task-artifact-ownership.test.ts         |  85 +++++++++--
  .../pr/internal/branch-task-artifact-ownership.ts  |  22 ++-
  .../task-run-lifecycle-replay-security.test.ts     | 162 +++++++++++----------
@@ -97,7 +98,7 @@ Created: 2026-08-18T17:51:51.714Z
  scripts/README.md                                  |  24 +--
  .../baselines/v0.7-compatibility-candidate.json    |   6 +-
  scripts/checks/run-fast-ci-tests.mjs               |   2 +-
- 68 files changed, 269 insertions(+), 1441 deletions(-)
+ 69 files changed, 272 insertions(+), 1441 deletions(-)
 ```
 
 </details>
