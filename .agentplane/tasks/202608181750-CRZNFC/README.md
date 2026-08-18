@@ -1,10 +1,10 @@
 ---
 id: "202608181750-CRZNFC"
 title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref."
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,10 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-18T23:12:48.003Z"
-  updated_by: "EVALUATOR"
-  note: "Execution authority omitted required root package.json; reopen implementation to request an exact state-bound scope extension before publication."
+  state: "pending"
+  updated_at: "2026-08-18T23:13:59.043Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 1
 quality_review:
   state: "rework"
@@ -86,6 +86,7 @@ execution_contract:
       - ".agentplane/config.json"
       - ".agentplane/tasks/202608112259-T3ZDDM/evidence"
       - "docs"
+      - "package.json"
       - "packages"
       - "schemas"
       - "scripts"
@@ -101,6 +102,7 @@ execution_contract:
       - "USER-approved blocked-result scope extension: roots=.agentplane/WORKFLOW.md,docs,packages,schemas,scripts,website; repository_effects=dependencies,documentation,public_api,release_metadata,repository_write,schema,source_code,tests"
       - "USER-approved blocked-result scope extension: roots=.agentplane/config.json; repository_effects=release_metadata,repository_write"
       - "USER-approved blocked-result scope extension: roots=.agentplane/tasks/202608112259-T3ZDDM/evidence; repository_effects=repository_write"
+      - "USER-approved blocked-result scope extension: roots=package.json; repository_effects=release_metadata"
       - "legacy structured task fields mapped to the execution contract"
     repository_effects:
       - "dependencies"
@@ -119,14 +121,13 @@ execution_contract:
       - ".agentplane/config.json"
       - ".agentplane/tasks/202608112259-T3ZDDM/evidence"
       - "docs"
+      - "package.json"
       - "packages"
       - "schemas"
       - "scripts"
       - "website"
   observed:
-    authority_violations:
-      - "verification:verification-record:fail"
-      - "writable_scope:package.json"
+    authority_violations: []
     changed_components:
       - ".agentplane"
       - "docs"
@@ -215,10 +216,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "verification-record"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_dependencies"
@@ -227,7 +225,6 @@ execution_contract:
     - "effect_publish"
     - "effect_release_metadata"
     - "effect_schema"
-    - "observed_path_outside_scope:package.json"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -248,6 +245,7 @@ execution_contract:
           - ".agentplane/config.json"
           - ".agentplane/tasks/202608112259-T3ZDDM/evidence"
           - "docs"
+          - "package.json"
           - "packages"
           - "schemas"
           - "scripts"
@@ -283,8 +281,9 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:81e132092d35da414866ebd0e8fa02140814533ea7461a6a2b86f232c460b539"
+      digest: "sha256:3c01bcaa714814f33a41688de8704195f47f09b02edbd35622a75413a3e0da3d"
       escalation_reasons:
+        - "central_component:package.json"
         - "central_path:package.json"
         - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts"
@@ -467,7 +466,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -497,6 +495,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The 0.7.7 candidate is complete and fully verified, but the release version change to root package.json is outside the persisted writable roots. Recommended action: Approve a state-bound scope extension for exactly package.json, then register the already verified implementation commit and resume independent evaluation. Requested scope: roots=package.json; repository effects=release_metadata; request digest=sha256:ed2c9df6f163e41c815575dec1796699df2aaf333b808e81905e4d24851ea971. Agentplane receipt: external-agent-blocker/tr_2ddae8292f5410a72b53c3f110e13e60/sha256:72a0c5d215806a3582e1c76216ab7d85925df0f027ce7f7809d9eca695e3c43d/sha256:ed2c9df6f163e41c815575dec1796699df2aaf333b808e81905e4d24851ea971."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: package.json; repository effects: release_metadata."
 events:
   -
     type: "status"
@@ -611,6 +612,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-08-18T23:13:59.043Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:72a0c5d215806a3582e1c76216ab7d85925df0f027ce7f7809d9eca695e3c43d"
     kind: "task_scope_extension_request"
     request:
@@ -622,7 +625,7 @@ extensions:
         - "package.json"
     request_digest: "sha256:ed2c9df6f163e41c815575dec1796699df2aaf333b808e81905e4d24851ea971"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_2ddae8292f5410a72b53c3f110e13e60"
   workflow_route_baseline:
     start_head_sha: "708f0d7d5b813ea2bb4de659d9eb113a752e3c63"
