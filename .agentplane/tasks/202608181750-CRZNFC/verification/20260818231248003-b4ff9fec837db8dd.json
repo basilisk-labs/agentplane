@@ -1,0 +1,83 @@
+{
+  "details": "Check: execution-contract-authority\nCommand: supervisor scope audit\nResult: rework\nEvidence: package.json is changed by the release version plan but absent from the current writable roots.\nScope: exact 0.7.7 candidate diff.",
+  "digest": "sha256:b4ff9fec837db8dd84e349932a38fbf552b67ef484dfad4d97c3921ed47b2d41",
+  "implementation_sha": "3c5ade2462f684a873993cade2d12103036bc160",
+  "input": {
+    "context": {
+      "digest": "sha256:e8474379a763ca6e0e128de1046c6129a4eeecfa9ee27726efe29aa98e54ddd8",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:965e5f8dc60d44ce1b5809587538a6f8e3485f23acd3a3f5ee43e0f87794ba77",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:dac3ed25f04c38628a7af192fa42ee0b1e0224ad8fd626ad0019139b30fe4fd3",
+      "digest": "sha256:8972c5c08f3df751598b73febafea50fbb3eb294c9b56dae7bd6e61cc7c7353e",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "708f0d7d5b813ea2bb4de659d9eb113a752e3c63",
+      "digest": "sha256:d109fa8cf9581d563fcebbb93e38d3ddc99e6c79ae76c9afec191456bf0cd539",
+      "strategy": "branch_diff",
+      "target_sha": "3c5ade2462f684a873993cade2d12103036bc160"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:81e132092d35da414866ebd0e8fa02140814533ea7461a6a2b86f232c460b539",
+    "verify_steps_digest": "sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1"
+  },
+  "kind": "task_verification_record",
+  "note": "Execution authority omitted required root package.json; reopen implementation to request an exact state-bound scope extension before publication.",
+  "recorded_at": "2026-08-18T23:12:48.003Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1",
+  "task_id": "202608181750-CRZNFC",
+  "verification_command": "agentplane task verify rework 202608181750-CRZNFC --rework --by EVALUATOR",
+  "verifier": "EVALUATOR"
+}

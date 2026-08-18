@@ -12,8 +12,8 @@ Created: 2026-08-18T17:51:51.714Z
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: needs_rework
+- Note: Execution authority omitted required root package.json; reopen implementation to request an exact state-bound scope extension before publication.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
