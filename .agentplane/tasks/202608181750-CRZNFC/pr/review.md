@@ -13,7 +13,7 @@ Created: 2026-08-18T17:51:51.714Z
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,75 @@ Created: 2026-08-18T17:51:51.714Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/WORKFLOW.md                            |   2 +-
+ .../risk-e2e/logs/hosted-boundary-matrix.log       |   7 -
+ .../risk-e2e/logs/packaged-candidate-flow.log      |   5 -
+ .../samples/sample-01.events.jsonl                 |   1 -
+ .../samples/sample-01.stderr.log                   |   2 -
+ .../samples/sample-01.stdout.log                   | 123 ----------------
+ .../samples/sample-02.events.jsonl                 |   1 -
+ .../samples/sample-02.stderr.log                   |   2 -
+ .../samples/sample-02.stdout.log                   | 123 ----------------
+ .../samples/sample-03.events.jsonl                 |   1 -
+ .../samples/sample-03.stderr.log                   |   2 -
+ .../samples/sample-03.stdout.log                   | 123 ----------------
+ .../samples/sample-04.events.jsonl                 |   1 -
+ .../samples/sample-04.stderr.log                   |   2 -
+ .../samples/sample-04.stdout.log                   | 123 ----------------
+ .../samples/sample-05.events.jsonl                 |   1 -
+ .../samples/sample-05.stderr.log                   |   2 -
+ .../samples/sample-05.stdout.log                   | 123 ----------------
+ .../samples/sample-01.events.jsonl                 |   1 -
+ .../samples/sample-01.stderr.log                   |   2 -
+ .../samples/sample-01.stdout.log                   | 124 ----------------
+ .../samples/sample-02.events.jsonl                 |   1 -
+ .../samples/sample-02.stderr.log                   |   2 -
+ .../samples/sample-02.stdout.log                   | 124 ----------------
+ .../samples/sample-03.events.jsonl                 |   1 -
+ .../samples/sample-03.stderr.log                   |   2 -
+ .../samples/sample-03.stdout.log                   | 124 ----------------
+ .../samples/sample-04.events.jsonl                 |   1 -
+ .../samples/sample-04.stderr.log                   |   2 -
+ .../samples/sample-04.stdout.log                   | 124 ----------------
+ .../samples/sample-05.events.jsonl                 |   1 -
+ .../samples/sample-05.stderr.log                   |   2 -
+ .../samples/sample-05.stdout.log                   | 124 ----------------
+ docs/assets/header.svg                             |   4 +-
+ docs/assets/readme-headers/adr.svg                 |   4 +-
+ docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
+ docs/assets/readme-headers/agentplane.svg          |   4 +-
+ docs/assets/readme-headers/core.svg                |   4 +-
+ docs/assets/readme-headers/docs.svg                |   4 +-
+ docs/assets/readme-headers/humanizer.svg           |   4 +-
+ docs/assets/readme-headers/recipes.svg             |   4 +-
+ docs/assets/readme-headers/releases.svg            |   4 +-
+ docs/assets/readme-headers/schemas.svg             |   4 +-
+ docs/assets/readme-headers/scripts.svg             |   4 +-
+ docs/assets/readme-headers/skills.svg              |   4 +-
+ docs/assets/readme-headers/spec.svg                |   4 +-
+ docs/assets/readme-headers/testkit.svg             |   4 +-
+ docs/reference/generated-reference.mdx             |  14 +-
+ package.json                                       |   2 +-
+ packages/agentplane/package.json                   |   6 +-
+ ...run-cli.core.pr-flow.integrate-failures.test.ts |   6 +
+ .../run-cli.core.pr-flow.integrate-merge.test.ts   |   6 +
+ ...-cli.core.pr-flow.integrate-rebase-race.test.ts |   8 +-
+ ...n-cli.core.pr-flow.integrate-strategies.test.ts |   6 +
+ .../evaluator/evaluator-execute.command.test.ts    |   4 +-
+ .../evaluator-qualification-packet.test.ts         |   2 +-
+ .../branch-task-artifact-ownership.test.ts         |  85 +++++++++--
+ .../pr/internal/branch-task-artifact-ownership.ts  |  22 ++-
+ .../task-run-lifecycle-replay-security.test.ts     | 162 +++++++++++----------
+ packages/core/package.json                         |   2 +-
+ packages/recipes/package.json                      |   2 +-
+ packages/recipes/src/index.ts                      |   2 +-
+ packages/spec/examples/acr.json                    |   4 +-
+ packages/testkit/package.json                      |   2 +-
+ packages/testkit/src/github-pr.ts                  |   8 +-
+ scripts/README.md                                  |  24 +--
+ .../baselines/v0.7-compatibility-candidate.json    |   6 +-
+ scripts/checks/run-fast-ci-tests.mjs               |   2 +-
+ 68 files changed, 269 insertions(+), 1441 deletions(-)
 ```
 
 </details>
