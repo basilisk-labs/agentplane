@@ -264,7 +264,15 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     expect(next.operator_action).toMatchObject({
       kind: "approve_plan",
       required_role: "USER",
-      argv: ["agentplane", "task", "plan", "approve", taskId, "--by", "USER"],
+      argv: [
+        "agentplane",
+        "task",
+        "plan",
+        "approve",
+        taskId,
+        "--approval-receipt",
+        "<base64url-receipt>",
+      ],
     });
     expect(
       await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),

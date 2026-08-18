@@ -73,8 +73,24 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
+      - name: Classify release channel
+        id: channel
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "JSON.parse(require('node:fs').readFileSync('packages/agentplane/package.json','utf8')).version")
+          PRERELEASE=$(node --input-type=module -e "import { parseReleaseSemver } from './scripts/lib/release-semver.mjs'; const parsed = parseReleaseSemver(process.argv[1]); if (!parsed) process.exit(2); process.stdout.write(parsed.prerelease.length > 0 ? 'true' : 'false');" "$VERSION")
+          {
+            echo "version=$VERSION"
+            if [ "$PRERELEASE" = "true" ]; then
+              echo "stable=false"
+            else
+              echo "stable=true"
+            fi
+          } >> "$GITHUB_OUTPUT"
       - name: Resolve release-ready source
         id: source
+        if: steps.channel.outputs.stable == 'true'
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -146,7 +162,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           node -e 'const fs=require("node:fs"); const payload=JSON.parse(fs.readFileSync(".agentplane/.release/ready/source.json","utf8")); console.log(payload.message); if (payload.nextAction) console.log("Next action: " + payload.nextAction);'
       - name: Release task registry (check)
-        if: steps.source.outputs.release_ready_ok == 'true'
+        if: steps.channel.outputs.stable == 'true' && steps.source.outputs.release_ready_ok == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -158,7 +174,7 @@ jobs:
             echo "release task registry gate skipped: no compatible script exists for this historical target"
           fi
       - name: Release incidents (check)
-        if: steps.source.outputs.release_ready_ok == 'true'
+        if: steps.channel.outputs.stable == 'true' && steps.source.outputs.release_ready_ok == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -184,9 +200,23 @@ jobs:
             exit 1
           fi
 
-          SHA="${{ steps.source.outputs.sha }}"
           VERSION="$VERSION_CLI"
           TAG="v${VERSION}"
+          if [ "${{ steps.channel.outputs.stable }}" != "true" ]; then
+            {
+              echo "should_publish=false"
+              echo "sha=$(git rev-parse HEAD)"
+              echo "version=$VERSION"
+              echo "tag=$TAG"
+              echo "core_published=false"
+              echo "recipes_published=false"
+              echo "cli_published=false"
+            } >> "$GITHUB_OUTPUT"
+            echo "stable release detection skipped for prerelease $VERSION"
+            exit 0
+          fi
+
+          SHA="${{ steps.source.outputs.sha }}"
           NOTES="docs/releases/${TAG}.md"
           if [ ! -f "$NOTES" ]; then
             echo "missing release notes: $NOTES" >&2
@@ -310,7 +340,7 @@ jobs:
       - name: Validate release notes
         run: node scripts/check-release-notes.mjs --tag "${{ needs.detect.outputs.tag }}"
       - name: Validate release versions
-        run: node scripts/check-release-version.mjs --tag "${{ needs.detect.outputs.tag }}"
+        run: node scripts/check-release-version.mjs --tag "${{ needs.detect.outputs.tag }}" --stable-only
       - name: Validate exact-ref publish payload
         # The exact-SHA release-ready artifact already proves release-critical CI
         # readiness for this historical commit. The publish job only needs to
@@ -648,7 +678,7 @@ jobs:
           const out = process.env.GITHUB_OUTPUT;
           if (!out) throw new Error("GITHUB_OUTPUT is not set");
           const lines = [`actionable=${payload.actionable ? "true" : "false"}`];
-          for (const key of ["task_id", "base_ref", "release_sha", "closure_branch", "readme_path"]) {
+          for (const key of ["task_id", "base_ref", "release_sha", "closure_branch", "readme_path", "next_development_version"]) {
             if (typeof payload[key] === "string" && payload[key].trim().length > 0) {
               lines.push(`${key}=${payload[key]}`);
             }
@@ -697,27 +727,70 @@ jobs:
         id: apply_release_evidence
         env:
           REPO: ${{ github.repository }}
+          PUBLISHED_VERSION: ${{ needs.detect.outputs.version }}
         run: |
           set -euo pipefail
           git fetch --no-tags origin \
             "refs/heads/${{ steps.release_evidence.outputs.base_ref }}:refs/remotes/origin/${{ steps.release_evidence.outputs.base_ref }}"
           git switch -C "${{ steps.release_evidence.outputs.closure_branch }}" "origin/${{ steps.release_evidence.outputs.base_ref }}"
-          before_status="$(git status --short -- .agentplane/tasks/${{ steps.release_evidence.outputs.task_id }}/README.md)"
+          before_status="$(git status --short --untracked-files=no)"
+          if [ -n "${before_status}" ]; then
+            echo "release evidence follow-up branch is dirty before mutation" >&2
+            printf '%s\n' "${before_status}" >&2
+            exit 1
+          fi
           bun scripts/release-task-evidence.mjs apply \
             --task-id "${{ steps.release_evidence.outputs.task_id }}" \
             --publish-result .agentplane/.release/publish/publish-result.json \
             --repo "${REPO}" \
             --author DEUS > .agentplane/.release/publish/release-task-apply.json
-          after_status="$(git status --short -- .agentplane/tasks/${{ steps.release_evidence.outputs.task_id }}/README.md)"
-          if [ -z "${after_status}" ] || [ "${before_status}" = "${after_status}" ]; then
+          node scripts/release/open-next-development-version.mjs \
+            --published-version "${PUBLISHED_VERSION}" \
+            --write \
+            --json > .agentplane/.release/publish/next-development-version.json
+          node <<'EOF'
+          const fs = require("node:fs");
+          const payload = JSON.parse(
+            fs.readFileSync(".agentplane/.release/publish/next-development-version.json", "utf8"),
+          );
+          const out = process.env.GITHUB_OUTPUT;
+          if (!out) throw new Error("GITHUB_OUTPUT is not set");
+          fs.appendFileSync(
+            out,
+            `development_action=${payload.action}\ndevelopment_version=${payload.next_version || ""}\n`,
+          );
+          EOF
+          after_status="$(git status --short --untracked-files=no)"
+          if [ -z "${after_status}" ]; then
             echo "created_commit=false" >> "$GITHUB_OUTPUT"
             echo "closure_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add "${{ steps.release_evidence.outputs.readme_path }}"
-          git commit --no-verify -m "📝 ${{ steps.release_evidence.outputs.task_id }} task: record hosted publish evidence"
+          git add \
+            "${{ steps.release_evidence.outputs.readme_path }}" \
+            .agentplane/WORKFLOW.md \
+            bun.lock \
+            docs/reference/generated-reference.mdx \
+            packages/agentplane/package.json \
+            packages/core/package.json \
+            packages/recipes/package.json \
+            packages/recipes/src/index.ts \
+            packages/spec/examples/acr.json \
+            packages/testkit/package.json
+          unstaged="$(git diff --name-only)"
+          if [ -n "${unstaged}" ]; then
+            echo "next development version mutation left unstaged tracked files" >&2
+            printf '%s\n' "${unstaged}" >&2
+            exit 1
+          fi
+          commit_subject="📝 ${{ steps.release_evidence.outputs.task_id }} task: record hosted publish evidence"
+          development_action="$(node -e 'const p=require("./.agentplane/.release/publish/next-development-version.json"); process.stdout.write(String(p.action || ""))')"
+          if [ "${development_action}" = "apply" ]; then
+            commit_subject="📝 ${{ steps.release_evidence.outputs.task_id }} task: record publish evidence and open ${{ steps.release_evidence.outputs.next_development_version }}"
+          fi
+          git commit --no-verify -m "${commit_subject}"
           echo "created_commit=true" >> "$GITHUB_OUTPUT"
           echo "closure_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Push release evidence branch

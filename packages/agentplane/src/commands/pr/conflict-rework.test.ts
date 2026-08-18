@@ -273,12 +273,18 @@ describe("provider conflict rework packet", () => {
     expect(git.calls.diffNames).toBe(0);
   });
 
-  it("still requires conflict authority after a verified DONE provider head is aligned", async () => {
+  it("allows a verified DONE provider head to enter bounded current-PR rework", async () => {
     const conflicting = report({ queue: { present: false }, handoff: { present: false } });
 
     await expect(prepare({ report: conflicting })).resolves.toMatchObject({
-      state: "invalid",
-      reason_code: "conflict_rework_route_ineligible",
+      state: "ready",
+      packet: {
+        route_evidence: {
+          kind: "current_verified_open_pr_rework",
+          queue: null,
+          handoff: null,
+        },
+      },
     });
   });
 
@@ -624,11 +630,11 @@ describe("provider conflict rework packet", () => {
     });
   });
 
-  it("rejects nonqueued or unverified task PR conflicts before semantic routing", async () => {
+  it("admits a verified current DONE PR but rejects queued DOING and unverified conflicts", async () => {
     const nonqueued = report({ queue: { present: false }, handoff: { present: false } });
     await expect(prepare({ report: nonqueued })).resolves.toMatchObject({
-      state: "invalid",
-      reason_code: "conflict_rework_route_ineligible",
+      state: "ready",
+      packet: { route_evidence: { kind: "current_verified_open_pr_rework" } },
     });
 
     const doing = report({ task: { id: taskId, status: "DOING", verification: "ok" } });

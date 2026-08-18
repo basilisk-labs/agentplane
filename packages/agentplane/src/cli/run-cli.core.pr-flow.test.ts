@@ -794,9 +794,9 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
         ]);
         expect(code).toBe(5);
         expect(io.stderr).toContain(
-          "Base branch main is behind its upstream origin/main by 1 commit",
+          "Base branch main does not exactly match its upstream origin/main: behind by 1 commit",
         );
-        expect(io.stderr).toContain("Refresh the base branch before `agentplane work start`");
+        expect(io.stderr).toContain("Reconcile the base branch with its upstream");
       } finally {
         io.restore();
       }

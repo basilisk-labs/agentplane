@@ -17,6 +17,10 @@ function sameValue(left: unknown, right: unknown): boolean {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 
+function sameStringSet(left: readonly string[] | undefined, right: readonly string[]): boolean {
+  return sameValue([...(left ?? [])].toSorted(), [...right].toSorted());
+}
+
 function planningTaskFields(opts: {
   command: CommandContext;
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
@@ -46,14 +50,16 @@ function planningTaskFields(opts: {
     explicitIntent &&
     (!sameValue(opts.task.task_kind, intent.task_kind) ||
       !sameValue(opts.task.mutation_scope, intent.mutation_scope) ||
-      !sameValue(opts.task.risk_flags ?? [], intent.risk_flags) ||
-      !sameValue(opts.task.tags ?? [], intent.tags) ||
+      !sameStringSet(opts.task.risk_flags, intent.risk_flags) ||
+      !sameStringSet(opts.task.tags, intent.tags) ||
       !sameValue(opts.task.blueprint_request, intent.blueprint_request))
   ) {
     throw new CliError({
       code: "E_VALIDATION",
       message:
-        "PLANNER result cannot override caller-supplied structured task intent. Return the existing structured intent unchanged or omit result.task_intent.",
+        "PLANNER result cannot override caller-supplied structured classification fields. " +
+        "Keep task_kind, mutation_scope, risk_flags, tags, and blueprint_request unchanged; " +
+        "result.task_intent.execution may refine the execution contract.",
     });
   }
 
@@ -150,8 +156,8 @@ export async function isExternalPlanningResultApplied(opts: {
     intent &&
     (!sameValue(task.task_kind, intent.task_kind) ||
       !sameValue(task.mutation_scope, intent.mutation_scope) ||
-      !sameValue(task.risk_flags ?? [], intent.risk_flags) ||
-      !sameValue(task.tags ?? [], intent.tags) ||
+      !sameStringSet(task.risk_flags, intent.risk_flags) ||
+      !sameStringSet(task.tags, intent.tags) ||
       !sameValue(task.blueprint_request, intent.blueprint_request))
   ) {
     return false;
