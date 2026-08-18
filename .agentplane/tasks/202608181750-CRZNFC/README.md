@@ -1,10 +1,10 @@
 ---
 id: "202608181750-CRZNFC"
 title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref."
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -243,6 +243,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: .agentplane/WORKFLOW.md, docs, packages, schemas, scripts, website; repository effects: dependencies, documentation, public_api, release_metadata, repository_write, schema, source_code, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The canonical stable version dry-run resolves exactly 0.7.7 from 0.7.7-beta.1, but it also updates the protected .agentplane/config.json expected-version surface, which was omitted from the first scope extension. Recommended action: Extend scope to .agentplane/config.json and request a fresh implementation packet. Requested scope: roots=.agentplane/config.json; repository effects=release_metadata,repository_write; request digest=sha256:c0a97ea60bc7c8ba63126e4338e42fb5ffa1040dafab6424fa4d849570eed135. Agentplane receipt: external-agent-blocker/tr_db40d04d3ba232cd5a198e3dfd1a1c2e/sha256:a255590f2781062f631f79de4177f9f44e03fe122e10a51b15797ed6723461d7/sha256:c0a97ea60bc7c8ba63126e4338e42fb5ffa1040dafab6424fa4d849570eed135."
 events:
   -
     type: "status"
@@ -258,8 +261,15 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Stable release implementation cannot begin under the legacy release-only authority because canonical 0.7.7 promotion necessarily updates dependency pins, public version exports, documentation, generated assets, tests/baselines, schemas/examples, and repository expected-version surfaces in addition to release metadata. Recommended action: Extend task scope to the canonical version and generated release surfaces, then request a fresh implementation packet. Requested scope: roots=.agentplane/WORKFLOW.md,docs,packages,schemas,scripts,website; repository effects=dependencies,documentation,public_api,release_metadata,repository_write,schema,source_code,tests; request digest=sha256:58e6526f03c7f66a4ca8d9ca4fbcdd42e6c6cb3615734fcbf66bf32b756db0ad. Agentplane receipt: external-agent-blocker/tr_960a0b300ffdd1129eb3c5a662c84d3c/sha256:4c869c7ae707b155cc7f8b95505c492c320e1c3512311d10e75da64cf6cec784/sha256:58e6526f03c7f66a4ca8d9ca4fbcdd42e6c6cb3615734fcbf66bf32b756db0ad."
+  -
+    type: "status"
+    at: "2026-08-18T17:53:59.315Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The canonical stable version dry-run resolves exactly 0.7.7 from 0.7.7-beta.1, but it also updates the protected .agentplane/config.json expected-version surface, which was omitted from the first scope extension. Recommended action: Extend scope to .agentplane/config.json and request a fresh implementation packet. Requested scope: roots=.agentplane/config.json; repository effects=release_metadata,repository_write; request digest=sha256:c0a97ea60bc7c8ba63126e4338e42fb5ffa1040dafab6424fa4d849570eed135. Agentplane receipt: external-agent-blocker/tr_db40d04d3ba232cd5a198e3dfd1a1c2e/sha256:a255590f2781062f631f79de4177f9f44e03fe122e10a51b15797ed6723461d7/sha256:c0a97ea60bc7c8ba63126e4338e42fb5ffa1040dafab6424fa4d849570eed135."
 doc_version: 3
-doc_updated_at: "2026-08-18T17:52:55.532Z"
+doc_updated_at: "2026-08-18T17:53:59.315Z"
 doc_updated_by: "SUPERVISOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
@@ -286,33 +296,20 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
-    applied_at: "2026-08-18T17:53:10.493Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:4c869c7ae707b155cc7f8b95505c492c320e1c3512311d10e75da64cf6cec784"
+    blocker_state_fingerprint: "sha256:a255590f2781062f631f79de4177f9f44e03fe122e10a51b15797ed6723461d7"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Promote the already reviewed 0.7.7-beta.1 candidate to stable 0.7.7 with canonical synchronized version surfaces and release evidence, without semantic feature changes."
+      rationale: "Allow the canonical 0.7.7 version-bump tool to synchronize the repository expected CLI version in its protected config surface."
       repository_effects:
-        - "dependencies"
-        - "documentation"
-        - "public_api"
         - "release_metadata"
         - "repository_write"
-        - "schema"
-        - "source_code"
-        - "tests"
       schema_version: 1
       scope_roots:
-        - ".agentplane/WORKFLOW.md"
-        - "docs"
-        - "packages"
-        - "schemas"
-        - "scripts"
-        - "website"
-    request_digest: "sha256:58e6526f03c7f66a4ca8d9ca4fbcdd42e6c6cb3615734fcbf66bf32b756db0ad"
+        - ".agentplane/config.json"
+    request_digest: "sha256:c0a97ea60bc7c8ba63126e4338e42fb5ffa1040dafab6424fa4d849570eed135"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_960a0b300ffdd1129eb3c5a662c84d3c"
+    status: "pending"
+    transition_id: "tr_db40d04d3ba232cd5a198e3dfd1a1c2e"
   workflow_route_baseline:
     start_head_sha: "708f0d7d5b813ea2bb4de659d9eb113a752e3c63"
     version: 1
