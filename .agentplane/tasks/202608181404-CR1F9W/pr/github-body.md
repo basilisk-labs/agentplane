@@ -15,8 +15,8 @@ Generate and verify the social asset for docs/releases/v0.7.7.md. Add a typed, s
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
