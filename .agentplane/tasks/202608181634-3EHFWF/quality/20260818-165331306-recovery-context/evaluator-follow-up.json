@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608181634-3EHFWF-5d8c0a147a252bfeabd9b5da",
+  "task_id": "202608181634-3EHFWF",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "The candidate addresses both hosted P1 findings and its claimed local checks are recorded, but the prerelease publish path leaves the detect job's public sha output wired to the stable-only source step, so the new successful prerelease result exports an empty SHA.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "Task-owner context resolution now checks ownership of the explicitly resolved task branch before retaining a current worktree context, with a stale-worktree regression.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/379cd4d761527438e3ffa7c7f6821e6b1af480b2e92141006e22dbac98867cac.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "Prerelease classification now precedes release-ready, registry, incident, release-note, and npm checks, and the detect step writes the exact checkout SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/379cd4d761527438e3ffa7c7f6821e6b1af480b2e92141006e22dbac98867cac.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "The detect job output still declares sha from steps.source.outputs.sha; that step is intentionally skipped for prereleases, so downstream or diagnostic consumers receive an empty SHA despite the detect step emitting one.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/379cd4d761527438e3ffa7c7f6821e6b1af480b2e92141006e22dbac98867cac.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "Residual risk: Without the one-line output correction, prerelease automation succeeds but loses exact provenance in the job result.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/379cd4d761527438e3ffa7c7f6821e6b1af480b2e92141006e22dbac98867cac.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-165331306-recovery-context/evaluator-result.json"
+}
