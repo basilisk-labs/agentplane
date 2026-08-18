@@ -8,10 +8,10 @@
   "pr_number": 4842,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4842",
   "pre_merge_closure": {
-    "basis_commit": "4a0a29ac09c95b1d8281db73b8c132065001e657",
+    "basis_commit": "4b61c9771a04a2c5339764601516c6ca2f052d70",
     "branch": "task/202608181404-CR1F9W/add-v0-7-7-release-social-assets-and-a-controlle",
     "pr_number": 4842,
-    "recorded_at": "2026-08-18T15:12:50.051Z",
+    "recorded_at": "2026-08-18T15:42:35.790Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
