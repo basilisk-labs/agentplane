@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:0716067d45ba3d34f0aeb176e471d4585da189423f96d48059d7015471a83f7b",
   "pr_number": 4841,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4841",
+  "pre_merge_closure": {
+    "basis_commit": "06ccc2e25b02f66a64f025b2a13f6ec07ba71150",
+    "branch": "task/202608181315-3NYFYK/harden-task-isolation-provider-truth-autonomous",
+    "pr_number": 4841,
+    "recorded_at": "2026-08-18T13:50:26.434Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608181315-3NYFYK",

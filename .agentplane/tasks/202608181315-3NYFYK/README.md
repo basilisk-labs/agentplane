@@ -1,10 +1,11 @@
 ---
 id: "202608181315-3NYFYK"
 title: "Harden task isolation, provider truth, autonomous authority, recovery, and release AgentPlane 0.7.7"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -70,6 +71,20 @@ quality_review:
     - "The stable release workflow validates channel semantics and opens the next patch beta only after successful stable publication evidence."
     - "Residual risk: Hosted CI and publication must still validate the exact integrated SHA."
     - "Residual risk: Cleanup of the original divergent checkout must preserve an explicit recovery reference until public release readback succeeds."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:aaf63a0a821b93e3847e66235e1c7781fd0960a72d7e4323f70a7f438b9c9cc6"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-18T13:50:26.369Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -504,12 +519,15 @@ execution_contract:
       - "requirements_resolution"
       - "task_outcome"
 commit:
-  hash: "5ca79bafc8217c6ec8e8e782fa0d5f42d2e386a7"
-  message: "🐛 3NYFYK task: harden autonomous release lifecycle"
+  hash: "06ccc2e25b02f66a64f025b2a13f6ec07ba71150"
+  message: "🚧 3NYFYK task: record external evaluator result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -531,8 +549,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-18T13:50:26.369Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "06ccc2e25b02f66a64f025b2a13f6ec07ba71150"
 doc_version: 3
-doc_updated_at: "2026-08-18T13:49:04.963Z"
+doc_updated_at: "2026-08-18T13:50:26.378Z"
 doc_updated_by: "CODER"
 description: "Deliver the complete 0.7.7 patch pool: prevent task branches from inheriting diverged or contaminated local base history; block foreign-task commits and artifacts before PR publication; make provider truth authoritative for MERGED/DONE/cleanup and detect local/provider contradictions in doctor and release gates; preserve fully autonomous mode=all including integration.enqueue while loading authority only from a trusted base/operator-owned policy source; make task lookup and read/write/grant route contexts canonical across old worktrees; allow PLANNER to refine structured execution contracts and route evaluator-required scope widening through a controlled approval boundary; incorporate only still-relevant local changes, discard duplicates already present upstream, integrate the verified patch/beta release automation, run focused/full/installed-package/hosted checks, publish 0.7.7, and verify all public release surfaces plus opening 0.7.8-beta.1."
 sections:
@@ -636,6 +662,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "a97ddc09850d967b95c1696176bc8ff01935347d"
+    message: "🐛 3NYFYK task: harden autonomous release lifecycle"
   workflow_route_baseline:
     start_head_sha: "f4fc869fd5ffbafb58c7e33c9f75ac762f3a242f"
     version: 1
@@ -753,3 +782,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:aaf63a0a821b93e3847e66235e1c7781fd0960a72d7e4323f70a7f438b9c9cc6`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-18T13:50:26.369Z`
