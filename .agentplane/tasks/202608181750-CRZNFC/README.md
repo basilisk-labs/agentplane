@@ -1,10 +1,10 @@
 ---
 id: "202608181750-CRZNFC"
 title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref."
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -253,6 +253,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: .agentplane/config.json; repository effects: release_metadata, repository_write."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Stable 0.7.7 version surfaces and generated release assets are prepared, but the canonical release gate exposed tracked volatile evidence from shipped task 202608112259-T3ZDDM outside the current writable roots. Recommended action: Extend the current release task scope to the exact historical evidence directory, remove only the 32 policy-rejected .log/.jsonl files while preserving compact reports and verification receipts, then rerun all canonical release gates. Requested scope: roots=.agentplane/tasks/202608112259-T3ZDDM/evidence; repository effects=repository_write; request digest=sha256:668437b4fe03dca121fef86af2195153779536253ce670f0cc5463cb2d5596b3. Agentplane receipt: external-agent-blocker/tr_215366b9b0957e188e7e0556667d693b/sha256:c969bb0459eeb19f8834efa22687b3688fe2d5bce3042a00ce864820dbb0665e/sha256:668437b4fe03dca121fef86af2195153779536253ce670f0cc5463cb2d5596b3."
 events:
   -
     type: "status"
@@ -275,8 +278,15 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The canonical stable version dry-run resolves exactly 0.7.7 from 0.7.7-beta.1, but it also updates the protected .agentplane/config.json expected-version surface, which was omitted from the first scope extension. Recommended action: Extend scope to .agentplane/config.json and request a fresh implementation packet. Requested scope: roots=.agentplane/config.json; repository effects=release_metadata,repository_write; request digest=sha256:c0a97ea60bc7c8ba63126e4338e42fb5ffa1040dafab6424fa4d849570eed135. Agentplane receipt: external-agent-blocker/tr_db40d04d3ba232cd5a198e3dfd1a1c2e/sha256:a255590f2781062f631f79de4177f9f44e03fe122e10a51b15797ed6723461d7/sha256:c0a97ea60bc7c8ba63126e4338e42fb5ffa1040dafab6424fa4d849570eed135."
+  -
+    type: "status"
+    at: "2026-08-18T18:06:33.009Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Stable 0.7.7 version surfaces and generated release assets are prepared, but the canonical release gate exposed tracked volatile evidence from shipped task 202608112259-T3ZDDM outside the current writable roots. Recommended action: Extend the current release task scope to the exact historical evidence directory, remove only the 32 policy-rejected .log/.jsonl files while preserving compact reports and verification receipts, then rerun all canonical release gates. Requested scope: roots=.agentplane/tasks/202608112259-T3ZDDM/evidence; repository effects=repository_write; request digest=sha256:668437b4fe03dca121fef86af2195153779536253ce670f0cc5463cb2d5596b3. Agentplane receipt: external-agent-blocker/tr_215366b9b0957e188e7e0556667d693b/sha256:c969bb0459eeb19f8834efa22687b3688fe2d5bce3042a00ce864820dbb0665e/sha256:668437b4fe03dca121fef86af2195153779536253ce670f0cc5463cb2d5596b3."
 doc_version: 3
-doc_updated_at: "2026-08-18T17:53:59.315Z"
+doc_updated_at: "2026-08-18T18:06:33.009Z"
 doc_updated_by: "SUPERVISOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
@@ -303,22 +313,19 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
-    applied_at: "2026-08-18T17:54:14.753Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:a255590f2781062f631f79de4177f9f44e03fe122e10a51b15797ed6723461d7"
+    blocker_state_fingerprint: "sha256:c969bb0459eeb19f8834efa22687b3688fe2d5bce3042a00ce864820dbb0665e"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Allow the canonical 0.7.7 version-bump tool to synchronize the repository expected CLI version in its protected config surface."
+      rationale: "The user explicitly requested cleanup of obsolete unpublished state, and the canonical stable release gate proves these tracked raw files violate the current artifact policy while their summarized evidence remains preserved."
       repository_effects:
-        - "release_metadata"
         - "repository_write"
       schema_version: 1
       scope_roots:
-        - ".agentplane/config.json"
-    request_digest: "sha256:c0a97ea60bc7c8ba63126e4338e42fb5ffa1040dafab6424fa4d849570eed135"
+        - ".agentplane/tasks/202608112259-T3ZDDM/evidence"
+    request_digest: "sha256:668437b4fe03dca121fef86af2195153779536253ce670f0cc5463cb2d5596b3"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_db40d04d3ba232cd5a198e3dfd1a1c2e"
+    status: "pending"
+    transition_id: "tr_215366b9b0957e188e7e0556667d693b"
   workflow_route_baseline:
     start_head_sha: "708f0d7d5b813ea2bb4de659d9eb113a752e3c63"
     version: 1
