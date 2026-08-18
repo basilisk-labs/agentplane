@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 462b7b492f644d093b9749c1908be546149ae274..b020e4b597802053c7c4e664aee9ef584773eafc",
+      "command": "git diff --check 9d628b37cf2deb63ad04acf435f91464a49ced44..7fe66ed8e3a8f099aca5e7e759f9440f453b14b5",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 462b7b492f644d093b9749c1908be546149ae274..b020e4b597802053c7c4e664aee9ef584773eafc",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 9d628b37cf2deb63ad04acf435f91464a49ced44..7fe66ed8e3a8f099aca5e7e759f9440f453b14b5",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,10 @@
         "M\t.agentplane/tasks/202608181404-CR1F9W/pr/github-body.md",
         "M\t.agentplane/tasks/202608181404-CR1F9W/pr/meta.json",
         "M\t.agentplane/tasks/202608181404-CR1F9W/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-scope-extension-request.ts",
+        "M\tpackages/agentplane/src/commands/task/scope-extend.test.ts",
+        "M\tpackages/agentplane/src/commands/task/scope-extend.ts"
       ]
     },
     {
@@ -31,8 +34,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "462b7b492f644d093b9749c1908be546149ae274",
-  "implementation_commit": "b020e4b597802053c7c4e664aee9ef584773eafc",
+  "execution_base_commit": "9d628b37cf2deb63ad04acf435f91464a49ced44",
+  "implementation_commit": "7fe66ed8e3a8f099aca5e7e759f9440f453b14b5",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
