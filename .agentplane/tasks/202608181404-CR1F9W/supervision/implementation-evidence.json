@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check f48a0311e9284aca92695b8b5e6f8e601bf50da6..fe31aa147101fedca08e6dd601894f8ff08cec8b",
+      "command": "git diff --check 462b7b492f644d093b9749c1908be546149ae274..b020e4b597802053c7c4e664aee9ef584773eafc",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB f48a0311e9284aca92695b8b5e6f8e601bf50da6..fe31aa147101fedca08e6dd601894f8ff08cec8b",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 462b7b492f644d093b9749c1908be546149ae274..b020e4b597802053c7c4e664aee9ef584773eafc",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,31 +21,7 @@
         "M\t.agentplane/tasks/202608181404-CR1F9W/pr/github-body.md",
         "M\t.agentplane/tasks/202608181404-CR1F9W/pr/meta.json",
         "M\t.agentplane/tasks/202608181404-CR1F9W/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.ts",
-        "A\tpackages/agentplane/src/commands/shared/task-scope-extension-request.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-operation-effects.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-operation-prefix.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-operation-projection.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step-branch-state.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
-        "M\tpackages/agentplane/src/commands/task/configured-authority.test.ts",
-        "M\tpackages/agentplane/src/commands/task/configured-authority.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-blocked-result.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
-        "M\tpackages/agentplane/src/commands/task/scope-extend.command.ts",
-        "M\tpackages/agentplane/src/commands/task/scope-extend.test.ts",
-        "M\tpackages/agentplane/src/commands/task/scope-extend.ts",
-        "M\tpackages/core/src/index.ts",
-        "M\tpackages/core/src/runner/agent-semantic-result.test.ts",
-        "M\tpackages/core/src/runner/agent-semantic-result.ts",
-        "M\tpackages/core/src/schemas/index.ts",
-        "M\tschemas/agent-semantic-result.schema.json",
-        "M\tschemas/examples/agent-semantic-result-v2.blocked.valid.json",
-        "M\tscripts/baselines/v0.7-compatibility-candidate.json",
-        "M\tscripts/checks/check-compatibility-contract-baseline.mjs"
+        "M\tpackages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
       ]
     },
     {
@@ -55,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "f48a0311e9284aca92695b8b5e6f8e601bf50da6",
-  "implementation_commit": "fe31aa147101fedca08e6dd601894f8ff08cec8b",
+  "execution_base_commit": "462b7b492f644d093b9749c1908be546149ae274",
+  "implementation_commit": "b020e4b597802053c7c4e664aee9ef584773eafc",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
