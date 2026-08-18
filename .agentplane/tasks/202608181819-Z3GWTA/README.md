@@ -4,7 +4,7 @@ title: "Reposition AgentPlane as the Git-native control plane for coding agents 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -30,37 +30,37 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-18T20:03:12.286Z"
+  updated_at: "2026-08-18T20:15:32.985Z"
   updated_by: "TESTER"
-  note: "All declared checks pass on implementation commit a74975786; launch source and derived context are absent from the current tree and suppressed from deletion diffs."
+  note: "All declared checks and focused evaluator regressions pass on implementation commit 17b41294f; current evaluator evidence no longer serializes binary payload bodies."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-18T20:04:04.039Z"
+  updated_at: "2026-08-18T20:16:08.072Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 3 typed finding(s)."
-  evaluated_sha: "a749757867ec2824f7206d0f544f0ea391172771"
+  evaluated_sha: "17b41294f7e560750288c4483ab7f24cfbbfd6b7"
   blueprint_digest: "55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae"
   evidence_refs:
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200356108-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200356108-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/d61bd77a680dd69da5c8153c3014808dcc0a50ff59ea1caeee26eee02466085a.md"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200356108-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200356108-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200356108-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-201604971-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-201604971-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/d2ac35e9f6ed91b8cc7baed2af3bf22c470ed2654941d2e5be0f5deb390fcc22.md"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-201604971-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-201604971-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-201604971-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181819-Z3GWTA/README.md"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/15ad14834d54cfca3bcf555ea4ced884086d80defcb694243d195a2b61f79bf3.patch"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/ea53a9b9f7f4154e50f99490f3e4ebad1310fe69d38f8455ac9e192c4df647cd.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/2abd9847acb9cec18287c4ef70478d2c601d7a0a225abf7c358c400393f3f0ea.patch"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/c7c2ddd3deed447bf1a42d82d9e8cd82254bf7d3403a221c685f61639e0cd9de.json"
     - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/eafed46fee43d017a057933d11cf3e53dcf84df66a33c23ba4fe0d8f0ecf80a8.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.direct.md"
   findings:
-    - "README, docs, website, SEO, comparison, demo, and generated discovery surfaces use the same category and authority/proof promise without exceeding the source-backed product contract."
-    - "Current-tree searches find no unique internal launch-draft phrases; docs/launch/** and launch-derived context changes render without textual bodies through scoped .gitattributes rules."
-    - "Only the current sanitized review packet remains in the task quality store."
+    - "Public README, docs, website, SEO, comparison, demo, and discovery surfaces consistently lead with Git-native control plane for coding agents and authority/proof in Git."
+    - "Internal Launch Kit and post drafts live in the private marketing repository; public source and derived launch context are removed, and scoped attributes prevent textual deletion diffs."
+    - "Evaluator actual-diff evidence now omits --binary, retaining changed-path and binary-difference visibility without serializing reversible file bodies; focused regression, typecheck, formatting, bootstrap, and declared content checks pass."
 execution_route:
   frozen: true
   reason_codes:
@@ -111,6 +111,7 @@ execution_contract:
   observed:
     authority_violations:
       - "repository_effect:documentation"
+      - "repository_effect:tests"
     changed_components:
       - ".agentplane"
       - ".gitattributes"
@@ -144,6 +145,8 @@ execution_contract:
       - "docs/user/overview.mdx"
       - "marketing"
       - "packages/agentplane/README.md"
+      - "packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
       - "website/docusaurus.config.ts"
       - "website/scripts/check-site-content.mjs"
       - "website/src/data/homepage-content.ts"
@@ -161,6 +164,7 @@ execution_contract:
       - "documentation"
       - "repository_write"
       - "source_code"
+      - "tests"
     verification_results:
       -
         id: "recorded-check-1"
@@ -203,6 +207,7 @@ execution_contract:
           - "repository_effect:documentation"
           - "repository_effect:repository_write"
           - "repository_effect:source_code"
+          - "repository_effect:tests"
           - "task_outcome"
         external_effects:
           - "external_write"
@@ -213,7 +218,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:8b43a6e0da00cc759499f5c5ba0bf9fdb41e7a33450c9b655f3d3c8dc5a8a18e"
+      digest: "sha256:922606de82cdada8b1098ffdf8b67d7b3bc132fead9dc42ed406ee6e2e053fdc"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -261,6 +266,8 @@ execution_contract:
           - "docs/user/overview.mdx"
           - "marketing"
           - "packages/agentplane/README.md"
+          - "packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
           - "website/docusaurus.config.ts"
           - "website/scripts/check-site-content.mjs"
           - "website/src/data/homepage-content.ts"
@@ -278,6 +285,7 @@ execution_contract:
           - "documentation"
           - "repository_write"
           - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -311,6 +319,7 @@ execution_contract:
       - "repository_effect:documentation"
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
+      - "repository_effect:tests"
       - "task_outcome"
 commit:
   hash: "cbd9d5b3c234238194cbfb5f5e760129d5b71493"
@@ -401,8 +410,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "All declared checks pass on implementation commit a74975786; launch source and derived context are absent from the current tree and suppressed from deletion diffs."
+  -
+    type: "verify"
+    at: "2026-08-18T20:15:32.985Z"
+    author: "TESTER"
+    state: "ok"
+    note: "All declared checks and focused evaluator regressions pass on implementation commit 17b41294f; current evaluator evidence no longer serializes binary payload bodies."
 doc_version: 3
-doc_updated_at: "2026-08-18T20:03:31.414Z"
+doc_updated_at: "2026-08-18T20:15:45.127Z"
 doc_updated_by: "SUPERVISOR"
 description: "Unify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth."
 sections:
@@ -798,6 +813,72 @@ sections:
     Result: pass
     Evidence: unique internal draft phrases have no current-tree matches, and deleted launch source and derived context render only as Binary files differ.
     Scope: requested current-tree private-content boundary and hosted PR diff exposure.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608181819-Z3GWTA-reposition-agentplane-as-the-git-native-control/.agentplane/tasks/202608181819-Z3GWTA/blueprint/resolved-snapshot.json
+    - old_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+    - current_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181819-Z3GWTA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608181819-Z3GWTA
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-18T20:15:32.985Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: All declared checks and focused evaluator regressions pass on implementation commit 17b41294f; current evaluator evidence no longer serializes binary payload bodies.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0, input_digest=sha256:990ff8d88c6e0416f430396bbdfba7337d199a421aa5ce431da1880067f5d372
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts --testTimeout 60000
+    Result: pass
+    Evidence: 21 evaluator tests passed, including binary diff metadata without GIT binary patch payloads.
+    Scope: evaluator actual-diff evidence generation and review packet behavior.
+
+    Check: critical_paths
+    Command: bun run typecheck && bun run format:check -- packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: TypeScript, formatting, and policy routing passed after the evaluator change.
+    Scope: changed evaluator code and repository policy gateway.
+
+    Check: full_regression
+    Command: bun run release:demo:check
+    Result: pass
+    Evidence: a fresh VHS render completed below the 3,000,000-byte limit; committed GIF bytes were restored after the nondeterministic render. The later code delta is isolated to evaluator evidence rendering.
+    Scope: declared release demo gate and unchanged public demo artifact.
+
+    Check: hosted_integration
+    Command: agentplane pr open 202608181819-Z3GWTA --author CODER
+    Result: pass
+    Evidence: GitHub PR 4845 exists and is linked in task metadata; publishing the current head is the next lifecycle action.
+    Scope: task branch and hosted PR linkage.
+
+    Check: real_e2e
+    Command: bun run docs:site:check
+    Result: pass
+    Evidence: docs IA, generated artifacts, website typecheck, social-card check, optimized Docusaurus build, navigation check, and design-language check passed before the evaluator-only delta.
+    Scope: public documentation and website build.
+
+    Check: task_outcome
+    Command: current-tree privacy phrase scan plus evaluator binary-payload regression
+    Result: pass
+    Evidence: unique internal draft phrases have no current-tree matches for this task; current task quality store is empty before regeneration; evaluator no longer passes --binary to Git and its regression test rejects GIT binary patch output.
+    Scope: requested private-content boundary, PR diff exposure, and evaluator evidence storage.
 
     BlueprintSnapshotRef:
     - state: current
@@ -1231,6 +1312,72 @@ Command: privacy phrase scan plus git diff review for docs/launch/**, context/wi
 Result: pass
 Evidence: unique internal draft phrases have no current-tree matches, and deleted launch source and derived context render only as Binary files differ.
 Scope: requested current-tree private-content boundary and hosted PR diff exposure.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608181819-Z3GWTA-reposition-agentplane-as-the-git-native-control/.agentplane/tasks/202608181819-Z3GWTA/blueprint/resolved-snapshot.json
+- old_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+- current_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181819-Z3GWTA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608181819-Z3GWTA
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-18T20:15:32.985Z — VERIFY — ok
+
+By: TESTER
+
+Note: All declared checks and focused evaluator regressions pass on implementation commit 17b41294f; current evaluator evidence no longer serializes binary payload bodies.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0, input_digest=sha256:990ff8d88c6e0416f430396bbdfba7337d199a421aa5ce431da1880067f5d372
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts --testTimeout 60000
+Result: pass
+Evidence: 21 evaluator tests passed, including binary diff metadata without GIT binary patch payloads.
+Scope: evaluator actual-diff evidence generation and review packet behavior.
+
+Check: critical_paths
+Command: bun run typecheck && bun run format:check -- packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: TypeScript, formatting, and policy routing passed after the evaluator change.
+Scope: changed evaluator code and repository policy gateway.
+
+Check: full_regression
+Command: bun run release:demo:check
+Result: pass
+Evidence: a fresh VHS render completed below the 3,000,000-byte limit; committed GIF bytes were restored after the nondeterministic render. The later code delta is isolated to evaluator evidence rendering.
+Scope: declared release demo gate and unchanged public demo artifact.
+
+Check: hosted_integration
+Command: agentplane pr open 202608181819-Z3GWTA --author CODER
+Result: pass
+Evidence: GitHub PR 4845 exists and is linked in task metadata; publishing the current head is the next lifecycle action.
+Scope: task branch and hosted PR linkage.
+
+Check: real_e2e
+Command: bun run docs:site:check
+Result: pass
+Evidence: docs IA, generated artifacts, website typecheck, social-card check, optimized Docusaurus build, navigation check, and design-language check passed before the evaluator-only delta.
+Scope: public documentation and website build.
+
+Check: task_outcome
+Command: current-tree privacy phrase scan plus evaluator binary-payload regression
+Result: pass
+Evidence: unique internal draft phrases have no current-tree matches for this task; current task quality store is empty before regeneration; evaluator no longer passes --binary to Git and its regression test rejects GIT binary patch output.
+Scope: requested private-content boundary, PR diff exposure, and evaluator evidence storage.
 
 BlueprintSnapshotRef:
 - state: current

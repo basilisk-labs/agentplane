@@ -19,8 +19,8 @@ Unify public positioning across README, docs, website, SEO, demos, comparisons, 
 - Note:
 
 ```text
-All declared checks pass on implementation commit a74975786; launch source and derived context are
-absent from the current tree and suppressed from deletion diffs.
+All declared checks and focused evaluator regressions pass on implementation commit 17b41294f;
+current evaluator evidence no longer serializes binary payload bodies.
 ```
 - Canonical workflow state lives in the task README.
 
