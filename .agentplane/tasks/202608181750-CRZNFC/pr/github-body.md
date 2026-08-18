@@ -15,8 +15,8 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted P1: the generic volatile-evidence deletion exemption weakens foreign task ownership globally.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
