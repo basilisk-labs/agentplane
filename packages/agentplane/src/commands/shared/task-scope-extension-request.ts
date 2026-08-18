@@ -179,3 +179,53 @@ export function scopeExtensionReceiptForState(state: TaskScopeExtensionRequestSt
     request_digest: state.request_digest,
   });
 }
+
+export function applyApprovedTaskScopeExtension(opts: {
+  task: TaskData;
+  executionContract: NonNullable<TaskData["execution_contract"]>;
+  pending: TaskScopeExtensionRequestState;
+  scopeRoots: readonly string[];
+  repositoryEffects: readonly TaskRepositoryEffect[];
+  by: string;
+  now: string;
+}): TaskData {
+  return {
+    ...opts.task,
+    status: "DOING",
+    commit: null,
+    verification: {
+      state: "pending",
+      attempts: opts.task.verification?.attempts ?? 0,
+      updated_at: opts.now,
+      updated_by: opts.by,
+      note: "Invalidated by USER-approved execution scope extension.",
+    },
+    execution_contract: opts.executionContract,
+    extensions: {
+      ...(opts.task.extensions ?? {}),
+      [TASK_SCOPE_EXTENSION_REQUEST_KEY]: {
+        ...opts.pending,
+        status: "applied",
+        applied_at: opts.now,
+        applied_by: opts.by,
+      },
+    },
+    execution_route: opts.task.execution_route
+      ? {
+          ...opts.task.execution_route,
+          selected_mode: opts.executionContract.selected_mode,
+          repository_mode: opts.executionContract.repository_mode,
+          reason_codes: [...opts.executionContract.reason_codes],
+        }
+      : undefined,
+    comments: [
+      ...(opts.task.comments ?? []),
+      {
+        author: opts.by,
+        body:
+          `Approved state-bound execution scope extension: ${opts.scopeRoots.join(", ")}; ` +
+          `repository effects: ${opts.repositoryEffects.join(", ") || "unchanged"}.`,
+      },
+    ],
+  };
+}

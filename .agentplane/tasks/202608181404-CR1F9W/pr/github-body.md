@@ -28,12 +28,12 @@ Generate and verify the social asset for docs/releases/v0.7.7.md. Add a typed, s
 
 ```text
  docs/releases/v0.7.7.md                            |  38 +++
- ...un-cli.core.task-advance.blocked-result.test.ts |  78 +++++-
+ ...un-cli.core.task-advance.blocked-result.test.ts | 151 +++++++++++-
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/cli/run-cli/command-catalog/task.ts        |   8 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
  .../src/commands/shared/side-effect-authority.ts   |   7 +
- .../shared/task-scope-extension-request.ts         | 181 +++++++++++++
+ .../shared/task-scope-extension-request.ts         | 231 ++++++++++++++++++
  .../commands/shared/workflow-operation-effects.ts  |   1 +
  .../commands/shared/workflow-operation-prefix.ts   |   1 +
  .../workflow-operation-projection.registry.test.ts |  30 ++-
@@ -45,20 +45,20 @@ Generate and verify the social asset for docs/releases/v0.7.7.md. Add a typed, s
  .../src/commands/task/configured-authority.ts      |   1 +
  .../commands/task/external-agent-blocked-result.ts |  64 ++++-
  .../external-agent-implementation-authority.ts     |   1 +
- .../src/commands/task/scope-extend.command.ts      | 126 +++++++++
- .../src/commands/task/scope-extend.test.ts         | 163 ++++++++++++
- .../agentplane/src/commands/task/scope-extend.ts   | 285 +++++++++++++++++++++
+ .../src/commands/task/scope-extend.command.ts      | 126 ++++++++++
+ .../src/commands/task/scope-extend.test.ts         | 202 ++++++++++++++++
+ .../agentplane/src/commands/task/scope-extend.ts   | 260 +++++++++++++++++++++
  packages/core/src/index.ts                         |   1 +
- .../core/src/runner/agent-semantic-result.test.ts  |  14 +
+ .../core/src/runner/agent-semantic-result.test.ts  |  14 ++
  packages/core/src/runner/agent-semantic-result.ts  |  57 ++++-
  packages/core/src/schemas/index.ts                 |   1 +
- schemas/agent-semantic-result.schema.json          | 258 +++++++++++++++++++
+ schemas/agent-semantic-result.schema.json          | 258 ++++++++++++++++++++
  .../agent-semantic-result-v2.blocked.valid.json    |   8 +-
- .../baselines/v0.7-compatibility-candidate.json    | 147 ++++++++++-
+ .../baselines/v0.7-compatibility-candidate.json    | 147 +++++++++++-
  .../check-compatibility-contract-baseline.mjs      | 103 ++++++++
  website/static/img/social/docs/releases/v0.7.7.png | Bin 0 -> 52375 bytes
  website/static/img/social/manifest.json            |   8 +
- 31 files changed, 1642 insertions(+), 32 deletions(-)
+ 31 files changed, 1777 insertions(+), 34 deletions(-)
 ```
 
 </details>

@@ -4,6 +4,7 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { makeTaskCommandContext, makeTaskFixture } from "@agentplane/testkit/task";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import {
+  applyApprovedTaskScopeExtension,
   createTaskScopeExtensionRequestState,
   normalizeTaskScopeRoot,
   scopeExtensionReceiptForState,
@@ -96,6 +97,44 @@ describe("blocked task execution scope extension", () => {
     expect(extended.declaration.rationale).toContain(
       "USER-approved blocked-result scope extension: roots=website; repository_effects=release_metadata",
     );
+  });
+
+  it("preserves evaluator rework evidence while invalidating verification", () => {
+    const qualityReview = {
+      state: "rework" as const,
+      updated_at: "2026-08-18T00:00:00.000Z",
+      updated_by: "EVALUATOR",
+      note: "The evaluator requested scoped rework.",
+      evaluated_sha: "reviewed-head",
+      blueprint_digest: "sha256:reviewed-blueprint",
+      evidence_refs: ["quality/report.json"],
+      findings: ["Generated asset is outside the issued writable roots."],
+    };
+    const { command, pending, task } = fixture({ quality_review: qualityReview });
+    const executionContract = extendBlockedTaskExecutionContract({
+      command,
+      task,
+      scope_roots: ["website"],
+      repository_effects: ["release_metadata"],
+      request_digest: pending.request_digest,
+      by: "USER",
+    });
+
+    const updated = applyApprovedTaskScopeExtension({
+      task,
+      executionContract,
+      pending,
+      scopeRoots: ["website"],
+      repositoryEffects: ["release_metadata"],
+      by: "USER",
+      now: "2026-08-18T01:00:00.000Z",
+    });
+
+    expect(updated.quality_review).toEqual(qualityReview);
+    expect(updated.verification).toMatchObject({
+      state: "pending",
+      note: "Invalidated by USER-approved execution scope extension.",
+    });
   });
 
   it("requires a BLOCKED task, blocker receipt, and explicit USER authority", () => {
