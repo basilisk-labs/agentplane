@@ -1,10 +1,11 @@
 ---
 id: "202608181750-CRZNFC"
 title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref."
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -61,6 +62,20 @@ quality_review:
     - "The final integration prepare mock includes gitDiffNameStatus, closing the full-matrix isolation failure; the affected prepare and ownership tests pass 29/29."
     - "Canonical local evidence passes all 105 release-ci-base chunks, workflow 50/50, significant 204/204, release-critical 16/16, package tarball policy, eight migration scenarios, and local tarball install smoke."
     - "Residual risk: Hosted checks, protected-main integration, public package publication, next-beta opening, and post-release local cleanup remain lifecycle steps outside this read-only verdict."
+token_usage:
+  agent_runs: 8
+  input_tokens: null
+  journal_digest: "sha256:cc2f14400d12dac7b643c38f4fd387049adf7c342b468b1ebf425867b2bbf2b3"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-18T23:17:37.060Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -506,8 +521,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "3c5ade2462f684a873993cade2d12103036bc160"
-  message: "🚧 CRZNFC task: apply external agent result"
+  hash: "792f32e1978ac4833991298bea9e065e180e0d87"
+  message: "🚧 CRZNFC task: record external evaluator result"
 comments:
   -
     author: "INTEGRATOR"
@@ -542,6 +557,9 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Implementation authority now includes the required root package.json; registering the already verified canonical implementation effect without introducing an artificial semantic diff."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -606,8 +624,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-18T23:17:37.060Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "792f32e1978ac4833991298bea9e065e180e0d87"
 doc_version: 3
-doc_updated_at: "2026-08-18T23:15:33.597Z"
+doc_updated_at: "2026-08-18T23:17:37.069Z"
 doc_updated_by: "INTEGRATOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
@@ -757,6 +783,9 @@ extensions:
     schema_version: 1
     status: "applied"
     transition_id: "tr_2ddae8292f5410a72b53c3f110e13e60"
+  implementation_commit:
+    hash: "6b3d54e01ac3a71e0b0620eff04e6b1ca0e41f63"
+    message: "🚧 CRZNFC task: extend approved execution scope"
   workflow_route_baseline:
     start_head_sha: "708f0d7d5b813ea2bb4de659d9eb113a752e3c63"
     version: 1
@@ -904,3 +933,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/8` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:cc2f14400d12dac7b643c38f4fd387049adf7c342b468b1ebf425867b2bbf2b3`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-18T23:17:37.060Z`
