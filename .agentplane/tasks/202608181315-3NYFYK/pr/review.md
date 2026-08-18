@@ -6,7 +6,7 @@ Created: 2026-08-18T13:16:41.665Z
 
 - Task: `202608181315-3NYFYK`
 - Title: Harden task isolation, provider truth, autonomous authority, recovery, and release AgentPlane 0.7.7
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608181315-3NYFYK/harden-task-isolation-provider-truth-autonomous`
 - Canonical task record: `.agentplane/tasks/202608181315-3NYFYK/README.md`
 
