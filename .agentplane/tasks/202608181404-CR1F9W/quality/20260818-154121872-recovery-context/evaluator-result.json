@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The route fingerprint remains checked against the trusted route decision before the authoritative checkout context is loaded, preventing the checkout reload from weakening state binding.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/616abdd22420931d4113d09ea248b72f0e1fa6fdb5265be80f1206c4aab04172.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The authoritative context retains the trusted route configuration while relocating the backend and Git context to the resolved task worktree; the integration test proves the base task record is untouched.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/616abdd22420931d4113d09ea248b72f0e1fa6fdb5265be80f1206c4aab04172.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The state transformation intentionally preserves quality_review and all evaluator evidence while resetting commit and verification and marking the exact pending request applied.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/616abdd22420931d4113d09ea248b72f0e1fa6fdb5265be80f1206c4aab04172.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "All 44 focused tests, 12 critical chunks, ci:contract, 567 fast files with 4,170 passing tests and one skip, package builds, and the documentation production build pass.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/616abdd22420931d4113d09ea248b72f0e1fa6fdb5265be80f1206c4aab04172.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

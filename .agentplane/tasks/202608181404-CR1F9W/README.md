@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -35,31 +35,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-18T15:12:24.627Z"
+  updated_at: "2026-08-18T15:42:07.387Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 3 typed finding(s)."
-  evaluated_sha: "b020e4b597802053c7c4e664aee9ef584773eafc"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "7fe66ed8e3a8f099aca5e7e759f9440f453b14b5"
   blueprint_digest: "e814ba9c904d77ecda4ad71bed97eea32e4aa66684a85a7a429ae6d345afbf2f"
   evidence_refs:
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-151145188-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-151145188-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/ec74cdec7ab29a507a239148f09a32c6739858b02756e317125c2a731ecfe5a4.md"
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-151145188-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-151145188-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-151145188-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-154121872-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-154121872-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/362dab564e22315b44663ed983010261f851c714a340d4f85b3e8eddde65252d.md"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-154121872-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-154121872-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-154121872-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181404-CR1F9W/README.md"
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/77b30e2f0bd77b3522fd52439a1776e74262260532ef7ee33b9c6451911434c8.patch"
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/531c83d77287b3ae22dab0256935b796ca7583412c107d091c095d1847aade23.json"
-    - ".agentplane/tasks/202608181404-CR1F9W/verification/20260818151132158-dc1c202af2aabe24.json"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/616abdd22420931d4113d09ea248b72f0e1fa6fdb5265be80f1206c4aab04172.patch"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/760e65220453354ccab8e60559ea4f15a2e7bfbabeec2fcb47cadbef11aaf774.json"
+    - ".agentplane/tasks/202608181404-CR1F9W/verification/20260818154107890-92e2b540523b88e9.json"
     - ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/b0825e0a70291e02337ad2afed7ec89373e0edd644d4294762a7ca05cf385f47.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "GitHub Actions identified one stale expected compatibility count and candidate digest/provenance set; the updated assertions match the current candidate file exactly."
-    - "The focused critical file passes all 9 tests and the complete critical CLI suite passes all 12 chunks."
-    - "The immutable historical baseline remains unchanged, while source task 202608181404-CR1F9W is now explicitly represented in the candidate expectation."
+    - "The route fingerprint remains checked against the trusted route decision before the authoritative checkout context is loaded, preventing the checkout reload from weakening state binding."
+    - "The authoritative context retains the trusted route configuration while relocating the backend and Git context to the resolved task worktree; the integration test proves the base task record is untouched."
+    - "The state transformation intentionally preserves quality_review and all evaluator evidence while resetting commit and verification and marking the exact pending request applied."
+    - "All 44 focused tests, 12 critical chunks, ci:contract, 567 fast files with 4,170 passing tests and one skip, package builds, and the documentation production build pass."
 token_usage:
   agent_runs: 7
   input_tokens: null
@@ -514,7 +515,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-18T15:41:09.173Z"
+doc_updated_at: "2026-08-18T15:42:07.415Z"
 doc_updated_by: "SUPERVISOR"
 description: "Generate and verify the social asset for docs/releases/v0.7.7.md. Add a typed, state-bound, USER-approved path for an evaluator or implementation-rework result to request additional writable roots without silently widening authority; invalidate stale verification and reissue a scoped EXECUTOR packet after approval. Keep the change release-blocking and compatible with branch_pr."
 sections:
