@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   readFile: vi.fn(),
   ensureGitClean: vi.fn(),
   gitDiffNames: vi.fn(),
+  gitMergeBase: vi.fn(),
   gitDiffStat: vi.fn(),
   gitRefreshBranchTrackingRef: vi.fn(),
   gitBranchExists: vi.fn(),
@@ -42,6 +43,7 @@ vi.mock("../../../guard/index.js", () => ({ ensureGitClean: mocks.ensureGitClean
 vi.mock("@agentplaneorg/core/git", () => ({
   findWorktreeForBranch: mocks.findWorktreeForBranch,
   gitDiffNames: mocks.gitDiffNames,
+  gitMergeBase: mocks.gitMergeBase,
   gitDiffStat: mocks.gitDiffStat,
   gitRefreshBranchTrackingRef: mocks.gitRefreshBranchTrackingRef,
   gitEnv: () => process.env,
@@ -164,6 +166,7 @@ function seedCommon(): void {
   mocks.readAndValidatePrArtifacts.mockResolvedValue({ verifyLogText: "ok" });
   mocks.ensureCommittedPrArtifactsOnBranch.mockResolvedValue();
   mocks.gitDiffNames.mockReset().mockResolvedValue(["src/app.ts"]);
+  mocks.gitMergeBase.mockReset().mockResolvedValue("merge-base");
   mocks.gitDiffStat.mockResolvedValue("src/app.ts | 1 +\n");
   mocks.gitRefreshBranchTrackingRef.mockResolvedValue();
   mocks.gitBranchUpstream.mockImplementation((_gitRoot: string, branch: string) =>
@@ -526,6 +529,7 @@ describe("pr/integrate/internal/prepare", () => {
       last_verified_sha: null,
     });
     mocks.gitRevParse
+      .mockResolvedValueOnce("base-ref")
       .mockResolvedValueOnce("artifactsha")
       .mockResolvedValueOnce("basesha")
       .mockResolvedValueOnce("artifactsha");
@@ -558,6 +562,7 @@ describe("pr/integrate/internal/prepare", () => {
       verify: { status: "pass" },
     });
     mocks.gitRevParse
+      .mockResolvedValueOnce("base-ref")
       .mockResolvedValueOnce("closure-head")
       .mockResolvedValueOnce("base-head")
       .mockResolvedValueOnce("closure-head");
@@ -591,6 +596,7 @@ describe("pr/integrate/internal/prepare", () => {
       verify: { status: "pass" },
     });
     mocks.gitRevParse
+      .mockResolvedValueOnce("base-ref")
       .mockResolvedValueOnce("semantic-head")
       .mockResolvedValueOnce("base-head")
       .mockResolvedValueOnce("semantic-head");
@@ -623,6 +629,7 @@ describe("pr/integrate/internal/prepare", () => {
       verify: { status: "pass" },
     });
     mocks.gitRevParse
+      .mockResolvedValueOnce("base-ref")
       .mockResolvedValueOnce("new-metadata")
       .mockResolvedValueOnce("base-head")
       .mockResolvedValueOnce("new-metadata");

@@ -12,7 +12,7 @@ import {
   supervisePersistedWorkflowEpisode,
 } from "../shared/supervisor-execution-episode.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { loadCommandContext } from "../shared/task-backend.js";
+import { loadCommandContext, resolveTaskOwnerCommandContext } from "../shared/task-backend.js";
 
 import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
 import {
@@ -40,7 +40,11 @@ export function makeRunTaskAdvanceHandler(deps: {
         message: "task advance --replacement cannot be combined with --result.",
       });
     }
-    const command = await deps.getContext("task advance", { includeRemote: parsed.remote });
+    const initialCommand = await deps.getContext("task advance", { includeRemote: parsed.remote });
+    const command = await resolveTaskOwnerCommandContext({
+      ctx: initialCommand,
+      taskId: parsed.taskId,
+    });
     const decide = async (freshHead = false): Promise<TaskRouteDecision> => {
       const routeCommand = freshHead
         ? await loadCommandContext({
@@ -111,7 +115,10 @@ export function makeRunTaskAdvanceHandler(deps: {
     for (let operationCount = 0; operationCount < 32; operationCount += 1) {
       const step = current.workflowStep;
       if (step.kind === "approval") {
-        const authorityCheckout = current.oracle?.authoritativeCheckoutPath ?? ctx.cwd;
+        // Repository authority is policy, so it must come from the trusted base checkout.
+        // The current step may intentionally run inside a mutable task worktree.
+        const authorityCheckout =
+          current.workspace.baseCheckoutPath ?? command.resolvedProject.gitRoot;
         const authorityCommand = await loadCommandContext({
           cwd: authorityCheckout,
           rootOverride: null,

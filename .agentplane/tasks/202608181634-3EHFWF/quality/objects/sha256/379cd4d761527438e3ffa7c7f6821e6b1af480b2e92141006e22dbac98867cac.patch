@@ -1,0 +1,2685 @@
+diff --git a/.agentplane/WORKFLOW.md b/.agentplane/WORKFLOW.md
+index a6ad8ee92..fcacdca43 100644
+--- a/.agentplane/WORKFLOW.md
++++ b/.agentplane/WORKFLOW.md
+@@ -62,7 +62,7 @@ framework:
+   source: https://github.com/basilisk-labs/agentplane
+   last_update: null
+   cli:
+-    expected_version: 0.7.6
++    expected_version: 0.7.7-beta.1
+ feedback:
+   github_issues:
+     enabled: true
+diff --git a/.github/workflows/publish.yml b/.github/workflows/publish.yml
+index 2e59fe0d1..e597ba63c 100644
+--- a/.github/workflows/publish.yml
++++ b/.github/workflows/publish.yml
+@@ -73,8 +73,24 @@ jobs:
+       - uses: actions/setup-node@v6
+         with:
+           node-version: "24"
++      - name: Classify release channel
++        id: channel
++        shell: bash
++        run: |
++          set -euo pipefail
++          VERSION=$(node -p "JSON.parse(require('node:fs').readFileSync('packages/agentplane/package.json','utf8')).version")
++          PRERELEASE=$(node --input-type=module -e "import { parseReleaseSemver } from './scripts/lib/release-semver.mjs'; const parsed = parseReleaseSemver(process.argv[1]); if (!parsed) process.exit(2); process.stdout.write(parsed.prerelease.length > 0 ? 'true' : 'false');" "$VERSION")
++          {
++            echo "version=$VERSION"
++            if [ "$PRERELEASE" = "true" ]; then
++              echo "stable=false"
++            else
++              echo "stable=true"
++            fi
++          } >> "$GITHUB_OUTPUT"
+       - name: Resolve release-ready source
+         id: source
++        if: steps.channel.outputs.stable == 'true'
+         env:
+           GITHUB_TOKEN: ${{ github.token }}
+           GITHUB_REPOSITORY: ${{ github.repository }}
+@@ -146,7 +162,7 @@ jobs:
+           } >> "$GITHUB_OUTPUT"
+           node -e 'const fs=require("node:fs"); const payload=JSON.parse(fs.readFileSync(".agentplane/.release/ready/source.json","utf8")); console.log(payload.message); if (payload.nextAction) console.log("Next action: " + payload.nextAction);'
+       - name: Release task registry (check)
+-        if: steps.source.outputs.release_ready_ok == 'true'
++        if: steps.channel.outputs.stable == 'true' && steps.source.outputs.release_ready_ok == 'true'
+         shell: bash
+         run: |
+           set -euo pipefail
+@@ -158,7 +174,7 @@ jobs:
+             echo "release task registry gate skipped: no compatible script exists for this historical target"
+           fi
+       - name: Release incidents (check)
+-        if: steps.source.outputs.release_ready_ok == 'true'
++        if: steps.channel.outputs.stable == 'true' && steps.source.outputs.release_ready_ok == 'true'
+         shell: bash
+         run: |
+           set -euo pipefail
+@@ -184,9 +200,23 @@ jobs:
+             exit 1
+           fi
+ 
+-          SHA="${{ steps.source.outputs.sha }}"
+           VERSION="$VERSION_CLI"
+           TAG="v${VERSION}"
++          if [ "${{ steps.channel.outputs.stable }}" != "true" ]; then
++            {
++              echo "should_publish=false"
++              echo "sha=$(git rev-parse HEAD)"
++              echo "version=$VERSION"
++              echo "tag=$TAG"
++              echo "core_published=false"
++              echo "recipes_published=false"
++              echo "cli_published=false"
++            } >> "$GITHUB_OUTPUT"
++            echo "stable release detection skipped for prerelease $VERSION"
++            exit 0
++          fi
++
++          SHA="${{ steps.source.outputs.sha }}"
+           NOTES="docs/releases/${TAG}.md"
+           if [ ! -f "$NOTES" ]; then
+             echo "missing release notes: $NOTES" >&2
+@@ -310,7 +340,7 @@ jobs:
+       - name: Validate release notes
+         run: node scripts/check-release-notes.mjs --tag "${{ needs.detect.outputs.tag }}"
+       - name: Validate release versions
+-        run: node scripts/check-release-version.mjs --tag "${{ needs.detect.outputs.tag }}"
++        run: node scripts/check-release-version.mjs --tag "${{ needs.detect.outputs.tag }}" --stable-only
+       - name: Validate exact-ref publish payload
+         # The exact-SHA release-ready artifact already proves release-critical CI
+         # readiness for this historical commit. The publish job only needs to
+@@ -648,7 +678,7 @@ jobs:
+           const out = process.env.GITHUB_OUTPUT;
+           if (!out) throw new Error("GITHUB_OUTPUT is not set");
+           const lines = [`actionable=${payload.actionable ? "true" : "false"}`];
+-          for (const key of ["task_id", "base_ref", "release_sha", "closure_branch", "readme_path"]) {
++          for (const key of ["task_id", "base_ref", "release_sha", "closure_branch", "readme_path", "next_development_version"]) {
+             if (typeof payload[key] === "string" && payload[key].trim().length > 0) {
+               lines.push(`${key}=${payload[key]}`);
+             }
+@@ -697,27 +727,70 @@ jobs:
+         id: apply_release_evidence
+         env:
+           REPO: ${{ github.repository }}
++          PUBLISHED_VERSION: ${{ needs.detect.outputs.version }}
+         run: |
+           set -euo pipefail
+           git fetch --no-tags origin \
+             "refs/heads/${{ steps.release_evidence.outputs.base_ref }}:refs/remotes/origin/${{ steps.release_evidence.outputs.base_ref }}"
+           git switch -C "${{ steps.release_evidence.outputs.closure_branch }}" "origin/${{ steps.release_evidence.outputs.base_ref }}"
+-          before_status="$(git status --short -- .agentplane/tasks/${{ steps.release_evidence.outputs.task_id }}/README.md)"
++          before_status="$(git status --short --untracked-files=no)"
++          if [ -n "${before_status}" ]; then
++            echo "release evidence follow-up branch is dirty before mutation" >&2
++            printf '%s\n' "${before_status}" >&2
++            exit 1
++          fi
+           bun scripts/release-task-evidence.mjs apply \
+             --task-id "${{ steps.release_evidence.outputs.task_id }}" \
+             --publish-result .agentplane/.release/publish/publish-result.json \
+             --repo "${REPO}" \
+             --author DEUS > .agentplane/.release/publish/release-task-apply.json
+-          after_status="$(git status --short -- .agentplane/tasks/${{ steps.release_evidence.outputs.task_id }}/README.md)"
+-          if [ -z "${after_status}" ] || [ "${before_status}" = "${after_status}" ]; then
++          node scripts/release/open-next-development-version.mjs \
++            --published-version "${PUBLISHED_VERSION}" \
++            --write \
++            --json > .agentplane/.release/publish/next-development-version.json
++          node <<'EOF'
++          const fs = require("node:fs");
++          const payload = JSON.parse(
++            fs.readFileSync(".agentplane/.release/publish/next-development-version.json", "utf8"),
++          );
++          const out = process.env.GITHUB_OUTPUT;
++          if (!out) throw new Error("GITHUB_OUTPUT is not set");
++          fs.appendFileSync(
++            out,
++            `development_action=${payload.action}\ndevelopment_version=${payload.next_version || ""}\n`,
++          );
++          EOF
++          after_status="$(git status --short --untracked-files=no)"
++          if [ -z "${after_status}" ]; then
+             echo "created_commit=false" >> "$GITHUB_OUTPUT"
+             echo "closure_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+             exit 0
+           fi
+           git config user.name "github-actions[bot]"
+           git config user.email "github-actions[bot]@users.noreply.github.com"
+-          git add "${{ steps.release_evidence.outputs.readme_path }}"
+-          git commit --no-verify -m "📝 ${{ steps.release_evidence.outputs.task_id }} task: record hosted publish evidence"
++          git add \
++            "${{ steps.release_evidence.outputs.readme_path }}" \
++            .agentplane/WORKFLOW.md \
++            bun.lock \
++            docs/reference/generated-reference.mdx \
++            packages/agentplane/package.json \
++            packages/core/package.json \
++            packages/recipes/package.json \
++            packages/recipes/src/index.ts \
++            packages/spec/examples/acr.json \
++            packages/testkit/package.json
++          unstaged="$(git diff --name-only)"
++          if [ -n "${unstaged}" ]; then
++            echo "next development version mutation left unstaged tracked files" >&2
++            printf '%s\n' "${unstaged}" >&2
++            exit 1
++          fi
++          commit_subject="📝 ${{ steps.release_evidence.outputs.task_id }} task: record hosted publish evidence"
++          development_action="$(node -e 'const p=require("./.agentplane/.release/publish/next-development-version.json"); process.stdout.write(String(p.action || ""))')"
++          if [ "${development_action}" = "apply" ]; then
++            commit_subject="📝 ${{ steps.release_evidence.outputs.task_id }} task: record publish evidence and open ${{ steps.release_evidence.outputs.next_development_version }}"
++          fi
++          git commit --no-verify -m "${commit_subject}"
+           echo "created_commit=true" >> "$GITHUB_OUTPUT"
+           echo "closure_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+       - name: Push release evidence branch
+diff --git a/docs/assets/header.svg b/docs/assets/header.svg
+index 85bdb83e8..528f899ba 100644
+--- a/docs/assets/header.svg
++++ b/docs/assets/header.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.6 README header</title>
++<title>Agentplane v0.7.7-beta.1 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.6</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.7-beta.1</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/adr.svg b/docs/assets/readme-headers/adr.svg
+index 85bdb83e8..528f899ba 100644
+--- a/docs/assets/readme-headers/adr.svg
++++ b/docs/assets/readme-headers/adr.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.6 README header</title>
++<title>Agentplane v0.7.7-beta.1 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.6</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.7-beta.1</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/agentplane-cli.svg b/docs/assets/readme-headers/agentplane-cli.svg
+index 85bdb83e8..528f899ba 100644
+--- a/docs/assets/readme-headers/agentplane-cli.svg
++++ b/docs/assets/readme-headers/agentplane-cli.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.6 README header</title>
++<title>Agentplane v0.7.7-beta.1 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.6</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.7-beta.1</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/agentplane.svg b/docs/assets/readme-headers/agentplane.svg
+index 85bdb83e8..528f899ba 100644
+--- a/docs/assets/readme-headers/agentplane.svg
++++ b/docs/assets/readme-headers/agentplane.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.6 README header</title>
++<title>Agentplane v0.7.7-beta.1 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.6</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.7-beta.1</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/core.svg b/docs/assets/readme-headers/core.svg
+index 85bdb83e8..528f899ba 100644
+--- a/docs/assets/readme-headers/core.svg
++++ b/docs/assets/readme-headers/core.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.6 README header</title>
++<title>Agentplane v0.7.7-beta.1 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.6</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.7-beta.1</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/docs.svg b/docs/assets/readme-headers/docs.svg
+index 85bdb83e8..528f899ba 100644
+--- a/docs/assets/readme-headers/docs.svg
++++ b/docs/assets/readme-headers/docs.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.6 README header</title>
++<title>Agentplane v0.7.7-beta.1 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.6</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.7-beta.1</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/humanizer.svg b/docs/assets/readme-headers/humanizer.svg
+index 85bdb83e8..528f899ba 100644
+--- a/docs/assets/readme-headers/humanizer.svg
++++ b/docs/assets/readme-headers/humanizer.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.6 README header</title>
++<title>Agentplane v0.7.7-beta.1 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.6</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.7-beta.1</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/recipes.svg b/docs/assets/readme-headers/recipes.svg
+index 85bdb83e8..528f899ba 100644
+--- a/docs/assets/readme-headers/recipes.svg
++++ b/docs/assets/readme-headers/recipes.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.6 README header</title>
++<title>Agentplane v0.7.7-beta.1 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.6</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.7-beta.1</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/releases.svg b/docs/assets/readme-headers/releases.svg
+index 85bdb83e8..528f899ba 100644
+--- a/docs/assets/readme-headers/releases.svg
++++ b/docs/assets/readme-headers/releases.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.6 README header</title>
++<title>Agentplane v0.7.7-beta.1 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.6</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.7-beta.1</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/schemas.svg b/docs/assets/readme-headers/schemas.svg
+index 85bdb83e8..528f899ba 100644
+--- a/docs/assets/readme-headers/schemas.svg
++++ b/docs/assets/readme-headers/schemas.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.6 README header</title>
++<title>Agentplane v0.7.7-beta.1 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.6</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.7-beta.1</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/scripts.svg b/docs/assets/readme-headers/scripts.svg
+index 85bdb83e8..528f899ba 100644
+--- a/docs/assets/readme-headers/scripts.svg
++++ b/docs/assets/readme-headers/scripts.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.6 README header</title>
++<title>Agentplane v0.7.7-beta.1 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.6</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.7-beta.1</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/skills.svg b/docs/assets/readme-headers/skills.svg
+index 85bdb83e8..528f899ba 100644
+--- a/docs/assets/readme-headers/skills.svg
++++ b/docs/assets/readme-headers/skills.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.6 README header</title>
++<title>Agentplane v0.7.7-beta.1 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.6</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.7-beta.1</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/spec.svg b/docs/assets/readme-headers/spec.svg
+index 85bdb83e8..528f899ba 100644
+--- a/docs/assets/readme-headers/spec.svg
++++ b/docs/assets/readme-headers/spec.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.6 README header</title>
++<title>Agentplane v0.7.7-beta.1 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.6</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.7-beta.1</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/testkit.svg b/docs/assets/readme-headers/testkit.svg
+index 85bdb83e8..528f899ba 100644
+--- a/docs/assets/readme-headers/testkit.svg
++++ b/docs/assets/readme-headers/testkit.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.7.6 README header</title>
++<title>Agentplane v0.7.7-beta.1 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.6</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.7.7-beta.1</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/developer/release-and-publishing.mdx b/docs/developer/release-and-publishing.mdx
+index 6e1d29bd8..db322e333 100644
+--- a/docs/developer/release-and-publishing.mdx
++++ b/docs/developer/release-and-publishing.mdx
+@@ -10,6 +10,14 @@ description: "Patch release flow, CI parity checks, and GitHub-only npm publish
+ - `packages/agentplane` dependencies `@agentplaneorg/core` and `@agentplaneorg/recipes` must match the same release version exactly.
+ - Patch bump is default automation path.
+ - Minor/major bump requires explicit approval.
++- After a successful stable publish, the hosted evidence follow-up opens the next patch development
++  line as `X.Y.(Z+1)-beta.1` across every semantic version surface.
++- A patch release plan created from `X.Y.Z-beta.N` finalizes `X.Y.Z`; it does not skip to
++  `X.Y.(Z+1)`.
++- Explicitly approved minor and major plans from that development line target the next stable minor
++  or major version.
++- The stable publish workflow rejects prerelease versions before any package is published with npm
++  tag `latest`.
+ 
+ ## Notes policy
+ 
+@@ -40,9 +48,10 @@ bun run release:incidents:check
+ agentplane release plan
+ ```
+ 
+-If the workspace version is already ahead of the latest published/tagged patch release, the planner
+-now fails instead of proposing a skipped future patch. Recover and publish the missing patch chain
+-first, then plan the next release.
++If the workspace contains the exact next patch development version, such as `0.7.7-beta.1` above
++stable tag `v0.7.6`, the planner targets `v0.7.7`. Other ahead-of-tag versions still fail instead of
++proposing a skipped future patch. Recover and publish the missing patch chain first, then plan the
++next release.
+ 
+ 3. Draft notes from plan artifacts.
+ 4. Run local release gate (must match publish prerequisites):
+@@ -87,6 +96,25 @@ agentplane release candidate --push --yes
+ That command prepares and optionally pushes only the candidate branch. Final publication remains
+ gated on merge to the protected base branch and hosted publish from `main`.
+ 
++7. Open the next development line automatically.
++
++After hosted publication succeeds, the release-evidence follow-up PR records the canonical publish
++evidence and runs:
++
++```bash
++node scripts/release/open-next-development-version.mjs \
++  --published-version X.Y.Z \
++  --write
++```
++
++For a stable `X.Y.Z` publish, this updates package manifests, exact internal dependency pins,
++runtime version constants, repository CLI expectations, ACR examples, and generated package
++reference documentation to `X.Y.(Z+1)-beta.1`. The frozen lockfile is validated but not rewritten:
++workspace version metadata does not change its dependency graph, and the lockfile remains part of
++the reproducible replay anchor. Repeated workflow runs are idempotent and do not downgrade a
++workspace that has already advanced. Historical release notes, compatibility comments, and
++third-party dependency versions are not release-version surfaces.
++
+ ## What `release:prepublish` covers
+ 
+ `bun run release:prepublish` includes:
+diff --git a/docs/reference/generated-reference.mdx b/docs/reference/generated-reference.mdx
+index 194644973..c1c03ef0a 100644
+--- a/docs/reference/generated-reference.mdx
++++ b/docs/reference/generated-reference.mdx
+@@ -8,13 +8,13 @@ This page is generated by `scripts/generate-website-docs.mjs`.
+ 
+ ## Packages
+ 
+-| Package                  | Version    | Folder                |
+-| ------------------------ | ---------- | --------------------- |
+-| `agentplane`             | `0.7.6`    | `packages/agentplane` |
+-| `@agentplaneorg/core`    | `0.7.6`    | `packages/core`       |
+-| `@agentplaneorg/recipes` | `0.7.6`    | `packages/recipes`    |
+-| `@agentplane/spec`       | `internal` | `packages/spec`       |
+-| `@agentplane/testkit`    | `internal` | `packages/testkit`    |
++| Package                  | Version        | Folder                |
++| ------------------------ | -------------- | --------------------- |
++| `agentplane`             | `0.7.7-beta.1` | `packages/agentplane` |
++| `@agentplaneorg/core`    | `0.7.7-beta.1` | `packages/core`       |
++| `@agentplaneorg/recipes` | `0.7.7-beta.1` | `packages/recipes`    |
++| `@agentplane/spec`       | `internal`     | `packages/spec`       |
++| `@agentplane/testkit`    | `internal`     | `packages/testkit`    |
+ 
+ ## Update Contract
+ 
+diff --git a/docs/releases/v0.7.7.md b/docs/releases/v0.7.7.md
+index 587f69770..0b44f09fb 100644
+--- a/docs/releases/v0.7.7.md
++++ b/docs/releases/v0.7.7.md
+@@ -11,12 +11,13 @@
+ - Added fail-closed ownership checks that reject foreign committed `.agentplane/tasks/**` artifacts before PR synchronization or integration.
+ - Added an automated post-release transition that opens the next patch beta version across all managed version surfaces.
+ - Added regression coverage for stale-worktree routing, autonomous integration authority, provider merge truth, and release-channel version rules.
++- Added a typed `blocker.scope_extension_request` and explicit `task scope-extend` operator path so an autonomous agent can request narrowly bounded extra write authority without silently widening its own scope.
+ 
+ ## Improved
+ 
+ - Required a task worktree base branch to match its upstream exactly instead of accepting locally ahead or behind bases.
+ - Made planner classification arrays order-insensitive while preserving classification immutability and allowing execution-contract refinement.
+-- Made task lookup recover through the primary checkout when a command is launched from an obsolete linked worktree.
++- Made task lookup recover through the primary checkout when a command is launched from an obsolete linked worktree, even when the requested task branch is globally visible in another worktree.
+ - Consolidated release semver handling and generated a current compatibility candidate for the 0.7 line.
+ 
+ ## Fixed
+@@ -25,14 +26,18 @@
+ - Fixed configured authority being read from a mutable task checkout instead of the trusted base checkout.
+ - Fixed signed approval receipt expectations in task-advance and planner-intent command tests.
+ - Fixed stable release checks accepting prerelease versions or leaving development surfaces on the released stable version.
++- Fixed prerelease commits entering stable-only release-ready, task-registry, release-note, or npm registry detection instead of completing the publish detector as a clean no-op.
++- Fixed verified completed tasks becoming unrecoverable when their current provider PR conflicts before an integration-queue handoff exists.
++- Fixed advanced-base task artifacts being misclassified as foreign deletions owned by the candidate branch.
+ 
+ ## Upgrade Notes
+ 
+ - No user action is required. Existing `authority.mode=all` projects retain full autonomous routing, but authority is now resolved from the canonical base checkout.
+ - A `branch_pr` task with a locally divergent base must be rebased or recreated from the exact upstream base before work can start.
+ - PR synchronization and integration now fail with `foreign_committed_task_artifacts` when a branch contains task records outside its declared ownership set.
++- `authority.mode=all` still covers `integration.enqueue`, but `task.scope.extend` always requires an exact state-bound USER grant.
+ 
+ ## Verification
+ 
+-- Qualified with type checking, focused authority/routing/provider/release suites, the release-critical and critical suites, and the complete fast suite: 569 test files and 4,185 passing tests with one intentional skip.
++- Qualified with type checking, focused authority/routing/provider/release suites, the release-critical and critical suites, and the complete fast suite: 570 test files and 4,193 passing tests with one intentional skip.
+ - Release parity, schema projections, specification examples, routing policy, formatting, and compatibility candidate checks pass for `0.7.7-beta.1` before the stable release freeze.
+diff --git a/packages/agentplane/package.json b/packages/agentplane/package.json
+index 2a58a7ba5..341886be8 100644
+--- a/packages/agentplane/package.json
++++ b/packages/agentplane/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "agentplane",
+-  "version": "0.7.6",
++  "version": "0.7.7-beta.1",
+   "description": "CLI-first operational workflows and traces for AI agents.",
+   "keywords": [
+     "agentplane",
+@@ -75,8 +75,8 @@
+     "prepublishOnly": "node ../../scripts/release/enforce-github-publish.mjs && npm run prepack"
+   },
+   "dependencies": {
+-    "@agentplaneorg/core": "0.7.6",
+-    "@agentplaneorg/recipes": "0.7.6",
++    "@agentplaneorg/core": "0.7.7-beta.1",
++    "@agentplaneorg/recipes": "0.7.7-beta.1",
+     "@clack/prompts": "^1.5.1",
+     "yaml": "^2.7.1",
+     "yauzl": "^3.4.0",
+diff --git a/packages/agentplane/src/cli/reason-codes.ts b/packages/agentplane/src/cli/reason-codes.ts
+index f18ce3796..1237b0fbf 100644
+--- a/packages/agentplane/src/cli/reason-codes.ts
++++ b/packages/agentplane/src/cli/reason-codes.ts
+@@ -196,6 +196,12 @@ const REASON_CODE_MAP: Readonly<Record<string, ReasonCodeMeta>> = {
+     summary: "command requires valid git repository context",
+     action: "confirm repository root and tracked changes",
+   },
++  base_branch_upstream_mismatch: {
++    code: "base_branch_upstream_mismatch",
++    category: "git",
++    summary: "base branch does not exactly match its configured upstream",
++    action: "reconcile the base branch with its upstream before starting task work",
++  },
+   integrate_base_checkout_required: {
+     code: "integrate_base_checkout_required",
+     category: "git",
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
+index dd07cae70..f3d6a0221 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
+@@ -247,7 +247,9 @@ describe("provider conflict rework CLI", () => {
+     const taskReadme = await readFile(taskReadmePath, "utf8");
+     await writeFile(
+       taskReadmePath,
+-      taskReadme.replace('verification:\n  state: "pending"', 'verification:\n  state: "ok"'),
++      taskReadme
++        .replace('status: "DOING"', 'status: "DONE"')
++        .replace('verification:\n  state: "pending"', 'verification:\n  state: "ok"'),
+       "utf8",
+     );
+     await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: worktree });
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
+index 02ee41896..62ee6d31c 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
+@@ -794,9 +794,9 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
+         ]);
+         expect(code).toBe(5);
+         expect(io.stderr).toContain(
+-          "Base branch main is behind its upstream origin/main by 1 commit",
++          "Base branch main does not exactly match its upstream origin/main: behind by 1 commit",
+         );
+-        expect(io.stderr).toContain("Refresh the base branch before `agentplane work start`");
++        expect(io.stderr).toContain("Reconcile the base branch with its upstream");
+       } finally {
+         io.restore();
+       }
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+index a765ce3e4..e3caa8359 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+@@ -264,7 +264,15 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
+     expect(next.operator_action).toMatchObject({
+       kind: "approve_plan",
+       required_role: "USER",
+-      argv: ["agentplane", "task", "plan", "approve", taskId, "--by", "USER"],
++      argv: [
++        "agentplane",
++        "task",
++        "plan",
++        "approve",
++        taskId,
++        "--approval-receipt",
++        "<base64url-receipt>",
++      ],
+     });
+     expect(
+       await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts b/packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts
+index 075a71f4f..b7aff4253 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts
+@@ -481,11 +481,10 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+         cwd: checkout,
+       });
+       if (!evaluator.operator_action?.argv) throw new Error("expected exact authority argv");
+-      await runCommand(
+-        evaluator.operator_action.cwd ?? checkout,
+-        evaluator.operator_action.argv.slice(1),
+-        metrics,
+-      );
++      const authorityArgv = evaluator.operator_action.argv.slice(1);
++      const receiptIndex = authorityArgv.indexOf("--approval-receipt");
++      if (receiptIndex !== -1) authorityArgv.splice(receiptIndex, 2, "--by", "USER");
++      await runCommand(evaluator.operator_action.cwd ?? checkout, authorityArgv, metrics);
+       evaluator = (await runJson(
+         checkout,
+         ["task", "advance", taskId, "--agent-json"],
+diff --git a/packages/agentplane/src/commands/branch/work-start.git.test.ts b/packages/agentplane/src/commands/branch/work-start.git.test.ts
+new file mode 100644
+index 000000000..b01f03a40
+--- /dev/null
++++ b/packages/agentplane/src/commands/branch/work-start.git.test.ts
+@@ -0,0 +1,40 @@
++import { beforeEach, describe, expect, it, vi } from "vitest";
++
++const mocks = vi.hoisted(() => ({
++  gitAheadBehind: vi.fn(),
++  gitBranchUpstream: vi.fn(),
++}));
++
++vi.mock("@agentplaneorg/core/git", () => ({ gitAheadBehind: mocks.gitAheadBehind }));
++vi.mock("../shared/git-ops.js", () => ({ gitBranchUpstream: mocks.gitBranchUpstream }));
++
++import { ensureCurrentBaseBranch } from "./work-start.git.js";
++
++describe("work start base/upstream isolation", () => {
++  beforeEach(() => {
++    vi.clearAllMocks();
++    mocks.gitBranchUpstream.mockResolvedValue("origin/main");
++  });
++
++  it.each([
++    { ahead: 1, behind: 0, summary: "ahead by 1 commit" },
++    { ahead: 0, behind: 2, summary: "behind by 2 commit" },
++    { ahead: 3, behind: 4, summary: "ahead by 3 commit(s) and behind by 4 commit" },
++  ])("rejects a non-identical tracked base: $summary", async ({ ahead, behind }) => {
++    mocks.gitAheadBehind.mockResolvedValue({ ahead, behind });
++
++    await expect(ensureCurrentBaseBranch("/repo", "main")).rejects.toMatchObject({
++      code: "E_GIT",
++      context: {
++        reason_code: "base_branch_upstream_mismatch",
++        ahead,
++        behind,
++      },
++    });
++  });
++
++  it("accepts an exact tracked base", async () => {
++    mocks.gitAheadBehind.mockResolvedValue({ ahead: 0, behind: 0 });
++    await expect(ensureCurrentBaseBranch("/repo", "main")).resolves.toBeUndefined();
++  });
++});
+diff --git a/packages/agentplane/src/commands/branch/work-start.git.ts b/packages/agentplane/src/commands/branch/work-start.git.ts
+index 1d2a05348..40b543095 100644
+--- a/packages/agentplane/src/commands/branch/work-start.git.ts
++++ b/packages/agentplane/src/commands/branch/work-start.git.ts
+@@ -7,14 +7,29 @@ export async function ensureCurrentBaseBranch(gitRoot: string, baseBranch: strin
+   const upstreamBranch = await gitBranchUpstream(gitRoot, baseBranch);
+   if (!upstreamBranch) return;
+ 
+-  const { behind } = await gitAheadBehind(gitRoot, upstreamBranch, baseBranch);
+-  if (behind === 0) return;
++  const { ahead, behind } = await gitAheadBehind(gitRoot, upstreamBranch, baseBranch);
++  if (ahead === 0 && behind === 0) return;
++
++  const divergence = [
++    ahead > 0 ? `ahead by ${ahead} commit(s)` : null,
++    behind > 0 ? `behind by ${behind} commit(s)` : null,
++  ]
++    .filter((entry): entry is string => entry !== null)
++    .join(" and ");
+ 
+   throw new CliError({
+     exitCode: exitCodeForError("E_GIT"),
+     code: "E_GIT",
+     message:
+-      `Base branch ${baseBranch} is behind its upstream ${upstreamBranch} by ${behind} commit(s). ` +
+-      "Refresh the base branch before `agentplane work start` to avoid DIRTY hosted PRs.",
++      `Base branch ${baseBranch} does not exactly match its upstream ${upstreamBranch}: ${divergence}. ` +
++      "Reconcile the base branch with its upstream before `agentplane work start`; " +
++      "task branches must not inherit unpublished or stale base commits.",
++    context: {
++      reason_code: "base_branch_upstream_mismatch",
++      base_branch: baseBranch,
++      upstream_branch: upstreamBranch,
++      ahead,
++      behind,
++    },
+   });
+ }
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts b/packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts
+index 4d1ba66bc..41f0619ff 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts
+@@ -237,7 +237,7 @@ export function resolveConflictRouteEligibility(opts: {
+       reason: "semantic conflict rework requires a current passing verification record",
+     };
+   }
+-  if (taskStatus === "DOING") {
++  if (taskStatus === "DOING" || taskStatus === "DONE") {
+     if (!opts.report.queue.present && !opts.report.handoff.present) {
+       return {
+         state: "eligible",
+@@ -248,11 +248,13 @@ export function resolveConflictRouteEligibility(opts: {
+         },
+       };
+     }
+-    return {
+-      state: "ineligible",
+-      reason:
+-        "a verified DOING task may enter semantic conflict rework only from its current open PR before any integration queue or protected-base handoff exists",
+-    };
++    if (taskStatus === "DOING") {
++      return {
++        state: "ineligible",
++        reason:
++          "a verified DOING task may enter semantic conflict rework only from its current open PR before any integration queue or protected-base handoff exists",
++      };
++    }
+   }
+   if (taskStatus !== "DONE") {
+     return {
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework.test.ts b/packages/agentplane/src/commands/pr/conflict-rework.test.ts
+index 99a6f97df..81e208d36 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework.test.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework.test.ts
+@@ -273,12 +273,18 @@ describe("provider conflict rework packet", () => {
+     expect(git.calls.diffNames).toBe(0);
+   });
+ 
+-  it("still requires conflict authority after a verified DONE provider head is aligned", async () => {
++  it("allows a verified DONE provider head to enter bounded current-PR rework", async () => {
+     const conflicting = report({ queue: { present: false }, handoff: { present: false } });
+ 
+     await expect(prepare({ report: conflicting })).resolves.toMatchObject({
+-      state: "invalid",
+-      reason_code: "conflict_rework_route_ineligible",
++      state: "ready",
++      packet: {
++        route_evidence: {
++          kind: "current_verified_open_pr_rework",
++          queue: null,
++          handoff: null,
++        },
++      },
+     });
+   });
+ 
+@@ -624,11 +630,11 @@ describe("provider conflict rework packet", () => {
+     });
+   });
+ 
+-  it("rejects nonqueued or unverified task PR conflicts before semantic routing", async () => {
++  it("admits a verified current DONE PR but rejects queued DOING and unverified conflicts", async () => {
+     const nonqueued = report({ queue: { present: false }, handoff: { present: false } });
+     await expect(prepare({ report: nonqueued })).resolves.toMatchObject({
+-      state: "invalid",
+-      reason_code: "conflict_rework_route_ineligible",
++      state: "ready",
++      packet: { route_evidence: { kind: "current_verified_open_pr_rework" } },
+     });
+ 
+     const doing = report({ task: { id: taskId, status: "DOING", verification: "ok" } });
+diff --git a/packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts b/packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts
+index e5741cb6b..9c9f9f2a4 100644
+--- a/packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts
++++ b/packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts
+@@ -34,6 +34,9 @@ describe("GitHub base protection", () => {
+     await expect(
+       resolveGithubBasePullRequestProtection({ gitRoot: "/repo", baseBranch: "main" }),
+     ).resolves.toEqual({ state: "unprotected", baseBranch: "main" });
++    await expect(
++      requiresPullRequestMergePath({ gitRoot: "/repo", baseBranch: "main" }),
++    ).resolves.toBe(true);
+ 
+     mocks.runGhApiJson.mockRejectedValue(new Error("GitHub 503"));
+     await expect(
+diff --git a/packages/agentplane/src/commands/pr/integrate/internal/github-protection.ts b/packages/agentplane/src/commands/pr/integrate/internal/github-protection.ts
+index 132a0da22..f29859d33 100644
+--- a/packages/agentplane/src/commands/pr/integrate/internal/github-protection.ts
++++ b/packages/agentplane/src/commands/pr/integrate/internal/github-protection.ts
+@@ -57,5 +57,10 @@ export async function requiresPullRequestMergePath(opts: {
+       },
+     });
+   }
+-  return protection.state === "protected";
++  // branch_pr has already established an open provider PR at the exact head.
++  // Finalizing an unprotected base with a separate local squash/merge can leave
++  // that provider PR OPEN while local task metadata is marked MERGED. Use the
++  // provider PR as the sole merge authority for both protected and explicitly
++  // unprotected bases.
++  return true;
+ }
+diff --git a/packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts b/packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts
+index e9c1e28ec..b0e77aedc 100644
+--- a/packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts
++++ b/packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts
+@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
+   readFile: vi.fn(),
+   ensureGitClean: vi.fn(),
+   gitDiffNames: vi.fn(),
++  gitMergeBase: vi.fn(),
+   gitDiffStat: vi.fn(),
+   gitRefreshBranchTrackingRef: vi.fn(),
+   gitBranchExists: vi.fn(),
+@@ -42,6 +43,7 @@ vi.mock("../../../guard/index.js", () => ({ ensureGitClean: mocks.ensureGitClean
+ vi.mock("@agentplaneorg/core/git", () => ({
+   findWorktreeForBranch: mocks.findWorktreeForBranch,
+   gitDiffNames: mocks.gitDiffNames,
++  gitMergeBase: mocks.gitMergeBase,
+   gitDiffStat: mocks.gitDiffStat,
+   gitRefreshBranchTrackingRef: mocks.gitRefreshBranchTrackingRef,
+   gitEnv: () => process.env,
+@@ -164,6 +166,7 @@ function seedCommon(): void {
+   mocks.readAndValidatePrArtifacts.mockResolvedValue({ verifyLogText: "ok" });
+   mocks.ensureCommittedPrArtifactsOnBranch.mockResolvedValue();
+   mocks.gitDiffNames.mockReset().mockResolvedValue(["src/app.ts"]);
++  mocks.gitMergeBase.mockReset().mockResolvedValue("merge-base");
+   mocks.gitDiffStat.mockResolvedValue("src/app.ts | 1 +\n");
+   mocks.gitRefreshBranchTrackingRef.mockResolvedValue();
+   mocks.gitBranchUpstream.mockImplementation((_gitRoot: string, branch: string) =>
+diff --git a/packages/agentplane/src/commands/pr/integrate/internal/prepare.ts b/packages/agentplane/src/commands/pr/integrate/internal/prepare.ts
+index b281eedce..b7a23b2e2 100644
+--- a/packages/agentplane/src/commands/pr/integrate/internal/prepare.ts
++++ b/packages/agentplane/src/commands/pr/integrate/internal/prepare.ts
+@@ -37,6 +37,7 @@ import { requireOpenGithubPrAtHead } from "../../provider-head.js";
+ import { ensurePrArtifactsSynced } from "../../internal/sync.js";
+ import { normalizeBranchPrBatchTaskIds } from "../../internal/sync-batch-ownership.js";
+ import { computePrDiffstat } from "../../internal/sync-branch.js";
++import { assertBranchTaskArtifactOwnership } from "../../internal/branch-task-artifact-ownership.js";
+ 
+ import { readAndValidatePrArtifacts, ensureCommittedPrArtifactsOnBranch } from "../artifacts.js";
+ import { computeVerifyState } from "../verify.js";
+@@ -214,6 +215,17 @@ export async function prepareIntegrate(opts: {
+     preferBranchSnapshot: true,
+     branchSnapshotBranch: branch,
+   });
++  await assertBranchTaskArtifactOwnership({
++    gitRoot: resolved.gitRoot,
++    baseBranch: base,
++    branch,
++    workflowDir: loadedConfig.paths.workflow_dir,
++    tasksPath: loadedConfig.paths.tasks_path,
++    primaryTaskId: opts.taskId,
++    includedTaskIds: normalizeBranchPrBatchTaskIds(task, opts.taskId).filter(
++      (taskId) => taskId !== opts.taskId,
++    ),
++  });
+   const protectedBaseRequiresPrMerge = await requiresPullRequestMergePath({
+     gitRoot: resolved.gitRoot,
+     baseBranch: base,
+diff --git a/packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts b/packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts
+new file mode 100644
+index 000000000..b27bbb879
+--- /dev/null
++++ b/packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts
+@@ -0,0 +1,108 @@
++import { beforeEach, describe, expect, it, vi } from "vitest";
++
++const mocks = vi.hoisted(() => ({
++  gitDiffNames: vi.fn(),
++  gitMergeBase: vi.fn(),
++  gitBranchExists: vi.fn(),
++  gitBranchUpstream: vi.fn(),
++}));
++
++vi.mock("@agentplaneorg/core/git", () => ({
++  gitDiffNames: mocks.gitDiffNames,
++  gitMergeBase: mocks.gitMergeBase,
++}));
++vi.mock("../../shared/git-ops.js", () => ({
++  gitBranchExists: mocks.gitBranchExists,
++  gitBranchUpstream: mocks.gitBranchUpstream,
++}));
++
++import { assertBranchTaskArtifactOwnership } from "./branch-task-artifact-ownership.js";
++
++describe("committed task artifact ownership", () => {
++  beforeEach(() => {
++    vi.clearAllMocks();
++    mocks.gitBranchExists.mockResolvedValue(true);
++    mocks.gitBranchUpstream.mockResolvedValue("origin/main");
++    mocks.gitMergeBase.mockResolvedValue("merge-base-sha");
++  });
++
++  it("compares against upstream and rejects foreign task history", async () => {
++    mocks.gitDiffNames.mockResolvedValue([
++      "packages/agentplane/src/index.ts",
++      ".agentplane/tasks/T-PRIMARY/README.md",
++      ".agentplane/tasks/T-FOREIGN/pr/meta.json",
++    ]);
++
++    await expect(
++      assertBranchTaskArtifactOwnership({
++        gitRoot: "/repo",
++        baseBranch: "main",
++        branch: "task/T-PRIMARY/change",
++        workflowDir: ".agentplane/tasks",
++        tasksPath: ".agentplane/tasks",
++        primaryTaskId: "T-PRIMARY",
++      }),
++    ).rejects.toMatchObject({
++      code: "E_VALIDATION",
++      context: {
++        reason_code: "foreign_committed_task_artifacts",
++        comparison_base: "origin/main",
++        comparison_merge_base: "merge-base-sha",
++        foreign_task_ids: ["T-FOREIGN"],
++      },
++    });
++    expect(mocks.gitDiffNames).toHaveBeenCalledWith(
++      "/repo",
++      "merge-base-sha",
++      "task/T-PRIMARY/change",
++    );
++  });
++
++  it("ignores task artifacts introduced only by an advanced base", async () => {
++    mocks.gitDiffNames.mockResolvedValue([
++      "packages/agentplane/src/index.ts",
++      ".agentplane/tasks/T-PRIMARY/README.md",
++    ]);
++
++    await expect(
++      assertBranchTaskArtifactOwnership({
++        gitRoot: "/repo",
++        baseBranch: "main",
++        branch: "task/T-PRIMARY/change",
++        workflowDir: ".agentplane/tasks",
++        tasksPath: ".agentplane/tasks",
++        primaryTaskId: "T-PRIMARY",
++      }),
++    ).resolves.toBeUndefined();
++
++    expect(mocks.gitMergeBase).toHaveBeenCalledWith(
++      "/repo",
++      "origin/main",
++      "task/T-PRIMARY/change",
++    );
++    expect(mocks.gitDiffNames).toHaveBeenCalledWith(
++      "/repo",
++      "merge-base-sha",
++      "task/T-PRIMARY/change",
++    );
++  });
++
++  it("accepts artifacts explicitly owned by a batch", async () => {
++    mocks.gitDiffNames.mockResolvedValue([
++      ".agentplane/tasks/T-PRIMARY/README.md",
++      ".agentplane/tasks/T-INCLUDED/README.md",
++    ]);
++
++    await expect(
++      assertBranchTaskArtifactOwnership({
++        gitRoot: "/repo",
++        baseBranch: "main",
++        branch: "task/T-PRIMARY/change",
++        workflowDir: ".agentplane/tasks",
++        tasksPath: ".agentplane/tasks",
++        primaryTaskId: "T-PRIMARY",
++        includedTaskIds: ["T-INCLUDED"],
++      }),
++    ).resolves.toBeUndefined();
++  });
++});
+diff --git a/packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts b/packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts
+new file mode 100644
+index 000000000..02df5443c
+--- /dev/null
++++ b/packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts
+@@ -0,0 +1,76 @@
++import { gitDiffNames, gitMergeBase } from "@agentplaneorg/core/git";
++
++import { exitCodeForError } from "../../../cli/exit-codes.js";
++import { CliError } from "../../../shared/errors.js";
++import { gitBranchExists, gitBranchUpstream } from "../../shared/git-ops.js";
++
++function normalizedRoot(value: string | undefined): string {
++  if (!value) return "";
++  return value.replaceAll("\\", "/").replace(/^\.\//u, "").replace(/\/+$/u, "");
++}
++
++function taskIdFromArtifactPath(pathname: string, roots: readonly string[]): string | null {
++  const normalized = pathname.replaceAll("\\", "/").replace(/^\.\//u, "");
++  for (const root of roots) {
++    const prefix = `${root}/`;
++    if (!normalized.startsWith(prefix)) continue;
++    const taskId = normalized.slice(prefix.length).split("/", 1)[0]?.trim() ?? "";
++    return taskId || null;
++  }
++  return null;
++}
++
++export async function assertBranchTaskArtifactOwnership(opts: {
++  gitRoot: string;
++  baseBranch: string;
++  branch: string;
++  workflowDir: string;
++  tasksPath: string;
++  primaryTaskId: string;
++  includedTaskIds?: readonly string[];
++}): Promise<void> {
++  const roots = [...new Set([normalizedRoot(opts.workflowDir), normalizedRoot(opts.tasksPath)])]
++    .filter(Boolean)
++    .toSorted((left, right) => right.length - left.length);
++  const upstream = await gitBranchUpstream(opts.gitRoot, opts.baseBranch);
++  const comparisonBase = upstream ?? opts.baseBranch;
++  // Synthetic and pre-initialized repositories may name a future base before
++  // the ref exists. There is no committed base history to contaminate yet.
++  const [baseExists, branchExists] = await Promise.all([
++    gitBranchExists(opts.gitRoot, comparisonBase),
++    gitBranchExists(opts.gitRoot, opts.branch),
++  ]);
++  if (!baseExists || !branchExists) return;
++  // Compare only changes introduced by the candidate branch. A two-dot diff
++  // also reports paths added on an advanced base as deletions from an older
++  // task branch, which can falsely attribute unrelated base task artifacts to
++  // the candidate. The merge-base anchored diff is the branch-side delta.
++  const mergeBase = await gitMergeBase(opts.gitRoot, comparisonBase, opts.branch);
++  const changedPaths = await gitDiffNames(opts.gitRoot, mergeBase, opts.branch);
++  const allowed = new Set([opts.primaryTaskId, ...(opts.includedTaskIds ?? [])]);
++  const foreignTaskIds = [
++    ...new Set(
++      changedPaths
++        .map((pathname) => taskIdFromArtifactPath(pathname, roots))
++        .filter((taskId): taskId is string => Boolean(taskId && !allowed.has(taskId))),
++    ),
++  ].toSorted();
++  if (foreignTaskIds.length === 0) return;
++
++  throw new CliError({
++    exitCode: exitCodeForError("E_VALIDATION"),
++    code: "E_VALIDATION",
++    message:
++      `Task branch ${opts.branch} contains committed artifacts owned by other tasks: ` +
++      `${foreignTaskIds.join(", ")}. Rebuild the branch from ${comparisonBase} or explicitly ` +
++      "include those tasks in the branch_pr batch before publishing.",
++    context: {
++      reason_code: "foreign_committed_task_artifacts",
++      task_id: opts.primaryTaskId,
++      branch: opts.branch,
++      comparison_base: comparisonBase,
++      comparison_merge_base: mergeBase,
++      foreign_task_ids: foreignTaskIds,
++    },
++  });
++}
+diff --git a/packages/agentplane/src/commands/pr/internal/sync.ts b/packages/agentplane/src/commands/pr/internal/sync.ts
+index 95621746b..583715830 100644
+--- a/packages/agentplane/src/commands/pr/internal/sync.ts
++++ b/packages/agentplane/src/commands/pr/internal/sync.ts
+@@ -39,6 +39,7 @@ import type {
+ import { runPrOpenSync } from "./sync-open-step.js";
+ import { nowIso, readTextIfExists, restoreIncidentRegistryIfNeeded } from "./sync-support.js";
+ import { runPrUpdateSync } from "./sync-update-step.js";
++import { assertBranchTaskArtifactOwnership } from "./branch-task-artifact-ownership.js";
+ 
+ type PrSyncMode = "open" | "update";
+ export type { PrOpenOutcome, PrRemoteMode } from "./sync-model.js";
+@@ -282,6 +283,17 @@ export async function syncPrArtifacts(opts: {
+         includeTaskIds: opts.includeTaskIds,
+         primaryBranch: branch,
+       });
++      if (baseBranch) {
++        await assertBranchTaskArtifactOwnership({
++          gitRoot: resolved.gitRoot,
++          baseBranch,
++          branch,
++          workflowDir: config.paths.workflow_dir,
++          tasksPath: config.paths.tasks_path,
++          primaryTaskId: task.id,
++          includedTaskIds: validatedIncludedTaskIds,
++        });
++      }
+       const previousIncludedTaskIds = normalizeRelatedTaskIds(
+         [
+           ...(existingMeta?.batch?.included_task_ids ?? []),
+diff --git a/packages/agentplane/src/commands/release/check-release-version-script.test.ts b/packages/agentplane/src/commands/release/check-release-version-script.test.ts
+index f69692c9c..67b67d542 100644
+--- a/packages/agentplane/src/commands/release/check-release-version-script.test.ts
++++ b/packages/agentplane/src/commands/release/check-release-version-script.test.ts
+@@ -19,7 +19,7 @@ describe("check-release-version script", () => {
+     ).resolves.toBeDefined();
+   });
+ 
+-  it("passes when prerelease tag and package versions are aligned", async () => {
++  it("supports aligned prereleases outside the stable publish workflow", async () => {
+     const root = await initReleaseWorkspace({
+       prefix: "agentplane-release-check-",
+       coreVersion: "1.2.3-rc.1",
+@@ -34,6 +34,38 @@ describe("check-release-version script", () => {
+     ).resolves.toBeDefined();
+   });
+ 
++  it("rejects an aligned prerelease before the stable publish workflow", async () => {
++    const root = await initReleaseWorkspace({
++      prefix: "agentplane-release-check-",
++      coreVersion: "1.2.3-rc.1",
++      cliVersion: "1.2.3-rc.1",
++      recipesVersion: "1.2.3-rc.1",
++      dependencyVersion: "1.2.3-rc.1",
++      recipesDependencyVersion: "1.2.3-rc.1",
++    });
++
++    const result = await execFileAsync(
++      "node",
++      [SCRIPT_PATH, "--tag", "v1.2.3-rc.1", "--stable-only"],
++      { cwd: root },
++    ).then(
++      () => ({ ok: true as const, stderr: "" }),
++      (error: unknown) => {
++        const stderr =
++          typeof error === "object" &&
++          error !== null &&
++          "stderr" in error &&
++          typeof (error as { stderr?: unknown }).stderr === "string"
++            ? (error as { stderr: string }).stderr
++            : "";
++        return { ok: false as const, stderr };
++      },
++    );
++
++    expect(result.ok).toBe(false);
++    expect(result.stderr).toContain("Refusing to publish prerelease v1.2.3-rc.1");
++  });
++
+   it("fails when agentplane depends on a different core version", async () => {
+     const root = await initReleaseWorkspace({
+       prefix: "agentplane-release-check-",
+diff --git a/packages/agentplane/src/commands/release/open-next-development-version-script.test.ts b/packages/agentplane/src/commands/release/open-next-development-version-script.test.ts
+new file mode 100644
+index 000000000..0b68192a4
+--- /dev/null
++++ b/packages/agentplane/src/commands/release/open-next-development-version-script.test.ts
+@@ -0,0 +1,148 @@
++import { execFile } from "node:child_process";
++import { readFile, rm } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import { afterEach, describe, expect, it } from "vitest";
++
++import { initReleaseWorkspace } from "@agentplane/testkit/release";
++
++const execFileAsync = promisify(execFile);
++const OPEN_SCRIPT_PATH = path.resolve(
++  process.cwd(),
++  "scripts/release/open-next-development-version.mjs",
++);
++const VERSION_BUMP_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/release/version-bump.mjs");
++const roots: string[] = [];
++
++async function workspace(version: string) {
++  const root = await initReleaseWorkspace({
++    prefix: "agentplane-next-development-version-",
++    coreVersion: version,
++    cliVersion: version,
++    recipesVersion: version,
++    dependencyVersion: version,
++    recipesDependencyVersion: version,
++  });
++  roots.push(root);
++  return root;
++}
++
++async function readJson(root: string, relPath: string) {
++  return JSON.parse(await readFile(path.join(root, relPath), "utf8")) as Record<string, unknown>;
++}
++
++afterEach(async () => {
++  while (roots.length > 0) {
++    const root = roots.pop();
++    if (root) await rm(root, { recursive: true, force: true });
++  }
++});
++
++describe("open next development version", () => {
++  it("atomically opens the next patch beta and is idempotent", async () => {
++    const root = await workspace("0.2.6");
++
++    const first = await execFileAsync(
++      "node",
++      [OPEN_SCRIPT_PATH, "--published-version", "0.2.6", "--write", "--skip-install", "--json"],
++      { cwd: root },
++    );
++    const firstPayload = JSON.parse(first.stdout) as {
++      action: string;
++      next_version: string;
++      changed_paths: string[];
++    };
++
++    expect(firstPayload.action).toBe("apply");
++    expect(firstPayload.next_version).toBe("0.2.7-beta.1");
++    expect(firstPayload.changed_paths).toEqual(
++      expect.arrayContaining([
++        "packages/agentplane/package.json",
++        "packages/core/package.json",
++        "packages/recipes/package.json",
++        "packages/recipes/src/index.ts",
++      ]),
++    );
++    const agentplaneManifest = await readJson(root, "packages/agentplane/package.json");
++    const coreManifest = await readJson(root, "packages/core/package.json");
++    const recipesManifest = await readJson(root, "packages/recipes/package.json");
++    expect(agentplaneManifest.version).toBe("0.2.7-beta.1");
++    expect(coreManifest.version).toBe("0.2.7-beta.1");
++    expect(recipesManifest.version).toBe("0.2.7-beta.1");
++    await expect(
++      readFile(path.join(root, "packages", "recipes", "src", "index.ts"), "utf8"),
++    ).resolves.toContain('RECIPES_VERSION = "0.2.7-beta.1"');
++
++    const repeated = await execFileAsync(
++      "node",
++      [OPEN_SCRIPT_PATH, "--published-version", "0.2.6", "--write", "--skip-install", "--json"],
++      { cwd: root },
++    );
++    const repeatedPayload = JSON.parse(repeated.stdout) as {
++      action: string;
++      reason: string;
++      changed_paths: string[];
++    };
++    expect(repeatedPayload).toMatchObject({
++      action: "skip",
++      reason: "development_version_already_open",
++      changed_paths: [],
++    });
++  });
++
++  it("does not downgrade a workspace that has already advanced", async () => {
++    const root = await workspace("0.2.7-beta.2");
++    const result = await execFileAsync(
++      "node",
++      [OPEN_SCRIPT_PATH, "--published-version", "0.2.6", "--write", "--skip-install", "--json"],
++      { cwd: root },
++    );
++    expect(JSON.parse(result.stdout)).toMatchObject({
++      action: "skip",
++      reason: "workspace_already_ahead",
++      previous_version: "0.2.7-beta.2",
++      next_version: "0.2.7-beta.1",
++    });
++  });
++
++  it("fails closed on a conflicting prerelease line", async () => {
++    const root = await workspace("0.2.7-alpha.1");
++    await expect(
++      execFileAsync(
++        "node",
++        [OPEN_SCRIPT_PATH, "--published-version", "0.2.6", "--write", "--skip-install"],
++        { cwd: root },
++      ),
++    ).rejects.toMatchObject({ code: 1 });
++  });
++
++  it("finalizes the current beta when the candidate bump requests patch", async () => {
++    const root = await workspace("0.2.7-beta.1");
++    const result = await execFileAsync(
++      "node",
++      [VERSION_BUMP_SCRIPT_PATH, "--bump", "patch", "--skip-install", "--json"],
++      { cwd: root },
++    );
++    expect(JSON.parse(result.stdout)).toMatchObject({
++      previous_version: "0.2.7-beta.1",
++      next_version: "0.2.7",
++    });
++  });
++
++  it.each([
++    ["minor", "0.3.0"],
++    ["major", "1.0.0"],
++  ] as const)("prepares an approved %s candidate from the current beta", async (bump, version) => {
++    const root = await workspace("0.2.7-beta.1");
++    const result = await execFileAsync(
++      "node",
++      [VERSION_BUMP_SCRIPT_PATH, "--bump", bump, "--skip-install", "--json"],
++      { cwd: root },
++    );
++    expect(JSON.parse(result.stdout)).toMatchObject({
++      previous_version: "0.2.7-beta.1",
++      next_version: version,
++    });
++  });
++});
+diff --git a/packages/agentplane/src/commands/release/plan.command.ts b/packages/agentplane/src/commands/release/plan.command.ts
+index 3ff80c0eb..ad44b030c 100644
+--- a/packages/agentplane/src/commands/release/plan.command.ts
++++ b/packages/agentplane/src/commands/release/plan.command.ts
+@@ -17,6 +17,7 @@ import {
+   compareSemver,
+   listMissingPatchTags,
+   normalizeTagVersion,
++  releaseVersionFromDevelopment,
+   releaseInstructions,
+   requiredBulletCount,
+   type Change,
+@@ -274,7 +275,15 @@ export async function createReleasePlan(
+ 
+   const prevTag = flags.since ?? (await getLatestSemverTag(gitRoot));
+   const latestPublishedVersion = normalizeTagVersion(prevTag);
+-  if (latestPublishedVersion && compareSemver(coreVersion, latestPublishedVersion) > 0) {
++  const developmentReleaseVersion = releaseVersionFromDevelopment(
++    coreVersion,
++    latestPublishedVersion,
++  );
++  if (
++    !developmentReleaseVersion &&
++    latestPublishedVersion &&
++    compareSemver(coreVersion, latestPublishedVersion) > 0
++  ) {
+     const missingTags = listMissingPatchTags(latestPublishedVersion, coreVersion);
+     const missingText = missingTags.length > 0 ? missingTags.join(", ") : coreVersion;
+     throw new CliError({
+@@ -285,7 +294,11 @@ export async function createReleasePlan(
+         `Publish or recover the missing release sequence first: ${missingText}.`,
+     });
+   }
+-  const nextVersion = bumpVersion(coreVersion, flags.bump);
++  const nextVersion = developmentReleaseVersion
++    ? flags.bump === "patch"
++      ? developmentReleaseVersion
++      : bumpVersion(developmentReleaseVersion, flags.bump)
++    : bumpVersion(coreVersion, flags.bump);
+   const nextTag = `v${nextVersion}`;
+   const baseSha = await resolveProtectedBaseShaForPlan({
+     cwd: ctx.cwd,
+diff --git a/packages/agentplane/src/commands/release/plan.helpers.ts b/packages/agentplane/src/commands/release/plan.helpers.ts
+index 1a343e2e5..dc4566f25 100644
+--- a/packages/agentplane/src/commands/release/plan.helpers.ts
++++ b/packages/agentplane/src/commands/release/plan.helpers.ts
+@@ -8,14 +8,49 @@ export type Change = {
+   subject: string;
+ };
+ 
+-function parseSemver(version: string): { major: number; minor: number; patch: number } | null {
+-  const m = /^(\d+)\.(\d+)\.(\d+)$/u.exec(version.trim());
++type ParsedSemver = {
++  major: number;
++  minor: number;
++  patch: number;
++  prerelease: string[];
++};
++
++function parseSemver(version: string): ParsedSemver | null {
++  const m =
++    /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/u.exec(
++      version.trim(),
++    );
+   if (!m) return null;
+   const major = Number(m[1]);
+   const minor = Number(m[2]);
+   const patch = Number(m[3]);
+   if (![major, minor, patch].every((n) => Number.isInteger(n) && n >= 0)) return null;
+-  return { major, minor, patch };
++  const prerelease = m[4] ? m[4].split(".") : [];
++  if (prerelease.some((part) => /^\d+$/u.test(part) && part.length > 1 && part.startsWith("0"))) {
++    return null;
++  }
++  return { major, minor, patch, prerelease };
++}
++
++function comparePrerelease(left: string[], right: string[]): number {
++  if (left.length === 0 && right.length === 0) return 0;
++  if (left.length === 0) return 1;
++  if (right.length === 0) return -1;
++  const length = Math.max(left.length, right.length);
++  for (let index = 0; index < length; index += 1) {
++    const leftPart = left[index];
++    const rightPart = right[index];
++    if (leftPart === undefined) return -1;
++    if (rightPart === undefined) return 1;
++    if (leftPart === rightPart) continue;
++    const leftNumeric = /^\d+$/u.test(leftPart);
++    const rightNumeric = /^\d+$/u.test(rightPart);
++    if (leftNumeric && rightNumeric) return Number(leftPart) - Number(rightPart);
++    if (leftNumeric) return -1;
++    if (rightNumeric) return 1;
++    return leftPart.localeCompare(rightPart);
++  }
++  return 0;
+ }
+ 
+ export function compareSemver(left: string, right: string): number {
+@@ -30,7 +65,8 @@ export function compareSemver(left: string, right: string): number {
+   }
+   if (leftParsed.major !== rightParsed.major) return leftParsed.major - rightParsed.major;
+   if (leftParsed.minor !== rightParsed.minor) return leftParsed.minor - rightParsed.minor;
+-  return leftParsed.patch - rightParsed.patch;
++  if (leftParsed.patch !== rightParsed.patch) return leftParsed.patch - rightParsed.patch;
++  return comparePrerelease(leftParsed.prerelease, rightParsed.prerelease);
+ }
+ 
+ export function normalizeTagVersion(tag: string | null): string | null {
+@@ -58,11 +94,11 @@ export function listMissingPatchTags(fromVersion: string, toVersion: string): st
+ 
+ export function bumpVersion(version: string, bump: BumpKind): string {
+   const parsed = parseSemver(version);
+-  if (!parsed) {
++  if (!parsed || parsed.prerelease.length > 0) {
+     throw new CliError({
+       exitCode: exitCodeForError("E_VALIDATION"),
+       code: "E_VALIDATION",
+-      message: `Invalid version (expected X.Y.Z): ${version}`,
++      message: `Invalid stable version (expected X.Y.Z): ${version}`,
+     });
+   }
+   if (bump === "patch") return `${parsed.major}.${parsed.minor}.${parsed.patch + 1}`;
+@@ -70,6 +106,49 @@ export function bumpVersion(version: string, bump: BumpKind): string {
+   return `${parsed.major + 1}.0.0`;
+ }
+ 
++export function releaseVersionFromDevelopment(
++  workspaceVersion: string,
++  latestPublishedVersion: string | null,
++): string | null {
++  const workspace = parseSemver(workspaceVersion);
++  if (!workspace) {
++    throw new CliError({
++      exitCode: exitCodeForError("E_VALIDATION"),
++      code: "E_VALIDATION",
++      message: `Invalid workspace version: ${workspaceVersion}`,
++    });
++  }
++  if (workspace.prerelease.length === 0) return null;
++  const published = latestPublishedVersion ? parseSemver(latestPublishedVersion) : null;
++  if (!published || published.prerelease.length > 0) {
++    throw new CliError({
++      exitCode: exitCodeForError("E_VALIDATION"),
++      code: "E_VALIDATION",
++      message:
++        `Release planning requires a latest stable tag before finalizing development version ${workspaceVersion}. ` +
++        `Observed tag version: ${latestPublishedVersion ?? "missing"}.`,
++    });
++  }
++  const expectedCore = `${published.major}.${published.minor}.${published.patch + 1}`;
++  const workspaceCore = `${workspace.major}.${workspace.minor}.${workspace.patch}`;
++  const [label, sequence, ...extra] = workspace.prerelease;
++  const validBetaSequence =
++    label === "beta" &&
++    typeof sequence === "string" &&
++    /^[1-9]\d*$/u.test(sequence) &&
++    extra.length === 0;
++  if (workspaceCore !== expectedCore || !validBetaSequence) {
++    throw new CliError({
++      exitCode: exitCodeForError("E_VALIDATION"),
++      code: "E_VALIDATION",
++      message:
++        `Unsupported development version ${workspaceVersion}. ` +
++        `Expected ${expectedCore}-beta.N above latest stable version ${latestPublishedVersion}.`,
++    });
++  }
++  return workspaceCore;
++}
++
+ export function changesMarkdown(changes: Change[]): string {
+   if (changes.length === 0) return "_No commits found in the selected range._\n";
+   return (
+diff --git a/packages/agentplane/src/commands/release/plan.test.ts b/packages/agentplane/src/commands/release/plan.test.ts
+index f0d17355b..76197f46e 100644
+--- a/packages/agentplane/src/commands/release/plan.test.ts
++++ b/packages/agentplane/src/commands/release/plan.test.ts
+@@ -141,6 +141,91 @@ describeWhenNotHook("release plan", () => {
+     ).toThrow(/requires explicit approval/i);
+   });
+ 
++  it("finalizes the next patch beta instead of skipping to another patch", async () => {
++    const repo = await tempRepo({ withDefaultConfig: true });
++    const { root } = repo;
++    try {
++      await seedReleaseWorkspace(root, {
++        coreVersion: "0.2.7-beta.1",
++        cliVersion: "0.2.7-beta.1",
++        dependencyVersion: "0.2.7-beta.1",
++      });
++      await commitAll(root, "open 0.2.7 beta development");
++      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
++
++      const result = await createReleasePlan(
++        { cwd: root, rootOverride: root },
++        { bump: "patch", yes: false },
++      );
++
++      expect(result).toMatchObject({
++        previous_tag: "v0.2.6",
++        previous_version: "0.2.7-beta.1",
++        next_tag: "v0.2.7",
++        next_version: "0.2.7",
++        bump: "patch",
++      });
++    } finally {
++      await repo.cleanup();
++    }
++  }, 60_000);
++
++  it.each([
++    ["minor", "v0.3.0", "0.3.0"],
++    ["major", "v1.0.0", "1.0.0"],
++  ] as const)(
++    "allows an explicitly approved %s release plan from the next patch beta",
++    async (bump, nextTag, nextVersion) => {
++      const repo = await tempRepo({ withDefaultConfig: true });
++      const { root } = repo;
++      try {
++        await seedReleaseWorkspace(root, {
++          coreVersion: "0.2.7-beta.1",
++          cliVersion: "0.2.7-beta.1",
++          dependencyVersion: "0.2.7-beta.1",
++        });
++        await commitAll(root, "open 0.2.7 beta development");
++        await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
++
++        const result = await createReleasePlan(
++          { cwd: root, rootOverride: root },
++          { bump, yes: true },
++        );
++
++        expect(result).toMatchObject({
++          previous_tag: "v0.2.6",
++          previous_version: "0.2.7-beta.1",
++          next_tag: nextTag,
++          next_version: nextVersion,
++          bump,
++        });
++      } finally {
++        await repo.cleanup();
++      }
++    },
++    60_000,
++  );
++
++  it("rejects a prerelease that is not the next patch beta line", async () => {
++    const repo = await tempRepo({ withDefaultConfig: true });
++    const { root } = repo;
++    try {
++      await seedReleaseWorkspace(root, {
++        coreVersion: "0.2.7-alpha.1",
++        cliVersion: "0.2.7-alpha.1",
++        dependencyVersion: "0.2.7-alpha.1",
++      });
++      await commitAll(root, "seed unsupported prerelease");
++      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
++
++      await expect(
++        runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false }),
++      ).rejects.toThrow(/Expected 0\.2\.7-beta\.N/i);
++    } finally {
++      await repo.cleanup();
++    }
++  }, 60_000);
++
+   it("fails when workspace version is already ahead of the latest published patch tag", async () => {
+     const repo = await tempRepo({ withDefaultConfig: true });
+     const { root } = repo;
+diff --git a/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts b/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+index 6c8f44c64..ba6355849 100644
+--- a/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
++++ b/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+@@ -16,6 +16,18 @@ describe("publish workflow contract", () => {
+     expect(workflow).toContain("name: Publish release");
+   });
+ 
++  it("runs the stable-version guard before publishing packages with npm tag latest", async () => {
++    const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
++
++    expect(workflow).toContain(
++      'node scripts/check-release-version.mjs --tag "${{ needs.detect.outputs.tag }}" --stable-only',
++    );
++    expect(workflow).toContain("npm publish --provenance --access public --tag latest");
++    expect(workflow.indexOf("node scripts/check-release-version.mjs")).toBeLessThan(
++      workflow.indexOf("npm publish --provenance --access public --tag latest"),
++    );
++  });
++
+   it("uses workflow_run from Core CI and downloads the exact detected release-ready artifact by run id", async () => {
+     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+ 
+@@ -149,6 +161,12 @@ describe("publish workflow contract", () => {
+     expect(workflow).toContain("Check for existing release evidence PR");
+     expect(workflow).toContain("Apply release task evidence on a follow-up branch");
+     expect(workflow).toContain("bun scripts/release-task-evidence.mjs apply");
++    expect(workflow).toContain("node scripts/release/open-next-development-version.mjs");
++    expect(workflow).toContain('--published-version "${PUBLISHED_VERSION}"');
++    expect(workflow).toContain("next-development-version.json");
++    expect(workflow).toContain("release evidence follow-up branch is dirty before mutation");
++    expect(workflow).toContain("next development version mutation left unstaged tracked files");
++    expect(workflow).toContain("record publish evidence and open");
+     expect(workflow).toContain("Open or recover release evidence PR");
+     expect(workflow).toContain("Verify and merge exact release evidence SHA");
+     expect(workflow).toContain("node scripts/workflow/verify-release-evidence-pr.mjs");
+@@ -243,7 +261,9 @@ describe("publish workflow contract", () => {
+     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+ 
+     expect(workflow).toContain("Release task registry (check)");
+-    expect(workflow).toContain("if: steps.source.outputs.release_ready_ok == 'true'");
++    expect(workflow).toContain(
++      "if: steps.channel.outputs.stable == 'true' && steps.source.outputs.release_ready_ok == 'true'",
++    );
+     expect(workflow).toContain("node scripts/release/check-task-registry-ready.mjs");
+     expect(workflow).toContain("--allow-active-release-task");
+     expect(workflow.indexOf("Resolve release-ready source")).toBeLessThan(
+@@ -251,6 +271,37 @@ describe("publish workflow contract", () => {
+     );
+   });
+ 
++  it("skips stable-only gates for a prerelease before registry, notes, or npm lookups", async () => {
++    const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
++
++    const channelIndex = workflow.indexOf("- name: Classify release channel");
++    const sourceIndex = workflow.indexOf("- name: Resolve release-ready source");
++    const registryIndex = workflow.indexOf("- name: Release task registry (check)");
++    const detectIndex = workflow.indexOf("- name: Detect publish target");
++    const prereleaseExitIndex = workflow.indexOf(
++      'if [ "${{ steps.channel.outputs.stable }}" != "true" ]; then',
++      detectIndex,
++    );
++    const notesIndex = workflow.indexOf('NOTES="docs/releases/${TAG}.md"', detectIndex);
++    const npmLookupIndex = workflow.indexOf(
++      'npm view "@agentplaneorg/core@${VERSION}"',
++      detectIndex,
++    );
++
++    expect(channelIndex).toBeGreaterThanOrEqual(0);
++    expect(channelIndex).toBeLessThan(sourceIndex);
++    expect(channelIndex).toBeLessThan(registryIndex);
++    expect(workflow).toContain("if: steps.channel.outputs.stable == 'true'");
++    expect(workflow).toContain(
++      "if: steps.channel.outputs.stable == 'true' && steps.source.outputs.release_ready_ok == 'true'",
++    );
++    expect(prereleaseExitIndex).toBeGreaterThan(detectIndex);
++    expect(prereleaseExitIndex).toBeLessThan(notesIndex);
++    expect(prereleaseExitIndex).toBeLessThan(npmLookupIndex);
++    expect(workflow).toContain('echo "should_publish=false"');
++    expect(workflow).toContain('echo "stable release detection skipped for prerelease $VERSION"');
++  });
++
+   it("validates the exact evidence SHA and publishes the required PR check before merge", async () => {
+     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+ 
+diff --git a/packages/agentplane/src/commands/release/release-task-evidence-script.test.ts b/packages/agentplane/src/commands/release/release-task-evidence-script.test.ts
+index 9723bb6cc..40ccbcb4c 100644
+--- a/packages/agentplane/src/commands/release/release-task-evidence-script.test.ts
++++ b/packages/agentplane/src/commands/release/release-task-evidence-script.test.ts
+@@ -239,15 +239,21 @@ describe("release-task-evidence script", () => {
+       closure_branch: string;
+       pr_title: string;
+       pr_body: string;
++      next_development_version: string;
+     };
+ 
+     expect(payload.actionable).toBe(true);
+     expect(payload.task_id).toBe(taskId);
+     expect(payload.closure_branch).toBe(`task-close/${taskId}/${releaseSha.slice(0, 12)}-publish`);
+-    expect(payload.pr_title).toBe(`task-evidence: Record hosted publish evidence [${taskId}]`);
++    expect(payload.pr_title).toBe(
++      `task-evidence: Record publish evidence and open 0.3.16-beta.1 [${taskId}]`,
++    );
++    expect(payload.next_development_version).toBe("0.3.16-beta.1");
+     expect(payload.pr_body).toContain("v0.3.15");
++    expect(payload.pr_body).toContain("Next development version: `0.3.16-beta.1`");
+     expect(payload.pr_body).toContain("## Source");
+     expect(payload.pr_body).toContain("## Scope");
++    expect(payload.pr_body).toContain("atomically opens the next patch development line");
+   });
+ 
+   it("reads quoted CRLF close branch prefix from WORKFLOW frontmatter", async () => {
+diff --git a/packages/agentplane/src/commands/shared/task-backend.test.ts b/packages/agentplane/src/commands/shared/task-backend.test.ts
+index c6f8b011d..d965ac355 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.test.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.test.ts
+@@ -1,4 +1,4 @@
+-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
++import { mkdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
+ import { execFile } from "node:child_process";
+ import os from "node:os";
+ import path from "node:path";
+@@ -22,6 +22,7 @@ import {
+   loadCommandContext,
+   loadTaskFromContext,
+   resolveTaskBranchFromContext,
++  resolveTaskOwnerCommandContext,
+ } from "./task-backend.js";
+ 
+ const TASK_BACKEND_INTEGRATION_TIMEOUT_MS = 180_000;
+@@ -102,6 +103,103 @@ describe(
+       expect(ctx.backendId).toBe("local");
+     });
+ 
++    it("routes a task command from an older linked worktree to the primary task owner", async () => {
++      const repo = await tempRepo({ branch: "main" });
++      const root = repo.root;
++      await configureGitUser(root);
++      await repo.writeConfig(
++        mockConfig((draft) => {
++          draft.workflow_mode = "branch_pr";
++        }),
++      );
++      await writeLocalBackendConfig(root);
++      const execFileAsync = promisify(execFile);
++      await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
++      await execFileAsync("git", ["add", "."], { cwd: root });
++      await execFileAsync("git", ["commit", "-m", "seed old worktree"], { cwd: root });
++
++      const oldWorktree = path.join(root, ".agentplane", "worktrees", "old-task");
++      await execFileAsync("git", ["worktree", "add", "-b", "recovery/old", oldWorktree], {
++        cwd: root,
++      });
++      const created = await createTask({
++        cwd: root,
++        rootOverride: root,
++        title: "New primary-only task",
++        description: "The old linked worktree must resolve this task through the primary checkout.",
++        owner: "TESTER",
++        priority: "med",
++        tags: ["testing"],
++        dependsOn: [],
++        verify: [],
++      });
++
++      const oldCtx = await loadCommandContext({ cwd: oldWorktree, rootOverride: oldWorktree });
++      const ownerCtx = await resolveTaskOwnerCommandContext({ ctx: oldCtx, taskId: created.id });
++
++      expect(await realpath(ownerCtx.resolvedProject.gitRoot)).toBe(await realpath(root));
++      await expect(ownerCtx.taskBackend.getTask(created.id)).resolves.toMatchObject({
++        id: created.id,
++      });
++    });
++
++    it("does not retain a stale worktree merely because another worktree owns the task branch", async () => {
++      const repo = await tempRepo({ branch: "main" });
++      const root = repo.root;
++      await configureGitUser(root);
++      await repo.writeConfig(
++        mockConfig((draft) => {
++          draft.workflow_mode = "branch_pr";
++        }),
++      );
++      await writeLocalBackendConfig(root);
++      const execFileAsync = promisify(execFile);
++      await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
++      await execFileAsync("git", ["add", "."], { cwd: root });
++      await execFileAsync("git", ["commit", "-m", "seed stale worktree"], { cwd: root });
++
++      const staleWorktree = path.join(root, ".agentplane", "worktrees", "stale-task");
++      await execFileAsync("git", ["worktree", "add", "-b", "recovery/stale", staleWorktree], {
++        cwd: root,
++      });
++      const created = await createTask({
++        cwd: root,
++        rootOverride: root,
++        title: "Task owned by another worktree",
++        description:
++          "A globally visible task branch must not make the stale caller its command owner.",
++        owner: "TESTER",
++        priority: "med",
++        tags: ["testing"],
++        dependsOn: [],
++        verify: [],
++      });
++      await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
++      await execFileAsync("git", ["commit", "--no-verify", "-m", `scaffold ${created.id}`], {
++        cwd: root,
++      });
++
++      const taskBranch = `task/${created.id}/owned`;
++      const taskWorktree = path.join(root, ".agentplane", "worktrees", `${created.id}-owned`);
++      await execFileAsync("git", ["worktree", "add", "-b", taskBranch, taskWorktree], {
++        cwd: root,
++      });
++
++      const staleCtx = await loadCommandContext({
++        cwd: staleWorktree,
++        rootOverride: staleWorktree,
++      });
++      const ownerCtx = await resolveTaskOwnerCommandContext({
++        ctx: staleCtx,
++        taskId: created.id,
++      });
++
++      expect(await realpath(ownerCtx.resolvedProject.gitRoot)).toBe(await realpath(root));
++      await expect(ownerCtx.taskBackend.getTask(created.id)).resolves.toMatchObject({
++        id: created.id,
++      });
++    });
++
+     it("loadTaskFromContext falls back to a branch-backed task README in branch_pr mode", async () => {
+       const repo = await tempRepo({ branch: "main" });
+       const root = repo.root;
+diff --git a/packages/agentplane/src/commands/shared/task-backend.ts b/packages/agentplane/src/commands/shared/task-backend.ts
+index 33eb1a2dd..dec9d5cd0 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.ts
+@@ -18,9 +18,12 @@ import {
+   type TaskData,
+   type TaskSummary,
+ } from "../../backends/task-backend.js";
+-import { GitContext } from "@agentplaneorg/core/git";
++import { findWorktreeForBranch, GitContext, listWorktrees } from "@agentplaneorg/core/git";
+ import { resolveCommonGitDirectory } from "../../shared/env.js";
+-import { loadTaskFromBranchSnapshot } from "./task-backend-branch-snapshot.js";
++import {
++  loadTaskFromBranchSnapshot,
++  resolveTaskBranchFromContext,
++} from "./task-backend-branch-snapshot.js";
+ 
+ export {
+   loadTaskFromBranchSnapshot,
+@@ -204,6 +207,44 @@ export async function loadCommandContext(opts: {
+   };
+ }
+ 
++/**
++ * Route task commands back to the primary checkout when invoked from an old
++ * linked worktree that predates the requested task. A task worktree remains
++ * authoritative when it already contains the task or owns its task branch.
++ */
++export async function resolveTaskOwnerCommandContext(opts: {
++  ctx: CommandContext;
++  taskId: string;
++}): Promise<CommandContext> {
++  if (await opts.ctx.taskBackend.getTask(opts.taskId)) return opts.ctx;
++
++  const tasksDir = path.join(opts.ctx.resolvedProject.gitRoot, opts.ctx.config.paths.workflow_dir);
++  const taskBranch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
++  const branchTask = await loadTaskFromBranchSnapshot({
++    ctx: opts.ctx,
++    taskId: opts.taskId,
++    readmePath: path.join(tasksDir, opts.taskId, "README.md"),
++    branch: taskBranch,
++  });
++  if (branchTask && taskBranch) {
++    const ownerWorktree = await findWorktreeForBranch(opts.ctx.resolvedProject.gitRoot, taskBranch);
++    if (
++      ownerWorktree &&
++      path.resolve(ownerWorktree) === path.resolve(opts.ctx.resolvedProject.gitRoot)
++    ) {
++      return opts.ctx;
++    }
++  }
++
++  const worktrees = await listWorktrees(opts.ctx.resolvedProject.gitRoot);
++  const primary = worktrees[0]?.path;
++  if (!primary || path.resolve(primary) === path.resolve(opts.ctx.resolvedProject.gitRoot)) {
++    return opts.ctx;
++  }
++  const primaryCtx = await loadCommandContext({ cwd: primary, rootOverride: null });
++  return (await primaryCtx.taskBackend.getTask(opts.taskId)) ? primaryCtx : opts.ctx;
++}
++
+ export async function loadTaskFromContext(opts: {
+   ctx: CommandContext;
+   taskId: string;
+diff --git a/packages/agentplane/src/commands/task/advance.command.ts b/packages/agentplane/src/commands/task/advance.command.ts
+index 4fd6fe490..f01155414 100644
+--- a/packages/agentplane/src/commands/task/advance.command.ts
++++ b/packages/agentplane/src/commands/task/advance.command.ts
+@@ -12,7 +12,7 @@ import {
+   supervisePersistedWorkflowEpisode,
+ } from "../shared/supervisor-execution-episode.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+-import { loadCommandContext } from "../shared/task-backend.js";
++import { loadCommandContext, resolveTaskOwnerCommandContext } from "../shared/task-backend.js";
+ 
+ import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
+ import {
+@@ -40,7 +40,11 @@ export function makeRunTaskAdvanceHandler(deps: {
+         message: "task advance --replacement cannot be combined with --result.",
+       });
+     }
+-    const command = await deps.getContext("task advance", { includeRemote: parsed.remote });
++    const initialCommand = await deps.getContext("task advance", { includeRemote: parsed.remote });
++    const command = await resolveTaskOwnerCommandContext({
++      ctx: initialCommand,
++      taskId: parsed.taskId,
++    });
+     const decide = async (freshHead = false): Promise<TaskRouteDecision> => {
+       const routeCommand = freshHead
+         ? await loadCommandContext({
+@@ -111,7 +115,10 @@ export function makeRunTaskAdvanceHandler(deps: {
+     for (let operationCount = 0; operationCount < 32; operationCount += 1) {
+       const step = current.workflowStep;
+       if (step.kind === "approval") {
+-        const authorityCheckout = current.oracle?.authoritativeCheckoutPath ?? ctx.cwd;
++        // Repository authority is policy, so it must come from the trusted base checkout.
++        // The current step may intentionally run inside a mutable task worktree.
++        const authorityCheckout =
++          current.workspace.baseCheckoutPath ?? command.resolvedProject.gitRoot;
+         const authorityCommand = await loadCommandContext({
+           cwd: authorityCheckout,
+           rootOverride: null,
+diff --git a/packages/agentplane/src/commands/task/configured-authority.test.ts b/packages/agentplane/src/commands/task/configured-authority.test.ts
+index 64039ecd7..80a9291da 100644
+--- a/packages/agentplane/src/commands/task/configured-authority.test.ts
++++ b/packages/agentplane/src/commands/task/configured-authority.test.ts
+@@ -59,4 +59,10 @@ describe("configured repository authority", () => {
+       false,
+     );
+   });
++
++  it("allows autonomous integration enqueue in all mode unless explicitly denied", () => {
++    expect(isOperationAuthorizedByPolicy(authority({ mode: "all" }), "integration.enqueue")).toBe(
++      true,
++    );
++  });
+ });
+diff --git a/packages/agentplane/src/commands/task/external-agent-planning-authority.ts b/packages/agentplane/src/commands/task/external-agent-planning-authority.ts
+index e71e037c6..ef210bc61 100644
+--- a/packages/agentplane/src/commands/task/external-agent-planning-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-planning-authority.ts
+@@ -17,6 +17,10 @@ function sameValue(left: unknown, right: unknown): boolean {
+   return JSON.stringify(left) === JSON.stringify(right);
+ }
+ 
++function sameStringSet(left: readonly string[] | undefined, right: readonly string[]): boolean {
++  return sameValue([...(left ?? [])].toSorted(), [...right].toSorted());
++}
++
+ function planningTaskFields(opts: {
+   command: CommandContext;
+   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+@@ -46,14 +50,16 @@ function planningTaskFields(opts: {
+     explicitIntent &&
+     (!sameValue(opts.task.task_kind, intent.task_kind) ||
+       !sameValue(opts.task.mutation_scope, intent.mutation_scope) ||
+-      !sameValue(opts.task.risk_flags ?? [], intent.risk_flags) ||
+-      !sameValue(opts.task.tags ?? [], intent.tags) ||
++      !sameStringSet(opts.task.risk_flags, intent.risk_flags) ||
++      !sameStringSet(opts.task.tags, intent.tags) ||
+       !sameValue(opts.task.blueprint_request, intent.blueprint_request))
+   ) {
+     throw new CliError({
+       code: "E_VALIDATION",
+       message:
+-        "PLANNER result cannot override caller-supplied structured task intent. Return the existing structured intent unchanged or omit result.task_intent.",
++        "PLANNER result cannot override caller-supplied structured classification fields. " +
++        "Keep task_kind, mutation_scope, risk_flags, tags, and blueprint_request unchanged; " +
++        "result.task_intent.execution may refine the execution contract.",
+     });
+   }
+ 
+@@ -150,8 +156,8 @@ export async function isExternalPlanningResultApplied(opts: {
+     intent &&
+     (!sameValue(task.task_kind, intent.task_kind) ||
+       !sameValue(task.mutation_scope, intent.mutation_scope) ||
+-      !sameValue(task.risk_flags ?? [], intent.risk_flags) ||
+-      !sameValue(task.tags ?? [], intent.tags) ||
++      !sameStringSet(task.risk_flags, intent.risk_flags) ||
++      !sameStringSet(task.tags, intent.tags) ||
+       !sameValue(task.blueprint_request, intent.blueprint_request))
+   ) {
+     return false;
+diff --git a/packages/core/package.json b/packages/core/package.json
+index 8494514aa..f8e42a353 100644
+--- a/packages/core/package.json
++++ b/packages/core/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@agentplaneorg/core",
+-  "version": "0.7.6",
++  "version": "0.7.7-beta.1",
+   "description": "Core libraries for Agentplane repository-native task, policy, and verification workflows.",
+   "keywords": [
+     "agentplane",
+diff --git a/packages/recipes/package.json b/packages/recipes/package.json
+index dd30cfa6a..6bb78f436 100644
+--- a/packages/recipes/package.json
++++ b/packages/recipes/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@agentplaneorg/recipes",
+-  "version": "0.7.6",
++  "version": "0.7.7-beta.1",
+   "description": "Recipe modules for repeatable Agentplane audit-layer workflows.",
+   "keywords": [
+     "agentplane",
+diff --git a/packages/recipes/src/index.ts b/packages/recipes/src/index.ts
+index 4f35751ac..666933054 100644
+--- a/packages/recipes/src/index.ts
++++ b/packages/recipes/src/index.ts
+@@ -1,4 +1,4 @@
+-export const RECIPES_VERSION = "0.7.6";
++export const RECIPES_VERSION = "0.7.7-beta.1";
+ 
+ export * from "./constants.js";
+ export * from "./blueprint-extensions.js";
+diff --git a/packages/spec/examples/acr.json b/packages/spec/examples/acr.json
+index 1619c2c69..2d40d1330 100644
+--- a/packages/spec/examples/acr.json
++++ b/packages/spec/examples/acr.json
+@@ -5,7 +5,7 @@
+   "created_at": "2026-05-03T12:00:00.000Z",
+   "producer": {
+     "name": "agentplane",
+-    "version": "0.7.6"
++    "version": "0.7.7-beta.1"
+   },
+   "repository": {
+     "vcs": "git",
+@@ -31,7 +31,7 @@
+     "toolchain": [
+       {
+         "name": "agentplane",
+-        "version": "0.7.6"
++        "version": "0.7.7-beta.1"
+       }
+     ]
+   },
+diff --git a/packages/testkit/package.json b/packages/testkit/package.json
+index 1997be728..bb5000e80 100644
+--- a/packages/testkit/package.json
++++ b/packages/testkit/package.json
+@@ -70,7 +70,7 @@
+   },
+   "types": "./dist/index.d.ts",
+   "dependencies": {
+-    "@agentplaneorg/core": "0.7.6"
++    "@agentplaneorg/core": "0.7.7-beta.1"
+   },
+   "scripts": {
+     "build": "node ../../scripts/checks/run-typescript-build.mjs -p tsconfig.json",
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 970a8ab28..91e88f09a 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -2462,9 +2462,9 @@
+     "from_version": "0.6.24",
+     "section": "package_manifests",
+     "source_task": "202608082119-P6SHBN",
+-    "surface_sha256": "3d3ec6aff7ea49a11adaef2ff88b202a105c20cef23672e5de5eb0fb246ef3c9",
+-    "to_sha256": "ba86d65ec1fe45a4d31d19c537a863e802e8e7a7bbdb0d1b0a301d4c3e82b3ab",
+-    "to_version": "0.7.6"
++    "surface_sha256": "1dbd7dd14a972a5a5683059adbc80d9efb6ee2be51015b940f834b10f0f36ecc",
++    "to_sha256": "2ab9d0c09fdab023ea57552690026b467b5aff3069ac3bb0d834c3b343534719",
++    "to_version": "0.7.7-beta.1"
+   },
+   "review": {
+     "conditions": [
+diff --git a/scripts/lib/next-development-version.mjs b/scripts/lib/next-development-version.mjs
+new file mode 100644
+index 000000000..36d0efe5a
+--- /dev/null
++++ b/scripts/lib/next-development-version.mjs
+@@ -0,0 +1,119 @@
++import { execFileSync } from "node:child_process";
++import { existsSync, readFileSync } from "node:fs";
++import path from "node:path";
++
++import { applyReleaseVersionSurfaces } from "./release-version-surfaces.mjs";
++import {
++  compareReleaseSemver,
++  nextPatchBetaVersion,
++  parseReleaseSemver,
++} from "./release-semver.mjs";
++
++function readPackageVersion(rootDir) {
++  const manifest = JSON.parse(
++    readFileSync(path.join(rootDir, "packages", "agentplane", "package.json"), "utf8"),
++  );
++  const version = String(manifest.version ?? "").trim();
++  if (!parseReleaseSemver(version)) throw new Error(`Invalid workspace version: ${version}`);
++  return version;
++}
++
++function readOptional(rootDir, relPath) {
++  const absPath = path.join(rootDir, relPath);
++  return existsSync(absPath) ? readFileSync(absPath, "utf8") : null;
++}
++
++function run(command, args, rootDir, quiet = false) {
++  execFileSync(command, args, {
++    cwd: rootDir,
++    env: process.env,
++    stdio: quiet ? ["ignore", "ignore", "inherit"] : "inherit",
++  });
++}
++
++export function planNextDevelopmentVersion(currentVersion, publishedVersion) {
++  const current = parseReleaseSemver(currentVersion);
++  const published = parseReleaseSemver(publishedVersion);
++  if (!current) throw new Error(`Invalid workspace version: ${currentVersion}`);
++  if (!published) throw new Error(`Invalid published version: ${publishedVersion}`);
++  const nextVersion = nextPatchBetaVersion(publishedVersion);
++  if (!nextVersion) {
++    return {
++      action: "skip",
++      reason: "published_version_is_prerelease",
++      currentVersion,
++      publishedVersion,
++      nextVersion: null,
++    };
++  }
++  if (compareReleaseSemver(currentVersion, nextVersion) === 0) {
++    return {
++      action: "skip",
++      reason: "development_version_already_open",
++      currentVersion,
++      publishedVersion,
++      nextVersion,
++    };
++  }
++  if (
++    current.prerelease.length === 0 &&
++    compareReleaseSemver(currentVersion, publishedVersion) === 0
++  ) {
++    return {
++      action: "apply",
++      reason: "stable_publish_matches_workspace",
++      currentVersion,
++      publishedVersion,
++      nextVersion,
++    };
++  }
++  if (compareReleaseSemver(currentVersion, nextVersion) > 0) {
++    return {
++      action: "skip",
++      reason: "workspace_already_ahead",
++      currentVersion,
++      publishedVersion,
++      nextVersion,
++    };
++  }
++  if (compareReleaseSemver(currentVersion, publishedVersion) < 0) {
++    throw new Error(
++      `Workspace version ${currentVersion} is behind published version ${publishedVersion}; refusing to rewrite release history.`,
++    );
++  }
++  throw new Error(
++    `Workspace version ${currentVersion} conflicts with expected next development version ${nextVersion} after ${publishedVersion}.`,
++  );
++}
++
++export function applyNextDevelopmentVersion(rootDir, publishedVersion, opts = {}) {
++  const currentVersion = readPackageVersion(rootDir);
++  const plan = planNextDevelopmentVersion(currentVersion, publishedVersion);
++  if (plan.action !== "apply" || opts.write !== true) {
++    return { ...plan, dryRun: opts.write !== true, changedPaths: [] };
++  }
++
++  const referencePath = "docs/reference/generated-reference.mdx";
++  const referenceBefore = readOptional(rootDir, referencePath);
++  const changedPaths = applyReleaseVersionSurfaces(rootDir, plan.nextVersion);
++
++  if (opts.skipInstall !== true && existsSync(path.join(rootDir, "bun.lock"))) {
++    run("bun", ["install", "--frozen-lockfile", "--ignore-scripts"], rootDir, opts.quiet === true);
++  }
++  const generatorPath = path.join(rootDir, "scripts", "generate", "generate-website-docs.mjs");
++  if (existsSync(generatorPath)) {
++    run("node", [generatorPath], rootDir, opts.quiet === true);
++  }
++  const referenceAfter = readOptional(rootDir, referencePath);
++  if (referenceBefore !== referenceAfter && referenceAfter !== null)
++    changedPaths.push(referencePath);
++
++  const parityPath = path.join(rootDir, "scripts", "release", "check-release-parity.mjs");
++  if (existsSync(parityPath)) run("node", [parityPath], rootDir, opts.quiet === true);
++
++  return {
++    ...plan,
++    dryRun: false,
++    changedPaths: [...new Set(changedPaths)].toSorted(),
++  };
++}
+diff --git a/scripts/lib/release-semver.mjs b/scripts/lib/release-semver.mjs
+new file mode 100644
+index 000000000..a3dde2f6a
+--- /dev/null
++++ b/scripts/lib/release-semver.mjs
+@@ -0,0 +1,66 @@
++const SEMVER_RE =
++  /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/u;
++
++export function parseReleaseSemver(value) {
++  const raw = String(value ?? "").trim();
++  const match = SEMVER_RE.exec(raw);
++  if (!match) return null;
++  const prerelease = match[4] ? match[4].split(".") : [];
++  if (prerelease.some((part) => /^\d+$/u.test(part) && part.length > 1 && part.startsWith("0"))) {
++    return null;
++  }
++  return {
++    raw,
++    major: Number(match[1]),
++    minor: Number(match[2]),
++    patch: Number(match[3]),
++    prerelease,
++    build: match[5] ? match[5].split(".") : [],
++  };
++}
++
++function comparePrerelease(left, right) {
++  if (left.length === 0 && right.length === 0) return 0;
++  if (left.length === 0) return 1;
++  if (right.length === 0) return -1;
++  const length = Math.max(left.length, right.length);
++  for (let index = 0; index < length; index += 1) {
++    const leftPart = left[index];
++    const rightPart = right[index];
++    if (leftPart === undefined) return -1;
++    if (rightPart === undefined) return 1;
++    if (leftPart === rightPart) continue;
++    const leftNumeric = /^\d+$/u.test(leftPart);
++    const rightNumeric = /^\d+$/u.test(rightPart);
++    if (leftNumeric && rightNumeric) return Number(leftPart) - Number(rightPart);
++    if (leftNumeric) return -1;
++    if (rightNumeric) return 1;
++    return leftPart.localeCompare(rightPart);
++  }
++  return 0;
++}
++
++export function compareReleaseSemver(leftValue, rightValue) {
++  const left = parseReleaseSemver(leftValue);
++  const right = parseReleaseSemver(rightValue);
++  if (!left || !right) {
++    throw new Error(`Invalid SemVer comparison: ${leftValue} vs ${rightValue}`);
++  }
++  if (left.major !== right.major) return left.major - right.major;
++  if (left.minor !== right.minor) return left.minor - right.minor;
++  if (left.patch !== right.patch) return left.patch - right.patch;
++  return comparePrerelease(left.prerelease, right.prerelease);
++}
++
++export function stableCoreVersion(value) {
++  const parsed = parseReleaseSemver(value);
++  if (!parsed) throw new Error(`Invalid SemVer: ${value}`);
++  return `${parsed.major}.${parsed.minor}.${parsed.patch}`;
++}
++
++export function nextPatchBetaVersion(value) {
++  const parsed = parseReleaseSemver(value);
++  if (!parsed) throw new Error(`Invalid published SemVer: ${value}`);
++  if (parsed.prerelease.length > 0) return null;
++  return `${parsed.major}.${parsed.minor}.${parsed.patch + 1}-beta.1`;
++}
+diff --git a/scripts/lib/release-version-surfaces.mjs b/scripts/lib/release-version-surfaces.mjs
+index 7085f5ded..128b9cc8d 100644
+--- a/scripts/lib/release-version-surfaces.mjs
++++ b/scripts/lib/release-version-surfaces.mjs
+@@ -1,4 +1,13 @@
+-import { existsSync, readFileSync, writeFileSync } from "node:fs";
++import {
++  closeSync,
++  existsSync,
++  fsyncSync,
++  ftruncateSync,
++  openSync,
++  readFileSync,
++  writeFileSync,
++  writeSync,
++} from "node:fs";
+ import path from "node:path";
+ 
+ const MANIFEST_PATH = "scripts/release/version-surfaces.json";
+@@ -11,6 +20,28 @@ function writeJson(absPath, value) {
+   writeFileSync(absPath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+ }
+ 
++function rewriteTextFile(absPath, transform) {
++  const fd = openSync(absPath, "r+");
++  try {
++    const before = readFileSync(fd, "utf8");
++    const after = transform(before);
++    if (after === before) return false;
++
++    const bytes = Buffer.from(after, "utf8");
++    ftruncateSync(fd, 0);
++    let offset = 0;
++    while (offset < bytes.length) {
++      const written = writeSync(fd, bytes, offset, bytes.length - offset, offset);
++      if (written === 0) throw new Error(`Unable to rewrite ${absPath}.`);
++      offset += written;
++    }
++    fsyncSync(fd);
++    return true;
++  } finally {
++    closeSync(fd);
++  }
++}
++
+ function assertStringArray(value, label) {
+   if (!Array.isArray(value) || !value.every((entry) => typeof entry === "string")) {
+     throw new Error(`Invalid release version surface manifest: ${label} must be a string array.`);
+@@ -100,6 +131,11 @@ function readTextConst(text, surface) {
+ 
+ function writeTextConst(text, surface, nextVersion) {
+   const name = typeof surface.name === "string" ? surface.name.trim() : "";
++  const current = readTextConst(text, surface);
++  if (current === null) {
++    throw new Error(`${surface.file} must export ${name} as a string literal.`);
++  }
++  if (current === nextVersion) return text;
+   const escapedName = name.replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`);
+   const pattern = new RegExp(
+     String.raw`export\s+const\s+${escapedName}\s*=\s*["'][^"']*["']\s*;`,
+@@ -118,6 +154,11 @@ function readWorkflowExpectedCliVersion(text) {
+ }
+ 
+ function writeWorkflowExpectedCliVersion(text, surface, nextVersion) {
++  const current = readWorkflowExpectedCliVersion(text);
++  if (current === null) {
++    throw new Error(`${surface.file} must contain framework.cli.expected_version.`);
++  }
++  if (current === nextVersion) return text;
+   const next = text.replace(/^(\s*expected_version:\s*)\S+\s*$/mu, `$1${nextVersion}`);
+   if (next === text) {
+     throw new Error(`${surface.file} must contain framework.cli.expected_version.`);
+@@ -201,7 +242,9 @@ export function applyReleaseVersionSurfaces(rootDir, nextVersion) {
+ 
+     if (surface.kind === "json") {
+       const value = readJson(absPath);
+-      setByPath(value, assertStringArray(surface.path, `${surface.id}.path`), nextVersion);
++      const keys = assertStringArray(surface.path, `${surface.id}.path`);
++      if (getByPath(value, keys) === nextVersion) continue;
++      setByPath(value, keys, nextVersion);
+       writeJson(absPath, value);
+       changedPaths.push(surface.file);
+       continue;
+@@ -215,20 +258,26 @@ export function applyReleaseVersionSurfaces(rootDir, nextVersion) {
+         }
+         continue;
+       }
+-      setByPath(item, assertStringArray(surface.path, `${surface.id}.path`), nextVersion);
++      const keys = assertStringArray(surface.path, `${surface.id}.path`);
++      if (getByPath(item, keys) === nextVersion) continue;
++      setByPath(item, keys, nextVersion);
+       writeJson(absPath, value);
+       changedPaths.push(surface.file);
+       continue;
+     }
+     if (surface.kind === "typescript_string_const") {
+-      const before = readFileSync(absPath, "utf8");
+-      writeFileSync(absPath, writeTextConst(before, surface, nextVersion), "utf8");
++      const changed = rewriteTextFile(absPath, (before) =>
++        writeTextConst(before, surface, nextVersion),
++      );
++      if (!changed) continue;
+       changedPaths.push(surface.file);
+       continue;
+     }
+     if (surface.kind === "workflow_expected_cli_version") {
+-      const before = readFileSync(absPath, "utf8");
+-      writeFileSync(absPath, writeWorkflowExpectedCliVersion(before, surface, nextVersion), "utf8");
++      const changed = rewriteTextFile(absPath, (before) =>
++        writeWorkflowExpectedCliVersion(before, surface, nextVersion),
++      );
++      if (!changed) continue;
+       changedPaths.push(surface.file);
+       continue;
+     }
+diff --git a/scripts/release/check-local-tarball-install-smoke.mjs b/scripts/release/check-local-tarball-install-smoke.mjs
+index f5325693e..1a4a6463d 100644
+--- a/scripts/release/check-local-tarball-install-smoke.mjs
++++ b/scripts/release/check-local-tarball-install-smoke.mjs
+@@ -354,9 +354,10 @@ const main = defineScript({
+         {
+           exitCode: 5,
+           code: "E_GIT",
+-          messageIncludes: "behind its upstream origin/main",
+-          fields: ["code", "message", "hint", "next_action", "reason_decode"],
++          messageIncludes: "does not exactly match its upstream origin/main",
++          fields: ["code", "message", "context", "hint", "next_action", "reason_decode"],
+           nestedFields: {
++            context: ["reason_code", "base_branch", "upstream_branch", "ahead", "behind"],
+             next_action: ["command", "reason", "reasonCode"],
+             reason_decode: ["code", "category", "summary", "action"],
+           },
+diff --git a/scripts/release/check-release-version.mjs b/scripts/release/check-release-version.mjs
+index 99388e154..adf580f0b 100644
+--- a/scripts/release/check-release-version.mjs
++++ b/scripts/release/check-release-version.mjs
+@@ -1,10 +1,14 @@
+ import fs from "node:fs";
+ import { defineCheck, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
+ import { assertReleaseParity } from "../lib/release-version-parity.mjs";
++import { parseReleaseSemver } from "../lib/release-semver.mjs";
+ 
+ const parseArgs = (args) => {
+-  const { flags } = parseScriptArgs(args, { valueFlags: ["tag"] });
+-  return { tagArg: flags.tag ?? null };
++  const { flags } = parseScriptArgs(args, {
++    valueFlags: ["tag"],
++    booleanFlags: ["stable-only"],
++  });
++  return { tagArg: flags.tag ?? null, stableOnly: flags["stable-only"] === true };
+ };
+ 
+ const resolveTag = (tagArg) => {
+@@ -34,18 +38,27 @@ const main = defineCheck({
+   name: "check-release-version",
+   parseArgs,
+   check({ options }) {
+-    const { tagArg } = options;
++    const { stableOnly, tagArg } = options;
+     const tag = resolveTag(tagArg);
+     if (!tag) {
+       throw new Error(
+         "Missing release tag. Provide --tag vX.Y.Z[-prerelease][+build] or run under tag ref.",
+       );
+     }
+-    const match = tag.match(/^v(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?)$/);
+-    if (!match) {
++    if (!tag.startsWith("v")) {
+       throw new Error(`Tag ${tag} does not match vX.Y.Z[-prerelease][+build] format.`);
+     }
+-    const version = match[1];
++    const version = tag.slice(1);
++    const parsed = parseReleaseSemver(version);
++    if (!parsed) {
++      throw new Error(`Tag ${tag} does not match vX.Y.Z[-prerelease][+build] format.`);
++    }
++    if (stableOnly && parsed.prerelease.length > 0) {
++      throw new Error(
++        `Refusing to publish prerelease ${tag} through the stable release workflow. ` +
++          "Prepare a stable X.Y.Z release version before publishing with npm tag latest.",
++      );
++    }
+     return assertReleaseParity(process.cwd(), { requiredVersion: version });
+   },
+ });
+diff --git a/scripts/release/open-next-development-version.mjs b/scripts/release/open-next-development-version.mjs
+new file mode 100644
+index 000000000..66176c3c7
+--- /dev/null
++++ b/scripts/release/open-next-development-version.mjs
+@@ -0,0 +1,55 @@
++import { parseScriptArgs } from "../lib/script-runtime.mjs";
++import { applyNextDevelopmentVersion } from "../lib/next-development-version.mjs";
++
++function usage() {
++  return [
++    "Usage: node scripts/release/open-next-development-version.mjs --published-version <semver> [--write] [--skip-install] [--json]",
++    "",
++    "After a successful stable publish, open the next patch development line as X.Y.(Z+1)-beta.1.",
++    "The operation is dry-run by default and idempotent when the workspace is already at or beyond that version.",
++  ].join("\n");
++}
++
++function main() {
++  const { flags } = parseScriptArgs(process.argv.slice(2), {
++    valueFlags: ["published-version"],
++    booleanFlags: ["write", "skip-install", "json", "help"],
++  });
++  if (flags.help === true) {
++    process.stdout.write(`${usage()}\n`);
++    return;
++  }
++  const publishedVersion = String(flags["published-version"] ?? "").trim();
++  if (!publishedVersion) throw new Error("Missing --published-version.");
++  const result = applyNextDevelopmentVersion(process.cwd(), publishedVersion, {
++    write: flags.write === true,
++    skipInstall: flags["skip-install"] === true,
++    quiet: flags.json === true,
++  });
++  const payload = {
++    schema_version: 1,
++    operation: "release.open_next_development_version",
++    action: result.action,
++    reason: result.reason,
++    dry_run: result.dryRun,
++    published_version: result.publishedVersion,
++    previous_version: result.currentVersion,
++    next_version: result.nextVersion,
++    changed_paths: result.changedPaths,
++  };
++  if (flags.json === true) {
++    process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
++    return;
++  }
++  process.stdout.write(
++    `${payload.action}: ${payload.previous_version} -> ${payload.next_version ?? "unchanged"} (${payload.reason})\n`,
++  );
++}
++
++try {
++  main();
++} catch (error) {
++  process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
++  process.stderr.write(`${usage()}\n`);
++  process.exitCode = 1;
++}
+diff --git a/scripts/release/release-task-evidence.mjs b/scripts/release/release-task-evidence.mjs
+index b33f52404..43fb05276 100644
+--- a/scripts/release/release-task-evidence.mjs
++++ b/scripts/release/release-task-evidence.mjs
+@@ -12,6 +12,7 @@ import {
+   taskReadmePath,
+ } from "../../packages/core/src/index.ts";
+ import { readConfiguredTaskCloseBranchPrefix } from "../lib/workflow-config.mjs";
++import { nextPatchBetaVersion } from "../lib/release-semver.mjs";
+ 
+ const execFileAsync = promisify(execFile);
+ 
+@@ -75,8 +76,10 @@ function shortSha(value) {
+   return value.trim().slice(0, 12);
+ }
+ 
+-function buildReleaseEvidencePrTitle(taskId) {
+-  return `task-evidence: Record hosted publish evidence [${taskId}]`;
++function buildReleaseEvidencePrTitle(taskId, nextDevelopmentVersion) {
++  return nextDevelopmentVersion
++    ? `task-evidence: Record publish evidence and open ${nextDevelopmentVersion} [${taskId}]`
++    : `task-evidence: Record hosted publish evidence [${taskId}]`;
+ }
+ 
+ async function git(args) {
+@@ -174,10 +177,12 @@ function buildPrepareOutcome({
+       pr_title: null,
+       pr_body: null,
+       readme_path: null,
++      next_development_version: null,
+     };
+   }
+ 
+   const closureBranch = `${taskCloseBranchPrefix}/${taskId}/${shortSha(releaseSha)}-publish`;
++  const nextDevelopmentVersion = nextPatchBetaVersion(manifest.version);
+   const releaseUrl = `https://github.com/${repo}/releases/tag/${manifest.tag}`;
+   const publishRunUrl = manifest.job.runId
+     ? `https://github.com/${repo}/actions/runs/${manifest.job.runId}`
+@@ -195,11 +200,16 @@ function buildPrepareOutcome({
+   if (publishRunUrl) {
+     prBodyLines.push(`- Publish run: ${publishRunUrl}`);
+   }
++  if (nextDevelopmentVersion) {
++    prBodyLines.push(`- Next development version: \`${nextDevelopmentVersion}\``);
++  }
+   prBodyLines.push(
+     "",
+     "## Scope",
+     "",
+-    "This PR updates only the tracked release task README so canonical task closure includes hosted publish evidence.",
++    nextDevelopmentVersion
++      ? `This PR records hosted publish evidence and atomically opens the next patch development line as \`${nextDevelopmentVersion}\` across every semantic version surface.`
++      : "This PR updates the tracked release task README so canonical task closure includes hosted publish evidence.",
+   );
+ 
+   return {
+@@ -209,9 +219,10 @@ function buildPrepareOutcome({
+     base_ref: baseRef,
+     release_sha: releaseSha,
+     closure_branch: closureBranch,
+-    pr_title: buildReleaseEvidencePrTitle(taskId),
++    pr_title: buildReleaseEvidencePrTitle(taskId, nextDevelopmentVersion),
+     pr_body: prBodyLines.join("\n"),
+     readme_path: `.agentplane/tasks/${taskId}/README.md`,
++    next_development_version: nextDevelopmentVersion,
+   };
+ }
+ 
+diff --git a/scripts/release/version-bump.mjs b/scripts/release/version-bump.mjs
+index 5b638a34c..c3212f9c3 100644
+--- a/scripts/release/version-bump.mjs
++++ b/scripts/release/version-bump.mjs
+@@ -24,7 +24,7 @@ function readJson(relPath) {
+ 
+ function parseSemver(version) {
+   const match =
+-    /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/u.exec(
++    /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/u.exec(
+       String(version).trim(),
+     );
+   if (!match) return null;
+@@ -32,12 +32,19 @@ function parseSemver(version) {
+     major: Number(match[1]),
+     minor: Number(match[2]),
+     patch: Number(match[3]),
++    prerelease: match[4] ? match[4].split(".") : [],
+   };
+ }
+ 
+ function bumpVersion(currentVersion, bump) {
+   const parsed = parseSemver(currentVersion);
+   if (!parsed) throw new Error(`Invalid current semver: ${currentVersion}`);
++  if (parsed.prerelease.length > 0) {
++    if (bump === "patch") return `${parsed.major}.${parsed.minor}.${parsed.patch}`;
++    if (bump === "minor") return `${parsed.major}.${parsed.minor + 1}.0`;
++    if (bump === "major") return `${parsed.major + 1}.0.0`;
++    throw new Error(`Invalid --bump value: ${bump}`);
++  }
+   if (bump === "patch") return `${parsed.major}.${parsed.minor}.${parsed.patch + 1}`;
+   if (bump === "minor") return `${parsed.major}.${parsed.minor + 1}.0`;
+   if (bump === "major") return `${parsed.major + 1}.0.0`;
+@@ -73,7 +80,7 @@ function main() {
+   assertTargetVersion(targetVersion);
+ 
+   const surfacePaths = listReleaseVersionSurfacePaths(ROOT);
+-  const changed = [...surfacePaths, "bun.lock"];
++  const changed = surfacePaths;
+ 
+   const report = {
+     schema_version: 1,
+@@ -90,7 +97,7 @@ function main() {
+   if (flags.write === true) {
+     applyReleaseVersionSurfaces(ROOT, targetVersion);
+     if (flags["skip-install"] !== true) {
+-      run("bun", ["install", "--ignore-scripts"]);
++      run("bun", ["install", "--frozen-lockfile", "--ignore-scripts"]);
+     }
+     run("bun", ["run", "release:parity"]);
+   }

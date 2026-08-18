@@ -53,4 +53,16 @@ describe("configured repository authority", () => {
     expect(isOperationAuthorizedByPolicy(config, "pr.open")).toBe(true);
     expect(isOperationAuthorizedByPolicy(config, "integration.enqueue")).toBe(false);
   });
+
+  it("keeps semantic scope expansion USER-owned even in all mode", () => {
+    expect(isOperationAuthorizedByPolicy(authority({ mode: "all" }), "task.scope.extend")).toBe(
+      false,
+    );
+  });
+
+  it("allows autonomous integration enqueue in all mode unless explicitly denied", () => {
+    expect(isOperationAuthorizedByPolicy(authority({ mode: "all" }), "integration.enqueue")).toBe(
+      true,
+    );
+  });
 });

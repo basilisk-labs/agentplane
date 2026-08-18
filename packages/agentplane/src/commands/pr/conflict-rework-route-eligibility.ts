@@ -237,7 +237,7 @@ export function resolveConflictRouteEligibility(opts: {
       reason: "semantic conflict rework requires a current passing verification record",
     };
   }
-  if (taskStatus === "DOING") {
+  if (taskStatus === "DOING" || taskStatus === "DONE") {
     if (!opts.report.queue.present && !opts.report.handoff.present) {
       return {
         state: "eligible",
@@ -248,11 +248,13 @@ export function resolveConflictRouteEligibility(opts: {
         },
       };
     }
-    return {
-      state: "ineligible",
-      reason:
-        "a verified DOING task may enter semantic conflict rework only from its current open PR before any integration queue or protected-base handoff exists",
-    };
+    if (taskStatus === "DOING") {
+      return {
+        state: "ineligible",
+        reason:
+          "a verified DOING task may enter semantic conflict rework only from its current open PR before any integration queue or protected-base handoff exists",
+      };
+    }
   }
   if (taskStatus !== "DONE") {
     return {

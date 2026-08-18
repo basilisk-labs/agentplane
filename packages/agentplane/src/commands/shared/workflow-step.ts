@@ -1,4 +1,5 @@
 import type { StateFingerprint } from "@agentplaneorg/core/schemas";
+import type { TaskRepositoryEffect } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
@@ -51,6 +52,7 @@ type WorkflowOperationType =
   | "provider_refresh"
   | "runner_follow"
   | "task_record_result"
+  | "task_scope_extend"
   | "task_start"
   | "task_view"
   | "workflow_repair"
@@ -76,6 +78,7 @@ export type WorkflowOperationId =
   | "task.hosted_close.open"
   | "task.hosted_close.finalize"
   | "task.pre_merge_close"
+  | "task.scope.extend"
   | "task.start"
   | "task.verify.show"
   | "task.worktree.cleanup"
@@ -117,6 +120,12 @@ export type WorkflowOperationParams = {
     result: string;
     commit: string;
     force: boolean;
+  };
+  "task.scope.extend": {
+    taskId: string;
+    requestDigest: string;
+    scopeRoots: readonly string[];
+    repositoryEffects: readonly TaskRepositoryEffect[];
   };
   "task.start": { taskId: string; author: string; body: string };
   "task.verify.show": { taskId: string };
@@ -171,6 +180,19 @@ export const WORKFLOW_OPERATION_REGISTRY = {
     expectedPostconditions: [POSTCONDITION.taskDoing, POSTCONDITION.routeRecomputed],
     mustNot: [],
     triggersGitHooks: false,
+    verificationCandidate: null,
+    needsVerificationRecord: false,
+  },
+  "task.scope.extend": {
+    type: "task_scope_extend",
+    phase: "task_scope_extension_pending",
+    checkout: "task_worktree",
+    role: "CODER",
+    expectedPostconditions: [POSTCONDITION.taskDoing, POSTCONDITION.routeRecomputed],
+    mustNot: [
+      "do not substitute or widen the exact structured scope-extension request approved by USER",
+    ],
+    triggersGitHooks: true,
     verificationCandidate: null,
     needsVerificationRecord: false,
   },

@@ -1,7 +1,25 @@
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 import { cliOperationStep, terminalStep } from "./workflow-step-factory.js";
+import { parseTaskScopeExtensionRequestState } from "./task-scope-extension-request.js";
 
 export function blockedTaskStep(state: WorkflowRouteState): WorkflowStep {
+  const pending = parseTaskScopeExtensionRequestState(state.task);
+  if (pending?.status === "pending") {
+    return cliOperationStep({
+      state,
+      operationId: "task.scope.extend",
+      params: {
+        taskId: state.task.id,
+        requestDigest: pending.request_digest,
+        scopeRoots: pending.request.scope_roots,
+        repositoryEffects: pending.request.repository_effects,
+      },
+      code: "approve_scope_extension",
+      summary:
+        "apply the exact pending repository scope extension after explicit USER authority, then issue a freshly scoped executor episode",
+      selectedBlocker: null,
+    });
+  }
   return terminalStep({
     state,
     id: "terminal.task_blocked",

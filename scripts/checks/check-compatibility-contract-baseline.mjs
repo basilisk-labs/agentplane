@@ -346,6 +346,7 @@ function validateReviewedCandidate({
     "202608110235-WCJJRD",
     "202608112213-NWJCBW",
     "202608171853-X3FD5M",
+    "202608181404-CR1F9W",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -384,6 +385,7 @@ function validateReviewedCandidate({
     "202608112213-NWJCBW",
     "202608112259-T3ZDDM",
     "202608171853-X3FD5M",
+    "202608181404-CR1F9W",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -1529,6 +1531,46 @@ function validateReviewedCandidate({
       options: [],
     },
     {
+      id: ["task", "scope", "extend"],
+      visibility: "advanced",
+      group: "Task",
+      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
+      options: [
+        { name: "scope-root", kind: "string", valueHint: "<path>", repeatable: true },
+        {
+          name: "repository-effect",
+          kind: "string",
+          valueHint: "<effect>",
+          repeatable: true,
+          choices: [
+            "repository_write",
+            "documentation",
+            "source_code",
+            "tests",
+            "public_api",
+            "schema",
+            "dependencies",
+            "ci",
+            "release_metadata",
+            "security_boundary",
+          ],
+        },
+        {
+          name: "request-digest",
+          kind: "string",
+          valueHint: "<sha256:...>",
+          required: true,
+        },
+        {
+          name: "state-fingerprint",
+          kind: "string",
+          valueHint: "<sha256:...>",
+          required: true,
+        },
+        { name: "by", kind: "string", valueHint: "<role>", required: true },
+      ],
+    },
+    {
       id: ["workflow", "migrate"],
       visibility: "user",
       group: "Workflow",
@@ -1998,6 +2040,53 @@ function validateReviewedCandidate({
     },
     ...effectResolutionAddedOptions,
     {
+      command: "task scope extend",
+      name: "by",
+      kind: "string",
+      valueHint: "<role>",
+      required: true,
+    },
+    {
+      command: "task scope extend",
+      name: "repository-effect",
+      kind: "string",
+      valueHint: "<effect>",
+      repeatable: true,
+      choices: [
+        "repository_write",
+        "documentation",
+        "source_code",
+        "tests",
+        "public_api",
+        "schema",
+        "dependencies",
+        "ci",
+        "release_metadata",
+        "security_boundary",
+      ],
+    },
+    {
+      command: "task scope extend",
+      name: "request-digest",
+      kind: "string",
+      valueHint: "<sha256:...>",
+      required: true,
+    },
+    {
+      command: "task scope extend",
+      name: "scope-root",
+      kind: "string",
+      valueHint: "<path>",
+      repeatable: true,
+    },
+    {
+      command: "task scope extend",
+      name: "state-fingerprint",
+      kind: "string",
+      valueHint: "<sha256:...>",
+      required: true,
+    },
+    {
       command: "workflow migrate",
       name: "dry-run",
       kind: "boolean",
@@ -2061,6 +2150,11 @@ function validateReviewedCandidate({
       kind: "command",
       command: "task run tool",
       source_task: "202607221852-ECBY56",
+    },
+    {
+      kind: "command",
+      command: "task scope extend",
+      source_task: "202608181404-CR1F9W",
     },
     { kind: "command", command: "workflow migrate", source_task: "202607221846-4VB97J" },
     {
@@ -2460,6 +2554,14 @@ function validateReviewedCandidate({
       source_task: "202607221846-9XC1H0",
     },
     ...effectResolutionOptionSources,
+    ...["by", "repository-effect", "request-digest", "scope-root", "state-fingerprint"].map(
+      (name) => ({
+        kind: "option",
+        command: "task scope extend",
+        name,
+        source_task: "202608181404-CR1F9W",
+      }),
+    ),
     {
       kind: "option",
       command: "workflow migrate",
@@ -2582,6 +2684,7 @@ function validateReviewedCandidate({
         "task run resolve-effect",
         "task run resume-effect",
         "task run tool",
+        "task scope extend",
         "workflow migrate",
       ]),
     "unexpected CLI addition",

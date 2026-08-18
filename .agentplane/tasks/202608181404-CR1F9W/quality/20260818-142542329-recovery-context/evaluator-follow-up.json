@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608181404-CR1F9W-b97d56dc1ceb26a2651fabc6",
+  "task_id": "202608181404-CR1F9W",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Add a structured repository scope-extension request to blocked semantic results (or an equivalent immutable pending-request artifact), bind its exact roots/effects and digest into the BLOCKED route operator action and USER approval, then add an end-to-end task advance regression proving a fresh expanded EXECUTOR packet. Preserve the existing monotonic merge, task evidence invalidation, compatibility ratchet, and social asset changes.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "docs/releases/v0.7.7.md, its generated social image, and the social manifest pass the full documentation-site contract.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e6cf0e72c1337e3d80e0cdd44de75fe18073f29ee2e83bb0a5077d5f05f6caaf.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "task scope extend rejects unsafe/no-op changes, checks exact route fingerprint and USER authority, preserves observations, and invalidates task-level commit, verification, and quality-review state.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e6cf0e72c1337e3d80e0cdd44de75fe18073f29ee2e83bb0a5077d5f05f6caaf.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "AgentSemanticResult blocker has no structured requested_scope_roots or requested_repository_effects, so the proposed authority expansion remains embedded in recommended_action prose and is not bound to the recorded blocker receipt.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e6cf0e72c1337e3d80e0cdd44de75fe18073f29ee2e83bb0a5077d5f05f6caaf.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "blockedTaskStep remains a generic terminal attention_required step and does not expose an exact task scope extend operator action; the new command is therefore not part of the normal task advance protocol.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e6cf0e72c1337e3d80e0cdd44de75fe18073f29ee2e83bb0a5077d5f05f6caaf.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "summary": "The focused tests cover only the pure contract merge helper. They do not exercise blocker recording, the state-bound CLI command, supervisor journal recovery, or issuance of a new implementation_rework/implementation EXECUTOR work order with the expanded writable roots.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e6cf0e72c1337e3d80e0cdd44de75fe18073f29ee2e83bb0a5077d5f05f6caaf.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "summary": "Residual risk: An operator can approve roots/effects unrelated to the recorded blocker because the command validates only the task fingerprint, not an exact structured request digest.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e6cf0e72c1337e3d80e0cdd44de75fe18073f29ee2e83bb0a5077d5f05f6caaf.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "summary": "Residual risk: The task can remain terminally BLOCKED in the normal protocol because no projected operator action teaches an autonomous supervisor how to invoke the new boundary.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e6cf0e72c1337e3d80e0cdd44de75fe18073f29ee2e83bb0a5077d5f05f6caaf.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-142542329-recovery-context/evaluator-result.json"
+}

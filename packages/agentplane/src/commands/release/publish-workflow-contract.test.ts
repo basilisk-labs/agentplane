@@ -16,6 +16,18 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("name: Publish release");
   });
 
+  it("runs the stable-version guard before publishing packages with npm tag latest", async () => {
+    const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+
+    expect(workflow).toContain(
+      'node scripts/check-release-version.mjs --tag "${{ needs.detect.outputs.tag }}" --stable-only',
+    );
+    expect(workflow).toContain("npm publish --provenance --access public --tag latest");
+    expect(workflow.indexOf("node scripts/check-release-version.mjs")).toBeLessThan(
+      workflow.indexOf("npm publish --provenance --access public --tag latest"),
+    );
+  });
+
   it("uses workflow_run from Core CI and downloads the exact detected release-ready artifact by run id", async () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
 
@@ -28,6 +40,8 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain(
       "release_ready_artifact_name: ${{ steps.source.outputs.release_ready_artifact_name }}",
     );
+    expect(workflow).toContain("sha: ${{ steps.detect.outputs.sha }}");
+    expect(workflow).not.toContain("sha: ${{ steps.source.outputs.sha }}");
     expect(workflow).toContain("actions/download-artifact@v8");
     expect(workflow).toContain("RELEASE_READY_ARTIFACT_NAME=");
     expect(workflow).toContain('echo "release_ready_artifact_name=${RELEASE_READY_ARTIFACT_NAME}"');
@@ -149,6 +163,12 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("Check for existing release evidence PR");
     expect(workflow).toContain("Apply release task evidence on a follow-up branch");
     expect(workflow).toContain("bun scripts/release-task-evidence.mjs apply");
+    expect(workflow).toContain("node scripts/release/open-next-development-version.mjs");
+    expect(workflow).toContain('--published-version "${PUBLISHED_VERSION}"');
+    expect(workflow).toContain("next-development-version.json");
+    expect(workflow).toContain("release evidence follow-up branch is dirty before mutation");
+    expect(workflow).toContain("next development version mutation left unstaged tracked files");
+    expect(workflow).toContain("record publish evidence and open");
     expect(workflow).toContain("Open or recover release evidence PR");
     expect(workflow).toContain("Verify and merge exact release evidence SHA");
     expect(workflow).toContain("node scripts/workflow/verify-release-evidence-pr.mjs");
@@ -243,12 +263,45 @@ describe("publish workflow contract", () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
 
     expect(workflow).toContain("Release task registry (check)");
-    expect(workflow).toContain("if: steps.source.outputs.release_ready_ok == 'true'");
+    expect(workflow).toContain(
+      "if: steps.channel.outputs.stable == 'true' && steps.source.outputs.release_ready_ok == 'true'",
+    );
     expect(workflow).toContain("node scripts/release/check-task-registry-ready.mjs");
     expect(workflow).toContain("--allow-active-release-task");
     expect(workflow.indexOf("Resolve release-ready source")).toBeLessThan(
       workflow.indexOf("Release task registry (check)"),
     );
+  });
+
+  it("skips stable-only gates for a prerelease before registry, notes, or npm lookups", async () => {
+    const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+
+    const channelIndex = workflow.indexOf("- name: Classify release channel");
+    const sourceIndex = workflow.indexOf("- name: Resolve release-ready source");
+    const registryIndex = workflow.indexOf("- name: Release task registry (check)");
+    const detectIndex = workflow.indexOf("- name: Detect publish target");
+    const prereleaseExitIndex = workflow.indexOf(
+      'if [ "${{ steps.channel.outputs.stable }}" != "true" ]; then',
+      detectIndex,
+    );
+    const notesIndex = workflow.indexOf('NOTES="docs/releases/${TAG}.md"', detectIndex);
+    const npmLookupIndex = workflow.indexOf(
+      'npm view "@agentplaneorg/core@${VERSION}"',
+      detectIndex,
+    );
+
+    expect(channelIndex).toBeGreaterThanOrEqual(0);
+    expect(channelIndex).toBeLessThan(sourceIndex);
+    expect(channelIndex).toBeLessThan(registryIndex);
+    expect(workflow).toContain("if: steps.channel.outputs.stable == 'true'");
+    expect(workflow).toContain(
+      "if: steps.channel.outputs.stable == 'true' && steps.source.outputs.release_ready_ok == 'true'",
+    );
+    expect(prereleaseExitIndex).toBeGreaterThan(detectIndex);
+    expect(prereleaseExitIndex).toBeLessThan(notesIndex);
+    expect(prereleaseExitIndex).toBeLessThan(npmLookupIndex);
+    expect(workflow).toContain('echo "should_publish=false"');
+    expect(workflow).toContain('echo "stable release detection skipped for prerelease $VERSION"');
   });
 
   it("validates the exact evidence SHA and publishes the required PR check before merge", async () => {

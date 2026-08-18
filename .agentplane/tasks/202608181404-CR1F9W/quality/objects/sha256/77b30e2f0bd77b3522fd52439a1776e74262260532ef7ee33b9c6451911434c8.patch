@@ -1,0 +1,2994 @@
+diff --git a/docs/releases/v0.7.7.md b/docs/releases/v0.7.7.md
+new file mode 100644
+index 000000000..587f69770
+--- /dev/null
++++ b/docs/releases/v0.7.7.md
+@@ -0,0 +1,38 @@
++# Release Notes — v0.7.7
++
++## Summary
++
++- AgentPlane 0.7.7 hardens autonomous `branch_pr` execution so a task starts only from an exact upstream base, carries only its own task artifacts, and is considered integrated only when the provider pull request is actually merged.
++- Task authority and routing now resolve from the trusted base checkout, including commands launched from stale linked worktrees, while `authority.mode=all` continues to authorize the complete safe autonomous route, including `integration.enqueue`.
++- Stable patch publication now enforces release-channel semantics and automatically opens the next beta development version after public release evidence is recorded.
++
++## Added
++
++- Added fail-closed ownership checks that reject foreign committed `.agentplane/tasks/**` artifacts before PR synchronization or integration.
++- Added an automated post-release transition that opens the next patch beta version across all managed version surfaces.
++- Added regression coverage for stale-worktree routing, autonomous integration authority, provider merge truth, and release-channel version rules.
++
++## Improved
++
++- Required a task worktree base branch to match its upstream exactly instead of accepting locally ahead or behind bases.
++- Made planner classification arrays order-insensitive while preserving classification immutability and allowing execution-contract refinement.
++- Made task lookup recover through the primary checkout when a command is launched from an obsolete linked worktree.
++- Consolidated release semver handling and generated a current compatibility candidate for the 0.7 line.
++
++## Fixed
++
++- Fixed local squash integration marking task metadata as merged while the corresponding GitHub pull request remained open.
++- Fixed configured authority being read from a mutable task checkout instead of the trusted base checkout.
++- Fixed signed approval receipt expectations in task-advance and planner-intent command tests.
++- Fixed stable release checks accepting prerelease versions or leaving development surfaces on the released stable version.
++
++## Upgrade Notes
++
++- No user action is required. Existing `authority.mode=all` projects retain full autonomous routing, but authority is now resolved from the canonical base checkout.
++- A `branch_pr` task with a locally divergent base must be rebased or recreated from the exact upstream base before work can start.
++- PR synchronization and integration now fail with `foreign_committed_task_artifacts` when a branch contains task records outside its declared ownership set.
++
++## Verification
++
++- Qualified with type checking, focused authority/routing/provider/release suites, the release-critical and critical suites, and the complete fast suite: 569 test files and 4,185 passing tests with one intentional skip.
++- Release parity, schema projections, specification examples, routing policy, formatting, and compatibility candidate checks pass for `0.7.7-beta.1` before the stable release freeze.
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+index 21c6b2b95..eb5870129 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+@@ -39,6 +39,7 @@ type AgentPacket = {
+     result_path: string;
+   };
+   stop: { reason: string; resume: string };
++  operator_action?: { argv: string[] };
+ };
+ 
+ async function createTask(root: string, title: string): Promise<string> {
+@@ -83,7 +84,11 @@ async function readAgentPacket(root: string, taskId: string): Promise<AgentPacke
+   }
+ }
+ 
+-async function writeBlockedResult(packet: AgentPacket, summary: string): Promise<string> {
++async function writeBlockedResult(
++  packet: AgentPacket,
++  summary: string,
++  scopeExtension?: { scopeRoots: string[]; repositoryEffects: string[] },
++): Promise<string> {
+   if (!packet.exchange) throw new Error("expected an external-agent exchange");
+   const workOrder = JSON.parse(
+     await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
+@@ -110,6 +115,16 @@ async function writeBlockedResult(packet: AgentPacket, summary: string): Promise
+           blocker: {
+             summary,
+             recommended_action: "Resolve the recorded authority boundary, then resume the task.",
++            ...(scopeExtension
++              ? {
++                  scope_extension_request: {
++                    schema_version: 1,
++                    scope_roots: scopeExtension.scopeRoots,
++                    repository_effects: scopeExtension.repositoryEffects,
++                    rationale: "The required generated artifact is outside the issued scope.",
++                  },
++                }
++              : {}),
+           },
+         },
+       },
+@@ -174,6 +189,7 @@ async function prepareBlockedResultTask(opts: {
+   title: string;
+   plan: string;
+   slug: string;
++  authorityAll?: boolean;
+ }): Promise<{ taskId: string; taskWorktree: string }> {
+   const root = await mkGitRepoRootWithBranch("main");
+   await cp(
+@@ -183,6 +199,7 @@ async function prepareBlockedResultTask(opts: {
+   );
+   const config = defaultConfig();
+   config.workflow_mode = "branch_pr";
++  if (opts.authorityAll) config.authority.mode = "all";
+   await writeConfig(root, config);
+   await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+   const taskId = await createTask(root, opts.title);
+@@ -210,6 +227,65 @@ async function prepareBlockedResultTask(opts: {
+ }
+ 
+ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
++  it("projects explicit USER approval and issues a fresh executor with the exact requested scope", async () => {
++    const { taskId, taskWorktree } = await prepareBlockedResultTask({
++      title: "Structured blocked scope extension",
++      plan: "Request and approve one exact repository scope extension before resuming implementation.",
++      slug: "blocked-scope-extension",
++      authorityAll: true,
++    });
++    const issued = await readAgentPacket(taskWorktree, taskId);
++    const resultPath = await writeBlockedResult(
++      issued,
++      "The release image generator needs one additional writable root.",
++      { scopeRoots: ["website/static/img/social"], repositoryEffects: ["documentation"] },
++    );
++
++    const returned = await returnAgentResult(taskWorktree, taskId, resultPath);
++    expect(returned.code, returned.stderr).toBe(0);
++    const approval = JSON.parse(returned.stdout) as AgentPacket;
++    expect(approval.action.kind, returned.stdout).toBe("approval_required");
++    expect(approval.operator_action?.argv).toEqual(
++      expect.arrayContaining([
++        "task",
++        "authority",
++        "grant",
++        taskId,
++        "--operation",
++        "task.scope.extend",
++      ]),
++    );
++
++    const authorityArgv = [...(approval.operator_action?.argv.slice(1) ?? [])];
++    const receiptIndex = authorityArgv.indexOf("--approval-receipt");
++    if (receiptIndex !== -1) authorityArgv.splice(receiptIndex, 2);
++    await runCliSilent([...authorityArgv, "--by", "USER", "--root", taskWorktree]);
++
++    const resumed = await readAgentPacket(taskWorktree, taskId);
++    expect(resumed.action.kind, JSON.stringify(resumed, null, 2)).toBe("agent_episode");
++    expect(resumed.exchange?.result_path).not.toBe(resultPath);
++    if (!resumed.exchange) throw new Error("expected a fresh executor exchange");
++    const workOrder = JSON.parse(
++      await readFile(
++        path.join(resumed.exchange.directory, resumed.exchange.work_order_ref),
++        "utf8",
++      ),
++    ) as { role: string; authority: { writable_roots: string[] } };
++    expect(workOrder.role).toBe("EXECUTOR");
++    expect(
++      workOrder.authority.writable_roots.some((root) =>
++        root.endsWith("/website/static/img/social"),
++      ),
++    ).toBe(true);
++
++    const readme = await readFile(
++      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
++      "utf8",
++    );
++    expect(readme).toContain('status: "DOING"');
++    expect(readme).toContain('status: "applied"');
++  });
++
+   it("consumes a blocked branch implementation once and waits for an explicit resume", async () => {
+     const { taskId, taskWorktree } = await prepareBlockedResultTask({
+       title: "Blocked external branch result",
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index d826b7e12..cc098bab5 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -119,7 +119,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+ 
+       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+       expect(candidateFreshness).toMatchObject({ exitCode: 0, stderr: "" });
+-      expect(compatibility.stdout).toContain("263commands/180args/851options");
++      expect(compatibility.stdout).toContain("264commands/181args/856options");
+       expect(compatibility.stdout).toContain(
+         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
+       );
+@@ -217,13 +217,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202608112213-NWJCBW",
+           "202608112259-T3ZDDM",
+           "202608171853-X3FD5M",
++          "202608181404-CR1F9W",
+         ],
+         candidate: {
+-          surface_sha256: "1facd3d0771f9420c47c2144a595a86ae01722dcc14eef06fbce06e6b874ec32",
++          surface_sha256: "2fb42f5eff1ad0ae173d8dd6a147a2cbb545b835539f8182df96ec067b8f2cb1",
+           section_digests: {
+             agent_facing_context_contracts:
+               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+-            cli_topology: "20a9c58073545ec9938c1a52b8d4ca3a164f2b60ec8cf6d5f8b55eec004eb09b",
++            cli_topology: "f1f582f3cdd1711ce16fa52c9b6dacd81804c3a8fa94882c2192133dbfb89d13",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+index 45901f2f0..3059281cd 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+@@ -70,6 +70,7 @@ import { taskStartReadySpec } from "../../../commands/task/start-ready.command.j
+ import { taskNextActionSpec } from "../../../commands/task/next-action.command.js";
+ import { taskAdvanceSpec } from "../../../commands/task/advance.spec.js";
+ import { taskStatusSpec } from "../../../commands/task/status.command.js";
++import { taskScopeExtendSpec } from "../../../commands/task/scope-extend.command.js";
+ import { taskUpdateSpec } from "../../../commands/task/update.command.js";
+ import { taskVerifyOkSpec } from "../../../commands/task/verify-ok.command.js";
+ import { taskVerifyReworkSpec } from "../../../commands/task/verify-rework.command.js";
+@@ -147,6 +148,7 @@ import {
+   loadTaskStartReadySpec,
+   loadTaskCloseNoopSpec,
+   loadTaskAddSpec,
++  loadTaskScopeExtendSpec,
+   loadTaskUpdateSpec,
+   loadTaskCommentSpec,
+   loadTaskSetStatusSpec,
+@@ -386,6 +388,12 @@ export const TASK_COMMANDS = [
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
++  declareSessionCommand(taskScopeExtendSpec, {
++    load: loadTaskScopeExtendSpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
++    surface: "advanced",
++    helpGroup: "Advanced",
++  }),
+   declareSessionCommand(taskCommentSpec, {
+     load: loadTaskCommentSpec,
+     requirements: TASK_WRITE_REQUIREMENTS,
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+index b88c43302..77af08e71 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+@@ -281,6 +281,10 @@ export const loadTaskUpdateSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/update.command.js").then((m) =>
+     m.makeRunTaskUpdateHandler(getSessionContext(session, "task.write")),
+   );
++export const loadTaskScopeExtendSpec = (session: TaskLifecycleSession) =>
++  import("../../../commands/task/scope-extend.command.js").then((m) =>
++    m.makeRunTaskScopeExtendHandler(getSessionContext(session, "git.mutate")),
++  );
+ export const loadTaskCommentSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/comment.command.js").then((m) =>
+     m.makeRunTaskCommentHandler(getSessionContext(session, "task.write")),
+diff --git a/packages/agentplane/src/commands/shared/side-effect-authority.ts b/packages/agentplane/src/commands/shared/side-effect-authority.ts
+index 9d4ec276b..c2091f4b1 100644
+--- a/packages/agentplane/src/commands/shared/side-effect-authority.ts
++++ b/packages/agentplane/src/commands/shared/side-effect-authority.ts
+@@ -45,6 +45,12 @@ const EXTERNAL_HIGH_RISK: AuthorityRequirement = {
+   requiresAuthority: true,
+ };
+ 
++const SEMANTIC_DECISION: AuthorityRequirement = {
++  class: "semantic_decision",
++  policyRule: "workflow.semantic_decision.user_only",
++  requiresAuthority: true,
++};
++
+ /**
+  * The queue entry is itself an exact, durable integration authorization: it
+  * can only be created by the authority-gated integration.enqueue operation.
+@@ -65,6 +71,7 @@ export const WORKFLOW_OPERATION_AUTHORITY_POLICY = {
+   "task.artifacts.commit": LOCAL_REVERSIBLE,
+   "task.start": LOCAL_REVERSIBLE,
+   "task.branch.start": LOCAL_REVERSIBLE,
++  "task.scope.extend": SEMANTIC_DECISION,
+   "task.verify.show": LOCAL_REVERSIBLE,
+   "runner.follow": LOCAL_REVERSIBLE,
+   "batch.follow_primary": LOCAL_REVERSIBLE,
+diff --git a/packages/agentplane/src/commands/shared/task-scope-extension-request.ts b/packages/agentplane/src/commands/shared/task-scope-extension-request.ts
+new file mode 100644
+index 000000000..e0a346408
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/task-scope-extension-request.ts
+@@ -0,0 +1,181 @@
++import { createHash } from "node:crypto";
++import path from "node:path";
++
++import type { AgentSemanticResultScopeExtensionRequest } from "@agentplaneorg/core/schemas";
++import { canonicalizeJson, type TaskRepositoryEffect } from "@agentplaneorg/core/tasks";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import { CliError } from "../../shared/errors.js";
++import { isRecord } from "../../shared/guards.js";
++
++export const TASK_SCOPE_EXTENSION_REQUEST_KEY = "agentplane.scope_extension_request";
++
++type NormalizedTaskScopeExtensionRequest = {
++  schema_version: 1;
++  scope_roots: string[];
++  repository_effects: TaskRepositoryEffect[];
++  rationale: string;
++};
++
++export type TaskScopeExtensionRequestState = {
++  schema_version: 1;
++  kind: "task_scope_extension_request";
++  status: "pending" | "applied";
++  transition_id: string;
++  blocker_state_fingerprint: string;
++  request_digest: string;
++  request: NormalizedTaskScopeExtensionRequest;
++  applied_at?: string;
++  applied_by?: string;
++};
++
++const REPOSITORY_EFFECTS = new Set<TaskRepositoryEffect>([
++  "repository_write",
++  "documentation",
++  "source_code",
++  "tests",
++  "public_api",
++  "schema",
++  "dependencies",
++  "ci",
++  "release_metadata",
++  "security_boundary",
++]);
++
++function uniqueSorted<T extends string>(values: readonly T[]): T[] {
++  return [...new Set(values)].toSorted();
++}
++
++export function normalizeTaskScopeRoot(value: string): string {
++  const normalized = path.posix.normalize(value.trim().replaceAll("\\", "/")).replace(/^\.\//u, "");
++  if (
++    !normalized ||
++    normalized === "." ||
++    normalized === ".." ||
++    normalized.startsWith("../") ||
++    path.posix.isAbsolute(normalized)
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Invalid scope root: ${value}. Use a non-root repository-relative path.`,
++    });
++  }
++  return normalized.replace(/\/+$/u, "");
++}
++
++function normalizeTaskScopeExtensionRequest(
++  request: AgentSemanticResultScopeExtensionRequest,
++): NormalizedTaskScopeExtensionRequest {
++  const normalized = {
++    schema_version: 1 as const,
++    scope_roots: uniqueSorted(request.scope_roots.map((root) => normalizeTaskScopeRoot(root))),
++    repository_effects: uniqueSorted(request.repository_effects),
++    rationale: request.rationale.trim(),
++  };
++  if (normalized.scope_roots.length === 0 && normalized.repository_effects.length === 0) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Scope extension request must add a scope root or repository effect.",
++    });
++  }
++  return normalized;
++}
++
++function taskScopeExtensionRequestDigest(request: NormalizedTaskScopeExtensionRequest): string {
++  const canonical = JSON.stringify(canonicalizeJson(request));
++  return `sha256:${createHash("sha256").update(canonical, "utf8").digest("hex")}`;
++}
++
++export function externalBlockerReceipt(opts: {
++  transition_id: string;
++  state_fingerprint: string;
++  request_digest?: string;
++}): string {
++  const suffix = opts.request_digest ? `/${opts.request_digest}` : "";
++  return `Agentplane receipt: external-agent-blocker/${opts.transition_id}/${opts.state_fingerprint}${suffix}.`;
++}
++
++export function createTaskScopeExtensionRequestState(opts: {
++  request: AgentSemanticResultScopeExtensionRequest;
++  transition_id: string;
++  state_fingerprint: string;
++}): TaskScopeExtensionRequestState {
++  const request = normalizeTaskScopeExtensionRequest(opts.request);
++  return {
++    schema_version: 1,
++    kind: "task_scope_extension_request",
++    status: "pending",
++    transition_id: opts.transition_id,
++    blocker_state_fingerprint: opts.state_fingerprint,
++    request_digest: taskScopeExtensionRequestDigest(request),
++    request,
++  };
++}
++
++export function parseTaskScopeExtensionRequestState(
++  task: Pick<TaskData, "extensions">,
++): TaskScopeExtensionRequestState | null {
++  const raw = task.extensions?.[TASK_SCOPE_EXTENSION_REQUEST_KEY];
++  if (!isRecord(raw) || !isRecord(raw.request)) return null;
++  const request = raw.request;
++  if (
++    raw.schema_version !== 1 ||
++    raw.kind !== "task_scope_extension_request" ||
++    (raw.status !== "pending" && raw.status !== "applied") ||
++    typeof raw.transition_id !== "string" ||
++    !/^tr_[0-9a-f]{32}$/u.test(raw.transition_id) ||
++    typeof raw.blocker_state_fingerprint !== "string" ||
++    !/^sha256:[0-9a-f]{64}$/u.test(raw.blocker_state_fingerprint) ||
++    typeof raw.request_digest !== "string" ||
++    !/^sha256:[0-9a-f]{64}$/u.test(raw.request_digest) ||
++    request.schema_version !== 1 ||
++    !Array.isArray(request.scope_roots) ||
++    !request.scope_roots.every((value) => typeof value === "string") ||
++    !Array.isArray(request.repository_effects) ||
++    !request.repository_effects.every(
++      (value) => typeof value === "string" && REPOSITORY_EFFECTS.has(value as TaskRepositoryEffect),
++    ) ||
++    typeof request.rationale !== "string" ||
++    !request.rationale.trim()
++  ) {
++    return null;
++  }
++  try {
++    const normalized = normalizeTaskScopeExtensionRequest({
++      schema_version: 1,
++      scope_roots: request.scope_roots,
++      repository_effects: request.repository_effects as TaskRepositoryEffect[],
++      rationale: request.rationale,
++    });
++    if (
++      JSON.stringify(normalized.scope_roots) !== JSON.stringify(request.scope_roots) ||
++      JSON.stringify(normalized.repository_effects) !==
++        JSON.stringify(request.repository_effects) ||
++      normalized.rationale !== request.rationale ||
++      taskScopeExtensionRequestDigest(normalized) !== raw.request_digest
++    ) {
++      return null;
++    }
++    return {
++      schema_version: 1,
++      kind: "task_scope_extension_request",
++      status: raw.status,
++      transition_id: raw.transition_id,
++      blocker_state_fingerprint: raw.blocker_state_fingerprint,
++      request_digest: raw.request_digest,
++      request: normalized,
++      ...(typeof raw.applied_at === "string" ? { applied_at: raw.applied_at } : {}),
++      ...(typeof raw.applied_by === "string" ? { applied_by: raw.applied_by } : {}),
++    };
++  } catch {
++    return null;
++  }
++}
++
++export function scopeExtensionReceiptForState(state: TaskScopeExtensionRequestState): string {
++  return externalBlockerReceipt({
++    transition_id: state.transition_id,
++    state_fingerprint: state.blocker_state_fingerprint,
++    request_digest: state.request_digest,
++  });
++}
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-effects.ts b/packages/agentplane/src/commands/shared/workflow-operation-effects.ts
+index 9f31aab86..eebae5460 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-effects.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-effects.ts
+@@ -11,6 +11,7 @@ export const WORKFLOW_OPERATION_EFFECTS = {
+   "task.artifacts.commit": "mutating",
+   "task.start": "mutating",
+   "task.branch.start": "mutating",
++  "task.scope.extend": "mutating",
+   "task.verify.show": "read_only",
+   "runner.follow": "mode_dependent",
+   "batch.follow_primary": "read_only",
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts b/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts
+index a9be177ae..163ca01ad 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts
+@@ -17,6 +17,7 @@ export const WORKFLOW_OPERATION_ARGV_PREFIX = {
+   "runner.follow": ["agentplane", "task"],
+   "task.artifacts.commit": ["agentplane", "commit"],
+   "task.branch.start": ["agentplane", "task", "start-ready"],
++  "task.scope.extend": ["agentplane", "task", "scope", "extend"],
+   "task.hosted_close.open": ["agentplane", "task", "hosted-close-pr"],
+   "task.hosted_close.finalize": ["agentplane", "cleanup", "merged"],
+   "task.pre_merge_close": ["agentplane", "finish"],
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts b/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+index ad745c375..469d7fb8f 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+@@ -189,6 +189,31 @@ describe("Workflow operation projection registry", () => {
+           "--yes",
+         ],
+       },
++      "task.scope.extend": {
++        params: {
++          taskId,
++          requestDigest: adoptionToken,
++          scopeRoots: ["website/static/img/social"],
++          repositoryEffects: ["documentation"],
++        },
++        argv: [
++          "agentplane",
++          "task",
++          "scope",
++          "extend",
++          taskId,
++          "--scope-root",
++          "website/static/img/social",
++          "--repository-effect",
++          "documentation",
++          "--request-digest",
++          adoptionToken,
++          "--state-fingerprint",
++          state.preconditionFingerprint.digest,
++          "--by",
++          "USER",
++        ],
++      },
+       "task.start": {
+         params: { taskId, author: "CODER", body: "Start: execute." },
+         argv: [
+@@ -250,7 +275,10 @@ describe("Workflow operation projection registry", () => {
+         step.kind === "cli_operation"
+           ? step.operation
+           : step.kind === "approval" && step.request.type === "side_effect"
+-            ? (step.request.operation as WorkflowOperation)
++            ? ({
++                ...step.request.operation,
++                preconditionFingerprint: state.preconditionFingerprint,
++              } as WorkflowOperation)
+             : null;
+       if (!operation) throw new Error(`expected a projected operation for ${id}`);
+       expect(projectWorkflowOperationArgv(operation), id).toEqual(fixture.argv);
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-projection.ts b/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
+index 0d7d7159d..b2848271f 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
+@@ -142,6 +142,23 @@ function operationArgv(operation: WorkflowOperation): string[] {
+         ...(operation.params.force ? ["--force", "--yes"] : []),
+       ];
+     }
++    case "task.scope.extend": {
++      return [
++        "agentplane",
++        "task",
++        "scope",
++        "extend",
++        operation.params.taskId,
++        ...operation.params.scopeRoots.flatMap((root) => ["--scope-root", root]),
++        ...operation.params.repositoryEffects.flatMap((effect) => ["--repository-effect", effect]),
++        "--request-digest",
++        operation.params.requestDigest,
++        "--state-fingerprint",
++        operation.preconditionFingerprint.digest,
++        "--by",
++        "USER",
++      ];
++    }
+     case "task.branch.start":
+     case "task.start": {
+       return [
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts b/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts
+index 6d98ceefa..90d919935 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts
+@@ -1,7 +1,25 @@
+ import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
+ import { cliOperationStep, terminalStep } from "./workflow-step-factory.js";
++import { parseTaskScopeExtensionRequestState } from "./task-scope-extension-request.js";
+ 
+ export function blockedTaskStep(state: WorkflowRouteState): WorkflowStep {
++  const pending = parseTaskScopeExtensionRequestState(state.task);
++  if (pending?.status === "pending") {
++    return cliOperationStep({
++      state,
++      operationId: "task.scope.extend",
++      params: {
++        taskId: state.task.id,
++        requestDigest: pending.request_digest,
++        scopeRoots: pending.request.scope_roots,
++        repositoryEffects: pending.request.repository_effects,
++      },
++      code: "approve_scope_extension",
++      summary:
++        "apply the exact pending repository scope extension after explicit USER authority, then issue a freshly scoped executor episode",
++      selectedBlocker: null,
++    });
++  }
+   return terminalStep({
+     state,
+     id: "terminal.task_blocked",
+diff --git a/packages/agentplane/src/commands/shared/workflow-step.ts b/packages/agentplane/src/commands/shared/workflow-step.ts
+index 35f622f68..7beae4ec3 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step.ts
+@@ -1,4 +1,5 @@
+ import type { StateFingerprint } from "@agentplaneorg/core/schemas";
++import type { TaskRepositoryEffect } from "@agentplaneorg/core/tasks";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+ import type { PrFlowStatusReport } from "../pr/flow-status.js";
+@@ -51,6 +52,7 @@ type WorkflowOperationType =
+   | "provider_refresh"
+   | "runner_follow"
+   | "task_record_result"
++  | "task_scope_extend"
+   | "task_start"
+   | "task_view"
+   | "workflow_repair"
+@@ -76,6 +78,7 @@ export type WorkflowOperationId =
+   | "task.hosted_close.open"
+   | "task.hosted_close.finalize"
+   | "task.pre_merge_close"
++  | "task.scope.extend"
+   | "task.start"
+   | "task.verify.show"
+   | "task.worktree.cleanup"
+@@ -118,6 +121,12 @@ export type WorkflowOperationParams = {
+     commit: string;
+     force: boolean;
+   };
++  "task.scope.extend": {
++    taskId: string;
++    requestDigest: string;
++    scopeRoots: readonly string[];
++    repositoryEffects: readonly TaskRepositoryEffect[];
++  };
+   "task.start": { taskId: string; author: string; body: string };
+   "task.verify.show": { taskId: string };
+   "task.worktree.cleanup": { taskId: string; base: string };
+@@ -174,6 +183,19 @@ export const WORKFLOW_OPERATION_REGISTRY = {
+     verificationCandidate: null,
+     needsVerificationRecord: false,
+   },
++  "task.scope.extend": {
++    type: "task_scope_extend",
++    phase: "task_scope_extension_pending",
++    checkout: "task_worktree",
++    role: "CODER",
++    expectedPostconditions: [POSTCONDITION.taskDoing, POSTCONDITION.routeRecomputed],
++    mustNot: [
++      "do not substitute or widen the exact structured scope-extension request approved by USER",
++    ],
++    triggersGitHooks: true,
++    verificationCandidate: null,
++    needsVerificationRecord: false,
++  },
+   "task.verify.show": {
+     type: "task_view",
+     phase: "direct_execution",
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+index 925769972..c5b769f39 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+@@ -19,6 +19,7 @@ import { applyForeignTaskReadmeReplicaRepair } from "../shared/task-worktree-for
+ import { cmdFinish } from "./finish-command.js";
+ import { makeRunTaskHostedClosePrHandler } from "./hosted-close-pr.command.js";
+ import { cmdTaskStartReady } from "./start-ready.js";
++import { cmdTaskScopeExtend } from "./scope-extend.js";
+ import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
+ 
+ function observedPostconditions(operation: WorkflowOperation): string[] {
+@@ -109,6 +110,24 @@ export async function executeBranchWorkflowOperation(opts: {
+       });
+       return succeeded(operation, `recorded task start for ${operation.params.taskId}`, exitCode);
+     }
++    case "task.scope.extend": {
++      exitCode = await cmdTaskScopeExtend({
++        ctx: command,
++        cwd,
++        taskId: operation.params.taskId,
++        scopeRoots: [...operation.params.scopeRoots],
++        repositoryEffects: [...operation.params.repositoryEffects],
++        requestDigest: operation.params.requestDigest,
++        stateFingerprint: operation.preconditionFingerprint.digest,
++        by: "USER",
++        quiet: true,
++      });
++      return succeeded(
++        operation,
++        `applied exact USER-approved scope extension for ${operation.params.taskId}`,
++        exitCode,
++      );
++    }
+     case "pr.artifacts.update":
+     case "pr.sync_or_verify": {
+       exitCode = await cmdPrUpdate({
+diff --git a/packages/agentplane/src/commands/task/configured-authority.test.ts b/packages/agentplane/src/commands/task/configured-authority.test.ts
+index f669bd4a4..64039ecd7 100644
+--- a/packages/agentplane/src/commands/task/configured-authority.test.ts
++++ b/packages/agentplane/src/commands/task/configured-authority.test.ts
+@@ -53,4 +53,10 @@ describe("configured repository authority", () => {
+     expect(isOperationAuthorizedByPolicy(config, "pr.open")).toBe(true);
+     expect(isOperationAuthorizedByPolicy(config, "integration.enqueue")).toBe(false);
+   });
++
++  it("keeps semantic scope expansion USER-owned even in all mode", () => {
++    expect(isOperationAuthorizedByPolicy(authority({ mode: "all" }), "task.scope.extend")).toBe(
++      false,
++    );
++  });
+ });
+diff --git a/packages/agentplane/src/commands/task/configured-authority.ts b/packages/agentplane/src/commands/task/configured-authority.ts
+index ae0f16a4f..f0d185ef4 100644
+--- a/packages/agentplane/src/commands/task/configured-authority.ts
++++ b/packages/agentplane/src/commands/task/configured-authority.ts
+@@ -19,6 +19,7 @@ export function isOperationAuthorizedByPolicy(
+   config: SideEffectAuthorityConfig,
+   operationId: string,
+ ): boolean {
++  if (operationId === "task.scope.extend") return false;
+   if (config.mode === "manual" || config.deny_operations.includes(operationId)) return false;
+   if (config.mode === "all") return true;
+   return config.allow_operations.includes(operationId);
+diff --git a/packages/agentplane/src/commands/task/external-agent-blocked-result.ts b/packages/agentplane/src/commands/task/external-agent-blocked-result.ts
+index 997e08705..c5c20f130 100644
+--- a/packages/agentplane/src/commands/task/external-agent-blocked-result.ts
++++ b/packages/agentplane/src/commands/task/external-agent-blocked-result.ts
+@@ -5,6 +5,11 @@ import { cmdCommit } from "../guard/impl/commit.js";
+ import { commitRefreshedTaskArtifacts } from "../guard/impl/commit-refresh.js";
+ import { refreshBranchPrArtifactsAfterTaskCommit } from "../shared/post-commit-pr-artifacts.js";
+ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
++import {
++  createTaskScopeExtensionRequestState,
++  externalBlockerReceipt,
++  TASK_SCOPE_EXTENSION_REQUEST_KEY,
++} from "../shared/task-scope-extension-request.js";
+ 
+ import type {
+   ExternalAgentExchange,
+@@ -17,8 +22,30 @@ function blockerSubject(taskId: string): string {
+   return `🚧 ${taskId.split("-").at(-1)} task: record external blocker`;
+ }
+ 
+-function externalBlockedResultReceipt(exchange: ExternalAgentExchange): string {
+-  return `Agentplane receipt: external-agent-blocker/${exchange.transition_id}/${exchange.state_fingerprint}.`;
++function scopeExtensionState(opts: {
++  exchange: ExternalAgentExchange;
++  semantic: ExternalAgentResultEnvelope["result"];
++}) {
++  const request = opts.semantic.blocker?.scope_extension_request;
++  return request
++    ? createTaskScopeExtensionRequestState({
++        request,
++        transition_id: opts.exchange.transition_id,
++        state_fingerprint: opts.exchange.state_fingerprint,
++      })
++    : null;
++}
++
++function externalBlockedResultReceipt(opts: {
++  exchange: ExternalAgentExchange;
++  semantic: ExternalAgentResultEnvelope["result"];
++}): string {
++  const pending = scopeExtensionState(opts);
++  return externalBlockerReceipt({
++    transition_id: opts.exchange.transition_id,
++    state_fingerprint: opts.exchange.state_fingerprint,
++    ...(pending ? { request_digest: pending.request_digest } : {}),
++  });
+ }
+ 
+ export function blockedResultBody(opts: {
+@@ -26,20 +53,28 @@ export function blockedResultBody(opts: {
+   semantic: ExternalAgentResultEnvelope["result"];
+ }): string {
+   const recommendation = opts.semantic.blocker?.recommended_action?.trim();
++  const pending = scopeExtensionState(opts);
++  const requestedScope = pending
++    ? ` Requested scope: roots=${pending.request.scope_roots.join(",") || "unchanged"}; ` +
++      `repository effects=${pending.request.repository_effects.join(",") || "unchanged"}; ` +
++      `request digest=${pending.request_digest}.`
++    : "";
+   return (
+     `Blocked: external ${opts.exchange.role} could not complete the scoped implementation. ` +
+     `${opts.semantic.summary.trim()}` +
+     (recommendation ? ` Recommended action: ${recommendation}` : "") +
+-    ` ${externalBlockedResultReceipt(opts.exchange)}`
++    requestedScope +
++    ` ${externalBlockedResultReceipt(opts)}`
+   );
+ }
+ 
+ export async function isExternalBlockedResultRecorded(opts: {
+   command: CommandContext;
+   exchange: ExternalAgentExchange;
++  semantic: ExternalAgentResultEnvelope["result"];
+ }): Promise<boolean> {
+   const task = await loadTaskFromContext({ ctx: opts.command, taskId: opts.exchange.task_id });
+-  const receipt = externalBlockedResultReceipt(opts.exchange);
++  const receipt = externalBlockedResultReceipt(opts);
+   return Boolean(
+     task.status === "BLOCKED" &&
+     (task.comments ?? []).some(
+@@ -48,6 +83,26 @@ export async function isExternalBlockedResultRecorded(opts: {
+   );
+ }
+ 
++async function persistScopeExtensionRequest(opts: {
++  command: CommandContext;
++  exchange: ExternalAgentExchange;
++  semantic: ExternalAgentResultEnvelope["result"];
++}): Promise<void> {
++  const pending = scopeExtensionState(opts);
++  if (!pending) return;
++  const task = await loadTaskFromContext({ ctx: opts.command, taskId: opts.exchange.task_id });
++  await opts.command.taskBackend.writeTask(
++    {
++      ...task,
++      extensions: {
++        ...(task.extensions ?? {}),
++        [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
++      },
++    },
++    task.revision ? { expectedRevision: task.revision } : undefined,
++  );
++}
++
+ function statusPath(line: string): string {
+   const raw = line.length >= 4 ? line.slice(3).trim() : "";
+   const renamed = raw.includes(" -> ") ? (raw.split(" -> ").at(-1) ?? raw) : raw;
+@@ -215,5 +270,6 @@ export async function recordExternalBlockedResult(opts: {
+       quiet: true,
+     });
+   }
++  await persistScopeExtensionRequest(opts);
+   await commitExternalBlocker({ command: opts.command, exchange: opts.exchange });
+ }
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+index f5dd3e0ad..6818af28e 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+@@ -269,6 +269,7 @@ export async function applyExternalImplementationResult(opts: {
+       const alreadyRecorded = await isExternalBlockedResultRecorded({
+         command: opts.command,
+         exchange: opts.exchange,
++        semantic,
+       });
+       if (!alreadyRecorded) {
+         const [head, status] = await Promise.all([
+diff --git a/packages/agentplane/src/commands/task/scope-extend.command.ts b/packages/agentplane/src/commands/task/scope-extend.command.ts
+new file mode 100644
+index 000000000..fa931ee93
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/scope-extend.command.ts
+@@ -0,0 +1,126 @@
++import type { TaskRepositoryEffect } from "@agentplaneorg/core/tasks";
++
++import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
++import { usageError } from "../../cli/spec/errors.js";
++import { toStringList } from "../../cli/spec/parse-utils.js";
++import type { CommandContext } from "../shared/task-backend.js";
++
++import { cmdTaskScopeExtend } from "./scope-extend.js";
++
++const REPOSITORY_EFFECTS = [
++  "repository_write",
++  "documentation",
++  "source_code",
++  "tests",
++  "public_api",
++  "schema",
++  "dependencies",
++  "ci",
++  "release_metadata",
++  "security_boundary",
++] as const satisfies readonly TaskRepositoryEffect[];
++
++export type TaskScopeExtendParsed = {
++  taskId: string;
++  scopeRoots: string[];
++  repositoryEffects: TaskRepositoryEffect[];
++  requestDigest: string;
++  stateFingerprint: string;
++  by: string;
++};
++
++export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
++  id: ["task", "scope", "extend"],
++  group: "Task",
++  summary: "Extend blocked task repository scope with state-bound USER authority.",
++  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
++  options: [
++    {
++      kind: "string",
++      name: "scope-root",
++      repeatable: true,
++      valueHint: "<path>",
++      description: "Repository-relative writable root to add. Repeatable.",
++    },
++    {
++      kind: "string",
++      name: "repository-effect",
++      repeatable: true,
++      choices: [...REPOSITORY_EFFECTS],
++      valueHint: "<effect>",
++      description: "Repository effect to add. Repeatable.",
++    },
++    {
++      kind: "string",
++      name: "request-digest",
++      required: true,
++      valueHint: "<sha256:...>",
++      description: "Exact digest of the pending structured scope-extension request.",
++    },
++    {
++      kind: "string",
++      name: "state-fingerprint",
++      required: true,
++      valueHint: "<sha256:...>",
++      description: "Exact task next-action fingerprint that binds this approval.",
++    },
++    {
++      kind: "string",
++      name: "by",
++      required: true,
++      valueHint: "<role>",
++      description: "Approver role. Scope extension requires USER.",
++    },
++  ],
++  examples: [
++    {
++      cmd: "agentplane task scope extend T-1 --scope-root website --repository-effect documentation --request-digest sha256:... --state-fingerprint sha256:... --by USER",
++      why: "Approve a monotonic repository-scope extension after a typed blocker.",
++    },
++  ],
++  validateRaw: (raw) => {
++    if (
++      toStringList(raw.opts["scope-root"]).length === 0 &&
++      toStringList(raw.opts["repository-effect"]).length === 0
++    ) {
++      throw usageError({
++        spec: taskScopeExtendSpec,
++        message: "At least one --scope-root or --repository-effect is required.",
++      });
++    }
++    if (!/^sha256:[0-9a-f]{64}$/u.test(String(raw.opts["state-fingerprint"]))) {
++      throw usageError({
++        spec: taskScopeExtendSpec,
++        message: "--state-fingerprint must be an exact sha256:<64 lowercase hex> digest.",
++      });
++    }
++    if (!/^sha256:[0-9a-f]{64}$/u.test(String(raw.opts["request-digest"]))) {
++      throw usageError({
++        spec: taskScopeExtendSpec,
++        message: "--request-digest must be an exact sha256:<64 lowercase hex> digest.",
++      });
++    }
++  },
++  parse: (raw) => ({
++    taskId: String(raw.args["task-id"]),
++    scopeRoots: toStringList(raw.opts["scope-root"]),
++    repositoryEffects: toStringList(raw.opts["repository-effect"]) as TaskRepositoryEffect[],
++    requestDigest: String(raw.opts["request-digest"]),
++    stateFingerprint: String(raw.opts["state-fingerprint"]),
++    by: String(raw.opts.by),
++  }),
++};
++
++export function makeRunTaskScopeExtendHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
++  return async (ctx: CommandCtx, parsed: TaskScopeExtendParsed): Promise<number> =>
++    await cmdTaskScopeExtend({
++      ctx: await getCtx("task scope extend"),
++      cwd: ctx.cwd,
++      taskId: parsed.taskId,
++      scopeRoots: parsed.scopeRoots,
++      repositoryEffects: parsed.repositoryEffects,
++      requestDigest: parsed.requestDigest,
++      stateFingerprint: parsed.stateFingerprint,
++      by: parsed.by,
++    });
++}
+diff --git a/packages/agentplane/src/commands/task/scope-extend.test.ts b/packages/agentplane/src/commands/task/scope-extend.test.ts
+new file mode 100644
+index 000000000..711d8d224
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/scope-extend.test.ts
+@@ -0,0 +1,163 @@
++import { describe, expect, it } from "vitest";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import { makeTaskCommandContext, makeTaskFixture } from "@agentplane/testkit/task";
++import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
++import {
++  createTaskScopeExtensionRequestState,
++  normalizeTaskScopeRoot,
++  scopeExtensionReceiptForState,
++  TASK_SCOPE_EXTENSION_REQUEST_KEY,
++} from "../shared/task-scope-extension-request.js";
++
++import { extendBlockedTaskExecutionContract } from "./scope-extend.js";
++
++function fixture(
++  overrides: Partial<TaskData> = {},
++  request?: {
++    scope_roots: string[];
++    repository_effects: ("documentation" | "release_metadata")[];
++  },
++) {
++  const requested = request ?? {
++    scope_roots: ["website"],
++    repository_effects: ["release_metadata" as const],
++  };
++  const command = makeTaskCommandContext({
++    configureConfig: (config) => {
++      config.workflow_mode = "branch_pr";
++    },
++  });
++  const executionContract = resolveTaskExecutionContract({
++    config: command.config,
++    task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
++    requestedMode: "branch_pr",
++    declaration: {
++      schema_version: 2,
++      preferred_mode: "branch_pr",
++      scope_roots: ["docs/releases"],
++      repository_effects: ["documentation"],
++      external_effects: [],
++      requirements_uncertainty: "bounded",
++      implementation_uncertainty: "bounded",
++      reversibility: "reversible",
++      rationale: ["release documentation"],
++    },
++  });
++  executionContract.observed.changed_paths = ["docs/releases/v0.7.7.md"];
++  const pending = createTaskScopeExtensionRequestState({
++    request: {
++      schema_version: 1,
++      ...requested,
++      rationale: "The required generated asset is outside the current scope.",
++    },
++    transition_id: "tr_11111111111111111111111111111111",
++    state_fingerprint: `sha256:${"a".repeat(64)}`,
++  });
++  const task = makeTaskFixture({
++    id: "202608181404-SCOPE1",
++    status: "BLOCKED",
++    execution_contract: executionContract,
++    execution_route: {
++      requested_mode: "branch_pr",
++      selected_mode: "branch_pr",
++      repository_mode: "branch_pr",
++      reason_codes: [...executionContract.reason_codes],
++    },
++    comments: [
++      {
++        author: "SUPERVISOR",
++        body: scopeExtensionReceiptForState(pending),
++      },
++    ],
++    extensions: { [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending },
++    ...overrides,
++  });
++  return { command, pending, task };
++}
++
++describe("blocked task execution scope extension", () => {
++  it("adds repository authority monotonically and preserves observations", () => {
++    const { command, pending, task } = fixture();
++
++    const extended = extendBlockedTaskExecutionContract({
++      command,
++      task,
++      scope_roots: ["website"],
++      repository_effects: ["release_metadata"],
++      request_digest: pending.request_digest,
++      by: "USER",
++    });
++
++    expect(extended.declaration.scope_roots).toEqual(["docs/releases", "website"]);
++    expect(extended.declaration.repository_effects).toEqual(["documentation", "release_metadata"]);
++    expect(extended.observed.changed_paths).toEqual(["docs/releases/v0.7.7.md"]);
++    expect(extended.authority.allowed_repository_effects).toContain("release_metadata");
++    expect(extended.declaration.rationale).toContain(
++      "USER-approved blocked-result scope extension: roots=website; repository_effects=release_metadata",
++    );
++  });
++
++  it("requires a BLOCKED task, blocker receipt, and explicit USER authority", () => {
++    const { command, pending, task } = fixture();
++    const cases: { task: TaskData; by: string; message: RegExp }[] = [
++      { task: { ...task, status: "DOING" }, by: "USER", message: /only after a recorded BLOCKED/u },
++      { task: { ...task, comments: [] }, by: "USER", message: /blocker receipt/u },
++      { task, by: "SUPERVISOR", message: /explicit --by USER/u },
++    ];
++
++    for (const testCase of cases) {
++      expect(() =>
++        extendBlockedTaskExecutionContract({
++          command,
++          task: testCase.task,
++          scope_roots: ["website"],
++          repository_effects: [],
++          request_digest: pending.request_digest,
++          by: testCase.by,
++        }),
++      ).toThrow(testCase.message);
++    }
++  });
++
++  it("rejects unsafe roots and no-op extensions", () => {
++    const { command, pending, task } = fixture();
++
++    expect(() => normalizeTaskScopeRoot("../outside")).toThrow(/Invalid scope root/u);
++    expect(() =>
++      extendBlockedTaskExecutionContract({
++        command,
++        task,
++        scope_roots: ["website"],
++        repository_effects: ["release_metadata"],
++        request_digest: `sha256:${"f".repeat(64)}`,
++        by: "USER",
++      }),
++    ).toThrow(/request digest does not match/u);
++    expect(() =>
++      extendBlockedTaskExecutionContract({
++        command,
++        task,
++        scope_roots: ["website-other"],
++        repository_effects: ["release_metadata"],
++        request_digest: pending.request_digest,
++        by: "USER",
++      }),
++    ).toThrow(/exactly match/u);
++
++    const noOp = fixture(
++      {},
++      { scope_roots: ["docs/releases"], repository_effects: ["documentation"] },
++    );
++    expect(() =>
++      extendBlockedTaskExecutionContract({
++        command: noOp.command,
++        task: noOp.task,
++        scope_roots: ["docs/releases"],
++        repository_effects: ["documentation"],
++        request_digest: noOp.pending.request_digest,
++        by: "USER",
++      }),
++    ).toThrow(/must add a new scope root or repository effect/u);
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/scope-extend.ts b/packages/agentplane/src/commands/task/scope-extend.ts
+new file mode 100644
+index 000000000..60bc7a38b
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/scope-extend.ts
+@@ -0,0 +1,285 @@
++import type { TaskRepositoryEffect } from "@agentplaneorg/core/tasks";
++
++import { mapBackendError } from "../../cli/error-map.js";
++import { createCliEmitter, emitCommandResult } from "../../cli/output.js";
++import { CliError } from "../../shared/errors.js";
++import {
++  reconcileTaskExecutionContract,
++  resolveTaskExecutionContract,
++} from "../../runtime/task-routing/index.js";
++import { cmdCommit } from "../guard/impl/commit.js";
++import { commitRefreshedTaskArtifacts } from "../guard/impl/commit-refresh.js";
++import { refreshBranchPrArtifactsAfterTaskCommit } from "../shared/post-commit-pr-artifacts.js";
++import { buildTaskRouteDecision } from "../shared/route-decision.js";
++import {
++  normalizeTaskScopeRoot,
++  parseTaskScopeExtensionRequestState,
++  scopeExtensionReceiptForState,
++  TASK_SCOPE_EXTENSION_REQUEST_KEY,
++} from "../shared/task-scope-extension-request.js";
++import type { CommandContext } from "../shared/task-backend.js";
++
++const output = createCliEmitter();
++
++function uniqueSorted<T extends string>(values: readonly T[]): T[] {
++  return [...new Set(values)].toSorted();
++}
++
++export function extendBlockedTaskExecutionContract(opts: {
++  command: CommandContext;
++  task: NonNullable<Awaited<ReturnType<CommandContext["taskBackend"]["getTask"]>>>;
++  scope_roots: readonly string[];
++  repository_effects: readonly TaskRepositoryEffect[];
++  request_digest: string;
++  by: string;
++}) {
++  const current = opts.task.execution_contract;
++  if (!current) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Task execution scope cannot be extended without a persisted execution contract.",
++    });
++  }
++  if (opts.task.status !== "BLOCKED") {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        "Task execution scope can be extended only after a recorded BLOCKED semantic result.",
++    });
++  }
++  const pending = parseTaskScopeExtensionRequestState(opts.task);
++  if (pending?.status !== "pending") {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Task execution scope extension requires one valid pending structured request.",
++    });
++  }
++  if (pending.request_digest !== opts.request_digest) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Task execution scope extension request digest does not match the pending blocker.",
++    });
++  }
++  if (
++    !(opts.task.comments ?? []).some(
++      (comment) =>
++        comment.author === "SUPERVISOR" &&
++        comment.body.includes(scopeExtensionReceiptForState(pending)),
++    )
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Task execution scope extension requires a recorded external-agent blocker receipt.",
++    });
++  }
++  if (opts.by !== "USER") {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Task execution scope extension requires explicit --by USER authority.",
++    });
++  }
++
++  const addedRoots = uniqueSorted(opts.scope_roots.map((root) => normalizeTaskScopeRoot(root)));
++  const addedEffects = uniqueSorted(opts.repository_effects);
++  if (
++    JSON.stringify(addedRoots) !== JSON.stringify(pending.request.scope_roots) ||
++    JSON.stringify(addedEffects) !== JSON.stringify(pending.request.repository_effects)
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Task execution scope extension must exactly match the pending structured request.",
++    });
++  }
++  const scopeRoots = uniqueSorted([...current.declaration.scope_roots, ...addedRoots]);
++  const repositoryEffects = uniqueSorted([
++    ...current.declaration.repository_effects,
++    ...opts.repository_effects,
++  ]);
++  if (
++    scopeRoots.length === current.declaration.scope_roots.length &&
++    repositoryEffects.length === current.declaration.repository_effects.length
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Task execution scope extension must add a new scope root or repository effect.",
++    });
++  }
++  const extensionSummary = [
++    addedRoots.length > 0 ? `roots=${uniqueSorted(addedRoots).join(",")}` : null,
++    addedEffects.length > 0 ? `repository_effects=${addedEffects.join(",")}` : null,
++  ]
++    .filter((value): value is string => value !== null)
++    .join("; ");
++  const declaration = {
++    ...current.declaration,
++    scope_roots: scopeRoots,
++    repository_effects: repositoryEffects,
++    rationale: uniqueSorted([
++      ...current.declaration.rationale,
++      `USER-approved blocked-result scope extension: ${extensionSummary}`,
++    ]),
++  };
++  const fresh = resolveTaskExecutionContract({
++    config: opts.command.config,
++    task: opts.task,
++    requestedMode: opts.task.execution_route?.requested_mode,
++    declaration,
++  });
++  return reconcileTaskExecutionContract({
++    contract: fresh,
++    changed_paths: current.observed.changed_paths,
++    observed_external_effects: current.observed.external_effects,
++  }).contract;
++}
++
++export async function cmdTaskScopeExtend(opts: {
++  ctx: CommandContext;
++  cwd: string;
++  taskId: string;
++  scopeRoots: string[];
++  repositoryEffects: TaskRepositoryEffect[];
++  requestDigest: string;
++  stateFingerprint: string;
++  by: string;
++  quiet?: boolean;
++}): Promise<number> {
++  try {
++    const command = opts.ctx;
++    const decision = await buildTaskRouteDecision({
++      ctx: command,
++      cwd: opts.cwd,
++      includeRemote: false,
++      rootOverride: null,
++      taskId: opts.taskId,
++    });
++    if (decision.workflowStep.preconditionFingerprint.digest !== opts.stateFingerprint) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message:
++          "Task execution scope extension is stale; recompute task next-action and use its exact state fingerprint.",
++      });
++    }
++    const task = await command.taskBackend.getTask(opts.taskId);
++    if (!task) {
++      throw new CliError({
++        code: "E_USAGE",
++        message: `Unknown task id: ${opts.taskId}`,
++      });
++    }
++    const executionContract = extendBlockedTaskExecutionContract({
++      command,
++      task,
++      scope_roots: opts.scopeRoots,
++      repository_effects: opts.repositoryEffects,
++      request_digest: opts.requestDigest,
++      by: opts.by,
++    });
++    const pending = parseTaskScopeExtensionRequestState(task);
++    if (pending?.status !== "pending") {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: "Task execution scope extension pending request disappeared before persistence.",
++      });
++    }
++    const checkout = decision.oracle.authoritativeCheckoutPath;
++    if (!checkout) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: "Task execution scope extension requires an authoritative task checkout.",
++      });
++    }
++    const now = new Date().toISOString();
++    await command.taskBackend.writeTask(
++      {
++        ...task,
++        status: "DOING",
++        commit: null,
++        quality_review: undefined,
++        verification: {
++          state: "pending",
++          attempts: task.verification?.attempts ?? 0,
++          updated_at: now,
++          updated_by: opts.by,
++          note: "Invalidated by USER-approved execution scope extension.",
++        },
++        execution_contract: executionContract,
++        extensions: {
++          ...(task.extensions ?? {}),
++          [TASK_SCOPE_EXTENSION_REQUEST_KEY]: {
++            ...pending,
++            status: "applied",
++            applied_at: now,
++            applied_by: opts.by,
++          },
++        },
++        execution_route: task.execution_route
++          ? {
++              ...task.execution_route,
++              selected_mode: executionContract.selected_mode,
++              repository_mode: executionContract.repository_mode,
++              reason_codes: [...executionContract.reason_codes],
++            }
++          : undefined,
++        comments: [
++          ...(task.comments ?? []),
++          {
++            author: opts.by,
++            body:
++              `Approved state-bound execution scope extension: ${opts.scopeRoots.join(", ")}; ` +
++              `repository effects: ${opts.repositoryEffects.join(", ") || "unchanged"}.`,
++          },
++        ],
++      },
++      task.revision ? { expectedRevision: task.revision } : undefined,
++    );
++
++    const subject = `🚧 ${opts.taskId.split("-").at(-1) ?? opts.taskId} task: extend approved execution scope`;
++    const exitCode = await cmdCommit({
++      ctx: command,
++      cwd: checkout,
++      taskId: opts.taskId,
++      message: subject,
++      close: false,
++      allow: [],
++      autoAllow: false,
++      allowTasks: true,
++      allowBase: false,
++      allowPolicy: false,
++      allowConfig: false,
++      allowHooks: false,
++      allowCI: false,
++      requireClean: false,
++      quiet: true,
++      closeUnstageOthers: false,
++      closeCheckOnly: false,
++    });
++    if (exitCode !== 0) throw new Error(`Task scope extension commit exited ${exitCode}.`);
++    await refreshBranchPrArtifactsAfterTaskCommit({
++      ctx: command,
++      cwd: checkout,
++      taskId: opts.taskId,
++      quiet: true,
++    });
++    command.git.invalidateStatus();
++    await commitRefreshedTaskArtifacts({
++      ctx: command,
++      cwd: checkout,
++      taskId: opts.taskId,
++      sourceMessage: subject,
++      quiet: true,
++    });
++
++    if (!opts.quiet) {
++      emitCommandResult(output, {
++        kind: "success",
++        action: "task execution scope extended",
++        target: opts.taskId,
++        details: `roots=${opts.scopeRoots.join(",")} state_fingerprint=${opts.stateFingerprint}`,
++      });
++    }
++    return 0;
++  } catch (error) {
++    if (error instanceof CliError) throw error;
++    throw mapBackendError(error, { command: "task scope extend", task_id: opts.taskId });
++  }
++}
+diff --git a/packages/core/src/index.ts b/packages/core/src/index.ts
+index 5ef81a081..ffdeeb3dc 100644
+--- a/packages/core/src/index.ts
++++ b/packages/core/src/index.ts
+@@ -178,6 +178,7 @@ export {
+   type AgentSemanticResultClaimedCheck,
+   type AgentSemanticResultKnowledgeRequest,
+   type AgentSemanticResultReview,
++  type AgentSemanticResultScopeExtensionRequest,
+   type AgentSemanticResultStatus,
+   type AgentSemanticResultTaskIntent,
+   KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES,
+diff --git a/packages/core/src/runner/agent-semantic-result.test.ts b/packages/core/src/runner/agent-semantic-result.test.ts
+index a726445a6..3d3725bed 100644
+--- a/packages/core/src/runner/agent-semantic-result.test.ts
++++ b/packages/core/src/runner/agent-semantic-result.test.ts
+@@ -82,6 +82,20 @@ describe("agent semantic result contract", () => {
+         blocker: { summary: "The required API is unavailable." },
+       }),
+     ).toEqual([]);
++    expect(
++      listAgentSemanticResultSchemaErrors({
++        ...buildAgentSemanticResultV2ValidFixtures("scope-request-invalid").blocked,
++        blocker: {
++          summary: "Additional repository scope is required.",
++          scope_extension_request: {
++            schema_version: 1,
++            scope_roots: [],
++            repository_effects: [],
++            rationale: "No actual authority was requested.",
++          },
++        },
++      }),
++    ).not.toEqual([]);
+     expect(
+       listAgentSemanticResultSchemaErrors({
+         ...AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURE,
+diff --git a/packages/core/src/runner/agent-semantic-result.ts b/packages/core/src/runner/agent-semantic-result.ts
+index d28322c3a..db6560a3a 100644
+--- a/packages/core/src/runner/agent-semantic-result.ts
++++ b/packages/core/src/runner/agent-semantic-result.ts
+@@ -38,10 +38,46 @@ export const KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES = [
+ ] as const;
+ export const KNOWLEDGE_REQUEST_SCOPE_VALUES = ["task_context"] as const;
+ 
++const AGENT_SEMANTIC_RESULT_REPOSITORY_EFFECT_ZOD_SCHEMA = z.enum([
++  "repository_write",
++  "documentation",
++  "source_code",
++  "tests",
++  "public_api",
++  "schema",
++  "dependencies",
++  "ci",
++  "release_metadata",
++  "security_boundary",
++]);
++
++const SCOPE_EXTENSION_REQUEST_BASE = {
++  schema_version: z.literal(1),
++  rationale: NON_EMPTY_STRING,
++} as const;
++
++const AGENT_SEMANTIC_RESULT_SCOPE_EXTENSION_REQUEST_ZOD_SCHEMA = z.union([
++  z
++    .object({
++      ...SCOPE_EXTENSION_REQUEST_BASE,
++      scope_roots: z.array(NON_EMPTY_STRING).min(1),
++      repository_effects: z.array(AGENT_SEMANTIC_RESULT_REPOSITORY_EFFECT_ZOD_SCHEMA),
++    })
++    .strict(),
++  z
++    .object({
++      ...SCOPE_EXTENSION_REQUEST_BASE,
++      scope_roots: z.array(NON_EMPTY_STRING),
++      repository_effects: z.array(AGENT_SEMANTIC_RESULT_REPOSITORY_EFFECT_ZOD_SCHEMA).min(1),
++    })
++    .strict(),
++]);
++
+ const AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA = z
+   .object({
+     summary: NON_EMPTY_STRING,
+     recommended_action: NON_EMPTY_STRING.optional(),
++    scope_extension_request: AGENT_SEMANTIC_RESULT_SCOPE_EXTENSION_REQUEST_ZOD_SCHEMA.optional(),
+   })
+   .strict();
+ 
+@@ -75,18 +111,6 @@ const AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA = z
+   })
+   .strict();
+ 
+-const AGENT_SEMANTIC_RESULT_REPOSITORY_EFFECT_ZOD_SCHEMA = z.enum([
+-  "repository_write",
+-  "documentation",
+-  "source_code",
+-  "tests",
+-  "public_api",
+-  "schema",
+-  "dependencies",
+-  "ci",
+-  "release_metadata",
+-  "security_boundary",
+-]);
+ const AGENT_SEMANTIC_RESULT_EXTERNAL_EFFECT_ZOD_SCHEMA = z.enum([
+   "network_read",
+   "external_write",
+@@ -209,6 +233,9 @@ export const AGENT_SEMANTIC_RESULT_ZOD_SCHEMA = z.discriminatedUnion("status", [
+ export type AgentSemanticResult = z.infer<typeof AGENT_SEMANTIC_RESULT_ZOD_SCHEMA>;
+ export type AgentSemanticResultStatus = (typeof AGENT_SEMANTIC_RESULT_STATUS_VALUES)[number];
+ export type AgentSemanticResultBlocker = z.infer<typeof AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA>;
++export type AgentSemanticResultScopeExtensionRequest = z.infer<
++  typeof AGENT_SEMANTIC_RESULT_SCOPE_EXTENSION_REQUEST_ZOD_SCHEMA
++>;
+ export type AgentSemanticResultKnowledgeRequest = z.infer<
+   typeof AGENT_SEMANTIC_RESULT_KNOWLEDGE_REQUEST_ZOD_SCHEMA
+ >;
+@@ -262,6 +289,12 @@ export function buildAgentSemanticResultV2ValidFixtures(
+       blocker: {
+         summary: "The runner needs a provider action from the parent workflow.",
+         recommended_action: "Return control to the parent workflow for the provider action.",
++        scope_extension_request: {
++          schema_version: 1,
++          scope_roots: ["website/static/img/social"],
++          repository_effects: ["documentation"],
++          rationale: "The generated release image is outside the current writable roots.",
++        },
+       },
+     },
+     needs_context: {
+diff --git a/packages/core/src/schemas/index.ts b/packages/core/src/schemas/index.ts
+index a7eeb31a8..59d253b93 100644
+--- a/packages/core/src/schemas/index.ts
++++ b/packages/core/src/schemas/index.ts
+@@ -37,6 +37,7 @@ export {
+   type AgentSemanticResultClaimedCheck,
+   type AgentSemanticResultKnowledgeRequest,
+   type AgentSemanticResultReview,
++  type AgentSemanticResultScopeExtensionRequest,
+   type AgentSemanticResultStatus,
+   type AgentSemanticResultTaskIntent,
+   KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES,
+diff --git a/schemas/agent-semantic-result.schema.json b/schemas/agent-semantic-result.schema.json
+index 67633dc5a..40d4e3149 100644
+--- a/schemas/agent-semantic-result.schema.json
++++ b/schemas/agent-semantic-result.schema.json
+@@ -326,6 +326,92 @@
+             "recommended_action": {
+               "type": "string",
+               "minLength": 1
++            },
++            "scope_extension_request": {
++              "anyOf": [
++                {
++                  "type": "object",
++                  "properties": {
++                    "schema_version": {
++                      "type": "number",
++                      "const": 1
++                    },
++                    "rationale": {
++                      "type": "string",
++                      "minLength": 1
++                    },
++                    "scope_roots": {
++                      "minItems": 1,
++                      "type": "array",
++                      "items": {
++                        "type": "string",
++                        "minLength": 1
++                      }
++                    },
++                    "repository_effects": {
++                      "type": "array",
++                      "items": {
++                        "type": "string",
++                        "enum": [
++                          "repository_write",
++                          "documentation",
++                          "source_code",
++                          "tests",
++                          "public_api",
++                          "schema",
++                          "dependencies",
++                          "ci",
++                          "release_metadata",
++                          "security_boundary"
++                        ]
++                      }
++                    }
++                  },
++                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
++                  "additionalProperties": false
++                },
++                {
++                  "type": "object",
++                  "properties": {
++                    "schema_version": {
++                      "type": "number",
++                      "const": 1
++                    },
++                    "rationale": {
++                      "type": "string",
++                      "minLength": 1
++                    },
++                    "scope_roots": {
++                      "type": "array",
++                      "items": {
++                        "type": "string",
++                        "minLength": 1
++                      }
++                    },
++                    "repository_effects": {
++                      "minItems": 1,
++                      "type": "array",
++                      "items": {
++                        "type": "string",
++                        "enum": [
++                          "repository_write",
++                          "documentation",
++                          "source_code",
++                          "tests",
++                          "public_api",
++                          "schema",
++                          "dependencies",
++                          "ci",
++                          "release_metadata",
++                          "security_boundary"
++                        ]
++                      }
++                    }
++                  },
++                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
++                  "additionalProperties": false
++                }
++              ]
+             }
+           },
+           "required": ["summary"],
+@@ -708,6 +794,92 @@
+             "recommended_action": {
+               "type": "string",
+               "minLength": 1
++            },
++            "scope_extension_request": {
++              "anyOf": [
++                {
++                  "type": "object",
++                  "properties": {
++                    "schema_version": {
++                      "type": "number",
++                      "const": 1
++                    },
++                    "rationale": {
++                      "type": "string",
++                      "minLength": 1
++                    },
++                    "scope_roots": {
++                      "minItems": 1,
++                      "type": "array",
++                      "items": {
++                        "type": "string",
++                        "minLength": 1
++                      }
++                    },
++                    "repository_effects": {
++                      "type": "array",
++                      "items": {
++                        "type": "string",
++                        "enum": [
++                          "repository_write",
++                          "documentation",
++                          "source_code",
++                          "tests",
++                          "public_api",
++                          "schema",
++                          "dependencies",
++                          "ci",
++                          "release_metadata",
++                          "security_boundary"
++                        ]
++                      }
++                    }
++                  },
++                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
++                  "additionalProperties": false
++                },
++                {
++                  "type": "object",
++                  "properties": {
++                    "schema_version": {
++                      "type": "number",
++                      "const": 1
++                    },
++                    "rationale": {
++                      "type": "string",
++                      "minLength": 1
++                    },
++                    "scope_roots": {
++                      "type": "array",
++                      "items": {
++                        "type": "string",
++                        "minLength": 1
++                      }
++                    },
++                    "repository_effects": {
++                      "minItems": 1,
++                      "type": "array",
++                      "items": {
++                        "type": "string",
++                        "enum": [
++                          "repository_write",
++                          "documentation",
++                          "source_code",
++                          "tests",
++                          "public_api",
++                          "schema",
++                          "dependencies",
++                          "ci",
++                          "release_metadata",
++                          "security_boundary"
++                        ]
++                      }
++                    }
++                  },
++                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
++                  "additionalProperties": false
++                }
++              ]
+             }
+           },
+           "required": ["summary"],
+@@ -1090,6 +1262,92 @@
+             "recommended_action": {
+               "type": "string",
+               "minLength": 1
++            },
++            "scope_extension_request": {
++              "anyOf": [
++                {
++                  "type": "object",
++                  "properties": {
++                    "schema_version": {
++                      "type": "number",
++                      "const": 1
++                    },
++                    "rationale": {
++                      "type": "string",
++                      "minLength": 1
++                    },
++                    "scope_roots": {
++                      "minItems": 1,
++                      "type": "array",
++                      "items": {
++                        "type": "string",
++                        "minLength": 1
++                      }
++                    },
++                    "repository_effects": {
++                      "type": "array",
++                      "items": {
++                        "type": "string",
++                        "enum": [
++                          "repository_write",
++                          "documentation",
++                          "source_code",
++                          "tests",
++                          "public_api",
++                          "schema",
++                          "dependencies",
++                          "ci",
++                          "release_metadata",
++                          "security_boundary"
++                        ]
++                      }
++                    }
++                  },
++                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
++                  "additionalProperties": false
++                },
++                {
++                  "type": "object",
++                  "properties": {
++                    "schema_version": {
++                      "type": "number",
++                      "const": 1
++                    },
++                    "rationale": {
++                      "type": "string",
++                      "minLength": 1
++                    },
++                    "scope_roots": {
++                      "type": "array",
++                      "items": {
++                        "type": "string",
++                        "minLength": 1
++                      }
++                    },
++                    "repository_effects": {
++                      "minItems": 1,
++                      "type": "array",
++                      "items": {
++                        "type": "string",
++                        "enum": [
++                          "repository_write",
++                          "documentation",
++                          "source_code",
++                          "tests",
++                          "public_api",
++                          "schema",
++                          "dependencies",
++                          "ci",
++                          "release_metadata",
++                          "security_boundary"
++                        ]
++                      }
++                    }
++                  },
++                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
++                  "additionalProperties": false
++                }
++              ]
+             }
+           },
+           "required": ["summary"],
+diff --git a/schemas/examples/agent-semantic-result-v2.blocked.valid.json b/schemas/examples/agent-semantic-result-v2.blocked.valid.json
+index 40ac4ec16..cb77dcd34 100644
+--- a/schemas/examples/agent-semantic-result-v2.blocked.valid.json
++++ b/schemas/examples/agent-semantic-result-v2.blocked.valid.json
+@@ -8,6 +8,12 @@
+   "uncertainty": [],
+   "blocker": {
+     "summary": "The runner needs a provider action from the parent workflow.",
+-    "recommended_action": "Return control to the parent workflow for the provider action."
++    "recommended_action": "Return control to the parent workflow for the provider action.",
++    "scope_extension_request": {
++      "schema_version": 1,
++      "scope_roots": ["website/static/img/social"],
++      "repository_effects": ["documentation"],
++      "rationale": "The generated release image is outside the current writable roots."
++    }
+   }
+ }
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 31eed5b91..970a8ab28 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -8,14 +8,14 @@
+   "candidate": {
+     "section_digests": {
+       "agent_facing_context_contracts": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+-      "cli_topology": "20a9c58073545ec9938c1a52b8d4ca3a164f2b60ec8cf6d5f8b55eec004eb09b",
++      "cli_topology": "f1f582f3cdd1711ce16fa52c9b6dacd81804c3a8fa94882c2192133dbfb89d13",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
+       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
+       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
+     },
+-    "surface_sha256": "1facd3d0771f9420c47c2144a595a86ae01722dcc14eef06fbce06e6b874ec32"
++    "surface_sha256": "2fb42f5eff1ad0ae173d8dd6a147a2cbb545b835539f8182df96ec067b8f2cb1"
+   },
+   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
+   "contract_artifacts": {
+@@ -698,6 +698,48 @@
+             "options": [],
+             "visibility": "internal"
+           },
++          {
++            "args": [
++              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
++            ],
++            "group": "Task",
++            "id": ["task", "scope", "extend"],
++            "options": [
++              { "kind": "string", "name": "scope-root", "repeatable": true, "valueHint": "<path>" },
++              {
++                "choices": [
++                  "repository_write",
++                  "documentation",
++                  "source_code",
++                  "tests",
++                  "public_api",
++                  "schema",
++                  "dependencies",
++                  "ci",
++                  "release_metadata",
++                  "security_boundary"
++                ],
++                "kind": "string",
++                "name": "repository-effect",
++                "repeatable": true,
++                "valueHint": "<effect>"
++              },
++              {
++                "kind": "string",
++                "name": "request-digest",
++                "required": true,
++                "valueHint": "<sha256:...>"
++              },
++              {
++                "kind": "string",
++                "name": "state-fingerprint",
++                "required": true,
++                "valueHint": "<sha256:...>"
++              },
++              { "kind": "string", "name": "by", "required": true, "valueHint": "<role>" }
++            ],
++            "visibility": "advanced"
++          },
+           {
+             "args": [],
+             "group": "Workflow",
+@@ -729,6 +771,7 @@
+           "task run resolve-effect",
+           "task run resume-effect",
+           "task run tool",
++          "task scope extend",
+           "workflow migrate"
+         ],
+         "added_options": [
+@@ -1311,6 +1354,53 @@
+             "required": true,
+             "valueHint": "<run-id>"
+           },
++          {
++            "command": "task scope extend",
++            "kind": "string",
++            "name": "by",
++            "required": true,
++            "valueHint": "<role>"
++          },
++          {
++            "choices": [
++              "repository_write",
++              "documentation",
++              "source_code",
++              "tests",
++              "public_api",
++              "schema",
++              "dependencies",
++              "ci",
++              "release_metadata",
++              "security_boundary"
++            ],
++            "command": "task scope extend",
++            "kind": "string",
++            "name": "repository-effect",
++            "repeatable": true,
++            "valueHint": "<effect>"
++          },
++          {
++            "command": "task scope extend",
++            "kind": "string",
++            "name": "request-digest",
++            "required": true,
++            "valueHint": "<sha256:...>"
++          },
++          {
++            "command": "task scope extend",
++            "kind": "string",
++            "name": "scope-root",
++            "repeatable": true,
++            "valueHint": "<path>"
++          },
++          {
++            "command": "task scope extend",
++            "kind": "string",
++            "name": "state-fingerprint",
++            "required": true,
++            "valueHint": "<sha256:...>"
++          },
+           {
+             "command": "workflow migrate",
+             "default": false,
+@@ -1389,6 +1479,11 @@
+             "source_task": "202607242158-QV09NA"
+           },
+           { "command": "task run tool", "kind": "command", "source_task": "202607221852-ECBY56" },
++          {
++            "command": "task scope extend",
++            "kind": "command",
++            "source_task": "202608181404-CR1F9W"
++          },
+           {
+             "command": "workflow migrate",
+             "kind": "command",
+@@ -1886,6 +1981,36 @@
+             "name": "run-id",
+             "source_task": "202607242158-QV09NA"
+           },
++          {
++            "command": "task scope extend",
++            "kind": "option",
++            "name": "by",
++            "source_task": "202608181404-CR1F9W"
++          },
++          {
++            "command": "task scope extend",
++            "kind": "option",
++            "name": "repository-effect",
++            "source_task": "202608181404-CR1F9W"
++          },
++          {
++            "command": "task scope extend",
++            "kind": "option",
++            "name": "request-digest",
++            "source_task": "202608181404-CR1F9W"
++          },
++          {
++            "command": "task scope extend",
++            "kind": "option",
++            "name": "scope-root",
++            "source_task": "202608181404-CR1F9W"
++          },
++          {
++            "command": "task scope extend",
++            "kind": "option",
++            "name": "state-fingerprint",
++            "source_task": "202608181404-CR1F9W"
++          },
+           {
+             "command": "workflow migrate",
+             "kind": "option",
+@@ -1899,7 +2024,7 @@
+             "source_task": "202607221846-4VB97J"
+           }
+         ],
+-        "command_count": { "from": 243, "to": 263 },
++        "command_count": { "from": 243, "to": 264 },
+         "mutated_command_shells": [
+           {
+             "after": {
+@@ -2096,8 +2221,8 @@
+             "identity": "task plan approve --by"
+           }
+         ],
+-        "option_count": { "from": 767, "to": 851 },
+-        "positional_count": { "from": 165, "to": 180 },
++        "option_count": { "from": 767, "to": 856 },
++        "positional_count": { "from": 165, "to": 181 },
+         "removed_command_descriptors": [],
+         "removed_commands": [],
+         "removed_options": []
+@@ -2132,10 +2257,11 @@
+         "202608080805-KPWPAV",
+         "202608110235-WCJJRD",
+         "202608112213-NWJCBW",
+-        "202608171853-X3FD5M"
++        "202608171853-X3FD5M",
++        "202608181404-CR1F9W"
+       ],
+-      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, and safe local evidence statistics, compaction, and garbage collection; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; and canonicalizes setup and execution profile selection to standard while retaining legacy init aliases.",
+-      "to_sha256": "20a9c58073545ec9938c1a52b8d4ca3a164f2b60ec8cf6d5f8b55eec004eb09b"
++      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; and canonicalizes setup and execution profile selection to standard while retaining legacy init aliases.",
++      "to_sha256": "f1f582f3cdd1711ce16fa52c9b6dacd81804c3a8fa94882c2192133dbfb89d13"
+     },
+     {
+       "classification": "additive",
+@@ -2336,7 +2462,7 @@
+     "from_version": "0.6.24",
+     "section": "package_manifests",
+     "source_task": "202608082119-P6SHBN",
+-    "surface_sha256": "ab2384feaf78cb4c0a0c0f5c600ea386e5f0376e852122f2d74b97ac1356d414",
++    "surface_sha256": "3d3ec6aff7ea49a11adaef2ff88b202a105c20cef23672e5de5eb0fb246ef3c9",
+     "to_sha256": "ba86d65ec1fe45a4d31d19c537a863e802e8e7a7bbdb0d1b0a301d4c3e82b3ab",
+     "to_version": "0.7.6"
+   },
+@@ -2387,6 +2513,7 @@
+     "202608110235-WCJJRD",
+     "202608112213-NWJCBW",
+     "202608112259-T3ZDDM",
+-    "202608171853-X3FD5M"
++    "202608171853-X3FD5M",
++    "202608181404-CR1F9W"
+   ]
+ }
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index 671509bcb..549c4719f 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -346,6 +346,7 @@ function validateReviewedCandidate({
+     "202608110235-WCJJRD",
+     "202608112213-NWJCBW",
+     "202608171853-X3FD5M",
++    "202608181404-CR1F9W",
+   ];
+   const expectedSourceTasks = [
+     "202607221846-4VB97J",
+@@ -384,6 +385,7 @@ function validateReviewedCandidate({
+     "202608112213-NWJCBW",
+     "202608112259-T3ZDDM",
+     "202608171853-X3FD5M",
++    "202608181404-CR1F9W",
+   ];
+   assert(
+     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+@@ -1528,6 +1530,46 @@ function validateReviewedCandidate({
+       args: [{ name: "tool", required: true, variadic: false, valueHint: "<tool-name>" }],
+       options: [],
+     },
++    {
++      id: ["task", "scope", "extend"],
++      visibility: "advanced",
++      group: "Task",
++      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
++      options: [
++        { name: "scope-root", kind: "string", valueHint: "<path>", repeatable: true },
++        {
++          name: "repository-effect",
++          kind: "string",
++          valueHint: "<effect>",
++          repeatable: true,
++          choices: [
++            "repository_write",
++            "documentation",
++            "source_code",
++            "tests",
++            "public_api",
++            "schema",
++            "dependencies",
++            "ci",
++            "release_metadata",
++            "security_boundary",
++          ],
++        },
++        {
++          name: "request-digest",
++          kind: "string",
++          valueHint: "<sha256:...>",
++          required: true,
++        },
++        {
++          name: "state-fingerprint",
++          kind: "string",
++          valueHint: "<sha256:...>",
++          required: true,
++        },
++        { name: "by", kind: "string", valueHint: "<role>", required: true },
++      ],
++    },
+     {
+       id: ["workflow", "migrate"],
+       visibility: "user",
+@@ -1997,6 +2039,53 @@ function validateReviewedCandidate({
+       default: false,
+     },
+     ...effectResolutionAddedOptions,
++    {
++      command: "task scope extend",
++      name: "by",
++      kind: "string",
++      valueHint: "<role>",
++      required: true,
++    },
++    {
++      command: "task scope extend",
++      name: "repository-effect",
++      kind: "string",
++      valueHint: "<effect>",
++      repeatable: true,
++      choices: [
++        "repository_write",
++        "documentation",
++        "source_code",
++        "tests",
++        "public_api",
++        "schema",
++        "dependencies",
++        "ci",
++        "release_metadata",
++        "security_boundary",
++      ],
++    },
++    {
++      command: "task scope extend",
++      name: "request-digest",
++      kind: "string",
++      valueHint: "<sha256:...>",
++      required: true,
++    },
++    {
++      command: "task scope extend",
++      name: "scope-root",
++      kind: "string",
++      valueHint: "<path>",
++      repeatable: true,
++    },
++    {
++      command: "task scope extend",
++      name: "state-fingerprint",
++      kind: "string",
++      valueHint: "<sha256:...>",
++      required: true,
++    },
+     {
+       command: "workflow migrate",
+       name: "dry-run",
+@@ -2062,6 +2151,11 @@ function validateReviewedCandidate({
+       command: "task run tool",
+       source_task: "202607221852-ECBY56",
+     },
++    {
++      kind: "command",
++      command: "task scope extend",
++      source_task: "202608181404-CR1F9W",
++    },
+     { kind: "command", command: "workflow migrate", source_task: "202607221846-4VB97J" },
+     {
+       kind: "option",
+@@ -2460,6 +2554,14 @@ function validateReviewedCandidate({
+       source_task: "202607221846-9XC1H0",
+     },
+     ...effectResolutionOptionSources,
++    ...["by", "repository-effect", "request-digest", "scope-root", "state-fingerprint"].map(
++      (name) => ({
++        kind: "option",
++        command: "task scope extend",
++        name,
++        source_task: "202608181404-CR1F9W",
++      }),
++    ),
+     {
+       kind: "option",
+       command: "workflow migrate",
+@@ -2582,6 +2684,7 @@ function validateReviewedCandidate({
+         "task run resolve-effect",
+         "task run resume-effect",
+         "task run tool",
++        "task scope extend",
+         "workflow migrate",
+       ]),
+     "unexpected CLI addition",
+diff --git a/website/static/img/social/docs/releases/v0.7.7.png b/website/static/img/social/docs/releases/v0.7.7.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..36f4c2c447e2706207998432e6b75b07a244bc43
+GIT binary patch
+literal 52375
+zcmeFaXIPV2*EXDhh=PKOG!d`?3IZy<TM$%4EQs_fO?oe(*+4)+P(Y-LVxxCLXi}wx
+zDhY%TiV$i-4-g>Vj*j;;qcZpN^LyXdIgU9-DOdKj_u6ZnYpwHK6MXfG>Q07z3=jxp
+z=fw-k*C7x(@JE_}ZCk;As^`DF0{_|WctOVn0%2sK{tJb?jOTzr4nQs{pV9P;pGu%F
+z-und`^h~sl2i8>+!k1%0l(;j+7qU;S<{p*<u^Z;_sEov;E*|~JD#f&x=IEiL+~e0p
+zPw2mVKCeLe1TzrPv#{{6L~bnkCRrwm^7bVp_>$^-%9L7T=f&v3hkySkckTEj<Bz{U
+z0w&HtxBd9rfgN-Qe*8J$#NL1(e}+_Dh0y%?%eHfWe&N86&G_H#(&Jln1EpT`eUD?6
+zitDV!`ZSsLKZTw;z4bGM^8oGbfF1w%OV`z{>7BXuO|l|MGjAc{XUys}oLL0a-EO?S
+z;sK>+`t9$0d%&HewBTo$5yF$j>63GGq70Q6Z|uW92&`;L6qA}%gZ^0aQAX+y<RY8s
+zPl-Y@c1j#fY<axp$2TuLb~EVqS~<aTqLZer`<#CdESc;+a02DfHZwEUNkJ&rFU00a
+zJ8rUeu#Tr*Tb(UwdYuQ-iQ8XTL(%UjS4k#C{VgL#-E_t$?7Tg1b4Pm1%se5ci(M$s
+zBh`3DmdVvQP?!}(XA|7EHh3&0a%kjw)Gtp{KH>SwedU~ErH?s^S*{OE6hfx34v)ws
+z#9esCmHs1@MGRlLaE(tLe1y)G&t~jcsVh45?F&Rtblm|RQCeg^B!4cPCfm=XvhuHQ
+z{q(bnEaF#~!;im$G~b0DHkf(hVE$REJnA5BSu4<ISdVk=`xkuqlOeaa8Y@&o{^bYW
+zK+-KalK;MpzkOEgmc0Rc0~UACivRj_>c=g`2GBgE$xbv0`0);Z`(^4&DY9IJT!(av
+z?P&Yw(tfNJV@bnsnxWD=5W4SoJL2F&zI+;b0jk}4;`IN#*N<QR_M%DKk3x<?CONlS
+z{k)yumohB|r8_|PfBGg|CDJ7`(>QNx5RFfXy^|G3Aub0h$M5}g20tu~x)a7rJFP@^
+zaQyx-z<zQwQ;(x05K6n*aSWWH)b1JB&vBxI?k98maV*p`t(@X&)8{xb^Ed1M$ExIb
+zsD|aXlXmN7hE;igBb2XF=7jMZ#(!LrzdeR(ojp>?@Ds)Z|FQWWi}>pc9`fI;W8c;t
+zn_0(Q`gL}-02kxR3+#WpI{$bK)x`1~PP_cu?t6Z-bBWEi7VHW0s%SI>Ul|Y~vivWX
+z#R3;FS`~2j_ZJ$hYBm`HZmi9wTid#YXTj(=6#3u$LUTE^<>6+h4E)mY8S1q|ZMwBd
+z+vUe9v}xjLX;n%Fe(TM?-`y9!v@aPqJ7wUl>hDt>Nam(ntH|Qn=AW}gnttnJ*H6Fk
+zanysNdZ82Kt>WyPoieb(FnX#NFsR;aYkm1=k}0O!9hr7;{9ky1))%ow4o0LUj03xT
+zATzJw;$()~W)b5*mQm9{Ldp@R{Fd^PSmjGx$A|7jIFzr{C3sJK@Cpy(meX2*b7=g|
+z3;f4M*A}?9+$E2Q`s-w`={Yy>VVh&c420)!l#QZ+$<=D!jjQeWL%84UH`SR@jSG5(
+z-G@9*UPKv*%90(De3zUG80eBk9t-^9z`$oNBm<L%49nRi`fqrV+RiaY$y+qPh|n!>
+zRUq}H&>06YaqDNCg}!GT{>6?wrWcKxK`@29V=Pb5b0}L3iMCU(FLoNfK3_Il$HiV2
+zou~jS(S1mBmA#JTXHP-|ci+1$VDxOjtO1d3fQ0iW`fbc7v6qHLY3Vk!B*>w@2<{Ci
+zIpOz91Vb58YIjub-{x2{fT^IF8Gn}~;?1qf?e;v){3yiDME=vy(H~fGGClC%TR3ow
+zh7cbAwb}Do!x5@HP6a!t+w!YJE<pL8q&-1T6ECv7lm*fEUHlSiSpW3kIep=C)Q#Bw
+zv-hR?O9iXbE(a@@Gx0PtaSr9jymwA!Rg|Z>QCGC~i|5KL+X&?hkl8ih`l-l>Zot3;
+zdvjqQQhIpDt;ws9i7L-~KYKE2gkj#-Rt!xPw~mC7r;7}z=YlD;!}^h@@$S9W0;m!<
+zo1!mTdT?-To!std6GDFH6&GgtnSjZjymxU5F!!5T2nSp_ArVH{o`q-jU%rpA&1>mn
+z)3e>ZLA-HArdDBXrkalNO{|z@Nnl`LWIeOe+SMgDCLVdT!phfYgnNu4j$~p*1;(j9
+zL4Q(R$_>0G9Ah41(07KO`)hBJ1CeS$Qowj}lSH@Oi_Ee?#>;r|%DGRWXZ$<_5<OGo
+z1_Ef$Cb>_QOlA_kKGSe#R$MkNHnZ1!tC5sQTG1=G!}<ZT|Ag`B29zn$TxLaadEkDi
+zVYQlQ+1HN^k2%Hq>UsUA2<2pZkCl-a#5__?bghD0&fS%=(&}GDdZWcq=`}wJ&nhQO
+zCwk5u^T5~@!G$u5Q&txHz#a`&+;3GRr%#xjJ89AKa-`o2pKzk-mVsN89A$03dNQ9v
+znQv7RU3PdKiFWY;`%CDtOmdUL`Q#y%heEM%d?J@&kQZz+qv%i!&Ifw&=cu<7OO3po
+z0lT;E5YkG2o_lC4ree+fO%*>$`_6~dKBJ8}c2c`4@6Cl4*hti^KHyS#$M>=6+}`am
+zl~Z5x>RgbBBa;x*Yxxau%RN$T;$_`FA{M*#sv||i@{HDo*zJq3?u;I(>blBPrSnL>
+zq<1h9fl<DW;l0wvY&e0kL8M$#?DiY|d^mhZ6a2dN3X7DK6SEL9((i!o?t-b@CN^Is
+z{wwhuJ!PyVT91n4({JBtsJu&CT~&&nm*Up5hns6(m5`K_#W9=~T2H^4mk=2PzIcJy
+z)1f9hy@d5JBGs^HJfO4MGm1=zLltmK+85L`Dv-nJQZt>RZfb33lp%-nM7^~^WfHn>
+zXt;rGH$9>O%u8K6{z{@ed_ZQUD(2?^{sUNjfL4cOxpnKjGv#YhBu}v*9|#2vRtF&z
+zme7aW=P47nDx6#8=P!R@JS{YBJF3-XG^2)v5eiU-X_uhOpXhnTW27X>CoavR=Cpyc
+zR3n5<!k|_UFMpunXNu1A!RK)1!BdA*V+<$Q3|!mMS#B8x-OdSe9`5CP1Bhj$M2utg
+z&L(e4x3<}n(uW4mX|mg7?A|)F+<1F=duT;5YH`wt(p$E%I+?j=Vd9I>artMmx+V`<
+z`-F@7B0W@287=?f%D>0Nt;Tnu)fSmix_e?5vUQXS-<;eoS^d86`ZQjN;-!tenFh({
+zbh>8AUng@#cKnExU2lE}TL1_Y7Rz~snk9Xcd3=uxbRmYo^_*|DJ8!@T4kmMFT!Xoo
+ze3NfWjK1?l?S6}!5Z&G8Vm(th&D8#S_vzkRU1y_oNGYLYvMMQuZ_z#O-W$~Itk$}a
+zH)x68itr=m4zJFZ_)|6*<>`OB?qmoxib)wi=24K<zoXrfTNnMcF5#vniAUcwm``wS
+zZHaNcVq-BYggpRT;>KvX<7QJ_ly_}3v`!de<hNq(f%7HZY_@(C8&b|5P<Xot4F_K^
+zxD`y(*3W_<>349ZuY?VUD=9i}*KVL`BTQP6a?|TzUSqF<R18-Q(;@jVre5J4=_k^Z
+z%b)epcNnTh#s;N^jl>u!>Ld5#c`~oc%q09|MF4P(nLwq@@4N<Xi95}(8=V90D<Z3W
+zRj{LAaS|mOFQeUnFM<Uac#TA{3PCc~^2pp;n79^^;{}7~yJ*@Z_i0<inhUzy31yW!
+z7q46pW({yxDl-+!JN{0~{bmXz|B&FF(V_iXuBiqP-HW$cNb@P7B7z7=zKgzlk2$L_
+zcF5MxtafU*>i%mIs_qJf!H+(%Km7%B{e}DbOe>}FeJ*LMYQ9Zoz?U%j-xUpPd6Apo
+zn>M?4O-ktKO-OHg!<Sn|3K9;5Q@MNSlCd5c9Vqt}2~?LR6#e1GyA(VYMl3VXXJ8G`
+zdMZ+gHl?Ewo}OcJ@+V_(RSCx7imO&dAoQvxCUmE&#dI;8#th0ey4e-Cs}L4CHJFKd
+z)Cm8OYe<_deVcHBEt;SjD_1Ri5o#6Jl^-u*+iEi$CY)5b^QJBTOc|-4i(qd@LJKXv
+zoLUcVd?MA)(a^~sXFG(HolI}*Tqog(nPp48j>AVVkKS~d2_M!noqs6$b6)+QyvEyq
+z-mVy9-Bnd<p`v4AQjy*(+TqdXq`It@Zg+LpyW$+9%1{%8QJwJpZh$4SJ+n_WW)h2s
+z!$KFDTsvqSv&xo2+!Xcr`$n^?`*f6|75o8OsHQoJl(}Sgc~>eVy>2!Rw`TDQR=lDQ
+zc}X$Fw_q=%^wFHanZ#L^u1=)U#gzKZw@5`;MD$pkOtlEq0%wbTs@76haBup4xT0Xm
+zkuMgM=o01>Y*2nYP4-CUh}=~6x%TVr7Fp3Hyl+`UuDNd|w7*tunC)sbC&SO8RZeOs
+zuDl^nJNWA@$g}G^LXDQM2a2NqiLrh-115na=R03JhGwdnJ%;O^Gzooa<VCFbbv=Qm
+zZ#nv4y3e|)FU1hmYm<d7%{gB_nHzbu!FNk2YXAUY`d{bMOC~-N0M21j3yr4DUyn^_
+z^5buW`;id1hk1vEbRhQm?J9#)B6?cVCRJNV0QUu<@&Od6l?}&cos0p?JQ5G>o_nP0
+z-TPK}g(nHNFy2|uw{kka=T>bZxk<Fb^@|`xLwazFlv&;53;6s)?=@d7pv}T>mO=8b
+zm!T!{tvmUf&7X@NSaRrSB%a0Ro_ym$><?zF>>GYz7Itiv$j1&W01cnQT{w0Ld#huk
+zTDc1*)tftPN;;XZlZsoIu2+EEcp!@Y3A0kuSsw9Zb+iI9h0P2gIL!ugL||0FHKe85
+zx@`>7r=};liXrE0>TQuEzg6og*dnVS#I9Q_O)KM2>%zX1rZpN!#=S?D#3nNl_HSGi
+z=RO|>SKLl4_^jCHbm<;n683P?<WQ)n`?c)Ym)DT&Bfi4t6>-rB)AI$>(%gKL7a2~+
+zePJi{70Typ-qmZNY0E4^U+&#0iB9%<H}RhLQQ>egE6FMPc~R-x>zN<`V?K`<J=Y17
+zoR|4vDMtl7L#F_^Ny$sYB)FcUGY*;g#rnTPRbBu#JPxs*)Up*97gvt78PV=KH2IL-
+z@G~szJz_V8pUIcJ^kl70X=8bq^%%r%#rb(XMuqGC)}0~p#_05S(M|00-0luFm-Yt8
+zP3PYz?#t%TsuG5Ojf_AR5zEQl%FyLzvDUr5hKL~jJ(qxENIAdm(Y41#Z>kTA@W|4I
+zTIC&ly&)Gof7hyr`KT)r0K~j>niGx3t9;O98w?4Z7MX0-3{_{tv8JKId!iZxr+W>?
+zO0~4ZIHeTZy$&k+466MEcfO|$c84ae#0n(1UQeHo))mpVt<(O{qa#eb%Sx~3T{QkS
+zF4_P>$ZJ)M;Bm-1ILyQW5TNNB7xt2OI`K3!p`zuFzP3p6KXO(STDtQJlCKkf(Na75
+z2Bg=5<Kj53!e81(vVi~}VGAg%0ZuB$p)fnj6izz%c>b=mEjs%i$~@I2$GJokx?Hcc
+z(atxhL|M^jpJx+vtPkfU0$dewFMP5Oo~IV_M6Xsd(Ces);qTt#8_u6mwe9JDbnSH&
+z`9e?2id}3vwtgDG1qREDJqq3S<tw9~&tGE!$&J>Vd-amzRt*3r@{Z?d?P1z4ePSuj
+z$hQ01bDB2y{`@CbFDZ04LWJmsm^en28Vgu;4{;WND1Y(VF$uHG@ocQ7%`3?90+)G^
+zNC+B2dYiB4nd&mZrgBt2&4a){dJ{*7&K?<ZcaV+qvKc<#1mmk)KYiR?>GRp5ZI7-)
+zsEAc$`%-U6LQ&gev$z)hv6EVf{0Zx*8W122XVz4?eO-0%fn&cKAt)BK-QSwu3oTSX
+zlCoExe!pYo+3>Qjk!pt&3bhBX?I6=BHm)$T21q`87q5Qh(n{gIRP^PPw`TR+9>>!l
+z;;q+mMpCaKt>gAAgH@{tM7^lxD1ziC7&X;e46({q*zGlq!)qcS=?k9MZB;U-AH;(~
+ztaI)@qFIqWc202=q#;7f92mYb{eBR-Qq-Cbaxeda25qt^rdy3!X>6Moy%#4&5<Q24
+zKR0O?;rz%Ck!FZs6|boVfu#6l-CKHg1vPZZEsq}0p<P-Pq;iO+QtJ+~wlWswI_Ix3
+zo{qETWW{hwH_F&W$ARMC^frSj84acNg^znxQzZ-DD|@Za*7Kq+L#2I|9ZA65!l}S>
+zpul%|FbMdwh{LK{=04d88S^F&eO}e0cl0{vpl(bp_Eubbzv(p)ma5cRS_B?dVX^B5
+zVJfecN$T07l55HYlRST2(^TW<^}tD-oV5vC-M_+6d7Tt)Bin7{zdoaQTbNm|&RVs+
+z!bUb_ir=Qb?bSIJ_5fa=nKQSIB!#Y}Lgc9lkm5UGe~n8yq!vl%qwENjVNOCi)ftL1
+zR$hCp@{rVxnE061cbA?=+f{Y2uR2rC8ft~uA&`n*Uji6GC?o%RdrzUe+(YLudS0LG
+zF@*yN_vx3*i)URoJA-Bj=6WeTkLQ7SH%qyNUIOBp-(8LC5c}K){s<oO*z0h9rb>|T
+zJuimz*<_Uo&h-j8p+%4v87qrPZjW>2a=@;$qMAeyw(aKmBYp3(w4od*k4Wc<)yb^Z
+ze8}2h5U)N;L(z?-G!q~<-z<h@lAF4kpPg<2wL(QcH$^<f3qjt2d~ij3m!*p6kswi@
+z-v^CU8e6d^wui$D?J#U*7yTs|D&LQ^QInyXtRBN#9W*B<rap;>`Q&{`VGD3is*_fZ
+z9UKRFLEf7X1)L<t_C~i02o)7%g50g`>6)Q=Y3>D#m4551aPUr&@n2rvX3IVcwUTM^
+zK7OIZMWW{ZFUvqIt%_Pe*tTU0FP7pHVV4Mzx-B%>=pFAatyjSSqU9HX=oQ%~tca4;
+zgRl-ce0u{P&fAd&)4J-8Ix(Kc7!>ZALJ-Syq~hMYLZu!0<w+n;l}s06GC!_lM$xo2
+zV$<tsFxdScnSVj*e-#_%>6TxID>{Sqx__+59~FYUj%Fz8_qG{Am68bv0TD=O6s<Kc
+z3G0D7i&BNYP{P%TAf~Q&;lZa)e!K}8MHrdwnc|6fm^d8og8bkOMI$_jA?sY(dfShe
+zFAqr=L3#uEb;9WiWp-=wmd~XAvz$z=G`)bL4^?{fyT$0;jyNwk7drORCR4{X`uYd3
+z_v<THqz50=Kp&NCKT}TQh%)eKS&LbJI}AL4!Px3i$UJk~lP6Ek6Ai4-KgTv@=+X_u
+z82OD0-W9$fvamnK(A)YZ<7qPK=|Z9($o^f6Z)CPy_W_CWS>8O07KWsXZpKPbp-4gH
+zHlJ!L2JWw1u-;jTrx|jY{@0cMRc4y2d8PqRqO9SA{XP`!WVKc40F{eTL)dh|sCk$q
+z=9o3q^AjDrvUj>L>y@+dJ+k1co@0_Z(qV?lw|?d!)e0jbMCBW?tX)i)U^qC<75cF&
+z39_ud6-)gvhg%}G43$1yg-2eY*I5`_LNb)WB~%dw@Vve5;Yc)N{lid^lB1=!EOF(&
+z)m0+Apc<!eD~H=#i998COL&<k@~5n3c3O;DU>Ae<*SO0U7<Ip9GgUjDqbz-{weg)p
+z#d_g@=;At=q@fS#ol1U>dX@zdI$s~g-6ROf=z27V1_4Ux8T2L1i3%bpl4OmM-I|1p
+zGz%c<H6j_3=W@`Ou|9ECngIUBdS~bs2u?WEvfkQ3Iai6tmLTfJ#ST^Q$FXWp(j}XS
+zB@LI0Mg{z0``;T>pyn>=1b$Unq}p~A^Jw?sLkUG{F(SZ?e!5SuTK=~4ikxuwWWk|f
+zj|#GZ4qdWc>F$vn|JBZ<IYU}HV@U)grnhti;DGmcpxRbm_WMiRCbbqM7N&ag1i=p%
+z-<a~6R${oEC@*uZJaiqFo(gVP8K=-S5%zn(T@WaEpQN2pO%DjYUbEk&`DD%(DxL~v
+zJZ*+`Lp@nordClhLDeK8YqE~Z;j#V(z>?&}N%rv^usiW_VwT9W;qM@i4I!XL+Z`3U
+z!XxXW+-^>ggk`kZb^}yZ2)zjJ1GNIWRtM6kkfwK(9)!oS5=zHg(PI(!5D_HMKms_q
+z%D<X{ZlIRkNPp&}yGGZYPweHtNd`e<q}vld`GX7Ka5~OjpLem}pLXkxM{b0};qtlZ
+zG&A5j1?zWY6!zY+Z%aPImo*OZ!Y5_z7t3i*TsdP+N(hxZjj_o&HTX8p-WgO+D_{gT
+zzG@yV(gK1@0hgq$_PnjoB46dXz#UE_rkT7#Cv7_Cbhn29eCR5HJuG&N%QpMWr+Eyr
+z`{B`dka#Hv!{WQDuj(<6(Qk}S8~Uw`q!86WGE5=kC?U~#XLc1kzc^{8((m#sz8L=A
+zrm=v?viDbuUfRx5&}BUY+>B5O=FW2($FH9wB3j$U?@xjV?wV)WYB;73iYrdjm?Dk*
+zCZ|_4GgXYDj~ABh0Kk4_BPek?$+_`Z1k%7t>zeT1fNPeC?u5Rcs8F~)W~n%(bsi*8
+zh&${7?r4R%$T@J3dlg9FH?@Gv+*scW>o+X(=G&mjMH#{x_6E57*O?M2(?vK!<11_Z
+z>_a_ua^&z`06|1y%)%A=dhqc#y5R?9eLjJD`9G@6-|?+PiTm_E__k14SS=xk3jfb5
+zW??C5yRLcAA{D0ChYyEIS0#X5C#2^gok7VkNzZ4t)-36rCe(`0GAA_@UN3`>XF;Zf
+zoH8y2wY>8lEG-I&UZb%ug&`imCNH2o(I!D~=aZ<kta9%!mitry_UAW<#OLxAg4(g)
+zr}^H?h8S$gKDuP{GPDgyVYBx59*FLZf_F2Vt|na69dk;{EV(npH!UetjFxu4NJkLe
+z-af!+^iyZ)d#xD>2N;vzdACIz<hkiY*9StY|Axy~mtK?9NG$zv-ooYrO{W{vudhO_
+z_Pcdmi)ih9s~$Icj~^FcVjkFXHqRjXb-V*8yE6Nt?m#^OT2ggK724^cUaN*X2HxD`
+zy|h{~wqnPBGnHDxFro7@Gc)_@qAMAuxH^`C&rd;c00#*UqI}Fu;PQ)IX^+C@?pkrJ
+zr<cw(@)_tHG;9uapi7Q=RcoJSEXLzPjNzbbDl1cch_t30Old9hWvS45^lQoLuR!?Z
+z;xqp9A||$@9UvBJ&Gc((J+JLCkRoO8+?wb;ag5r&5p}gEn`17e9>EK{qD9Btah1*>
+z2Je=+G}!5ijvPJ5tkC6FT<{t;m_%W)JgqQONlTzsd1MhnI46+0v6W`(9)(abx-t=)
+z+a$sjodj3?FoGz;`l+_NB>Jt6XI@ussScAPjH!h47|i)--J^i^%`vZXP!TH{^HKzb
+z^^_~2*c%-dS>I|lycI2ynB&<!>K~Yug&Ml`U0N<ACi*V*ycC2y0hU?#73NSR{iq6D
+zxT+SjkOX3lyFhKP8)xJ1VF=LzBKh#>v{_R|VaUx&?FJ94I7xzoWzuw*LSY7Z*boLc
+zk2a9J7TY<8_6Zf9GaMe)kmvM*+dUtCz=DC_XHt~zXjP<CDTS^g$cZpPcY|x;JEeL*
+ztH<_g&%AW+b9#3HKi)qas;v{O3sI3l$r+SrHV3i#)Fw^_&@vxiUB++B`qXYH)E;|~
+zp{Yb%o5%hYNZ6!XD?gp<6Xv#mqNz#DBbM`JO@<~Ku`1MeV{C_c{1&dEKFr4r&ep{_
+z2+w$8jNhP#DL!8#?3>X}gRNUT-v+5R*>K2s=OY$!n?j<4g~LHtquqDbTtjM=eA2$-
+zx$)ik*gVs4;U$MRT_$GNUd@-2KGC1&wILdOIN81-oZv!$XHE(vi7fPEX6-6A2)RvJ
+zj!hy(`t9>*9P_HZl_75b7pJR7ar>9GK0{XOJi0lL;Cf)D@(umm!$lPOq?lChsELY>
+zK$@9)sk%#nmsn4(SoG@XXxl@r>N{KIxxBn=bE@rMIGjJ5%5YllisDGuM;TkM^z5pT
+z%v(go^I7lM7%HvBEZDH^h1cl@x~w~^Iqe_v*pT%0pS+_fNN1d*ZkN6z-x=G89f>wl
+zoU<vaUz}D-UI@}0&etA!!%A=pwMW>;J#laKB_aIFmm^^#Ur>E48j2&C#dCs1sD2oG
+zX%N;Vh?mD&YK{!RJwI5*#^R7#gon121D9Q?lc!O0Mqz(%MsA~E1nzZ=kyn)H0iVHV
+zip%$YN5`4QL@<8qld-rfeFSX?66-NjU7o`2ssOYcrj!aJgj9(AWrvA8n7M4DI#7~t
+zc6_#H7!)6m!L~cH6n3>qro9iW?yF|lk10;wTadj4oo$YbnsEjYl--9(FH>hK2h{Zn
+z(vH+#qWZV;6tC>LIciMvv2!9ItVXWy8?FI`MHUgIe$bb?v@r$XtuBjNKwL4XB?uCP
+zaG6yrinm{R56JygVgyB&5$ul2<159J0(>zqYZXAl0yk<@$s8t)$pmH71vN^ihSIbo
+z&S(B}Ee=4?Y2cM!(;@RH8)Q}QH7<wJ-3_m>v@HyEch++q@~X?%moOJl*M;bko%)>W
+zZx%pGmwIhN6$?R?MkIsAacy~)0QxNH7kJW>h1`hM(V#DoHg>!w8t)LyYNRGypjms$
+zt|^X8BJw86U6RqY0Z59^pv$1_HBadA+|M*3o8mn><51{uUMm8Q+gK`MU7;&5K)5qb
+zxmqJ0sl+PmO@-LPLvx~(Ko_i(47$L(qVGwbYhyTp2n2Y)btkv1IMK{bp!;YRU*lth
+zJ~e`0K*XsifNqXy4w`>wfj$J8sDLp5F)AWP4OHyybj)+=%K<_Z0hKR9B8XKtwD@g%
+zvPO<?r+});p{M|Wf#0?$+YU!LyVxOmnE<A^`{aRS&utbsO<VR(UBQC574OLmJZN&~
+zR<8U@ho>BB*7*F`U|9Y`!k3#9*}17#Uzy5{_O6ozbs+q;7L%+9QGLS6+n=8*1BVMB
+zRs?Y*ikMC2?zK-*7ke{wRgKP=h1zg1a){)#c*sy$S67$9bwwLV%@glH(KVoSKO_mT
+z*)pk1e&MQ=&+<%eX1n_!7C_|?<YggEh~)HT8{*B#SUZ4sox>HDw6!0Mave_pd`k$j
+zlS|J|a)Lo9{i&6FHs!q|2+R-9TdVz=9sdWDhwk9mxpOB0q}-0=sl0GKfPq7!w_xlM
+zcEyiRO<abzDpC3jz!&X7?ba0-my`Cke0yx~`fRwrYf+!G+Nb&+Q8K6jyR5G+GWtV_
+zT_0`~?=1$%GzYf^I-&<UM6r^c*8QbkBF7{d=USw2uJ4lkyqEW7>=#<l*LsUS-e49c
+z!(S?8xNA#r5~^P=?&htD<qa~?EP*uFBr58K1SwNj)P2@-T2~do0>AZpV*;bSk!O4I
+zdXkn%?E0Q2p7}oU2^Ag6!jQO-F=`=wFn8c=-h?gu9hSE>#H-1VFNcI9IC+5*&;ts;
+z3sxU=*7$fG#FjJRqx*`gndJ6jlj|)i5<r=T01BCpG#h(-&w)-a2hyhiX2auDvwQHd
+zp-`|(j(=ROvx(m`(^ThI^P@=p$4vku_W{s9MnwjWQ$ms(=?Fr}pr^4C&Xw5V^Ludl
+zjTa?NTlYEQut7MFLRG3QI9Ye?5*_&U@tzyPO>gZAd-&J*JmH5(0{IEIGxk3YS)U>x
+zh&&%4@*tKAt-efO%ie>p4p($fkgeb>$v@j=u@ZG-`K}W0BPWJR{q*$QSYJSs(0Rd#
+zuryCn^sTCT&z3#pUKs#2NfgFVe96-@s~P!0Rp<^sp;9~Rf->Tgzg^yIQyuH=zoh3<
+z<$u-ulkv25phv>%<<$pDckI@06QlN8#yhEeo$p=mn5Zo}Rd5v|c;+`Ot-l(h?}@Z^
+zz&6aVqD_P+7HV7OS?@~TXpfe)FI()6Xf3MSXQOEs_&U5i>J_AGap&?CuD|$;KS)?V
+zP<eM{fD=Hc0=);n5K@akWu_QFS>ZmNd~_M9BXJ#{=Wr8{6ntsRJO9pt{2N0kpKa?7
+zy<7yy=W0cWjS2wf6qhVyfE+f{q0*!GXF}#T>d{HsY?ZB#L4hi&PdG0!Xj(-cbQVe$
+zGq!E|OIINvpX}}k07d<6MJuCmx60P!MqilqQMoT=WUc!&S5Z;}a&|w{Z@x9wUO=_Y
+zXaids5g?Vo0^p`QJLK@?<}EkT(wVb&vQpW6gw8<UPjby9NdC+q{fi4%AZxs1zjRvy
+z;8EB&@WmWQEK|F}SSl@}0PDx<BXoMx-v_+0W=Q%h^mR^7d)eAt69JUsT><qVK@ar(
+zL!x~tB!3DXG?#aJ%zUCpfTnuwB4{J$*<_u^6<mH<Zik-$GzuAFgnN5D>(8tEK?Man
+zBgn+@j9=Z^cXh!@!F$1x*LNX;3@8*;lywm6;5vD0UcQ3mHgx|?V}7)v{?HSD!{q%#
+zPyCr<^u*y0J@L;4qO$A1mmmM|dw=2g{~yTj&2I}h*(xLDQt0w&2Y%mM8L3whuREB^
+zljH^D8)bsZq?UMkVCF<l<t8ajUY~dWEc1V3jZ-N$I#9H<Su_`WvwJmH{G?JH{LFAX
+zmt;FUVkh#+%bLO0v@nM$g<Mi&zZi_jui;@YVmEO1#OdEX?LW4a;NmhWD<$HXNzuj!
+zUU9VdIpMFRGkiHr*V&jDTjsIE!^9y+Q79m>jaJi}{#4TX&ZnfRBtU5F-E&<iRAocj
+z<@n^D(ATG!rpoe3UHy8n@Vm@4`GbtxekN=F1<*cXI0GcbY_;#Zoa2|4^4eD$cV|}G
+zx_6C)?w|Bd+WDFO(67Jvok`yO9uhBMxuGzuqK+(29(rGX|AQDFC)(EU0wYecZlb6F
+zyZGV^)QYaHG6(r&`%&CPhEG1Jub=EK4CVa2js&n)jT`Bbg`ovH#?Sp14QO<?PB_V&
+z*hEwUN|u-5kbH7w&Xg2+kH}<oG_4-n#Lj<NjVTm8Gi<R-Cq`qxUmuI(=j9cy2VE?i
+zNKQZx`9vyBTQrP`qshKPhuuMuTWdpyf5Q6Mzby#RIoYM9au1R_f~!U84-2%ks+3j!
+zURFab=G{07!6V5|OSpw8MggXZ{o4G;xuPSy1Aeb^p%RGSUWMp3h~?9eHV|{QCkdYs
+zK_ag4GXstuP5yOo2UX-HAA*3Qm6aln9oO=?lq2n3b?!;NGGD7x5C8R<Ob);vulilP
+zeI92qO=guZEGw;mWvD(K>*F@$MfoI#lQo)3_kyQIL-bT8pqp>9_6SXzmV57>R$~=&
+z#>z=U&Pn@eaU^zbRhkq73tHEtF>J@}j5`rWlO4#^6lng2$N2Y>ASzSlrU=9m>2BXv
+z+_?8VoNnNApbX<0)~hw_&IUq2$x3^G$gduU?_ay~5w=jam2@E{nDE-Kv#*P@-4ddE
+zX3-C4O_(Kd^_?SLaix$;PRd)B+r&$|CBo8Bnk2`V;K5eRyrlRjrDu@E5)p$?cVaFV
+zJ6W3Pu_|8DK!+r+zmXYi?VZO=lD(IkOO-6MCiBj8R`a#E_gg9@eqDWXsa#w(qxzJo
+z&b6S;cUB7+=$tLOW`aFH)Ge-K%|oh8vT&tUiJ*jCpA9_2D9m06Ti>~V{#*m#P)FqT
+z9W3%MY8xgYys{@xdVYe@m6Oz8V}@5BCQUM<cDgz&=sQ~HMnx3fhL5xo{F{tXHt2gJ
+z{bIZt&KQG}#;=mf2H@B1tGeJVN>Zjn`#q+7m0ALAWhE=#Bq1hJPl~)CkbEJ+LKB;4
+zqyT8H6l4$B*%{B(b9J3&hEP-|MZuO)5_WCGw)ofxBHfGc1R!SM?Sw3i$F6#YvK5}>
+zPP=n2E$2prAoZ6MCznc`{9Y9;ny+JViTgQ`;<mE*Occ`&%h`uw=(>%8!V2fp^QUgZ
+zGAk%%`IyoA$kxX4PiA=buq3AV{xy9qj^3^Ox7H@fqi1I-^@7AjV>dLylUFQB<xWo#
+zUmp_LwdeXaR)}%j@#JQWyaO8kwhs`~Pi7g{ro?#F8%xK8T(wn>|F@T8*_Xg2@nMc`
+zfQ-B1q7c~Z=s>dH(WE4VeYuf|NnR0~7xA`tb@7Tp++N~Mx@^Cp6DOnn9#V?0V0lSt
+zj$V{hD4z^SVkpJPg)>vqiSKm=TazeL@98XdDXtM}Mw1Hg1xg6YbP|%h%C6M1BcI|s
+zY-5IHOuFLE!i9g><Yo8PL|QDndY6>@oJQVy`nG%}+)$)nCS`0z&ByNTtM%BZXmuq^
+zwUDe05{Czl!vCPwtoyvttN&(Z-BwWTvFun^btQ+qjh7ayIyz`qv;ssAncQ>>!sFK3
+zHbW_j^)2j^BJD@$%T?Isak>j<bw>C0&Y2<{26QySY(bv~-@36;+v=~I=~J0;t_rs5
+zyMk?gNT67%-Hr1@TI?NFtiT#&o9B4e7$^zfET7?hUESe4w!F-hauuS*ymjoCrXN*m
+z=*$1!nZo)o$$aH&LCF?roQax$oFplG1d-Z!R_=<|ZRJlij-*Mp@+6}sv!uAKQbtKF
+zD)Qs62EB-=7(EE!(+v}hmJNNi#1rQij*?m)t%$AK=0zOM8YC3)i{tKRTXQ-SO!$Ur
+z9W;&?I|Vb-s|CE;H$!*ir*bK^(?vDzeb_BE1fr$faBoNVTcten9Cam|I5Y8eIQ9my
+z`^xYfk9r<{4zOWc70471xP|ejddxhg)qUg6o#Gyq&h@R+es?{}Boy@z_2oirU-B*M
+zh98LkfXZ(!8b^;$KnI%@gce?IOx4f_v6lvl;KU`9P!>G8yS>+FtJwr;?G8Up4=q1S
+z9~W?1Vu1GKCQAhOPs~zI%1VDx5*jP*W;icW;jUDg<?P;O*IQZbK5OTd*@tzZQkUYg
+zKD6b*=2&4qo!4=~BGdR)e@Z8z%3Z0#2asr6v+!+6nQoOYc>Aow!>l%X*p-s@+aK>(
+zpct(T-5W^|X19mmMq4QLx-fG}A>g-t=F>j3#Dz}zv{W{ORR)>g?zR<R-aPWAJ42-b
+z#xkB-iw*d46ryK8VZx`|nS_hHG0}5bL8v+X2yCJ{F#C9Z>|KY29Sm#%t@!62?hc=3
+zKlP2KmKQ#oDVJhqBGy{^TObI%tvyN18#w`aoFS_H3a+mJ7o_xU)m(z&yd^O<sfi-v
+zZ^kTVtMY1n#fT7Bp^0{9DdhWPGTtLC8b56n7q_;O`HFyv$g9FWinCbj@!cLLxg*EM
+zx`aK&zyVyI@@hlGzlWJ)eOsJ7@4F1&n_vyN@wU~4-eW)T)P*a7>np{_T&g3p##^WR
+zec&W~9_KxEe8VkB?~W38B_xfl;NZ)~{I{^B#SJHq!TNr(^$jL6r_ja}e2V9;Fk@va
+zee1R+MBgNOv0nZBl$A@pM+<2(kMjv!&C8?II{+hy&k<0NFNN!uE%VNMC=^z^pYNwc
+ze*z9Ik5{9ybgIciTT<n+vm12tW4QbZ5-;z&q0kTbExqmIP01@nTP^(?$0SQk!Vn7&
+ziPdM*$B7v}c`cGJEha$wKh6TvbNQ^EB4&Xk>CzhVDa$!}MpwtPrOAx#=+YIx+sdB)
+z<vwZw2&NZ=Fu0}Fyf1AW!}&OC={p_wvRW>wVA5+6rHXEsju+$%?iqWVl*bw7Q7WTY
+zYH30!qonWmO(j47Zarp~3b|(AY~6I>v++I_Kezx8>PyHuZ0ykxqRA7CP5(S8cPDyM
+z%v5XsdcSl~%jZ1u!s0$ju|AXH0o%f3E?88xrHCe=;Z5PE;@$0piQ_TEKCP|2t-a~>
+zDQb7>*LJZzujXIVbYAuRU!kdeh0QLv&n-P<2{K}`9nUg<ZTK&U<QQv!%P2BwT*6v+
+zDU~INm+3eoZ9VeeG2Z;%0QG|(7f!l2+Ddtry4+AWnk1d;X3WWP3K=cYnyK6GBYzKc
+z$_`IXzK@~BEhA;`f0cu2JQnCdn5`{Q2IlwRbS$6xSQ3M0kH9=0<MKWZJ)+50rqyi;
+z@RKr0<dO)c$?Rvm&{WyBef|{h3C`p^k1F~U<R{Um|MsZcT6e;ZLd4=}teX_*pSajx
+ze(JluHsZ<slQ-hI<TJ~oHzXq*cG38xo&L32JN#+Sz;i${>5g9^`Mutf-a6+nAdUBX
+zF+8znb65y60kkGf@8#2a42=rVMP^v|bQzC+{YcWM&B3vlAY`W=jcocS_`%^GZf)Np
+zBUpHlR2M!Mr@x61oti)dg4T)FuALl{eV;EP)j^Zlr1lyo{gPqW3vqvVQCWQ@Btg>W
+zz|b#3;BUp_tfVgpNVP@a6Gm#z=N^<mskqPi+^IlIr59#FOehP|n&_oul63sxGj|{T
+zT1_(lOce<34UiE>z8I;a&#N9u(K^uMOB1B-YJa<W4fgp-V)NiLTA0RESx!}JzYwg|
+zwj1|+9NCf(gH;kV+C&}y7iqkfM&4y<O~)MIv$!^Ce-%#Ek^PSo#RcRe75n>HsOjiS
+z3AxU(t}UA+G=CEj{?Xz7M*;b#Qv9b<{G;ge|DKTjBN&|k2&T?PKC|Z=hM#FDF@{I`
+zD>@A+$FNlg?hJL!SP28v#+Z@!fZ0oU6~yBV+IfNB6tIAUH_>efvn#4%5Go#t)<b5%
+zM_*>TO?KM@`jERol20z+!;$;IABKR~mGA|E1-<JUrcU{kj<&X|5qP2J#7o?-Ri1oY
+zhUqlT&~5p3j0CmV_4Wn?33Smwz^F^0%1cv*iT)IXS|}jENzS?%`mZnMl=-a9))Rn4
+z)FmyWP<IG#0K{#5*HpPjWZfpd`T^cnGyNEq+YxM}_EJ?7X!-oj{W7kFQFXFIM04S4
+z_FX^gwEr4N(7*RHqe$@qr<|OA@5xl>CzAK?w4Y~J_euDsUC}3&&WB;{q-6*i(iGhJ
+z(x?EWIQBsP%a?VR=ET0e0R`KQPX9X9;#;HBn{L1|$yZA&=S$kHtdB;+_n8%6EUyCU
+zZ0Lnn6TU&9R@PbUF_wHb3pgCY-hdL=o(xG>U#9s*B28^y9EEfWLGUec?8vWbx>g2&
+z-Fvg5j+ROK!0aLxboBUIf!MbdL1he2j2Lz1)a+3!X5yB8K$t%R<=Dwk+515Bz>lWc
+z|2TqggA%X?S4GMeI%>?jqxI}{zSuC{s}u%*56;T+r)<!*+R?>h@uC?+StCwgBUDR(
+zhFZkc;J>a_7y?_G($R{LFs=;vXn+BY`{&CgQ-*%E#bYU<r-Udk!zAr`i+l1cMIHY)
+z4|@V6deTn8ZlL{mbGn4e!2WogLTyTliGoJ~rhK3rv($fm({&)t9Er)V>~%vKq&ce>
+znh`#xWxiZ4SzVlrA(dv8&RrT!HEJ3LB0aluMTSbNtB`JfALuWl`??}(b9J0OKr5P0
+zI18xEPfB?&jD;9=0u8y*>_`Q$cEL2w^zIxWL@6O)5kaU6|LqLG%Cb9-Ti;y-8pfMz
+z-i>fo9C+gwq<HX1|50<JS7rd(yMP;<0(rcR&e*PMQ)^a-dIBw=fJj!lcA7Yq2zy?N
+z-wOyb8%4&W4cv9UiL&c?V9joXJ{fsDl|6JtW@K;CT%%Bo?*<T3Jf%5t=wGc`l5POV
+zeEL8$`laV~n{(&R)n<-h94a!#=5SPzI$*NBN_Wl#{2u$}7boemyym_(5P$;U%2Znz
+zxZO<>mlO9ebrdvnd-O$&EfRr*#?bFTZ*#K*N?)wq#(RAcbps|`0NM0XNzx_f42Q|_
+zi)2x0g&_v2U|N7+$r|d?3+F~9q5PCN;5abC!2W}iCJQmd_v18<b&oksB4WQ5U>;xM
+zRocbt^)*5{%MvkN$k=502+t)*U*7ri<QnRrq~=Tra5i!*?6-n={XA<ktKHc$zs})k
+zndMK+t^mP7E*j;a=JiYwr^02Y*-6&`v}e!8+=zfgNqwQI3Lw7`Xtx1;)Egf`qkiD`
+z)%tHAlaKYWyM=p0s<*MVJx<<N7seg8yswbTy+&F#xj#dG#sKwNADCJ2bj)qP^XG%X
+zYL(##zo7}cB^=oJ=@EL<j#Du`{tZ6o%s+Yj(ogtC1YivSlh~#rii^D$zuao_+W?BS
+zL$mWZ*G_d-1aAU2@Nrj$Q0-Yp6*cEaaY#kXmqUQZdn*Nn0OTL9mAld|qnA-1Z>A|{
+zjRUj1uwKwbv+2F)VG9^JZlo~yfThuI16=YWej9gb=|x->G1`Y3;Dtc<lxq|!9C~H0
+z&n7)5FiirmaoG$#de7TPDD5IvP&Sma>ItdaXMN9&Z1ys20f1wqR(g90Rk7jb*_!|6
+za+0Eg{-yY@a4MA<Y?@l6UC_`GeBPma{V5*Di%rdE?r(+b4gtDs7QDy5R&ke|%sfy?
+z8HmNjb}{_hi_`(~QBrZSAl}e^WUmF7nJ|AA4+E?}mV~BgLT?#uQ*HFq%>0f^!I^_p
+z3V6Xi)(k4+IR&)>xOiaSJb?_K-&;YBSn9%`^;&BaBLIVDR&~l4kKz@5EEC+chVWFm
+zm5{6%0jyEoH8Z2AzxQUyo4C6#LUmu6)rU#Qkh9w8O=aR@*MO}zO>KS{fWhHr1d$XM
+zFHVit6}$$`9ert20(ZgJMcap8^k#<pASlr{$`f3WGMU%=0N*V*(*!66TnkQ-iA5Fb
+zb}1<85CYGYyDwbDo&m;)L>}sz(54|A^sDv-@pxOM?5PO@x-{{n`5v=KMI3dS04YAs
+zzQlU8$-(ZTYov`f7&4$Q3?yMe%2^IzgWMIV_eDu4$Hq?VneN@+$0;y_B8^}P*#{_S
+zK0{|SL1@lNHKNMY4L0N)`b%rLLVV^L1TwGh;8m2LoqT!1<lemR5)Opz=&^4SIAlF@
+z4Pf`Ywuli!{fq5NB~yt>EbLZP&pCysju8<oBxjk#c^(n&7tDcPu-^?|=ui_V2?Ksz
+zE-B~9t;o_$;D_p0mhVb~Ne4A?v99ACe3LQPSvJ|Izr-A2vJ>xX_;jhXQ$}8SPsiFA
+z%F<Z-;r10aBOfOzOXU7r7j+BnM2+bhdX2E+g@8!m<}Cw>_Q{Ffg0%Tr+Sx*kz1o8J
+z5|A>d8>zHZZW<1JX?q{AUcDF!=dv$8I5*!1l*7SE^^Mg&rGO$D46cf<(36(ymz{+H
+z>-F(`6d?7TY`5tJB((T&-bW+HEeq4n$m5<eE&r?|05g`pj|EXW<-6)yG!!DlFL>S^
+zC^<h@fx#@5%B?xzDzeI3;*kj~2`<$;rCg&dfX@Art1z>|!qfSPhGznZn_4=21v^bU
+zmQP<U(aS3<+J%#P1Grkhb;e+NL#iEScn|C0P~pNCTypNV4fB}Hw2MRut5o%ahTh|;
+z%J_WPZmpM8NYq|{4&1Bg3<!^W-U?a^tKe+>OwSGV_)`^#-J-AFZhjGgRFf&IbX7OS
+zv?dIQ-!k7!QPzq6!L3Sw!+8&1Fp_r>2?q@K;!9K&filV&#49=63oyBc3;<`s*rLzI
+z3Z80flbIE-My13)ux<+Hr~|}ePZhLh<X*~c;pqjEgSj<!Lr;?w7qI(F=UXRlKs`Sn
+z4ANXz46$~aE<o{n3sZHD^AS!g{3W=x(V}3(P7s-1ERLY|Z{owgF}Q3`8pr!Ieh6mR
+zgV50b!0iSQz5xI!bwC_H)v{**@c5M43#dFkWKoYlbyP$Osv|>B3V-;PkxNF61%Cm}
+zrm+~zj%$Lxp4X$OYeu4Hfd||xPnsF51_urRv@i(DR4BrdKqggCd~3OZh$k^Pa|FmF
+z-4&fc7!vU2mZa@aeS0}}Nb5>*?8O}Yb0)tb5PzT5l^jH8JiNeZ59UQ&)_jhRY(Fax
+zoMbQ(4j7xyOYJf72OHpE=FJxdE?0Zt!_s>d_Sy{g`vaA@$ECPf^jndqI}~^QVp^c<
+z4TREQnwUmFD_{vLn>W}arnRoR0ww9k+%?n~z^6k!4}r4BJ?e<H*D4U%)vr`V-7<_F
+zli2S)_6n)msDoSs<8;h@S0osDA8i7#!6Y(VKzo4=3OqkjO@vdVpt&B<!JoZP2J~j)
+zB}3AK?JRo?vc6?WFO-B>TFyjHX7A~wZyuqNcgM<B0r@o{{0O%BYw~@j#?=m+edPha
+z4!HY4iX7!UG1?M`?*<NAIrZYZD+z3o@}4sT%J^O|M&xis1XVbjg3lhQjxrsnyc-;P
+zAue^4HU>b$lu4zj?CSV%sxWPKsseag`N^g%>why~#+@AOz+a_wd<9TRZ>%(2X~Q$c
+z#SMsp=L&$XygN9NI*jTAcqyf4`uABi6;JrBc@_cKF7R@l1PJmnycbJi8<I8_-ldC{
+zjc(3p0Jrik6bN#7f<vCEOJQ9PHURpr{+DQqB;ez!9x3Su49=FDAvT$C{&oplaD9;U
+zB4CPuGRlGAdwZxR*dB=aE<aajQhH8rbo!UEHoywL%c6wY2Ed4f1J@3U13XWMM0D%g
+z+%zZQ^krSgo{s5C_1u0IvVs9hZx(}Uz+;z+kpR({szB7AvN5vFsqI4<`A_>C8MojM
+z+V6a!J4OWhdz1L?IL~i={D!WPQM9zphbgW$=Ied{Ui8wXPL0>`Ia%&wL!kPy{1(%c
+zQ8U!MF8yN3S2CdHyDFxDo09SAU;MqUZRHrI$RXwWSeE~~&Abd%m!-_t4C1Ys0U2;k
+zS=b#VVcGgXK=eVm)vg|>8}*~X2&y_^0BNu1QMx3>KAhj=%)x{|Ku9&MMElIQn8h5;
+z0ItMuE!Hwo=L^=~r3Yw~_CzTbc6ov9ICDQW7AUt;#|t6S;efr$Vn7B{qNaV6oj{P^
+zJQ*c#&F>0u0`cOA;Pt6Q=Q@ixJFUf$3Uzc?`Nfd*=%(o5IdEtA{rZ<;^oMe52&iHp
+zlsy8h39!kfzgZLTFNuq(YMX2kbz0?)%00Ao1E21*L>&{YSaU9BOk+Lo)KqO!9mrSC
+zY!rE_DGVedof6{WHGWt0ylv%p1%x3L%en8GBB}b*b~j!y*#L>^@xMr1M}f>fUDSwS
+zlMDHc-hGs|&K+aNj<_mA>T@vw7t&P8{#}B*;G_il?cR$`(g=!PUuq?l2|t9#c*ohz
+zt%}qEBV)Hmx4%{A@~DK;7lYA4{R%)b-y$Y5jNDLj#?=5FrhKW=?NkN?hymyX$Exjv
+zlR2nG;As`&Z^{5f1kQ0~K8d0qfudFV-P|5f!Unt)n>UbrKDZNO6o6?R1|W*&@Ol77
+zb<E;EMIbS)d8psnTsYpTRv`d<;1zjT=D6p=Z2e*O05HMB8L-=JKDqQL5M=>7K21C?
+zQnJCV$PUwe^B(w4+L*0^(0!m3Nous<FN2XXKik|(`h7dp07f0Sd3cNG^334io`&Mo
+zOMR(1BgZK%wHA?4H=28V8G-C`@t%1v$c1^MZ;Z&-199Zk+beN^1fQS!AuT=k(wq52
+z0RJK`Q3nU`C9bo-doEO?W0}A@zM`dT%}15;UBH)u!o!|2cIqsao-BH{K<1j?bh7^v
+z-o4)H32viM+RP=h6$h$7Bh)~9R8GstchT`3hFUB-9s`8Iz=z+6K&=9~p%`FyyG?YV
+zTfIPX5aa5))MF`7Vz2j6PXwTyt5amLD=)=AjLCrP1_p1re1}_c*Dw6L|A;USGjWiB
+z@cIj5B^9rlI@nT!kzd)xa6pH~g5iNu9gu|E?4uwG^{B_5N*$0<eatZ!4G<6-ZvbXl
+z^?~7MP2NWPxVW$me)DnYR$ssuXH{_M7(x55G#NE|D_rF$5BS{-RVo|q4DCLNO3CWR
+zXn(D=y=h%@xV~5yDij7Kh;qJ+b3shP<A~ty3_StwMBw;y24pC!s0x1BcTpcl=0LW>
+z=S{$^6FkmKiCvT>XK5rUnpg0DX6AkL)1U)tTjIOUp5t&OFm;bFAvp;i{qP|NdsL=D
+znyxOt3^lp`Ty7^8`KGnA+?QO6&nL@>6m(q=wxIN=92s$@;s-zVhtW{Wve@lkgEl?P
+zc`$_MVB^rXx9ZH{XZ<Oa_nEaaI3^u!>OYq9W2{jY-sT2tJx)C%G4*o_x5u(;THQJ>
+z3g8v+$KEAIkNF5BqB9Q>>tnZD^7hWE<NO#C9A-Suu{c=FeL<Cpt&`sRJ#UnvFSn7Q
+z1qAnhbniBJeGG@>CU-;<ZMjFz0v12rz!<Uq$V&w_^A%#infqx=B|P3=BSLH$t|MoQ
+z@>;{DVP~t~)U<khddM!~TE0O`&*x2v2E))uK;OseB`Q)jm0Oe5Fo&A+v5b#Rzbe0k
+zE{xsKOA7+R$$#tr{ZA{gEpMxMjE}>0H6}29FeJtdxO=rPMi>?i`3S4G+VG$j#eDOu
+z`Oy}&uX5wQJ6vM+NjddeH&{@p<2_knyi@%TE@r;EnWn{xX|A!L?BqC+Y?`%wj)f2R
+zo7rW588Zp;SjJd8M{_)K3JeZ)wVnax$-uaaZ*Fc-g?pJUc%=DCIY=E$m52c15WyI~
+z;!3Z;9h`fRUqfLcux6k!y_G{U1{I`1m7`8s)S58)EFN6Dygg;2)S)}IhRk~dMGySW
+zyuJ@dsM|U7{MZda*=NY;(ca6M`Pom7h!hXpQx>ZqYF-8RYxq)m=FxJlef#=As>n9E
+z;!r#o_z>v=Qb_@CVc?QW(!{|W#>WP4!nmZ6X)TwN#eELE{SA}!`;eD=5MF>sBnsA~
+zc)?Y16Nq;_dp`8E&<4OaN^mf^?PE&0ozyUx&LG+G4L?%r$c*xSGXtMYW?4y#+MgtC
+z(I;+MgGq#wR1whyl(D%>jEDi7Y(1xCe8iZ7?BEs)N-Ev&@6-1e=HKqvK`tJV1C#PZ
+zV)!Jh2|4vVE}&R^D}^uDU5Q$qJE&hL58%zmog50VC07u`MLfCPr-5eO<C}s#XS%mQ
+zZJ|FNpoUCc?TcWx+%2|*+M;$9E;vYe@xl(zkQ;dk55T0G)0cnJmQ&&HU(Lq}g&*yP
+zhp>fqRqP5riPwHRJoX0{fXy<9+g)3miJB7(PRYhecp_!+#lXSid{@WcW#;6Zl)!1d
+zTn7q$rYsxaid{e*Dnkw^o~rpOB%89>a!wIJ5OAgEcD=gnJ>?c_CKNj#6+3d3xN?Q-
+zH$-=UjsHxb{;i1W&jjj!j7OlF@Sh3PzibJ04#uAg^#AGwYNix<@EAI4;tT!#v5X`v
+zIg_^V<ktHQGKW(>%e;(t*~@vE=@gCf37td12X=8DxxW3b-HF9+k(C7>gBv%o5}lm}
+zd1R7a8k?!?O=7QG2{MxyKfjKnT(b@64;ye;aNp|x+9Rf68$=)}K*j1r8-{c3Nk8(h
+zZxo3wbCo50!i`Pu*s!OE9)J#Lp1Xhdx8GJFiac{WKr!9s7_il>G+D}9?tVr4uMb09
+zR)I*bY!N@Z*<&0mXFTM#LAFEQ?c2BG+v@(l2o>;cDQ}P1blMg6a{;vC9K&>FzxfpE
+zlCkEeXet{7l6P<V7_dUj8OQ~Q^p`f{<X=C9`T~fi+uWZkIB51Kf8r1w`~AjH-+VXZ
+ziX!yMrjG&pfMudNO;h<Ha4YSP4gLNu|Jf!3{>jrDwYvr&JL^2pd_R|8*W?lV7~(j$
+z-Ri-nk3kL)-FHFuK(0uLb5M`%r%$1tEa8+6{hVkZgx=~z9i#W_Uq9uqH{TNQOyl(7
+zO&<d+r|3T9Da7&Pt52uDoy&jT<%j(M!;*dKe{zfT>H8-Q+x}xpKds4t|1c!phi2cV
+zj{z%0aBm6N5^!VZ&aImoR`=bt(1VrGeUE4F^>6y-oX~-<EN$C1eGIUi=>w1>koY^B
+z-UY0AF4I?|9Z;q=<Hzg^KfTM}-u%y%`kVLopKbbcrT*``Qd3*R6Y`&-bJcO|m?I>U
+zmy!!A#EY<9{u+h?z0VqKRLR)&Cpfi*#C-Z$(pR?>h1gQ}d>j_HT&7ISwA)Q}jKN%y
+zTfOIGXYP-|ouK#npDi8ONG!dQFYpW%wuB&aRm6-bSThe18zz-ur@W@EDkwPz_U(qa
+zABR5C<UVrRfgMDJU%U@+8?f0Cqh=^aW#ykZ@jo~4uc-VdPW*`zKga$*(CZKM`WdwU
+zfnI;InV%DhKiSNmY=&An_<Q{LQy}>NV}YRg=vvt<LVblw3e5F&4qV#u&-%l+S_=5T
+zz(6);s&VsAxGE;?lmMCi>P{6OEDqlTkLNGP<bQalXAtyqtGCI@2AS8pegKRLw9O#l
+zjnZ40rPr2y(zurz9m?kW>9Ds{XGm+o(?q3>l~%fTa%XG#XARlmwY3VrBHs-q{~WiC
+z3O~5|#yc!ibH(avoYxdwiE)}}ndE;AXJ14+m$0NLZM44nvO5b!yfTM;tB!@YOAAj2
+zS1r7uQ2z%(edhs3b(oh0&fg_rQyS=Ima_uOx&J-e|5k+w6NSic<hz6-4SMY<O|<7E
+zIO>zUuMj0HjXZ0$m%iM^*%hg36iMN{-_6O0w=p(t1o2?xwra>P7Ik|kdG)83p@jCX
+zOwBJcmQ>ge5La9plSHSyW&-sH`{Dl|dGGxXXS=Td--wh^B2NfWBTb8z=$%9)5#7v)
+z8YI!8g(1oy5nYg?MDJxriRg7CT0(S#Xrm8<j4}+y@VWD>wf5d?efRzgzCXHOc-`eH
+z=Xsp(<GiL<RSxBju_Fy6s*F9QHHPxjqmTN?KClxPmqu2}1<!Lb-7zKZK+dr%MwKY<
+z_waeIt{m?+5EsRKt^C_}nuv(m#nHFUfz5}6)n*xjR>gzG_9bFF^FIZczlE_nU;|S#
+zDS3Pt#f0qR2e?7eBT5x$TtIR8mL2!u4uy^nQe4?R1E-RR^xr+iOS_K!zb>|W9k<3V
+z4t>`+6{N-O?MtK{_m$Q3oK;*JJ{&XZ?JcX@toDE3NSUsmF2@`#EfLp!Up2MzYWsFR
+zJ8lKfv|7W;j*v)2^`8Vl!GeKi#-1N|W1yjS^PhSRsD`9I1`3^5Htk5tVSt+_3m|p`
+zY*6?D1W`OO3Y$MKN59@Yx+K=HF5WcnJ@|?JVcsFbMZodiRN$fS#56^9YwUv${3YQR
+zyDz1RaukLidik~HcW~_1c|BEe)%CR~J1CzBi{1gZFG(oAOaMr|aUv)u1Yo&)hG+Mm
+zLJqjF%)FshW3qdAY+1hbYue*9paou<I}2C`umE0)z~RzFF)=i5Npu}@BB%$v#7EmQ
+zpaGoDd9(WU-~LC7Tp2DQaJ(X^*z}<vP<V!nzM%Dq0o1v`2m8VT^fKubXIx-1`3~qu
+z`FkRCOYWZvGL^b#1{dF}=LJx{z6-><?=CYeK+FYNwWOupC;uFK|G2>xv){EfNvlFs
+z%+k4JJ)p3c@Ig-%?s+EwL$%Zl$%1{HB*)oqnGx&DOx{YrXchHd^yB_qIVRRb=;$IJ
+zE>!gS^$qL}2xP!ih?7xe1ZBIVcvI=zTgp~ER}sciqh^pbuV3W;X1oZC|56?M_LUe#
+zQJiB~lON8Rcui|jcFN1!8T(U$W=0^RtWUgQDc?U4$=q{HAuC=Wmay4LudT+zarTG2
+z1dy01|B}=yf*c8?dQohq3y1oeu3ByHj(3a(?hOd+`><O<i*FX~uagc$tAADPrN@@}
+zS4*D8M!v7XAp@K7ue7(VT$`MTRh)*U4;u1E9iMgu9#z!YT9A=MpP2#wAA{%pGK#3v
+z?tRxnLZKoF33M$ws)x#fGXtI5$OP`RV;gi@<ZP_zI;m^brAR4eOKU6gby7G?M<=!f
+zc^o{ah(qF9+n-R6%iF!$n~R2!Q(q>wT`S)1n-91vtsZtqQHPHl(`EKIHf;5}`Sw>o
+z(7_YUw|5&tGTwVH-r^}(I2-a{#qYZwf~QQRtih*3uO@Y~NXmpdo)Ta7F3fA<INU}X
+zzv#EB@>5Ta+L-;eU-F%6mFwb}Ej?BIoJ}C<;>zAiQUR6wncU~f`+cK!##vAVSz)<w
+zdfU=+$8>SqGra(B{_<B9GFIrS>Cv9i{#UK^VJFJ)CY<7iS3WyZ+KiIl9rRP#S=(-J
+zHb+oJn~04&x)eqp0JV;#Ty07TMWYGg$kOq84&Zn5@wr>hD;DIPrr-OCFt$!J$_^%Q
+zr}NwV#P2VGl2(~8w6lhX9f5lSfot75u32PG!DmvbG3||B-cw{ZtA4L_of`HG%z7z>
+zysN$LJYI%mR;k~*HR8JW#r~9M@5(Jt?#j3yLUtBO;M|`8UjS~1GVR}~+%8`%^Nga*
+zOo0Bd<67;rSZ^SWtV%zuflzmg(jI1Pk8`;~Rm735&WRSt`C`lzxqoZU)znk{7y~}a
+zF3G?wA-!O?K?pdsp@z<R`=_LlMPqU<1R0oR&rc+HraSuCty44=3vjm73(L38$`ckI
+zIUh#~WUMH{htmtwM(VP;+@QIAaU(dFN#hd>3h<-a?tpf`Ws0^fk79}b#GA(5<;eJb
+zb#1*HE&=)5P|O*H^hKxm5N2SfArE&tjSDmBh|flj%I7->9PNJVrgObVa1U8rIk=jZ
+zqELf<hF*8^T^|bcE0+r!BDNk=d%W7EUyZNWS-yPwBr0gRVs0lj=C(r2md(B#tmLK2
+zL!frHyKD>XT3cd2I)qxnOnH&Bl}F68q3Bais)GS52O5P_%`U%q+IK#ZhW(1xeP-Tu
+za>ho$j4{iRtC2EyMr{xL(`*&kNh!l5Q-!$yQkyKU+n$U2aUzJ|FI?H*Zo~Okam=AP
+zt(pai&uwqBVu?LEMM1>1>DKvsLeckQSLTWd+4tCAZ7Q>tejK3BRCvE4AFPnA!9KFG
+zABdb=nadUn&}9S==U$FU7DxriA}&ku`%M7)?CV9h%xi?cqaoduFT2xE@&4K~<uO9s
+zK<V3w^irW!JRVyaBC2MclJs(jiLY8|#wRzpd;Y}&T=Xs4E+7{7!NUAZhU;+dWx-sk
+zM(n@PR#rw_fN&ft`P40E$XHie-m=jO&o5_8t6!|p<Nk7#pX*AVCewJPhlaHgcd1p?
+ziXsf*Xy^td`yw2NzZ&ml9C=Mxkl~@)MOUCTX^5kz6{x(U7spqcI>l>A$#Y18Qh{zk
+zrEcM^X_8N?@tgZZl7E#4l(T7X3ymbAW1QI_h#`-;*9=>E8Ws6SY&rb2+1*zLzP-q^
+z)T-r6yEUI$>4U_Zw;Z#qe0vv1rzZ=e6u#?FQe+S|AsQE}=!4VC;;K-$OC=1yc4W?f
+zqCL#tzL)ZP=Vq+(rYG_G-KqS?4`__<1n9+P1g=OUqmFV*gaH2)>?ozT00n5%X#1<u
+zXF=Oqwx>@e_6=%SXX?Mik(B2NJ&S<8$|05y6&o^srl;;#=*x7Js8G#-Bw&16X}K}s
+zq!W(vcm&^uFFxK{eT4btZWL~WxFtw+5w>?4KSghyV_NR54+y%pttO&$W}i>#-1RYf
+z1sz)5IXYMu$=TJHeSRu!v>?N8rFgZX?qtv=Qksza<1Dn(T^}g)QscK7A`c)Q)hUnY
+z%)I2`FLS|AUR4pZ+$sslJ6VgdXP<|8>JHOSd5(4dtE}^PRPhPW=izZ*@=4r1%6}j{
+zW#M`rAc#4yaj*Wa`h5re<zYra17$@LN?(Z5TNd+MtAv5WlU)U#^4l=cU?YJSeou1w
+zcc46A%%;{TF`P!M9M4vWl6+!x>OT9=0~f+thi-|Og0wZ|Gfk%0p{+!YZfB95)yE8v
+zf%posNa)jZ1MN96P#=uvLpF}02O`auU$yVV^KMqi!XcA}#!pdS9&}15!%BPo1E;i*
+zS$PT{P>}c6>p#CGq93EUAwp|!DasF@rixYCe$VcMcbd#52nQI4eB?C>(`M6!(mYo9
+zy_Fl&z$@b29HTTFEl(e$aQC2$R;;O}_tOh4qocCbBpCnt{3<lUZTcFV9jgwZF?^Y!
+zaP=u`Qs*d|Q~hgkFM5G*g)O+?1yH;72~UYB`WCWa1U3G6yQLn`ZyuD-CJ&Z>v|@8>
+zA6@l-KvVpUV;$Yw`7(guIv$!9c`4xTz7k8KRYkEYpXbl6<s?leL#}-0N>X?LOd>1t
+z7F14%C2~BGZiWNs@VbW&Z}uKf%m+5!N)t&{<qBfKp;9ZU+6oD-llGV)+j^QSp1N)L
+zWhH&Nmz(jj3#Sq+tt{nD7~r|WNeg^UF2B~vteq0+fesvK)X>iU=HbBhU_d)WHY-JL
+zbFVP@-Z+5@)nO&;;q@#4LD50^YvKfs?;bidnZl8_-*Z@sqsJF&&pP6|?-eXx38_SY
+z*Yk64GfoUwUque{!s&w?RSgTXwymxJUHoCq7$xZ&n>E6|CeY$Ry|3;EJ%daMq}uWO
+zRn`Yn`hKjg68AjlSKrmfDqu)fRRRah2hn?6nL5rM@@rV4Mx*<+G-(ZWVgZZjbZY<6
+za*Yc=UCWkqkW%SqJ?E!&H{p15`L)3+_<oHgj<Rq|T+qd|1Lwd4pIQsY6fJsKVZtE0
+zmGN{VTf##*r-32Y{Ft0(Z>;<9+gC5SQ)pY*EiI?K*Rwq|)`LpVk#HRTtG*(zXPtmP
+zzPXp5Y8LRWvyyMKsVZ+*a`Pa$h7wcITO(3xk$`)-I@Rv|cC-PtT=tro@~<lE-_>us
+zQ$Z`aJUd=Lh3v>;YQ{S`7>CmY@z#)mr=w!s6*@RFM$9-c)qVOYGPXT3V%<ymQlQ^@
+zeRHR(8P2N6t8KG@%xh$Ki%RX7I2t4?Ac_Nah}P*V-?VQ7JLJ7ak<x~|t)>(iWpT^z
+z>-D%<%|(-apV3KAt>xO^X_)e*spd{-MCNA+Wv#T?y_bv)QmL}dy3pX2au4x3g}&wq
+z?#6uQ{dqmIg@g))m?byvss5|MgxcD>-#y#(!K>&)t}`w;cEwMLP}+O<kr5N+elmKy
+zc^2&&i3x-=K24EN(AJa7A)AcDns%Qxx69m0OE)71WD++yB2h+P0$Sm8v7<wMm`T64
+z3JgzUg(|0y`#;UQ?Yyla^A35(@~DJ-&j8~Ia_te)?Q{z%^{mQKC3!DLBt3a08jN6x
+z9^OLq{)%f=R|AQ`v6S=*n?>9KZQOZXMOVSt=HpobBu@<5rPg`G-FI#U??|TP=&2GJ
+z;Jc4rJlw3=J2=JrXn@_&p<$)k&o?%(e70NVEIJ47!o?f#{3*^)>3EAUZA*~K$8>i?
+z<}H!)B`O(W4fE5@eVEyV2Fmnt{Zp`|qv8>1wlZqs5xe<-AN3R7)n$9GnnIHjyqH_%
+zX`I5A;c<LL<RHfVfD&>1`)YpmN(i)Ux5;Jw6yHvW)Ry)zaREG~XJD?0Y<_c9xhum1
+zeDa+mFkEu-bAF<bh@rX+726J17Exm<`T^@heLbmugG*l*^?v%Et(r0j8%y|cYo)x2
+zSxNZ#VB#&6vxHJu)?~6X{!sC7>_cCu%)#d_>M;q-=*r-Bfwn7(ljQHVNW9_ms73M~
+zb;nWxj~!vk$sj2RRaQYtyZheRWp|QrFB*!n3U00cJlBND*uqEo29CN~;G8sCN@bcH
+zkB1XF=L>LA@qNt_t2NhQqARz;c4A{3hV|ArlD%;mJ4#TiyBVvKf)xGETJO>fFBjbW
+z=B-K|uQdlv3hTsQ`w}N57OSsL>kqrbcAohkPLWlAdXLR#HqT2GpCwc;_l)hXc#9uh
+z;Pq@fQ!&o7FJVb%?t?tugvX`x4!K4LICUleW)EP8T6}7b9bYGTSK$ssg@_Hkc^s3S
+zIKF))OAKR9h@};RdtN$dx6Gd#(e#1$c&|cSctWI!tV{Vh84hEyROwVXT-a9WiJF~0
+z4p{4UZC<BZ;0wOZnEh@nBko}iIwsl?kA0_mDcq)h$P%ZVFW$qybGILkswk*H*YBt7
+zrZ@+1W|ChjzX7xV$!D{~K*r&4z)g*|UVkZ?U9cd{<35oHaj?;%zV)8w5eAIy#Go0=
+zukZ5=qWYi`?=)B}#`2<$&2I0s^J`@ck~tA4hHM4W0|FK`J>_R2*gacM20`R(F0tw@
+zNcE-e%6oBk^YmN2dC<b~*9d)3{pW{)RxcJJs@VNEX%9E%byuktJmw(*5W(Yvwp;OK
+zNT+oQvQx^ku@hBTknUHswF3zo778D4yQFJPl;y&p1J-k5$q0ox+i@#|27=#zJB`eQ
+zXmn}t>kv34s+_eYPi#C^4;V$BW#f&;Ngvo!rp|U@4rEgDYGSMzyIJ=tnE-5ra9E&2
+z!+iQFyL9rZa~MRqYK8hcVCLOn<f=<4GDd-ar3w2^FA$EGrCRVCOxbnBHE;tRZVUak
+zx+PO#W9O8&+HQ%^sX2?6{3f~;=#)k9d@}$aS~1&h-ge82VBaCLG>cLBMQ-HCxAI)v
+zX~%)ztD;$#0Osvh`}?aZ2f5<r5j^W00E$WIR3*5}ysjAg1PwD<*O*|4Q>V$SmUhL!
+zD<3UNs5<-V6l+A&=s$Pre)aRGq;L7@t2RN(&jAjq-|&4qY=B+}D|FUS9`HYk|3&kB
+zD4)pN${ND5>CQ7G92?)7Y<pXdEw~xHxACK`nXN8-JC{!~+*OPwv$yO;3);CAZbg25
+zBaOikjh@z~F|Yr0sfTqpw{y;W%(1g+y9_*<AV+6Z0E$tr&-$xxv>vByk<!M+DRR7P
+zBcjU41$1!nDa2w94<@=sJDozTT$;4S&0|L`Q_7IMDF3E$s#MMA*Kmho%&P3xjx>?=
+zXw>x~)`=~02dWa*;>b#q`K_|vDf}h3ZG#0nkWWOdGOX*#KP)*YQCLsarZhYG<4`G@
+z<0LMwjDnOp=qR1zd6ebxcUzGtFP%|tXzb7{Zel1nf*WT+ENA>e7Ok7c?I3BAY?kH;
+zDeD)$553>cA6`d*m&zU<G+fBGzZ@Fw5RfCccE1%m=Vrh}e8@w?)PBD&YP-XM!=1A_
+z2QRJTWg&Y)uEzr^?F#jc3GI?P7q-=|d5;hZbfUfvpDWV%P*s3mx!l|XNn7-39u)4o
+z%uIZD_N3_Lci|rG@nI)4rJiVQFX!SN4cEdOu}cm1%g=npndXbk81p0LPMB=-!=yFl
+zTCV6WE9>26nP8?VHG875+|ZHrI96$Qp`W6<L7^9K=fBT6o^VuZU5c<@HY&auaXTnS
+zk8q)rMWK0f@2YA$e@ik;6LU|XY|iFjbElNRBj4vqA*x;WN#<*Ufk*8JUAx+?yhD=)
+zi?i*VVlqP!R=1p%?XjO{zhA`nKCED2e;=_P8tOY@z)M@~p~ws#xbR_#P`pjnD5Wjl
+zmaj&*Z(erzbX4kL@L@gn1>0k)vT}h-*4fRkT72+cd9K)ba~P-Ythz!NNs%>d-)Znz
+z?u1mxS9ku4>)KQL11SC$4-0w|ib>7h`=#TztycJ(Cu&`eTEY@l2mE46uO){wd}#N&
+z>1!-YAL<ZQ=`g^b#g9igKOEZ6_mJHL^*;7i`;=;uPelDZCt_%r3$dImC|a1U(;7Nt
+zUcch1K<;Wy>-N~~aF7hubXG66j2)_swmJPd<~~pIGkz6Wrp|PtaEm*sZ9pImDu1HZ
+zVL(Pl^89Vk_7pJb_pmi7rw>1vQ0<Jd4geRwf7B{L2<tN)O=f?)MJk;@iQE_~;22V8
+z*|}THz$G3%<S)M1FWPHeA?(RLBmq?x8#I4RxOBC0M$5N^_NR3O&0~wWc-ni;5b>1e
+zl%**!-766TqCK{kW4?s`!ZvxQ+UdV?;PHLf2QSb+=%^d2Y_Hp`)Ufn_xUKH+yVOQ=
+zA(V|}e!~ipnj#g^S><S1EMu?nTTbhv!nLgwg;Bo1tzZ2#nb(&~oic3;#JwuRn1JqW
+z8fp3&IL^&Ug`IUyc%eVC0`huJ|M%8q`SSUT_yE-9&=4VTy%vR)I>e9X&-2`_mI9*~
+zV3iiK3F=}bANP+mk01G!%$P72u$H3f(!QNaQ*_T;BbhoRf79s+PCBxziS*Iv6j6q6
+z=fUWM7TpSZQ<86q_ST_%IIuoC(N}<Br(u}L*uZ4gqR;MdjByCrL02^76y)Z~kiUXy
+z)p#o8&gPGQx*prnRZ99L2}HkY`Fyp>)-7*7?VidzZ%^Gk`SU}><bFckN);q!zNZFU
+znoPr;#%7-PcU3^u6P9d>FEi7PBD97iA9$3-vuj6C@(JYY#$S`tQ!ZQ}1mc!7U)Vgp
+zh?KRL{G9z3vMnw{A5;#WAakj(lsbs2)bQx;sj;|`!^Kcm9MH6vHoP3XrSt}(rgae*
+z33+~|XYo-wrb-7W{A{*e>c~4WL2Sm<-e)gsn)Amj0-qg9r(ZrCZB(xKZ1G%skQm;W
+zFQ2%2!CmO~sTco(GC=_AC(YPfK)>zG=FkIs4F*PI`k-K#Q}M*G5DIe6=#&<_%Svwr
+z>?~WdRNZp1tGv+}_At>rhWTomOjv7)MuuV{G2yy$83Q1_Niv^?o0)4qil;%P8lIN2
+z$2PnG3Q>a4=P+eG9!CVh_=kyQ<`tMm)vvn-oB1*3jGyMNr!Ag^mP^qGb;Ex$b_*G?
+zcYv#~%J$?^SG2-hTv7d*7IgpQM~GtBfC_yO<SqfliVF9z%>(oq_<mvw9Ll3O02%0M
+zbZ})HO{NBh#5;KN-37IKQ4iXLvsi69;=eDxd$W`jX>?X9t6xSLj#YxDJ2_%(0F&v;
+z4UOU%i*PU*_NH%foUp;yxI}@|hAE;xzOd?M3GHU(=Lac(+ZZ+)Ekob1sOyKlY!qCW
+z+$x@qb9k3TnsziJ9S>d!iGv6XI(1_Uau@;I&lY#%%eR>TXgo}_F~Gh;Q}iHaDkw$8
+z-92jfdPlqC;ORFCtS+6n1Ore=RuXK!ZefSb+7?iT%W`!)hka|Q%d{<qdSGP=R&<lA
+z!QbKhqWB!q5TG4;2B_+)xbVZU!O*fYr%{?dNQdFLZ50#@3Enlms|vU(RJqFy*^sFJ
+zNcG3k0R2|3xvA~SgXgJqB9<RB<T@Gr*0rE`lU9lD)^~=V{|alguc~^XnT!&=dlATQ
+zDPPaGz65UGV!QaQX7|0U=_}00s1(|h2romeTh5CTdhGM4%nwWDk=I?ukJ+t074b&h
+zemDNSJlRu4@M_#~vc_qqUy-d@9c%zI>P2)~?G~yR(WVQVl=`UGs@siD&F}pk3l7Ul
+z1;oXW^NWC+%IpJE%}NoP$L8&Db;o^*P|!I-X5#Ht6Zu^JR%qIg`YR28D`@6VSzy>Z
+zqEi<3F-8FxKJMJT=>l0m=oZo%qMN}0Oap6y`WzLn=WY~I=3-xY2Iy`*f&a@e7L4;Y
+z;-<CGQx_=Y6?}#8n|ahuk%CTrE~W@IB?=U8_hpJ!f7m1@pDI05vTRnm5lh*hxgx@8
+zRkkal>k!vZHu4*;{8151+wvlutpHzmxtBgQ9}+%lxfov)rha>~n{B~isE|(QI5VZf
+z{Z%da#dOq@!qE?$c&EUK$HlM>f*G?U)Wc-!NnBs_X&!4}&MWY((%uUxaS-&rsIc}w
+zbipgYnl2zH#Vw5x+p)4BwM*PM8RTx?XD+5Oq-kw><96C@XhG4f;^Wb{5~)TV8W;rS
+znN^a7TA|gBGG&~wz9<727bqxeu{U^R2?N6c9Sp6Na<{qW;+`{E887B5_?BPc=K)jY
+zaA5;abrjhkOeK^7LNyF|{Tr3o`u%=pqyY3bVQeMFkNbLwj`y!l9>8(T_`Kvj!!Q??
+zO^>Rgg9lhn2xs<aPU31PAoAGhvR8}|V8VPZB{Xz&ARhR9$RqvS+*0sVZn@}#+xyZ_
+zq(e##f?qOQ26|9apUnNLeW`oedg(8KkR<pp^3|84gqY1jIyEL~z1SiuRw>g_q$|z4
+zXA|72t`DcL=D%((qYWRsK%maMeOITMIcse|<G_NC<4G_8KXsP>^HE#1#3glXPsFfg
+zk+4a+wk(X*a`}3y8Nh*$aZV<eMAW*PHfBfEZh3JgaNi!OuY=ge8IST-<$-U82ya|T
+zKpCutuixQp<}PdMg66ccu($Rj5*iD=P)av2fyY{46ev%Rj@w<SJ6Lyu09822!=a6*
+zRUeW+NLDkHXZvN*w!A6r%w2(w;tWrqHp#}adUO7jP1MKCE#?1Y$o{TAdWitW!RLtY
+zQMLx&<rm?yJW_Su=iLKZMyFq*_a0Ksc-ronepF+3K?&Y3lPAxiO_9?QG?}OqgC28@
+z!On##bP~EV8L%|&3rw*wY0r9o8EN_?8Gx_-E)U71=!5X}1m3`oeyHC3omSNRiOKRI
+znNq+_U*JZs-N(>dOo}&ZR+@(D44Hv>T3*5$HmfdTZZgCDTwJZGC#v3}nC3C#7pcy~
+zaYm|HXP)r$p@25c$SxY~R55FPN@m^9XX$=jjkGON*Ip|$OZppVDVLIzP=G|Q>{#W7
+z9_hiKyO`A~=8d-gCJ`0X7C$m!{7U=|z!AG08Q-`2t$}CP#L&lu2$nP2Hx5ahRIzyX
+z)4;rcy*mezYpyxZ@v|`NWLu`@==p5dye*bP<1GGM@NM^`oJDv59Zo^&Y!MEq*K%QC
+zB}8SIVwS4+<+o|(!&F0!b!(pbueIP*8fvVow~XkN6x}dl2Ra;hJ)7f$Nq4wiF#R--
+zFH%GAD$lz*yQ-cBIwAj~pgPtBY*g%U9f+CFPs&P0>lg4_<gWa78ZwtjUbeD^Vuj<}
+zvtL@U=CM6-ZCY(^#^-gZSp+#OHj+4-$l!RLGSF2|q5TVLiOteYp#33tG0+I$P`pB5
+z!6L>G=g<rjCj2a6VkqIFm|C?5i~#gi_N*(X3!L`_dxS@7UW{Gi_mOYsbkgoX+lp?h
+ztU+3JzQZ{orR~~;P^PAhEkc)d!aM|!E-rA%Cf0t}#G<}K+xYX7+ZrKIpN?&*lR?R?
+zl2nVd7^wn_p^Yyu3hs!+!_vsmcoRZfz}{v70~e66H0l_P(ix<rdjG(-`#*HoE!ld_
+z<2X7;Xd}3385bq+8c{N5(-ED5Ue&g4Dv5x;`m^VO^OF`^KRa}Au~I<v(cpu6XrXg-
+z+72s#LiR^a#g>}<svUHAes-Q4B?%1I!8FaE%9R$IAwJB20dz){eZL@Gi=3x%Yqrrf
+z)4JD6RXJNa#rF&|Wk-RHxE$TzU|I)%JQ6pa@1}_{OAapMo@ql)P=l^GlEp*cqKY35
+zsSBQ7ODi*b4u6Ea=862Wn6b;PkecEI&Smit4HZP&e8K8F<E(;RrF0Jj+y3Bvn(R_d
+zR;5*c*3EpqDObWc*>3!2$Z255&(xcH-m%GjGp`<yP{FL!2*X@rZvw+d4tX~Fc@DZ`
+zFKx>n$o}V=YY7zUY`5m&I~aPl+M&g2hWdpPnbBg=gK2seFB9N_L+y#*ihI~Yw4K<+
+z``ck<=RY5xOKE*8>U~4uR}M4K?U7UDVZpXhIG+*fwnD26!wl00aVEU~rs+V@@8Q`S
+zlN@PV(qM0N--{C)ME~CFwAKd$$TVZoN<(ZBT;K|9q>#?4k?5UrKpR#cuWhSe$o~;#
+z8XaX?h`Ptdg5c@6=}zli@>)Ug``|`~`>CLDPj@~%A1kUW5*vv6$rU<g5RSIKKI|SD
+zUk6qq(&}FpONl=+zpD8voEEz^#|V}of>Iju@p<yyU2U2A+pceK0@3keIy{Tk{lbMm
+z_#8CHw#*;8qh1Yn441U<#A0YSUrZF(=E@8C&31xh1L6jr3xKQ#DuuFJ_)uR%0hs7g
+z4!*PNv2ziVvEQfh9pRFw(c?Ya^4EUY$gc7(Gw0`6+G~#RA@Zm@`hbxqjDs~_)9Nk{
+zK=3e35hvzSh0DH`q{yw5FGx}Yp)5nJKnFID?Kd<;$l^56z5Y2M5G`EEDv^hsMg(-=
+zs%u>l807=!C<e`TH!GZg?;{L;G3A}FuF~j2o%;56k2Ek`NhkS6Bx6(~V9aau(*t$t
+z^*eJKmMCAeDb&oUA{T!z#gpm0>w}N@G*$(bO>b|0+LoU6>Gk;d7w&Sd+_RDo!E@sH
+z(TC{S+RbqXFpn@7wH)=@G!e)}HeM)%Kvq7-{>#zv$7%C9g(g!Us=oiagd0F53t4)u
+zzJ_|wA`FUr%!ad~T6uRB7sk4xDz+egi&;L4%rI#CcW~7}4BLcf1M1tzB2Jy#jg<$M
+zDA;hm+NG0fpyJ-&D6t}mI3g)avEu94;cQTTNt3r8Gp7-chj0k~vKcL6na-<-U8CDC
+z=i6N%K%O<@BdodsA|{lI(lBa8&uv^qhK(6SdK5Sq38+JL#$BPgss2m!$X9oKT)yv3
+zk9S%xC4iD`M$vvM>)j&MZEOyTF)HI?*oC(uz{71ep_fo>GU~1IVpe40k$i6`*Uel=
+z*PcRCB8nR;G@^1Xur0=r5%}P;7^D{vuWE=ligzo&@`yKqHLRY{G<;@iZ3rG2Bo2#o
+zjN+daq*bHu*rZlndPm}^+;U-q#LoK(rK0Ms&xPs9GL;*J$$8C5Gs5uimv}zJEQa`c
+z8eO{?34Hd?$vo|t5#aKK=CRU|BOdCo-Gz2#g|=;}qjDd9eOvwV{MD10V1Qd@Dxt-u
+zjY^1MkT04~75-?r==!{s#Fd3hcwx^H?1l^!jm!LO$cvRf7tE;4OBV|!VT;5RsVG@B
+zf(x(UiIQv~aO5LaYV`3PqTZ7eb$~tv#ihGahk7s+KrmVMA4p9o7d2}5D}qwpiovH0
+z)516tN*`GC7^P}ZS*PRaB&(X-4;U?MzxS>9zx9yo*r#K^46xSIoLAMuJqo}w$@c89
+zmnoB6L#!5UccV(Y2o%v#KZ3XJdJZXq$cMLzepMTA-dM7<8b&FU(AlOE%p*FV57Rt8
+z=vh;ZN!;PlLKeK_UZqu=vX62u4{#-!<#xHI(K%8OYdM{Fl~2ftp|Wwvw6cR9m?k;~
+ztuem$k~^74>+5n7Y-%lN;P(IIbJpB|LPGUeIhxCIa|<=f34f-OA|{N;f`y2g%zJd-
+z-u|l~9ch5uUb=b5ZVb@3|NTksYN3l!NIWbr8qCA$TcX%!5h-Hd5C(h(^wvJJQCs;E
+zVk!c?G=;q;sorRpp;h!!K*N5FpCg<(CPiUxk-tTfh3nb1mNp4f2cuI;UY4C~fa4;@
+zL=rZg3s1quK`%mox5Uf#C>JmrSpZ49s$PH1=U>vtzce@a!VNg8hCVuHrXqUk7FgRs
+z+?aQaYhoTAX{a>a(-O>$AsWa&zo{dwpZ*d9K}@1x={KCtv*%w#046_AacF3V(CZjo
+z00VxkOQEyVL4c{68e12XCR3qK2d}B5iV|krQPkf#<OmgfEOIP1%oDbCnH5~NrOj0X
+zo?#mUG-PAvwh0&BJ3xT$_-_tIEboQa>i+`rx63Av;LecVZVbcbW}+pssZ67(v8ZWC
+z`aYXuLHDQ>)H0f%paH(BM{+-j$)#5aOOK%(8Fw#9IXkw_OJWfw#k9rao>S#Ug~{9q
+zppZE1IaRnCyT#q9g9cW)Idg3rd;eVb5S*SVo>)+wa(mmx|5IzE@}h+A^1qgxKj^(8
+zH;{mzaZI+-WLNdQ0i(1th+8~Nz<(FPs5IY&dIf_DUY1j`w;L<XW7G*_fg03yHiHTD
+zhcOeIBLp}ft5kgxXZJ(0Vj7Oq!M;a`)C!+4eyUyfO*`Y0#sIiWTHJF&beJ?<RMdwE
+z5SHGauSb_;eT_#%{EGz$gsNwTnih>0q0SdEY><+z6`60DD$6_Bdkj8E>p(Ft*V3x>
+z!1Eu_LuWt6Mtu9UCDCHtzn`tiXTugM1HHLCwz66K?HLqE3Z<Zg4WrfzU+8DO5*9Pu
+zd1?eC#Z@nM)#f&Z4#g`<<v@U;ej$2(cex^!8kgxN1y)u~jFZNmaOF48x}5Ph`EvcV
+z*UDd911D3d8LO=^xD3y*2LtrCT8-Z^LI5MPENr#y&PN&g498KnC*T&W0Zs6=gxXnk
+z8c!FRwcMuUd@km;fisyIFB)^}rpi>wLWbB9K7ymDkjTldk1|`%H2;N)?5aBvgz6n}
+zHIg5GfRVL;03p4PrYZ{|J%}6~eqF56*G(T#=dP@cU{h60b3Je#b+tW@%7&$|i*yXG
+zB8>7}tV_TYa5Fi-tEN6-aAPzdH!B6XO=AW9T(rVWh>41+BMBdeuGXuo*C~CDqnTk}
+zm1P}jH0IHQ?!$RH^8x+B$j^k(l7O6rPbLmEEFhS|sfPIlm7QAf*)R3ascmGLPRrYW
+zW<8tPs`B4B-dYRCvH_<_{3!y9Q#0Gt<|w`8#Dla_aLe%^+uMJVLH6wj)a2GE%%NnA
+z<8tf9QA^uJ8s1xZ6=Kh&PZ|0!*Q+nnn!XB)Nt8ht8t+KosMjA^t-=xHm<YwEk)tSi
+zY^Y{NR-a+jTZKW0y}*E4B3;XyT`eA>^$y1yg|@9XC^+j?SP4OnkJXeJa^o+g3KH4V
+zg3Z$^@^&;Eew9I-G-r7A8isg}0NZuWea3It)Byu^rCq{0f%-Rw`?oxXVJ<GJa5j$}
+zArt3%Ay$Kie4lDoR^~w{|Ev5{_jq}B_6OS;RH}Xr!qjb2*l+?NjX6PD>ZLBg@|X<u
+z4^74)*rn(AVLaWnzC07xa6i3l5%*#rO1a`pfPE>sJzEjlNSGY#H==*unwe5q|0)N^
+z&eRj@Asjo119<_BsO_ISaxi2}%&JkJij}?m&up`tyX*1e!aClUVnqa>C!<Y0zQgvp
+zE+mvz;)ZDd&L;lY$c}Bt>BApCCV4&Mrg@yG|I`H9uD*7ooj=_fKFoV!{m0*GY_1sa
+zCgiC(%}nJ7VNLHbk29}^IcCZKlHS;@jx>RPn9<nFrY)EOs86A_Cg)N$mG@LnvYJX3
+z|Au?G;ZT1;T@dDPgyRZ`CcXmPW)0e1wrWDRjo!(q>@{)!!-)LHzU6g^=I!6NWD4Su
+zIg#fVodV=~pha18oCFI?9_Yl=(MhQ-YNqnVKYtR#0_dKkZ3)q8P4^o;*Vl9hkh}Ze
+z|E)bS(BPj&xqsYS$ddX2bvGF9H<GV;qf104miAEj&miRC2T~bN1Tpjl$EsNFnMKw5
+zS8OWMwn%;>F8)tJ`i%VvIuH-fA=SWCs30}VnsS};o3L@YB>NzYhg@X-3ITG0QTONB
+zA>$wZW;E|P+6C6_i0y}E_{*$Jec}Y8$o%<2ov3s*%NybO?M;;|OzZ!Wy#F}XL1Qs^
+z!~gVU&ugI1J4tJl2o_`OsvH+Ig8%XU{=<O!_YxZybXP*+e>DsK?N5#pKhCC=2zvEj
+z2+cq3@BeL|1NGDY|2m`1uhPtbDEUX%$vum5WQ~JS^VlBPUdE47rgMy=2R+k%r9XF4
+z50Aq54thhjcFBQ1RgTeMdw7g2rVlgm9<}>Ka${2<W0Au9;$btE*$)q5j2o%bwv+2i
+zHY0wL|LMs4mswcpPVgU;WBYhNsw8SXwqY$%T&5YU&`%#ZQ94zRKY7z|+LO{n{wU^n
+zytDUI;PNOBV(t?XuYuh~tFEQ;fpqbHjtJ}mKa5Qv&Hbo_yiXMM{z+CO)m~OJx>TDK
+zjw1$AU!)wO%P<a9-ZG5*kc;p=b9;Ne|Bpldzuf-d^t(-bi*x=P!fq-NVT+35Dd1}h
+zVFc#AT4p=(RslOZskAM%>$UjzhfN5+rKk`O@n%#F@z}MSXUX`h7O?!*$nOh>+P|Cq
+zLE!o-z|9a<LhD8iEj!pv1l+85(nkO{kk;&qRozLQ_F5CN!&CUY%+I~lJpO|s?t`5l
+zO}GG;nh6>t(POd*zi^5-!2hUQb#0QYVn(dgJ94g;v|<!|gP9q0+RD*W5DE0bI(hh>
+zrB!oH9ske{{8KXd=TNuw|GT+@F%ZK}+v2jUTtYLG2cI%g#NeL7abxV$Q@*3fDw>%;
+zobbNNuYBTm3b9fA7>7BqCDyT9xLc@*vH-sG!|69p{<}%$U(@e2fD{J6Zfs%a*7MHl
+zGLbY+21T6LRV^b=TI|YKB7h`P^B>~9kGfvnpr@lLLX#=0yZ*xl`1ei^;?0Ln1YrQX
+zAMm>!9(hUa_SVrK?)`XvbYe+y9qAVEb#ZhF+`c^vHPvMN_n`rQ_^;zK2%jjo+jj#2
+ze4onkU<>jO7ThkO-UQ1y4h*cYXzp$fTY_79Z|i?pN82JnoSpS+XW;X43(5PKQ2un}
+zEZaV1RV8_d<uQ}HabbBUjds*}(uZRur`gvv(~nXzK+bW0L~(tBGWo}8usMmhGL7%6
+z`D(JcaI4);JE|7rkWq=;`h{=86A}FeO&F(R)xG6;8>`B_*OuPxRow^8xYq8B?`Kta
+zD-UG@Cre)b?VOO5O=%u#AeL~|Vh)Z9GCbV>7$|PUd}_wT%znaKBx9(*DR0ZDn*|wL
+zi?OQle3hg&|8CXwUuIV|Jbto8-C;CA?*1sq5DB#vRvW~3RZOfkx(1BwC$i)GhM6jx
+z(Mwj70c5(UzW1F~ajn*!smZF9hnrpPl2XP}JZF6#`ERY@L!K#&R^rT_S2(%<E(t*D
+z%;TMU>rz}A8ct6it=3GiQ!;H4An(bZp&SEjv?p4vZ(A$zjh_hGg865l<mpdk#d{`B
+z?I!w@sb|H<Ih$g8m3=gvbs5>Pp=}<|;%Y!{VyFpE*dsKhBaarRaSP?bGDY7uWBj%(
+z$jZfXiNgsFCOcprXSRn-0`xPgKvHkJHAep09{?T_yWF%ZzqbrBrLX;&%46`&<CRan
+zCsT-(Wd8lYqb0re>WP3bd=0MYm$;5USYAH-;^flhJxz(ToOm~0Wj*e(Z`lWJ5M&y(
+zvqH9(Xils`*!};#fyCcS{yYd>d@}bvy!iIR4tjfkCMQ<*WDr4L<a?oCtdmP)$<{X3
+z0Ln2)+Q*DJ7F=E{@~7&lvSmFSTE)^d9W5!E(Fgr$*B80pH#ko?3?SVPWbs`@)Uc*)
+z=l8iZJl3jv)x0_#c2X>#g-#baO7f<6!%Wv7C*=bASy>v9`DCoOQIbIjscx@}>twSf
+zzXp~JpULrANVY7?be;kaK{5-`g*-jUv;D;`Y@h+MjtMPdRv7uS%%(f9W%TJb>%^jc
+zb@?rPRGKP<^c%@v7vm|JYDV}+Q+6Us@Z~T4G~jU=Wkkwktm^)AU78tL+%qKc*26Jw
+z1CwNp)p{MA_A7InjB8pT=SFXH9+EfYA>Oz)KIa;HxbtHg$66h4K*>yD)}d?@xSTlY
+z)IyRsE6~-dYqfgKOY7ctO}mL^JwM9?k%(KFzm*eiD7%kv$DB!%g>0X4Fk`!e;^C>}
+z_*qsx{j`w9UGf{f%)jr?zi)zVJN9VRps(6=%VnVch3|Et){tqNr1Q6HLH>jw3@sF@
+zG?1$RT`dQ+=c$x<I4-H`tmKoSeEL(pb<16cA62bP-ngs~QC_}9HgnW@J;fT(siQ)Y
+zMd)|asHavGg9YaqkB+*;UQd(b&)da88fgoAzEHe5vekK?sb=z#adR6nfMUg)<UvOr
+zuIR&`;zJl_X&*KQ$0`-=HON3$jp>7g?)BqXdBLO-{oo6SvEa+WP1s(JCbQS%>P+)|
+zKB52SVm~xq1(HRYGLp6$H{LmKAXu?3M(N|85Um!8Nz}Nqua0%T#s9;y0@Z5sxEML=
+zl-odx&B|^jC)bQt4>m-0mpvLGBaH|09>9Adycf>ck$UU|m<Y6L%4G5c5qf9_^;gi#
+zW*%p4{D@{}gTzZ?eNcUan|ju7D`W9rHBJPXR>}U>D(-bY50rvNi)Qiw3)$LW;yj&j
+z8eSm7M}70tDPDICT%CYb0bn}o$T&cF?E}5pX`9?j1#^{jSSCB>L+=%yD^PU-y-r(W
+zX5e_gkB_3U?`cW!6H+=N;#^DHhVmb)hL(ZaWPINN@xsI!tdh--x7HI@2v-qrr=C?E
+zA#)>RTv*ax9{7Y1=WPwlvI6<sCmoQ^VV;A89|frhYl9*#WU0h3li25fZ|w6orrF63
+zILcWwT1%~oW@F{g${&23_F%Ov{9wuqU<ZaIBtxL*m_9{ebqROw^7_rKG^65Pw7`u&
+zr2426<sl_={Z)Iu>%p|mWBk}}^pf9=uGvC9B-6G;mDM(rz1NSOTpOje6`5jn`wY~K
+z@7^{WnuoX=OUlN`1Gb=SjKe6sIRJ4(Qi#A}R{i*>+~`EsA9idHG-44L9<d6e{<_64
+z3YErgkCfG{Gl;Nm<ae^ZDMA%<x3uy16{I2EiIO}u9KDC@A&C@A5evh;EFF>lUQJ>f
+z-s-vFu4)smN_I*`+mAl?{#mN*$uFRoyPU=H1S)hoaG_j)5@S}UAR54zR<MP9LJbv<
+zvd-A76*mS7vwp4ADd2N1ID?@^X1H)zn6j#I)df07dhJE)ebkp|S#e&A@-KT0uZbLD
+ziLtjeULip&h+P1D>@PUP!|wEHzx#ojmLT4Ji9Hrqe^xae%Zu)kQpShR>y|MAi&f}S
+z%ry`}9p0|#Rj2P<k+1*y7b0=g_Iu%mVe&Q4Vm6kJZP)fLI}z8&LJOg@4x{dovi`%N
+z^*z+@|LZh<3Ce~J<r=yk+R#m`>?5KN3b>Dz04oh%WaL?Rvr4EA<lAL}Ia%Soo{G`F
+zFMUk;g9jeAJ&i}<(>Ul;!w`kqBGg@|Dx@qKOnKO1thKR90fb6IIjIq4jhbr?OTdda
+zHrBgx%*oNI(JLZ4Ewl1bORR&iKWI+Rn~K1(I-(>K-@{m;%n}VsLEWLD+u<H2m^Oq%
+zNZ;rZWyQ|QxY-iww$iYS;T#mK#7RCWocrT-)8O{0bV;&JfvC}cJgf30yHKKdNZD5s
+zIr;)H*>$}dn$1~%@%9IfY@Dy%jt}awqKYd&ty+jl`CkUJW>1oUjn(J20iflJ9C8nD
+z<=fLwIcPHqTxGx$mcCHBsj;N=0z%ESN+=g(urZQjc*?ymn2t`Z%0SY;0i;}oad6%k
+z8Z$-!dz9O67*NLbSBcjpUc8*B`ec~r??ftf$&5Ix%f}*OAzkxis_sMR(dss9xPb9a
+zn&mMGXIboDa>y-m&B$+!mVNAh+t<zj(5jCL)`XWMqP3YP=c{CK=}=8rDLDKLLqZ?t
+z<BNtegms7Abpl6iPV2;98Wn9o!urXxof*5xBT&*9Znlh<Di=nB+z?i0e3WD1<A6#5
+z9yR#PIQk~wzZnn5H}at_L}ny@1NJY4%5rx7BJnO-N0OCEqti~(&nqH0r1FDIURf*s
+z_IPCfls|w)np7#w7)z5GYBa(lOMiXE2ZB0}Lg@s;H-;)DA}{18xdMgc{=>K?kj0G(
+z5vd%zi;FuHtxkc;|Jity9KwCaS>Ja+8c7yLwTg`8H=zt=!&#a48T77Z2)?`kS+EV_
+z7J-K}d!Uwvy`w2Gu$)+JobhP%0)&aD3<9t*7GRt<W3SIuo*HnH1Rf4a8}BRjVo{nF
+ze<gSEQ>m}Cc+pgUhppamG6i*Nv|096uGx^9)VbihArZQ6ul}P)*xv?>bU=dnSoG{Q
+zuKcgzAaHdJ28p%_vub_O-Rdn}tiv-<FA6&+%=#DPjZM`9vo4S+#K=Wg6w%$N>~i*R
+z3Vl5Nhg<(#qmCYp5dm(5xgwUESc`=o8ey|TZzZs&-oxGRD?%@GpQNu{+2I@?_neeI
+zA*l@KcN>S(GfJKq=6;IWGdwN1ra!oUc**6^#pqn5LsAV&kj+K2<ToSK7F=hpIr2b;
+zZ1j^%yeP_GP%2h;J)z7*o(Q-l=_JFUhs>sjS&iWFq*%z5j(yb%$=9dqhidr?Ii~r<
+zK%19Vyc(s1CQ?!;`YwUCMed0Sw5$~-(E;dV^Hzw1<tu*e)dDa*@MpG0#L<Xj<BE^N
+z_(>lH-jsYUVW?pAx`RjCnYWZOuIsIbyEpFEw)}Ud{dXsdKi$E&K|5tT?@6W%9vNVm
+zrB9&?jm!rmypkuL3*Ct*8?}Le3{E$VmXAv7P1AMh-cB}ICU-0?H{^aY>eU4Wz*yRd
+z2lcWM|4J*W*OxoNq$UsiV^USnL$kTdr=4Z?r8h?uo$N$w<7ANRJ(PkO=cN7iP^!9d
+zP;Q8Wak-4W)hhU0tX0vW{vc20p0@}ZCUf2Ss=oJvmRnyOO4EA$WYFNv9)a<bJ&JPd
+z$8G#Yl0kz3cccWK`mTM#TXG8nja&68r<fzk9A#|*4z%pV^UZA=AW7H*eaI7rF7VQY
+z4z9R5-X8DmVRsd*`n5C|>Ur^h-~Y}79U=5$jfeH+r-D4zB^-G*viKu{m+GBBh9N|>
+zQt<xNq30QBiqOJPs`X|S^3@M93K``NYTS-uHMQaQCyjfGHg1aDV*w{hXe&$+n)TUB
+ztkVL`oCxn|nj3#w0ULOm0#oIYYV=IvyCd3VuybT;uO1b@Y(ChCWH<+OWLokYoJXmo
+zfm1NZ!n9L|e_`DlXH`5t&dS&h=tCV9?m7(F{3Uq^jT^5vtWNT)sQljZ+049HBffma
+zANn|T_ck_sWuNo6dAikSF<`hcVukppI5F>S0y;S3X)>3LQoG6T^TEo1Ej=n!vgR60
+zqWYKd+vOAg*V0w>!in&vXkO(vAW_QUL%MHQHGTXytJy?byASfr7ubf|eR_A5Hoj+}
+zKUSU&4kbI#&(;n;gV1z~#Os3f;?E5v?vRsU&Zljld;xxF9AXOv_J%9ONe&|kLw$9%
+zWZ#enIcf}{_V1WObhm6KU3)IdX7IJi$(ljTrTi^C9(35Uw3dM7Cr+ExqW~}}V^nVR
+z%!1Ll*z{k%<ZjLGTz{rNp~NdmzS%kKtky0V5<g<70N-hSd{PRnnrNnRjg8kuC>uDk
+zB%h4z%dsz=2NDV#?JL|2d<Nq4ap%4NuNlFiSdn}lUG&xDcyY9Xwg7xs_u9G4`}1gh
+zX~W_+N66UlC(%A8I5VJnY_pvTH<h~r+pc<)CABpwkp9~*!<rp!vJB{(wo!d;dlch|
+zMn{b(VWB2HqmU^w?pOjHDJ-^pvoPCPY<XKM%=&;))MRkst-5Ns`#?lKRrzpi=)zSX
+z8efFEl_I=h6Fv-n{Zy~sYe=+qLA!kD)8pH*Jhd<OB<y4QNGf)zeh!<mJQ?|J<=`f<
+z{Z9A|+U%2w;3OIXK<{(kUIGi<j(qdRz+&CGE2b=hRr64WEU6yE3iJQ<(WP(bq0N~I
+z8%1BoK(ruoLp|QN$W|T)R>Yq)+4;Obs<-w)r4FbF3|nI_v$~&)&4=E?)?qh>65&m-
+z28bIJkz2jx*g^oDGKL*oA^cvGPS27`U>KgKfJx0*dnP!Pext2>5%%AoKmkGH{lueE
+zNR@(=zp==u<GX0ETS3uY%Hess5)*{U-R<g<fc2hc+Z@2CQ~!2L)i;tv`cUMM2UR^9
+zO+kGtg+L=fC*&0SRp6uEJgVDW(CH4pU2(vgBd|9skU=gvF)2k=W2>1)SP`or7OVRD
+zs5l}h7QsUEAq9&%O|hr|=^HBa^PIgFnifEz<1aa>{db+|#XI-SgRY(oT9x(xMe$!T
+zvP39nr<_qZ)%A7PpSER7Vj<swZ8)JQZQv03WA(rV;yJY1EpkVTG_kq1EiRi*iDLV|
+zmKTW5r3{7VplIYea7NU_HpxjZ-iwo<09J05yhoV*ZU||V-bArH5D7#D7iXnIKkTEo
+zi&*laX_HJg6Et$bJYhC@DK-kK?5;V*LCD?6j9xlBY;L;Z14?ts8G3Xj8@GPDPC>wk
+zOHK5_d)`Db=xkEVFRun3eJ)_y7ymO(D@4%rT+L4g@v`3xnw1B3mwOWn;$i5}M<S1P
+z4t{uZstDU4GM0o7%d^KHU=vs5A$2LC?lna~<6-jC_`V1RM6?3H$_eA_tI|_hS1pCq
+z>MHs@vqvP-sW~7A*hY7FGSoes?|PQz&FH3FpyOm^MSTOyWYNh*gR)e!)<+X3f;3ty
+zhHN3hs)x15jf0@uKDJZvWYApr{4)^INQR4E%H6(1k5s_S)yd)jH!RwfRPv@2n$TUS
+z6ESqv9=p)ylW0CgX}Dli1d-g4rH<tG^*<OtL!Vs#D2JSwxKxpRkUK;BAFVL|ZtLj}
+zmN9M1A$n}qrY5rkY$8#*Za!a6mUw;Q&;$wt3*7Wlb~X8<mKFxRs6F1hJ^Oiqu7@u9
+zj(2$O(1)$KLwgI)qhjh6%0L&3rPW@+u^w33y`M5RFoisB1v?AiT`IPl`IV*w{&>Zs
+zta~8!#%UMO=c{J!GG3aKFzLA^_neML)u?qXH#U?NMO)Ov9aN6eAr^%wv(`GueO_Ap
+z(0jbouuiFrN^^(0cFewqxL2}-!cKz*ug=KF*I*^_a0eJPL8FPZ7vm=;q@f9=7h=)>
+zUeKo(E5Z>`_V#NwDo%<oSNI<E8fvs-21;Rz_*(k90bEc}OAq=+y$79)U*!d9&RQyH
+z*$7G#K#tYGwyG5N4Z4{6&8<hZAcR%Mj})$X4iH|3o820fpPzGk<P5pD*nqb*ho+J{
+z(|mPt^9r(PeZh?M4~K%pwg>apU<ME{;Jp=m!OegzyRivW>+E=PKtS2&T3|U=_g1G{
+zB6XX~wW(pFO8BjK!$C)LoZfWodY3<43kn+!-6`2s$G>Xi3p*nMW{OXXdv#{hWvVh9
+zGo)M#d+B=0IVOy&lqDA$!NPc`f{R5c!}EV{SNnGZ+D-bPxt^No6$UgxCdAHtY(<c^
+zW!OE2-*PG+#TjD!)R-v`aOhvfTF0jKfCy>7L<7f@c8UA(vhLr_rmj01?U>Fj==&65
+zy~3O`*<KhULup^j&}3dvGzcHA#6jk4`eCIV233U`1L`;{8aqb8^PGQix5gZdil<5U
+zWqw<!hbGSF@6UBXjZKj<%B7#Z`p;$yGbY|pF5mQE23`5hgi^4A2{M*LkXnT>))}!-
+zK!4)Pgxxn@p6>eDNvI%c(C1e4DOP)IPf8)?*gcW@tjYrcjx2DJfb{dUF_Z#^PEK?!
+z#v$ykUBk|f+s!5zpXotxJJe*e6jCc0A6_cx6AZ&{O-qyo+BqLfSWo#!_6gOzjiUMA
+zS0Io-f-V%c@}d==y$%W9^5ZpC+0s<IoXqeb{&Km(Rp)U5dRJ)c^Z8Y*PccERfY7+5
+zKVS{=x>f1biz2YykXVSa&7$6T_1Lq~Y|e7Wcflsg@N|lsK3xf<VCzB6cqjP!`nfGA
+zJU1&cHIxz{DR+zjLC+gdtP$I#RaZ`4lL9A5U=?t?csJ#Y)~+xrgAhuC^3@ipgN3M}
+zQU_W3w<Jf8^6_X5?c4uv&Fw!OLpmbXd0kOkd*15*rbS$@=5()%xxf&x1~@_*|22*4
+z{FYUl+n%kqD%!}>V6|@Ju5iWd=#b8pul8&4Ydq09e>c)K=4bfqRUFTy7?zb8hRs~|
+zc0;nCrc*KR&V1lxw3vz&aFM7MbJ5nqS-%v*?g1BbiDbPtJs)3b`gxJ<y`tku_pj7l
+zTX^6<a6I$XY;oh<Tke&Mvnn?1E1#ttc(pM!IH*JxdmzgL*WGG{cP!{KDs3?}ziuJT
+z!>b#rv1H@3BP$pfco;oh97Cp7georc+PX~C^t8r@NMLX8XxEgeD=t&ZeOE8*<7$mr
+zwdBs4+uA>GeYaZ?yTo}(-`+OIY4go{?)~z!GFzpl70$TTb^UbUs^yTxn_KSp9)G*o
+zzstexa78HV6}NKM;*;gGtOMSg>TpGD4d`g=$>u1#d#A%m)LpY90yw~W^!}|M(N_b1
+z>FBa8`nyJ2Yu5!0p75nJv?QKa|2clvX^Z-<lM3&%R;(=X{5-`^h&AR@S6^UMVvXM0
+zu5+q$=VygqtG)1Uk5ubDscCCId)->qn?1{a^D5hGJJ%GuzHK_U-|_9veVg~C&p!WB
+zC?)~r2rKAO&Uy@Mn%I)JXw30YoT9eJ{r$&}5fL&fYo&Uz&MHFBqrU!sMj4}$iNs>p
+zt0tN)UD{HMzaJ{TyU9AO&HaD1YAj^(6x(DX@PKI!2H;WFi=P4y8~FY#Z}qI}0(-^#
+zg3s;Ra3N0HfARN}1K<O=vGj`|rzT72ipN(v3p%~s^*-^1ZQ2&4ja%&hU&^kkKYSm)
+z;2d@?G5El)-9DhRlDQ55kDAW7m?R!0;V}7kc;h|p_OOdnzeRnO+N;it{oLr$)05E;
+zJ%dEb=z-*;2a=;7n-9rkqX&|s&ThlTA3<}$gX)ZbE8wo#!Fz`FTxlj7PkhT(-bQ>q
+zb}MPN3QGecj}3IK7%Z%jj>e8n6J=BoZMe+CYl1q(1~1okpV0!H$DP^6CWU%XApCf3
+zuo;XGOq`j~#yVk@+k3suU7&jbW-V+)tFvIWQ2F#oSJ1@^XD>LQ*1zy;1a_ZZqXb+B
+zF()l!0qQgm{KUz-sbPYkdk&0EE@1H}$fkEjtHFs(61X-5?mw6#p%+Png02;yFgUJm
+zVQ;vf`%CeE+2ik(;R|qGh5&T=ZdtDXVf!tQ0{1x8|4;w-^t$xtbq$R;JP5jT<M`?I
+zdnfPT_Uvy>7W0Am_5UpY=ls16T<-BVd(v)31}HEns{8YD`Jba#^PlJM`|N19l`%nz
+zZO_BiI{$w@_k7O@Q+6OD;M&qN*<WYB7i8#KzyI$#ffg?Zm}J3<Kes=GhNZ-<`ZxO*
+z*MSJm6%P-@*Uc5>ZqB*$g;`qa0i#U=`v(TO1I!f+{3slsGt8^+$K1}k+$2Biv;X0`
+z;HUS4_4l|jM9dQo;BMC7Ib&9LzKsoC7s3eP&j(hSU)y#|gemJ_f5_MCt*`d`onhpF
+zIgEiDc<%^|(_qNb0An*86JTJ1aU`4>;5rg`7!_dRqZ&vKrJef!<z-(7WLi#mdm9vt
+Mp00i_>zopr0ITFy=>Px#
+
+literal 0
+HcmV?d00001
+
+diff --git a/website/static/img/social/manifest.json b/website/static/img/social/manifest.json
+index 7aedea364..2030a47d5 100644
+--- a/website/static/img/social/manifest.json
++++ b/website/static/img/social/manifest.json
+@@ -1588,6 +1588,14 @@
+       "title": "V0.7.6",
+       "svgSha256": "a08397e2e0965ed799c0e8a2e342db502f5f5ad70cece73dec2703a186794711"
+     },
++    {
++      "route": "/docs/releases/v0.7.7",
++      "output": "static/img/social/docs/releases/v0.7.7.png",
++      "section": "Releases",
++      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
++      "title": "V0.7.7",
++      "svgSha256": "b2afa40c7a69bf45594e67229d3b79d9a15c233bc9b2849dc95a3c39639b22f5"
++    },
+     {
+       "route": "/docs/showcase",
+       "output": "static/img/social/docs/showcase.png",

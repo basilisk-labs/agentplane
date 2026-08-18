@@ -19,6 +19,7 @@ import { applyForeignTaskReadmeReplicaRepair } from "../shared/task-worktree-for
 import { cmdFinish } from "./finish-command.js";
 import { makeRunTaskHostedClosePrHandler } from "./hosted-close-pr.command.js";
 import { cmdTaskStartReady } from "./start-ready.js";
+import { cmdTaskScopeExtend } from "./scope-extend.js";
 import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
 
 function observedPostconditions(operation: WorkflowOperation): string[] {
@@ -108,6 +109,24 @@ export async function executeBranchWorkflowOperation(opts: {
         quiet: true,
       });
       return succeeded(operation, `recorded task start for ${operation.params.taskId}`, exitCode);
+    }
+    case "task.scope.extend": {
+      exitCode = await cmdTaskScopeExtend({
+        ctx: command,
+        cwd,
+        taskId: operation.params.taskId,
+        scopeRoots: [...operation.params.scopeRoots],
+        repositoryEffects: [...operation.params.repositoryEffects],
+        requestDigest: operation.params.requestDigest,
+        stateFingerprint: operation.preconditionFingerprint.digest,
+        by: "USER",
+        quiet: true,
+      });
+      return succeeded(
+        operation,
+        `applied exact USER-approved scope extension for ${operation.params.taskId}`,
+        exitCode,
+      );
     }
     case "pr.artifacts.update":
     case "pr.sync_or_verify": {

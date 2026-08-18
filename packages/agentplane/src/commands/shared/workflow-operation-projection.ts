@@ -142,6 +142,23 @@ function operationArgv(operation: WorkflowOperation): string[] {
         ...(operation.params.force ? ["--force", "--yes"] : []),
       ];
     }
+    case "task.scope.extend": {
+      return [
+        "agentplane",
+        "task",
+        "scope",
+        "extend",
+        operation.params.taskId,
+        ...operation.params.scopeRoots.flatMap((root) => ["--scope-root", root]),
+        ...operation.params.repositoryEffects.flatMap((effect) => ["--repository-effect", effect]),
+        "--request-digest",
+        operation.params.requestDigest,
+        "--state-fingerprint",
+        operation.preconditionFingerprint.digest,
+        "--by",
+        "USER",
+      ];
+    }
     case "task.branch.start":
     case "task.start": {
       return [

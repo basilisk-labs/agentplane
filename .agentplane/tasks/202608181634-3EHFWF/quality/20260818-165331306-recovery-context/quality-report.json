@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608181634-3EHFWF",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-18T16:55:47.255Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 4 typed finding(s).",
+  "evaluated_sha": "3c5b50c1ed7101a6696f4902dd53e508704bab64",
+  "blueprint_digest": "7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8",
+  "findings": [
+    "Task-owner context resolution now checks ownership of the explicitly resolved task branch before retaining a current worktree context, with a stale-worktree regression.",
+    "Prerelease classification now precedes release-ready, registry, incident, release-note, and npm checks, and the detect step writes the exact checkout SHA.",
+    "The detect job output still declares sha from steps.source.outputs.sha; that step is intentionally skipped for prereleases, so downstream or diagnostic consumers receive an empty SHA despite the detect step emitting one.",
+    "Residual risk: Without the one-line output correction, prerelease automation succeeds but loses exact provenance in the job result."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/379cd4d761527438e3ffa7c7f6821e6b1af480b2e92141006e22dbac98867cac.patch"
+  ],
+  "missing_tests": [
+    "Add a workflow-contract assertion that the detect job exports sha from steps.detect.outputs.sha, not the stable-only source step."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumed the detect job's sha output was irrelevant whenever should_publish=false, even though it is part of the job's declared output contract."
+  ],
+  "residual_risks": [
+    "The candidate addresses both hosted P1 findings and its claimed local checks are recorded, but the prerelease publish path leaves the detect job's public sha output wired to the stable-only source step, so the new successful prerelease result exports an empty SHA."
+  ]
+}

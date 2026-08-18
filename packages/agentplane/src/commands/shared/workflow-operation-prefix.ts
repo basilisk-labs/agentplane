@@ -17,6 +17,7 @@ export const WORKFLOW_OPERATION_ARGV_PREFIX = {
   "runner.follow": ["agentplane", "task"],
   "task.artifacts.commit": ["agentplane", "commit"],
   "task.branch.start": ["agentplane", "task", "start-ready"],
+  "task.scope.extend": ["agentplane", "task", "scope", "extend"],
   "task.hosted_close.open": ["agentplane", "task", "hosted-close-pr"],
   "task.hosted_close.finalize": ["agentplane", "cleanup", "merged"],
   "task.pre_merge_close": ["agentplane", "finish"],

@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
-      "cli_topology": "20a9c58073545ec9938c1a52b8d4ca3a164f2b60ec8cf6d5f8b55eec004eb09b",
+      "cli_topology": "f1f582f3cdd1711ce16fa52c9b6dacd81804c3a8fa94882c2192133dbfb89d13",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "1facd3d0771f9420c47c2144a595a86ae01722dcc14eef06fbce06e6b874ec32"
+    "surface_sha256": "2fb42f5eff1ad0ae173d8dd6a147a2cbb545b835539f8182df96ec067b8f2cb1"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -699,6 +699,48 @@
             "visibility": "internal"
           },
           {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Task",
+            "id": ["task", "scope", "extend"],
+            "options": [
+              { "kind": "string", "name": "scope-root", "repeatable": true, "valueHint": "<path>" },
+              {
+                "choices": [
+                  "repository_write",
+                  "documentation",
+                  "source_code",
+                  "tests",
+                  "public_api",
+                  "schema",
+                  "dependencies",
+                  "ci",
+                  "release_metadata",
+                  "security_boundary"
+                ],
+                "kind": "string",
+                "name": "repository-effect",
+                "repeatable": true,
+                "valueHint": "<effect>"
+              },
+              {
+                "kind": "string",
+                "name": "request-digest",
+                "required": true,
+                "valueHint": "<sha256:...>"
+              },
+              {
+                "kind": "string",
+                "name": "state-fingerprint",
+                "required": true,
+                "valueHint": "<sha256:...>"
+              },
+              { "kind": "string", "name": "by", "required": true, "valueHint": "<role>" }
+            ],
+            "visibility": "advanced"
+          },
+          {
             "args": [],
             "group": "Workflow",
             "id": ["workflow", "migrate"],
@@ -729,6 +771,7 @@
           "task run resolve-effect",
           "task run resume-effect",
           "task run tool",
+          "task scope extend",
           "workflow migrate"
         ],
         "added_options": [
@@ -1312,6 +1355,53 @@
             "valueHint": "<run-id>"
           },
           {
+            "command": "task scope extend",
+            "kind": "string",
+            "name": "by",
+            "required": true,
+            "valueHint": "<role>"
+          },
+          {
+            "choices": [
+              "repository_write",
+              "documentation",
+              "source_code",
+              "tests",
+              "public_api",
+              "schema",
+              "dependencies",
+              "ci",
+              "release_metadata",
+              "security_boundary"
+            ],
+            "command": "task scope extend",
+            "kind": "string",
+            "name": "repository-effect",
+            "repeatable": true,
+            "valueHint": "<effect>"
+          },
+          {
+            "command": "task scope extend",
+            "kind": "string",
+            "name": "request-digest",
+            "required": true,
+            "valueHint": "<sha256:...>"
+          },
+          {
+            "command": "task scope extend",
+            "kind": "string",
+            "name": "scope-root",
+            "repeatable": true,
+            "valueHint": "<path>"
+          },
+          {
+            "command": "task scope extend",
+            "kind": "string",
+            "name": "state-fingerprint",
+            "required": true,
+            "valueHint": "<sha256:...>"
+          },
+          {
             "command": "workflow migrate",
             "default": false,
             "kind": "boolean",
@@ -1389,6 +1479,11 @@
             "source_task": "202607242158-QV09NA"
           },
           { "command": "task run tool", "kind": "command", "source_task": "202607221852-ECBY56" },
+          {
+            "command": "task scope extend",
+            "kind": "command",
+            "source_task": "202608181404-CR1F9W"
+          },
           {
             "command": "workflow migrate",
             "kind": "command",
@@ -1887,6 +1982,36 @@
             "source_task": "202607242158-QV09NA"
           },
           {
+            "command": "task scope extend",
+            "kind": "option",
+            "name": "by",
+            "source_task": "202608181404-CR1F9W"
+          },
+          {
+            "command": "task scope extend",
+            "kind": "option",
+            "name": "repository-effect",
+            "source_task": "202608181404-CR1F9W"
+          },
+          {
+            "command": "task scope extend",
+            "kind": "option",
+            "name": "request-digest",
+            "source_task": "202608181404-CR1F9W"
+          },
+          {
+            "command": "task scope extend",
+            "kind": "option",
+            "name": "scope-root",
+            "source_task": "202608181404-CR1F9W"
+          },
+          {
+            "command": "task scope extend",
+            "kind": "option",
+            "name": "state-fingerprint",
+            "source_task": "202608181404-CR1F9W"
+          },
+          {
             "command": "workflow migrate",
             "kind": "option",
             "name": "dry-run",
@@ -1899,7 +2024,7 @@
             "source_task": "202607221846-4VB97J"
           }
         ],
-        "command_count": { "from": 243, "to": 263 },
+        "command_count": { "from": 243, "to": 264 },
         "mutated_command_shells": [
           {
             "after": {
@@ -2096,8 +2221,8 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 851 },
-        "positional_count": { "from": 165, "to": 180 },
+        "option_count": { "from": 767, "to": 856 },
+        "positional_count": { "from": 165, "to": 181 },
         "removed_command_descriptors": [],
         "removed_commands": [],
         "removed_options": []
@@ -2132,10 +2257,11 @@
         "202608080805-KPWPAV",
         "202608110235-WCJJRD",
         "202608112213-NWJCBW",
-        "202608171853-X3FD5M"
+        "202608171853-X3FD5M",
+        "202608181404-CR1F9W"
       ],
-      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, and safe local evidence statistics, compaction, and garbage collection; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; and canonicalizes setup and execution profile selection to standard while retaining legacy init aliases.",
-      "to_sha256": "20a9c58073545ec9938c1a52b8d4ca3a164f2b60ec8cf6d5f8b55eec004eb09b"
+      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; and canonicalizes setup and execution profile selection to standard while retaining legacy init aliases.",
+      "to_sha256": "f1f582f3cdd1711ce16fa52c9b6dacd81804c3a8fa94882c2192133dbfb89d13"
     },
     {
       "classification": "additive",
@@ -2336,9 +2462,9 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "ab2384feaf78cb4c0a0c0f5c600ea386e5f0376e852122f2d74b97ac1356d414",
-    "to_sha256": "ba86d65ec1fe45a4d31d19c537a863e802e8e7a7bbdb0d1b0a301d4c3e82b3ab",
-    "to_version": "0.7.6"
+    "surface_sha256": "1dbd7dd14a972a5a5683059adbc80d9efb6ee2be51015b940f834b10f0f36ecc",
+    "to_sha256": "2ab9d0c09fdab023ea57552690026b467b5aff3069ac3bb0d834c3b343534719",
+    "to_version": "0.7.7-beta.1"
   },
   "review": {
     "conditions": [
@@ -2387,6 +2513,7 @@
     "202608110235-WCJJRD",
     "202608112213-NWJCBW",
     "202608112259-T3ZDDM",
-    "202608171853-X3FD5M"
+    "202608171853-X3FD5M",
+    "202608181404-CR1F9W"
   ]
 }
