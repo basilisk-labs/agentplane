@@ -6,7 +6,7 @@ Created: 2026-08-18T16:36:10.309Z
 
 - Task: `202608181634-3EHFWF`
 - Title: Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without f...
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608181634-3EHFWF/supersede-pr-4843-with-a-clean-agentplane-0-7-7`
 - Canonical task record: `.agentplane/tasks/202608181634-3EHFWF/README.md`
 
