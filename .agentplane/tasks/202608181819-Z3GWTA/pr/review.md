@@ -13,7 +13,7 @@ Created: 2026-08-18T18:57:10.614Z
 ## Verification
 
 - State: ok
-- Note: All declared checks pass on implementation commit 60c6cda2f; this record rebinds the already-observed evidence after the verified VHS output was committed.
+- Note: All declared checks pass on implementation commit 9a01a6dd4; current public context, docs, and website contain no launch-document metadata outside excluded historical provenance.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

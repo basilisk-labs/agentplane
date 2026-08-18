@@ -4,7 +4,7 @@ title: "Reposition AgentPlane as the Git-native control plane for coding agents 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -30,9 +30,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-18T19:39:18.309Z"
+  updated_at: "2026-08-18T19:46:33.941Z"
   updated_by: "TESTER"
-  note: "All declared checks pass on implementation commit 60c6cda2f; this record rebinds the already-observed evidence after the verified VHS output was committed."
+  note: "All declared checks pass on implementation commit 9a01a6dd4; current public context, docs, and website contain no launch-document metadata outside excluded historical provenance."
   attempts: 0
 quality_review:
   state: "rework"
@@ -111,6 +111,7 @@ execution_contract:
     authority_violations:
       - "repository_effect:documentation"
     changed_components:
+      - ".agentplane"
       - "README.md"
       - "context"
       - "docs"
@@ -118,6 +119,9 @@ execution_contract:
       - "packages/agentplane"
       - "website"
     changed_paths:
+      - ".agentplane/context/derived/reports/release-docs-assimilation.json"
+      - ".agentplane/context/derived/reports/release-docs-assimilation.sgr.json"
+      - ".agentplane/context/derived/reports/release-docs-coverage-detail.jsonl"
       - "README.md"
       - "context/wiki/release-docs/concepts/acr.md"
       - "context/wiki/release-docs/concepts/configuration.md"
@@ -206,10 +210,13 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:87cd6efcb7de7da6e6d191f4b4e2f53626b049ec2104a310942c1de52f0d4110"
+      digest: "sha256:6bca5b55caca43de65d899b8c081959841b93e6d7b40c4e07e0b30ae4e81e296"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:.agentplane/context/derived/reports/release-docs-assimilation.json"
+        - "unknown_path:.agentplane/context/derived/reports/release-docs-assimilation.sgr.json"
+        - "unknown_path:.agentplane/context/derived/reports/release-docs-coverage-detail.jsonl"
         - "unknown_path:marketing"
       execution_groups:
         - "docs-schema"
@@ -218,6 +225,7 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
+          - ".agentplane"
           - "README.md"
           - "context"
           - "docs"
@@ -225,6 +233,9 @@ execution_contract:
           - "packages/agentplane"
           - "website"
         changed_files:
+          - ".agentplane/context/derived/reports/release-docs-assimilation.json"
+          - ".agentplane/context/derived/reports/release-docs-assimilation.sgr.json"
+          - ".agentplane/context/derived/reports/release-docs-coverage-detail.jsonl"
           - "README.md"
           - "context/wiki/release-docs/concepts/acr.md"
           - "context/wiki/release-docs/concepts/configuration.md"
@@ -353,8 +364,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "All declared checks pass on implementation commit 60c6cda2f; this record rebinds the already-observed evidence after the verified VHS output was committed."
+  -
+    type: "verify"
+    at: "2026-08-18T19:46:33.941Z"
+    author: "TESTER"
+    state: "ok"
+    note: "All declared checks pass on implementation commit 9a01a6dd4; current public context, docs, and website contain no launch-document metadata outside excluded historical provenance."
 doc_version: 3
-doc_updated_at: "2026-08-18T19:39:24.739Z"
+doc_updated_at: "2026-08-18T19:46:40.610Z"
 doc_updated_by: "CODER"
 description: "Unify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth."
 sections:
@@ -552,6 +569,72 @@ sections:
     Result: pass
     Evidence: public Launch Kit files and derived cards are removed; marketing submodule points to published private commit d590b93; canonical control-plane copy is present across README, docs, SEO, homepage, and llms surfaces.
     Scope: requested positioning and content-boundary outcome.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608181819-Z3GWTA-reposition-agentplane-as-the-git-native-control/.agentplane/tasks/202608181819-Z3GWTA/blueprint/resolved-snapshot.json
+    - old_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+    - current_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181819-Z3GWTA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608181819-Z3GWTA
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-18T19:46:33.941Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: All declared checks pass on implementation commit 9a01a6dd4; current public context, docs, and website contain no launch-document metadata outside excluded historical provenance.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0, input_digest=sha256:b3f9887ceac28072ad83c9f29a1f1e71de10670634b2bac794d8a79849ca632b
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run lint:website
+    Result: pass
+    Evidence: ESLint exited 0 on the cleaned task branch.
+    Scope: touched website implementation.
+
+    Check: critical_paths
+    Command: bun run docs:readme-header:check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: README header artifacts are fresh for v0.7.6 and policy routing is OK.
+    Scope: public README and repository policy gateway.
+
+    Check: full_regression
+    Command: bun run release:demo:check
+    Result: pass
+    Evidence: a fresh VHS render at 700x394 completed below the 3,000,000-byte limit; the committed verified GIF was restored byte-for-byte after the nondeterministic render.
+    Scope: declared release demo gate.
+
+    Check: hosted_integration
+    Command: agentplane pr open 202608181819-Z3GWTA --author CODER
+    Result: pass
+    Evidence: GitHub PR 4845 exists and is linked in task metadata; cleaned head publication remains owned by the next Agentplane route.
+    Scope: task branch and hosted PR linkage.
+
+    Check: real_e2e
+    Command: bun run docs:site:check
+    Result: pass
+    Evidence: docs IA, generated artifacts, website typecheck, social-card check, optimized Docusaurus production build, navigation check, and design-language check passed.
+    Scope: public documentation and website build.
+
+    Check: task_outcome
+    Command: rg for launch paths and titles in current public context, docs, and website
+    Result: pass
+    Evidence: no matches remain outside deliberately excluded historical release provenance and task records; stale disposable release-docs assimilation reports were removed.
+    Scope: requested current-tree private-content boundary and positioning outcome.
 
     BlueprintSnapshotRef:
     - state: current
@@ -787,6 +870,72 @@ Command: inspect public diff and published private marketing source of truth
 Result: pass
 Evidence: public Launch Kit files and derived cards are removed; marketing submodule points to published private commit d590b93; canonical control-plane copy is present across README, docs, SEO, homepage, and llms surfaces.
 Scope: requested positioning and content-boundary outcome.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608181819-Z3GWTA-reposition-agentplane-as-the-git-native-control/.agentplane/tasks/202608181819-Z3GWTA/blueprint/resolved-snapshot.json
+- old_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+- current_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181819-Z3GWTA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608181819-Z3GWTA
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-18T19:46:33.941Z — VERIFY — ok
+
+By: TESTER
+
+Note: All declared checks pass on implementation commit 9a01a6dd4; current public context, docs, and website contain no launch-document metadata outside excluded historical provenance.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0, input_digest=sha256:b3f9887ceac28072ad83c9f29a1f1e71de10670634b2bac794d8a79849ca632b
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run lint:website
+Result: pass
+Evidence: ESLint exited 0 on the cleaned task branch.
+Scope: touched website implementation.
+
+Check: critical_paths
+Command: bun run docs:readme-header:check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: README header artifacts are fresh for v0.7.6 and policy routing is OK.
+Scope: public README and repository policy gateway.
+
+Check: full_regression
+Command: bun run release:demo:check
+Result: pass
+Evidence: a fresh VHS render at 700x394 completed below the 3,000,000-byte limit; the committed verified GIF was restored byte-for-byte after the nondeterministic render.
+Scope: declared release demo gate.
+
+Check: hosted_integration
+Command: agentplane pr open 202608181819-Z3GWTA --author CODER
+Result: pass
+Evidence: GitHub PR 4845 exists and is linked in task metadata; cleaned head publication remains owned by the next Agentplane route.
+Scope: task branch and hosted PR linkage.
+
+Check: real_e2e
+Command: bun run docs:site:check
+Result: pass
+Evidence: docs IA, generated artifacts, website typecheck, social-card check, optimized Docusaurus production build, navigation check, and design-language check passed.
+Scope: public documentation and website build.
+
+Check: task_outcome
+Command: rg for launch paths and titles in current public context, docs, and website
+Result: pass
+Evidence: no matches remain outside deliberately excluded historical release provenance and task records; stale disposable release-docs assimilation reports were removed.
+Scope: requested current-tree private-content boundary and positioning outcome.
 
 BlueprintSnapshotRef:
 - state: current
