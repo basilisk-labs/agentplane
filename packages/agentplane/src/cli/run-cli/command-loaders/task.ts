@@ -281,6 +281,10 @@ export const loadTaskUpdateSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/update.command.js").then((m) =>
     m.makeRunTaskUpdateHandler(getSessionContext(session, "task.write")),
   );
+export const loadTaskScopeExtendSpec = (session: TaskLifecycleSession) =>
+  import("../../../commands/task/scope-extend.command.js").then((m) =>
+    m.makeRunTaskScopeExtendHandler(getSessionContext(session, "git.mutate")),
+  );
 export const loadTaskCommentSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/comment.command.js").then((m) =>
     m.makeRunTaskCommentHandler(getSessionContext(session, "task.write")),
