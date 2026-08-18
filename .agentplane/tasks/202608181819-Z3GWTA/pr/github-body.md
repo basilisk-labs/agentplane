@@ -19,8 +19,8 @@ Unify public positioning across README, docs, website, SEO, demos, comparisons, 
 - Note:
 
 ```text
-All declared checks pass after reducing the reproducible VHS demo canvas; public positioning,
-private-content boundary, production website build, policy routing, and release demo are verified.
+All declared checks pass on implementation commit 60c6cda2f; this record rebinds the
+already-observed evidence after the verified VHS output was committed.
 ```
 - Canonical workflow state lives in the task README.
 
