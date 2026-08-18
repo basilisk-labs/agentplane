@@ -15,13 +15,8 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Execution authority omitted required root package.json; reopen implementation to request an exact
-state-bound scope extension before publication.
-```
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
