@@ -4,7 +4,7 @@ title: "Harden task isolation, provider truth, autonomous authority, recovery, a
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -38,6 +38,38 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-18T13:50:12.340Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "a97ddc09850d967b95c1696176bc8ff01935347d"
+  blueprint_digest: "dab9d215344b3164aeaf3b15752cad50f7c2ba092a2fd4409ae397b95ad325c2"
+  evidence_refs:
+    - ".agentplane/tasks/202608181315-3NYFYK/quality/20260818-134908984-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181315-3NYFYK/quality/20260818-134908984-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/e9a7edd7b1ebbdc6a579d3d3fe07d2ef2449fed7fe43de9dea4c5ab154a4c9c6.md"
+    - ".agentplane/tasks/202608181315-3NYFYK/quality/20260818-134908984-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181315-3NYFYK/quality/20260818-134908984-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181315-3NYFYK/quality/20260818-134908984-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608181315-3NYFYK/README.md"
+    - ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/8a5af7c96a66635c65617733123c7562912867ad7867fc3f78390285f54aecbd.patch"
+    - ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/e6b200a3bb549bcd44e5a3bf3841443dce43b1bfd96948731dc9cc9c2995c161.json"
+    - ".agentplane/tasks/202608181315-3NYFYK/verification/20260818134903967-8fff96ec4249ad5f.json"
+    - ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/c660cc970fb172a04f3916e1581e79f2c4cf3fd2e6f47dd20a04e3156f13371f.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
+  findings:
+    - "Base isolation rejects both unpublished-ahead and stale-behind history with structured machine-readable guidance."
+    - "Foreign task artifacts are checked against the upstream base before both PR synchronization and integration, while explicit batch ownership remains supported."
+    - "branch_pr integration consistently treats the exact provider PR as merge authority, eliminating the local-MERGED/provider-OPEN contradiction for protected and unprotected bases."
+    - "Configured autonomous authority is sourced from the base checkout; mode=all retains integration.enqueue and old linked worktrees recover task ownership through the primary checkout."
+    - "The stable release workflow validates channel semantics and opens the next patch beta only after successful stable publication evidence."
+    - "Residual risk: Hosted CI and publication must still validate the exact integrated SHA."
+    - "Residual risk: Cleanup of the original divergent checkout must preserve an explicit recovery reference until public release readback succeeds."
 execution_route:
   frozen: true
   reason_codes:

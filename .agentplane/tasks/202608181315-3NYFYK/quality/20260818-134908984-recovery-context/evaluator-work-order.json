@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608181315-3NYFYK-f3757ad7d3249ea3eb28654b",
+  "prepared_at": "2026-08-18T13:49:08.984Z",
+  "task": {
+    "id": "202608181315-3NYFYK",
+    "revision": 6,
+    "objective": "Harden task isolation, provider truth, autonomous authority, recovery, and release AgentPlane 0.7.7\n\nDeliver the complete 0.7.7 patch pool: prevent task branches from inheriting diverged or contaminated local base history; block foreign-task commits and artifacts before PR publication; make provider truth authoritative for MERGED/DONE/cleanup and detect local/provider contradictions in doctor and release gates; preserve fully autonomous mode=all including integration.enqueue while loading authority only from a trusted base/operator-owned policy source; make task lookup and read/write/grant route contexts canonical across old worktrees; allow PLANNER to refine structured execution contracts and route evaluator-required scope widening through a controlled approval boundary; incorporate only still-relevant local changes, discard duplicates already present upstream, integrate the verified patch/beta release automation, run focused/full/installed-package/hosted checks, publish 0.7.7, and verify all public release surfaces plus opening 0.7.8-beta.1.",
+    "acceptance_criteria": [
+      "- In scope: Deliver the complete 0.7.7 patch pool: prevent task branches from inheriting diverged or contaminated local base history; block foreign-task commits and artifacts before PR publication; make provider truth authoritative for MERGED/DONE/cleanup and detect local/provider contradictions in doctor and release gates; preserve fully autonomous mode=all including integration.enqueue while loading authority only from a trusted base/operator-owned policy source; make task lookup and read/write/grant route contexts canonical across old worktrees; allow PLANNER to refine structured execution contracts and route evaluator-required scope widening through a controlled approval boundary; incorporate only still-relevant local changes, discard duplicates already present upstream, integrate the verified patch/beta release automation, run focused/full/installed-package/hosted checks, publish 0.7.7, and verify all public release surfaces plus opening 0.7.8-beta.1.\n- Out of scope: unrelated refactors not required for \"Harden task isolation, provider truth, autonomous authority, recovery, and release AgentPlane 0.7.7\".",
+      "Plan the 0.7.7 patch as a release-blocking correctness program: first restore branch and provider invariants, then harden trusted autonomous authority and task routing, reconcile the verified release-cycle work, qualify the exact candidate, publish it, verify every public surface, and clean only state proven redundant or recoverable.",
+      "PLANNER fallback scaffold for \"Harden task isolation, provider truth, autonomous authority, recovery, and release AgentPlane 0.7.7\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Harden task isolation, provider truth, autonomous authority, recovery, and release AgentPlane 0.7.7\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "a97ddc09850d967b95c1696176bc8ff01935347d",
+  "diff_base_sha": "f4fc869fd5ffbafb58c7e33c9f75ac762f3a242f",
+  "blueprint_digest": "dab9d215344b3164aeaf3b15752cad50f7c2ba092a2fd4409ae397b95ad325c2",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608181315-3NYFYK/quality/20260818-134908984-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:908bdbfff2e349e80b7e23a4e00996a773be8f0d14612f9b12b22ddfa7d7a350",
+    "prompt_path": ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/e9a7edd7b1ebbdc6a579d3d3fe07d2ef2449fed7fe43de9dea4c5ab154a4c9c6.md",
+    "result_schema_path": ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608181315-3NYFYK/README.md",
+      "sha256": "sha256:2b93fc093ec0b57d77f3d63e74e8d3a6ab53096a0ef9555ba0d8551cda84dc56",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/8a5af7c96a66635c65617733123c7562912867ad7867fc3f78390285f54aecbd.patch",
+      "sha256": "sha256:8a5af7c96a66635c65617733123c7562912867ad7867fc3f78390285f54aecbd",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/e6b200a3bb549bcd44e5a3bf3841443dce43b1bfd96948731dc9cc9c2995c161.json",
+      "sha256": "sha256:e6b200a3bb549bcd44e5a3bf3841443dce43b1bfd96948731dc9cc9c2995c161",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608181315-3NYFYK/verification/20260818134903967-8fff96ec4249ad5f.json",
+      "sha256": "sha256:baee379d4bf581deec53c9094ebdc1a9b188c48625077fa7260a8c5ddd20aeef",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/c660cc970fb172a04f3916e1581e79f2c4cf3fd2e6f47dd20a04e3156f13371f.json",
+      "sha256": "sha256:c660cc970fb172a04f3916e1581e79f2c4cf3fd2e6f47dd20a04e3156f13371f",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:47ab8b04f9d747491398390dac415b34aa6d3df0cf0fb61e9924fd3e4851ec48",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Base isolation rejects both unpublished-ahead and stale-behind history with structured machine-readable guidance.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/8a5af7c96a66635c65617733123c7562912867ad7867fc3f78390285f54aecbd.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Foreign task artifacts are checked against the upstream base before both PR synchronization and integration, while explicit batch ownership remains supported.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/8a5af7c96a66635c65617733123c7562912867ad7867fc3f78390285f54aecbd.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "branch_pr integration consistently treats the exact provider PR as merge authority, eliminating the local-MERGED/provider-OPEN contradiction for protected and unprotected bases.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/8a5af7c96a66635c65617733123c7562912867ad7867fc3f78390285f54aecbd.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Configured autonomous authority is sourced from the base checkout; mode=all retains integration.enqueue and old linked worktrees recover task ownership through the primary checkout.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/8a5af7c96a66635c65617733123c7562912867ad7867fc3f78390285f54aecbd.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The stable release workflow validates channel semantics and opens the next patch beta only after successful stable publication evidence.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/8a5af7c96a66635c65617733123c7562912867ad7867fc3f78390285f54aecbd.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted CI and publication must still validate the exact integrated SHA.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/8a5af7c96a66635c65617733123c7562912867ad7867fc3f78390285f54aecbd.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Cleanup of the original divergent checkout must preserve an explicit recovery reference until public release readback succeeds.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181315-3NYFYK/quality/objects/sha256/8a5af7c96a66635c65617733123c7562912867ad7867fc3f78390285f54aecbd.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "listWorktrees returns the primary checkout first, matching the core Git adapter contract used by existing worktree routing."
+  ]
+}
