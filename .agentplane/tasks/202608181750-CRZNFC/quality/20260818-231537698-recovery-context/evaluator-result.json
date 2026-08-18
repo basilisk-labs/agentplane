@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "All package versions and internal pins resolve to stable 0.7.7; generated workflow, ACR, documentation, compatibility, and social-image surfaces are consistent.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/9430c1c981b75729ec6c75900f36cb4c8db0402aaa1ad0de83d0af4723fc7560.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Foreign task ownership remains fail-closed for additions, modifications, durable reports, and PR evidence; only deletions of volatile .log/.jsonl or runs/repro artifacts are exempted, with explicit negative regression tests.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/9430c1c981b75729ec6c75900f36cb4c8db0402aaa1ad0de83d0af4723fc7560.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The final integration prepare mock includes gitDiffNameStatus, closing the full-matrix isolation failure; the affected prepare and ownership tests pass 29/29.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/9430c1c981b75729ec6c75900f36cb4c8db0402aaa1ad0de83d0af4723fc7560.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Canonical local evidence passes all 105 release-ci-base chunks, workflow 50/50, significant 204/204, release-critical 16/16, package tarball policy, eight migration scenarios, and local tarball install smoke.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/9430c1c981b75729ec6c75900f36cb4c8db0402aaa1ad0de83d0af4723fc7560.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted checks, protected-main integration, public package publication, next-beta opening, and post-release local cleanup remain lifecycle steps outside this read-only verdict.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/9430c1c981b75729ec6c75900f36cb4c8db0402aaa1ad0de83d0af4723fc7560.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
