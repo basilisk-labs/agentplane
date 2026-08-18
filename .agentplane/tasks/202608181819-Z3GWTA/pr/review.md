@@ -12,8 +12,8 @@ Created: 2026-08-18T18:57:10.614Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Public positioning and website checks pass, but the declared release demo gate fails because the existing GIF is 3,834,539 bytes against a 3,000,000-byte limit.
+- State: ok
+- Note: All declared checks pass after reducing the reproducible VHS demo canvas; public positioning, private-content boundary, production website build, policy routing, and release demo are verified.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -35,7 +35,7 @@ Created: 2026-08-18T18:57:10.614Z
  context/wiki/release-docs/concepts/recipes.md      |   3 +-
  context/wiki/release-docs/docs-domains.md          |   2 -
  context/wiki/release-docs/domains/launch.md        |  45 --------
- docs/assets/agentplane-demo.gif                    | Bin 3834539 -> 2744740 bytes
+ docs/assets/agentplane-demo.gif                    | Bin 3834539 -> 2682529 bytes
  docs/assets/agentplane-demo.tape                   |   6 +-
  docs/compare.mdx                                   |  64 ++++++-----
  docs/index.mdx                                     |  14 ++-
