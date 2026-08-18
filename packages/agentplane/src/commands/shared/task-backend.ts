@@ -18,7 +18,7 @@ import {
   type TaskData,
   type TaskSummary,
 } from "../../backends/task-backend.js";
-import { GitContext } from "@agentplaneorg/core/git";
+import { GitContext, listWorktrees } from "@agentplaneorg/core/git";
 import { resolveCommonGitDirectory } from "../../shared/env.js";
 import { loadTaskFromBranchSnapshot } from "./task-backend-branch-snapshot.js";
 
@@ -202,6 +202,34 @@ export async function loadCommandContext(opts: {
     preparationTrace: opts.preparationTrace ?? null,
     memo: {},
   };
+}
+
+/**
+ * Route task commands back to the primary checkout when invoked from an old
+ * linked worktree that predates the requested task. A task worktree remains
+ * authoritative when it already contains the task or owns its task branch.
+ */
+export async function resolveTaskOwnerCommandContext(opts: {
+  ctx: CommandContext;
+  taskId: string;
+}): Promise<CommandContext> {
+  if (await opts.ctx.taskBackend.getTask(opts.taskId)) return opts.ctx;
+
+  const tasksDir = path.join(opts.ctx.resolvedProject.gitRoot, opts.ctx.config.paths.workflow_dir);
+  const branchTask = await loadTaskFromBranchSnapshot({
+    ctx: opts.ctx,
+    taskId: opts.taskId,
+    readmePath: path.join(tasksDir, opts.taskId, "README.md"),
+  });
+  if (branchTask) return opts.ctx;
+
+  const worktrees = await listWorktrees(opts.ctx.resolvedProject.gitRoot);
+  const primary = worktrees[0]?.path;
+  if (!primary || path.resolve(primary) === path.resolve(opts.ctx.resolvedProject.gitRoot)) {
+    return opts.ctx;
+  }
+  const primaryCtx = await loadCommandContext({ cwd: primary, rootOverride: null });
+  return (await primaryCtx.taskBackend.getTask(opts.taskId)) ? primaryCtx : opts.ctx;
 }
 
 export async function loadTaskFromContext(opts: {

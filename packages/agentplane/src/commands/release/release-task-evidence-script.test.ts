@@ -239,15 +239,21 @@ describe("release-task-evidence script", () => {
       closure_branch: string;
       pr_title: string;
       pr_body: string;
+      next_development_version: string;
     };
 
     expect(payload.actionable).toBe(true);
     expect(payload.task_id).toBe(taskId);
     expect(payload.closure_branch).toBe(`task-close/${taskId}/${releaseSha.slice(0, 12)}-publish`);
-    expect(payload.pr_title).toBe(`task-evidence: Record hosted publish evidence [${taskId}]`);
+    expect(payload.pr_title).toBe(
+      `task-evidence: Record publish evidence and open 0.3.16-beta.1 [${taskId}]`,
+    );
+    expect(payload.next_development_version).toBe("0.3.16-beta.1");
     expect(payload.pr_body).toContain("v0.3.15");
+    expect(payload.pr_body).toContain("Next development version: `0.3.16-beta.1`");
     expect(payload.pr_body).toContain("## Source");
     expect(payload.pr_body).toContain("## Scope");
+    expect(payload.pr_body).toContain("atomically opens the next patch development line");
   });
 
   it("reads quoted CRLF close branch prefix from WORKFLOW frontmatter", async () => {

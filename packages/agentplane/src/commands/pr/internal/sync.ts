@@ -39,6 +39,7 @@ import type {
 import { runPrOpenSync } from "./sync-open-step.js";
 import { nowIso, readTextIfExists, restoreIncidentRegistryIfNeeded } from "./sync-support.js";
 import { runPrUpdateSync } from "./sync-update-step.js";
+import { assertBranchTaskArtifactOwnership } from "./branch-task-artifact-ownership.js";
 
 type PrSyncMode = "open" | "update";
 export type { PrOpenOutcome, PrRemoteMode } from "./sync-model.js";
@@ -282,6 +283,17 @@ export async function syncPrArtifacts(opts: {
         includeTaskIds: opts.includeTaskIds,
         primaryBranch: branch,
       });
+      if (baseBranch) {
+        await assertBranchTaskArtifactOwnership({
+          gitRoot: resolved.gitRoot,
+          baseBranch,
+          branch,
+          workflowDir: config.paths.workflow_dir,
+          tasksPath: config.paths.tasks_path,
+          primaryTaskId: task.id,
+          includedTaskIds: validatedIncludedTaskIds,
+        });
+      }
       const previousIncludedTaskIds = normalizeRelatedTaskIds(
         [
           ...(existingMeta?.batch?.included_task_ids ?? []),

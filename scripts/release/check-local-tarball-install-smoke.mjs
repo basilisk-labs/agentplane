@@ -354,9 +354,10 @@ const main = defineScript({
         {
           exitCode: 5,
           code: "E_GIT",
-          messageIncludes: "behind its upstream origin/main",
-          fields: ["code", "message", "hint", "next_action", "reason_decode"],
+          messageIncludes: "does not exactly match its upstream origin/main",
+          fields: ["code", "message", "context", "hint", "next_action", "reason_decode"],
           nestedFields: {
+            context: ["reason_code", "base_branch", "upstream_branch", "ahead", "behind"],
             next_action: ["command", "reason", "reasonCode"],
             reason_decode: ["code", "category", "summary", "action"],
           },

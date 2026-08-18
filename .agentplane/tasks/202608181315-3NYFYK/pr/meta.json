@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608181315-3NYFYK/harden-task-isolation-provider-truth-autonomous",
+  "created_at": "2026-08-18T13:16:41.665Z",
+  "diffstat_sha256": "sha256:0716067d45ba3d34f0aeb176e471d4585da189423f96d48059d7015471a83f7b",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608181315-3NYFYK",
+  "updated_at": "2026-08-18T13:16:41.665Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

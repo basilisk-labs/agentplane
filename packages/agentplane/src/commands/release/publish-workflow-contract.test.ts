@@ -16,6 +16,18 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("name: Publish release");
   });
 
+  it("runs the stable-version guard before publishing packages with npm tag latest", async () => {
+    const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+
+    expect(workflow).toContain(
+      'node scripts/check-release-version.mjs --tag "${{ needs.detect.outputs.tag }}" --stable-only',
+    );
+    expect(workflow).toContain("npm publish --provenance --access public --tag latest");
+    expect(workflow.indexOf("node scripts/check-release-version.mjs")).toBeLessThan(
+      workflow.indexOf("npm publish --provenance --access public --tag latest"),
+    );
+  });
+
   it("uses workflow_run from Core CI and downloads the exact detected release-ready artifact by run id", async () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
 
@@ -149,6 +161,12 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("Check for existing release evidence PR");
     expect(workflow).toContain("Apply release task evidence on a follow-up branch");
     expect(workflow).toContain("bun scripts/release-task-evidence.mjs apply");
+    expect(workflow).toContain("node scripts/release/open-next-development-version.mjs");
+    expect(workflow).toContain('--published-version "${PUBLISHED_VERSION}"');
+    expect(workflow).toContain("next-development-version.json");
+    expect(workflow).toContain("release evidence follow-up branch is dirty before mutation");
+    expect(workflow).toContain("next development version mutation left unstaged tracked files");
+    expect(workflow).toContain("record publish evidence and open");
     expect(workflow).toContain("Open or recover release evidence PR");
     expect(workflow).toContain("Verify and merge exact release evidence SHA");
     expect(workflow).toContain("node scripts/workflow/verify-release-evidence-pr.mjs");

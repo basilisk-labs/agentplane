@@ -1,4 +1,4 @@
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
@@ -22,6 +22,7 @@ import {
   loadCommandContext,
   loadTaskFromContext,
   resolveTaskBranchFromContext,
+  resolveTaskOwnerCommandContext,
 } from "./task-backend.js";
 
 const TASK_BACKEND_INTEGRATION_TIMEOUT_MS = 180_000;
@@ -100,6 +101,46 @@ describe(
 
       expect(ctx.resolvedProject.gitRoot).toBe(root);
       expect(ctx.backendId).toBe("local");
+    });
+
+    it("routes a task command from an older linked worktree to the primary task owner", async () => {
+      const repo = await tempRepo({ branch: "main" });
+      const root = repo.root;
+      await configureGitUser(root);
+      await repo.writeConfig(
+        mockConfig((draft) => {
+          draft.workflow_mode = "branch_pr";
+        }),
+      );
+      await writeLocalBackendConfig(root);
+      const execFileAsync = promisify(execFile);
+      await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+      await execFileAsync("git", ["add", "."], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed old worktree"], { cwd: root });
+
+      const oldWorktree = path.join(root, ".agentplane", "worktrees", "old-task");
+      await execFileAsync("git", ["worktree", "add", "-b", "recovery/old", oldWorktree], {
+        cwd: root,
+      });
+      const created = await createTask({
+        cwd: root,
+        rootOverride: root,
+        title: "New primary-only task",
+        description: "The old linked worktree must resolve this task through the primary checkout.",
+        owner: "TESTER",
+        priority: "med",
+        tags: ["testing"],
+        dependsOn: [],
+        verify: [],
+      });
+
+      const oldCtx = await loadCommandContext({ cwd: oldWorktree, rootOverride: oldWorktree });
+      const ownerCtx = await resolveTaskOwnerCommandContext({ ctx: oldCtx, taskId: created.id });
+
+      expect(await realpath(ownerCtx.resolvedProject.gitRoot)).toBe(await realpath(root));
+      await expect(ownerCtx.taskBackend.getTask(created.id)).resolves.toMatchObject({
+        id: created.id,
+      });
     });
 
     it("loadTaskFromContext falls back to a branch-backed task README in branch_pr mode", async () => {
