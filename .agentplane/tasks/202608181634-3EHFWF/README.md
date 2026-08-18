@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -30,16 +30,34 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "rework"
-  updated_at: "2026-08-18T17:15:32.099Z"
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-18T17:23:09.207Z"
   updated_by: "EVALUATOR"
-  note: "Hosted P1 on PR #4844: branch-task-artifact ownership must accept remote-tracking comparison refs and retain the contamination gate for origin/main; add a regression."
-  evaluated_sha: "b10d32931b6f74f791d30677d61103cbe15fb38f"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "16457593d821119c1ed447fcbd8b94e1baee8c2f"
   blueprint_digest: "7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8"
   evidence_refs:
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-172239395-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-172239395-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/afdaab60787b3d1e0d946a342394b16a7f3ca155e88699d75d4056fcc40b8c84.md"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-172239395-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-172239395-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-172239395-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181634-3EHFWF/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181634-3EHFWF-supersede-pr-4843-with-a-clean-agentplane-0-7-7/.agentplane/tasks/202608181634-3EHFWF/blueprint/resolved-snapshot.json"
-  findings: []
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/9798f84e897f3bea91b6090475d5bee98386b0f3d9e47ee183eb39f24aa10350.patch"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/488d8bb0c427c40db137f2fcb733ff92938f480f42c3234499af536115d85c05.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/verification/20260818172234406-7beef3c912f6ca47.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/b758feb8420fb9c7158fdbfaefa7a450b440dd27fb80e91b9e6a0170615f632d.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
+  findings:
+    - "The implementation uses git rev-parse --verify origin/main^{commit}, which accepts the standard remote-tracking comparison base and fails closed only when no committed base history exists."
+    - "gitBranchExists is now invoked only for the local task branch, matching that helper's contract."
+    - "Focused tests, the full contract matrix, all 12 critical chunks, release payload builds and policy checks passed after the correction."
+    - "Residual risk: Provider state must be revalidated because the corrected commit is newer than the previously green hosted head."
 token_usage:
   agent_runs: 6
   input_tokens: null
@@ -555,7 +573,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-18T17:22:35.465Z"
+doc_updated_at: "2026-08-18T17:23:09.245Z"
 doc_updated_by: "CODER"
 description: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication."
 sections:
