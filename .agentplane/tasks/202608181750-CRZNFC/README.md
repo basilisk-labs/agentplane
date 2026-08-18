@@ -2,10 +2,10 @@
 id: "202608181750-CRZNFC"
 title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref."
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -64,9 +64,9 @@ quality_review:
     - "The full repeated release gate passed 105/105 release-ci-base chunks, workflow 50/50, significant 204/204, release-critical 16/16, package policy, eight migration scenarios, and install smoke."
     - "Residual risk: The task execution contract is treated as the authoritative source of writable roots; its approval and integrity remain enforced by existing scope-extension and task-lifecycle controls."
 token_usage:
-  agent_runs: 8
+  agent_runs: 10
   input_tokens: null
-  journal_digest: "sha256:cc2f14400d12dac7b643c38f4fd387049adf7c342b468b1ebf425867b2bbf2b3"
+  journal_digest: "sha256:2529ac46d33c5fc2a6bc9cc90babe1a7a3cb22068ae62f06191edc72c79222c9"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -76,7 +76,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-18T23:17:37.060Z"
+  updated_at: "2026-08-18T23:56:20.348Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -531,8 +531,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "6ed0b4b62b786d389f6a2b0ea3730973238c3985"
-  message: "🚧 CRZNFC task: apply external agent result"
+  hash: "500d113c0b3cd579fe12679e4e0c4cb4988d4ee1"
+  message: "🚧 CRZNFC task: record external evaluator result"
 comments:
   -
     author: "INTEGRATOR"
@@ -573,6 +573,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 6ed0b4b62b78. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -665,9 +668,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-18T23:56:20.348Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "500d113c0b3cd579fe12679e4e0c4cb4988d4ee1"
 doc_version: 3
-doc_updated_at: "2026-08-18T23:54:24.073Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-18T23:56:20.376Z"
+doc_updated_by: "INTEGRATOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
   Summary: |-
@@ -932,8 +943,8 @@ extensions:
     status: "applied"
     transition_id: "tr_2ddae8292f5410a72b53c3f110e13e60"
   implementation_commit:
-    hash: "6b3d54e01ac3a71e0b0620eff04e6b1ca0e41f63"
-    message: "🚧 CRZNFC task: extend approved execution scope"
+    hash: "6ed0b4b62b786d389f6a2b0ea3730973238c3985"
+    message: "🚧 CRZNFC task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "708f0d7d5b813ea2bb4de659d9eb113a752e3c63"
     version: 1
@@ -1201,12 +1212,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/8` agent runs
+- Completeness: `0/10` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:cc2f14400d12dac7b643c38f4fd387049adf7c342b468b1ebf425867b2bbf2b3`
+- Journal digest: `sha256:2529ac46d33c5fc2a6bc9cc90babe1a7a3cb22068ae62f06191edc72c79222c9`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-18T23:17:37.060Z`
+- Updated at: `2026-08-18T23:56:20.348Z`
