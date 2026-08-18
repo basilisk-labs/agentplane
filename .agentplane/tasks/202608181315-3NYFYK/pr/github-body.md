@@ -15,14 +15,14 @@ Deliver the complete 0.7.7 patch pool: prevent task branches from inheriting div
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-18T13:16:41.665Z
+- Updated: 2026-08-18T13:48:52.112Z
 - Branch: task/202608181315-3NYFYK/harden-task-isolation-provider-truth-autonomous
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

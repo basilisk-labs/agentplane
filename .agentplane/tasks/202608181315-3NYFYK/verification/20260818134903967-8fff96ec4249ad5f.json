@@ -1,0 +1,91 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181315-3NYFYK/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181315-3NYFYK Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181315-3NYFYK/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181315-3NYFYK Verification Contract check critical_paths\n\nCheck: docs_contract\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181315-3NYFYK/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181315-3NYFYK Verification Contract check docs_contract\n\nCheck: full_regression\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181315-3NYFYK/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181315-3NYFYK Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181315-3NYFYK/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181315-3NYFYK Verification Contract check hosted_integration\n\nCheck: real_e2e\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181315-3NYFYK/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181315-3NYFYK Verification Contract check real_e2e\n\nCheck: requirements_resolution\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181315-3NYFYK/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181315-3NYFYK Verification Contract check requirements_resolution\n\nCheck: task_outcome\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181315-3NYFYK/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181315-3NYFYK Verification Contract check task_outcome",
+  "digest": "sha256:8fff96ec4249ad5fb044b101368f3966d75a212aff8730abdaffacc5f8f053b8",
+  "implementation_sha": "a97ddc09850d967b95c1696176bc8ff01935347d",
+  "input": {
+    "context": {
+      "digest": "sha256:dc9f107572de41b553c1ad75b54baae171db8ec140e954fe86d422957ca6f770",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:59f1c81e5a9d58c273d0abcc7f6448096d1e884f69b416be564c38092df40887",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:49902c723e2f9f0b928e3de31f342d837e3dd4fddb3e526ec592139f714921fd",
+      "digest": "sha256:aa5537497db3f4ac32c8fa68f89eeb1d462a0c1062095862407b08b4664a820b",
+      "references": [
+        {
+          "digest": "sha256:36057b43c967f045e8606f43811467538acf40fba74b010263851b41e80a7582",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608181315-3NYFYK/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608181315-3NYFYK/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "f4fc869fd5ffbafb58c7e33c9f75ac762f3a242f",
+      "digest": "sha256:5acc5f06f7c6ef8132ec3dd09b494123ae81dcea9dcf4a8a509c78bb349b162e",
+      "strategy": "branch_diff",
+      "target_sha": "a97ddc09850d967b95c1696176bc8ff01935347d"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:5c7b2197ed6858e30aeb551e50f337300c31e843436ca4857e01ea86b8e4705a",
+    "verify_steps_digest": "sha256:9c5cecfb647bce3f0cfdfc84c524bb9a0112c7ca8ee4823bb994350597dc60b2"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-08-18T13:49:03.967Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Harden task isolation, provider truth, autonomous authority, recovery, and release AgentPlane 0.7.7\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Harden task isolation, provider truth, autonomous authority, recovery, and release AgentPlane 0.7.7\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:9c5cecfb647bce3f0cfdfc84c524bb9a0112c7ca8ee4823bb994350597dc60b2",
+  "task_id": "202608181315-3NYFYK",
+  "verification_command": "agentplane verify 202608181315-3NYFYK --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
