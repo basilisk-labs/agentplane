@@ -12,8 +12,8 @@ Created: 2026-08-18T16:36:10.309Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted P1 on PR #4844: branch-task-artifact ownership must accept remote-tracking comparison refs and retain the contamination gate for origin/main; add a regression.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
