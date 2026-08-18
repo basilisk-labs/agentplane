@@ -4,7 +4,7 @@ title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -32,17 +32,35 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "rework"
-  updated_at: "2026-08-18T23:12:48.003Z"
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-18T23:17:16.161Z"
   updated_by: "EVALUATOR"
-  note: "Execution authority omitted required root package.json; reopen implementation to request an exact state-bound scope extension before publication."
-  evaluated_sha: "3c5ade2462f684a873993cade2d12103036bc160"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "6b3d54e01ac3a71e0b0620eff04e6b1ca0e41f63"
   blueprint_digest: "7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce"
   evidence_refs:
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-231537698-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-231537698-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/5fb76541b905eab280064f6da781a5abcee8dd2054cb7cc480ef4b48081eac48.md"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-231537698-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-231537698-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-231537698-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181750-CRZNFC/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/9430c1c981b75729ec6c75900f36cb4c8db0402aaa1ad0de83d0af4723fc7560.patch"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/ab26a579e5063d5e36d4dd5c5edbf9fd64cbb67000c57806cba468f9fdf201c7.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/verification/20260818231532319-c7b4fb3c32dd2db0.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/07d3a2d994a7d0df45d44db46db30e7331200d55b9aea7ba949e473a44d57444.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
   findings:
-    - "Check: execution-contract-authority\nCommand: supervisor scope audit\nResult: rework\nEvidence: package.json is changed by the release version plan but absent from the current writable roots.\nScope: exact 0.7.7 candidate diff."
+    - "All package versions and internal pins resolve to stable 0.7.7; generated workflow, ACR, documentation, compatibility, and social-image surfaces are consistent."
+    - "Foreign task ownership remains fail-closed for additions, modifications, durable reports, and PR evidence; only deletions of volatile .log/.jsonl or runs/repro artifacts are exempted, with explicit negative regression tests."
+    - "The final integration prepare mock includes gitDiffNameStatus, closing the full-matrix isolation failure; the affected prepare and ownership tests pass 29/29."
+    - "Canonical local evidence passes all 105 release-ci-base chunks, workflow 50/50, significant 204/204, release-critical 16/16, package tarball policy, eight migration scenarios, and local tarball install smoke."
+    - "Residual risk: Hosted checks, protected-main integration, public package publication, next-beta opening, and post-release local cleanup remain lifecycle steps outside this read-only verdict."
 execution_route:
   frozen: true
   reason_codes:

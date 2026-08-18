@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608181750-CRZNFC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-18T23:17:16.161Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "6b3d54e01ac3a71e0b0620eff04e6b1ca0e41f63",
+  "blueprint_digest": "7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce",
+  "findings": [
+    "All package versions and internal pins resolve to stable 0.7.7; generated workflow, ACR, documentation, compatibility, and social-image surfaces are consistent.",
+    "Foreign task ownership remains fail-closed for additions, modifications, durable reports, and PR evidence; only deletions of volatile .log/.jsonl or runs/repro artifacts are exempted, with explicit negative regression tests.",
+    "The final integration prepare mock includes gitDiffNameStatus, closing the full-matrix isolation failure; the affected prepare and ownership tests pass 29/29.",
+    "Canonical local evidence passes all 105 release-ci-base chunks, workflow 50/50, significant 204/204, release-critical 16/16, package tarball policy, eight migration scenarios, and local tarball install smoke.",
+    "Residual risk: Hosted checks, protected-main integration, public package publication, next-beta opening, and post-release local cleanup remain lifecycle steps outside this read-only verdict."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/9430c1c981b75729ec6c75900f36cb4c8db0402aaa1ad0de83d0af4723fc7560.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
