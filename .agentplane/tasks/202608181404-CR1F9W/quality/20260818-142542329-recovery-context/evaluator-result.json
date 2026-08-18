@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "docs/releases/v0.7.7.md, its generated social image, and the social manifest pass the full documentation-site contract.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e6cf0e72c1337e3d80e0cdd44de75fe18073f29ee2e83bb0a5077d5f05f6caaf.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "task scope extend rejects unsafe/no-op changes, checks exact route fingerprint and USER authority, preserves observations, and invalidates task-level commit, verification, and quality-review state.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e6cf0e72c1337e3d80e0cdd44de75fe18073f29ee2e83bb0a5077d5f05f6caaf.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "AgentSemanticResult blocker has no structured requested_scope_roots or requested_repository_effects, so the proposed authority expansion remains embedded in recommended_action prose and is not bound to the recorded blocker receipt.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e6cf0e72c1337e3d80e0cdd44de75fe18073f29ee2e83bb0a5077d5f05f6caaf.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "blockedTaskStep remains a generic terminal attention_required step and does not expose an exact task scope extend operator action; the new command is therefore not part of the normal task advance protocol.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e6cf0e72c1337e3d80e0cdd44de75fe18073f29ee2e83bb0a5077d5f05f6caaf.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The focused tests cover only the pure contract merge helper. They do not exercise blocker recording, the state-bound CLI command, supervisor journal recovery, or issuance of a new implementation_rework/implementation EXECUTOR work order with the expanded writable roots.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e6cf0e72c1337e3d80e0cdd44de75fe18073f29ee2e83bb0a5077d5f05f6caaf.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: An operator can approve roots/effects unrelated to the recorded blocker because the command validates only the task fingerprint, not an exact structured request digest.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e6cf0e72c1337e3d80e0cdd44de75fe18073f29ee2e83bb0a5077d5f05f6caaf.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: The task can remain terminally BLOCKED in the normal protocol because no projected operator action teaches an autonomous supervisor how to invoke the new boundary.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e6cf0e72c1337e3d80e0cdd44de75fe18073f29ee2e83bb0a5077d5f05f6caaf.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "An end-to-end CLI/supervisor test that records a typed blocked result, observes the projected scope-extension operator action, applies exact USER approval, and asserts that the next task advance packet is a fresh EXECUTOR work order containing the added writable roots/effects.",
+    "Negative coverage proving that requested roots/effects cannot be substituted, widened, replayed after fingerprint drift, or applied from a stale blocker receipt."
+  ],
+  "hidden_assumptions": [
+    "A free-form recommended_action plus USER-supplied CLI arguments is equivalent to a typed scope-extension request bound to the blocker.",
+    "Resetting task-level commit/verification/quality fields is sufficient to recover the external-agent supervisor journal and force a new executor episode."
+  ],
+  "recovery_context": "Add a structured repository scope-extension request to blocked semantic results (or an equivalent immutable pending-request artifact), bind its exact roots/effects and digest into the BLOCKED route operator action and USER approval, then add an end-to-end task advance regression proving a fresh expanded EXECUTOR packet. Preserve the existing monotonic merge, task evidence invalidation, compatibility ratchet, and social asset changes."
+}
