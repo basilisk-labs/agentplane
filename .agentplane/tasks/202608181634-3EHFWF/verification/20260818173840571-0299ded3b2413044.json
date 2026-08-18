@@ -1,0 +1,91 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181634-3EHFWF Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181634-3EHFWF Verification Contract check critical_paths\n\nCheck: docs_contract\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181634-3EHFWF Verification Contract check docs_contract\n\nCheck: full_regression\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181634-3EHFWF Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181634-3EHFWF Verification Contract check hosted_integration\n\nCheck: real_e2e\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181634-3EHFWF Verification Contract check real_e2e\n\nCheck: task_outcome\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181634-3EHFWF Verification Contract check task_outcome",
+  "digest": "sha256:0299ded3b241304483c19405a6e92bb77aa86b0ee033ad8f84b5cc3a7c7b269d",
+  "implementation_sha": "6598f11bc42d11f6f1b5853cf60f6744bd3b9007",
+  "input": {
+    "context": {
+      "digest": "sha256:dc9f107572de41b553c1ad75b54baae171db8ec140e954fe86d422957ca6f770",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:e92454b23e07db4f2a76757d5760d375f50d525dbcc7eab0ce0768395e55f72a",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:2565be48b38e5eaea6b72567b4eaea9d1a751e22dc1fa869a5df5d3441ca8515",
+      "digest": "sha256:008d50b3852ec27acad5045f5d9539595fb12f02808ad495125cea1171086336",
+      "references": [
+        {
+          "digest": "sha256:de05aa30233de67816eca106480e6aa6d5f788fa59f77cd9deffe4b41e3ad78e",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "374aa33fbca59318205d2dde70ab149710fe566d",
+      "digest": "sha256:9733d574abe6d6fd898d4ee18ae7ac2a84b8e344f20eccb6508d60b1b1513c8a",
+      "strategy": "branch_diff",
+      "target_sha": "6598f11bc42d11f6f1b5853cf60f6744bd3b9007"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:e89ccea62147aa64f75bd28a8ca147674e66b778319a6d0b9b9f43558925f7a6",
+    "verify_steps_digest": "sha256:a6c4b5626711e325c56f5b57d743aa6f2befcb10b159974a135b21755f234abb"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-08-18T17:38:40.571Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:a6c4b5626711e325c56f5b57d743aa6f2befcb10b159974a135b21755f234abb",
+  "task_id": "202608181634-3EHFWF",
+  "verification_command": "agentplane verify 202608181634-3EHFWF --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

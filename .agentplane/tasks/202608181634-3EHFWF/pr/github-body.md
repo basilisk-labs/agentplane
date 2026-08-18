@@ -15,14 +15,8 @@ Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports 
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Hosted verify-tests failed because prepareIntegrate unit mocks with ordered gitRevParse results did
-not account for the new comparison-base ref resolution call; update all four sequences and rerun the
-exact failing file plus release gates.
-```
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>

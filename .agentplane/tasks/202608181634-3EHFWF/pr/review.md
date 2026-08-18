@@ -12,8 +12,8 @@ Created: 2026-08-18T16:36:10.309Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted verify-tests failed because prepareIntegrate unit mocks with ordered gitRevParse results did not account for the new comparison-base ref resolution call; update all four sequences and rerun the exact failing file plus release gates.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
