@@ -1,10 +1,11 @@
 ---
 id: "202608181634-3EHFWF"
 title: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication."
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -58,6 +59,20 @@ quality_review:
     - "The contract regression requires the detect output and rejects the former stable-only source output reference."
     - "The candidate records 4,193 passing fast tests plus focused, critical, release-critical, contract, documentation, release payload, and diff-hygiene checks."
     - "Residual risk: The public release remains dependent on green hosted checks and separately authority-gated integration and publication operations."
+token_usage:
+  agent_runs: 6
+  input_tokens: null
+  journal_digest: "sha256:fee6ca05d782fa58087ebc1ae79c5ef38c3aed177234a26881e6239ae4e116c8"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-18T17:01:17.770Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -458,8 +473,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b10d32931b6f74f791d30677d61103cbe15fb38f"
-  message: "🛠️ 3EHFWF task: preserve prerelease SHA output"
+  hash: "c0d4cc34fcb6f90312fee03e890928e67a47d88b"
+  message: "🚧 3EHFWF task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -476,6 +491,9 @@ comments:
   -
     author: "CODER"
     body: "Preserve prerelease SHA output and add contract regression after evaluator rework."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -519,8 +537,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-18T17:01:17.770Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "c0d4cc34fcb6f90312fee03e890928e67a47d88b"
 doc_version: 3
-doc_updated_at: "2026-08-18T16:59:57.747Z"
+doc_updated_at: "2026-08-18T17:01:17.779Z"
 doc_updated_by: "CODER"
 description: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication."
 sections:
@@ -720,6 +746,9 @@ extensions:
     schema_version: 1
     status: "applied"
     transition_id: "tr_89111575729e7a174742659ceb5fb0b9"
+  implementation_commit:
+    hash: "b10d32931b6f74f791d30677d61103cbe15fb38f"
+    message: "🛠️ 3EHFWF task: preserve prerelease SHA output"
   workflow_route_baseline:
     start_head_sha: "374aa33fbca59318205d2dde70ab149710fe566d"
     version: 1
@@ -903,3 +932,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/6` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:fee6ca05d782fa58087ebc1ae79c5ef38c3aed177234a26881e6239ae4e116c8`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-18T17:01:17.770Z`
