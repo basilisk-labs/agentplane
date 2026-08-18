@@ -1,10 +1,10 @@
 ---
 id: "202608181634-3EHFWF"
 title: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication."
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,14 +24,22 @@ plan_approval:
   note: "User explicitly authorized implementation, full validation, merge, publication, and cleanup in this conversation."
 verification:
   state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  updated_at: "2026-08-18T16:37:20.862Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 execution_route:
   frozen: true
   reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_ci"
+    - "effect_dependencies"
+    - "effect_public_api"
+    - "effect_publish"
+    - "effect_release_metadata"
+    - "effect_schema"
     - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
   repository_mode: "branch_pr"
   requested_mode: "branch_pr"
   schema_version: 1
@@ -40,8 +48,15 @@ execution_contract:
   authority:
     allowed_external_effects: []
     allowed_repository_effects:
+      - "ci"
+      - "dependencies"
+      - "documentation"
+      - "public_api"
       - "release_metadata"
       - "repository_write"
+      - "schema"
+      - "source_code"
+      - "tests"
     forbidden_external_effects:
       - "network_read"
       - "external_write"
@@ -50,29 +65,44 @@ execution_contract:
       - "deploy"
       - "destructive_git"
     forbidden_repository_effects:
-      - "documentation"
-      - "source_code"
-      - "tests"
-      - "public_api"
-      - "schema"
-      - "dependencies"
-      - "ci"
       - "security_boundary"
-    writable_roots: []
+    writable_roots:
+      - ".agentplane/WORKFLOW.md"
+      - ".github/workflows"
+      - "docs"
+      - "packages"
+      - "schemas"
+      - "scripts"
+      - "website"
   declaration:
     external_effects:
       - "publish"
     implementation_uncertainty: "bounded"
     preferred_mode: "branch_pr"
     rationale:
+      - "USER-approved blocked-result scope extension: roots=.agentplane/WORKFLOW.md,.github/workflows,docs,packages,schemas,scripts,website; repository_effects=ci,dependencies,documentation,public_api,release_metadata,repository_write,schema,source_code,tests"
       - "legacy structured task fields mapped to the execution contract"
     repository_effects:
+      - "ci"
+      - "dependencies"
+      - "documentation"
+      - "public_api"
       - "release_metadata"
       - "repository_write"
+      - "schema"
+      - "source_code"
+      - "tests"
     requirements_uncertainty: "bounded"
     reversibility: "recovery_required"
     schema_version: 2
-    scope_roots: []
+    scope_roots:
+      - ".agentplane/WORKFLOW.md"
+      - ".github/workflows"
+      - "docs"
+      - "packages"
+      - "schemas"
+      - "scripts"
+      - "website"
   observed:
     authority_violations: []
     changed_components: []
@@ -82,8 +112,12 @@ execution_contract:
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
+    - "effect_ci"
+    - "effect_dependencies"
+    - "effect_public_api"
     - "effect_publish"
     - "effect_release_metadata"
+    - "effect_schema"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -94,29 +128,55 @@ execution_contract:
     requires_worktree: true
   schema_version: 1
   selected_mode: "branch_pr"
-  source: "legacy_compatibility"
+  source: "agent_declared"
   verification:
     contract:
       declared:
-        components: []
+        components:
+          - ".agentplane/WORKFLOW.md"
+          - ".github/workflows"
+          - "docs"
+          - "packages"
+          - "schemas"
+          - "scripts"
+          - "website"
         evidence_requirements:
           - "external_effect:publish"
           - "hosted_integration"
+          - "repository_effect:ci"
+          - "repository_effect:dependencies"
+          - "repository_effect:documentation"
+          - "repository_effect:public_api"
           - "repository_effect:release_metadata"
           - "repository_effect:repository_write"
+          - "repository_effect:schema"
+          - "repository_effect:source_code"
+          - "repository_effect:tests"
           - "task_outcome"
         external_effects:
           - "publish"
         repository_effects:
+          - "ci"
+          - "dependencies"
+          - "documentation"
+          - "public_api"
           - "release_metadata"
           - "repository_write"
+          - "schema"
+          - "source_code"
+          - "tests"
         risk:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:cab5f9abef276fff075be42a9c7159a9dce3bf6453665b190f44ebd1fde1c9af"
+      digest: "sha256:9ff4ce66b96c83f6aef13cb4ca39ad5c174b0491c4b2ff50b915c20330ba6ed1"
       escalation_reasons:
+        - "central_component:.github/workflows"
+        - "effect_ci"
+        - "effect_dependencies"
+        - "effect_public_api"
         - "effect_release_metadata"
+        - "effect_schema"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
       execution_groups:
@@ -138,6 +198,9 @@ execution_contract:
       requires_real_e2e: true
       schema_version: 2
       selected_checks:
+        - "affected_unit_integration"
+        - "critical_paths"
+        - "docs_contract"
         - "full_regression"
         - "hosted_integration"
         - "real_e2e"
@@ -156,8 +219,15 @@ execution_contract:
     required_evidence:
       - "external_effect:publish"
       - "hosted_integration"
+      - "repository_effect:ci"
+      - "repository_effect:dependencies"
+      - "repository_effect:documentation"
+      - "repository_effect:public_api"
       - "repository_effect:release_metadata"
       - "repository_effect:repository_write"
+      - "repository_effect:schema"
+      - "repository_effect:source_code"
+      - "repository_effect:tests"
       - "task_outcome"
 commit: null
 comments:
@@ -167,6 +237,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Implementation cannot start because the caller-supplied legacy release contract permits release metadata only, while the approved plan necessarily changes source, tests, CI, documentation, public API, schema, and dependency version surfaces. Recommended action: Extend the task scope to the listed repository roots and effects, then request a fresh implementation packet. Requested scope: roots=.agentplane/WORKFLOW.md,.github/workflows,docs,packages,schemas,scripts,website; repository effects=ci,dependencies,documentation,public_api,release_metadata,repository_write,schema,source_code,tests; request digest=sha256:585f670ed99c2c408c06d26663703d36e9627546672ffec6ff5dee03af4d856a. Agentplane receipt: external-agent-blocker/tr_89111575729e7a174742659ceb5fb0b9/sha256:ad9e914da67c26f735e612da30159e6656f6292c2c3cc40daf15d21827034b3e/sha256:585f670ed99c2c408c06d26663703d36e9627546672ffec6ff5dee03af4d856a."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: .agentplane/WORKFLOW.md, .github/workflows, docs, packages, schemas, scripts, website; repository effects: ci, dependencies, documentation, public_api, release_metadata, repository_write, schema, source_code, tests."
 events:
   -
     type: "status"
@@ -210,6 +283,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-08-18T16:37:20.862Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:ad9e914da67c26f735e612da30159e6656f6292c2c3cc40daf15d21827034b3e"
     kind: "task_scope_extension_request"
     request:
@@ -235,7 +310,7 @@ extensions:
         - "website"
     request_digest: "sha256:585f670ed99c2c408c06d26663703d36e9627546672ffec6ff5dee03af4d856a"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_89111575729e7a174742659ceb5fb0b9"
   workflow_route_baseline:
     start_head_sha: "374aa33fbca59318205d2dde70ab149710fe566d"
