@@ -32,6 +32,7 @@ Created: 2026-08-18T18:57:10.614Z
  .../derived/reports/release-docs-assimilation.json |  7459 ---
  .../reports/release-docs-assimilation.sgr.json     | 54587 -------------------
  .../reports/release-docs-coverage-detail.jsonl     |   210 -
+ .gitattributes                                     |     1 +
  README.md                                          |    29 +-
  context/wiki/release-docs/concepts/acr.md          |     6 +-
  .../wiki/release-docs/concepts/configuration.md    |     3 +-
@@ -42,10 +43,10 @@ Created: 2026-08-18T18:57:10.614Z
  docs/assets/agentplane-demo.tape                   |     6 +-
  docs/compare.mdx                                   |    64 +-
  docs/index.mdx                                     |    14 +-
- docs/launch/checklist.md                           |    52 -
- docs/launch/hn.md                                  |    44 -
- docs/launch/reddit.md                              |    60 -
- docs/launch/twitter.md                             |    62 -
+ docs/launch/checklist.md                           |   Bin 2240 -> 0 bytes
+ docs/launch/hn.md                                  |   Bin 1543 -> 0 bytes
+ docs/launch/reddit.md                              |   Bin 1790 -> 0 bytes
+ docs/launch/twitter.md                             |   Bin 1543 -> 0 bytes
  docs/listing.md                                    |    26 +-
  docs/manifesto.mdx                                 |    45 +-
  docs/user/overview.mdx                             |    22 +-
@@ -63,7 +64,7 @@ Created: 2026-08-18T18:57:10.614Z
  website/static/img/social/manifest.json            |    32 -
  website/static/llms-full.txt                       |   125 +-
  website/static/llms.txt                            |     5 +-
- 34 files changed, 299 insertions(+), 62811 deletions(-)
+ 35 files changed, 300 insertions(+), 62593 deletions(-)
 ```
 
 </details>

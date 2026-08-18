@@ -24,6 +24,7 @@
 .agentplane/tasks/**/*.log export-ignore
 .agentplane/tasks/**/*.jsonl export-ignore
 .agentplane/tasks/**/quality/objects/** -diff linguist-generated=true
+docs/launch/** -diff
 .agentplane/cache/** export-ignore
 .agentplane/bin/** export-ignore
 .agentplane/.npm-cache/** export-ignore
