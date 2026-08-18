@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608181750-CRZNFC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-18T23:54:24.043Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 6 typed finding(s).",
+  "evaluated_sha": "6ed0b4b62b786d389f6a2b0ea3730973238c3985",
+  "blueprint_digest": "7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce",
+  "findings": [
+    "The default path no longer exempts foreign .log, .jsonl, runs, or repro deletions; they contribute the foreign task id and fail validation.",
+    "The exception requires both an exact foreign-task descendant root and path containment within that root, preventing task-id prefix and sibling-root widening.",
+    "Only deletion-class volatile artifacts are eligible; modifications, durable JSON reports, and pr/verify.log or pr/notes.jsonl remain ownership-gated.",
+    "Both PR synchronization and integration preparation derive cleanup roots from the current task execution contract authority, which contains the explicitly approved T3ZDDM evidence root for this release task.",
+    "The full repeated release gate passed 105/105 release-ci-base chunks, workflow 50/50, significant 204/204, release-critical 16/16, package policy, eight migration scenarios, and install smoke.",
+    "Residual risk: The task execution contract is treated as the authoritative source of writable roots; its approval and integrity remain enforced by existing scope-extension and task-lifecycle controls."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/d6629b98f571a9dd8028d2ce11099313b0927e6931c20316304642319549f053.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
