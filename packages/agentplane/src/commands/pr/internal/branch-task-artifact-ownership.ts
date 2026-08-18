@@ -23,11 +23,20 @@ function taskIdFromArtifactPath(pathname: string, roots: readonly string[]): str
 function isVolatileTaskArtifactDeletion(
   entry: { statusCode: string; path: string },
   roots: readonly string[],
+  authorizedCleanupRoots: readonly string[],
 ): boolean {
   if (entry.statusCode !== "D") return false;
   const normalized = entry.path.replaceAll("\\", "/").replace(/^\.\//u, "");
   const relative = roots.map((root) => `${root}/`).find((prefix) => normalized.startsWith(prefix));
   if (!relative) return false;
+  const taskId = normalized.slice(relative.length).split("/", 1)[0]?.trim() ?? "";
+  if (!taskId) return false;
+  const taskRoot = `${relative}${taskId}`;
+  const authorized = authorizedCleanupRoots.some(
+    (root) =>
+      root.startsWith(`${taskRoot}/`) && (normalized === root || normalized.startsWith(`${root}/`)),
+  );
+  if (!authorized) return false;
   const taskRelative = normalized.slice(relative.length).split("/").slice(1).join("/");
   if (/^pr\/(?:verify\.log|notes\.jsonl)$/u.test(taskRelative)) return false;
   return /\.(?:log|jsonl)$/u.test(taskRelative) || /^(?:runs|repro)(?:\/|$)/u.test(taskRelative);
@@ -41,6 +50,7 @@ export async function assertBranchTaskArtifactOwnership(opts: {
   tasksPath: string;
   primaryTaskId: string;
   includedTaskIds?: readonly string[];
+  authorizedForeignArtifactCleanupRoots?: readonly string[];
 }): Promise<void> {
   const roots = [...new Set([normalizedRoot(opts.workflowDir), normalizedRoot(opts.tasksPath)])]
     .filter(Boolean)
@@ -63,10 +73,17 @@ export async function assertBranchTaskArtifactOwnership(opts: {
   const mergeBase = await gitMergeBase(opts.gitRoot, comparisonBase, opts.branch);
   const changedEntries = await gitDiffNameStatus(opts.gitRoot, mergeBase, opts.branch);
   const allowed = new Set([opts.primaryTaskId, ...(opts.includedTaskIds ?? [])]);
+  const authorizedCleanupRoots = [
+    ...new Set(
+      (opts.authorizedForeignArtifactCleanupRoots ?? [])
+        .map((root) => normalizedRoot(root))
+        .filter(Boolean),
+    ),
+  ];
   const foreignTaskIds = [
     ...new Set(
       changedEntries
-        .filter((entry) => !isVolatileTaskArtifactDeletion(entry, roots))
+        .filter((entry) => !isVolatileTaskArtifactDeletion(entry, roots, authorizedCleanupRoots))
         .map((entry) => taskIdFromArtifactPath(entry.path, roots))
         .filter((taskId): taskId is string => Boolean(taskId && !allowed.has(taskId))),
     ),

@@ -15,8 +15,8 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Hosted P1: the generic volatile-evidence deletion exemption weakens foreign task ownership globally.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -84,8 +84,10 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
  .../evaluator/evaluator-execute.command.test.ts    |   4 +-
  .../evaluator-qualification-packet.test.ts         |   2 +-
  .../commands/pr/integrate/internal/prepare.test.ts |   3 +
- .../branch-task-artifact-ownership.test.ts         |  85 +++++++++--
- .../pr/internal/branch-task-artifact-ownership.ts  |  22 ++-
+ .../src/commands/pr/integrate/internal/prepare.ts  |   1 +
+ .../branch-task-artifact-ownership.test.ts         | 145 ++++++++++++++++--
+ .../pr/internal/branch-task-artifact-ownership.ts  |  39 ++++-
+ .../agentplane/src/commands/pr/internal/sync.ts    |   2 +
  .../task-run-lifecycle-replay-security.test.ts     | 162 +++++++++++----------
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
@@ -96,7 +98,7 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
  scripts/README.md                                  |  24 +--
  .../baselines/v0.7-compatibility-candidate.json    |   6 +-
  scripts/checks/run-fast-ci-tests.mjs               |   2 +-
- 69 files changed, 272 insertions(+), 1441 deletions(-)
+ 71 files changed, 352 insertions(+), 1441 deletions(-)
 ```
 
 </details>

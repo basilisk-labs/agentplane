@@ -1,0 +1,98 @@
+{
+  "details": "Check: hosted-review-thread\nCommand: GitHub review thread on PR #4846\nResult: rework\nEvidence: branch-task-artifact-ownership.ts filters all foreign .log/.jsonl and runs/repro deletions before ownership extraction.\nScope: replace the product-wide exemption with exact task-specific cleanup authority while retaining the T3ZDDM release cleanup.",
+  "digest": "sha256:b19e994d13c2559f6cef96e88cf8446d8876e0fd778ac3067a18cb4b80c69048",
+  "implementation_sha": "6b3d54e01ac3a71e0b0620eff04e6b1ca0e41f63",
+  "input": {
+    "context": {
+      "digest": "sha256:e8474379a763ca6e0e128de1046c6129a4eeecfa9ee27726efe29aa98e54ddd8",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:37db041a4857d6627d46c3fd6763d7b6007cf8d46468cc225150cbde4db455c4",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:da04b57476082b20bfbce9ed50cd669f468ebc9a463face45e5458121deb6420",
+      "digest": "sha256:4a69c12bb408c71f5dc5e8ee36b6ded164d2023656b03fbbbabb46075c599cae",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": ".log/.jsonl",
+          "reference": ".log/.jsonl",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "runs/repro",
+          "reference": "runs/repro",
+          "source": "missing"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "708f0d7d5b813ea2bb4de659d9eb113a752e3c63",
+      "digest": "sha256:d109fa8cf9581d563fcebbb93e38d3ddc99e6c79ae76c9afec191456bf0cd539",
+      "strategy": "branch_diff",
+      "target_sha": "6b3d54e01ac3a71e0b0620eff04e6b1ca0e41f63"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:3c01bcaa714814f33a41688de8704195f47f09b02edbd35622a75413a3e0da3d",
+    "verify_steps_digest": "sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1"
+  },
+  "kind": "task_verification_record",
+  "note": "Hosted P1: the generic volatile-evidence deletion exemption weakens foreign task ownership globally.",
+  "recorded_at": "2026-08-18T23:21:13.208Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1",
+  "task_id": "202608181750-CRZNFC",
+  "verification_command": "agentplane task verify rework 202608181750-CRZNFC --rework --by EVALUATOR",
+  "verifier": "EVALUATOR"
+}

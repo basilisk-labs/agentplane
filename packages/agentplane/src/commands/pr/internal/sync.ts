@@ -292,6 +292,8 @@ export async function syncPrArtifacts(opts: {
           tasksPath: config.paths.tasks_path,
           primaryTaskId: task.id,
           includedTaskIds: validatedIncludedTaskIds,
+          authorizedForeignArtifactCleanupRoots:
+            task.execution_contract?.authority.writable_roots ?? [],
         });
       }
       const previousIncludedTaskIds = normalizeRelatedTaskIds(

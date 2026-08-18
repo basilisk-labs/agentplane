@@ -2,10 +2,10 @@
 id: "202608181750-CRZNFC"
 title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref."
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -27,41 +27,23 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-18T23:15:32.319Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
-quality_review:
-  state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-18T23:17:16.161Z"
+  state: "needs_rework"
+  updated_at: "2026-08-18T23:21:13.208Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  note: "Hosted P1: the generic volatile-evidence deletion exemption weakens foreign task ownership globally."
+  attempts: 1
+quality_review:
+  state: "rework"
+  updated_at: "2026-08-18T23:21:13.208Z"
+  updated_by: "EVALUATOR"
+  note: "Hosted P1: the generic volatile-evidence deletion exemption weakens foreign task ownership globally."
   evaluated_sha: "6b3d54e01ac3a71e0b0620eff04e6b1ca0e41f63"
   blueprint_digest: "7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce"
   evidence_refs:
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-231537698-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-231537698-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/5fb76541b905eab280064f6da781a5abcee8dd2054cb7cc480ef4b48081eac48.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-231537698-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-231537698-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-231537698-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181750-CRZNFC/README.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/9430c1c981b75729ec6c75900f36cb4c8db0402aaa1ad0de83d0af4723fc7560.patch"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/ab26a579e5063d5e36d4dd5c5edbf9fd64cbb67000c57806cba468f9fdf201c7.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/verification/20260818231532319-c7b4fb3c32dd2db0.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/07d3a2d994a7d0df45d44db46db30e7331200d55b9aea7ba949e473a44d57444.json"
-    - ".agentplane/policy/dod.code.md"
-    - ".agentplane/policy/dod.core.md"
-    - ".agentplane/policy/security.must.md"
-    - ".agentplane/policy/workflow.release.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json"
   findings:
-    - "All package versions and internal pins resolve to stable 0.7.7; generated workflow, ACR, documentation, compatibility, and social-image surfaces are consistent."
-    - "Foreign task ownership remains fail-closed for additions, modifications, durable reports, and PR evidence; only deletions of volatile .log/.jsonl or runs/repro artifacts are exempted, with explicit negative regression tests."
-    - "The final integration prepare mock includes gitDiffNameStatus, closing the full-matrix isolation failure; the affected prepare and ownership tests pass 29/29."
-    - "Canonical local evidence passes all 105 release-ci-base chunks, workflow 50/50, significant 204/204, release-critical 16/16, package tarball policy, eight migration scenarios, and local tarball install smoke."
-    - "Residual risk: Hosted checks, protected-main integration, public package publication, next-beta opening, and post-release local cleanup remain lifecycle steps outside this read-only verdict."
+    - "Check: hosted-review-thread\nCommand: GitHub review thread on PR #4846\nResult: rework\nEvidence: branch-task-artifact-ownership.ts filters all foreign .log/.jsonl and runs/repro deletions before ownership extraction.\nScope: replace the product-wide exemption with exact task-specific cleanup authority while retaining the T3ZDDM release cleanup."
 token_usage:
   agent_runs: 8
   input_tokens: null
@@ -160,7 +142,8 @@ execution_contract:
       - "scripts"
       - "website"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - ".agentplane"
       - "docs"
@@ -271,6 +254,9 @@ execution_contract:
       -
         id: "recorded-check-7"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_dependencies"
@@ -520,9 +506,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "792f32e1978ac4833991298bea9e065e180e0d87"
-  message: "🚧 CRZNFC task: record external evaluator result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "INTEGRATOR"
@@ -632,8 +617,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "792f32e1978ac4833991298bea9e065e180e0d87"
+  -
+    type: "verify"
+    at: "2026-08-18T23:21:13.208Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Hosted P1: the generic volatile-evidence deletion exemption weakens foreign task ownership globally."
 doc_version: 3
-doc_updated_at: "2026-08-18T23:17:37.069Z"
+doc_updated_at: "2026-08-18T23:21:16.971Z"
 doc_updated_by: "INTEGRATOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
@@ -761,11 +752,54 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-18T23:21:13.208Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Hosted P1: the generic volatile-evidence deletion exemption weakens foreign task ownership globally.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:37db041a4857d6627d46c3fd6763d7b6007cf8d46468cc225150cbde4db455c4
+
+    Details:
+
+    Check: hosted-review-thread
+    Command: GitHub review thread on PR #4846
+    Result: rework
+    Evidence: branch-task-artifact-ownership.ts filters all foreign .log/.jsonl and runs/repro deletions before ownership extraction.
+    Scope: replace the product-wide exemption with exact task-specific cleanup authority while retaining the T3ZDDM release cleanup.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json
+    - old_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+    - current_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181750-CRZNFC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Generic volatile-evidence deletion bypasses foreign task ownership.
+      Impact: Any task branch could delete another task's execution or audit evidence without declaring batch ownership.
+      Resolution: Require an explicit exact cleanup allowlist or task-specific authority; keep additions, modifications, and unapproved deletions fail-closed.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
+      IncidentScope: branch_pr task artifact ownership
+      IncidentTags: ownership, evidence
 extensions:
   agentplane.scope_extension_request:
     applied_at: "2026-08-18T23:13:59.043Z"
@@ -925,6 +959,42 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-18T23:21:13.208Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Hosted P1: the generic volatile-evidence deletion exemption weakens foreign task ownership globally.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:37db041a4857d6627d46c3fd6763d7b6007cf8d46468cc225150cbde4db455c4
+
+Details:
+
+Check: hosted-review-thread
+Command: GitHub review thread on PR #4846
+Result: rework
+Evidence: branch-task-artifact-ownership.ts filters all foreign .log/.jsonl and runs/repro deletions before ownership extraction.
+Scope: replace the product-wide exemption with exact task-specific cleanup authority while retaining the T3ZDDM release cleanup.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json
+- old_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+- current_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181750-CRZNFC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -933,6 +1003,14 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Generic volatile-evidence deletion bypasses foreign task ownership.
+  Impact: Any task branch could delete another task's execution or audit evidence without declaring batch ownership.
+  Resolution: Require an explicit exact cleanup allowlist or task-specific authority; keep additions, modifications, and unapproved deletions fail-closed.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
+  IncidentScope: branch_pr task artifact ownership
+  IncidentTags: ownership, evidence
 
 ## Token Usage
 

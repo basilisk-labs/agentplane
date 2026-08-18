@@ -225,6 +225,7 @@ export async function prepareIntegrate(opts: {
     includedTaskIds: normalizeBranchPrBatchTaskIds(task, opts.taskId).filter(
       (taskId) => taskId !== opts.taskId,
     ),
+    authorizedForeignArtifactCleanupRoots: task.execution_contract?.authority.writable_roots ?? [],
   });
   const protectedBaseRequiresPrMerge = await requiresPullRequestMergePath({
     gitRoot: resolved.gitRoot,
