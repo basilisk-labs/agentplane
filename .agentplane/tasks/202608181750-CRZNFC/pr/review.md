@@ -12,8 +12,8 @@ Created: 2026-08-18T17:51:51.714Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted P1: the generic volatile-evidence deletion exemption weakens foreign task ownership globally.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
