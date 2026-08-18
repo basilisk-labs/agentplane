@@ -4,7 +4,7 @@ title: "Reposition AgentPlane as the Git-native control plane for coding agents 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -165,7 +165,9 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "task_outcome"
-commit: null
+commit:
+  hash: "f4b9faf482a744690425743a391d9498424e9f1a"
+  message: "🧭 Z3GWTA task: reposition Agentplane as Git-native control plane"
 comments:
   -
     author: "CODER"
@@ -198,8 +200,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-18T19:10:55.040Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    commit: "f4b9faf482a744690425743a391d9498424e9f1a"
 doc_version: 3
-doc_updated_at: "2026-08-18T18:57:10.256Z"
+doc_updated_at: "2026-08-18T19:10:55.040Z"
 doc_updated_by: "CODER"
 description: "Unify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth."
 sections:
