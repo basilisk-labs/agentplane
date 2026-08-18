@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608181557-DR1T03-dce24b04b39b4adcc01c13d8",
+  "prepared_at": "2026-08-18T16:24:42.271Z",
+  "task": {
+    "id": "202608181557-DR1T03",
+    "revision": 6,
+    "objective": "Consolidate AgentPlane 0.7.7 hardening and repair terminal conflict rework\n\nConsolidate only the current source and release changes from superseded PR #4841 onto the latest main; fix the terminal DONE-task provider conflict route so a current open conflicting PR can enter controlled semantic rework without an impossible prior queue record; make foreign task-artifact isolation compare branch-introduced changes rather than base-only task artifacts; refresh compatibility and release artifacts; run all local and hosted gates; integrate and release 0.7.7.",
+    "acceptance_criteria": [
+      "bun run ci:contract",
+      "bun run docs:site:check",
+      "bun run test:critical",
+      "bun run test:fast",
+      "- In scope: Consolidate only the current source and release changes from superseded PR #4841 onto the latest main; fix the terminal DONE-task provider conflict route so a current open conflicting PR can enter controlled semantic rework without an impossible prior queue record; make foreign task-artifact isolation compare branch-introduced changes rather than base-only task artifacts; refresh compatibility and release artifacts; run all local and hosted gates; integrate and release 0.7.7.\n- Out of scope: unrelated refactors not required for \"Consolidate AgentPlane 0.7.7 hardening and repair terminal conflict rework\".",
+      "Consolidate the still-relevant 0.7.7 hardening from superseded PR #4841 onto current main, add regressions for branch-only foreign task-artifact detection and terminal conflicting-PR recovery, preserve the already merged scope-extension and social-asset remediation, refresh all release/compatibility surfaces, then integrate and publish 0.7.7 through the controlled branch_pr release route.",
+      "PLANNER fallback scaffold for \"Consolidate AgentPlane 0.7.7 hardening and repair terminal conflict rework\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Consolidate AgentPlane 0.7.7 hardening and repair terminal conflict rework\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "ecf3e69579722fe9e6f0b129ee05e4a917ece325",
+  "diff_base_sha": "374aa33fbca59318205d2dde70ab149710fe566d",
+  "blueprint_digest": "752efa75490b7523541f777bf29d89d628ac0dd8db65a55b68f90cd2f6fdeefa",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608181557-DR1T03/quality/20260818-162442271-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:4902b170b59ab21255e3db2704b636b7979b99d24702b07b38b46dbcb4b37028",
+    "prompt_path": ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/b838067ee76b51a9ba9c3cacd3ed64cdc02739c6084ed587fea189311a5eb856.md",
+    "result_schema_path": ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608181557-DR1T03/README.md",
+      "sha256": "sha256:0109071b3b1c3f95005d5a3c024f607bc96554e6790a545266ecc69dc059791a",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/38aeb56cf95cfd09668aa70bdae0b253f6f9a685efecd8787a47e931a432532f.patch",
+      "sha256": "sha256:38aeb56cf95cfd09668aa70bdae0b253f6f9a685efecd8787a47e931a432532f",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/dc3d94f9e64301ef01fb6c086d425640482c6f2000342ced379d16701717d721.json",
+      "sha256": "sha256:dc3d94f9e64301ef01fb6c086d425640482c6f2000342ced379d16701717d721",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608181557-DR1T03/verification/20260818162329214-e2af7c6c77c9a84a.json",
+      "sha256": "sha256:7f353d982cb8693204f2fff8f11a75924a059aa647a1d337b16f49d4cee5aaea",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/43bd113da85440e7162ce12fd7d25446d74ab721d736aea8710e5bfe4bd7e7b3.json",
+      "sha256": "sha256:43bd113da85440e7162ce12fd7d25446d74ab721d736aea8710e5bfe4bd7e7b3",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:47ab8b04f9d747491398390dac415b34aa6d3df0cf0fb61e9924fd3e4851ec48",
+      "required": true
+    }
+  ]
+}

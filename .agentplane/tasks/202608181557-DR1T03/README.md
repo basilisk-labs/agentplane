@@ -4,7 +4,7 @@ title: "Consolidate AgentPlane 0.7.7 hardening and repair terminal conflict rewo
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -36,6 +36,38 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-18T16:25:39.294Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "ecf3e69579722fe9e6f0b129ee05e4a917ece325"
+  blueprint_digest: "752efa75490b7523541f777bf29d89d628ac0dd8db65a55b68f90cd2f6fdeefa"
+  evidence_refs:
+    - ".agentplane/tasks/202608181557-DR1T03/quality/20260818-162442271-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181557-DR1T03/quality/20260818-162442271-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/b838067ee76b51a9ba9c3cacd3ed64cdc02739c6084ed587fea189311a5eb856.md"
+    - ".agentplane/tasks/202608181557-DR1T03/quality/20260818-162442271-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181557-DR1T03/quality/20260818-162442271-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181557-DR1T03/quality/20260818-162442271-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608181557-DR1T03/README.md"
+    - ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/38aeb56cf95cfd09668aa70bdae0b253f6f9a685efecd8787a47e931a432532f.patch"
+    - ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/dc3d94f9e64301ef01fb6c086d425640482c6f2000342ced379d16701717d721.json"
+    - ".agentplane/tasks/202608181557-DR1T03/verification/20260818162329214-e2af7c6c77c9a84a.json"
+    - ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/43bd113da85440e7162ce12fd7d25446d74ab721d736aea8710e5bfe4bd7e7b3.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
+  findings:
+    - "The branch ownership check resolves the upstream comparison ref, computes its merge base with the candidate, and inspects only merge-base-to-head paths; foreign task records introduced by the candidate still fail closed before PR sync and integration."
+    - "Conflict rework admits DONE without queue/handoff only after the existing provider state, PR identity, protected-base, clean worktree, verification, local/provider head, and base-context gates pass; queued, stale, mismatched, unprotected, or dirty routes remain rejected."
+    - "Configured all-mode authority explicitly covers integration.enqueue while task.scope.extend remains a hard USER boundary, preserving autonomous operation without self-authorized semantic scope expansion."
+    - "The release scripts use shared semver/channel helpers, enforce stable publication inputs, and open the next patch beta only after release evidence; package, workflow, docs, generated header, spec, and compatibility surfaces are aligned at 0.7.7-beta.1."
+    - "The consolidated branch excludes #4841 task artifacts and is based on the current main that already contains the scope-extension/social-asset remediation."
+    - "Residual risk: Release publication is stateful and externally irreversible enough to require exact hosted checks, provider merge confirmation, registry readback, and tag/release verification before cleanup."
+    - "Residual risk: The next-beta automation must be verified on the actual stable publish run, not inferred solely from unit tests."
 execution_route:
   frozen: true
   reason_codes:

@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The branch ownership check resolves the upstream comparison ref, computes its merge base with the candidate, and inspects only merge-base-to-head paths; foreign task records introduced by the candidate still fail closed before PR sync and integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/38aeb56cf95cfd09668aa70bdae0b253f6f9a685efecd8787a47e931a432532f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Conflict rework admits DONE without queue/handoff only after the existing provider state, PR identity, protected-base, clean worktree, verification, local/provider head, and base-context gates pass; queued, stale, mismatched, unprotected, or dirty routes remain rejected.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/38aeb56cf95cfd09668aa70bdae0b253f6f9a685efecd8787a47e931a432532f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Configured all-mode authority explicitly covers integration.enqueue while task.scope.extend remains a hard USER boundary, preserving autonomous operation without self-authorized semantic scope expansion.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/38aeb56cf95cfd09668aa70bdae0b253f6f9a685efecd8787a47e931a432532f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The release scripts use shared semver/channel helpers, enforce stable publication inputs, and open the next patch beta only after release evidence; package, workflow, docs, generated header, spec, and compatibility surfaces are aligned at 0.7.7-beta.1.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/38aeb56cf95cfd09668aa70bdae0b253f6f9a685efecd8787a47e931a432532f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The consolidated branch excludes #4841 task artifacts and is based on the current main that already contains the scope-extension/social-asset remediation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/38aeb56cf95cfd09668aa70bdae0b253f6f9a685efecd8787a47e931a432532f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Release publication is stateful and externally irreversible enough to require exact hosted checks, provider merge confirmation, registry readback, and tag/release verification before cleanup.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/38aeb56cf95cfd09668aa70bdae0b253f6f9a685efecd8787a47e931a432532f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: The next-beta automation must be verified on the actual stable publish run, not inferred solely from unit tests.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181557-DR1T03/quality/objects/sha256/38aeb56cf95cfd09668aa70bdae0b253f6f9a685efecd8787a47e931a432532f.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The task's legacy-compatible execution-contract projection reports observed effect escalation even though the issued executor packet granted scoped worktree write authority; hosted policy and exact provider checks must remain authoritative for integration."
+  ]
+}
