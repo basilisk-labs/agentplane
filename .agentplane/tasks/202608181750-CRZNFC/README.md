@@ -1,10 +1,10 @@
 ---
 id: "202608181750-CRZNFC"
 title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref."
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 13
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +26,23 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "pending"
-  updated_at: "2026-08-18T18:06:59.875Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-18T23:12:48.003Z"
+  updated_by: "EVALUATOR"
+  note: "Execution authority omitted required root package.json; reopen implementation to request an exact state-bound scope extension before publication."
+  attempts: 1
+quality_review:
+  state: "rework"
+  updated_at: "2026-08-18T23:12:48.003Z"
+  updated_by: "EVALUATOR"
+  note: "Execution authority omitted required root package.json; reopen implementation to request an exact state-bound scope extension before publication."
+  evaluated_sha: "3c5ade2462f684a873993cade2d12103036bc160"
+  blueprint_digest: "7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce"
+  evidence_refs:
+    - ".agentplane/tasks/202608181750-CRZNFC/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json"
+  findings:
+    - "Check: execution-contract-authority\nCommand: supervisor scope audit\nResult: rework\nEvidence: package.json is changed by the release version plan but absent from the current writable roots.\nScope: exact 0.7.7 candidate diff."
 execution_route:
   frozen: true
   reason_codes:
@@ -112,12 +124,101 @@ execution_contract:
       - "scripts"
       - "website"
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "verification:verification-record:fail"
+      - "writable_scope:package.json"
+    changed_components:
+      - ".agentplane"
+      - "docs"
+      - "package.json"
+      - "packages/agentplane"
+      - "packages/core"
+      - "packages/recipes"
+      - "packages/spec"
+      - "packages/testkit"
+      - "scripts"
+    changed_paths:
+      - ".agentplane/WORKFLOW.md"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/risk-e2e/logs/hosted-boundary-matrix.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/risk-e2e/logs/packaged-candidate-flow.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-01.events.jsonl"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-01.stderr.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-01.stdout.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-02.events.jsonl"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-02.stderr.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-02.stdout.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-03.events.jsonl"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-03.stderr.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-03.stdout.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-04.events.jsonl"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-04.stderr.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-04.stdout.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-05.events.jsonl"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-05.stderr.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-05.stdout.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-01.events.jsonl"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-01.stderr.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-01.stdout.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-02.events.jsonl"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-02.stderr.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-02.stdout.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-03.events.jsonl"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-03.stderr.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-03.stdout.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-04.events.jsonl"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-04.stderr.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-04.stdout.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-05.events.jsonl"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-05.stderr.log"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-05.stdout.log"
+      - "docs/assets/header.svg"
+      - "docs/assets/readme-headers/adr.svg"
+      - "docs/assets/readme-headers/agentplane-cli.svg"
+      - "docs/assets/readme-headers/agentplane.svg"
+      - "docs/assets/readme-headers/core.svg"
+      - "docs/assets/readme-headers/docs.svg"
+      - "docs/assets/readme-headers/humanizer.svg"
+      - "docs/assets/readme-headers/recipes.svg"
+      - "docs/assets/readme-headers/releases.svg"
+      - "docs/assets/readme-headers/schemas.svg"
+      - "docs/assets/readme-headers/scripts.svg"
+      - "docs/assets/readme-headers/skills.svg"
+      - "docs/assets/readme-headers/spec.svg"
+      - "docs/assets/readme-headers/testkit.svg"
+      - "docs/reference/generated-reference.mdx"
+      - "package.json"
+      - "packages/agentplane/package.json"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-rebase-race.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts"
+      - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+      - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts"
+      - "packages/core/package.json"
+      - "packages/recipes/package.json"
+      - "packages/recipes/src/index.ts"
+      - "packages/spec/examples/acr.json"
+      - "packages/testkit/package.json"
+      - "packages/testkit/src/github-pr.ts"
+      - "scripts/README.md"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/checks/run-fast-ci-tests.mjs"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "dependencies"
+      - "documentation"
+      - "public_api"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_dependencies"
@@ -126,6 +227,7 @@ execution_contract:
     - "effect_publish"
     - "effect_release_metadata"
     - "effect_schema"
+    - "observed_path_outside_scope:package.json"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -181,24 +283,149 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:e732d6c4f3dce3d4462c5ba76171e0224440e2bde3e31a2f2742383925885d17"
+      digest: "sha256:81e132092d35da414866ebd0e8fa02140814533ea7461a6a2b86f232c460b539"
       escalation_reasons:
+        - "central_path:package.json"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-rebase-race.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts"
+        - "central_path:packages/core/package.json"
+        - "central_path:scripts/checks/run-fast-ci-tests.mjs"
         - "effect_dependencies"
         - "effect_public_api"
         - "effect_release_metadata"
         - "effect_schema"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/risk-e2e/logs/hosted-boundary-matrix.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/risk-e2e/logs/packaged-candidate-flow.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-01.events.jsonl"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-01.stderr.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-01.stdout.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-02.events.jsonl"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-02.stderr.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-02.stdout.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-03.events.jsonl"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-03.stderr.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-03.stdout.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-04.events.jsonl"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-04.stderr.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-04.stdout.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-05.events.jsonl"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-05.stderr.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-05.stdout.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-01.events.jsonl"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-01.stderr.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-01.stdout.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-02.events.jsonl"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-02.stderr.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-02.stdout.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-03.events.jsonl"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-03.stderr.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-03.stdout.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-04.events.jsonl"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-04.stderr.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-04.stdout.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-05.events.jsonl"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-05.stderr.log"
+        - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-05.stdout.log"
+        - "unknown_path:packages/spec/examples/acr.json"
+        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - ".agentplane"
+          - "docs"
+          - "package.json"
+          - "packages/agentplane"
+          - "packages/core"
+          - "packages/recipes"
+          - "packages/spec"
+          - "packages/testkit"
+          - "scripts"
+        changed_files:
+          - ".agentplane/WORKFLOW.md"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/risk-e2e/logs/hosted-boundary-matrix.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/risk-e2e/logs/packaged-candidate-flow.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-01.events.jsonl"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-01.stderr.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-01.stdout.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-02.events.jsonl"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-02.stderr.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-02.stdout.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-03.events.jsonl"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-03.stderr.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-03.stdout.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-04.events.jsonl"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-04.stderr.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-04.stdout.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-05.events.jsonl"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-05.stderr.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark-current/samples/sample-05.stdout.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-01.events.jsonl"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-01.stderr.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-01.stdout.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-02.events.jsonl"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-02.stderr.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-02.stdout.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-03.events.jsonl"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-03.stderr.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-03.stdout.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-04.events.jsonl"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-04.stderr.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-04.stdout.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-05.events.jsonl"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-05.stderr.log"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence/verification-contract-benchmark/samples/sample-05.stdout.log"
+          - "docs/assets/header.svg"
+          - "docs/assets/readme-headers/adr.svg"
+          - "docs/assets/readme-headers/agentplane-cli.svg"
+          - "docs/assets/readme-headers/agentplane.svg"
+          - "docs/assets/readme-headers/core.svg"
+          - "docs/assets/readme-headers/docs.svg"
+          - "docs/assets/readme-headers/humanizer.svg"
+          - "docs/assets/readme-headers/recipes.svg"
+          - "docs/assets/readme-headers/releases.svg"
+          - "docs/assets/readme-headers/schemas.svg"
+          - "docs/assets/readme-headers/scripts.svg"
+          - "docs/assets/readme-headers/skills.svg"
+          - "docs/assets/readme-headers/spec.svg"
+          - "docs/assets/readme-headers/testkit.svg"
+          - "docs/reference/generated-reference.mdx"
+          - "package.json"
+          - "packages/agentplane/package.json"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-rebase-race.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts"
+          - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+          - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts"
+          - "packages/core/package.json"
+          - "packages/recipes/package.json"
+          - "packages/recipes/src/index.ts"
+          - "packages/spec/examples/acr.json"
+          - "packages/testkit/package.json"
+          - "packages/testkit/src/github-pr.ts"
+          - "scripts/README.md"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "scripts/checks/run-fast-ci-tests.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "dependencies"
+          - "documentation"
+          - "public_api"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -240,6 +467,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -263,6 +491,12 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: .agentplane/tasks/202608112259-T3ZDDM/evidence; repository effects: repository_write."
+  -
+    author: "INTEGRATOR"
+    body: "Implementation committed after the complete 0.7.7 release gate passed; registering the exact canonical implementation effect before scoped authority recovery."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The 0.7.7 candidate is complete and fully verified, but the release version change to root package.json is outside the persisted writable roots. Recommended action: Approve a state-bound scope extension for exactly package.json, then register the already verified implementation commit and resume independent evaluation. Requested scope: roots=package.json; repository effects=release_metadata; request digest=sha256:ed2c9df6f163e41c815575dec1796699df2aaf333b808e81905e4d24851ea971. Agentplane receipt: external-agent-blocker/tr_2ddae8292f5410a72b53c3f110e13e60/sha256:72a0c5d215806a3582e1c76216ab7d85925df0f027ce7f7809d9eca695e3c43d/sha256:ed2c9df6f163e41c815575dec1796699df2aaf333b808e81905e4d24851ea971."
 events:
   -
     type: "status"
@@ -292,8 +526,29 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Stable 0.7.7 version surfaces and generated release assets are prepared, but the canonical release gate exposed tracked volatile evidence from shipped task 202608112259-T3ZDDM outside the current writable roots. Recommended action: Extend the current release task scope to the exact historical evidence directory, remove only the 32 policy-rejected .log/.jsonl files while preserving compact reports and verification receipts, then rerun all canonical release gates. Requested scope: roots=.agentplane/tasks/202608112259-T3ZDDM/evidence; repository effects=repository_write; request digest=sha256:668437b4fe03dca121fef86af2195153779536253ce670f0cc5463cb2d5596b3. Agentplane receipt: external-agent-blocker/tr_215366b9b0957e188e7e0556667d693b/sha256:c969bb0459eeb19f8834efa22687b3688fe2d5bce3042a00ce864820dbb0665e/sha256:668437b4fe03dca121fef86af2195153779536253ce670f0cc5463cb2d5596b3."
+  -
+    type: "status"
+    at: "2026-08-18T23:12:34.712Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed after the complete 0.7.7 release gate passed; registering the exact canonical implementation effect before scoped authority recovery."
+    commit: "3c5ade2462f684a873993cade2d12103036bc160"
+  -
+    type: "verify"
+    at: "2026-08-18T23:12:48.003Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Execution authority omitted required root package.json; reopen implementation to request an exact state-bound scope extension before publication."
+  -
+    type: "status"
+    at: "2026-08-18T23:13:38.498Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The 0.7.7 candidate is complete and fully verified, but the release version change to root package.json is outside the persisted writable roots. Recommended action: Approve a state-bound scope extension for exactly package.json, then register the already verified implementation commit and resume independent evaluation. Requested scope: roots=package.json; repository effects=release_metadata; request digest=sha256:ed2c9df6f163e41c815575dec1796699df2aaf333b808e81905e4d24851ea971. Agentplane receipt: external-agent-blocker/tr_2ddae8292f5410a72b53c3f110e13e60/sha256:72a0c5d215806a3582e1c76216ab7d85925df0f027ce7f7809d9eca695e3c43d/sha256:ed2c9df6f163e41c815575dec1796699df2aaf333b808e81905e4d24851ea971."
 doc_version: 3
-doc_updated_at: "2026-08-18T18:06:33.009Z"
+doc_updated_at: "2026-08-18T23:13:38.498Z"
 doc_updated_by: "SUPERVISOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
@@ -313,6 +568,42 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-18T23:12:48.003Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Execution authority omitted required root package.json; reopen implementation to request an exact state-bound scope extension before publication.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:965e5f8dc60d44ce1b5809587538a6f8e3485f23acd3a3f5ee43e0f87794ba77
+
+    Details:
+
+    Check: execution-contract-authority
+    Command: supervisor scope audit
+    Result: rework
+    Evidence: package.json is changed by the release version plan but absent from the current writable roots.
+    Scope: exact 0.7.7 candidate diff.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json
+    - old_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+    - current_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181750-CRZNFC
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -320,21 +611,19 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
-    applied_at: "2026-08-18T18:06:59.875Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:c969bb0459eeb19f8834efa22687b3688fe2d5bce3042a00ce864820dbb0665e"
+    blocker_state_fingerprint: "sha256:72a0c5d215806a3582e1c76216ab7d85925df0f027ce7f7809d9eca695e3c43d"
     kind: "task_scope_extension_request"
     request:
-      rationale: "The user explicitly requested cleanup of obsolete unpublished state, and the canonical stable release gate proves these tracked raw files violate the current artifact policy while their summarized evidence remains preserved."
+      rationale: "Root package.json is an obligatory 0.7.7 version surface explicitly required by the approved release plan and canonical parity checks."
       repository_effects:
-        - "repository_write"
+        - "release_metadata"
       schema_version: 1
       scope_roots:
-        - ".agentplane/tasks/202608112259-T3ZDDM/evidence"
-    request_digest: "sha256:668437b4fe03dca121fef86af2195153779536253ce670f0cc5463cb2d5596b3"
+        - "package.json"
+    request_digest: "sha256:ed2c9df6f163e41c815575dec1796699df2aaf333b808e81905e4d24851ea971"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_215366b9b0957e188e7e0556667d693b"
+    status: "pending"
+    transition_id: "tr_2ddae8292f5410a72b53c3f110e13e60"
   workflow_route_baseline:
     start_head_sha: "708f0d7d5b813ea2bb4de659d9eb113a752e3c63"
     version: 1
@@ -366,6 +655,42 @@ PLANNER fallback scaffold for "Qualify and publish AgentPlane 0.7.7 from exact m
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-18T23:12:48.003Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Execution authority omitted required root package.json; reopen implementation to request an exact state-bound scope extension before publication.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:965e5f8dc60d44ce1b5809587538a6f8e3485f23acd3a3f5ee43e0f87794ba77
+
+Details:
+
+Check: execution-contract-authority
+Command: supervisor scope audit
+Result: rework
+Evidence: package.json is changed by the release version plan but absent from the current writable roots.
+Scope: exact 0.7.7 candidate diff.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json
+- old_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+- current_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181750-CRZNFC
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
