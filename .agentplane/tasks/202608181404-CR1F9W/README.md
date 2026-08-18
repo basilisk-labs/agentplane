@@ -4,7 +4,7 @@ title: "Add v0.7.7 release social assets and a controlled evaluator rework scope
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -32,38 +32,36 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-18T14:28:57.326Z"
+  updated_at: "2026-08-18T14:58:54.135Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 7 typed finding(s)."
-  evaluated_sha: "60031cf026e31bd87a87194ed5f853ec2ac60ef6"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "fe31aa147101fedca08e6dd601894f8ff08cec8b"
   blueprint_digest: "e814ba9c904d77ecda4ad71bed97eea32e4aa66684a85a7a429ae6d345afbf2f"
   evidence_refs:
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-142542329-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-142542329-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/7a6de50ce891200cbdc234a5db0dd96000edcd159fe0102d16b9ec60d01c4b77.md"
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-142542329-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-142542329-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-142542329-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-142542329-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-145812839-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-145812839-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e8845847cdac68bdb30c718ac5d642e1f302cecdd8c81bf3b5bfc47f211ae36a.md"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-145812839-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-145812839-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/20260818-145812839-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181404-CR1F9W/README.md"
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/e6cf0e72c1337e3d80e0cdd44de75fe18073f29ee2e83bb0a5077d5f05f6caaf.patch"
-    - ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/f5c56bc024037157b94357cea32280937f39aad30c253f01a140d36a0fcb19ec.json"
-    - ".agentplane/tasks/202608181404-CR1F9W/verification/20260818142505481-66ac361d79637120.json"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/b8dfd5e457b0e7ca28d424bf7a440ba53c4d707d668074a034f4a0911e603895.patch"
+    - ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/a191990842f2382969ac1d109c4737688ef5a90a17c0d3c89dfb39af70218008.json"
+    - ".agentplane/tasks/202608181404-CR1F9W/verification/20260818145805314-358b4a5b0f1d4941.json"
     - ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/b0825e0a70291e02337ad2afed7ec89373e0edd644d4294762a7ca05cf385f47.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "docs/releases/v0.7.7.md, its generated social image, and the social manifest pass the full documentation-site contract."
-    - "task scope extend rejects unsafe/no-op changes, checks exact route fingerprint and USER authority, preserves observations, and invalidates task-level commit, verification, and quality-review state."
-    - "AgentSemanticResult blocker has no structured requested_scope_roots or requested_repository_effects, so the proposed authority expansion remains embedded in recommended_action prose and is not bound to the recorded blocker receipt."
-    - "blockedTaskStep remains a generic terminal attention_required step and does not expose an exact task scope extend operator action; the new command is therefore not part of the normal task advance protocol."
-    - "The focused tests cover only the pure contract merge helper. They do not exercise blocker recording, the state-bound CLI command, supervisor journal recovery, or issuance of a new implementation_rework/implementation EXECUTOR work order with the expanded writable roots."
-    - "Residual risk: An operator can approve roots/effects unrelated to the recorded blocker because the command validates only the task fingerprint, not an exact structured request digest."
-    - "Residual risk: The task can remain terminally BLOCKED in the normal protocol because no projected operator action teaches an autonomous supervisor how to invoke the new boundary."
+    - "The structured request is validated in AgentSemanticResult v2 and generated schema, normalized to safe repository-relative roots, and persisted with the originating transition, blocker fingerprint, canonical digest, and exact supervisor receipt."
+    - "task.scope.extend is part of workflow projection and supervisor execution, yet configured authority explicitly refuses to auto-authorize it even when mode=all; this preserves autonomous execution without allowing autonomous semantic scope escalation."
+    - "The command requires BLOCKED state, USER attribution, exact pending digest and exact root/effect sets, rejects replay and substitution, applies only monotonic additions, and clears stale commit, verification, and quality state."
+    - "End-to-end CLI coverage records a structured blocker under mode=all, observes approval_required, applies an explicit matching grant, and verifies a fresh EXECUTOR work order with the expanded website/static/img/social writable root."
+    - "ci:contract, all 567 fast test files with 4,169 passing tests and one skip, package builds, and the documentation production build including 230 social assets pass."
+    - "Residual risk: A future change that makes task.scope.extend policy-authorizable would weaken the boundary; the dedicated mode=all denial regression must remain release-blocking."
 execution_route:
   frozen: true
   reason_codes:
