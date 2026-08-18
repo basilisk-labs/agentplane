@@ -1,10 +1,10 @@
 ---
 id: "202608181750-CRZNFC"
 title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref."
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -27,7 +27,7 @@ plan_approval:
   note: null
 verification:
   state: "pending"
-  updated_at: "2026-08-18T17:54:14.753Z"
+  updated_at: "2026-08-18T18:06:59.875Z"
   updated_by: "USER"
   note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
@@ -72,6 +72,7 @@ execution_contract:
     writable_roots:
       - ".agentplane/WORKFLOW.md"
       - ".agentplane/config.json"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence"
       - "docs"
       - "packages"
       - "schemas"
@@ -87,6 +88,7 @@ execution_contract:
     rationale:
       - "USER-approved blocked-result scope extension: roots=.agentplane/WORKFLOW.md,docs,packages,schemas,scripts,website; repository_effects=dependencies,documentation,public_api,release_metadata,repository_write,schema,source_code,tests"
       - "USER-approved blocked-result scope extension: roots=.agentplane/config.json; repository_effects=release_metadata,repository_write"
+      - "USER-approved blocked-result scope extension: roots=.agentplane/tasks/202608112259-T3ZDDM/evidence; repository_effects=repository_write"
       - "legacy structured task fields mapped to the execution contract"
     repository_effects:
       - "dependencies"
@@ -103,6 +105,7 @@ execution_contract:
     scope_roots:
       - ".agentplane/WORKFLOW.md"
       - ".agentplane/config.json"
+      - ".agentplane/tasks/202608112259-T3ZDDM/evidence"
       - "docs"
       - "packages"
       - "schemas"
@@ -141,6 +144,7 @@ execution_contract:
         components:
           - ".agentplane/WORKFLOW.md"
           - ".agentplane/config.json"
+          - ".agentplane/tasks/202608112259-T3ZDDM/evidence"
           - "docs"
           - "packages"
           - "schemas"
@@ -177,7 +181,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:ed81cd0178ff6762a575fe547fc2b584ac20f55e618be78e4cb51d3ae65b1ad9"
+      digest: "sha256:e732d6c4f3dce3d4462c5ba76171e0224440e2bde3e31a2f2742383925885d17"
       escalation_reasons:
         - "effect_dependencies"
         - "effect_public_api"
@@ -256,6 +260,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Stable 0.7.7 version surfaces and generated release assets are prepared, but the canonical release gate exposed tracked volatile evidence from shipped task 202608112259-T3ZDDM outside the current writable roots. Recommended action: Extend the current release task scope to the exact historical evidence directory, remove only the 32 policy-rejected .log/.jsonl files while preserving compact reports and verification receipts, then rerun all canonical release gates. Requested scope: roots=.agentplane/tasks/202608112259-T3ZDDM/evidence; repository effects=repository_write; request digest=sha256:668437b4fe03dca121fef86af2195153779536253ce670f0cc5463cb2d5596b3. Agentplane receipt: external-agent-blocker/tr_215366b9b0957e188e7e0556667d693b/sha256:c969bb0459eeb19f8834efa22687b3688fe2d5bce3042a00ce864820dbb0665e/sha256:668437b4fe03dca121fef86af2195153779536253ce670f0cc5463cb2d5596b3."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: .agentplane/tasks/202608112259-T3ZDDM/evidence; repository effects: repository_write."
 events:
   -
     type: "status"
@@ -313,6 +320,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-08-18T18:06:59.875Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:c969bb0459eeb19f8834efa22687b3688fe2d5bce3042a00ce864820dbb0665e"
     kind: "task_scope_extension_request"
     request:
@@ -324,7 +333,7 @@ extensions:
         - ".agentplane/tasks/202608112259-T3ZDDM/evidence"
     request_digest: "sha256:668437b4fe03dca121fef86af2195153779536253ce670f0cc5463cb2d5596b3"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_215366b9b0957e188e7e0556667d693b"
   workflow_route_baseline:
     start_head_sha: "708f0d7d5b813ea2bb4de659d9eb113a752e3c63"
