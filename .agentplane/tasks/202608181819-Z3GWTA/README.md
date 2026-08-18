@@ -4,7 +4,7 @@ title: "Reposition AgentPlane as the Git-native control plane for coding agents 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -34,6 +34,33 @@ verification:
   updated_by: "TESTER"
   note: "All declared checks pass on implementation commit 60c6cda2f; this record rebinds the already-observed evidence after the verified VHS output was committed."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-18T19:40:56.659Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "60c6cda2f54343f58fc4053f4256ffe78de1e159"
+  blueprint_digest: "55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae"
+  evidence_refs:
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-194053418-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-194053418-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/9191b47e597f3d0979b64b233ef685eea7d7fa58365c29e8c761a70f3d7b4782.md"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-194053418-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-194053418-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-194053418-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-194053418-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/README.md"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/1a2712f2cf117de7dc2d5ca47fa31b77e77848cc58322568b44f4ee5bad5ae14.patch"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/8452612db8ace9c38231d617217c0d63709fc3ad80f8f51008a05a6dba6295b1.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/verification/20260818193918309-58b5a90aa91ff3e0.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/eafed46fee43d017a057933d11cf3e53dcf84df66a33c23ba4fe0d8f0ecf80a8.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.direct.md"
+  findings:
+    - "Tracked .agentplane/context/derived/reports/release-docs-assimilation.json, release-docs-assimilation.sgr.json, and release-docs-coverage-detail.jsonl still contain docs/launch paths, titles, hashes, and graph summaries after the source files were deleted."
 execution_route:
   frozen: true
   reason_codes:
