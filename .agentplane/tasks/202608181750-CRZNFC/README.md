@@ -1,10 +1,10 @@
 ---
 id: "202608181750-CRZNFC"
 title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref."
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -27,7 +27,7 @@ plan_approval:
   note: null
 verification:
   state: "pending"
-  updated_at: "2026-08-18T17:53:10.493Z"
+  updated_at: "2026-08-18T17:54:14.753Z"
   updated_by: "USER"
   note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
@@ -71,6 +71,7 @@ execution_contract:
       - "security_boundary"
     writable_roots:
       - ".agentplane/WORKFLOW.md"
+      - ".agentplane/config.json"
       - "docs"
       - "packages"
       - "schemas"
@@ -85,6 +86,7 @@ execution_contract:
     preferred_mode: "branch_pr"
     rationale:
       - "USER-approved blocked-result scope extension: roots=.agentplane/WORKFLOW.md,docs,packages,schemas,scripts,website; repository_effects=dependencies,documentation,public_api,release_metadata,repository_write,schema,source_code,tests"
+      - "USER-approved blocked-result scope extension: roots=.agentplane/config.json; repository_effects=release_metadata,repository_write"
       - "legacy structured task fields mapped to the execution contract"
     repository_effects:
       - "dependencies"
@@ -100,6 +102,7 @@ execution_contract:
     schema_version: 2
     scope_roots:
       - ".agentplane/WORKFLOW.md"
+      - ".agentplane/config.json"
       - "docs"
       - "packages"
       - "schemas"
@@ -137,6 +140,7 @@ execution_contract:
       declared:
         components:
           - ".agentplane/WORKFLOW.md"
+          - ".agentplane/config.json"
           - "docs"
           - "packages"
           - "schemas"
@@ -173,7 +177,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:ce1e9e95645b0121c43730a0eae2ab6e7512d1371be48c9663aa6678ffb16cba"
+      digest: "sha256:ed81cd0178ff6762a575fe547fc2b584ac20f55e618be78e4cb51d3ae65b1ad9"
       escalation_reasons:
         - "effect_dependencies"
         - "effect_public_api"
@@ -246,6 +250,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The canonical stable version dry-run resolves exactly 0.7.7 from 0.7.7-beta.1, but it also updates the protected .agentplane/config.json expected-version surface, which was omitted from the first scope extension. Recommended action: Extend scope to .agentplane/config.json and request a fresh implementation packet. Requested scope: roots=.agentplane/config.json; repository effects=release_metadata,repository_write; request digest=sha256:c0a97ea60bc7c8ba63126e4338e42fb5ffa1040dafab6424fa4d849570eed135. Agentplane receipt: external-agent-blocker/tr_db40d04d3ba232cd5a198e3dfd1a1c2e/sha256:a255590f2781062f631f79de4177f9f44e03fe122e10a51b15797ed6723461d7/sha256:c0a97ea60bc7c8ba63126e4338e42fb5ffa1040dafab6424fa4d849570eed135."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: .agentplane/config.json; repository effects: release_metadata, repository_write."
 events:
   -
     type: "status"
@@ -296,6 +303,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-08-18T17:54:14.753Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:a255590f2781062f631f79de4177f9f44e03fe122e10a51b15797ed6723461d7"
     kind: "task_scope_extension_request"
     request:
@@ -308,7 +317,7 @@ extensions:
         - ".agentplane/config.json"
     request_digest: "sha256:c0a97ea60bc7c8ba63126e4338e42fb5ffa1040dafab6424fa4d849570eed135"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_db40d04d3ba232cd5a198e3dfd1a1c2e"
   workflow_route_baseline:
     start_head_sha: "708f0d7d5b813ea2bb4de659d9eb113a752e3c63"
