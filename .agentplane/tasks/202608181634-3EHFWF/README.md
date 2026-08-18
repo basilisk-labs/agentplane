@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -30,16 +30,34 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "rework"
-  updated_at: "2026-08-18T17:31:59.532Z"
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-18T17:39:18.515Z"
   updated_by: "EVALUATOR"
-  note: "Hosted verify-tests failed because prepareIntegrate unit mocks with ordered gitRevParse results did not account for the new comparison-base ref resolution call; update all four sequences and rerun the exact failing file plus release gates."
-  evaluated_sha: "16457593d821119c1ed447fcbd8b94e1baee8c2f"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "6598f11bc42d11f6f1b5853cf60f6744bd3b9007"
   blueprint_digest: "7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8"
   evidence_refs:
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-173845833-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-173845833-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/2275291697bb03112536282ec8747ba91e294bc0b6e2ab469268dec1e89a8301.md"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-173845833-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-173845833-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-173845833-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181634-3EHFWF/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181634-3EHFWF-supersede-pr-4843-with-a-clean-agentplane-0-7-7/.agentplane/tasks/202608181634-3EHFWF/blueprint/resolved-snapshot.json"
-  findings: []
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/81a5f17a3826b24f984654658376a90a12d093d08421e9840957c613ae30aad5.patch"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/8bfb5a362142418262db506671e836daa5cd1f58e59fca8dc6490abd64714e1b.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/verification/20260818173840571-0299ded3b2413044.json"
+    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/b758feb8420fb9c7158fdbfaefa7a450b440dd27fb80e91b9e6a0170615f632d.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
+  findings:
+    - "All four sequential gitRevParse mocks now preserve the intended branch, base, and upstream identities after the new base-ref existence call."
+    - "The exact previously failing prepareIntegrate suite plus ownership suite passed 27 tests."
+    - "The full fast suite passed 570 files and 4,193 tests with one expected skip; contract and release gates also passed."
+    - "Residual risk: Only provider-side rerun and merge remain before stable release preparation."
 token_usage:
   agent_runs: 8
   input_tokens: null
@@ -589,7 +607,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-18T17:38:41.815Z"
+doc_updated_at: "2026-08-18T17:39:18.543Z"
 doc_updated_by: "CODER"
 description: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication."
 sections:
