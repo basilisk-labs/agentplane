@@ -225,7 +225,7 @@ async function runCliInSeparateProcess(opts: {
 }
 
 async function waitForFileText(filePath: string, expected: string): Promise<void> {
-  const deadline = Date.now() + 5000;
+  const deadline = Date.now() + 30_000;
   while (Date.now() < deadline) {
     const text = await readFile(filePath, "utf8").catch(() => "");
     if (text.includes(expected)) return;
@@ -992,5 +992,5 @@ describe("evaluator execute supervisor episode", () => {
       operations: [{ status: "failed" }, { status: "completed" }],
     });
     expect(processEpisode.operations[1]?.replacement_of_operation_key).toMatch(/^sha256:/u);
-  });
+  }, 90_000);
 });

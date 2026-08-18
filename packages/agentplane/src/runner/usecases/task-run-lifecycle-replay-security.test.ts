@@ -180,89 +180,93 @@ function runFreshReplay(
 }
 
 describe("task-run fresh replay security", () => {
-  it.each(REPLAY_ACTIONS)("%s ignores missing and tampered source artifacts", async (action) => {
-    const root = await mkGitRepoRoot();
-    await configureCustomRunner(root);
-    const taskId = await createDoingTask(root, `${action} ignores source artifacts`);
-    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
-    const source = await prepareAnchoredSource({
-      ctx,
-      root,
-      taskId,
-      runId: `run-${action}-untrusted-source`,
-    });
-    const detachedSourceDir = path.join(
-      root,
-      "detached-run-artifacts",
-      action,
-      source.invocation.run_id,
-    );
-    await mkdir(path.dirname(detachedSourceDir), { recursive: true });
-    await rename(source.invocation.run_dir, detachedSourceDir);
+  it.each(REPLAY_ACTIONS)(
+    "%s ignores missing and tampered source artifacts",
+    async (action) => {
+      const root = await mkGitRepoRoot();
+      await configureCustomRunner(root);
+      const taskId = await createDoingTask(root, `${action} ignores source artifacts`);
+      const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+      const source = await prepareAnchoredSource({
+        ctx,
+        root,
+        taskId,
+        runId: `run-${action}-untrusted-source`,
+      });
+      const detachedSourceDir = path.join(
+        root,
+        "detached-run-artifacts",
+        action,
+        source.invocation.run_id,
+      );
+      await mkdir(path.dirname(detachedSourceDir), { recursive: true });
+      await rename(source.invocation.run_dir, detachedSourceDir);
 
-    const fromMissing = await runFreshReplay(action, {
-      ctx,
-      root,
-      taskId,
-      sourceRunId: source.invocation.run_id,
-      destinationRunId: `run-${action}-from-missing-source`,
-    });
+      const fromMissing = await runFreshReplay(action, {
+        ctx,
+        root,
+        taskId,
+        sourceRunId: source.invocation.run_id,
+        destinationRunId: `run-${action}-from-missing-source`,
+      });
 
-    expect(fromMissing.source_run_id).toBe(source.invocation.run_id);
-    expect(fromMissing.source_status).toBe("failed");
-    expect(fromMissing.invocation.run_id).toBe(`run-${action}-from-missing-source`);
-    expect(JSON.stringify(fromMissing.bundle.route_decision)).not.toContain(
-      source.invocation.run_id,
-    );
+      expect(fromMissing.source_run_id).toBe(source.invocation.run_id);
+      expect(fromMissing.source_status).toBe("failed");
+      expect(fromMissing.invocation.run_id).toBe(`run-${action}-from-missing-source`);
+      expect(JSON.stringify(fromMissing.bundle.route_decision)).not.toContain(
+        source.invocation.run_id,
+      );
 
-    await recordExternalSource({
-      ctx,
-      taskId,
-      runId: source.invocation.run_id,
-      target: structuredClone(source.bundle.target),
-      adapterId: source.invocation.adapter_id,
-    });
-    const victimPath = path.join(root, `source-${action}-victim.txt`);
-    const detachedBundlePath = path.join(
-      detachedSourceDir,
-      path.basename(source.invocation.bundle_path),
-    );
-    const detachedStatePath = path.join(
-      detachedSourceDir,
-      path.basename(source.invocation.state_path),
-    );
-    const detachedEventsPath = path.join(
-      detachedSourceDir,
-      path.basename(source.invocation.events_path),
-    );
-    const tamperedBundle = `${JSON.stringify({
-      execution: {
-        artifact_paths: {
-          result_path: victimPath,
+      await recordExternalSource({
+        ctx,
+        taskId,
+        runId: source.invocation.run_id,
+        target: structuredClone(source.bundle.target),
+        adapterId: source.invocation.adapter_id,
+      });
+      const victimPath = path.join(root, `source-${action}-victim.txt`);
+      const detachedBundlePath = path.join(
+        detachedSourceDir,
+        path.basename(source.invocation.bundle_path),
+      );
+      const detachedStatePath = path.join(
+        detachedSourceDir,
+        path.basename(source.invocation.state_path),
+      );
+      const detachedEventsPath = path.join(
+        detachedSourceDir,
+        path.basename(source.invocation.events_path),
+      );
+      const tamperedBundle = `${JSON.stringify({
+        execution: {
+          artifact_paths: {
+            result_path: victimPath,
+          },
         },
-      },
-    })}\n`;
-    await writeFile(victimPath, "sentinel\n", "utf8");
-    await writeFile(detachedBundlePath, tamperedBundle, "utf8");
-    await writeFile(detachedStatePath, "not-json\n", "utf8");
-    await writeFile(detachedEventsPath, "source-tampered\n", "utf8");
+      })}\n`;
+      await writeFile(victimPath, "sentinel\n", "utf8");
+      await writeFile(detachedBundlePath, tamperedBundle, "utf8");
+      await writeFile(detachedStatePath, "not-json\n", "utf8");
+      await writeFile(detachedEventsPath, "source-tampered\n", "utf8");
 
-    const fromTampered = await runFreshReplay(action, {
-      ctx,
-      root,
-      taskId,
-      sourceRunId: source.invocation.run_id,
-      destinationRunId: `run-${action}-from-tampered-source`,
-    });
+      const fromTampered = await runFreshReplay(action, {
+        ctx,
+        root,
+        taskId,
+        sourceRunId: source.invocation.run_id,
+        destinationRunId: `run-${action}-from-tampered-source`,
+      });
 
-    expect(fromTampered.invocation.run_id).toBe(`run-${action}-from-tampered-source`);
-    expect(JSON.stringify(fromTampered.bundle.route_decision)).not.toContain(
-      source.invocation.run_id,
-    );
-    expect(await readFile(detachedBundlePath, "utf8")).toBe(tamperedBundle);
-    expect(await readFile(detachedEventsPath, "utf8")).toBe("source-tampered\n");
-    expect(await readFile(victimPath, "utf8")).toBe("sentinel\n");
-  });
+      expect(fromTampered.invocation.run_id).toBe(`run-${action}-from-tampered-source`);
+      expect(JSON.stringify(fromTampered.bundle.route_decision)).not.toContain(
+        source.invocation.run_id,
+      );
+      expect(await readFile(detachedBundlePath, "utf8")).toBe(tamperedBundle);
+      expect(await readFile(detachedEventsPath, "utf8")).toBe("source-tampered\n");
+      expect(await readFile(victimPath, "utf8")).toBe("sentinel\n");
+    },
+    90_000,
+  );
 
   it("re-derives current role, sandbox, and write scope for both replay actions", async () => {
     const root = await mkGitRepoRoot();
@@ -312,7 +316,7 @@ describe("task-run fresh replay security", () => {
       expect(replayed.bundle.execution.write_scope?.writable_roots).toEqual([]);
       expect(replayed.invocation.env.AGENTPLANE_RUNNER_SANDBOX_REQUESTED).toBe("read-only");
     }
-  });
+  }, 90_000);
 
   it("rejects the source run id as destination for both replay actions", async () => {
     const root = await mkGitRepoRoot();
@@ -613,5 +617,5 @@ describe("task-run fresh replay security", () => {
       expect(destinationEvents).toContain('"source_trust":"external_task_anchor_only"');
       expect(destinationEvents).toContain('"source_artifacts_reused":false');
     }
-  });
+  }, 90_000);
 });

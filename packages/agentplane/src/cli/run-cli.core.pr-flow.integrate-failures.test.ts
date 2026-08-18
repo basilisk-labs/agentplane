@@ -21,6 +21,12 @@ import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
 import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 
+vi.mock("../commands/pr/integrate/internal/github-protection.js", () => ({
+  // Provider-first branch_pr routing is covered separately. These scenarios
+  // retain focused coverage of the legacy local merge failure mechanics.
+  requiresPullRequestMergePath: vi.fn().mockResolvedValue(false),
+}));
+
 import { runCli } from "./run-cli.js";
 import {
   filterAgentsByWorkflow,

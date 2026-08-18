@@ -15,4 +15,4 @@ function run(command, args) {
   }
 }
 
-run("bun", ["run", "test:fast", "--", "--maxWorkers=4"]);
+run("bun", ["run", "test:fast"]);

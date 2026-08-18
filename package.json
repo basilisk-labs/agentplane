@@ -14,7 +14,7 @@
     "build": "node scripts/checks/run-typescript-build.mjs && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle",
     "typecheck": "node scripts/checks/run-typescript-build.mjs",
     "test": "bun run test:fast",
-    "test:fast": "vitest --config vitest.workspace.ts run --project agentplane --project core --project recipes --project testkit",
+    "test:fast": "vitest --config vitest.workspace.ts run --project agentplane --project core --project recipes --project testkit --maxWorkers=4",
     "test:fast:ci": "node scripts/checks/run-fast-ci-tests.mjs",
     "test:project": "vitest --config vitest.workspace.ts run --project",
     "test:precommit": "node scripts/checks/run-vitest-suite.mjs precommit",

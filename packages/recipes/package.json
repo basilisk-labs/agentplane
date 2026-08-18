@@ -1,6 +1,6 @@
 {
   "name": "@agentplaneorg/recipes",
-  "version": "0.7.7-beta.1",
+  "version": "0.7.7",
   "description": "Recipe modules for repeatable Agentplane audit-layer workflows.",
   "keywords": [
     "agentplane",
