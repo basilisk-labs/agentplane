@@ -1,0 +1,91 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181404-CR1F9W Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181404-CR1F9W Verification Contract check critical_paths\n\nCheck: docs_contract\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181404-CR1F9W Verification Contract check docs_contract\n\nCheck: full_regression\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181404-CR1F9W Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181404-CR1F9W Verification Contract check hosted_integration\n\nCheck: real_e2e\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181404-CR1F9W Verification Contract check real_e2e\n\nCheck: requirements_resolution\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181404-CR1F9W Verification Contract check requirements_resolution\n\nCheck: task_outcome\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181404-CR1F9W Verification Contract check task_outcome",
+  "digest": "sha256:92e2b540523b88e99e47ce57b84e6715cbe22dbef271197cc49a9d9afb569751",
+  "implementation_sha": "7fe66ed8e3a8f099aca5e7e759f9440f453b14b5",
+  "input": {
+    "context": {
+      "digest": "sha256:1d83a78bd7a4d8dc4a0d56864ee5466514423b918b1d18c2714297b8216376d9",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:1b08120033f2ebd3808c9dc180dbf916721b337a83e181d940b677427af261ae",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:d0d80e4f5626132d0c0c045c48618b6c97a174e46b91ef289e10c4220f8bc22d",
+      "digest": "sha256:07ff48f9384201ffe686ff12a4da81f228078730b63cb23789199689f3f0265d",
+      "references": [
+        {
+          "digest": "sha256:7f0e5082ba39c5fe278b4e8d19958d16414feb5d51fdb161d8b856c94d70801c",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608181404-CR1F9W/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "f4fc869fd5ffbafb58c7e33c9f75ac762f3a242f",
+      "digest": "sha256:5f0552829c06662b83cbf02e736c2080334f8bce739c8f8f65651f38517c4206",
+      "strategy": "branch_diff",
+      "target_sha": "7fe66ed8e3a8f099aca5e7e759f9440f453b14b5"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:cdb666f91f7aeb1457c50879b61931ef39c5867d88d0d638bbe39f4d7f29a648",
+    "verify_steps_digest": "sha256:e30bbf8802a36cadaad08b89737c97c43385b46dabfbe8fb30253ac4339312a0"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-18T15:41:07.890Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Add v0.7.7 release social assets and a controlled evaluator rework scope-extension boundary\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Add v0.7.7 release social assets and a controlled evaluator rework scope-extension boundary\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:e30bbf8802a36cadaad08b89737c97c43385b46dabfbe8fb30253ac4339312a0",
+  "task_id": "202608181404-CR1F9W",
+  "verification_command": "agentplane verify 202608181404-CR1F9W --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
