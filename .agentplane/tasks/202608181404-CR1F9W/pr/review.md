@@ -6,7 +6,7 @@ Created: 2026-08-18T14:05:34.593Z
 
 - Task: `202608181404-CR1F9W`
 - Title: Add v0.7.7 release social assets and a controlled evaluator rework scope-extension boundary
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608181404-CR1F9W/add-v0-7-7-release-social-assets-and-a-controlle`
 - Canonical task record: `.agentplane/tasks/202608181404-CR1F9W/README.md`
 
