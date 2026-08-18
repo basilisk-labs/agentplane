@@ -4,7 +4,7 @@ title: "Reposition AgentPlane as the Git-native control plane for coding agents 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -30,29 +30,28 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-18T19:59:51.783Z"
+  updated_at: "2026-08-18T20:03:12.286Z"
   updated_by: "TESTER"
-  note: "All declared checks pass on implementation commit cbd9d5b3c; launch-copy bodies are absent from the current tree and suppressed from deletion diffs."
+  note: "All declared checks pass on implementation commit a74975786; launch source and derived context are absent from the current tree and suppressed from deletion diffs."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-18T20:00:19.012Z"
+  updated_at: "2026-08-18T20:04:04.039Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 3 typed finding(s)."
-  evaluated_sha: "cbd9d5b3c234238194cbfb5f5e760129d5b71493"
+  evaluated_sha: "a749757867ec2824f7206d0f544f0ea391172771"
   blueprint_digest: "55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae"
   evidence_refs:
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200015936-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200015936-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/9c1d5d0eac45e966cf027bbcd47867bdfa38e0c58058a052a2e302e283d4bc4b.md"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200015936-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200015936-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200015936-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200356108-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200356108-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/d61bd77a680dd69da5c8153c3014808dcc0a50ff59ea1caeee26eee02466085a.md"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200356108-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200356108-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-200356108-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181819-Z3GWTA/README.md"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/8ab576362fd5948729d2a8eaad4cc11da1c9c877619159f9b427816ba537fd61.patch"
-    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/75cc40d0471d5b09a63f50b1b3def1cd78252da06047d74e5692aa0f962289f6.json"
-    - ".agentplane/tasks/202608181819-Z3GWTA/verification/20260818195951783-a918b69aa0c9a3b5.json"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/15ad14834d54cfca3bcf555ea4ced884086d80defcb694243d195a2b61f79bf3.patch"
+    - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/ea53a9b9f7f4154e50f99490f3e4ebad1310fe69d38f8455ac9e192c4df647cd.json"
     - ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/eafed46fee43d017a057933d11cf3e53dcf84df66a33c23ba4fe0d8f0ecf80a8.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
@@ -60,8 +59,8 @@ quality_review:
     - ".agentplane/policy/workflow.direct.md"
   findings:
     - "README, docs, website, SEO, comparison, demo, and generated discovery surfaces use the same category and authority/proof promise without exceeding the source-backed product contract."
-    - "Current-tree searches find no unique internal launch-draft phrases, and docs/launch/** deletions are rendered without textual bodies through .gitattributes."
-    - "The stale rework evidence set containing the pre-suppression textual diff has been removed and is replaced by this current review packet."
+    - "Current-tree searches find no unique internal launch-draft phrases; docs/launch/** and launch-derived context changes render without textual bodies through scoped .gitattributes rules."
+    - "Only the current sanitized review packet remains in the task quality store."
 execution_route:
   frozen: true
   reason_codes:
@@ -396,8 +395,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "All declared checks pass on implementation commit cbd9d5b3c; launch-copy bodies are absent from the current tree and suppressed from deletion diffs."
+  -
+    type: "verify"
+    at: "2026-08-18T20:03:12.286Z"
+    author: "TESTER"
+    state: "ok"
+    note: "All declared checks pass on implementation commit a74975786; launch source and derived context are absent from the current tree and suppressed from deletion diffs."
 doc_version: 3
-doc_updated_at: "2026-08-18T19:59:59.903Z"
+doc_updated_at: "2026-08-18T20:03:31.414Z"
 doc_updated_by: "SUPERVISOR"
 description: "Unify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth."
 sections:
@@ -727,6 +732,72 @@ sections:
     Result: pass
     Evidence: unique internal draft phrases have no current-tree matches; deleted launch files render as Binary files differ because docs/launch/** has diff unset.
     Scope: requested current-tree private-content boundary and PR diff exposure.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608181819-Z3GWTA-reposition-agentplane-as-the-git-native-control/.agentplane/tasks/202608181819-Z3GWTA/blueprint/resolved-snapshot.json
+    - old_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+    - current_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181819-Z3GWTA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608181819-Z3GWTA
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-18T20:03:12.286Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: All declared checks pass on implementation commit a74975786; launch source and derived context are absent from the current tree and suppressed from deletion diffs.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0, input_digest=sha256:4caf666c0c8a28729af156e5ecc46baa0d87ca66d6dc19334ea22156d0ae4820
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run lint:website
+    Result: pass
+    Evidence: ESLint exited 0 on the implementation immediately before the attributes-only privacy hardening commit.
+    Scope: touched website implementation; the later commit changes only Git diff attributes and task evidence.
+
+    Check: critical_paths
+    Command: bun run docs:readme-header:check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: README header artifacts are fresh for v0.7.6 and policy routing is OK.
+    Scope: public README and repository policy gateway.
+
+    Check: full_regression
+    Command: bun run release:demo:check
+    Result: pass
+    Evidence: a fresh VHS render completed below the 3,000,000-byte limit; committed GIF bytes were restored after the nondeterministic render.
+    Scope: declared release demo gate.
+
+    Check: hosted_integration
+    Command: agentplane pr open 202608181819-Z3GWTA --author CODER
+    Result: pass
+    Evidence: GitHub PR 4845 exists and is linked in task metadata; current head publication remains a subsequent lifecycle action.
+    Scope: task branch and hosted PR linkage.
+
+    Check: real_e2e
+    Command: bun run docs:site:check
+    Result: pass
+    Evidence: docs IA, generated artifacts, website typecheck, social-card check, optimized Docusaurus build, navigation check, and design-language check passed.
+    Scope: public documentation and website build.
+
+    Check: task_outcome
+    Command: privacy phrase scan plus git diff review for docs/launch/**, context/wiki/release-docs/**, and .agentplane/context/derived/reports/release-docs-*
+    Result: pass
+    Evidence: unique internal draft phrases have no current-tree matches, and deleted launch source and derived context render only as Binary files differ.
+    Scope: requested current-tree private-content boundary and hosted PR diff exposure.
 
     BlueprintSnapshotRef:
     - state: current
@@ -1094,6 +1165,72 @@ Command: privacy phrase scan plus git diff check for docs/launch/**
 Result: pass
 Evidence: unique internal draft phrases have no current-tree matches; deleted launch files render as Binary files differ because docs/launch/** has diff unset.
 Scope: requested current-tree private-content boundary and PR diff exposure.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608181819-Z3GWTA-reposition-agentplane-as-the-git-native-control/.agentplane/tasks/202608181819-Z3GWTA/blueprint/resolved-snapshot.json
+- old_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+- current_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181819-Z3GWTA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608181819-Z3GWTA
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-18T20:03:12.286Z — VERIFY — ok
+
+By: TESTER
+
+Note: All declared checks pass on implementation commit a74975786; launch source and derived context are absent from the current tree and suppressed from deletion diffs.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0, input_digest=sha256:4caf666c0c8a28729af156e5ecc46baa0d87ca66d6dc19334ea22156d0ae4820
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run lint:website
+Result: pass
+Evidence: ESLint exited 0 on the implementation immediately before the attributes-only privacy hardening commit.
+Scope: touched website implementation; the later commit changes only Git diff attributes and task evidence.
+
+Check: critical_paths
+Command: bun run docs:readme-header:check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: README header artifacts are fresh for v0.7.6 and policy routing is OK.
+Scope: public README and repository policy gateway.
+
+Check: full_regression
+Command: bun run release:demo:check
+Result: pass
+Evidence: a fresh VHS render completed below the 3,000,000-byte limit; committed GIF bytes were restored after the nondeterministic render.
+Scope: declared release demo gate.
+
+Check: hosted_integration
+Command: agentplane pr open 202608181819-Z3GWTA --author CODER
+Result: pass
+Evidence: GitHub PR 4845 exists and is linked in task metadata; current head publication remains a subsequent lifecycle action.
+Scope: task branch and hosted PR linkage.
+
+Check: real_e2e
+Command: bun run docs:site:check
+Result: pass
+Evidence: docs IA, generated artifacts, website typecheck, social-card check, optimized Docusaurus build, navigation check, and design-language check passed.
+Scope: public documentation and website build.
+
+Check: task_outcome
+Command: privacy phrase scan plus git diff review for docs/launch/**, context/wiki/release-docs/**, and .agentplane/context/derived/reports/release-docs-*
+Result: pass
+Evidence: unique internal draft phrases have no current-tree matches, and deleted launch source and derived context render only as Binary files differ.
+Scope: requested current-tree private-content boundary and hosted PR diff exposure.
 
 BlueprintSnapshotRef:
 - state: current

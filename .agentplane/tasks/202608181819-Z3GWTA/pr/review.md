@@ -13,7 +13,7 @@ Created: 2026-08-18T18:57:10.614Z
 ## Verification
 
 - State: ok
-- Note: All declared checks pass on implementation commit cbd9d5b3c; launch-copy bodies are absent from the current tree and suppressed from deletion diffs.
+- Note: All declared checks pass on implementation commit a74975786; launch source and derived context are absent from the current tree and suppressed from deletion diffs.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -52,6 +52,8 @@ Created: 2026-08-18T18:57:10.614Z
  docs/user/overview.mdx                             |  22 ++--
  marketing                                          |   2 +-
  packages/agentplane/README.md                      |  31 +++--
+ .../commands/evaluator/evaluator-diff-evidence.ts  |   4 +-
+ .../evaluator/evaluator-run.command.test.ts        |   3 +-
  website/docusaurus.config.ts                       |  10 +-
  website/scripts/check-site-content.mjs             |   8 +-
  website/src/data/homepage-content.ts               | 107 +++++++++---------
@@ -64,7 +66,7 @@ Created: 2026-08-18T18:57:10.614Z
  website/static/img/social/manifest.json            |  32 ------
  website/static/llms-full.txt                       | 125 ++++++++++++---------
  website/static/llms.txt                            |   5 +-
- 35 files changed, 299 insertions(+), 281 deletions(-)
+ 37 files changed, 303 insertions(+), 284 deletions(-)
 ```
 
 </details>
