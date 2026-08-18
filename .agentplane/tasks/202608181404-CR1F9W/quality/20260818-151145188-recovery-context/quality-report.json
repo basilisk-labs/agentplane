@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608181404-CR1F9W",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-18T15:12:24.627Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "b020e4b597802053c7c4e664aee9ef584773eafc",
+  "blueprint_digest": "e814ba9c904d77ecda4ad71bed97eea32e4aa66684a85a7a429ae6d345afbf2f",
+  "findings": [
+    "GitHub Actions identified one stale expected compatibility count and candidate digest/provenance set; the updated assertions match the current candidate file exactly.",
+    "The focused critical file passes all 9 tests and the complete critical CLI suite passes all 12 chunks.",
+    "The immutable historical baseline remains unchanged, while source task 202608181404-CR1F9W is now explicitly represented in the candidate expectation."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608181404-CR1F9W/quality/objects/sha256/77b30e2f0bd77b3522fd52439a1776e74262260532ef7ee33b9c6451911434c8.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
