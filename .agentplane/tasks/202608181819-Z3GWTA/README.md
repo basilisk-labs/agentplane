@@ -1,10 +1,11 @@
 ---
 id: "202608181819-Z3GWTA"
 title: "Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -61,6 +62,20 @@ quality_review:
     - "Public README, docs, website, SEO, comparison, demo, and discovery surfaces consistently lead with Git-native control plane for coding agents and authority/proof in Git."
     - "Internal Launch Kit and post drafts live in the private marketing repository; public source and derived launch context are removed, and scoped attributes prevent textual deletion diffs."
     - "Evaluator actual-diff evidence now omits --binary, retaining changed-path and binary-difference visibility without serializing reversible file bodies; focused regression, typecheck, formatting, bootstrap, and declared content checks pass."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:1b65b1059cfde6fcb777ac2c0f34f91f998b937df42322a3e02c77f35f37a6e5"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-18T20:18:56.534Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -322,8 +337,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "cbd9d5b3c234238194cbfb5f5e760129d5b71493"
-  message: "🚧 Z3GWTA task: apply external agent result"
+  hash: "e4118ebb2d9fface21da676a09e888db4edaafef"
+  message: "✅ Z3GWTA task: record sanitized quality evidence"
 comments:
   -
     author: "CODER"
@@ -337,6 +352,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: cbd9d5b3c234. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -416,9 +434,17 @@ events:
     author: "TESTER"
     state: "ok"
     note: "All declared checks and focused evaluator regressions pass on implementation commit 17b41294f; current evaluator evidence no longer serializes binary payload bodies."
+  -
+    type: "status"
+    at: "2026-08-18T20:18:56.534Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "e4118ebb2d9fface21da676a09e888db4edaafef"
 doc_version: 3
-doc_updated_at: "2026-08-18T20:15:45.127Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-18T20:18:56.570Z"
+doc_updated_by: "CODER"
 description: "Unify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth."
 sections:
   Summary: |-
@@ -905,6 +931,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: "Observation: the approved branch_pr worktree cannot start because local main is 34 commits ahead of and 119 commits behind origin/main. AgentPlane refuses to branch from a stale base. Impact: public README, docs, website content, stale proof counters, launch-file deletion, and marketing submodule pointer update remain unmodified. Resolution: preserve all local commits and active worktrees; reconcile the base through an explicit operator-selected merge/rebase/recovery lane, then resume this task and rerun work start. Fixability: external."
 extensions:
+  implementation_commit:
+    hash: "17b41294f7e560750288c4483ab7f24cfbbfd6b7"
+    message: "🔐 Z3GWTA task: omit binary bodies from evaluator evidence"
   workflow_route_baseline:
     start_head_sha: "7d7e964aec30e3551d34c81d3a726f28a6379690"
     version: 1
@@ -1408,3 +1437,16 @@ DecisionContextRef:
 ## Findings
 
 Observation: the approved branch_pr worktree cannot start because local main is 34 commits ahead of and 119 commits behind origin/main. AgentPlane refuses to branch from a stale base. Impact: public README, docs, website content, stale proof counters, launch-file deletion, and marketing submodule pointer update remain unmodified. Resolution: preserve all local commits and active worktrees; reconcile the base through an explicit operator-selected merge/rebase/recovery lane, then resume this task and rerun work start. Fixability: external.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:1b65b1059cfde6fcb777ac2c0f34f91f998b937df42322a3e02c77f35f37a6e5`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-18T20:18:56.534Z`

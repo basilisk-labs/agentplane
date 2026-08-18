@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:b8b20228c79377f155ff6e8c14c7537537fd0f0c4643acec6b96ef5486fdf458",
   "pr_number": 4845,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4845",
+  "pre_merge_closure": {
+    "basis_commit": "e4118ebb2d9fface21da676a09e888db4edaafef",
+    "branch": "task/202608181819-Z3GWTA/reposition-agentplane-as-the-git-native-control",
+    "pr_number": 4845,
+    "recorded_at": "2026-08-18T20:18:56.703Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608181819-Z3GWTA",
