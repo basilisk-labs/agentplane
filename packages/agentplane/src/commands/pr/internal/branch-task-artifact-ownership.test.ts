@@ -112,7 +112,7 @@ describe("committed task artifact ownership", () => {
     ).resolves.toBeUndefined();
   });
 
-  it("allows deletion-only cleanup of foreign volatile task artifacts", async () => {
+  it("rejects deletion-only cleanup of foreign volatile task artifacts without exact authority", async () => {
     mocks.gitDiffNameStatus.mockResolvedValue([
       {
         statusCode: "D",
@@ -133,7 +133,67 @@ describe("committed task artifact ownership", () => {
         tasksPath: ".agentplane/tasks",
         primaryTaskId: "T-PRIMARY",
       }),
+    ).rejects.toMatchObject({
+      context: {
+        reason_code: "foreign_committed_task_artifacts",
+        foreign_task_ids: ["T-FOREIGN"],
+      },
+    });
+  });
+
+  it("allows deletion-only cleanup under an exact foreign task authority root", async () => {
+    mocks.gitDiffNameStatus.mockResolvedValue([
+      {
+        statusCode: "D",
+        path: ".agentplane/tasks/T-FOREIGN/evidence/samples/sample.stdout.log",
+      },
+      {
+        statusCode: "D",
+        path: ".agentplane/tasks/T-FOREIGN/evidence/samples/sample.events.jsonl",
+      },
+    ]);
+
+    await expect(
+      assertBranchTaskArtifactOwnership({
+        gitRoot: "/repo",
+        baseBranch: "main",
+        branch: "task/T-PRIMARY/release-hygiene",
+        workflowDir: ".agentplane/tasks",
+        tasksPath: ".agentplane/tasks",
+        primaryTaskId: "T-PRIMARY",
+        authorizedForeignArtifactCleanupRoots: [".agentplane/tasks/T-FOREIGN/evidence"],
+      }),
     ).resolves.toBeUndefined();
+  });
+
+  it("does not widen an exact cleanup root to sibling paths or task-id prefixes", async () => {
+    mocks.gitDiffNameStatus.mockResolvedValue([
+      {
+        statusCode: "D",
+        path: ".agentplane/tasks/T-FOREIGN-OTHER/evidence/sample.stdout.log",
+      },
+      {
+        statusCode: "D",
+        path: ".agentplane/tasks/T-FOREIGN/runs/run-1/result.json",
+      },
+    ]);
+
+    await expect(
+      assertBranchTaskArtifactOwnership({
+        gitRoot: "/repo",
+        baseBranch: "main",
+        branch: "task/T-PRIMARY/unsafe-cleanup",
+        workflowDir: ".agentplane/tasks",
+        tasksPath: ".agentplane/tasks",
+        primaryTaskId: "T-PRIMARY",
+        authorizedForeignArtifactCleanupRoots: [".agentplane/tasks/T-FOREIGN/evidence"],
+      }),
+    ).rejects.toMatchObject({
+      context: {
+        reason_code: "foreign_committed_task_artifacts",
+        foreign_task_ids: ["T-FOREIGN", "T-FOREIGN-OTHER"],
+      },
+    });
   });
 
   it("rejects edits and durable-evidence deletions for foreign tasks", async () => {
