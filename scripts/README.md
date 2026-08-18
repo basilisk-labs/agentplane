@@ -100,18 +100,18 @@ Implementation layout: canonical script implementations live under `scripts/chec
 
 ## Test
 
-| Script                   | Command                                                                                                           | Purpose                               |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| `test`                   | `bun run test:fast`                                                                                               | Run test workflow commands.           |
-| `test:backend-critical`  | `node scripts/checks/run-vitest-suite.mjs backend-critical`                                                       | Run test workflow: backend-critical.  |
-| `test:cli:critical`      | `bun run test:critical`                                                                                           | Run test workflow: cli critical.      |
-| `test:critical`          | `node scripts/checks/run-vitest-suite.mjs critical-cli`                                                           | Run test workflow: critical.          |
-| `test:fast`              | `vitest --config vitest.workspace.ts run --project agentplane --project core --project recipes --project testkit` | Run test workflow: fast.              |
-| `test:fast:ci`           | `node scripts/checks/run-fast-ci-tests.mjs`                                                                       | Run test workflow: fast ci.           |
-| `test:platform-critical` | `node scripts/checks/run-vitest-suite.mjs platform-critical`                                                      | Run test workflow: platform-critical. |
-| `test:precommit`         | `node scripts/checks/run-vitest-suite.mjs precommit`                                                              | Run test workflow: precommit.         |
-| `test:project`           | `vitest --config vitest.workspace.ts run --project`                                                               | Run test workflow: project.           |
-| `test:release:critical`  | `node scripts/checks/run-vitest-suite.mjs release-critical`                                                       | Run test workflow: release critical.  |
+| Script                   | Command                                                                                                                          | Purpose                               |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `test`                   | `bun run test:fast`                                                                                                              | Run test workflow commands.           |
+| `test:backend-critical`  | `node scripts/checks/run-vitest-suite.mjs backend-critical`                                                                      | Run test workflow: backend-critical.  |
+| `test:cli:critical`      | `bun run test:critical`                                                                                                          | Run test workflow: cli critical.      |
+| `test:critical`          | `node scripts/checks/run-vitest-suite.mjs critical-cli`                                                                          | Run test workflow: critical.          |
+| `test:fast`              | `vitest --config vitest.workspace.ts run --project agentplane --project core --project recipes --project testkit --maxWorkers=4` | Run test workflow: fast.              |
+| `test:fast:ci`           | `node scripts/checks/run-fast-ci-tests.mjs`                                                                                      | Run test workflow: fast ci.           |
+| `test:platform-critical` | `node scripts/checks/run-vitest-suite.mjs platform-critical`                                                                     | Run test workflow: platform-critical. |
+| `test:precommit`         | `node scripts/checks/run-vitest-suite.mjs precommit`                                                                             | Run test workflow: precommit.         |
+| `test:project`           | `vitest --config vitest.workspace.ts run --project`                                                                              | Run test workflow: project.           |
+| `test:release:critical`  | `node scripts/checks/run-vitest-suite.mjs release-critical`                                                                      | Run test workflow: release critical.  |
 
 ## Coverage
 

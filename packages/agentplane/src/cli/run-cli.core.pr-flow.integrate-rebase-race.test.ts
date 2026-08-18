@@ -18,7 +18,13 @@ import {
   stageGitignoreIfPresent,
   writeConfig,
 } from "@agentplane/testkit";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("../commands/pr/integrate/internal/github-protection.js", () => ({
+  // Provider-first branch_pr routing is covered separately. This scenario
+  // retains focused coverage of the legacy local rebase race guard.
+  requiresPullRequestMergePath: vi.fn().mockResolvedValue(false),
+}));
 
 import { runCli } from "./run-cli.js";
 

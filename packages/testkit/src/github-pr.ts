@@ -42,6 +42,7 @@ export async function installFakeGhPrLookup(opts: {
       "const args = process.argv.slice(2);",
       "const logPath = process.env.AGENTPLANE_GH_LOG;",
       "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
+      'if (args[0] === "--version") { console.log("gh version 2.80.0"); process.exit(0); }',
       'if (args[0] !== "api") { console.error("unexpected gh command"); process.exit(90); }',
       'if (args[1] === "graphql") {',
       "  console.log(JSON.stringify({ data: { repository: { pullRequest: { reviewThreads: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } } } } } }));",
@@ -77,7 +78,12 @@ export async function installFakeGhPrLookup(opts: {
             "  process.exit(0);",
             "}",
           ]
-        : []),
+        : [
+            "if (/^repos\\/example\\/repo\\/branches\\/[^/]+\\/protection$/.test(route)) {",
+            '  console.error("HTTP 404: Branch not protected");',
+            "  process.exit(1);",
+            "}",
+          ]),
       'console.log("[]");',
       "process.exit(0);",
       "",

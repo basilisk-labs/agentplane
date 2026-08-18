@@ -1,2 +1,0 @@
-$ node scripts/checks/run-typescript-build.mjs && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle
-$ node scripts/checks/run-vitest-suite.mjs precommit

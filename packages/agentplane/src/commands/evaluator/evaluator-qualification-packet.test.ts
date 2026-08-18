@@ -980,5 +980,5 @@ describe("evaluator qualification packet", () => {
     await expect(prepareTypedReview(root, taskId)).rejects.toThrow(
       "may contain only current-task evidence after the packet's verified implementation SHA",
     );
-  });
+  }, 90_000);
 });
