@@ -4,7 +4,7 @@ title: "Reposition AgentPlane as the Git-native control plane for coding agents 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +29,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-18T19:22:20.001Z"
+  updated_by: "TESTER"
+  note: "Public positioning and website checks pass, but the declared release demo gate fails because the existing GIF is 3,834,539 bytes against a 3,000,000-byte limit."
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -81,12 +81,70 @@ execution_contract:
     schema_version: 2
     scope_roots: []
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "repository_effect:documentation"
+      - "verification:recorded-check-3:fail"
+    changed_components:
+      - "README.md"
+      - "context"
+      - "docs"
+      - "marketing"
+      - "packages/agentplane"
+      - "website"
+    changed_paths:
+      - "README.md"
+      - "context/wiki/release-docs/concepts/acr.md"
+      - "context/wiki/release-docs/concepts/configuration.md"
+      - "context/wiki/release-docs/concepts/recipes.md"
+      - "context/wiki/release-docs/docs-domains.md"
+      - "context/wiki/release-docs/domains/launch.md"
+      - "docs/compare.mdx"
+      - "docs/index.mdx"
+      - "docs/launch/checklist.md"
+      - "docs/launch/hn.md"
+      - "docs/launch/reddit.md"
+      - "docs/launch/twitter.md"
+      - "docs/listing.md"
+      - "docs/manifesto.mdx"
+      - "docs/user/overview.mdx"
+      - "marketing"
+      - "packages/agentplane/README.md"
+      - "website/docusaurus.config.ts"
+      - "website/scripts/check-site-content.mjs"
+      - "website/src/data/homepage-content.ts"
+      - "website/src/pages/_home.module.css"
+      - "website/src/pages/index.tsx"
+      - "website/static/img/social/docs/launch/checklist.png"
+      - "website/static/img/social/docs/launch/hn.png"
+      - "website/static/img/social/docs/launch/reddit.png"
+      - "website/static/img/social/docs/launch/twitter.png"
+      - "website/static/img/social/manifest.json"
+      - "website/static/llms-full.txt"
+      - "website/static/llms.txt"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+      - "source_code"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "fail"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
   reason_codes:
     - "effect_external_write"
     - "repository_branch_pr_floor"
@@ -107,6 +165,7 @@ execution_contract:
         evidence_requirements:
           - "external_effect:external_write"
           - "hosted_integration"
+          - "repository_effect:documentation"
           - "repository_effect:repository_write"
           - "repository_effect:source_code"
           - "task_outcome"
@@ -119,20 +178,59 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:7090115b39622430584a666c2049ff379c7b7a0bda0e929f9a5245c89aac8297"
+      digest: "sha256:d274666de5de4b41fa5477b86735ad6e3b01d88d43972533e2c3559f635d0ee9"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:marketing"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "README.md"
+          - "context"
+          - "docs"
+          - "marketing"
+          - "packages/agentplane"
+          - "website"
+        changed_files:
+          - "README.md"
+          - "context/wiki/release-docs/concepts/acr.md"
+          - "context/wiki/release-docs/concepts/configuration.md"
+          - "context/wiki/release-docs/concepts/recipes.md"
+          - "context/wiki/release-docs/docs-domains.md"
+          - "context/wiki/release-docs/domains/launch.md"
+          - "docs/compare.mdx"
+          - "docs/index.mdx"
+          - "docs/launch/checklist.md"
+          - "docs/launch/hn.md"
+          - "docs/launch/reddit.md"
+          - "docs/launch/twitter.md"
+          - "docs/listing.md"
+          - "docs/manifesto.mdx"
+          - "docs/user/overview.mdx"
+          - "marketing"
+          - "packages/agentplane/README.md"
+          - "website/docusaurus.config.ts"
+          - "website/scripts/check-site-content.mjs"
+          - "website/src/data/homepage-content.ts"
+          - "website/src/pages/_home.module.css"
+          - "website/src/pages/index.tsx"
+          - "website/static/img/social/docs/launch/checklist.png"
+          - "website/static/img/social/docs/launch/hn.png"
+          - "website/static/img/social/docs/launch/reddit.png"
+          - "website/static/img/social/docs/launch/twitter.png"
+          - "website/static/img/social/manifest.json"
+          - "website/static/llms-full.txt"
+          - "website/static/llms.txt"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
+          - "source_code"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -144,6 +242,7 @@ execution_contract:
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "docs_contract"
         - "full_regression"
         - "hosted_integration"
         - "real_e2e"
@@ -162,12 +261,12 @@ execution_contract:
     required_evidence:
       - "external_effect:external_write"
       - "hosted_integration"
+      - "repository_effect:documentation"
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "task_outcome"
-commit:
-  hash: "f4b9faf482a744690425743a391d9498424e9f1a"
-  message: "🧭 Z3GWTA task: reposition Agentplane as Git-native control plane"
+      - "verification_recovery:recorded-check-3"
+commit: null
 comments:
   -
     author: "CODER"
@@ -207,8 +306,14 @@ events:
     from: "DOING"
     to: "DOING"
     commit: "f4b9faf482a744690425743a391d9498424e9f1a"
+  -
+    type: "verify"
+    at: "2026-08-18T19:22:20.001Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Public positioning and website checks pass, but the declared release demo gate fails because the existing GIF is 3,834,539 bytes against a 3,000,000-byte limit."
 doc_version: 3
-doc_updated_at: "2026-08-18T19:10:55.040Z"
+doc_updated_at: "2026-08-18T19:22:24.279Z"
 doc_updated_by: "CODER"
 description: "Unify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth."
 sections:
@@ -228,6 +333,72 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-18T19:22:20.001Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Public positioning and website checks pass, but the declared release demo gate fails because the existing GIF is 3,834,539 bytes against a 3,000,000-byte limit.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0, input_digest=sha256:1a2f92e3ff2ef9e05d67da9dead653feb396fc7b6f61bb2eaab2d19bf0ce1223
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run lint:website
+    Result: pass
+    Evidence: ESLint exited 0 on the published task branch.
+    Scope: touched website implementation.
+
+    Check: critical_paths
+    Command: bun run docs:readme-header:check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: README header artifacts are fresh for v0.7.6 and policy routing is OK.
+    Scope: public README and repository policy gateway.
+
+    Check: full_regression
+    Command: bun run release:demo:check
+    Result: fail
+    Evidence: docs/assets/agentplane-demo.gif is 3,834,539 bytes; enforced limit is 3,000,000 bytes.
+    Scope: declared task verification set.
+
+    Check: hosted_integration
+    Command: agentplane pr open 202608181819-Z3GWTA --author CODER
+    Result: pass
+    Evidence: GitHub PR 4845 was created and linked by Agentplane.
+    Scope: published task branch and PR metadata.
+
+    Check: real_e2e
+    Command: bun run docs:site:check
+    Result: pass
+    Evidence: docs IA, generated artifacts, website typecheck, social-card check, optimized Docusaurus production build, navigation check, and design-language check passed.
+    Scope: public documentation and website build.
+
+    Check: task_outcome
+    Command: inspect public diff and private marketing source of truth
+    Result: pass
+    Evidence: public Launch Kit files and derived cards are removed; marketing submodule points to published private commit d590b93; canonical control-plane copy is present across README, docs, SEO, homepage, and llms surfaces.
+    Scope: requested positioning and content-boundary outcome.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608181819-Z3GWTA-reposition-agentplane-as-the-git-native-control/.agentplane/tasks/202608181819-Z3GWTA/blueprint/resolved-snapshot.json
+    - old_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+    - current_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181819-Z3GWTA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608181819-Z3GWTA
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -265,6 +436,72 @@ PLANNER fallback scaffold for "Reposition AgentPlane as the Git-native control p
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-18T19:22:20.001Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Public positioning and website checks pass, but the declared release demo gate fails because the existing GIF is 3,834,539 bytes against a 3,000,000-byte limit.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0, input_digest=sha256:1a2f92e3ff2ef9e05d67da9dead653feb396fc7b6f61bb2eaab2d19bf0ce1223
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run lint:website
+Result: pass
+Evidence: ESLint exited 0 on the published task branch.
+Scope: touched website implementation.
+
+Check: critical_paths
+Command: bun run docs:readme-header:check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: README header artifacts are fresh for v0.7.6 and policy routing is OK.
+Scope: public README and repository policy gateway.
+
+Check: full_regression
+Command: bun run release:demo:check
+Result: fail
+Evidence: docs/assets/agentplane-demo.gif is 3,834,539 bytes; enforced limit is 3,000,000 bytes.
+Scope: declared task verification set.
+
+Check: hosted_integration
+Command: agentplane pr open 202608181819-Z3GWTA --author CODER
+Result: pass
+Evidence: GitHub PR 4845 was created and linked by Agentplane.
+Scope: published task branch and PR metadata.
+
+Check: real_e2e
+Command: bun run docs:site:check
+Result: pass
+Evidence: docs IA, generated artifacts, website typecheck, social-card check, optimized Docusaurus production build, navigation check, and design-language check passed.
+Scope: public documentation and website build.
+
+Check: task_outcome
+Command: inspect public diff and private marketing source of truth
+Result: pass
+Evidence: public Launch Kit files and derived cards are removed; marketing submodule points to published private commit d590b93; canonical control-plane copy is present across README, docs, SEO, homepage, and llms surfaces.
+Scope: requested positioning and content-boundary outcome.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608181819-Z3GWTA-reposition-agentplane-as-the-git-native-control/.agentplane/tasks/202608181819-Z3GWTA/blueprint/resolved-snapshot.json
+- old_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+- current_digest: 55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181819-Z3GWTA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608181819-Z3GWTA
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

@@ -8,15 +8,15 @@ Require python3
 Set Shell bash
 Set FontFamily "JetBrains Mono"
 Set FontSize 18
-Set Width 960
-Set Height 540
+Set Width 700
+Set Height 394
 Set Padding 28
 Set Margin 28
 Set MarginFill "#0f1117"
 Set BorderRadius 16
 Set WindowBar Colorful
 Set Theme "TokyoNight"
-Set Framerate 60
+Set Framerate 20
 Set TypingSpeed 28ms
 Set CursorBlink false
 

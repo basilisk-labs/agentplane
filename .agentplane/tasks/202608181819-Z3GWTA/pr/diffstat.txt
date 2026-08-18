@@ -4,6 +4,8 @@
  context/wiki/release-docs/concepts/recipes.md      |   3 +-
  context/wiki/release-docs/docs-domains.md          |   2 -
  context/wiki/release-docs/domains/launch.md        |  45 --------
+ docs/assets/agentplane-demo.gif                    | Bin 3834539 -> 2744740 bytes
+ docs/assets/agentplane-demo.tape                   |   6 +-
  docs/compare.mdx                                   |  64 ++++++-----
  docs/index.mdx                                     |  14 ++-
  docs/launch/checklist.md                           |  52 ---------
@@ -27,4 +29,4 @@
  website/static/img/social/manifest.json            |  32 ------
  website/static/llms-full.txt                       | 125 ++++++++++++---------
  website/static/llms.txt                            |   5 +-
- 29 files changed, 296 insertions(+), 552 deletions(-)
+ 31 files changed, 299 insertions(+), 555 deletions(-)
