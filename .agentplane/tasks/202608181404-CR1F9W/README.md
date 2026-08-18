@@ -1,10 +1,11 @@
 ---
 id: "202608181404-CR1F9W"
 title: "Add v0.7.7 release social assets and a controlled evaluator rework scope-extension boundary"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -62,6 +63,20 @@ quality_review:
     - "End-to-end CLI coverage records a structured blocker under mode=all, observes approval_required, applies an explicit matching grant, and verifies a fresh EXECUTOR work order with the expanded website/static/img/social writable root."
     - "ci:contract, all 567 fast test files with 4,169 passing tests and one skip, package builds, and the documentation production build including 230 social assets pass."
     - "Residual risk: A future change that makes task.scope.extend policy-authorizable would weaken the boundary; the dedicated mode=all denial regression must remain release-blocking."
+token_usage:
+  agent_runs: 5
+  input_tokens: null
+  journal_digest: "sha256:3893161a232508f4a4b2df2cbc576387333ed82b285d4e20e470bea9a12b8217"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-18T14:59:20.498Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -394,8 +409,8 @@ execution_contract:
       - "requirements_resolution"
       - "task_outcome"
 commit:
-  hash: "fe31aa147101fedca08e6dd601894f8ff08cec8b"
-  message: "🚧 CR1F9W task: apply external agent result"
+  hash: "6d46be81810debf1194bad25e538558ad1420821"
+  message: "🚧 CR1F9W task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -406,6 +421,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: fe31aa147101. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -442,9 +460,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-18T14:59:20.498Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "6d46be81810debf1194bad25e538558ad1420821"
 doc_version: 3
-doc_updated_at: "2026-08-18T14:58:08.046Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-18T14:59:20.507Z"
+doc_updated_by: "CODER"
 description: "Generate and verify the social asset for docs/releases/v0.7.7.md. Add a typed, state-bound, USER-approved path for an evaluator or implementation-rework result to request additional writable roots without silently widening authority; invalidate stale verification and reissue a scoped EXECUTOR packet after approval. Keep the change release-blocking and compatible with branch_pr."
 sections:
   Summary: |-
@@ -625,6 +651,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "fe31aa147101fedca08e6dd601894f8ff08cec8b"
+    message: "🚧 CR1F9W task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "f4fc869fd5ffbafb58c7e33c9f75ac762f3a242f"
     version: 1
@@ -820,3 +849,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/5` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:3893161a232508f4a4b2df2cbc576387333ed82b285d4e20e470bea9a12b8217`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-18T14:59:20.498Z`
