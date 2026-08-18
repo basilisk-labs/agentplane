@@ -15,13 +15,8 @@ Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports 
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Hosted P1 on PR #4844: branch-task-artifact ownership must accept remote-tracking comparison refs
-and retain the contamination gate for origin/main; add a regression.
-```
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>

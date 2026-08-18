@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,11 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly authorized implementation, full validation, merge, publication, and cleanup in this conversation."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-18T17:15:32.099Z"
-  updated_by: "EVALUATOR"
-  note: "Hosted P1 on PR #4844: branch-task-artifact ownership must accept remote-tracking comparison refs and retain the contamination gate for origin/main; add a regression."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-18T17:22:34.406Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  attempts: 0
 quality_review:
   state: "rework"
   updated_at: "2026-08-18T17:15:32.099Z"
@@ -458,7 +458,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "16457593d821119c1ed447fcbd8b94e1baee8c2f"
+  message: "🛡️ 3EHFWF task: validate remote comparison refs"
 comments:
   -
     author: "CODER"
@@ -478,6 +480,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Resolve remote-tracking comparison refs for foreign-task-artifact ownership enforcement and add regression."
 events:
   -
     type: "status"
@@ -535,8 +540,22 @@ events:
     author: "EVALUATOR"
     state: "needs_rework"
     note: "Hosted P1 on PR #4844: branch-task-artifact ownership must accept remote-tracking comparison refs and retain the contamination gate for origin/main; add a regression."
+  -
+    type: "status"
+    at: "2026-08-18T17:22:08.677Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Resolve remote-tracking comparison refs for foreign-task-artifact ownership enforcement and add regression."
+    commit: "16457593d821119c1ed447fcbd8b94e1baee8c2f"
+  -
+    type: "verify"
+    at: "2026-08-18T17:22:34.406Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-18T17:15:35.078Z"
+doc_updated_at: "2026-08-18T17:22:35.465Z"
 doc_updated_by: "CODER"
 description: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication."
 sections:
@@ -724,6 +743,78 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-18T17:22:34.406Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a6c4b5626711e325c56f5b57d743aa6f2befcb10b159974a135b21755f234abb, input_digest=sha256:f66703c378dba1700abfbc230f45e26070e45740d5c641bae9cdf7f099cb8509
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181634-3EHFWF Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181634-3EHFWF Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181634-3EHFWF Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181634-3EHFWF Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181634-3EHFWF Verification Contract check hosted_integration
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181634-3EHFWF Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181634-3EHFWF Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181634-3EHFWF-supersede-pr-4843-with-a-clean-agentplane-0-7-7/.agentplane/tasks/202608181634-3EHFWF/blueprint/resolved-snapshot.json
+    - old_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+    - current_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181634-3EHFWF
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608181634-3EHFWF
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -968,6 +1059,78 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-18T17:22:34.406Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a6c4b5626711e325c56f5b57d743aa6f2befcb10b159974a135b21755f234abb, input_digest=sha256:f66703c378dba1700abfbc230f45e26070e45740d5c641bae9cdf7f099cb8509
+
+Details:
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181634-3EHFWF Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181634-3EHFWF Verification Contract check critical_paths
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181634-3EHFWF Verification Contract check docs_contract
+
+Check: full_regression
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181634-3EHFWF Verification Contract check full_regression
+
+Check: hosted_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181634-3EHFWF Verification Contract check hosted_integration
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181634-3EHFWF Verification Contract check real_e2e
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181634-3EHFWF Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181634-3EHFWF-supersede-pr-4843-with-a-clean-agentplane-0-7-7/.agentplane/tasks/202608181634-3EHFWF/blueprint/resolved-snapshot.json
+- old_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+- current_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181634-3EHFWF
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608181634-3EHFWF
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
