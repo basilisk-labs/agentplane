@@ -1,5 +1,3 @@
-import path from "node:path";
-
 import type { TaskRepositoryEffect } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../cli/error-map.js";
@@ -13,27 +11,15 @@ import { cmdCommit } from "../guard/impl/commit.js";
 import { commitRefreshedTaskArtifacts } from "../guard/impl/commit-refresh.js";
 import { refreshBranchPrArtifactsAfterTaskCommit } from "../shared/post-commit-pr-artifacts.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import {
+  normalizeTaskScopeRoot,
+  parseTaskScopeExtensionRequestState,
+  scopeExtensionReceiptForState,
+  TASK_SCOPE_EXTENSION_REQUEST_KEY,
+} from "../shared/task-scope-extension-request.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const output = createCliEmitter();
-const EXTERNAL_BLOCKER_RECEIPT = "Agentplane receipt: external-agent-blocker/";
-
-function normalizedScopeRoot(value: string): string {
-  const normalized = path.posix.normalize(value.trim().replaceAll("\\", "/")).replace(/^\.\//u, "");
-  if (
-    !normalized ||
-    normalized === "." ||
-    normalized === ".." ||
-    normalized.startsWith("../") ||
-    path.posix.isAbsolute(normalized)
-  ) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: `Invalid scope root: ${value}. Use a non-root repository-relative path.`,
-    });
-  }
-  return normalized.replace(/\/+$/u, "");
-}
 
 function uniqueSorted<T extends string>(values: readonly T[]): T[] {
   return [...new Set(values)].toSorted();
@@ -44,6 +30,7 @@ export function extendBlockedTaskExecutionContract(opts: {
   task: NonNullable<Awaited<ReturnType<CommandContext["taskBackend"]["getTask"]>>>;
   scope_roots: readonly string[];
   repository_effects: readonly TaskRepositoryEffect[];
+  request_digest: string;
   by: string;
 }) {
   const current = opts.task.execution_contract;
@@ -60,8 +47,25 @@ export function extendBlockedTaskExecutionContract(opts: {
         "Task execution scope can be extended only after a recorded BLOCKED semantic result.",
     });
   }
+  const pending = parseTaskScopeExtensionRequestState(opts.task);
+  if (pending?.status !== "pending") {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Task execution scope extension requires one valid pending structured request.",
+    });
+  }
+  if (pending.request_digest !== opts.request_digest) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Task execution scope extension request digest does not match the pending blocker.",
+    });
+  }
   if (
-    !(opts.task.comments ?? []).some((comment) => comment.body.includes(EXTERNAL_BLOCKER_RECEIPT))
+    !(opts.task.comments ?? []).some(
+      (comment) =>
+        comment.author === "SUPERVISOR" &&
+        comment.body.includes(scopeExtensionReceiptForState(pending)),
+    )
   ) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -75,7 +79,17 @@ export function extendBlockedTaskExecutionContract(opts: {
     });
   }
 
-  const addedRoots = opts.scope_roots.map((root) => normalizedScopeRoot(root));
+  const addedRoots = uniqueSorted(opts.scope_roots.map((root) => normalizeTaskScopeRoot(root)));
+  const addedEffects = uniqueSorted(opts.repository_effects);
+  if (
+    JSON.stringify(addedRoots) !== JSON.stringify(pending.request.scope_roots) ||
+    JSON.stringify(addedEffects) !== JSON.stringify(pending.request.repository_effects)
+  ) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Task execution scope extension must exactly match the pending structured request.",
+    });
+  }
   const scopeRoots = uniqueSorted([...current.declaration.scope_roots, ...addedRoots]);
   const repositoryEffects = uniqueSorted([
     ...current.declaration.repository_effects,
@@ -92,9 +106,7 @@ export function extendBlockedTaskExecutionContract(opts: {
   }
   const extensionSummary = [
     addedRoots.length > 0 ? `roots=${uniqueSorted(addedRoots).join(",")}` : null,
-    opts.repository_effects.length > 0
-      ? `repository_effects=${uniqueSorted(opts.repository_effects).join(",")}`
-      : null,
+    addedEffects.length > 0 ? `repository_effects=${addedEffects.join(",")}` : null,
   ]
     .filter((value): value is string => value !== null)
     .join("; ");
@@ -126,8 +138,10 @@ export async function cmdTaskScopeExtend(opts: {
   taskId: string;
   scopeRoots: string[];
   repositoryEffects: TaskRepositoryEffect[];
+  requestDigest: string;
   stateFingerprint: string;
   by: string;
+  quiet?: boolean;
 }): Promise<number> {
   try {
     const command = opts.ctx;
@@ -157,8 +171,16 @@ export async function cmdTaskScopeExtend(opts: {
       task,
       scope_roots: opts.scopeRoots,
       repository_effects: opts.repositoryEffects,
+      request_digest: opts.requestDigest,
       by: opts.by,
     });
+    const pending = parseTaskScopeExtensionRequestState(task);
+    if (pending?.status !== "pending") {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "Task execution scope extension pending request disappeared before persistence.",
+      });
+    }
     const checkout = decision.oracle.authoritativeCheckoutPath;
     if (!checkout) {
       throw new CliError({
@@ -181,6 +203,15 @@ export async function cmdTaskScopeExtend(opts: {
           note: "Invalidated by USER-approved execution scope extension.",
         },
         execution_contract: executionContract,
+        extensions: {
+          ...(task.extensions ?? {}),
+          [TASK_SCOPE_EXTENSION_REQUEST_KEY]: {
+            ...pending,
+            status: "applied",
+            applied_at: now,
+            applied_by: opts.by,
+          },
+        },
         execution_route: task.execution_route
           ? {
               ...task.execution_route,
@@ -238,12 +269,14 @@ export async function cmdTaskScopeExtend(opts: {
       quiet: true,
     });
 
-    emitCommandResult(output, {
-      kind: "success",
-      action: "task execution scope extended",
-      target: opts.taskId,
-      details: `roots=${opts.scopeRoots.join(",")} state_fingerprint=${opts.stateFingerprint}`,
-    });
+    if (!opts.quiet) {
+      emitCommandResult(output, {
+        kind: "success",
+        action: "task execution scope extended",
+        target: opts.taskId,
+        details: `roots=${opts.scopeRoots.join(",")} state_fingerprint=${opts.stateFingerprint}`,
+      });
+    }
     return 0;
   } catch (error) {
     if (error instanceof CliError) throw error;

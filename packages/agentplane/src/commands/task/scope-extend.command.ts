@@ -24,6 +24,7 @@ export type TaskScopeExtendParsed = {
   taskId: string;
   scopeRoots: string[];
   repositoryEffects: TaskRepositoryEffect[];
+  requestDigest: string;
   stateFingerprint: string;
   by: string;
 };
@@ -51,6 +52,13 @@ export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
     },
     {
       kind: "string",
+      name: "request-digest",
+      required: true,
+      valueHint: "<sha256:...>",
+      description: "Exact digest of the pending structured scope-extension request.",
+    },
+    {
+      kind: "string",
       name: "state-fingerprint",
       required: true,
       valueHint: "<sha256:...>",
@@ -66,7 +74,7 @@ export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
   ],
   examples: [
     {
-      cmd: "agentplane task scope extend T-1 --scope-root website --repository-effect documentation --state-fingerprint sha256:... --by USER",
+      cmd: "agentplane task scope extend T-1 --scope-root website --repository-effect documentation --request-digest sha256:... --state-fingerprint sha256:... --by USER",
       why: "Approve a monotonic repository-scope extension after a typed blocker.",
     },
   ],
@@ -86,11 +94,18 @@ export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
         message: "--state-fingerprint must be an exact sha256:<64 lowercase hex> digest.",
       });
     }
+    if (!/^sha256:[0-9a-f]{64}$/u.test(String(raw.opts["request-digest"]))) {
+      throw usageError({
+        spec: taskScopeExtendSpec,
+        message: "--request-digest must be an exact sha256:<64 lowercase hex> digest.",
+      });
+    }
   },
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     scopeRoots: toStringList(raw.opts["scope-root"]),
     repositoryEffects: toStringList(raw.opts["repository-effect"]) as TaskRepositoryEffect[],
+    requestDigest: String(raw.opts["request-digest"]),
     stateFingerprint: String(raw.opts["state-fingerprint"]),
     by: String(raw.opts.by),
   }),
@@ -104,6 +119,7 @@ export function makeRunTaskScopeExtendHandler(getCtx: (cmd: string) => Promise<C
       taskId: parsed.taskId,
       scopeRoots: parsed.scopeRoots,
       repositoryEffects: parsed.repositoryEffects,
+      requestDigest: parsed.requestDigest,
       stateFingerprint: parsed.stateFingerprint,
       by: parsed.by,
     });

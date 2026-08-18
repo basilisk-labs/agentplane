@@ -45,6 +45,12 @@ const EXTERNAL_HIGH_RISK: AuthorityRequirement = {
   requiresAuthority: true,
 };
 
+const SEMANTIC_DECISION: AuthorityRequirement = {
+  class: "semantic_decision",
+  policyRule: "workflow.semantic_decision.user_only",
+  requiresAuthority: true,
+};
+
 /**
  * The queue entry is itself an exact, durable integration authorization: it
  * can only be created by the authority-gated integration.enqueue operation.
@@ -65,6 +71,7 @@ export const WORKFLOW_OPERATION_AUTHORITY_POLICY = {
   "task.artifacts.commit": LOCAL_REVERSIBLE,
   "task.start": LOCAL_REVERSIBLE,
   "task.branch.start": LOCAL_REVERSIBLE,
+  "task.scope.extend": SEMANTIC_DECISION,
   "task.verify.show": LOCAL_REVERSIBLE,
   "runner.follow": LOCAL_REVERSIBLE,
   "batch.follow_primary": LOCAL_REVERSIBLE,

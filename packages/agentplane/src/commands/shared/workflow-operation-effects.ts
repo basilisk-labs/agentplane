@@ -11,6 +11,7 @@ export const WORKFLOW_OPERATION_EFFECTS = {
   "task.artifacts.commit": "mutating",
   "task.start": "mutating",
   "task.branch.start": "mutating",
+  "task.scope.extend": "mutating",
   "task.verify.show": "read_only",
   "runner.follow": "mode_dependent",
   "batch.follow_primary": "read_only",

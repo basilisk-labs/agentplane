@@ -8,6 +8,12 @@
   "uncertainty": [],
   "blocker": {
     "summary": "The runner needs a provider action from the parent workflow.",
-    "recommended_action": "Return control to the parent workflow for the provider action."
+    "recommended_action": "Return control to the parent workflow for the provider action.",
+    "scope_extension_request": {
+      "schema_version": 1,
+      "scope_roots": ["website/static/img/social"],
+      "repository_effects": ["documentation"],
+      "rationale": "The generated release image is outside the current writable roots."
+    }
   }
 }

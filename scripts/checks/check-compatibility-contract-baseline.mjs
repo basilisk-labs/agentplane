@@ -1556,6 +1556,12 @@ function validateReviewedCandidate({
           ],
         },
         {
+          name: "request-digest",
+          kind: "string",
+          valueHint: "<sha256:...>",
+          required: true,
+        },
+        {
           name: "state-fingerprint",
           kind: "string",
           valueHint: "<sha256:...>",
@@ -2061,6 +2067,13 @@ function validateReviewedCandidate({
     },
     {
       command: "task scope extend",
+      name: "request-digest",
+      kind: "string",
+      valueHint: "<sha256:...>",
+      required: true,
+    },
+    {
+      command: "task scope extend",
       name: "scope-root",
       kind: "string",
       valueHint: "<path>",
@@ -2541,12 +2554,14 @@ function validateReviewedCandidate({
       source_task: "202607221846-9XC1H0",
     },
     ...effectResolutionOptionSources,
-    ...["by", "repository-effect", "scope-root", "state-fingerprint"].map((name) => ({
-      kind: "option",
-      command: "task scope extend",
-      name,
-      source_task: "202608181404-CR1F9W",
-    })),
+    ...["by", "repository-effect", "request-digest", "scope-root", "state-fingerprint"].map(
+      (name) => ({
+        kind: "option",
+        command: "task scope extend",
+        name,
+        source_task: "202608181404-CR1F9W",
+      }),
+    ),
     {
       kind: "option",
       command: "workflow migrate",

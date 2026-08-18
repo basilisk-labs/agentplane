@@ -84,6 +84,20 @@ describe("agent semantic result contract", () => {
     ).toEqual([]);
     expect(
       listAgentSemanticResultSchemaErrors({
+        ...buildAgentSemanticResultV2ValidFixtures("scope-request-invalid").blocked,
+        blocker: {
+          summary: "Additional repository scope is required.",
+          scope_extension_request: {
+            schema_version: 1,
+            scope_roots: [],
+            repository_effects: [],
+            rationale: "No actual authority was requested.",
+          },
+        },
+      }),
+    ).not.toEqual([]);
+    expect(
+      listAgentSemanticResultSchemaErrors({
         ...AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURE,
         status: "needs_context",
         knowledge_request: {

@@ -326,6 +326,92 @@
             "recommended_action": {
               "type": "string",
               "minLength": 1
+            },
+            "scope_extension_request": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "schema_version": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "rationale": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "scope_roots": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "repository_effects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "repository_write",
+                          "documentation",
+                          "source_code",
+                          "tests",
+                          "public_api",
+                          "schema",
+                          "dependencies",
+                          "ci",
+                          "release_metadata",
+                          "security_boundary"
+                        ]
+                      }
+                    }
+                  },
+                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "schema_version": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "rationale": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "scope_roots": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "repository_effects": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "repository_write",
+                          "documentation",
+                          "source_code",
+                          "tests",
+                          "public_api",
+                          "schema",
+                          "dependencies",
+                          "ci",
+                          "release_metadata",
+                          "security_boundary"
+                        ]
+                      }
+                    }
+                  },
+                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
+                  "additionalProperties": false
+                }
+              ]
             }
           },
           "required": ["summary"],
@@ -708,6 +794,92 @@
             "recommended_action": {
               "type": "string",
               "minLength": 1
+            },
+            "scope_extension_request": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "schema_version": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "rationale": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "scope_roots": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "repository_effects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "repository_write",
+                          "documentation",
+                          "source_code",
+                          "tests",
+                          "public_api",
+                          "schema",
+                          "dependencies",
+                          "ci",
+                          "release_metadata",
+                          "security_boundary"
+                        ]
+                      }
+                    }
+                  },
+                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "schema_version": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "rationale": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "scope_roots": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "repository_effects": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "repository_write",
+                          "documentation",
+                          "source_code",
+                          "tests",
+                          "public_api",
+                          "schema",
+                          "dependencies",
+                          "ci",
+                          "release_metadata",
+                          "security_boundary"
+                        ]
+                      }
+                    }
+                  },
+                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
+                  "additionalProperties": false
+                }
+              ]
             }
           },
           "required": ["summary"],
@@ -1090,6 +1262,92 @@
             "recommended_action": {
               "type": "string",
               "minLength": 1
+            },
+            "scope_extension_request": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "schema_version": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "rationale": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "scope_roots": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "repository_effects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "repository_write",
+                          "documentation",
+                          "source_code",
+                          "tests",
+                          "public_api",
+                          "schema",
+                          "dependencies",
+                          "ci",
+                          "release_metadata",
+                          "security_boundary"
+                        ]
+                      }
+                    }
+                  },
+                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "schema_version": {
+                      "type": "number",
+                      "const": 1
+                    },
+                    "rationale": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "scope_roots": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "repository_effects": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "repository_write",
+                          "documentation",
+                          "source_code",
+                          "tests",
+                          "public_api",
+                          "schema",
+                          "dependencies",
+                          "ci",
+                          "release_metadata",
+                          "security_boundary"
+                        ]
+                      }
+                    }
+                  },
+                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
+                  "additionalProperties": false
+                }
+              ]
             }
           },
           "required": ["summary"],

@@ -37,6 +37,7 @@ export {
   type AgentSemanticResultClaimedCheck,
   type AgentSemanticResultKnowledgeRequest,
   type AgentSemanticResultReview,
+  type AgentSemanticResultScopeExtensionRequest,
   type AgentSemanticResultStatus,
   type AgentSemanticResultTaskIntent,
   KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES,

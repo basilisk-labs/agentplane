@@ -38,10 +38,46 @@ export const KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES = [
 ] as const;
 export const KNOWLEDGE_REQUEST_SCOPE_VALUES = ["task_context"] as const;
 
+const AGENT_SEMANTIC_RESULT_REPOSITORY_EFFECT_ZOD_SCHEMA = z.enum([
+  "repository_write",
+  "documentation",
+  "source_code",
+  "tests",
+  "public_api",
+  "schema",
+  "dependencies",
+  "ci",
+  "release_metadata",
+  "security_boundary",
+]);
+
+const SCOPE_EXTENSION_REQUEST_BASE = {
+  schema_version: z.literal(1),
+  rationale: NON_EMPTY_STRING,
+} as const;
+
+const AGENT_SEMANTIC_RESULT_SCOPE_EXTENSION_REQUEST_ZOD_SCHEMA = z.union([
+  z
+    .object({
+      ...SCOPE_EXTENSION_REQUEST_BASE,
+      scope_roots: z.array(NON_EMPTY_STRING).min(1),
+      repository_effects: z.array(AGENT_SEMANTIC_RESULT_REPOSITORY_EFFECT_ZOD_SCHEMA),
+    })
+    .strict(),
+  z
+    .object({
+      ...SCOPE_EXTENSION_REQUEST_BASE,
+      scope_roots: z.array(NON_EMPTY_STRING),
+      repository_effects: z.array(AGENT_SEMANTIC_RESULT_REPOSITORY_EFFECT_ZOD_SCHEMA).min(1),
+    })
+    .strict(),
+]);
+
 const AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA = z
   .object({
     summary: NON_EMPTY_STRING,
     recommended_action: NON_EMPTY_STRING.optional(),
+    scope_extension_request: AGENT_SEMANTIC_RESULT_SCOPE_EXTENSION_REQUEST_ZOD_SCHEMA.optional(),
   })
   .strict();
 
@@ -75,18 +111,6 @@ const AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA = z
   })
   .strict();
 
-const AGENT_SEMANTIC_RESULT_REPOSITORY_EFFECT_ZOD_SCHEMA = z.enum([
-  "repository_write",
-  "documentation",
-  "source_code",
-  "tests",
-  "public_api",
-  "schema",
-  "dependencies",
-  "ci",
-  "release_metadata",
-  "security_boundary",
-]);
 const AGENT_SEMANTIC_RESULT_EXTERNAL_EFFECT_ZOD_SCHEMA = z.enum([
   "network_read",
   "external_write",
@@ -209,6 +233,9 @@ export const AGENT_SEMANTIC_RESULT_ZOD_SCHEMA = z.discriminatedUnion("status", [
 export type AgentSemanticResult = z.infer<typeof AGENT_SEMANTIC_RESULT_ZOD_SCHEMA>;
 export type AgentSemanticResultStatus = (typeof AGENT_SEMANTIC_RESULT_STATUS_VALUES)[number];
 export type AgentSemanticResultBlocker = z.infer<typeof AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA>;
+export type AgentSemanticResultScopeExtensionRequest = z.infer<
+  typeof AGENT_SEMANTIC_RESULT_SCOPE_EXTENSION_REQUEST_ZOD_SCHEMA
+>;
 export type AgentSemanticResultKnowledgeRequest = z.infer<
   typeof AGENT_SEMANTIC_RESULT_KNOWLEDGE_REQUEST_ZOD_SCHEMA
 >;
@@ -262,6 +289,12 @@ export function buildAgentSemanticResultV2ValidFixtures(
       blocker: {
         summary: "The runner needs a provider action from the parent workflow.",
         recommended_action: "Return control to the parent workflow for the provider action.",
+        scope_extension_request: {
+          schema_version: 1,
+          scope_roots: ["website/static/img/social"],
+          repository_effects: ["documentation"],
+          rationale: "The generated release image is outside the current writable roots.",
+        },
       },
     },
     needs_context: {
