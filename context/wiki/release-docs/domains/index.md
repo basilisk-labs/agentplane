@@ -34,7 +34,6 @@ agentplane_context:
 - [examples documentation domain](examples.md)
 - [help documentation domain](help.md)
 - [internal documentation domain](internal.md)
-- [launch documentation domain](launch.md)
 - [recipes documentation domain](recipes.md)
 - [reference documentation domain](reference.md)
 - [releases documentation domain](releases.md)

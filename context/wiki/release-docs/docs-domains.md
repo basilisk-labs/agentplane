@@ -46,7 +46,6 @@ agentplane_context:
       - "entity.docs_domain.examples"
       - "entity.docs_domain.help"
       - "entity.docs_domain.internal"
-      - "entity.docs_domain.launch"
       - "entity.docs_domain.recipes"
       - "entity.docs_domain.reference"
       - "entity.docs_domain.releases"
@@ -92,7 +91,6 @@ agentplane_context:
 - [[examples documentation domain]]: 2 files.
 - [[help documentation domain]]: 5 files.
 - [[internal documentation domain]]: 1 files.
-- [[launch documentation domain]]: 4 files.
 - [[recipes documentation domain]]: 5 files.
 - [[reference documentation domain]]: 9 files.
 - [[releases documentation domain]]: 89 files.

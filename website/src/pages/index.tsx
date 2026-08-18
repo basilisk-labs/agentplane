@@ -29,11 +29,11 @@ function HomeJsonLd(): ReactNode {
     mainEntity: [
       [
         "What is Agentplane?",
-        "Agentplane is an agent-agnostic evidence layer for AI-written code changes. It keeps task intent, approved plans, verification evidence, traces, and Agent Change Records inspectable in Git.",
+        "Agentplane is the Git-native control plane for coding agents. It bounds delegated authority and keeps approvals, observed proof, recovery, and closure inspectable in Git.",
       ],
       [
         "Does Agentplane replace AI agent frameworks?",
-        "No. Agentplane works around agent frameworks by coordinating workflows, traces, context, artifacts, and operational state.",
+        "No. Coding agents remain the workers. Agentplane controls their delegated lifecycle through bounded authority, approvals, independent observation, verification, recovery, and closure.",
       ],
       [
         "Does Agentplane run locally?",
@@ -41,7 +41,7 @@ function HomeJsonLd(): ReactNode {
       ],
       [
         "What does Agentplane record?",
-        "Agentplane records task intent, approved plans, workflow runs, traces, verification evidence, review packets, and Agent Change Records.",
+        "Agentplane records task intent, delegated authority, approvals, workflow state, supervisor observations, verification evidence, recovery routes, closure, and Agent Change Records.",
       ],
       [
         "What are Agentplane traces?",
@@ -84,15 +84,16 @@ function Hero(): ReactNode {
   const { hero } = homepageContent;
   const [copied, setCopied] = useState(false);
   const evidenceRows = [
-    ["task", "20260523-AB12CD", "approved scope + owner"],
-    ["branch", "task/.../repo-evidence-hero", "isolated worktree"],
-    ["checks", "docs:site:check", "required before review"],
-    ["record", "acr.json", "machine-readable handoff"],
+    ["authorize", "bounded WorkOrder", "scope + allowed effects"],
+    ["dispatch", "semantic episode", "one explicit objective"],
+    ["observe", "repo + Git facts", "supervisor-owned proof"],
+    ["verify", "required checks", "observed pass or failure"],
+    ["close", "receipt or recovery", "deterministic next route"],
   ];
   const artifactRows = [
-    ["Task README", "intent, plan, findings"],
-    ["PR packet", "scope, checks, diffstat"],
-    ["Trace export", "steps, tools, checks"],
+    ["WorkOrder", "objective, roots, effects"],
+    ["Approval", "actor, scope, expiry"],
+    ["Receipt", "observations, closure"],
   ];
 
   async function copyInstall(): Promise<void> {
@@ -107,9 +108,9 @@ function Hero(): ReactNode {
       <div className={styles.heroCopy}>
         <p className={styles.kicker}>{hero.eyebrow}</p>
         <h1 aria-label={hero.title}>
-          <span>Audit trails for</span>
-          <span>AI-written code</span>
-          <span>changes.</span>
+          {hero.titleLines.map((line) => (
+            <span key={line}>{line}</span>
+          ))}
         </h1>
         <p className={styles.lede}>{hero.subtitle}</p>
         <p className={styles.trust}>{hero.trustLine}</p>
@@ -119,7 +120,7 @@ function Hero(): ReactNode {
             to={quickstartUrl}
             onClick={() => trackHomeEvent("quickstart_click", { location: "hero_primary" })}
           >
-            Try the 90-second quickstart
+            Start in your repository
           </Link>
           <button
             className={styles.buttonSecondary}
@@ -138,15 +139,15 @@ function Hero(): ReactNode {
           </a>
         </div>
       </div>
-      <div className={styles.artifactPanel} aria-label="Agentplane Git evidence artifacts">
+      <div className={styles.artifactPanel} aria-label="Agentplane control loop artifacts">
         <div className={styles.evidenceHeader}>
-          <span>repo evidence</span>
-          <strong>ready for review</strong>
+          <span>control loop</span>
+          <strong>authority + proof</strong>
         </div>
         <div className={styles.evidenceSummary}>
-          <span>review ready</span>
-          <strong>AI-written change with evidence</strong>
-          <p>Task intent, branch state, verification, and review packet stay in Git.</p>
+          <span>supervisor observed</span>
+          <strong>agent result separated from repository facts</strong>
+          <p>Authority, observations, verification, and closure stay with the repository.</p>
         </div>
         <div className={styles.evidenceLedger}>
           {evidenceRows.map(([label, value, detail]) => (
@@ -286,7 +287,7 @@ function Records(): ReactNode {
         to={acrUrl}
         onClick={() => trackHomeEvent("view_acr_guide")}
       >
-        Read the Agent Change Record guide
+        Inspect the evidence projection
       </Link>
     </section>
   );
@@ -317,10 +318,10 @@ function HarnessAndTraces(): ReactNode {
       </div>
       <div className={styles.timeline}>
         <div className={styles.sectionIntro}>
-          <h2>How does Agentplane trace an agent run?</h2>
+          <h2>How does Agentplane observe an agent run?</h2>
           <p>
-            Traces turn workflow execution into a structured timeline that can be inspected or
-            exported.
+            Traces expose execution, while repository, Git, and check readbacks remain
+            supervisor-owned facts.
           </p>
         </div>
         {timeline.map(([name, text]) => (

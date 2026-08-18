@@ -2,15 +2,16 @@
   <img src="https://raw.githubusercontent.com/basilisk-labs/agentplane/main/docs/assets/readme-headers/agentplane-cli.svg" alt="Agentplane CLI package header" style="width:100%;max-width:100%;"/>
 </p>
 
-# AgentPlane CLI
+# Agentplane CLI
 
-**Git-native infrastructure for traceable AI work.**
+**The Git-native control plane for coding agents.**
 
-`agentplane` is a local-first CLI that turns Claude Code, Codex, Cursor, Aider, and similar
-coding-agent changes into reviewable Git evidence: task intent, approved plan, verification, finish
-state, and Agent Change Record.
+`agentplane` is a local-first CLI that puts Claude Code, Codex, Cursor, Aider, and similar coding
+agents on an approved, verifiable repository workflow. It bounds delegated work, holds approval
+gates, independently observes repository and Git facts, and records verification, recovery, and
+closure.
 
-Use any coding agent. Keep the review trail in your repository.
+Let agents write code. Keep authority and proof in Git.
 
 [![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
 [![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
@@ -61,7 +62,7 @@ AGENTS.md or CLAUDE.md   Policy gateway for the repository
 .agentplane/workflows/  Last-known-good workflow snapshot
 ```
 
-AgentPlane records the task trail inside the repository you already review.
+Agentplane records the control and evidence trail inside the repository you already review.
 
 ## One task loop
 
@@ -99,15 +100,23 @@ Schema: https://agentplane.org/schemas/acr-v0.1.schema.json
 - `direct` keeps work in the current checkout for fast local loops.
 - `branch_pr` creates per-task branches, worktrees, PR artifacts, and integration handoff.
 
-## Not another agent
+## Worker and control plane
 
-AgentPlane does not replace your coding agent, editor, terminal, Git, CI, or PR review. It records
-the evidence around the tools you already use.
+Your coding agent reasons, edits, tests, and reports a result. Agentplane bounds its authority,
+holds material approval boundaries, observes repository and Git state, and determines whether the
+lifecycle can close or needs recovery.
+
+```text
+authorize -> dispatch -> observe -> verify -> close or recover
+```
+
+Agentplane does not replace your coding agent, editor, terminal, Git, CI, or PR review.
 
 ## Compatible with
 
 Claude Code, Codex CLI, Cursor agent, Aider, GitHub Actions agent runners, and MCP-driven
-workflows. AgentPlane does not replace them; it records what they did and whether your gates passed.
+workflows. Agentplane does not replace them; it controls the delegated workflow and records what
+the supervisor observed.
 
 ## Recipes
 

@@ -67,7 +67,7 @@ agentplane_context:
 
 # configuration concept
 
-Matched in 88 release/docs source files.
+Matched in 87 release/docs source files.
 
 ## Representative sources
 
@@ -105,7 +105,6 @@ Matched in 88 release/docs source files.
 - `docs/help/legacy-upgrade-recovery.mdx`: legacy-upgrade-recovery
 - `docs/help/troubleshooting-by-symptom.mdx`: troubleshooting-by-symptom
 - `docs/help/troubleshooting.mdx`: troubleshooting
-- `docs/launch/checklist.md`: Launch Checklist
 - `docs/manifesto.mdx`: Why AI work needs a Git-native evidence layer
 - `docs/README.md`: Docs layout
 - `docs/recipes/hermes-agentplane.mdx`: Hermes Agentplane recipe

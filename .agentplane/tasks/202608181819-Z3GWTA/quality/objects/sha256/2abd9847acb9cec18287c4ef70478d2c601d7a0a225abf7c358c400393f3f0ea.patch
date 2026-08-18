@@ -1,0 +1,1300 @@
+diff --git a/.agentplane/context/derived/reports/release-docs-assimilation.json b/.agentplane/context/derived/reports/release-docs-assimilation.json
+deleted file mode 100644
+index fbb56f26d..000000000
+Binary files a/.agentplane/context/derived/reports/release-docs-assimilation.json and /dev/null differ
+diff --git a/.agentplane/context/derived/reports/release-docs-assimilation.sgr.json b/.agentplane/context/derived/reports/release-docs-assimilation.sgr.json
+deleted file mode 100644
+index 0b8d8c48a..000000000
+Binary files a/.agentplane/context/derived/reports/release-docs-assimilation.sgr.json and /dev/null differ
+diff --git a/.agentplane/context/derived/reports/release-docs-coverage-detail.jsonl b/.agentplane/context/derived/reports/release-docs-coverage-detail.jsonl
+deleted file mode 100644
+index 70817ad07..000000000
+Binary files a/.agentplane/context/derived/reports/release-docs-coverage-detail.jsonl and /dev/null differ
+diff --git a/.gitattributes b/.gitattributes
+index 36ee4b46e..00d31abee 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -24,6 +24,9 @@
+ .agentplane/tasks/**/*.log export-ignore
+ .agentplane/tasks/**/*.jsonl export-ignore
+ .agentplane/tasks/**/quality/objects/** -diff linguist-generated=true
++.agentplane/context/derived/reports/release-docs-* -diff
++context/wiki/release-docs/** -diff
++docs/launch/** -diff
+ .agentplane/cache/** export-ignore
+ .agentplane/bin/** export-ignore
+ .agentplane/.npm-cache/** export-ignore
+diff --git a/README.md b/README.md
+index 831fd4d51..687589c23 100644
+--- a/README.md
++++ b/README.md
+@@ -4,16 +4,19 @@
+ 
+ # Agentplane
+ 
+-**CLI-first operational workflows and evidence for AI agents.**
++**The Git-native control plane for coding agents.**
+ 
+-Agentplane helps you route local agent work through tasks, plans, verification, context, recipes,
+-and Git-visible evidence.
++Let agents write code. Keep authority and proof in Git.
++
++Agentplane puts Codex, Claude Code, Cursor, Aider, and other coding agents on an approved,
++verifiable repository workflow. It bounds delegated work, holds approval gates, independently
++observes repository and Git facts, and records how work closes or recovers.
+ 
+ ```text
+ install -> init -> task -> run or advance -> terminal evidence
+ ```
+ 
+-Operationalize AI-assisted engineering with reproducible local workflow records.
++Put coding agents on an approved, verifiable Git workflow.
+ 
+ [![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
+ [![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
+@@ -42,11 +45,17 @@ Requirements: Node.js 24+, Git, and a local terminal.
+ 
+ ## What is Agentplane?
+ 
+-Agentplane is not another agent framework. It is the operational layer around AI agents: workflows,
+-orchestration, local context, recipes, verification, task artifacts, and ACR evidence.
++Agentplane is the Git-native control plane for coding agents. The coding agent remains the worker:
++it reasons, edits, tests, and reports a result. Agentplane controls the lifecycle around that
++worker: bounded authority, attributable approvals, supervisor-observed proof, verification,
++recovery, and closure.
++
++Use Agentplane when agent changes are consequential enough that a reviewer must know what was
++authorized, what the supervisor observed, which checks ran, and whether the work can safely close.
+ 
+-Use Agentplane when you want agent work to be debuggable, reproducible, observable, and safe to
+-operate beyond a single chat session.
++```text
++authorize -> dispatch -> observe -> verify -> close or recover
++```
+ 
+ ## What Agentplane writes
+ 
+@@ -147,8 +156,8 @@ observable, the record says `partial` or `unavailable` instead of inventing a ze
+ - a replacement for every agent framework;
+ - a black-box runtime that hides operational state.
+ 
+-Agentplane is the local operational layer around agent workflows: tasks, plans, context, recipes,
+-checks, ACRs, and artifacts.
++Agentplane is the control plane around coding-agent work. Harnesses, traces, recipes, and Agent
++Change Records are mechanisms and evidence surfaces within that control plane.
+ 
+ ## Recipes
+ 
+diff --git a/context/wiki/release-docs/concepts/acr.md b/context/wiki/release-docs/concepts/acr.md
+index ea2a830d6..961bc4460 100644
+Binary files a/context/wiki/release-docs/concepts/acr.md and b/context/wiki/release-docs/concepts/acr.md differ
+diff --git a/context/wiki/release-docs/concepts/configuration.md b/context/wiki/release-docs/concepts/configuration.md
+index d9a42397e..e3a051c67 100644
+Binary files a/context/wiki/release-docs/concepts/configuration.md and b/context/wiki/release-docs/concepts/configuration.md differ
+diff --git a/context/wiki/release-docs/concepts/recipes.md b/context/wiki/release-docs/concepts/recipes.md
+index 2448b9320..e7a86dd11 100644
+Binary files a/context/wiki/release-docs/concepts/recipes.md and b/context/wiki/release-docs/concepts/recipes.md differ
+diff --git a/context/wiki/release-docs/docs-domains.md b/context/wiki/release-docs/docs-domains.md
+index 9599de468..7c1695407 100644
+Binary files a/context/wiki/release-docs/docs-domains.md and b/context/wiki/release-docs/docs-domains.md differ
+diff --git a/context/wiki/release-docs/domains/launch.md b/context/wiki/release-docs/domains/launch.md
+deleted file mode 100644
+index acb0bd50c..000000000
+Binary files a/context/wiki/release-docs/domains/launch.md and /dev/null differ
+diff --git a/docs/assets/agentplane-demo.gif b/docs/assets/agentplane-demo.gif
+index 95601727b..3ae9cc3fc 100644
+Binary files a/docs/assets/agentplane-demo.gif and b/docs/assets/agentplane-demo.gif differ
+diff --git a/docs/assets/agentplane-demo.tape b/docs/assets/agentplane-demo.tape
+index 54dbbd7b5..1a3c09d4a 100644
+--- a/docs/assets/agentplane-demo.tape
++++ b/docs/assets/agentplane-demo.tape
+@@ -8,15 +8,15 @@ Require python3
+ Set Shell bash
+ Set FontFamily "JetBrains Mono"
+ Set FontSize 18
+-Set Width 960
+-Set Height 540
++Set Width 700
++Set Height 394
+ Set Padding 28
+ Set Margin 28
+ Set MarginFill "#0f1117"
+ Set BorderRadius 16
+ Set WindowBar Colorful
+ Set Theme "TokyoNight"
+-Set Framerate 60
++Set Framerate 20
+ Set TypingSpeed 28ms
+ Set CursorBlink false
+ 
+diff --git a/docs/compare.mdx b/docs/compare.mdx
+index 2fe4d1f94..b93cb1e60 100644
+--- a/docs/compare.mdx
++++ b/docs/compare.mdx
+@@ -1,52 +1,53 @@
+ ---
+ title: "How Agentplane compares"
+-description: "Agentplane compared with coding agents, AGENTS.md, Git-only workflows, and CI."
++description: "Where a Git-native control plane fits alongside coding agents, Git, CI, and agent operations platforms."
+ ---
+ 
+-# Agentplane is the agent-agnostic evidence layer
++# Agentplane is the Git-native control plane for coding agents
+ 
+-Use any repository-capable coding agent. Agentplane records the evidence that makes its work
+-reviewable: task scope, approved plan, role ownership, verification, branch handoff, closure, and
+-Agent Change Record.
++Use any repository-capable coding agent as the worker. Agentplane bounds its authority, holds
++approval gates, independently observes repository and Git facts, and records verification,
++recovery, and closure.
+ 
+-## Comparison matrix
++## Compare layers, not logos
+ 
+-| Surface                 | Best at                            | Missing by itself              | Agentplane adds                    |
+-| ----------------------- | ---------------------------------- | ------------------------------ | ---------------------------------- |
+-| Agent-agnostic codegen  | Generating and editing code        | Durable task evidence          | Lifecycle records and ACR          |
+-| `AGENTS.md` / rules     | Instructions and policy            | State, approvals, verification | Commands, gates, artifacts         |
+-| Git                     | Diffs and history                  | Intent, plan, verification     | Evidence around the diff           |
+-| CI                      | Automated checks                   | Task context and closure state | Verification evidence and ACR gate |
+-| Hosted agent dashboards | Central status or remote execution | Repo-local source of truth     | Durable Git-owned evidence         |
++| Layer                          | Primary job                       | What remains missing without Agentplane                                    |
++| ------------------------------ | --------------------------------- | -------------------------------------------------------------------------- |
++| Coding agents                  | Reason, edit, and test            | The worker still reports on its own work                                   |
++| `AGENTS.md` and prompt policy  | Describe rules                    | Instructions alone do not own lifecycle state or proof                     |
++| Git and pull requests          | Record content history and review | Git does not encode delegated authority or semantic intent                 |
++| CI                             | Execute automated checks          | A passing check does not explain scope, approval, or recovery              |
++| Fleet and operations platforms | Run and observe many agents       | Operational breadth may not make the repository control boundary explicit  |
++| Agentplane                     | Control delegated coding work     | Keeps authority, observation, and closure coherent across the other layers |
+ 
+ ## Coding agents
+ 
+-Coding agents are responsible for changing files. Agentplane is responsible for making that work
+-traceable after the session is gone.
++Coding agents are responsible for reasoning and changing files. Agentplane is responsible for
++controlling the delegated lifecycle around them.
+ 
+ Use Agentplane when you need a reviewer to answer:
+ 
+ - What was the task?
+ - Which plan constrained the work?
+-- What evidence proves verification happened?
++- What did the supervisor independently observe?
+ - Which commit represents the work?
+-- Is the ACR merge-ready?
++- Can the work safely close, or does it need recovery?
+ 
+ ## `AGENTS.md` and `CLAUDE.md`
+ 
+ Instruction files describe policy. They do not record whether a specific agent task followed that
+ policy.
+ 
+-Agentplane keeps the policy gateway, then adds task state, plan approval, verification, finish
+-metadata, PR artifacts, and ACR.
++Agentplane keeps the policy gateway, then adds scoped authority, task state, plan approval,
++supervisor observation, verification, recovery, finish metadata, PR artifacts, and ACR.
+ 
+ ## Git-only workflows
+ 
+ Git remains the source of truth for content and history. Agentplane does not replace it.
+ 
+-The gap is that a commit hash does not describe the agent's task, plan, verification, or policy
+-decisions. Agentplane stores those records beside the commit so review and revert have enough
+-context.
++The gap is that a commit hash does not describe delegated authority, semantic intent, approvals,
++verification, or recovery decisions. Agentplane stores those records beside the commit so review
++and revert have enough context.
+ 
+ ## CI
+ 
+@@ -61,19 +62,19 @@ ci` as an ACR readiness gate.
+ Hosted runtimes and dashboards are useful when you need remote execution, central queues, or sandbox
+ management.
+ 
+-Agentplane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first Git evidence
+-layer for AI work in repositories.
++Agentplane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first control plane
++for coding-agent work in repositories.
+ 
+-Hosted dashboards are useful for team visibility, shared history, alerts, and governance.
+-Agentplane OSS keeps the durable evidence record in Git, so Cloud can sync and collaborate around
+-the record without becoming the only source of truth.
++Fleet-first platforms are strongest when the first job is standing up many workers, connecting
++adapters, and operating them through a dedicated UI. Agentplane is strongest when the first job is
++making delegated authority and proof explicit inside the repository across any coding agent.
+ 
+ ## When to use Agentplane
+ 
+ Use Agentplane when:
+ 
+ - your coding agent changes real repositories;
+-- reviewers need task intent, plan, verification, and closure evidence;
++- reviewers need authority, intent, verification, recovery, and closure evidence;
+ - AI-written code changes need a repeatable review contract;
+ - you want durable artifacts in Git instead of transient chat history.
+ 
+@@ -89,6 +90,9 @@ Do not use Agentplane when:
+ Agentplane does not depend on a specific model, editor, hosted runtime, or agent product. Git stores
+ the diff. CI runs checks. Agentplane records the evidence around the work.
+ 
+-## Summary
++## Control-plane distinction
+ 
+-Use any coding agent. Keep the evidence in Git.
++The worker's semantic result and the control plane's observed facts are separate records. Agent
++confidence does not silently become supervisor proof.
++
++**Let agents write code. Keep authority and proof in Git.**
+diff --git a/docs/index.mdx b/docs/index.mdx
+index 66d83eb79..0358cd960 100644
+--- a/docs/index.mdx
++++ b/docs/index.mdx
+@@ -1,13 +1,19 @@
+ ---
+ title: "Agentplane Documentation"
+-description: "Docs for Agentplane, the agent-agnostic harness for governed coding-agent work."
++description: "Docs for Agentplane, the Git-native control plane for coding agents."
+ ---
+ 
+ # Agentplane documentation
+ 
+-Agentplane is an agent-agnostic harness for governed coding-agent work. The agent writes code,
+-uses the CLI, and records evidence; the human sets tasks, guardrails, and review boundaries through
+-the harness.
++Agentplane is the Git-native control plane for coding agents. The agent reasons, writes code, and
++reports a result; Agentplane bounds its authority, holds approval gates, observes repository and Git
++facts, and closes or recovers the lifecycle.
++
++**Let agents write code. Keep authority and proof in Git.**
++
++```text
++authorize -> dispatch -> observe -> verify -> close or recover
++```
+ 
+ ## Choose your path
+ 
+diff --git a/docs/launch/checklist.md b/docs/launch/checklist.md
+deleted file mode 100644
+index 39d20a5b4..000000000
+Binary files a/docs/launch/checklist.md and /dev/null differ
+diff --git a/docs/launch/hn.md b/docs/launch/hn.md
+deleted file mode 100644
+index 32369178b..000000000
+Binary files a/docs/launch/hn.md and /dev/null differ
+diff --git a/docs/launch/reddit.md b/docs/launch/reddit.md
+deleted file mode 100644
+index 58c508974..000000000
+Binary files a/docs/launch/reddit.md and /dev/null differ
+diff --git a/docs/launch/twitter.md b/docs/launch/twitter.md
+deleted file mode 100644
+index 34a2073b6..000000000
+Binary files a/docs/launch/twitter.md and /dev/null differ
+diff --git a/docs/listing.md b/docs/listing.md
+index 67d61d302..4ef81b28c 100644
+--- a/docs/listing.md
++++ b/docs/listing.md
+@@ -10,29 +10,29 @@ directories.
+ 
+ ## Short
+ 
+-Agentplane - Git-native infrastructure for traceable AI work.
++Agentplane is the Git-native control plane for coding agents.
+ 
+ ## Medium
+ 
+-Agentplane is a local-first CLI that turns coding-agent changes into reviewable Git evidence: task
+-intent, approved plan, verification, finish state, and Agent Change Record.
++Agentplane bounds coding-agent authority and keeps approvals, verification, recovery, and closure
++inside the repository.
+ 
+ ## Long
+ 
+-Agentplane is not another coding agent or hosted agent runtime. It is an agent-agnostic,
+-repo-local evidence trail so AI-written code changes can be reviewed, validated, merged, and
+-reverted through Git.
++Agentplane puts Codex, Claude Code, Cursor, Aider, and other coding agents on an approved,
++verifiable repository workflow. It separates agent-reported results from supervisor-observed
++proof.
+ 
+ ## Category
+ 
+-Repo-local evidence layer for AI-written software changes.
++Git-native control plane for coding agents.
+ 
+ ## Do position as
+ 
+-- Git-native infrastructure for traceable AI work.
+-- Local-first workflow control for coding agents.
+-- Agent Change Record producer and validator.
+-- Review trail for AI-written pull requests.
++- Git-native control plane for coding agents.
++- Bounded authority and attributable approvals.
++- Supervisor-observed verification, recovery, and closure.
++- Agent-agnostic repository workflow.
+ 
+ ## Do not position as
+ 
+@@ -44,5 +44,5 @@ Repo-local evidence layer for AI-written software changes.
+ 
+ ## Differentiation note
+ 
+-Agentplane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first Git evidence
+-layer for AI work in repositories.
++Agentplane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first control plane
++for delegated coding-agent work in repositories.
+diff --git a/docs/manifesto.mdx b/docs/manifesto.mdx
+index 056d9010c..b1e206a9c 100644
+--- a/docs/manifesto.mdx
++++ b/docs/manifesto.mdx
+@@ -1,15 +1,14 @@
+ ---
+ title: "Why Agentplane exists"
+-description: "Why AI work needs a Git-native evidence layer inside the repository."
++description: "Why coding agents need a Git-native control plane for authority, proof, and recovery."
+ ---
+ 
+-# Why AI work needs a Git-native evidence layer
++# Why coding agents need a Git-native control plane
+ 
+-Coding agents made software changes cheaper. They did not make those changes accountable.
++Coding agents made code generation cheap. They did not make delegated change accountable.
+ 
+-A generated diff is not enough when the work spans prompts, retries, tools, branches, checks,
+-approvals, and handoffs. Agentplane exists to preserve the operational evidence around AI-authored
+-changes inside the repository where review already happens.
++Agentplane is the Git-native control plane for coding agents. It exists so teams can let agents
++write code while keeping authority and proof in Git.
+ 
+ ## 1. The failure mode
+ 
+@@ -17,10 +16,19 @@ AI agents can now edit real repositories, not just draft snippets. They update c
+ release paths, and configuration. That creates a new review problem: the repository shows the final
+ diff, but the reasoning trail often remains in a chat transcript, terminal scrollback, or IDE state.
+ 
+-The weak link is not only "can the agent write code?" It is "can the team reconstruct, verify, and
+-govern what happened?"
++The weak link is not only "can the agent write code?" It is whether the team can prove what was
++authorized, what the supervisor observed, and why closure was justified.
+ 
+-## 2. Why Git alone is not enough
++## 2. The worker does not grade itself
++
++The coding agent is a semantic worker. It can reason, edit, test, and report a result. Its report is
++valuable, but it remains a claim by the worker.
++
++Agentplane owns the lifecycle around that worker. It issues bounded work, holds approval
++boundaries, observes repository and Git state, records verification, and determines the next safe
++route. Agent-reported facts do not silently become supervisor-observed facts.
++
++## 3. Why Git alone is not enough
+ 
+ Git is the right durable substrate. It stores content, branches, commits, and review history. But a
+ commit does not reliably answer:
+@@ -33,7 +41,7 @@ commit does not reliably answer:
+ 
+ Agentplane keeps Git as the source of truth and adds the missing evidence beside the diff.
+ 
+-## 3. Why chat transcripts are not enough
++## 4. Why chat transcripts are not enough
+ 
+ Chat transcripts are useful context, but they are poor review artifacts. They are long, mutable,
+ private, tool-specific, and often unavailable to the next reviewer. They can include sensitive
+@@ -42,7 +50,7 @@ material that should not be committed.
+ Agentplane records commit-safe summaries, task state, verification evidence, and hashes instead of
+ requiring reviewers to trust raw agent conversations.
+ 
+-## 4. Why the durable record belongs with the code
++## 5. Why the durable record belongs with the code
+ 
+ Remote execution and central status can be useful. They are separate from the durable evidence
+ record that reviewers need next to the code.
+@@ -50,7 +58,7 @@ record that reviewers need next to the code.
+ Agentplane keeps the durable workflow record with the repository. The repository owns the workflow
+ artifacts.
+ 
+-## 5. Why ACR exists
++## 6. Why ACR exists
+ 
+ An Agent Change Record is the evidence file for AI-authored work. It is a commit-safe JSON artifact
+ that records task intent, approved plan, agent/toolchain identity, Git commits, policy decisions,
+@@ -59,7 +67,7 @@ verification results, and merge readiness.
+ Humans can read `agentplane acr explain`. CI can run `agentplane acr check`. External tools can read
+ `.agentplane/tasks/<task-id>/acr.json`.
+ 
+-## 6. What Agentplane refuses to do
++## 7. What Agentplane refuses to do
+ 
+ Agentplane is not another coding agent. It does not choose a model, generate code for you, replace
+ Git, replace CI, or replace pull request review.
+@@ -67,12 +75,11 @@ Git, replace CI, or replace pull request review.
+ It wraps the tools you already use with a repo-local lifecycle:
+ 
+ ```text
+-task -> plan -> approve -> implement -> verify -> finish
++authorize -> dispatch -> observe -> verify -> close or recover
+ ```
+ 
+-## 7. The operating bet
+-
+-Every serious agent change should leave an Agent Change Record.
++## 8. The operating bet
+ 
+-That is the category bet: AI-authored work needs a durable evidence artifact, and the easiest place
+-to keep it is the Git repository that already owns review, revert, audit, and merge.
++The durable interface for agentic engineering will be a protocol for delegated authority and
++observed proof that any capable coding agent can follow. That is the category Agentplane intends to
++own.
+diff --git a/docs/user/overview.mdx b/docs/user/overview.mdx
+index f6bfa385a..76d067ccc 100644
+--- a/docs/user/overview.mdx
++++ b/docs/user/overview.mdx
+@@ -1,28 +1,30 @@
+ ---
+ title: "What is Agentplane?"
+-description: "Agentplane is an agent-agnostic harness for governed coding-agent work."
++description: "Agentplane is the Git-native control plane for coding agents."
+ ---
+ 
+ ## What is Agentplane?
+ 
+-Agentplane is an agent-agnostic harness for governed coding-agent work, built for reproducible
+-runs, inspectable traces, local context, recipes, artifacts, and Git-native evidence.
++Agentplane is the Git-native control plane for coding agents. It puts Codex, Claude Code, Cursor,
++Aider, and other repository-capable agents on an approved, verifiable Git workflow.
+ 
+-It does not replace the model or agent framework. It gives agent work an operating surface:
+-workflows, context boundaries, tool-call records, verification checks, run artifacts, traces, and
+-Agent Change Records.
++It does not replace the model or agent framework. It controls the lifecycle around the worker:
++bounded authority, attributable approvals, supervisor-observed proof, verification, recovery, and
++closure. Workflows, traces, context, recipes, and Agent Change Records are mechanisms within that
++control plane.
+ 
+ The operating split is deliberate:
+ 
+-- The agent writes code, uses the CLI, follows `AGENTS.md`, and records verification.
+-- The human sets tasks, adjusts guardrails, approves risky boundaries, and reviews evidence.
+-- Agentplane keeps that work durable as repo-local state instead of private chat or IDE context.
++- The agent reasons, writes code, runs tools, and reports a semantic result.
++- The human sets intent, approves material boundaries, and reviews observed evidence.
++- Agentplane bounds authority, dispatches work, observes repository and Git facts, and closes or
++  recovers the lifecycle.
+ 
+ Use your existing coding agent to edit code. Use Agentplane to make the agent's work reviewable
+ after the chat window, terminal session, or IDE context is gone.
+ 
+ ```text
+-task -> plan -> approve -> implement -> verify -> finish
++authorize -> dispatch -> observe -> verify -> close or recover
+ ```
+ 
+ The default path is:
+diff --git a/marketing b/marketing
+index b27185935..d590b93d4 160000
+--- a/marketing
++++ b/marketing
+@@ -1 +1 @@
+-Subproject commit b271859352f353a0447db4008a78bde6f29ef580
++Subproject commit d590b93d4468850c54a77215c6f2fada93b18beb
+diff --git a/packages/agentplane/README.md b/packages/agentplane/README.md
+index 87cc49a34..e0f99228c 100644
+--- a/packages/agentplane/README.md
++++ b/packages/agentplane/README.md
+@@ -2,15 +2,16 @@
+   <img src="https://raw.githubusercontent.com/basilisk-labs/agentplane/main/docs/assets/readme-headers/agentplane-cli.svg" alt="Agentplane CLI package header" style="width:100%;max-width:100%;"/>
+ </p>
+ 
+-# AgentPlane CLI
++# Agentplane CLI
+ 
+-**Git-native infrastructure for traceable AI work.**
++**The Git-native control plane for coding agents.**
+ 
+-`agentplane` is a local-first CLI that turns Claude Code, Codex, Cursor, Aider, and similar
+-coding-agent changes into reviewable Git evidence: task intent, approved plan, verification, finish
+-state, and Agent Change Record.
++`agentplane` is a local-first CLI that puts Claude Code, Codex, Cursor, Aider, and similar coding
++agents on an approved, verifiable repository workflow. It bounds delegated work, holds approval
++gates, independently observes repository and Git facts, and records verification, recovery, and
++closure.
+ 
+-Use any coding agent. Keep the review trail in your repository.
++Let agents write code. Keep authority and proof in Git.
+ 
+ [![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
+ [![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
+@@ -61,7 +62,7 @@ AGENTS.md or CLAUDE.md   Policy gateway for the repository
+ .agentplane/workflows/  Last-known-good workflow snapshot
+ ```
+ 
+-AgentPlane records the task trail inside the repository you already review.
++Agentplane records the control and evidence trail inside the repository you already review.
+ 
+ ## One task loop
+ 
+@@ -99,15 +100,23 @@ Schema: https://agentplane.org/schemas/acr-v0.1.schema.json
+ - `direct` keeps work in the current checkout for fast local loops.
+ - `branch_pr` creates per-task branches, worktrees, PR artifacts, and integration handoff.
+ 
+-## Not another agent
++## Worker and control plane
+ 
+-AgentPlane does not replace your coding agent, editor, terminal, Git, CI, or PR review. It records
+-the evidence around the tools you already use.
++Your coding agent reasons, edits, tests, and reports a result. Agentplane bounds its authority,
++holds material approval boundaries, observes repository and Git state, and determines whether the
++lifecycle can close or needs recovery.
++
++```text
++authorize -> dispatch -> observe -> verify -> close or recover
++```
++
++Agentplane does not replace your coding agent, editor, terminal, Git, CI, or PR review.
+ 
+ ## Compatible with
+ 
+ Claude Code, Codex CLI, Cursor agent, Aider, GitHub Actions agent runners, and MCP-driven
+-workflows. AgentPlane does not replace them; it records what they did and whether your gates passed.
++workflows. Agentplane does not replace them; it controls the delegated workflow and records what
++the supervisor observed.
+ 
+ ## Recipes
+ 
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts b/packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts
+index a26ecd778..5f7d8c1e4 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts
+@@ -130,8 +130,8 @@ export async function renderActualDiff(
+       "git",
+       [
+         ...(diffBaseSha
+-          ? ["diff", "--no-ext-diff", "--find-renames", "--binary", diffBaseSha, evaluatedSha]
+-          : ["show", "--format=", "--root", "--find-renames", "--binary", evaluatedSha]),
++          ? ["diff", "--no-ext-diff", "--find-renames", diffBaseSha, evaluatedSha]
++          : ["show", "--format=", "--root", "--find-renames", evaluatedSha]),
+         ...taskArtifactExclude,
+       ],
+       { cwd: gitRoot, maxBuffer: 16 * 1024 * 1024 },
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+index b6ab9073e..b9a860afc 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+@@ -701,7 +701,8 @@ describe("evaluator run command", () => {
+     const frozenDiff = await readFile(path.join(root, actualDiff.path), "utf8");
+     expect(frozenDiff).toContain("src/first-change.ts");
+     expect(frozenDiff).toContain("src/second-change.ts");
+-    expect(frozenDiff).toContain("GIT binary patch");
++    expect(frozenDiff).toContain("Binary files");
++    expect(frozenDiff).not.toContain("GIT binary patch");
+     expect(frozenDiff).toContain("rename from src/rename-before.ts");
+     expect(frozenDiff).toContain("rename to src/rename-after.ts");
+     expect(frozenDiff).toContain(`.agentplane/tasks/${otherTaskId}/README.md`);
+diff --git a/website/docusaurus.config.ts b/website/docusaurus.config.ts
+index bbbd4f1b7..dbbadb5e3 100644
+--- a/website/docusaurus.config.ts
++++ b/website/docusaurus.config.ts
+@@ -117,7 +117,7 @@ const config = {
+       {
+         name: "keywords",
+         content:
+-          "agent workflow, ai agent traces, harness engineering, context engineering, local ai agents, OpenTelemetry agent traces, agent change record, agentplane, ai coding agent guardrails",
++          "coding agent control plane, Git-native agent workflow, coding agent authority, coding agent verification, agent governance, agent change record, agentplane, ai coding agent guardrails",
+       },
+       {
+         name: "robots",
+@@ -127,22 +127,22 @@ const config = {
+       { property: "og:site_name", content: "Agentplane" },
+       {
+         property: "og:title",
+-        content: "Audit trails for AI-written code changes",
++        content: "The Git-native control plane for coding agents",
+       },
+       {
+         property: "og:description",
+         content:
+-          "Repo-local evidence for task intent, approved plans, checks, traces, commits, and Agent Change Records.",
++          "Let agents write code. Keep authority, observed proof, recovery, and closure in Git.",
+       },
+       { name: "twitter:card", content: "summary_large_image" },
+       {
+         name: "twitter:title",
+-        content: "Audit trails for AI-written code changes",
++        content: "The Git-native control plane for coding agents",
+       },
+       {
+         name: "twitter:description",
+         content:
+-          "Repo-local evidence for task intent, approved plans, checks, traces, commits, and Agent Change Records.",
++          "Let agents write code. Keep authority, observed proof, recovery, and closure in Git.",
+       },
+       { name: "twitter:site", content: "@agentplaneorg" },
+     ],
+diff --git a/website/scripts/check-site-content.mjs b/website/scripts/check-site-content.mjs
+index 10de0fee1..faf39c030 100644
+--- a/website/scripts/check-site-content.mjs
++++ b/website/scripts/check-site-content.mjs
+@@ -61,15 +61,11 @@ function checkBrandCasing() {
+ 
+ function checkNoHardcodedProofMetrics() {
+   const content = read("src/data/homepage-content.ts");
+-  if (/48 stars|60 releases|v0\.6\.0/.test(content)) {
++  if (/\b\d+ stars\b|\b\d+ releases\b|latestRelease|latestReleaseDate/.test(content)) {
+     errors.push(
+-      "homepage must not contain stale GitHub stars, release counts, or latestRelease proof values",
++      "homepage must not contain hard-coded GitHub stars, release counts, versions, or release dates",
+     );
+   }
+-
+-  if (!content.includes("export const githubProofFallback =")) {
+-    errors.push("homepage must keep explicit GitHub proof fallback data");
+-  }
+ }
+ 
+ checkBlogDates();
+diff --git a/website/src/data/homepage-content.ts b/website/src/data/homepage-content.ts
+index 3eade9849..27313f479 100644
+--- a/website/src/data/homepage-content.ts
++++ b/website/src/data/homepage-content.ts
+@@ -16,14 +16,6 @@ export const siteRoutes = {
+   harness: "/docs/concepts/harness-engineering/",
+ } as const;
+ 
+-export const githubProofFallback = {
+-  stars: 51,
+-  forks: 6,
+-  releases: 64,
+-  latestRelease: "v0.6.4",
+-  latestReleaseDate: "2026-05-20",
+-} as const;
+-
+ export const docsUrl = siteRoutes.docs;
+ export const quickstartUrl = siteRoutes.quickstart;
+ export const examplesUrl = siteRoutes.examples;
+@@ -34,17 +26,23 @@ export const harnessUrl = siteRoutes.harness;
+ 
+ export const homepageContent = {
+   seo: {
+-    title: "Agentplane | Audit trails for AI-written code changes",
++    title: "Agentplane | Git-native control plane for coding agents",
+     description:
+-      "Agentplane adds repo-local audit trails to AI-written code changes: task intent, approved plans, verification evidence, commits, traces, and Agent Change Records.",
++      "Agentplane puts coding agents on an approved, verifiable Git workflow with bounded authority, observed proof, recovery, and deterministic closure.",
+   },
+   hero: {
+-    eyebrow: "Agent-agnostic evidence layer for code review",
+-    title: "Audit trails for AI-written code changes.",
++    eyebrow: "The Git-native control plane for coding agents",
++    title: "Let agents write code. Keep authority and proof in Git.",
++    titleLines: ["Let agents", "write code.", "Keep authority", "and proof in Git."],
+     subtitle:
+-      "When an agent changes code, reviewers need more than a diff. Agentplane keeps the task, approved plan, checks, traces, and Agent Change Record inside the repo.",
++      "Agentplane puts Codex, Claude Code, Cursor, Aider, and other coding agents on an approved, verifiable repository workflow.",
+     trustLine: "Agent-agnostic. Local-first. No account required. MIT licensed.",
+-    commands: [installCommand, "agentplane init", "agentplane demo", "human reviews evidence"],
++    commands: [
++      installCommand,
++      "agentplane init",
++      'agentplane task create "Fix parser edge case"',
++      "agentplane task run <task-id>",
++    ],
+     output: [
+       "wrote policy gateway",
+       "approved task plan",
+@@ -54,56 +52,55 @@ export const homepageContent = {
+     ],
+   },
+   proof: [
+-    `${githubProofFallback.stars} stars`,
+-    `${githubProofFallback.releases} releases`,
+-    githubProofFallback.latestRelease,
+-    "MIT",
+-    "TypeScript",
++    "MIT licensed",
+     "local-first CLI",
++    "agent-agnostic",
++    "Git-owned state",
++    "direct + branch/PR routes",
+   ],
+   problem: {
+-    title: "A diff is not enough to merge agent work.",
+-    text: "A diff shows what changed. It does not show why the agent changed it, what scope was approved, what checks ran, or whether the result is ready for review.",
++    title: "Delegated code needs a control boundary.",
++    text: "A diff shows what changed. It does not prove what work was authorized, which effects were allowed, what the supervisor observed, or whether closure was justified.",
+     evidence:
+-      "Agentplane turns AI-written code changes into repo-local evidence: task intent, approved plan, verification, traces, commits, and Agent Change Records.",
++      "Agentplane keeps authority and proof separate from the worker's own report, then stores the durable control record with the repository.",
+   },
+   reviewFlow: {
+-    title: "From uncertain diff to reviewable change.",
+-    text: "Give reviewers a durable trail before asking them to trust an agent-authored pull request.",
++    title: "One control loop from intent to closure.",
++    text: "Authorize, dispatch, observe, verify, then close or recover through an explicit route.",
+     before: {
+-      title: "Before Agentplane",
++      title: "Coding agent: semantic worker",
+       points: [
+-        "The agent changed files, but the approved scope is buried in chat.",
+-        "Checks ran somewhere, but the result is not tied to the task.",
+-        "The reviewer sees a diff and has to infer intent.",
++        "Reasons, edits, and runs tools.",
++        "Receives bounded work for one semantic episode.",
++        "Reports a result without promoting its own claims to proof.",
+       ],
+     },
+     after: {
+-      title: "After Agentplane",
++      title: "Agentplane: control plane",
+       points: [
+-        "The task README records intent, plan, owner, findings, and rollback.",
+-        "The ACR links changed files to verification evidence.",
+-        "The PR carries a review packet instead of a loose agent summary.",
++        "Holds scoped authority and attributable approval gates.",
++        "Observes repository, Git, checks, and external effects independently.",
++        "Chooses deterministic closure or an exact recovery route.",
+       ],
+     },
+   },
+   whatIs: {
+-    title: "Agentplane is not another agent framework.",
+-    text: "Agent frameworks define agent logic. Model providers run inference. Prompt tools shape instructions.",
+-    use: "Agentplane coordinates the operational layer around coding-agent work: workflows, traces, context, recipes, verification, artifacts, and Git evidence.",
++    title: "Control plane, not another worker.",
++    text: "Coding agents produce changes. Agent frameworks define agent logic. Git and CI preserve history and run checks.",
++    use: "Agentplane controls delegated work across those layers: authority, approvals, observed proof, recovery, and closure.",
+     rows: [
+-      ["Agent frameworks", "Define agent logic and application behavior."],
+-      ["Model providers", "Run model inference."],
+-      ["Prompt tools", "Shape individual instructions."],
++      ["Coding agents", "Reason, edit, test, and report a semantic result."],
++      ["Git + CI", "Preserve code history and execute configured checks."],
++      ["Fleet platforms", "Run and observe many workers from an operations surface."],
+       [
+         "Agentplane",
+-        "Coordinates workflows, traces, context, artifacts, and operational state around agents.",
++        "Bounds authority, owns observed facts, and closes or recovers the lifecycle.",
+       ],
+     ],
+   },
+   records: {
+-    title: "Try the review trail in a repo you control.",
+-    text: "No account. No hosted dependency. Start locally, generate the evidence shape, then decide what to automate.",
++    title: "Inspect the control state in a repo you own.",
++    text: "No account. No hosted dependency. Start locally, inspect authority and observed proof, then decide what to automate.",
+     tree: [
+       "AGENTS.md",
+       ".agentplane/WORKFLOW.md",
+@@ -115,14 +112,14 @@ export const homepageContent = {
+   surfaces: [
+     ["AGENTS.md", "Repository policy gateway for coding agents."],
+     [".agentplane/WORKFLOW.md", "Workflow and verification contract."],
+-    ["Task README", "Task intent, lifecycle, plan, status, and handoff evidence."],
+-    ["acr.json", "Machine-readable Agent Change Record for review and tooling."],
++    ["Task README", "Intent, authority, lifecycle, plan, findings, and recovery route."],
++    ["acr.json", "Machine-readable evidence projection for review and tooling."],
+     ["Trace JSON", "Inspectable run timeline and exportable trace data."],
+     ["Recipes", "Reusable workflow overlays for TDD, security review, and docs work."],
+   ],
+   harness: {
+-    title: "Why harnesses matter",
+-    text: "A model alone is not an agent. Real agents need workflows, tools, context, state, verification, and traces. Agentplane gives that surrounding harness a local, inspectable structure.",
++    title: "Mechanisms behind the control plane",
++    text: "Harnesses, traces, context, recipes, and Agent Change Records make the control boundary inspectable. They are product mechanisms, not competing category labels.",
+     items: [
+       ["Context", "What the agent needs to know."],
+       ["Tools", "What the agent is allowed to do."],
+@@ -145,8 +142,8 @@ export const homepageContent = {
+     ["Run a TDD workflow recipe", "recipe YAML"],
+   ],
+   worksWith: {
+-    title: "Agent-agnostic by design.",
+-    text: "Agentplane does not replace your model, coding agent, editor, or Git workflow. It gives any repository-capable agent the same harness boundary and evidence trail.",
++    title: "Keep the worker replaceable.",
++    text: "Agentplane does not replace your model, coding agent, editor, Git workflow, or CI. It gives any repository-capable agent the same control boundary and evidence contract.",
+     tools: [
+       "Agent-agnostic",
+       "LLM-agnostic",
+@@ -157,17 +154,17 @@ export const homepageContent = {
+     ],
+   },
+   whoShouldUse: {
+-    title: "Who should open the repo?",
++    title: "When a control plane earns its keep",
+     items: [
+-      "using agentic coding tools in real repositories",
+-      "reviewing AI-written pull requests and missing intent, plan, and check evidence",
+-      "maintaining an OSS project where agent changes need audit trails",
+-      "building platform workflows around reproducible AI-agent work",
+-      "tired of agent demos that disappear after the chat session",
++      "coding agents make consequential changes in real repositories",
++      "reviewers need to distinguish agent claims from supervisor-observed facts",
++      "approvals, writable scope, and allowed effects must be explicit",
++      "interrupted or ambiguous work needs a deterministic recovery route",
++      "task authority and proof must survive beyond a chat or IDE session",
+     ],
+   },
+   closing: {
+-    title: "Make the next AI-written change reviewable.",
+-    text: "Run the quickstart, inspect the generated evidence, then decide where Agentplane belongs in your agent workflow.",
++    title: "Put your next agent task under control.",
++    text: "Start in a repository you control, inspect the authority and evidence artifacts, then choose the workflow route that fits your team.",
+   },
+ } as const;
+diff --git a/website/src/pages/_home.module.css b/website/src/pages/_home.module.css
+index cf5a98290..f1b19ee45 100644
+--- a/website/src/pages/_home.module.css
++++ b/website/src/pages/_home.module.css
+@@ -23,7 +23,7 @@
+   gap: clamp(1.5rem, 4vw, 4rem);
+   grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+   min-height: calc(100svh - var(--ifm-navbar-height));
+-  padding-top: calc(var(--ifm-navbar-height) + clamp(2rem, 5vw, 4rem));
++  padding-top: clamp(2rem, 5vw, 4rem);
+ }
+ 
+ .heroCopy {
+diff --git a/website/src/pages/index.tsx b/website/src/pages/index.tsx
+index a0ed9e858..e1362a31e 100644
+--- a/website/src/pages/index.tsx
++++ b/website/src/pages/index.tsx
+@@ -29,11 +29,11 @@ function HomeJsonLd(): ReactNode {
+     mainEntity: [
+       [
+         "What is Agentplane?",
+-        "Agentplane is an agent-agnostic evidence layer for AI-written code changes. It keeps task intent, approved plans, verification evidence, traces, and Agent Change Records inspectable in Git.",
++        "Agentplane is the Git-native control plane for coding agents. It bounds delegated authority and keeps approvals, observed proof, recovery, and closure inspectable in Git.",
+       ],
+       [
+         "Does Agentplane replace AI agent frameworks?",
+-        "No. Agentplane works around agent frameworks by coordinating workflows, traces, context, artifacts, and operational state.",
++        "No. Coding agents remain the workers. Agentplane controls their delegated lifecycle through bounded authority, approvals, independent observation, verification, recovery, and closure.",
+       ],
+       [
+         "Does Agentplane run locally?",
+@@ -41,7 +41,7 @@ function HomeJsonLd(): ReactNode {
+       ],
+       [
+         "What does Agentplane record?",
+-        "Agentplane records task intent, approved plans, workflow runs, traces, verification evidence, review packets, and Agent Change Records.",
++        "Agentplane records task intent, delegated authority, approvals, workflow state, supervisor observations, verification evidence, recovery routes, closure, and Agent Change Records.",
+       ],
+       [
+         "What are Agentplane traces?",
+@@ -84,15 +84,16 @@ function Hero(): ReactNode {
+   const { hero } = homepageContent;
+   const [copied, setCopied] = useState(false);
+   const evidenceRows = [
+-    ["task", "20260523-AB12CD", "approved scope + owner"],
+-    ["branch", "task/.../repo-evidence-hero", "isolated worktree"],
+-    ["checks", "docs:site:check", "required before review"],
+-    ["record", "acr.json", "machine-readable handoff"],
++    ["authorize", "bounded WorkOrder", "scope + allowed effects"],
++    ["dispatch", "semantic episode", "one explicit objective"],
++    ["observe", "repo + Git facts", "supervisor-owned proof"],
++    ["verify", "required checks", "observed pass or failure"],
++    ["close", "receipt or recovery", "deterministic next route"],
+   ];
+   const artifactRows = [
+-    ["Task README", "intent, plan, findings"],
+-    ["PR packet", "scope, checks, diffstat"],
+-    ["Trace export", "steps, tools, checks"],
++    ["WorkOrder", "objective, roots, effects"],
++    ["Approval", "actor, scope, expiry"],
++    ["Receipt", "observations, closure"],
+   ];
+ 
+   async function copyInstall(): Promise<void> {
+@@ -107,9 +108,9 @@ function Hero(): ReactNode {
+       <div className={styles.heroCopy}>
+         <p className={styles.kicker}>{hero.eyebrow}</p>
+         <h1 aria-label={hero.title}>
+-          <span>Audit trails for</span>
+-          <span>AI-written code</span>
+-          <span>changes.</span>
++          {hero.titleLines.map((line) => (
++            <span key={line}>{line}</span>
++          ))}
+         </h1>
+         <p className={styles.lede}>{hero.subtitle}</p>
+         <p className={styles.trust}>{hero.trustLine}</p>
+@@ -119,7 +120,7 @@ function Hero(): ReactNode {
+             to={quickstartUrl}
+             onClick={() => trackHomeEvent("quickstart_click", { location: "hero_primary" })}
+           >
+-            Try the 90-second quickstart
++            Start in your repository
+           </Link>
+           <button
+             className={styles.buttonSecondary}
+@@ -138,15 +139,15 @@ function Hero(): ReactNode {
+           </a>
+         </div>
+       </div>
+-      <div className={styles.artifactPanel} aria-label="Agentplane Git evidence artifacts">
++      <div className={styles.artifactPanel} aria-label="Agentplane control loop artifacts">
+         <div className={styles.evidenceHeader}>
+-          <span>repo evidence</span>
+-          <strong>ready for review</strong>
++          <span>control loop</span>
++          <strong>authority + proof</strong>
+         </div>
+         <div className={styles.evidenceSummary}>
+-          <span>review ready</span>
+-          <strong>AI-written change with evidence</strong>
+-          <p>Task intent, branch state, verification, and review packet stay in Git.</p>
++          <span>supervisor observed</span>
++          <strong>agent result separated from repository facts</strong>
++          <p>Authority, observations, verification, and closure stay with the repository.</p>
+         </div>
+         <div className={styles.evidenceLedger}>
+           {evidenceRows.map(([label, value, detail]) => (
+@@ -286,7 +287,7 @@ function Records(): ReactNode {
+         to={acrUrl}
+         onClick={() => trackHomeEvent("view_acr_guide")}
+       >
+-        Read the Agent Change Record guide
++        Inspect the evidence projection
+       </Link>
+     </section>
+   );
+@@ -317,10 +318,10 @@ function HarnessAndTraces(): ReactNode {
+       </div>
+       <div className={styles.timeline}>
+         <div className={styles.sectionIntro}>
+-          <h2>How does Agentplane trace an agent run?</h2>
++          <h2>How does Agentplane observe an agent run?</h2>
+           <p>
+-            Traces turn workflow execution into a structured timeline that can be inspected or
+-            exported.
++            Traces expose execution, while repository, Git, and check readbacks remain
++            supervisor-owned facts.
+           </p>
+         </div>
+         {timeline.map(([name, text]) => (
+diff --git a/website/static/img/social/docs/launch/checklist.png b/website/static/img/social/docs/launch/checklist.png
+deleted file mode 100644
+index 5d4c54262..000000000
+Binary files a/website/static/img/social/docs/launch/checklist.png and /dev/null differ
+diff --git a/website/static/img/social/docs/launch/hn.png b/website/static/img/social/docs/launch/hn.png
+deleted file mode 100644
+index aa92f17fb..000000000
+Binary files a/website/static/img/social/docs/launch/hn.png and /dev/null differ
+diff --git a/website/static/img/social/docs/launch/reddit.png b/website/static/img/social/docs/launch/reddit.png
+deleted file mode 100644
+index 29c510e51..000000000
+Binary files a/website/static/img/social/docs/launch/reddit.png and /dev/null differ
+diff --git a/website/static/img/social/docs/launch/twitter.png b/website/static/img/social/docs/launch/twitter.png
+deleted file mode 100644
+index 4cf7e3940..000000000
+Binary files a/website/static/img/social/docs/launch/twitter.png and /dev/null differ
+diff --git a/website/static/img/social/manifest.json b/website/static/img/social/manifest.json
+index 7aedea364..3309d70ce 100644
+--- a/website/static/img/social/manifest.json
++++ b/website/static/img/social/manifest.json
+@@ -588,38 +588,6 @@
+       "title": "V0.7 Refactor Plan",
+       "svgSha256": "5dbf1f75eab0ec36b52a83f2ad5872643ee33721bd2f1a846179e219eba976f8"
+     },
+-    {
+-      "route": "/docs/launch/checklist",
+-      "output": "static/img/social/docs/launch/checklist.png",
+-      "section": "Launch",
+-      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+-      "title": "Checklist",
+-      "svgSha256": "515f275f48f72c59d1cd19082a704db82cf4875908583a468ce018345441bf0b"
+-    },
+-    {
+-      "route": "/docs/launch/hn",
+-      "output": "static/img/social/docs/launch/hn.png",
+-      "section": "Launch",
+-      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+-      "title": "Hn",
+-      "svgSha256": "29c576fa43aeaea923614e127edda79d40c2bc77b1fbb22714124ba8d8cf2052"
+-    },
+-    {
+-      "route": "/docs/launch/reddit",
+-      "output": "static/img/social/docs/launch/reddit.png",
+-      "section": "Launch",
+-      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+-      "title": "Reddit",
+-      "svgSha256": "58ad43835d076c1c5154c1d2006b4bd100cb28425b2e4a50c98b308ca0e264ae"
+-    },
+-    {
+-      "route": "/docs/launch/twitter",
+-      "output": "static/img/social/docs/launch/twitter.png",
+-      "section": "Launch",
+-      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+-      "title": "Twitter",
+-      "svgSha256": "66777d9eeb5b25352c2a93a6ef0a07d931bf7d878b3dab9818227d30b7815093"
+-    },
+     {
+       "route": "/docs/listing",
+       "output": "static/img/social/docs/listing.png",
+diff --git a/website/static/llms-full.txt b/website/static/llms-full.txt
+index da2086dfa..f2c5037c2 100644
+--- a/website/static/llms-full.txt
++++ b/website/static/llms-full.txt
+@@ -12,13 +12,12 @@ acr-schema: https://agentplane.org/schemas/acr-v0.1.schema.json
+ 
+ ## Source: docs/manifesto.mdx
+ 
+-# Why AI work needs a Git-native evidence layer
++# Why coding agents need a Git-native control plane
+ 
+-Coding agents made software changes cheaper. They did not make those changes accountable.
++Coding agents made code generation cheap. They did not make delegated change accountable.
+ 
+-A generated diff is not enough when the work spans prompts, retries, tools, branches, checks,
+-approvals, and handoffs. Agentplane exists to preserve the operational evidence around AI-authored
+-changes inside the repository where review already happens.
++Agentplane is the Git-native control plane for coding agents. It exists so teams can let agents
++write code while keeping authority and proof in Git.
+ 
+ ## 1. The failure mode
+ 
+@@ -26,10 +25,19 @@ AI agents can now edit real repositories, not just draft snippets. They update c
+ release paths, and configuration. That creates a new review problem: the repository shows the final
+ diff, but the reasoning trail often remains in a chat transcript, terminal scrollback, or IDE state.
+ 
+-The weak link is not only "can the agent write code?" It is "can the team reconstruct, verify, and
+-govern what happened?"
++The weak link is not only "can the agent write code?" It is whether the team can prove what was
++authorized, what the supervisor observed, and why closure was justified.
+ 
+-## 2. Why Git alone is not enough
++## 2. The worker does not grade itself
++
++The coding agent is a semantic worker. It can reason, edit, test, and report a result. Its report is
++valuable, but it remains a claim by the worker.
++
++Agentplane owns the lifecycle around that worker. It issues bounded work, holds approval
++boundaries, observes repository and Git state, records verification, and determines the next safe
++route. Agent-reported facts do not silently become supervisor-observed facts.
++
++## 3. Why Git alone is not enough
+ 
+ Git is the right durable substrate. It stores content, branches, commits, and review history. But a
+ commit does not reliably answer:
+@@ -42,7 +50,7 @@ commit does not reliably answer:
+ 
+ Agentplane keeps Git as the source of truth and adds the missing evidence beside the diff.
+ 
+-## 3. Why chat transcripts are not enough
++## 4. Why chat transcripts are not enough
+ 
+ Chat transcripts are useful context, but they are poor review artifacts. They are long, mutable,
+ private, tool-specific, and often unavailable to the next reviewer. They can include sensitive
+@@ -51,7 +59,7 @@ material that should not be committed.
+ Agentplane records commit-safe summaries, task state, verification evidence, and hashes instead of
+ requiring reviewers to trust raw agent conversations.
+ 
+-## 4. Why the durable record belongs with the code
++## 5. Why the durable record belongs with the code
+ 
+ Remote execution and central status can be useful. They are separate from the durable evidence
+ record that reviewers need next to the code.
+@@ -59,7 +67,7 @@ record that reviewers need next to the code.
+ Agentplane keeps the durable workflow record with the repository. The repository owns the workflow
+ artifacts.
+ 
+-## 5. Why ACR exists
++## 6. Why ACR exists
+ 
+ An Agent Change Record is the evidence file for AI-authored work. It is a commit-safe JSON artifact
+ that records task intent, approved plan, agent/toolchain identity, Git commits, policy decisions,
+@@ -68,7 +76,7 @@ verification results, and merge readiness.
+ Humans can read `agentplane acr explain`. CI can run `agentplane acr check`. External tools can read
+ `.agentplane/tasks/<task-id>/acr.json`.
+ 
+-## 6. What Agentplane refuses to do
++## 7. What Agentplane refuses to do
+ 
+ Agentplane is not another coding agent. It does not choose a model, generate code for you, replace
+ Git, replace CI, or replace pull request review.
+@@ -76,62 +84,62 @@ Git, replace CI, or replace pull request review.
+ It wraps the tools you already use with a repo-local lifecycle:
+ 
+ ```text
+-task -> plan -> approve -> implement -> verify -> finish
++authorize -> dispatch -> observe -> verify -> close or recover
+ ```
+ 
+-## 7. The operating bet
++## 8. The operating bet
+ 
+-Every serious agent change should leave an Agent Change Record.
+-
+-That is the category bet: AI-authored work needs a durable evidence artifact, and the easiest place
+-to keep it is the Git repository that already owns review, revert, audit, and merge.
++The durable interface for agentic engineering will be a protocol for delegated authority and
++observed proof that any capable coding agent can follow. That is the category Agentplane intends to
++own.
+ 
+ ## Source: docs/compare.mdx
+ 
+-# Agentplane is the agent-agnostic evidence layer
++# Agentplane is the Git-native control plane for coding agents
+ 
+-Use any repository-capable coding agent. Agentplane records the evidence that makes its work
+-reviewable: task scope, approved plan, role ownership, verification, branch handoff, closure, and
+-Agent Change Record.
++Use any repository-capable coding agent as the worker. Agentplane bounds its authority, holds
++approval gates, independently observes repository and Git facts, and records verification,
++recovery, and closure.
+ 
+-## Comparison matrix
++## Compare layers, not logos
+ 
+-| Surface                 | Best at                            | Missing by itself              | Agentplane adds                    |
+-| ----------------------- | ---------------------------------- | ------------------------------ | ---------------------------------- |
+-| Agent-agnostic codegen  | Generating and editing code        | Durable task evidence          | Lifecycle records and ACR          |
+-| `AGENTS.md` / rules     | Instructions and policy            | State, approvals, verification | Commands, gates, artifacts         |
+-| Git                     | Diffs and history                  | Intent, plan, verification     | Evidence around the diff           |
+-| CI                      | Automated checks                   | Task context and closure state | Verification evidence and ACR gate |
+-| Hosted agent dashboards | Central status or remote execution | Repo-local source of truth     | Durable Git-owned evidence         |
++| Layer                          | Primary job                       | What remains missing without Agentplane                                    |
++| ------------------------------ | --------------------------------- | -------------------------------------------------------------------------- |
++| Coding agents                  | Reason, edit, and test            | The worker still reports on its own work                                   |
++| `AGENTS.md` and prompt policy  | Describe rules                    | Instructions alone do not own lifecycle state or proof                     |
++| Git and pull requests          | Record content history and review | Git does not encode delegated authority or semantic intent                 |
++| CI                             | Execute automated checks          | A passing check does not explain scope, approval, or recovery              |
++| Fleet and operations platforms | Run and observe many agents       | Operational breadth may not make the repository control boundary explicit  |
++| Agentplane                     | Control delegated coding work     | Keeps authority, observation, and closure coherent across the other layers |
+ 
+ ## Coding agents
+ 
+-Coding agents are responsible for changing files. Agentplane is responsible for making that work
+-traceable after the session is gone.
++Coding agents are responsible for reasoning and changing files. Agentplane is responsible for
++controlling the delegated lifecycle around them.
+ 
+ Use Agentplane when you need a reviewer to answer:
+ 
+ - What was the task?
+ - Which plan constrained the work?
+-- What evidence proves verification happened?
++- What did the supervisor independently observe?
+ - Which commit represents the work?
+-- Is the ACR merge-ready?
++- Can the work safely close, or does it need recovery?
+ 
+ ## `AGENTS.md` and `CLAUDE.md`
+ 
+ Instruction files describe policy. They do not record whether a specific agent task followed that
+ policy.
+ 
+-Agentplane keeps the policy gateway, then adds task state, plan approval, verification, finish
+-metadata, PR artifacts, and ACR.
++Agentplane keeps the policy gateway, then adds scoped authority, task state, plan approval,
++supervisor observation, verification, recovery, finish metadata, PR artifacts, and ACR.
+ 
+ ## Git-only workflows
+ 
+ Git remains the source of truth for content and history. Agentplane does not replace it.
+ 
+-The gap is that a commit hash does not describe the agent's task, plan, verification, or policy
+-decisions. Agentplane stores those records beside the commit so review and revert have enough
+-context.
++The gap is that a commit hash does not describe delegated authority, semantic intent, approvals,
++verification, or recovery decisions. Agentplane stores those records beside the commit so review
++and revert have enough context.
+ 
+ ## CI
+ 
+@@ -146,19 +154,19 @@ ci` as an ACR readiness gate.
+ Hosted runtimes and dashboards are useful when you need remote execution, central queues, or sandbox
+ management.
+ 
+-Agentplane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first Git evidence
+-layer for AI work in repositories.
++Agentplane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first control plane
++for coding-agent work in repositories.
+ 
+-Hosted dashboards are useful for team visibility, shared history, alerts, and governance.
+-Agentplane OSS keeps the durable evidence record in Git, so Cloud can sync and collaborate around
+-the record without becoming the only source of truth.
++Fleet-first platforms are strongest when the first job is standing up many workers, connecting
++adapters, and operating them through a dedicated UI. Agentplane is strongest when the first job is
++making delegated authority and proof explicit inside the repository across any coding agent.
+ 
+ ## When to use Agentplane
+ 
+ Use Agentplane when:
+ 
+ - your coding agent changes real repositories;
+-- reviewers need task intent, plan, verification, and closure evidence;
++- reviewers need authority, intent, verification, recovery, and closure evidence;
+ - AI-written code changes need a repeatable review contract;
+ - you want durable artifacts in Git instead of transient chat history.
+ 
+@@ -174,32 +182,37 @@ Do not use Agentplane when:
+ Agentplane does not depend on a specific model, editor, hosted runtime, or agent product. Git stores
+ the diff. CI runs checks. Agentplane records the evidence around the work.
+ 
+-## Summary
++## Control-plane distinction
++
++The worker's semantic result and the control plane's observed facts are separate records. Agent
++confidence does not silently become supervisor proof.
+ 
+-Use any coding agent. Keep the evidence in Git.
++**Let agents write code. Keep authority and proof in Git.**
+ 
+ ## Source: docs/user/overview.mdx
+ 
+ ## What is Agentplane?
+ 
+-Agentplane is an agent-agnostic harness for governed coding-agent work, built for reproducible
+-runs, inspectable traces, local context, recipes, artifacts, and Git-native evidence.
++Agentplane is the Git-native control plane for coding agents. It puts Codex, Claude Code, Cursor,
++Aider, and other repository-capable agents on an approved, verifiable Git workflow.
+ 
+-It does not replace the model or agent framework. It gives agent work an operating surface:
+-workflows, context boundaries, tool-call records, verification checks, run artifacts, traces, and
+-Agent Change Records.
++It does not replace the model or agent framework. It controls the lifecycle around the worker:
++bounded authority, attributable approvals, supervisor-observed proof, verification, recovery, and
++closure. Workflows, traces, context, recipes, and Agent Change Records are mechanisms within that
++control plane.
+ 
+ The operating split is deliberate:
+ 
+-- The agent writes code, uses the CLI, follows `AGENTS.md`, and records verification.
+-- The human sets tasks, adjusts guardrails, approves risky boundaries, and reviews evidence.
+-- Agentplane keeps that work durable as repo-local state instead of private chat or IDE context.
++- The agent reasons, writes code, runs tools, and reports a semantic result.
++- The human sets intent, approves material boundaries, and reviews observed evidence.
++- Agentplane bounds authority, dispatches work, observes repository and Git facts, and closes or
++  recovers the lifecycle.
+ 
+ Use your existing coding agent to edit code. Use Agentplane to make the agent's work reviewable
+ after the chat window, terminal session, or IDE context is gone.
+ 
+ ```text
+-task -> plan -> approve -> implement -> verify -> finish
++authorize -> dispatch -> observe -> verify -> close or recover
+ ```
+ 
+ The default path is:
+diff --git a/website/static/llms.txt b/website/static/llms.txt
+index 77d9cf346..1b9401386 100644
+--- a/website/static/llms.txt
++++ b/website/static/llms.txt
+@@ -5,7 +5,9 @@ docs: https://agentplane.org/docs
+ examples: https://agentplane.org/examples
+ repo: https://github.com/basilisk-labs/agentplane
+ 
+-summary: Agentplane is an agent-agnostic harness for governed coding-agent work. It helps developers set tasks and guardrails while coding agents use the CLI, record traces, manage local context, apply reusable recipes, export artifacts, and make work reproducible and inspectable.
++summary: Agentplane is the Git-native control plane for coding agents. It puts repository-capable agents on an approved, verifiable workflow with bounded authority, attributable approvals, supervisor-observed proof, deterministic recovery, and closure in Git.
++promise: Let agents write code. Keep authority and proof in Git.
++control-loop: authorize -> dispatch -> observe -> verify -> close or recover.
+ not: model provider, prompt playground, low-code chatbot builder, replacement for every agent framework, black-box runtime that hides operational state.
+ local-first: The default quickstart runs locally, writes repo-local artifacts, and does not require account creation.
+ cli: agentplane
+@@ -14,6 +16,7 @@ license: MIT
+ canonical-links:
+ - What is Agentplane: https://agentplane.org/docs
+ - Quickstart: https://agentplane.org/docs/start/quickstart
++- Comparison: https://agentplane.org/docs/compare
+ - Harness engineering: https://agentplane.org/docs/concepts/harness-engineering
+ - Context engineering: https://agentplane.org/docs/concepts/context-engineering
+ - Traces: https://agentplane.org/docs/concepts/traces

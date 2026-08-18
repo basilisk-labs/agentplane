@@ -1,0 +1,91 @@
+{
+  "details": "Check: requested_outcome\nCommand: git show --stat --oneline 18ec7968a\nResult: pass\nEvidence: commit changes only the stale generated-domain link and the hard-coded proof-metric detector\nScope: approved PR review rework\n\nCheck: relevant_validation\nCommand: bun run docs:site:check && bun run lint:website\nResult: pass\nEvidence: docs IA, generated site content, typecheck, production build, design-language check, and website lint exited 0\nScope: website and documentation surfaces\n\nCheck: semantic_version_regression\nCommand: node --input-type=module assertion against containsHardcodedProofMetric\nResult: pass\nEvidence: v0.7.6, 0.7.6, and prerelease/build versions are detected; 2026-08-18 is not\nScope: website content rule",
+  "digest": "sha256:3cfc6d88d6ddb8a945859c3e6d60609174a31654c308051de86406a0b685c1f1",
+  "implementation_sha": "531c1eb8e4c8354d1011b7b4201e522bbb98b36c",
+  "input": {
+    "context": {
+      "digest": "sha256:0ae2d6fd19100739a3eb62ee1e1089c36186f4e9976d255c5b393499e1353d45",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:7fcc42eb5965361252a4b039dbc565f4fa2300a84f17315bd6c50e3b7e3a63ac",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:1170017c69fb3020e6893c41ea1d0739ae16e441f06efc3cb6287a55b6e57354",
+      "digest": "sha256:1ea603ff8fa0256699f15a322ddd0ebaa1c37e6973a515766633dd9287421191",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "prerelease/build",
+          "reference": "prerelease/build",
+          "source": "missing"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "7d7e964aec30e3551d34c81d3a726f28a6379690",
+      "digest": "sha256:b8416451620f606065ee0b86eac4e3e7746db14c4508e54565ade812d7b4194b",
+      "strategy": "branch_diff",
+      "target_sha": "531c1eb8e4c8354d1011b7b4201e522bbb98b36c"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:083d171b3e39fb3c0b074907a74886d1ab153bb031e79029484aeed935648f31",
+    "verify_steps_digest": "sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0"
+  },
+  "kind": "task_verification_record",
+  "note": "PR review rework is complete: stale launch index link removed and literal semantic versions are rejected by the homepage content guard.",
+  "recorded_at": "2026-08-18T20:42:06.126Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0",
+  "task_id": "202608181819-Z3GWTA",
+  "verification_command": "agentplane verify 202608181819-Z3GWTA --ok --by REVIEWER",
+  "verifier": "REVIEWER"
+}

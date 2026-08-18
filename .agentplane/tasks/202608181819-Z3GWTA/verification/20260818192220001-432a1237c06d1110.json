@@ -1,0 +1,91 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run lint:website\nResult: pass\nEvidence: ESLint exited 0 on the published task branch.\nScope: touched website implementation.\n\nCheck: critical_paths\nCommand: bun run docs:readme-header:check && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: README header artifacts are fresh for v0.7.6 and policy routing is OK.\nScope: public README and repository policy gateway.\n\nCheck: full_regression\nCommand: bun run release:demo:check\nResult: fail\nEvidence: docs/assets/agentplane-demo.gif is 3,834,539 bytes; enforced limit is 3,000,000 bytes.\nScope: declared task verification set.\n\nCheck: hosted_integration\nCommand: agentplane pr open 202608181819-Z3GWTA --author CODER\nResult: pass\nEvidence: GitHub PR 4845 was created and linked by Agentplane.\nScope: published task branch and PR metadata.\n\nCheck: real_e2e\nCommand: bun run docs:site:check\nResult: pass\nEvidence: docs IA, generated artifacts, website typecheck, social-card check, optimized Docusaurus production build, navigation check, and design-language check passed.\nScope: public documentation and website build.\n\nCheck: task_outcome\nCommand: inspect public diff and private marketing source of truth\nResult: pass\nEvidence: public Launch Kit files and derived cards are removed; marketing submodule points to published private commit d590b93; canonical control-plane copy is present across README, docs, SEO, homepage, and llms surfaces.\nScope: requested positioning and content-boundary outcome.",
+  "digest": "sha256:432a1237c06d11108ac530d54ca3fe88848a0e9b7b4f729e08349371adec059e",
+  "implementation_sha": "f4b9faf482a744690425743a391d9498424e9f1a",
+  "input": {
+    "context": {
+      "digest": "sha256:0ae2d6fd19100739a3eb62ee1e1089c36186f4e9976d255c5b393499e1353d45",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:1a2f92e3ff2ef9e05d67da9dead653feb396fc7b6f61bb2eaab2d19bf0ce1223",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:4dd5d33584a7c7ea7e1e19963bf236f8af93f4ce5e67f2afb21f898b88cd973c",
+      "digest": "sha256:28b5666cc23819441e46108def269767c969d44c5fa50da2577f772199dd7e47",
+      "references": [
+        {
+          "digest": "sha256:b655945e126c981d702a76f0ed619a1c1d706a14a16e450f0268ff33f66cbf5a",
+          "fragment": null,
+          "path": "docs/assets/agentplane-demo.gif",
+          "reference": "docs/assets/agentplane-demo.gif",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "7d7e964aec30e3551d34c81d3a726f28a6379690",
+      "digest": "sha256:5bbc13085d2449181eed62fd28ff83c7199b30442691815ac20706ba95883ccf",
+      "strategy": "branch_diff",
+      "target_sha": "f4b9faf482a744690425743a391d9498424e9f1a"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:d274666de5de4b41fa5477b86735ad6e3b01d88d43972533e2c3559f635d0ee9",
+    "verify_steps_digest": "sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0"
+  },
+  "kind": "task_verification_record",
+  "note": "Public positioning and website checks pass, but the declared release demo gate fails because the existing GIF is 3,834,539 bytes against a 3,000,000-byte limit.",
+  "recorded_at": "2026-08-18T19:22:20.001Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0",
+  "task_id": "202608181819-Z3GWTA",
+  "verification_command": "agentplane verify 202608181819-Z3GWTA --rework --by TESTER",
+  "verifier": "TESTER"
+}

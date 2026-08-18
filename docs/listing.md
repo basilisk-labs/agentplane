@@ -10,29 +10,29 @@ directories.
 
 ## Short
 
-Agentplane - Git-native infrastructure for traceable AI work.
+Agentplane is the Git-native control plane for coding agents.
 
 ## Medium
 
-Agentplane is a local-first CLI that turns coding-agent changes into reviewable Git evidence: task
-intent, approved plan, verification, finish state, and Agent Change Record.
+Agentplane bounds coding-agent authority and keeps approvals, verification, recovery, and closure
+inside the repository.
 
 ## Long
 
-Agentplane is not another coding agent or hosted agent runtime. It is an agent-agnostic,
-repo-local evidence trail so AI-written code changes can be reviewed, validated, merged, and
-reverted through Git.
+Agentplane puts Codex, Claude Code, Cursor, Aider, and other coding agents on an approved,
+verifiable repository workflow. It separates agent-reported results from supervisor-observed
+proof.
 
 ## Category
 
-Repo-local evidence layer for AI-written software changes.
+Git-native control plane for coding agents.
 
 ## Do position as
 
-- Git-native infrastructure for traceable AI work.
-- Local-first workflow control for coding agents.
-- Agent Change Record producer and validator.
-- Review trail for AI-written pull requests.
+- Git-native control plane for coding agents.
+- Bounded authority and attributable approvals.
+- Supervisor-observed verification, recovery, and closure.
+- Agent-agnostic repository workflow.
 
 ## Do not position as
 
@@ -44,5 +44,5 @@ Repo-local evidence layer for AI-written software changes.
 
 ## Differentiation note
 
-Agentplane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first Git evidence
-layer for AI work in repositories.
+Agentplane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first control plane
+for delegated coding-agent work in repositories.

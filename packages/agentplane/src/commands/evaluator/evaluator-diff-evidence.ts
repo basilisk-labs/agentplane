@@ -130,8 +130,8 @@ export async function renderActualDiff(
       "git",
       [
         ...(diffBaseSha
-          ? ["diff", "--no-ext-diff", "--find-renames", "--binary", diffBaseSha, evaluatedSha]
-          : ["show", "--format=", "--root", "--find-renames", "--binary", evaluatedSha]),
+          ? ["diff", "--no-ext-diff", "--find-renames", diffBaseSha, evaluatedSha]
+          : ["show", "--format=", "--root", "--find-renames", evaluatedSha]),
         ...taskArtifactExclude,
       ],
       { cwd: gitRoot, maxBuffer: 16 * 1024 * 1024 },
