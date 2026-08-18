@@ -4,7 +4,7 @@ title: "Consolidate AgentPlane 0.7.7 hardening and repair terminal conflict rewo
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -31,10 +31,10 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-18T16:23:29.214Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -84,17 +84,117 @@ execution_contract:
     schema_version: 2
     scope_roots: []
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "repository_effect:ci"
+      - "repository_effect:dependencies"
+      - "repository_effect:documentation"
+      - "repository_effect:public_api"
+      - "repository_effect:source_code"
+      - "repository_effect:tests"
+    changed_components:
+      - ".agentplane"
+      - ".github"
+      - "docs"
+      - "packages/agentplane"
+      - "packages/core"
+      - "packages/recipes"
+      - "packages/spec"
+      - "packages/testkit"
+      - "scripts"
+    changed_paths:
+      - ".agentplane/WORKFLOW.md"
+      - ".github/workflows/publish.yml"
+      - "docs/assets/header.svg"
+      - "docs/assets/readme-headers/adr.svg"
+      - "docs/assets/readme-headers/agentplane-cli.svg"
+      - "docs/assets/readme-headers/agentplane.svg"
+      - "docs/assets/readme-headers/core.svg"
+      - "docs/assets/readme-headers/docs.svg"
+      - "docs/assets/readme-headers/humanizer.svg"
+      - "docs/assets/readme-headers/recipes.svg"
+      - "docs/assets/readme-headers/releases.svg"
+      - "docs/assets/readme-headers/schemas.svg"
+      - "docs/assets/readme-headers/scripts.svg"
+      - "docs/assets/readme-headers/skills.svg"
+      - "docs/assets/readme-headers/spec.svg"
+      - "docs/assets/readme-headers/testkit.svg"
+      - "docs/developer/release-and-publishing.mdx"
+      - "docs/reference/generated-reference.mdx"
+      - "docs/releases/v0.7.7.md"
+      - "packages/agentplane/package.json"
+      - "packages/agentplane/src/cli/reason-codes.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.git.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.git.ts"
+      - "packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts"
+      - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/github-protection.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/prepare.ts"
+      - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+      - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+      - "packages/agentplane/src/commands/pr/internal/sync.ts"
+      - "packages/agentplane/src/commands/release/check-release-version-script.test.ts"
+      - "packages/agentplane/src/commands/release/open-next-development-version-script.test.ts"
+      - "packages/agentplane/src/commands/release/plan.command.ts"
+      - "packages/agentplane/src/commands/release/plan.helpers.ts"
+      - "packages/agentplane/src/commands/release/plan.test.ts"
+      - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+      - "packages/agentplane/src/commands/release/release-task-evidence-script.test.ts"
+      - "packages/agentplane/src/commands/shared/task-backend.test.ts"
+      - "packages/agentplane/src/commands/shared/task-backend.ts"
+      - "packages/agentplane/src/commands/task/advance.command.ts"
+      - "packages/agentplane/src/commands/task/configured-authority.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
+      - "packages/core/package.json"
+      - "packages/recipes/package.json"
+      - "packages/recipes/src/index.ts"
+      - "packages/spec/examples/acr.json"
+      - "packages/testkit/package.json"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/lib/next-development-version.mjs"
+      - "scripts/lib/release-semver.mjs"
+      - "scripts/lib/release-version-surfaces.mjs"
+      - "scripts/release/check-local-tarball-install-smoke.mjs"
+      - "scripts/release/check-release-version.mjs"
+      - "scripts/release/open-next-development-version.mjs"
+      - "scripts/release/release-task-evidence.mjs"
+      - "scripts/release/version-bump.mjs"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "ci"
+      - "dependencies"
+      - "documentation"
+      - "public_api"
+      - "release_metadata"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_publish"
     - "effect_release_metadata"
     - "effect_security_boundary"
+    - "observed_effect_ci"
+    - "observed_effect_dependencies"
+    - "observed_effect_public_api"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -114,9 +214,15 @@ execution_contract:
           - "external_effect:network_read"
           - "external_effect:publish"
           - "hosted_integration"
+          - "repository_effect:ci"
+          - "repository_effect:dependencies"
+          - "repository_effect:documentation"
+          - "repository_effect:public_api"
           - "repository_effect:release_metadata"
           - "repository_effect:repository_write"
           - "repository_effect:security_boundary"
+          - "repository_effect:source_code"
+          - "repository_effect:tests"
           - "task_outcome"
         external_effects:
           - "network_read"
@@ -129,22 +235,123 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:081b4eb9bcb09026153057783c65f4dc65caa9b9674f3028ddc8b2d6c3c1ed9b"
+      digest: "sha256:cd3d2b662805b68214ed54c1302382c9d93987fce5eba4d86b0bb38ed909db1e"
       escalation_reasons:
+        - "central_path:.github/workflows/publish.yml"
+        - "central_path:packages/agentplane/src/cli/reason-codes.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend.ts"
+        - "central_path:packages/core/package.json"
+        - "central_path:scripts/lib/next-development-version.mjs"
+        - "central_path:scripts/lib/release-semver.mjs"
+        - "central_path:scripts/lib/release-version-surfaces.mjs"
+        - "central_path:scripts/release/check-local-tarball-install-smoke.mjs"
+        - "central_path:scripts/release/check-release-version.mjs"
+        - "central_path:scripts/release/open-next-development-version.mjs"
+        - "central_path:scripts/release/release-task-evidence.mjs"
+        - "central_path:scripts/release/version-bump.mjs"
+        - "effect_ci"
+        - "effect_dependencies"
+        - "effect_public_api"
         - "effect_release_metadata"
         - "effect_security_boundary"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:packages/spec/examples/acr.json"
+        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - ".agentplane"
+          - ".github"
+          - "docs"
+          - "packages/agentplane"
+          - "packages/core"
+          - "packages/recipes"
+          - "packages/spec"
+          - "packages/testkit"
+          - "scripts"
+        changed_files:
+          - ".agentplane/WORKFLOW.md"
+          - ".github/workflows/publish.yml"
+          - "docs/assets/header.svg"
+          - "docs/assets/readme-headers/adr.svg"
+          - "docs/assets/readme-headers/agentplane-cli.svg"
+          - "docs/assets/readme-headers/agentplane.svg"
+          - "docs/assets/readme-headers/core.svg"
+          - "docs/assets/readme-headers/docs.svg"
+          - "docs/assets/readme-headers/humanizer.svg"
+          - "docs/assets/readme-headers/recipes.svg"
+          - "docs/assets/readme-headers/releases.svg"
+          - "docs/assets/readme-headers/schemas.svg"
+          - "docs/assets/readme-headers/scripts.svg"
+          - "docs/assets/readme-headers/skills.svg"
+          - "docs/assets/readme-headers/spec.svg"
+          - "docs/assets/readme-headers/testkit.svg"
+          - "docs/developer/release-and-publishing.mdx"
+          - "docs/reference/generated-reference.mdx"
+          - "docs/releases/v0.7.7.md"
+          - "packages/agentplane/package.json"
+          - "packages/agentplane/src/cli/reason-codes.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.git.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.git.ts"
+          - "packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts"
+          - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/github-protection.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/prepare.ts"
+          - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+          - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+          - "packages/agentplane/src/commands/pr/internal/sync.ts"
+          - "packages/agentplane/src/commands/release/check-release-version-script.test.ts"
+          - "packages/agentplane/src/commands/release/open-next-development-version-script.test.ts"
+          - "packages/agentplane/src/commands/release/plan.command.ts"
+          - "packages/agentplane/src/commands/release/plan.helpers.ts"
+          - "packages/agentplane/src/commands/release/plan.test.ts"
+          - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+          - "packages/agentplane/src/commands/release/release-task-evidence-script.test.ts"
+          - "packages/agentplane/src/commands/shared/task-backend.test.ts"
+          - "packages/agentplane/src/commands/shared/task-backend.ts"
+          - "packages/agentplane/src/commands/task/advance.command.ts"
+          - "packages/agentplane/src/commands/task/configured-authority.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
+          - "packages/core/package.json"
+          - "packages/recipes/package.json"
+          - "packages/recipes/src/index.ts"
+          - "packages/spec/examples/acr.json"
+          - "packages/testkit/package.json"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "scripts/lib/next-development-version.mjs"
+          - "scripts/lib/release-semver.mjs"
+          - "scripts/lib/release-version-surfaces.mjs"
+          - "scripts/release/check-local-tarball-install-smoke.mjs"
+          - "scripts/release/check-release-version.mjs"
+          - "scripts/release/open-next-development-version.mjs"
+          - "scripts/release/release-task-evidence.mjs"
+          - "scripts/release/version-bump.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "ci"
+          - "dependencies"
+          - "documentation"
+          - "public_api"
+          - "release_metadata"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -154,6 +361,9 @@ execution_contract:
       requires_real_e2e: true
       schema_version: 2
       selected_checks:
+        - "affected_unit_integration"
+        - "critical_paths"
+        - "docs_contract"
         - "full_regression"
         - "hosted_integration"
         - "real_e2e"
@@ -173,9 +383,15 @@ execution_contract:
       - "external_effect:network_read"
       - "external_effect:publish"
       - "hosted_integration"
+      - "repository_effect:ci"
+      - "repository_effect:dependencies"
+      - "repository_effect:documentation"
+      - "repository_effect:public_api"
       - "repository_effect:release_metadata"
       - "repository_effect:repository_write"
       - "repository_effect:security_boundary"
+      - "repository_effect:source_code"
+      - "repository_effect:tests"
       - "task_outcome"
 commit:
   hash: "4e1e8183679d7560b9f074965066ef61bf9aff2e"
@@ -203,8 +419,14 @@ events:
     to: "DOING"
     note: "Implemented: consolidated current v0.7.7 hardening, fixed merge-base task ownership and verified DONE conflict rework, refreshed release surfaces, and passed local contract, critical, fast, docs, and release gates."
     commit: "4e1e8183679d7560b9f074965066ef61bf9aff2e"
+  -
+    type: "verify"
+    at: "2026-08-18T16:23:29.214Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-18T16:17:07.007Z"
+doc_updated_at: "2026-08-18T16:23:30.386Z"
 doc_updated_by: "CODER"
 description: "Consolidate only the current source and release changes from superseded PR #4841 onto the latest main; fix the terminal DONE-task provider conflict route so a current open conflicting PR can enter controlled semantic rework without an impossible prior queue record; make foreign task-artifact isolation compare branch-introduced changes rather than base-only task artifacts; refresh compatibility and release artifacts; run all local and hosted gates; integrate and release 0.7.7."
 sections:
@@ -224,6 +446,60 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-18T16:23:29.214Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:79ad762795c3ba6de8eabe79bfa05045d6e7fe257c3a826b2d8fdf688732912c, input_digest=sha256:b08bb6076afe938c89590daef303eaaa5d898da2f0b0e884ed1de073ec5435e5
+
+    Details:
+
+    Check: full_regression
+    Command: bun run ci:contract && bun run docs:site:check && bun run test:critical && bun run test:fast
+    Result: pass
+    Evidence: .agentplane/tasks/202608181557-DR1T03/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181557-DR1T03 Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bun run ci:contract && bun run docs:site:check && bun run test:critical && bun run test:fast
+    Result: pass
+    Evidence: .agentplane/tasks/202608181557-DR1T03/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181557-DR1T03 Verification Contract check hosted_integration
+
+    Check: real_e2e
+    Command: bun run ci:contract && bun run docs:site:check && bun run test:critical && bun run test:fast
+    Result: pass
+    Evidence: .agentplane/tasks/202608181557-DR1T03/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181557-DR1T03 Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: bun run ci:contract && bun run docs:site:check && bun run test:critical && bun run test:fast
+    Result: pass
+    Evidence: .agentplane/tasks/202608181557-DR1T03/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181557-DR1T03 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181557-DR1T03-consolidate-agentplane-0-7-7-hardening-and-repai/.agentplane/tasks/202608181557-DR1T03/blueprint/resolved-snapshot.json
+    - old_digest: 752efa75490b7523541f777bf29d89d628ac0dd8db65a55b68f90cd2f6fdeefa
+    - current_digest: 752efa75490b7523541f777bf29d89d628ac0dd8db65a55b68f90cd2f6fdeefa
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181557-DR1T03
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608181557-DR1T03
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -261,6 +537,60 @@ PLANNER fallback scaffold for "Consolidate AgentPlane 0.7.7 hardening and repair
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-18T16:23:29.214Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:79ad762795c3ba6de8eabe79bfa05045d6e7fe257c3a826b2d8fdf688732912c, input_digest=sha256:b08bb6076afe938c89590daef303eaaa5d898da2f0b0e884ed1de073ec5435e5
+
+Details:
+
+Check: full_regression
+Command: bun run ci:contract && bun run docs:site:check && bun run test:critical && bun run test:fast
+Result: pass
+Evidence: .agentplane/tasks/202608181557-DR1T03/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181557-DR1T03 Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bun run ci:contract && bun run docs:site:check && bun run test:critical && bun run test:fast
+Result: pass
+Evidence: .agentplane/tasks/202608181557-DR1T03/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181557-DR1T03 Verification Contract check hosted_integration
+
+Check: real_e2e
+Command: bun run ci:contract && bun run docs:site:check && bun run test:critical && bun run test:fast
+Result: pass
+Evidence: .agentplane/tasks/202608181557-DR1T03/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181557-DR1T03 Verification Contract check real_e2e
+
+Check: task_outcome
+Command: bun run ci:contract && bun run docs:site:check && bun run test:critical && bun run test:fast
+Result: pass
+Evidence: .agentplane/tasks/202608181557-DR1T03/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181557-DR1T03 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181557-DR1T03-consolidate-agentplane-0-7-7-hardening-and-repai/.agentplane/tasks/202608181557-DR1T03/blueprint/resolved-snapshot.json
+- old_digest: 752efa75490b7523541f777bf29d89d628ac0dd8db65a55b68f90cd2f6fdeefa
+- current_digest: 752efa75490b7523541f777bf29d89d628ac0dd8db65a55b68f90cd2f6fdeefa
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181557-DR1T03
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608181557-DR1T03
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

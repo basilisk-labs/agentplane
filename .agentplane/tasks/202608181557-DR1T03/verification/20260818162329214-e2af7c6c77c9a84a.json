@@ -1,0 +1,91 @@
+{
+  "details": "Check: full_regression\nCommand: bun run ci:contract && bun run docs:site:check && bun run test:critical && bun run test:fast\nResult: pass\nEvidence: .agentplane/tasks/202608181557-DR1T03/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181557-DR1T03 Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: bun run ci:contract && bun run docs:site:check && bun run test:critical && bun run test:fast\nResult: pass\nEvidence: .agentplane/tasks/202608181557-DR1T03/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181557-DR1T03 Verification Contract check hosted_integration\n\nCheck: real_e2e\nCommand: bun run ci:contract && bun run docs:site:check && bun run test:critical && bun run test:fast\nResult: pass\nEvidence: .agentplane/tasks/202608181557-DR1T03/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181557-DR1T03 Verification Contract check real_e2e\n\nCheck: task_outcome\nCommand: bun run ci:contract && bun run docs:site:check && bun run test:critical && bun run test:fast\nResult: pass\nEvidence: .agentplane/tasks/202608181557-DR1T03/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181557-DR1T03 Verification Contract check task_outcome",
+  "digest": "sha256:e2af7c6c77c9a84a15316345459c2195e774e7ac169015ddcf8df1d4562c9216",
+  "implementation_sha": "ecf3e69579722fe9e6f0b129ee05e4a917ece325",
+  "input": {
+    "context": {
+      "digest": "sha256:dc9f107572de41b553c1ad75b54baae171db8ec140e954fe86d422957ca6f770",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:b08bb6076afe938c89590daef303eaaa5d898da2f0b0e884ed1de073ec5435e5",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e8acbb8e4ac70deb434d8170448beb115ebe22253d8a2a6a33c3574052cef34d",
+      "digest": "sha256:fd8adb42872f59734ff89f1dbd489953837563c61adc06319d3cdd1ae64d45c9",
+      "references": [
+        {
+          "digest": "sha256:7bd9a5c7f36f2d107aa18b7fe8dd9fe9c1fe3ab6eeb9720c7b011f645aa18ce6",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608181557-DR1T03/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608181557-DR1T03/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "374aa33fbca59318205d2dde70ab149710fe566d",
+      "digest": "sha256:1a07d2ec4ed64fd2f2105e70812cb38395ac7b63e08f2996dd3eeaf9ff3c7f56",
+      "strategy": "branch_diff",
+      "target_sha": "ecf3e69579722fe9e6f0b129ee05e4a917ece325"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:cd3d2b662805b68214ed54c1302382c9d93987fce5eba4d86b0bb38ed909db1e",
+    "verify_steps_digest": "sha256:79ad762795c3ba6de8eabe79bfa05045d6e7fe257c3a826b2d8fdf688732912c"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-08-18T16:23:29.214Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Consolidate AgentPlane 0.7.7 hardening and repair terminal conflict rework\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Consolidate AgentPlane 0.7.7 hardening and repair terminal conflict rework\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:79ad762795c3ba6de8eabe79bfa05045d6e7fe257c3a826b2d8fdf688732912c",
+  "task_id": "202608181557-DR1T03",
+  "verification_command": "agentplane verify 202608181557-DR1T03 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
