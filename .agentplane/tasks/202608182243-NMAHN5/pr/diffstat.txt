@@ -1,0 +1,5 @@
+ website/docusaurus.config.ts         |   10 +-
+ website/src/data/homepage-content.ts |  200 +++---
+ website/src/pages/_home.module.css   | 1291 ++++++++++++++++++++++++----------
+ website/src/pages/index.tsx          |  538 +++++++-------
+ 4 files changed, 1243 insertions(+), 796 deletions(-)
