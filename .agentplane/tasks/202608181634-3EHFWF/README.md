@@ -4,7 +4,7 @@ title: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,10 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly authorized implementation, full validation, merge, publication, and cleanup in this conversation."
 verification:
-  state: "pending"
-  updated_at: "2026-08-18T16:37:20.862Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
+  state: "ok"
+  updated_at: "2026-08-18T16:53:26.215Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -105,11 +105,111 @@ execution_contract:
       - "website"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - ".agentplane"
+      - ".github"
+      - "docs"
+      - "packages/agentplane"
+      - "packages/core"
+      - "packages/recipes"
+      - "packages/spec"
+      - "packages/testkit"
+      - "scripts"
+    changed_paths:
+      - ".agentplane/WORKFLOW.md"
+      - ".github/workflows/publish.yml"
+      - "docs/assets/header.svg"
+      - "docs/assets/readme-headers/adr.svg"
+      - "docs/assets/readme-headers/agentplane-cli.svg"
+      - "docs/assets/readme-headers/agentplane.svg"
+      - "docs/assets/readme-headers/core.svg"
+      - "docs/assets/readme-headers/docs.svg"
+      - "docs/assets/readme-headers/humanizer.svg"
+      - "docs/assets/readme-headers/recipes.svg"
+      - "docs/assets/readme-headers/releases.svg"
+      - "docs/assets/readme-headers/schemas.svg"
+      - "docs/assets/readme-headers/scripts.svg"
+      - "docs/assets/readme-headers/skills.svg"
+      - "docs/assets/readme-headers/spec.svg"
+      - "docs/assets/readme-headers/testkit.svg"
+      - "docs/developer/release-and-publishing.mdx"
+      - "docs/reference/generated-reference.mdx"
+      - "docs/releases/v0.7.7.md"
+      - "packages/agentplane/package.json"
+      - "packages/agentplane/src/cli/reason-codes.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.git.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.git.ts"
+      - "packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts"
+      - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/github-protection.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/prepare.ts"
+      - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+      - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+      - "packages/agentplane/src/commands/pr/internal/sync.ts"
+      - "packages/agentplane/src/commands/release/check-release-version-script.test.ts"
+      - "packages/agentplane/src/commands/release/open-next-development-version-script.test.ts"
+      - "packages/agentplane/src/commands/release/plan.command.ts"
+      - "packages/agentplane/src/commands/release/plan.helpers.ts"
+      - "packages/agentplane/src/commands/release/plan.test.ts"
+      - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+      - "packages/agentplane/src/commands/release/release-task-evidence-script.test.ts"
+      - "packages/agentplane/src/commands/shared/task-backend.test.ts"
+      - "packages/agentplane/src/commands/shared/task-backend.ts"
+      - "packages/agentplane/src/commands/task/advance.command.ts"
+      - "packages/agentplane/src/commands/task/configured-authority.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
+      - "packages/core/package.json"
+      - "packages/recipes/package.json"
+      - "packages/recipes/src/index.ts"
+      - "packages/spec/examples/acr.json"
+      - "packages/testkit/package.json"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/lib/next-development-version.mjs"
+      - "scripts/lib/release-semver.mjs"
+      - "scripts/lib/release-version-surfaces.mjs"
+      - "scripts/release/check-local-tarball-install-smoke.mjs"
+      - "scripts/release/check-release-version.mjs"
+      - "scripts/release/open-next-development-version.mjs"
+      - "scripts/release/release-task-evidence.mjs"
+      - "scripts/release/version-bump.mjs"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "ci"
+      - "dependencies"
+      - "documentation"
+      - "public_api"
+      - "release_metadata"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -169,9 +269,26 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:9ff4ce66b96c83f6aef13cb4ca39ad5c174b0491c4b2ff50b915c20330ba6ed1"
+      digest: "sha256:e89ccea62147aa64f75bd28a8ca147674e66b778319a6d0b9b9f43558925f7a6"
       escalation_reasons:
         - "central_component:.github/workflows"
+        - "central_path:.github/workflows/publish.yml"
+        - "central_path:packages/agentplane/src/cli/reason-codes.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend.ts"
+        - "central_path:packages/core/package.json"
+        - "central_path:scripts/lib/next-development-version.mjs"
+        - "central_path:scripts/lib/release-semver.mjs"
+        - "central_path:scripts/lib/release-version-surfaces.mjs"
+        - "central_path:scripts/release/check-local-tarball-install-smoke.mjs"
+        - "central_path:scripts/release/check-release-version.mjs"
+        - "central_path:scripts/release/open-next-development-version.mjs"
+        - "central_path:scripts/release/release-task-evidence.mjs"
+        - "central_path:scripts/release/version-bump.mjs"
         - "effect_ci"
         - "effect_dependencies"
         - "effect_public_api"
@@ -179,16 +296,97 @@ execution_contract:
         - "effect_schema"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:packages/spec/examples/acr.json"
+        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - ".agentplane"
+          - ".github"
+          - "docs"
+          - "packages/agentplane"
+          - "packages/core"
+          - "packages/recipes"
+          - "packages/spec"
+          - "packages/testkit"
+          - "scripts"
+        changed_files:
+          - ".agentplane/WORKFLOW.md"
+          - ".github/workflows/publish.yml"
+          - "docs/assets/header.svg"
+          - "docs/assets/readme-headers/adr.svg"
+          - "docs/assets/readme-headers/agentplane-cli.svg"
+          - "docs/assets/readme-headers/agentplane.svg"
+          - "docs/assets/readme-headers/core.svg"
+          - "docs/assets/readme-headers/docs.svg"
+          - "docs/assets/readme-headers/humanizer.svg"
+          - "docs/assets/readme-headers/recipes.svg"
+          - "docs/assets/readme-headers/releases.svg"
+          - "docs/assets/readme-headers/schemas.svg"
+          - "docs/assets/readme-headers/scripts.svg"
+          - "docs/assets/readme-headers/skills.svg"
+          - "docs/assets/readme-headers/spec.svg"
+          - "docs/assets/readme-headers/testkit.svg"
+          - "docs/developer/release-and-publishing.mdx"
+          - "docs/reference/generated-reference.mdx"
+          - "docs/releases/v0.7.7.md"
+          - "packages/agentplane/package.json"
+          - "packages/agentplane/src/cli/reason-codes.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.git.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.git.ts"
+          - "packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts"
+          - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/github-protection.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/prepare.ts"
+          - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+          - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+          - "packages/agentplane/src/commands/pr/internal/sync.ts"
+          - "packages/agentplane/src/commands/release/check-release-version-script.test.ts"
+          - "packages/agentplane/src/commands/release/open-next-development-version-script.test.ts"
+          - "packages/agentplane/src/commands/release/plan.command.ts"
+          - "packages/agentplane/src/commands/release/plan.helpers.ts"
+          - "packages/agentplane/src/commands/release/plan.test.ts"
+          - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+          - "packages/agentplane/src/commands/release/release-task-evidence-script.test.ts"
+          - "packages/agentplane/src/commands/shared/task-backend.test.ts"
+          - "packages/agentplane/src/commands/shared/task-backend.ts"
+          - "packages/agentplane/src/commands/task/advance.command.ts"
+          - "packages/agentplane/src/commands/task/configured-authority.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
+          - "packages/core/package.json"
+          - "packages/recipes/package.json"
+          - "packages/recipes/src/index.ts"
+          - "packages/spec/examples/acr.json"
+          - "packages/testkit/package.json"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "scripts/lib/next-development-version.mjs"
+          - "scripts/lib/release-semver.mjs"
+          - "scripts/lib/release-version-surfaces.mjs"
+          - "scripts/release/check-local-tarball-install-smoke.mjs"
+          - "scripts/release/check-release-version.mjs"
+          - "scripts/release/open-next-development-version.mjs"
+          - "scripts/release/release-task-evidence.mjs"
+          - "scripts/release/version-bump.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "ci"
+          - "dependencies"
+          - "documentation"
+          - "public_api"
+          - "release_metadata"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -268,8 +466,14 @@ events:
     to: "DOING"
     note: "Implementation committed after protected CI path recovery; full local release matrix passed."
     commit: "9ae23fb9bad25b85c2edb8eec41283180f26f47e"
+  -
+    type: "verify"
+    at: "2026-08-18T16:53:26.215Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-18T16:52:39.712Z"
+doc_updated_at: "2026-08-18T16:53:27.211Z"
 doc_updated_by: "CODER"
 description: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication."
 sections:
@@ -289,6 +493,78 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-18T16:53:26.215Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a6c4b5626711e325c56f5b57d743aa6f2befcb10b159974a135b21755f234abb, input_digest=sha256:fecd80915b7b016dc1ec90afebb0b89d9a946c49a4059eabc325e3ec1b671ac1
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181634-3EHFWF Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181634-3EHFWF Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181634-3EHFWF Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181634-3EHFWF Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181634-3EHFWF Verification Contract check hosted_integration
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181634-3EHFWF Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181634-3EHFWF Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181634-3EHFWF-supersede-pr-4843-with-a-clean-agentplane-0-7-7/.agentplane/tasks/202608181634-3EHFWF/blueprint/resolved-snapshot.json
+    - old_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+    - current_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181634-3EHFWF
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608181634-3EHFWF
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -356,6 +632,78 @@ PLANNER fallback scaffold for "Supersede PR #4843 with a clean AgentPlane 0.7.7 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-18T16:53:26.215Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a6c4b5626711e325c56f5b57d743aa6f2befcb10b159974a135b21755f234abb, input_digest=sha256:fecd80915b7b016dc1ec90afebb0b89d9a946c49a4059eabc325e3ec1b671ac1
+
+Details:
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181634-3EHFWF Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181634-3EHFWF Verification Contract check critical_paths
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181634-3EHFWF Verification Contract check docs_contract
+
+Check: full_regression
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181634-3EHFWF Verification Contract check full_regression
+
+Check: hosted_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181634-3EHFWF Verification Contract check hosted_integration
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181634-3EHFWF Verification Contract check real_e2e
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181634-3EHFWF/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181634-3EHFWF Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181634-3EHFWF-supersede-pr-4843-with-a-clean-agentplane-0-7-7/.agentplane/tasks/202608181634-3EHFWF/blueprint/resolved-snapshot.json
+- old_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+- current_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181634-3EHFWF
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608181634-3EHFWF
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

@@ -15,14 +15,14 @@ Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports 
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-18T16:36:10.309Z
+- Updated: 2026-08-18T16:53:16.403Z
 - Branch: task/202608181634-3EHFWF/supersede-pr-4843-with-a-clean-agentplane-0-7-7
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
