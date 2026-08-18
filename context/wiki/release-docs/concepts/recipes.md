@@ -67,7 +67,7 @@ agentplane_context:
 
 # recipes concept
 
-Matched in 104 release/docs source files.
+Matched in 103 release/docs source files.
 
 ## Representative sources
 
@@ -105,7 +105,6 @@ Matched in 104 release/docs source files.
 - `docs/help/troubleshooting.mdx`: troubleshooting
 - `docs/index.mdx`: Agentplane documentation
 - `docs/internal/git-mutation-model.mdx`: git-mutation-model
-- `docs/launch/checklist.md`: Launch Checklist
 - `docs/README.md`: Docs layout
 - `docs/recipes/docs-update.mdx`: Docs update recipe
 - `docs/recipes/hermes-agentplane.mdx`: Hermes Agentplane recipe

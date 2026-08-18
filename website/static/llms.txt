@@ -5,7 +5,9 @@ docs: https://agentplane.org/docs
 examples: https://agentplane.org/examples
 repo: https://github.com/basilisk-labs/agentplane
 
-summary: Agentplane is an agent-agnostic harness for governed coding-agent work. It helps developers set tasks and guardrails while coding agents use the CLI, record traces, manage local context, apply reusable recipes, export artifacts, and make work reproducible and inspectable.
+summary: Agentplane is the Git-native control plane for coding agents. It puts repository-capable agents on an approved, verifiable workflow with bounded authority, attributable approvals, supervisor-observed proof, deterministic recovery, and closure in Git.
+promise: Let agents write code. Keep authority and proof in Git.
+control-loop: authorize -> dispatch -> observe -> verify -> close or recover.
 not: model provider, prompt playground, low-code chatbot builder, replacement for every agent framework, black-box runtime that hides operational state.
 local-first: The default quickstart runs locally, writes repo-local artifacts, and does not require account creation.
 cli: agentplane
@@ -14,6 +16,7 @@ license: MIT
 canonical-links:
 - What is Agentplane: https://agentplane.org/docs
 - Quickstart: https://agentplane.org/docs/start/quickstart
+- Comparison: https://agentplane.org/docs/compare
 - Harness engineering: https://agentplane.org/docs/concepts/harness-engineering
 - Context engineering: https://agentplane.org/docs/concepts/context-engineering
 - Traces: https://agentplane.org/docs/concepts/traces

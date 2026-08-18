@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608181819-Z3GWTA/reposition-agentplane-as-the-git-native-control",
+  "created_at": "2026-08-18T18:57:10.614Z",
+  "diffstat_sha256": "sha256:4fccb1fbe32b72901fe926b7e97b572131cb9a2c216550eae9e9562589310ca6",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608181819-Z3GWTA",
+  "updated_at": "2026-08-18T18:57:10.614Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

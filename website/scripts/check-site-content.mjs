@@ -61,14 +61,10 @@ function checkBrandCasing() {
 
 function checkNoHardcodedProofMetrics() {
   const content = read("src/data/homepage-content.ts");
-  if (/48 stars|60 releases|v0\.6\.0/.test(content)) {
+  if (/\b\d+ stars\b|\b\d+ releases\b|latestRelease|latestReleaseDate/.test(content)) {
     errors.push(
-      "homepage must not contain stale GitHub stars, release counts, or latestRelease proof values",
+      "homepage must not contain hard-coded GitHub stars, release counts, versions, or release dates",
     );
-  }
-
-  if (!content.includes("export const githubProofFallback =")) {
-    errors.push("homepage must keep explicit GitHub proof fallback data");
   }
 }
 

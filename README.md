@@ -4,16 +4,19 @@
 
 # Agentplane
 
-**CLI-first operational workflows and evidence for AI agents.**
+**The Git-native control plane for coding agents.**
 
-Agentplane helps you route local agent work through tasks, plans, verification, context, recipes,
-and Git-visible evidence.
+Let agents write code. Keep authority and proof in Git.
+
+Agentplane puts Codex, Claude Code, Cursor, Aider, and other coding agents on an approved,
+verifiable repository workflow. It bounds delegated work, holds approval gates, independently
+observes repository and Git facts, and records how work closes or recovers.
 
 ```text
 install -> init -> task -> run or advance -> terminal evidence
 ```
 
-Operationalize AI-assisted engineering with reproducible local workflow records.
+Put coding agents on an approved, verifiable Git workflow.
 
 [![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
 [![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
@@ -42,11 +45,17 @@ Requirements: Node.js 24+, Git, and a local terminal.
 
 ## What is Agentplane?
 
-Agentplane is not another agent framework. It is the operational layer around AI agents: workflows,
-orchestration, local context, recipes, verification, task artifacts, and ACR evidence.
+Agentplane is the Git-native control plane for coding agents. The coding agent remains the worker:
+it reasons, edits, tests, and reports a result. Agentplane controls the lifecycle around that
+worker: bounded authority, attributable approvals, supervisor-observed proof, verification,
+recovery, and closure.
 
-Use Agentplane when you want agent work to be debuggable, reproducible, observable, and safe to
-operate beyond a single chat session.
+Use Agentplane when agent changes are consequential enough that a reviewer must know what was
+authorized, what the supervisor observed, which checks ran, and whether the work can safely close.
+
+```text
+authorize -> dispatch -> observe -> verify -> close or recover
+```
 
 ## What Agentplane writes
 
@@ -147,8 +156,8 @@ observable, the record says `partial` or `unavailable` instead of inventing a ze
 - a replacement for every agent framework;
 - a black-box runtime that hides operational state.
 
-Agentplane is the local operational layer around agent workflows: tasks, plans, context, recipes,
-checks, ACRs, and artifacts.
+Agentplane is the control plane around coding-agent work. Harnesses, traces, recipes, and Agent
+Change Records are mechanisms and evidence surfaces within that control plane.
 
 ## Recipes
 

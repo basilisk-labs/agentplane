@@ -589,38 +589,6 @@
       "svgSha256": "5dbf1f75eab0ec36b52a83f2ad5872643ee33721bd2f1a846179e219eba976f8"
     },
     {
-      "route": "/docs/launch/checklist",
-      "output": "static/img/social/docs/launch/checklist.png",
-      "section": "Launch",
-      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
-      "title": "Checklist",
-      "svgSha256": "515f275f48f72c59d1cd19082a704db82cf4875908583a468ce018345441bf0b"
-    },
-    {
-      "route": "/docs/launch/hn",
-      "output": "static/img/social/docs/launch/hn.png",
-      "section": "Launch",
-      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
-      "title": "Hn",
-      "svgSha256": "29c576fa43aeaea923614e127edda79d40c2bc77b1fbb22714124ba8d8cf2052"
-    },
-    {
-      "route": "/docs/launch/reddit",
-      "output": "static/img/social/docs/launch/reddit.png",
-      "section": "Launch",
-      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
-      "title": "Reddit",
-      "svgSha256": "58ad43835d076c1c5154c1d2006b4bd100cb28425b2e4a50c98b308ca0e264ae"
-    },
-    {
-      "route": "/docs/launch/twitter",
-      "output": "static/img/social/docs/launch/twitter.png",
-      "section": "Launch",
-      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
-      "title": "Twitter",
-      "svgSha256": "66777d9eeb5b25352c2a93a6ef0a07d931bf7d878b3dab9818227d30b7815093"
-    },
-    {
       "route": "/docs/listing",
       "output": "static/img/social/docs/listing.png",
       "section": "Listing",

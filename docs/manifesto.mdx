@@ -1,15 +1,14 @@
 ---
 title: "Why Agentplane exists"
-description: "Why AI work needs a Git-native evidence layer inside the repository."
+description: "Why coding agents need a Git-native control plane for authority, proof, and recovery."
 ---
 
-# Why AI work needs a Git-native evidence layer
+# Why coding agents need a Git-native control plane
 
-Coding agents made software changes cheaper. They did not make those changes accountable.
+Coding agents made code generation cheap. They did not make delegated change accountable.
 
-A generated diff is not enough when the work spans prompts, retries, tools, branches, checks,
-approvals, and handoffs. Agentplane exists to preserve the operational evidence around AI-authored
-changes inside the repository where review already happens.
+Agentplane is the Git-native control plane for coding agents. It exists so teams can let agents
+write code while keeping authority and proof in Git.
 
 ## 1. The failure mode
 
@@ -17,10 +16,19 @@ AI agents can now edit real repositories, not just draft snippets. They update c
 release paths, and configuration. That creates a new review problem: the repository shows the final
 diff, but the reasoning trail often remains in a chat transcript, terminal scrollback, or IDE state.
 
-The weak link is not only "can the agent write code?" It is "can the team reconstruct, verify, and
-govern what happened?"
+The weak link is not only "can the agent write code?" It is whether the team can prove what was
+authorized, what the supervisor observed, and why closure was justified.
 
-## 2. Why Git alone is not enough
+## 2. The worker does not grade itself
+
+The coding agent is a semantic worker. It can reason, edit, test, and report a result. Its report is
+valuable, but it remains a claim by the worker.
+
+Agentplane owns the lifecycle around that worker. It issues bounded work, holds approval
+boundaries, observes repository and Git state, records verification, and determines the next safe
+route. Agent-reported facts do not silently become supervisor-observed facts.
+
+## 3. Why Git alone is not enough
 
 Git is the right durable substrate. It stores content, branches, commits, and review history. But a
 commit does not reliably answer:
@@ -33,7 +41,7 @@ commit does not reliably answer:
 
 Agentplane keeps Git as the source of truth and adds the missing evidence beside the diff.
 
-## 3. Why chat transcripts are not enough
+## 4. Why chat transcripts are not enough
 
 Chat transcripts are useful context, but they are poor review artifacts. They are long, mutable,
 private, tool-specific, and often unavailable to the next reviewer. They can include sensitive
@@ -42,7 +50,7 @@ material that should not be committed.
 Agentplane records commit-safe summaries, task state, verification evidence, and hashes instead of
 requiring reviewers to trust raw agent conversations.
 
-## 4. Why the durable record belongs with the code
+## 5. Why the durable record belongs with the code
 
 Remote execution and central status can be useful. They are separate from the durable evidence
 record that reviewers need next to the code.
@@ -50,7 +58,7 @@ record that reviewers need next to the code.
 Agentplane keeps the durable workflow record with the repository. The repository owns the workflow
 artifacts.
 
-## 5. Why ACR exists
+## 6. Why ACR exists
 
 An Agent Change Record is the evidence file for AI-authored work. It is a commit-safe JSON artifact
 that records task intent, approved plan, agent/toolchain identity, Git commits, policy decisions,
@@ -59,7 +67,7 @@ verification results, and merge readiness.
 Humans can read `agentplane acr explain`. CI can run `agentplane acr check`. External tools can read
 `.agentplane/tasks/<task-id>/acr.json`.
 
-## 6. What Agentplane refuses to do
+## 7. What Agentplane refuses to do
 
 Agentplane is not another coding agent. It does not choose a model, generate code for you, replace
 Git, replace CI, or replace pull request review.
@@ -67,12 +75,11 @@ Git, replace CI, or replace pull request review.
 It wraps the tools you already use with a repo-local lifecycle:
 
 ```text
-task -> plan -> approve -> implement -> verify -> finish
+authorize -> dispatch -> observe -> verify -> close or recover
 ```
 
-## 7. The operating bet
+## 8. The operating bet
 
-Every serious agent change should leave an Agent Change Record.
-
-That is the category bet: AI-authored work needs a durable evidence artifact, and the easiest place
-to keep it is the Git repository that already owns review, revert, audit, and merge.
+The durable interface for agentic engineering will be a protocol for delegated authority and
+observed proof that any capable coding agent can follow. That is the category Agentplane intends to
+own.

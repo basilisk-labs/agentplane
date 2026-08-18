@@ -117,7 +117,7 @@ const config = {
       {
         name: "keywords",
         content:
-          "agent workflow, ai agent traces, harness engineering, context engineering, local ai agents, OpenTelemetry agent traces, agent change record, agentplane, ai coding agent guardrails",
+          "coding agent control plane, Git-native agent workflow, coding agent authority, coding agent verification, agent governance, agent change record, agentplane, ai coding agent guardrails",
       },
       {
         name: "robots",
@@ -127,22 +127,22 @@ const config = {
       { property: "og:site_name", content: "Agentplane" },
       {
         property: "og:title",
-        content: "Audit trails for AI-written code changes",
+        content: "The Git-native control plane for coding agents",
       },
       {
         property: "og:description",
         content:
-          "Repo-local evidence for task intent, approved plans, checks, traces, commits, and Agent Change Records.",
+          "Let agents write code. Keep authority, observed proof, recovery, and closure in Git.",
       },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:title",
-        content: "Audit trails for AI-written code changes",
+        content: "The Git-native control plane for coding agents",
       },
       {
         name: "twitter:description",
         content:
-          "Repo-local evidence for task intent, approved plans, checks, traces, commits, and Agent Change Records.",
+          "Let agents write code. Keep authority, observed proof, recovery, and closure in Git.",
       },
       { name: "twitter:site", content: "@agentplaneorg" },
     ],

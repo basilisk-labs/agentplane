@@ -1,0 +1,268 @@
+---
+id: "202608181819-Z3GWTA"
+title: "Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository"
+status: "DOING"
+priority: "high"
+owner: "CODER"
+revision: 7
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "marketing-boundary"
+  - "positioning"
+  - "website"
+task_kind: "code"
+mutation_scope: "code"
+risk_flags:
+  - "external_system"
+blueprint_request: "code.direct"
+verify:
+  - "bun run docs:readme-header:check"
+  - "bun run docs:site:check"
+  - "bun run lint:website"
+  - "bun run release:demo:check"
+  - "node .agentplane/policy/check-routing.mjs"
+plan_approval:
+  state: "approved"
+  updated_at: "2026-08-18T18:23:24.386Z"
+  updated_by: "USER"
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
+execution_route:
+  frozen: true
+  reason_codes:
+    - "direct_request_overridden"
+    - "repository_branch_pr_floor"
+  repository_mode: "branch_pr"
+  requested_mode: "direct"
+  schema_version: 1
+  selected_mode: "branch_pr"
+execution_contract:
+  authority:
+    allowed_external_effects: []
+    allowed_repository_effects:
+      - "repository_write"
+      - "source_code"
+    forbidden_external_effects:
+      - "network_read"
+      - "external_write"
+      - "credentials"
+      - "publish"
+      - "deploy"
+      - "destructive_git"
+    forbidden_repository_effects:
+      - "documentation"
+      - "tests"
+      - "public_api"
+      - "schema"
+      - "dependencies"
+      - "ci"
+      - "release_metadata"
+      - "security_boundary"
+    writable_roots: []
+  declaration:
+    external_effects:
+      - "external_write"
+    implementation_uncertainty: "bounded"
+    preferred_mode: "direct"
+    rationale:
+      - "legacy structured task fields mapped to the execution contract"
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+    requirements_uncertainty: "bounded"
+    reversibility: "recovery_required"
+    schema_version: 2
+    scope_roots: []
+  observed:
+    authority_violations: []
+    changed_components: []
+    changed_paths: []
+    external_effects: []
+    repository_effects: []
+    verification_results: []
+  reason_codes:
+    - "effect_external_write"
+    - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
+  repository_mode: "branch_pr"
+  safety:
+    approval_effects:
+      - "external_write"
+    requires_user_approval: true
+    requires_worktree: true
+  schema_version: 1
+  selected_mode: "branch_pr"
+  source: "legacy_compatibility"
+  verification:
+    contract:
+      declared:
+        components: []
+        evidence_requirements:
+          - "external_effect:external_write"
+          - "hosted_integration"
+          - "repository_effect:repository_write"
+          - "repository_effect:source_code"
+          - "task_outcome"
+        external_effects:
+          - "external_write"
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+        risk:
+          implementation_uncertainty: "bounded"
+          requirements_uncertainty: "bounded"
+          reversibility: "recovery_required"
+      digest: "sha256:7090115b39622430584a666c2049ff379c7b7a0bda0e929f9a5245c89aac8297"
+      escalation_reasons:
+        - "external_effect_requires_real_e2e"
+        - "reversibility_recovery_required"
+      execution_groups:
+        - "docs-schema"
+        - "core"
+        - "runtime"
+        - "cli"
+      observed:
+        changed_components: []
+        changed_files: []
+        external_effects: []
+        repository_effects: []
+      phase: "task"
+      policy_floor:
+        monotonic_strengthening: true
+        pr_full_regression: true
+        unknown_or_central_full_regression: true
+      requires_full_regression: true
+      requires_real_e2e: true
+      schema_version: 2
+      selected_checks:
+        - "affected_unit_integration"
+        - "critical_paths"
+        - "full_regression"
+        - "hosted_integration"
+        - "real_e2e"
+        - "task_outcome"
+      selector:
+        bucket: null
+        buckets: []
+        execution_mode: "semantic"
+        kind: "semantic"
+        lint_targets: []
+        reason: "execution_declaration"
+        run_cli_docs_check: false
+        selected_test_files: []
+        vitest_pool: "forks"
+      source: "execution_contract"
+    required_evidence:
+      - "external_effect:external_write"
+      - "hosted_integration"
+      - "repository_effect:repository_write"
+      - "repository_effect:source_code"
+      - "task_outcome"
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Blocked: public main diverges from origin/main (ahead 34, behind 119), so AgentPlane refuses safe branch_pr worktree creation; base reconciliation requires an explicit operator choice because active worktrees and unpublished local history must be preserved."
+  -
+    author: "CODER"
+    body: "Resume: operator-authorized base reconciliation completed in merge commit 7d7e964ae; origin/main is now an ancestor, conflicts used the newer upstream authority/config implementation, and targeted checks passed."
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-08-18T18:43:13.166Z"
+    author: "CODER"
+    from: "TODO"
+    to: "BLOCKED"
+    note: "Blocked: public main diverges from origin/main (ahead 34, behind 119), so AgentPlane refuses safe branch_pr worktree creation; base reconciliation requires an explicit operator choice because active worktrees and unpublished local history must be preserved."
+  -
+    type: "status"
+    at: "2026-08-18T18:56:09.353Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "TODO"
+    note: "Resume: operator-authorized base reconciliation completed in merge commit 7d7e964ae; origin/main is now an ancestor, conflicts used the newer upstream authority/config implementation, and targeted checks passed."
+  -
+    type: "status"
+    at: "2026-08-18T18:57:10.256Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
+doc_version: 3
+doc_updated_at: "2026-08-18T18:57:10.256Z"
+doc_updated_by: "CODER"
+description: "Unify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth."
+sections:
+  Summary: |-
+    Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository
+
+    Unify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth.
+  Scope: |-
+    - In scope: Unify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth.
+    - Out of scope: unrelated refactors not required for "Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository".
+  Plan: "Reposition AgentPlane around one category contract: the Git-native control plane for coding agents. Migrate internal launch plans, post drafts, competitor research, and private messaging strategy out of the public repository into the authorized private agentplane-marketing repository; then align the public README, documentation, website, SEO, discovery surfaces, examples, and demo around bounded WorkOrders, human-owned approval boundaries, supervisor-observed receipts, and Git-native closure evidence."
+  Verify Steps: |-
+    PLANNER fallback scaffold for "Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository". Replace with task-specific acceptance checks when PLANNER context is available.
+
+    1. Review the requested outcome for "Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository". Expected: the visible result matches ## Summary and stays inside approved scope.
+    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: "Observation: the approved branch_pr worktree cannot start because local main is 34 commits ahead of and 119 commits behind origin/main. AgentPlane refuses to branch from a stale base. Impact: public README, docs, website content, stale proof counters, launch-file deletion, and marketing submodule pointer update remain unmodified. Resolution: preserve all local commits and active worktrees; reconcile the base through an explicit operator-selected merge/rebase/recovery lane, then resume this task and rerun work start. Fixability: external."
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "7d7e964aec30e3551d34c81d3a726f28a6379690"
+    version: 1
+id_source: "generated"
+---
+## Summary
+
+Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository
+
+Unify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth.
+
+## Scope
+
+- In scope: Unify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth.
+- Out of scope: unrelated refactors not required for "Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository".
+
+## Plan
+
+Reposition AgentPlane around one category contract: the Git-native control plane for coding agents. Migrate internal launch plans, post drafts, competitor research, and private messaging strategy out of the public repository into the authorized private agentplane-marketing repository; then align the public README, documentation, website, SEO, discovery surfaces, examples, and demo around bounded WorkOrders, human-owned approval boundaries, supervisor-observed receipts, and Git-native closure evidence.
+
+## Verify Steps
+
+PLANNER fallback scaffold for "Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository". Replace with task-specific acceptance checks when PLANNER context is available.
+
+1. Review the requested outcome for "Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository". Expected: the visible result matches ## Summary and stays inside approved scope.
+2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings
+
+Observation: the approved branch_pr worktree cannot start because local main is 34 commits ahead of and 119 commits behind origin/main. AgentPlane refuses to branch from a stale base. Impact: public README, docs, website content, stale proof counters, launch-file deletion, and marketing submodule pointer update remain unmodified. Resolution: preserve all local commits and active worktrees; reconcile the base through an explicit operator-selected merge/rebase/recovery lane, then resume this task and rerun work start. Fixability: external.
