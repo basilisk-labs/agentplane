@@ -2,10 +2,10 @@
 id: "202608181634-3EHFWF"
 title: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication."
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -24,40 +24,22 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly authorized implementation, full validation, merge, publication, and cleanup in this conversation."
 verification:
-  state: "ok"
-  updated_at: "2026-08-18T17:22:34.406Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
-quality_review:
-  state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-18T17:23:09.207Z"
+  state: "needs_rework"
+  updated_at: "2026-08-18T17:31:59.532Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  note: "Hosted verify-tests failed because prepareIntegrate unit mocks with ordered gitRevParse results did not account for the new comparison-base ref resolution call; update all four sequences and rerun the exact failing file plus release gates."
+  attempts: 1
+quality_review:
+  state: "rework"
+  updated_at: "2026-08-18T17:31:59.532Z"
+  updated_by: "EVALUATOR"
+  note: "Hosted verify-tests failed because prepareIntegrate unit mocks with ordered gitRevParse results did not account for the new comparison-base ref resolution call; update all four sequences and rerun the exact failing file plus release gates."
   evaluated_sha: "16457593d821119c1ed447fcbd8b94e1baee8c2f"
   blueprint_digest: "7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8"
   evidence_refs:
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-172239395-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-172239395-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/afdaab60787b3d1e0d946a342394b16a7f3ca155e88699d75d4056fcc40b8c84.md"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-172239395-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-172239395-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-172239395-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181634-3EHFWF/README.md"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/9798f84e897f3bea91b6090475d5bee98386b0f3d9e47ee183eb39f24aa10350.patch"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/488d8bb0c427c40db137f2fcb733ff92938f480f42c3234499af536115d85c05.json"
-    - ".agentplane/tasks/202608181634-3EHFWF/verification/20260818172234406-7beef3c912f6ca47.json"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/b758feb8420fb9c7158fdbfaefa7a450b440dd27fb80e91b9e6a0170615f632d.json"
-    - ".agentplane/policy/dod.code.md"
-    - ".agentplane/policy/dod.core.md"
-    - ".agentplane/policy/security.must.md"
-    - ".agentplane/policy/workflow.release.md"
-  findings:
-    - "The implementation uses git rev-parse --verify origin/main^{commit}, which accepts the standard remote-tracking comparison base and fails closed only when no committed base history exists."
-    - "gitBranchExists is now invoked only for the local task branch, matching that helper's contract."
-    - "Focused tests, the full contract matrix, all 12 critical chunks, release payload builds and policy checks passed after the correction."
-    - "Residual risk: Provider state must be revalidated because the corrected commit is newer than the previously green hosted head."
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181634-3EHFWF-supersede-pr-4843-with-a-clean-agentplane-0-7-7/.agentplane/tasks/202608181634-3EHFWF/blueprint/resolved-snapshot.json"
+  findings: []
 token_usage:
   agent_runs: 8
   input_tokens: null
@@ -476,9 +458,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit:
-  hash: "682094ab531f7dea88278f52032df97870e59a72"
-  message: "🚧 3EHFWF task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -583,8 +563,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "682094ab531f7dea88278f52032df97870e59a72"
+  -
+    type: "verify"
+    at: "2026-08-18T17:31:59.532Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Hosted verify-tests failed because prepareIntegrate unit mocks with ordered gitRevParse results did not account for the new comparison-base ref resolution call; update all four sequences and rerun the exact failing file plus release gates."
 doc_version: 3
-doc_updated_at: "2026-08-18T17:23:24.690Z"
+doc_updated_at: "2026-08-18T17:32:02.492Z"
 doc_updated_by: "CODER"
 description: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication."
 sections:
@@ -844,6 +830,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608181634-3EHFWF
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-18T17:31:59.532Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Hosted verify-tests failed because prepareIntegrate unit mocks with ordered gitRevParse results did not account for the new comparison-base ref resolution call; update all four sequences and rerun the exact failing file plus release gates.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a6c4b5626711e325c56f5b57d743aa6f2befcb10b159974a135b21755f234abb, input_digest=sha256:51ae79461348eca24c2595b8659f425cfeb6c884d1e3379a5181882aee0f280d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181634-3EHFWF-supersede-pr-4843-with-a-clean-agentplane-0-7-7/.agentplane/tasks/202608181634-3EHFWF/blueprint/resolved-snapshot.json
+    - old_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+    - current_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181634-3EHFWF
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1160,6 +1176,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608181634-3EHFWF
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-18T17:31:59.532Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Hosted verify-tests failed because prepareIntegrate unit mocks with ordered gitRevParse results did not account for the new comparison-base ref resolution call; update all four sequences and rerun the exact failing file plus release gates.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a6c4b5626711e325c56f5b57d743aa6f2befcb10b159974a135b21755f234abb, input_digest=sha256:51ae79461348eca24c2595b8659f425cfeb6c884d1e3379a5181882aee0f280d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181634-3EHFWF-supersede-pr-4843-with-a-clean-agentplane-0-7-7/.agentplane/tasks/202608181634-3EHFWF/blueprint/resolved-snapshot.json
+- old_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+- current_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181634-3EHFWF
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

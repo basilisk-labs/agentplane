@@ -529,6 +529,7 @@ describe("pr/integrate/internal/prepare", () => {
       last_verified_sha: null,
     });
     mocks.gitRevParse
+      .mockResolvedValueOnce("base-ref")
       .mockResolvedValueOnce("artifactsha")
       .mockResolvedValueOnce("basesha")
       .mockResolvedValueOnce("artifactsha");
@@ -561,6 +562,7 @@ describe("pr/integrate/internal/prepare", () => {
       verify: { status: "pass" },
     });
     mocks.gitRevParse
+      .mockResolvedValueOnce("base-ref")
       .mockResolvedValueOnce("closure-head")
       .mockResolvedValueOnce("base-head")
       .mockResolvedValueOnce("closure-head");
@@ -594,6 +596,7 @@ describe("pr/integrate/internal/prepare", () => {
       verify: { status: "pass" },
     });
     mocks.gitRevParse
+      .mockResolvedValueOnce("base-ref")
       .mockResolvedValueOnce("semantic-head")
       .mockResolvedValueOnce("base-head")
       .mockResolvedValueOnce("semantic-head");
@@ -626,6 +629,7 @@ describe("pr/integrate/internal/prepare", () => {
       verify: { status: "pass" },
     });
     mocks.gitRevParse
+      .mockResolvedValueOnce("base-ref")
       .mockResolvedValueOnce("new-metadata")
       .mockResolvedValueOnce("base-head")
       .mockResolvedValueOnce("new-metadata");

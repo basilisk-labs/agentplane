@@ -2,23 +2,16 @@
   "base": "main",
   "branch": "task/202608181634-3EHFWF/supersede-pr-4843-with-a-clean-agentplane-0-7-7",
   "created_at": "2026-08-18T16:36:10.309Z",
-  "diffstat_sha256": "sha256:a0b1682e0474f207936c5ff08a19963098be97afe19e691e26b038309bd5f3a4",
-  "last_verified_at": "2026-08-18T17:22:34.406Z",
+  "diffstat_sha256": "sha256:de9e25a01a2811b706a32d1eca1314675157ee16b4204a2662cba5f63a52c596",
+  "last_verified_at": "2026-08-18T17:31:59.532Z",
   "last_verified_diffstat_sha256": "sha256:a0b1682e0474f207936c5ff08a19963098be97afe19e691e26b038309bd5f3a4",
   "pr_number": 4844,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4844",
-  "pre_merge_closure": {
-    "basis_commit": "682094ab531f7dea88278f52032df97870e59a72",
-    "branch": "task/202608181634-3EHFWF/supersede-pr-4843-with-a-clean-agentplane-0-7-7",
-    "pr_number": 4844,
-    "recorded_at": "2026-08-18T17:23:24.729Z",
-    "state": "closed_before_merge"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608181634-3EHFWF",
   "updated_at": "2026-08-18T16:53:16.403Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }
