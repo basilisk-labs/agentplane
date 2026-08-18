@@ -1,4 +1,4 @@
-import { gitDiffNames, gitMergeBase } from "@agentplaneorg/core/git";
+import { gitDiffNameStatus, gitMergeBase } from "@agentplaneorg/core/git";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
@@ -18,6 +18,19 @@ function taskIdFromArtifactPath(pathname: string, roots: readonly string[]): str
     return taskId || null;
   }
   return null;
+}
+
+function isVolatileTaskArtifactDeletion(
+  entry: { statusCode: string; path: string },
+  roots: readonly string[],
+): boolean {
+  if (entry.statusCode !== "D") return false;
+  const normalized = entry.path.replaceAll("\\", "/").replace(/^\.\//u, "");
+  const relative = roots.map((root) => `${root}/`).find((prefix) => normalized.startsWith(prefix));
+  if (!relative) return false;
+  const taskRelative = normalized.slice(relative.length).split("/").slice(1).join("/");
+  if (/^pr\/(?:verify\.log|notes\.jsonl)$/u.test(taskRelative)) return false;
+  return /\.(?:log|jsonl)$/u.test(taskRelative) || /^(?:runs|repro)(?:\/|$)/u.test(taskRelative);
 }
 
 export async function assertBranchTaskArtifactOwnership(opts: {
@@ -48,12 +61,13 @@ export async function assertBranchTaskArtifactOwnership(opts: {
   // task branch, which can falsely attribute unrelated base task artifacts to
   // the candidate. The merge-base anchored diff is the branch-side delta.
   const mergeBase = await gitMergeBase(opts.gitRoot, comparisonBase, opts.branch);
-  const changedPaths = await gitDiffNames(opts.gitRoot, mergeBase, opts.branch);
+  const changedEntries = await gitDiffNameStatus(opts.gitRoot, mergeBase, opts.branch);
   const allowed = new Set([opts.primaryTaskId, ...(opts.includedTaskIds ?? [])]);
   const foreignTaskIds = [
     ...new Set(
-      changedPaths
-        .map((pathname) => taskIdFromArtifactPath(pathname, roots))
+      changedEntries
+        .filter((entry) => !isVolatileTaskArtifactDeletion(entry, roots))
+        .map((entry) => taskIdFromArtifactPath(entry.path, roots))
         .filter((taskId): taskId is string => Boolean(taskId && !allowed.has(taskId))),
     ),
   ].toSorted();
