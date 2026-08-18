@@ -12,8 +12,8 @@ Created: 2026-08-18T17:51:51.714Z
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-18T17:51:51.714Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-18T17:51:51.714Z
+- Updated: 2026-08-18T23:15:22.218Z
 - Branch: task/202608181750-CRZNFC/qualify-and-publish-agentplane-0-7-7-from-exact
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
