@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -528,6 +528,12 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: Hosted verify-contract identified a missing generated social image and stale social-image manifest for docs/releases/v0.7.7.md. The canonical generator writes under website/static/img/social, which is outside the current writable roots, so implementation rework cannot proceed without controlled scope widening."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The only dirty worktree path is the active task README updated by AgentPlane when it recorded the scoped rework blocker. The change is intended supervisor-owned task evidence; there are no unclassified implementation or user changes."
 events:
   -
     type: "status"
@@ -557,9 +563,19 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "06ccc2e25b02f66a64f025b2a13f6ec07ba71150"
+  -
+    type: "comment"
+    at: "2026-08-18T14:01:38.313Z"
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: Hosted verify-contract identified a missing generated social image and stale social-image manifest for docs/releases/v0.7.7.md. The canonical generator writes under website/static/img/social, which is outside the current writable roots, so implementation rework cannot proceed without controlled scope widening."
+  -
+    type: "comment"
+    at: "2026-08-18T14:02:25.326Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The only dirty worktree path is the active task README updated by AgentPlane when it recorded the scoped rework blocker. The change is intended supervisor-owned task evidence; there are no unclassified implementation or user changes."
 doc_version: 3
-doc_updated_at: "2026-08-18T13:50:26.378Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-18T14:02:25.356Z"
+doc_updated_by: "SUPERVISOR"
 description: "Deliver the complete 0.7.7 patch pool: prevent task branches from inheriting diverged or contaminated local base history; block foreign-task commits and artifacts before PR publication; make provider truth authoritative for MERGED/DONE/cleanup and detect local/provider contradictions in doctor and release gates; preserve fully autonomous mode=all including integration.enqueue while loading authority only from a trusted base/operator-owned policy source; make task lookup and read/write/grant route contexts canonical across old worktrees; allow PLANNER to refine structured execution contracts and route evaluator-required scope widening through a controlled approval boundary; incorporate only still-relevant local changes, discard duplicates already present upstream, integrate the verified patch/beta release automation, run focused/full/installed-package/hosted checks, publish 0.7.7, and verify all public release surfaces plus opening 0.7.8-beta.1."
 sections:
   Summary: |-
