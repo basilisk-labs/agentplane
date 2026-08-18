@@ -2,10 +2,10 @@
 id: "202608181634-3EHFWF"
 title: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication."
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -24,41 +24,22 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly authorized implementation, full validation, merge, publication, and cleanup in this conversation."
 verification:
-  state: "ok"
-  updated_at: "2026-08-18T16:59:56.280Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
-quality_review:
-  state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-18T17:00:41.659Z"
+  state: "needs_rework"
+  updated_at: "2026-08-18T17:15:32.099Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  note: "Hosted P1 on PR #4844: branch-task-artifact ownership must accept remote-tracking comparison refs and retain the contamination gate for origin/main; add a regression."
+  attempts: 1
+quality_review:
+  state: "rework"
+  updated_at: "2026-08-18T17:15:32.099Z"
+  updated_by: "EVALUATOR"
+  note: "Hosted P1 on PR #4844: branch-task-artifact ownership must accept remote-tracking comparison refs and retain the contamination gate for origin/main; add a regression."
   evaluated_sha: "b10d32931b6f74f791d30677d61103cbe15fb38f"
   blueprint_digest: "7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8"
   evidence_refs:
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-170001715-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-170001715-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/b494e6ffc1ccd88b2f3669de311165fc18b23f81d015c1600995d4e78677e227.md"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-170001715-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-170001715-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/20260818-170001715-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181634-3EHFWF/README.md"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/f83e4b370d979dcce33905493f39453f2d519d6b4d46dfb915368ca326a2242b.patch"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/50162db35ce71ddc97634b5247c7f0ee662fed36d7e55dd2975a9f7f300848ff.json"
-    - ".agentplane/tasks/202608181634-3EHFWF/verification/20260818165956280-913d91a95b9390ba.json"
-    - ".agentplane/tasks/202608181634-3EHFWF/quality/objects/sha256/b758feb8420fb9c7158fdbfaefa7a450b440dd27fb80e91b9e6a0170615f632d.json"
-    - ".agentplane/policy/dod.code.md"
-    - ".agentplane/policy/dod.core.md"
-    - ".agentplane/policy/security.must.md"
-    - ".agentplane/policy/workflow.release.md"
-  findings:
-    - "The task-backend implementation resolves the task branch explicitly and retains the current context only when its git root owns that branch; the stale-worktree regression exercises a separate live owner worktree."
-    - "The publish workflow classifies prereleases before all stable-only gates, emits should_publish=false with exact version, tag, and SHA, and now exports that SHA from steps.detect.outputs.sha."
-    - "The contract regression requires the detect output and rejects the former stable-only source output reference."
-    - "The candidate records 4,193 passing fast tests plus focused, critical, release-critical, contract, documentation, release payload, and diff-hygiene checks."
-    - "Residual risk: The public release remains dependent on green hosted checks and separately authority-gated integration and publication operations."
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181634-3EHFWF-supersede-pr-4843-with-a-clean-agentplane-0-7-7/.agentplane/tasks/202608181634-3EHFWF/blueprint/resolved-snapshot.json"
+  findings: []
 token_usage:
   agent_runs: 6
   input_tokens: null
@@ -149,7 +130,8 @@ execution_contract:
       - "scripts"
       - "website"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - ".agentplane"
       - ".github"
@@ -255,6 +237,9 @@ execution_contract:
       -
         id: "recorded-check-7"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -472,9 +457,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "c0d4cc34fcb6f90312fee03e890928e67a47d88b"
-  message: "🚧 3EHFWF task: record external evaluator result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -545,8 +529,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "c0d4cc34fcb6f90312fee03e890928e67a47d88b"
+  -
+    type: "verify"
+    at: "2026-08-18T17:15:32.099Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Hosted P1 on PR #4844: branch-task-artifact ownership must accept remote-tracking comparison refs and retain the contamination gate for origin/main; add a regression."
 doc_version: 3
-doc_updated_at: "2026-08-18T17:01:17.779Z"
+doc_updated_at: "2026-08-18T17:15:35.078Z"
 doc_updated_by: "CODER"
 description: "Supersede PR #4843 with a clean AgentPlane 0.7.7 release candidate that imports its reviewed source changes without foreign task artifacts, fixes stale-worktree task ownership and prerelease publish detection before release-note/registry checks, passes full release validation, and is ready for hosted integration and publication."
 sections:
@@ -704,6 +694,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608181634-3EHFWF
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-18T17:15:32.099Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Hosted P1 on PR #4844: branch-task-artifact ownership must accept remote-tracking comparison refs and retain the contamination gate for origin/main; add a regression.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a6c4b5626711e325c56f5b57d743aa6f2befcb10b159974a135b21755f234abb, input_digest=sha256:881257e3d4895631991a0c988e1563be4c1cad5ed41763d2f182a6563f48a588
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181634-3EHFWF-supersede-pr-4843-with-a-clean-agentplane-0-7-7/.agentplane/tasks/202608181634-3EHFWF/blueprint/resolved-snapshot.json
+    - old_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+    - current_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181634-3EHFWF
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -918,6 +938,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608181634-3EHFWF
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-18T17:15:32.099Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Hosted P1 on PR #4844: branch-task-artifact ownership must accept remote-tracking comparison refs and retain the contamination gate for origin/main; add a regression.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a6c4b5626711e325c56f5b57d743aa6f2befcb10b159974a135b21755f234abb, input_digest=sha256:881257e3d4895631991a0c988e1563be4c1cad5ed41763d2f182a6563f48a588
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181634-3EHFWF-supersede-pr-4843-with-a-clean-agentplane-0-7-7/.agentplane/tasks/202608181634-3EHFWF/blueprint/resolved-snapshot.json
+- old_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+- current_digest: 7410f8b666da9c6f423bc3c0b1c847264eed37ece11e0d8206beef317fd609e8
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181634-3EHFWF
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
