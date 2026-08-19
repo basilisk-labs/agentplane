@@ -1,0 +1,83 @@
+{
+  "details": "Command: agentplane pr open 202608182243-NMAHN5 --author CODER\nResult: pass\nEvidence: success output included \"created GitHub PR #4849: https://github.com/basilisk-labs/agentplane/pull/4849\"\nScope: branch publication flow (task publish/link PR step)",
+  "digest": "sha256:10abe487a851b0448c7c1c8d38c28ca7c62416aa1a0fd6ad4d1afead64944dd4",
+  "implementation_sha": "10418cf3ee50127c6f94e9122073109456bce440",
+  "input": {
+    "context": {
+      "digest": "sha256:8837a9c954f181491402cb8d87e58432719e91da8e82e11ab7334ae4c9b31a5c",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:f5dc9eecf8791e78cd83c222bd7ddc23c915ff6455fe4b3c717ac10775b542bf",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:6ba3185996a6880c955c2eaa8f62e16a0e12624ddc737120360669cf58eac02d",
+      "digest": "sha256:1c742fdd520a2fe60cd7532077ea5dea865c4229ea9f7c68584ce31cdf5ff34a",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "25f426a00727463215ec36e8f2879ac734d17422",
+      "digest": "sha256:447628cb4c18be8d12831453a6c08dadd6c3f281dcdac5afb7fa11c4fb784b66",
+      "strategy": "branch_diff",
+      "target_sha": "10418cf3ee50127c6f94e9122073109456bce440"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:cd21ac3d2f3074675f286bbcc851388f20beda6d1783144f5697e3931c56e5a6",
+    "verify_steps_digest": "sha256:eeb567c25b0cdd2e85d2f891a2a665221f9e019ffb4d454994f21ec83e225e8b"
+  },
+  "kind": "task_verification_record",
+  "note": "Publication path completed; PR #4849 is created and workflow moved from pr_needed to verification_required.",
+  "recorded_at": "2026-08-19T12:20:52.843Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Redesign the Agentplane homepage around a clear authority-to-proof happy path\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Redesign the Agentplane homepage around a clear authority-to-proof happy path\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:eeb567c25b0cdd2e85d2f891a2a665221f9e019ffb4d454994f21ec83e225e8b",
+  "task_id": "202608182243-NMAHN5",
+  "verification_command": "agentplane verify 202608182243-NMAHN5 --ok --by CODER",
+  "verifier": "CODER"
+}

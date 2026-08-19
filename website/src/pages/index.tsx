@@ -1,17 +1,17 @@
 import Link from "@docusaurus/Link";
 import Head from "@docusaurus/Head";
 import Layout from "@theme/Layout";
-import { type ReactNode, useState } from "react";
-import CommandBlock from "../components/CommandBlock";
+import IconArrow from "@theme/Icon/Arrow";
+import IconCopy from "@theme/Icon/Copy";
+import IconEdit from "@theme/Icon/Edit";
+import IconSuccess from "@theme/Icon/Success";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import {
   acrUrl,
   examplesUrl,
-  githubUrl,
-  harnessUrl,
   homepageContent,
   installCommand,
   quickstartUrl,
-  tracesUrl,
 } from "../data/homepage-content";
 import { site } from "../data/site";
 import styles from "./_home.module.css";
@@ -32,28 +32,12 @@ function HomeJsonLd(): ReactNode {
         "Agentplane is the Git-native control plane for coding agents. It bounds delegated authority and keeps approvals, observed proof, recovery, and closure inspectable in Git.",
       ],
       [
-        "Does Agentplane replace AI agent frameworks?",
-        "No. Coding agents remain the workers. Agentplane controls their delegated lifecycle through bounded authority, approvals, independent observation, verification, recovery, and closure.",
+        "Does Agentplane replace coding agents?",
+        "No. Coding agents remain the workers. Agentplane controls their delegated lifecycle through bounded authority, independent observation, verification, recovery, and closure.",
       ],
       [
         "Does Agentplane run locally?",
-        "Yes. The default quickstart runs locally, writes repo-local artifacts, and does not require account creation.",
-      ],
-      [
-        "What does Agentplane record?",
-        "Agentplane records task intent, delegated authority, approvals, workflow state, supervisor observations, verification evidence, recovery routes, closure, and Agent Change Records.",
-      ],
-      [
-        "What are Agentplane traces?",
-        "Agentplane traces are structured records of workflow steps, context loads, model calls, tool calls, checks, outputs, and artifacts from an agent run.",
-      ],
-      [
-        "What is local context?",
-        "Local context is repo-specific operational knowledge that agents can inspect and reuse without depending on fragile chat history.",
-      ],
-      [
-        "What is an Agent Change Record?",
-        "An Agent Change Record is a machine-readable record of AI-assisted engineering work, including task intent, changed files, verification evidence, and review status.",
+        "Yes. The quickstart runs locally, writes repository-owned artifacts, and does not require an account.",
       ],
     ].map(([name, text]) => ({
       "@type": "Question",
@@ -80,264 +64,253 @@ function HomeJsonLd(): ReactNode {
   );
 }
 
-function Hero(): ReactNode {
-  const { hero } = homepageContent;
+function CopyInstallButton({ location }: { location: string }): ReactNode {
   const [copied, setCopied] = useState(false);
-  const evidenceRows = [
-    ["authorize", "bounded WorkOrder", "scope + allowed effects"],
-    ["dispatch", "semantic episode", "one explicit objective"],
-    ["observe", "repo + Git facts", "supervisor-owned proof"],
-    ["verify", "required checks", "observed pass or failure"],
-    ["close", "receipt or recovery", "deterministic next route"],
-  ];
-  const artifactRows = [
-    ["WorkOrder", "objective, roots, effects"],
-    ["Approval", "actor, scope, expiry"],
-    ["Receipt", "observations, closure"],
-  ];
 
   async function copyInstall(): Promise<void> {
     await navigator.clipboard.writeText(installCommand);
     setCopied(true);
-    trackHomeEvent("copy_install_click", { location: "hero" });
+    trackHomeEvent("copy_install_click", { location });
     globalThis.setTimeout(() => setCopied(false), 1600);
   }
 
   return (
-    <section className={styles.hero}>
-      <div className={styles.heroCopy}>
-        <p className={styles.kicker}>{hero.eyebrow}</p>
-        <h1 aria-label={hero.title}>
-          {hero.titleLines.map((line) => (
-            <span key={line}>{line}</span>
-          ))}
-        </h1>
-        <p className={styles.lede}>{hero.subtitle}</p>
-        <p className={styles.trust}>{hero.trustLine}</p>
-        <div className={styles.ctaGroup}>
-          <Link
-            className={styles.buttonPrimary}
-            to={quickstartUrl}
-            onClick={() => trackHomeEvent("quickstart_click", { location: "hero_primary" })}
-          >
-            Start in your repository
-          </Link>
-          <button
-            className={styles.buttonSecondary}
-            type="button"
-            aria-live="polite"
-            onClick={() => void copyInstall()}
-          >
-            {copied ? "Copied" : installCommand}
-          </button>
-          <a
-            className={styles.buttonTertiary}
-            href={githubUrl}
-            onClick={() => trackHomeEvent("github_click", { location: "hero" })}
-          >
-            Open GitHub
-          </a>
-        </div>
-      </div>
-      <div className={styles.artifactPanel} aria-label="Agentplane control loop artifacts">
-        <div className={styles.evidenceHeader}>
-          <span>control loop</span>
-          <strong>authority + proof</strong>
-        </div>
-        <div className={styles.evidenceSummary}>
-          <span>supervisor observed</span>
-          <strong>agent result separated from repository facts</strong>
-          <p>Authority, observations, verification, and closure stay with the repository.</p>
-        </div>
-        <div className={styles.evidenceLedger}>
-          {evidenceRows.map(([label, value, detail]) => (
-            <div key={label}>
-              <span>{label}</span>
-              <strong>{value}</strong>
-              <em>{detail}</em>
-            </div>
-          ))}
-        </div>
-        <div className={styles.artifactGrid}>
-          {artifactRows.map(([title, detail]) => (
-            <article key={title}>
-              <strong>{title}</strong>
-              <code>{detail}</code>
-            </article>
-          ))}
-        </div>
-        <pre>
-          <code>{hero.commands.map((line) => `$ ${line}`).join("\n")}</code>
-        </pre>
-      </div>
-    </section>
+    <button
+      className={`${styles.installButton} ${copied ? styles.installButtonCopied : ""}`}
+      type="button"
+      aria-live="polite"
+      onClick={() => void copyInstall()}
+    >
+      <code>{copied ? "Copied to clipboard" : installCommand}</code>
+      <IconCopy className={styles.copyIcon} />
+    </button>
   );
 }
 
-function ProofStrip(): ReactNode {
-  return (
-    <section className={styles.proofStrip} aria-label="Agentplane open-source proof">
-      {homepageContent.proof.map((item) => (
-        <span key={item}>{item}</span>
-      ))}
-    </section>
-  );
-}
-
-function Problem(): ReactNode {
-  const { problem } = homepageContent;
-  return (
-    <section className={styles.section}>
-      <div className={styles.sectionIntro}>
-        <h2>{problem.title}</h2>
-        <p>{problem.text}</p>
-        <p>{problem.evidence}</p>
-      </div>
-    </section>
-  );
-}
-
-function ReviewFlow(): ReactNode {
-  const { reviewFlow } = homepageContent;
+function HeroReceipt(): ReactNode {
+  const { receipt } = homepageContent;
 
   return (
-    <section className={styles.section}>
-      <div className={styles.sectionIntro}>
-        <h2>{reviewFlow.title}</h2>
-        <p>{reviewFlow.text}</p>
-      </div>
-      <div className={styles.reviewColumns}>
-        {[reviewFlow.before, reviewFlow.after].map((column) => (
-          <div key={column.title}>
-            <h3>{column.title}</h3>
-            <ul>
-              {column.points.map((point) => (
-                <li key={point}>{point}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-      <Link
-        className={styles.inlineCta}
-        to={acrUrl}
-        onClick={() => trackHomeEvent("view_acr_guide", { location: "review_flow" })}
-      >
-        See what an Agent Change Record contains
-      </Link>
-    </section>
-  );
-}
-
-function WhatIs(): ReactNode {
-  const { whatIs } = homepageContent;
-  return (
-    <section className={styles.section}>
-      <div className={styles.sectionIntro}>
-        <h2>{whatIs.title}</h2>
-        <p>{whatIs.text}</p>
-        <p>{whatIs.use}</p>
-      </div>
-      <div className={styles.comparisonTable}>
-        {whatIs.rows.map(([label, text]) => (
-          <div key={label}>
-            <strong>{label}</strong>
-            <span>{text}</span>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Records(): ReactNode {
-  const { records, surfaces } = homepageContent;
-  return (
-    <section className={styles.section}>
-      <div className={styles.twoColumn}>
+    <article className={styles.heroReceipt} aria-label="Example Agentplane execution receipt">
+      <header className={styles.receiptHeader}>
         <div>
-          <h2>{records.title}</h2>
-          <p>{records.text}</p>
-          <CommandBlock
-            label="Run the local loop first"
-            command={[
-              "npm i -g agentplane",
-              "agentplane init",
-              "agentplane quickstart",
-              "agentplane demo",
-              "agentplane acr validate <task-id> --mode local",
-            ].join("\n")}
-            eventName="copy_run_command"
-          />
+          <span className={styles.receiptType}>Execution receipt</span>
+          <p>{receipt.id}</p>
         </div>
-        <pre className={styles.fileTree} aria-label="Agentplane artifact tree">
-          <code>{records.tree.join("\n")}</code>
-        </pre>
+        <span className={styles.receiptAuthority}>Authority + proof</span>
+      </header>
+
+      <div className={styles.receiptTitle}>
+        <p>WorkOrder</p>
+        <h2>{receipt.objective}</h2>
       </div>
-      <div className={styles.surfaceGrid}>
-        {surfaces.map(([title, text]) => (
-          <article key={title}>
-            <h3>{title}</h3>
-            <p>{text}</p>
-          </article>
+
+      <dl className={styles.receiptRows}>
+        {receipt.rows.map(([label, value, detail], index) => (
+          <div key={label} className={styles.receiptRow}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+            <dd className={styles.receiptDetail}>
+              {index >= 2 ? <IconSuccess aria-hidden="true" /> : null}
+              {detail}
+            </dd>
+          </div>
         ))}
+      </dl>
+
+      <footer className={styles.receiptFooter}>
+        <span className={styles.verifiedMark}>
+          <IconSuccess aria-hidden="true" />
+        </span>
+        <div>
+          <strong>Durable record in Git</strong>
+          <p>Task state, ACR, and evidence manifest stay reviewable with the code.</p>
+        </div>
+        <code>{receipt.commit}</code>
+      </footer>
+    </article>
+  );
+}
+
+function Hero(): ReactNode {
+  const { hero } = homepageContent;
+
+  return (
+    <section className={styles.hero}>
+      <div className={styles.heroInner}>
+        <div className={styles.heroCopy}>
+          <p className={styles.kicker}>{hero.eyebrow}</p>
+          <h1 aria-label={hero.title}>
+            {hero.titleLines.map((line) => (
+              <span key={line}>{line}</span>
+            ))}
+          </h1>
+          <p className={styles.lede}>{hero.subtitle}</p>
+          <div className={styles.ctaGroup}>
+            <Link
+              className={styles.buttonPrimary}
+              to={quickstartUrl}
+              onClick={() => trackHomeEvent("quickstart_click", { location: "hero_primary" })}
+            >
+              Start in your repository
+            </Link>
+            <CopyInstallButton location="hero" />
+          </div>
+          <p className={styles.trust}>{hero.trustLine}</p>
+        </div>
+        <HeroReceipt />
       </div>
-      <Link
-        className={styles.inlineCta}
-        to={acrUrl}
-        onClick={() => trackHomeEvent("view_acr_guide")}
-      >
-        Inspect the evidence projection
-      </Link>
     </section>
   );
 }
 
-function HarnessAndTraces(): ReactNode {
-  const { harness, timeline } = homepageContent;
+function AuthorityGap(): ReactNode {
+  const { authorityGap } = homepageContent;
+
   return (
-    <section className={styles.section}>
-      <div className={styles.sectionIntro}>
-        <h2>{harness.title}</h2>
-        <p>{harness.text}</p>
-        <Link
-          className={styles.inlineCta}
-          to={harnessUrl}
-          onClick={() => trackHomeEvent("view_harness_guide")}
-        >
-          Read the harness engineering guide
-        </Link>
-      </div>
-      <div className={styles.harnessGrid}>
-        {harness.items.map(([title, text]) => (
-          <div key={title}>
-            <strong>{title}</strong>
-            <span>{text}</span>
-          </div>
-        ))}
-      </div>
-      <div className={styles.timeline}>
+    <section className={`${styles.section} ${styles.reveal}`}>
+      <div className={styles.splitSection}>
         <div className={styles.sectionIntro}>
-          <h2>How does Agentplane observe an agent run?</h2>
-          <p>
-            Traces expose execution, while repository, Git, and check readbacks remain
-            supervisor-owned facts.
-          </p>
+          <p className={styles.kicker}>{authorityGap.eyebrow}</p>
+          <h2>{authorityGap.title}</h2>
+          <p>{authorityGap.text}</p>
         </div>
-        {timeline.map(([name, text]) => (
-          <div key={name} className={styles.timelineRow}>
-            <code>{name}</code>
-            <span>{text}</span>
-          </div>
-        ))}
+        <div className={styles.diffPanel} aria-label="Git diff without authority evidence">
+          <header>
+            <code>git diff -- src/parser/token.ts</code>
+          </header>
+          <pre>
+            <code>
+              <span className={styles.diffMeta}>@@ -142,7 +142,7 @@ parse_token(...)</span>
+              {"\n"}
+              <span className={styles.diffRemove}>
+                - if (c == EOF &amp;&amp; !in_string) &#123;
+              </span>
+              {"\n"}
+              <span className={styles.diffAdd}>
+                + if (c == EOF &amp;&amp; !in_string &amp;&amp; !escaped) &#123;
+              </span>
+              {"\n"}
+              {"    return ERROR_UNTERMINATED;\n  }"}
+            </code>
+          </pre>
+          <footer>
+            <strong>Missing proof</strong>
+            <p>No record of scope, allowed effects, approver, or independent verification.</p>
+          </footer>
+        </div>
       </div>
-      <Link
-        className={styles.inlineCta}
-        to={tracesUrl}
-        onClick={() => trackHomeEvent("view_traces_guide")}
-      >
-        Read the traces guide
-      </Link>
+    </section>
+  );
+}
+
+const toneClasses = {
+  blue: styles.toneBlue,
+  violet: styles.toneViolet,
+  green: styles.toneGreen,
+  coral: styles.toneCoral,
+} as const;
+
+function StepIcon({ icon }: { icon: string }): ReactNode {
+  if (icon === "authorize") return <IconEdit />;
+  if (icon === "verify") return <IconSuccess />;
+  if (icon === "record") return <IconCopy />;
+  return <IconArrow />;
+}
+
+function ControlLoop(): ReactNode {
+  const { controlLoop } = homepageContent;
+  const [activeId, setActiveId] = useState<(typeof controlLoop.steps)[number]["id"]>(
+    controlLoop.steps[0].id,
+  );
+  const activeStep = useMemo(
+    () => controlLoop.steps.find((step) => step.id === activeId) ?? controlLoop.steps[0],
+    [activeId, controlLoop.steps],
+  );
+
+  return (
+    <section className={`${styles.section} ${styles.loopSection} ${styles.reveal}`}>
+      <div className={styles.sectionIntroWide}>
+        <p className={styles.kicker}>{controlLoop.eyebrow}</p>
+        <h2>{controlLoop.title}</h2>
+        <p>{controlLoop.text}</p>
+      </div>
+
+      <div className={styles.loopGrid}>
+        {controlLoop.steps.map((step, index) => {
+          const active = step.id === activeId;
+          return (
+            <div className={styles.loopCell} key={step.id}>
+              <button
+                className={`${styles.loopStep} ${toneClasses[step.tone]} ${active ? styles.loopStepActive : ""}`}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setActiveId(step.id)}
+              >
+                <span className={styles.stepNumber}>0{index + 1}</span>
+                <span className={styles.stepIcon}>
+                  <StepIcon icon={step.icon} />
+                </span>
+                <strong>{step.title}</strong>
+                <span className={styles.stepText}>{step.text}</span>
+              </button>
+              {index < controlLoop.steps.length - 1 ? (
+                <IconArrow className={styles.loopArrow} aria-hidden="true" />
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className={`${styles.loopEvidence} ${toneClasses[activeStep.tone]}`} aria-live="polite">
+        <span>{activeStep.title}</span>
+        <strong>{activeStep.evidence}</strong>
+        <code>{activeStep.artifact}</code>
+      </div>
+    </section>
+  );
+}
+
+function DurableProof(): ReactNode {
+  const { durableProof } = homepageContent;
+
+  return (
+    <section className={`${styles.section} ${styles.proofSection} ${styles.reveal}`}>
+      <div className={styles.sectionIntroWide}>
+        <p className={styles.kicker}>{durableProof.eyebrow}</p>
+        <h2>{durableProof.title}</h2>
+        <p>{durableProof.text}</p>
+      </div>
+
+      <div className={styles.proofLedger}>
+        <header>
+          <div>
+            <code>{durableProof.commit}</code>
+            <strong>{durableProof.summary}</strong>
+          </div>
+          <span className={styles.proofStatus}>
+            <IconSuccess aria-hidden="true" /> verified
+          </span>
+        </header>
+        <div className={styles.proofBody}>
+          <ul className={styles.fileList} aria-label="Repository evidence files">
+            {durableProof.files.map((file) => (
+              <li key={file}>
+                <code>{file}</code>
+              </li>
+            ))}
+          </ul>
+          <dl className={styles.proofFacts}>
+            {durableProof.facts.map(([label, value]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+        <footer>{durableProof.footer}</footer>
+      </div>
     </section>
   );
 }
@@ -345,94 +318,69 @@ function HarnessAndTraces(): ReactNode {
 function WorksWith(): ReactNode {
   const { worksWith } = homepageContent;
   return (
-    <section className={styles.section}>
+    <section className={`${styles.section} ${styles.worksSection} ${styles.reveal}`}>
       <div className={styles.sectionIntro}>
+        <p className={styles.kicker}>The worker stays replaceable</p>
         <h2>{worksWith.title}</h2>
         <p>{worksWith.text}</p>
       </div>
-      <div className={styles.badgeRow}>
+      <div className={styles.toolList} aria-label="Agentplane compatibility">
         {worksWith.tools.map((tool) => (
           <span key={tool}>{tool}</span>
         ))}
       </div>
+      <Link className={styles.textLink} to={examplesUrl}>
+        Explore runnable examples
+      </Link>
     </section>
   );
 }
 
-function Examples(): ReactNode {
+function FinalCta(): ReactNode {
+  const { closing } = homepageContent;
   return (
-    <section className={styles.section}>
-      <div className={styles.sectionIntro}>
-        <h2>Examples and recipes</h2>
-        <p>
-          Start from runnable workflows: trace debugging, TDD recipes, local context, and Agent
-          Change Records.
-        </p>
+    <section className={`${styles.section} ${styles.finalCta} ${styles.reveal}`}>
+      <div>
+        <p className={styles.kicker}>Start locally</p>
+        <h2>{closing.title}</h2>
+        <p>{closing.text}</p>
       </div>
-      <div className={styles.exampleGrid}>
-        {homepageContent.examples.map(([title, command]) => (
-          <Link
-            key={title}
-            to={examplesUrl}
-            onClick={() => trackHomeEvent("view_example", { example: title })}
-          >
-            <strong>{title}</strong>
-            <code>{command}</code>
-          </Link>
-        ))}
+      <div className={styles.ctaGroup}>
+        <Link className={styles.buttonPrimary} to={quickstartUrl}>
+          Run quickstart
+        </Link>
+        <CopyInstallButton location="closing" />
+        <Link className={styles.textLink} to={acrUrl}>
+          Inspect an Agent Change Record
+        </Link>
       </div>
-    </section>
-  );
-}
-
-function WhoShouldUse(): ReactNode {
-  const { whoShouldUse } = homepageContent;
-  return (
-    <section className={styles.section}>
-      <div className={styles.sectionIntro}>
-        <h2>{whoShouldUse.title}</h2>
-      </div>
-      <ul className={styles.checkList}>
-        {whoShouldUse.items.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
     </section>
   );
 }
 
 export default function Home(): ReactNode {
-  const { seo, closing } = homepageContent;
+  const { seo } = homepageContent;
+
+  useEffect(() => {
+    document.documentElement.classList.add("agentplane-home");
+    document.body.classList.add("agentplane-home");
+
+    return () => {
+      document.documentElement.classList.remove("agentplane-home");
+      document.body.classList.remove("agentplane-home");
+    };
+  }, []);
 
   return (
     <Layout title={seo.title} description={seo.description}>
       <HomeJsonLd />
       <main className={styles.page}>
         <Hero />
-        <ProofStrip />
-        <Problem />
-        <ReviewFlow />
-        <Records />
+        <AuthorityGap />
+        <ControlLoop />
+        <DurableProof />
         <WorksWith />
-        <WhatIs />
-        <HarnessAndTraces />
-        <Examples />
-        <WhoShouldUse />
-        <section className={`${styles.section} ${styles.finalCta}`}>
-          <h2>{closing.title}</h2>
-          <p>{closing.text}</p>
-          <div className={styles.ctaGroup}>
-            <Link className={styles.buttonPrimary} to={quickstartUrl}>
-              Run quickstart
-            </Link>
-            <a className={styles.buttonSecondary} href={githubUrl}>
-              Open GitHub
-            </a>
-            <Link className={styles.buttonSecondary} to={acrUrl}>
-              See an example ACR
-            </Link>
-          </div>
-        </section>
+        <FinalCta />
       </main>
     </Layout>
   );

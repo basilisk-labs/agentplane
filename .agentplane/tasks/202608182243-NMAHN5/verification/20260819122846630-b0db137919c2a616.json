@@ -1,0 +1,83 @@
+{
+  "details": "Command: agentplane pr open 202608182243-NMAHN5 --author CODER\nResult: pass\nEvidence: PR remains linked as https://github.com/basilisk-labs/agentplane/pull/4849 with head bbf70dc3c17c...rebased to current main\nScope: final task branch head and PR publication alignment",
+  "digest": "sha256:b0db137919c2a616fa40bb8fa0269f78e5eba42a3b01ea11e1681c0fb734aa14",
+  "implementation_sha": "2601e73b3e04c42343904c9e41dbd85b5a262181",
+  "input": {
+    "context": {
+      "digest": "sha256:c604a3866814dba57d1e8b75bf0340937981e8280dda0ec9356a7987f4282f36",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:72461311a5ab128671c59465061e29e46e7e551fbc88176c3a99de200ac1524c",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:a18955a3520d7fa26a6e626d7cfddba5683f443d08957db3be9aefed1ea5e0c3",
+      "digest": "sha256:111406e649d0fb1d3c15893fba78a261624093b377c4e7a285e3f7df5381113e",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "25f426a00727463215ec36e8f2879ac734d17422",
+      "digest": "sha256:447628cb4c18be8d12831453a6c08dadd6c3f281dcdac5afb7fa11c4fb784b66",
+      "strategy": "branch_diff",
+      "target_sha": "2601e73b3e04c42343904c9e41dbd85b5a262181"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:cd21ac3d2f3074675f286bbcc851388f20beda6d1783144f5697e3931c56e5a6",
+    "verify_steps_digest": "sha256:eeb567c25b0cdd2e85d2f891a2a665221f9e019ffb4d454994f21ec83e225e8b"
+  },
+  "kind": "task_verification_record",
+  "note": "After rebase onto current main, task branch still contains only intended homepage redesign changes and remains aligned with PR #4849.",
+  "recorded_at": "2026-08-19T12:28:46.630Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Redesign the Agentplane homepage around a clear authority-to-proof happy path\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Redesign the Agentplane homepage around a clear authority-to-proof happy path\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:eeb567c25b0cdd2e85d2f891a2a665221f9e019ffb4d454994f21ec83e225e8b",
+  "task_id": "202608182243-NMAHN5",
+  "verification_command": "agentplane verify 202608182243-NMAHN5 --ok --by CODER",
+  "verifier": "CODER"
+}

@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608182243-NMAHN5-a7587ff440438737f63cbbd9",
+  "prepared_at": "2026-08-19T12:28:54.517Z",
+  "task": {
+    "id": "202608182243-NMAHN5",
+    "revision": 10,
+    "objective": "Redesign the Agentplane homepage around a clear authority-to-proof happy path\n\nImplement the selected hybrid visual target: compact header from concept 3, icon-led diagrams and evidence storytelling from concept 1, a white background, modern multicolor semantic accents, responsive behavior, and restrained microinteractions. Preserve the current Git-native control-plane positioning and working navigation/CTAs.",
+    "acceptance_criteria": [
+      "npm --prefix website run build",
+      "npm --prefix website run typecheck",
+      "- In scope: Implement the selected hybrid visual target: compact header from concept 3, icon-led diagrams and evidence storytelling from concept 1, a white background, modern multicolor semantic accents, responsive behavior, and restrained microinteractions. Preserve the current Git-native control-plane positioning and working navigation/CTAs.\n- Out of scope: unrelated refactors not required for \"Redesign the Agentplane homepage around a clear authority-to-proof happy path\".",
+      "Implement the selected hybrid homepage in the existing Docusaurus website: compact quiet header, white editorial canvas, concise authority-to-proof story, icon-led four-step loop, one credible repository receipt, and restrained interaction states. Keep the implementation limited to the homepage presentation and shared visual tokens needed by it, preserve existing routes and tracking, and validate responsive rendering plus build and typecheck.",
+      "PLANNER fallback scaffold for \"Redesign the Agentplane homepage around a clear authority-to-proof happy path\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Redesign the Agentplane homepage around a clear authority-to-proof happy path\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "2601e73b3e04c42343904c9e41dbd85b5a262181",
+  "diff_base_sha": "25f426a00727463215ec36e8f2879ac734d17422",
+  "blueprint_digest": "72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122854517-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:c4c119ecc2729b8d08f2179788d61d9d405ece3828dc5dcfe4ddef67c7493bd0",
+    "prompt_path": ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/b970b82e8b909fe5a24f113490f4991a7372db3a5d6440c236ca8a4e136d2bc0.md",
+    "result_schema_path": ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608182243-NMAHN5/README.md",
+      "sha256": "sha256:40291322d5ae5c1a45465d44bc74f8b4dff1aee436eb1bd8860b0a0d9e388d38",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/d7e45b15552d96f360bea76f963bd1fd2a18c2820799fd50449840b8c22fe542.patch",
+      "sha256": "sha256:d7e45b15552d96f360bea76f963bd1fd2a18c2820799fd50449840b8c22fe542",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/7fc7171c0bf8dfb245662e5baaaa67342d96e51829c889553fe27993bd2c990c.json",
+      "sha256": "sha256:7fc7171c0bf8dfb245662e5baaaa67342d96e51829c889553fe27993bd2c990c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/4d03873199544981788fe06cc57f0aef684033ee4e150bb67cf3b69e648a5600.json",
+      "sha256": "sha256:4d03873199544981788fe06cc57f0aef684033ee4e150bb67cf3b69e648a5600",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

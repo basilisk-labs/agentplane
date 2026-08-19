@@ -43,7 +43,7 @@ function docsNavigationCheckPlugin() {
 
 const config = {
   title: "Agentplane",
-  tagline: "Build, run, trace, and operationalize AI agents with reproducible local workflows.",
+  tagline: "The Git-native control plane for coding agents.",
   titleDelimiter: "·",
   favicon: "img/favicon.ico",
   future: {
@@ -163,24 +163,24 @@ const config = {
         {
           to: "/docs",
           label: "Docs",
-          position: "right",
+          position: "left",
           activeBaseRegex: "^/docs",
         },
         {
           to: "/examples",
           label: "Examples",
-          position: "right",
+          position: "left",
           activeBaseRegex: "^/examples",
         },
         {
           to: "/docs/compare",
           label: "Compare",
-          position: "right",
+          position: "left",
         },
         {
           to: "/docs/start/quickstart",
           label: "Quickstart",
-          position: "right",
+          position: "left",
           className: "navbar-quickstart-cta",
         },
         {

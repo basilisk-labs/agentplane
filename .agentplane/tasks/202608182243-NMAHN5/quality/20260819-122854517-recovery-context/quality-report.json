@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202608182243-NMAHN5",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-19T12:28:55.024Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "2601e73b3e04c42343904c9e41dbd85b5a262181",
+  "blueprint_digest": "72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f",
+  "findings": [
+    "After rebase on main, homepage UX/positioning remains consistent, with updated commit history and no regression in requested content structure."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/d7e45b15552d96f360bea76f963bd1fd2a18c2820799fd50449840b8c22fe542.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
