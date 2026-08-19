@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 52
+revision: 53
 origin:
   system: "manual"
 depends_on: []
@@ -631,6 +631,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The workspace source diff is an intended minimal fix for the reproduced verification_implementation_changed loop: verification recording must resolve against extensions.implementation_commit rather than a later metadata-only pre-merge closure commit. The focused patch and regression test pass, but it requires a formal implementation-rework episode before it can become the new implementation identity."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The workspace contains only intended evaluator evidence artifacts from the stale-but-valid rework verdict for implementation 1c0ecc78b. Preserve and commit the task-local evidence so a fresh evaluator packet can record the same verdict against current state."
 events:
   -
     type: "status"
@@ -843,8 +846,13 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "comment"
+    at: "2026-08-19T01:24:51.339Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The workspace contains only intended evaluator evidence artifacts from the stale-but-valid rework verdict for implementation 1c0ecc78b. Preserve and commit the task-local evidence so a fresh evaluator packet can record the same verdict against current state."
 doc_version: 3
-doc_updated_at: "2026-08-19T01:22:16.348Z"
+doc_updated_at: "2026-08-19T01:24:51.373Z"
 doc_updated_by: "SUPERVISOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
