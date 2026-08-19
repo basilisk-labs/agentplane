@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The failure is reproduced exactly from hosted job 95928116943: verify-record.unit.test.ts was 1016 lines and became an eleventh oversized test.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/30a2f39f1f10642d62438c23bf889e12db4e83dc5b1abd4a6480eac7fbe986ec.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The implementation keeps the new implementation_commit assertion and all pre-existing tests while reducing the file to 998 lines.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/30a2f39f1f10642d62438c23bf889e12db4e83dc5b1abd4a6480eac7fbe986ec.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Using the real quality-review module for unchanged exports improves mock fidelity; overriding only resolveQualityReviewTargetSha keeps the call-boundary assertion deterministic.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/30a2f39f1f10642d62438c23bf889e12db4e83dc5b1abd4a6480eac7fbe986ec.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Vitest 41/41, hotspots:check, focused ESLint, repository typecheck, and diff hygiene all pass.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/30a2f39f1f10642d62438c23bf889e12db4e83dc5b1abd4a6480eac7fbe986ec.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
