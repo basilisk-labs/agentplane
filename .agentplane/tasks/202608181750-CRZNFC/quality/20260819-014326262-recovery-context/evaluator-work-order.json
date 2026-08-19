@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608181750-CRZNFC-837f5f8ce213bde9d3b498c1",
+  "prepared_at": "2026-08-19T01:43:26.262Z",
+  "task": {
+    "id": "202608181750-CRZNFC",
+    "revision": 62,
+    "objective": "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref.\n\nStable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability.",
+    "acceptance_criteria": [
+      "- In scope: Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability.\n- Out of scope: unrelated refactors not required for \"Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref.\".",
+      "1. Freeze exact base 708f0d7d5b813ea2bb4de659d9eb113a752e3c63 after PR #4844 and successful Task Hosted Close 32167609851; confirm clean main, empty incidents, current public 0.7.6, and no existing 0.7.7 publication. 2. Create the release.strict branch worktree and use the canonical release planner/version tooling to promote all package versions, internal pins, repository expected CLI, generated headers/assets, schemas/examples, and docs/releases/v0.7.7.md from 0.7.7-beta.1 to stable 0.7.7 without semantic source changes. 3. Run focused stable/prerelease workflow regressions, release parity, release:prepublish, release:check, full fast, critical, release-critical, documentation/site, policy/routing, and diff hygiene checks on the exact candidate. 4. Independently evaluate exact candidate scope and evidence, publish its exact head, obtain all hosted checks with no unresolved review threads, and integrate through the AgentPlane queue plus hosted close. 5. On exact merged main, require release-ready evidence, grant only the state-bound hosted publication operation, dispatch Publish release for version 0.7.7 and exact SHA, then verify publish-result, tag, latest GitHub Release, npm identities and internal dependency pins for agentplane, @agentplaneorg/core, and @agentplaneorg/recipes. 6. Verify the automated next-development PR opens 0.7.8-beta.1 with consistent version surfaces and successful hosted checks. 7. Only after public proof, create a recovery ref for the original checkout, close superseded PRs #4838, #4839, #4841, and #4843, retire obsolete local task artifacts without replaying patch-equivalent commits, reconcile the original checkout to current main, and report any historical non-release debt separately.",
+      "PLANNER fallback scaffold for \"Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "785a9fc9eb53eee3eff7bc109e6547b230061f9b",
+  "diff_base_sha": "708f0d7d5b813ea2bb4de659d9eb113a752e3c63",
+  "blueprint_digest": "92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-014326262-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:7ffd809db33b1ddfffca85b3aba90e279ed8fe450da23582eaf83f6ed4566b5d",
+    "prompt_path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/59e7bca54bf2537f314e87471286cd3205649f933989cc467797d97dc6a225fb.md",
+    "result_schema_path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608181750-CRZNFC/README.md",
+      "sha256": "sha256:fc3d3a05740ebb2059dcd61e5ded42dd3639a9e9d3b83535694d07db2facefdf",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/30a2f39f1f10642d62438c23bf889e12db4e83dc5b1abd4a6480eac7fbe986ec.patch",
+      "sha256": "sha256:30a2f39f1f10642d62438c23bf889e12db4e83dc5b1abd4a6480eac7fbe986ec",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/fb31533f92b9a3c5d8ab6812e2c08c36ac39959f378650661f474df0f15ba16f.json",
+      "sha256": "sha256:fb31533f92b9a3c5d8ab6812e2c08c36ac39959f378650661f474df0f15ba16f",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608181750-CRZNFC/verification/20260819014306816-cb3a543a3c1704ea.json",
+      "sha256": "sha256:59e6e75559adde7b18fe38345449b5a0eb06c75b65968085ee925fe5e1f19f0b",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/7ccd6e7b02923ad1c86ea041ac541bbd3d5af42468482f5eb901fb845a97a2ce.json",
+      "sha256": "sha256:7ccd6e7b02923ad1c86ea041ac541bbd3d5af42468482f5eb901fb845a97a2ce",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:47ab8b04f9d747491398390dac415b34aa6d3df0cf0fb61e9924fd3e4851ec48",
+      "required": true
+    }
+  ]
+}

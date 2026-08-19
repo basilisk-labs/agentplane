@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 62
+revision: 63
 origin:
   system: "manual"
 depends_on: []
@@ -35,33 +35,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-19T01:35:35.237Z"
+  updated_at: "2026-08-19T01:44:04.930Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "306272c451e4cd13b7987bef303b6204f4598680"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "785a9fc9eb53eee3eff7bc109e6547b230061f9b"
   blueprint_digest: "92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e"
   evidence_refs:
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-013443948-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-013443948-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/8e30d8c2d9a220512897ad9efb58b688f7b9f5ea11dd84b40e885661b3653258.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-013443948-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-013443948-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-013443948-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-014326262-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-014326262-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/59e7bca54bf2537f314e87471286cd3205649f933989cc467797d97dc6a225fb.md"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-014326262-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-014326262-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-014326262-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181750-CRZNFC/README.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/dd8cad4bbcb6dac318b792d49878c639ecc7158009a44913abd0360e0bfed4b2.patch"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/8e15a80a2a7b7def77090f7121ae65ff9444b0f1bb2dc94ce65c521d2648d56e.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/verification/20260819013430567-6e8302af42f21820.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/30a2f39f1f10642d62438c23bf889e12db4e83dc5b1abd4a6480eac7fbe986ec.patch"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/fb31533f92b9a3c5d8ab6812e2c08c36ac39959f378650661f474df0f15ba16f.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/verification/20260819014306816-cb3a543a3c1704ea.json"
     - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/7ccd6e7b02923ad1c86ea041ac541bbd3d5af42468482f5eb901fb845a97a2ce.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "The planner retains the existing source-task-plus-signature fingerprint for active entries and adds a separate archived identity based only on normalized scope and failure, which is the correct distinction between recurrence tracking and archival tombstones."
-    - "The command path loads the historical archive read-only and uses it only for promotion planning; active registry rendering, mirror writes, advice lookup, and line-budget behavior remain unchanged."
-    - "Regression coverage proves both the runtime case with changed id, date, source task, evidence, advice, and rule and the command-level archive loading/write no-op."
-    - "The duplicate active entry is removed from both canonical and packaged registries while the richer archived record remains preserved."
-    - "Residual risk: Archive identity intentionally treats the same normalized failure within the same normalized scope as already resolved; materially different failure classes must use precise observation text rather than reusing an archived description."
+    - "The failure is reproduced exactly from hosted job 95928116943: verify-record.unit.test.ts was 1016 lines and became an eleventh oversized test."
+    - "The implementation keeps the new implementation_commit assertion and all pre-existing tests while reducing the file to 998 lines."
+    - "Using the real quality-review module for unchanged exports improves mock fidelity; overriding only resolveQualityReviewTargetSha keeps the call-boundary assertion deterministic."
+    - "Vitest 41/41, hotspots:check, focused ESLint, repository typecheck, and diff hygiene all pass."
 token_usage:
   agent_runs: 24
   input_tokens: null
@@ -907,7 +906,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-19T01:43:09.476Z"
+doc_updated_at: "2026-08-19T01:44:04.992Z"
 doc_updated_by: "SUPERVISOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
