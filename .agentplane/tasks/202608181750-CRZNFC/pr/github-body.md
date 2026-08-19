@@ -16,12 +16,7 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Verified: exact implementation ae97cf05c passed the complete release prepublish gate and independent
-evaluator review.
-```
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -33,6 +28,7 @@ evaluator review.
 
 ```text
  .agentplane/WORKFLOW.md                            |   2 +-
+ .agentplane/policy/incidents.md                    |   1 +
  .../risk-e2e/logs/hosted-boundary-matrix.log       |   7 -
  .../risk-e2e/logs/packaged-candidate-flow.log      |   5 -
  .../samples/sample-01.events.jsonl                 |   1 -
@@ -82,6 +78,7 @@ evaluator review.
  docs/developer/incident-archive.mdx                |   4 +
  docs/reference/generated-reference.mdx             |  14 +-
  package.json                                       |   2 +-
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  packages/agentplane/package.json                   |   6 +-
  ...run-cli.core.pr-flow.integrate-failures.test.ts |   6 +
  .../run-cli.core.pr-flow.integrate-merge.test.ts   |   6 +
@@ -111,7 +108,7 @@ evaluator review.
  scripts/README.md                                  |  24 +--
  .../baselines/v0.7-compatibility-candidate.json    |   6 +-
  scripts/checks/run-fast-ci-tests.mjs               |   2 +-
- 79 files changed, 539 insertions(+), 1475 deletions(-)
+ 81 files changed, 541 insertions(+), 1475 deletions(-)
 ```
 
 </details>
