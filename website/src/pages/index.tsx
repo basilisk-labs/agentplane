@@ -181,9 +181,16 @@ function AuthorityGap(): ReactNode {
           </header>
           <pre>
             <code>
-              <span className={styles.diffMeta}>@@ -142,7 +142,7 @@ parse_token(...)</span>{"\n"}
-              <span className={styles.diffRemove}>- if (c == EOF &amp;&amp; !in_string) &#123;</span>{"\n"}
-              <span className={styles.diffAdd}>+ if (c == EOF &amp;&amp; !in_string &amp;&amp; !escaped) &#123;</span>{"\n"}
+              <span className={styles.diffMeta}>@@ -142,7 +142,7 @@ parse_token(...)</span>
+              {"\n"}
+              <span className={styles.diffRemove}>
+                - if (c == EOF &amp;&amp; !in_string) &#123;
+              </span>
+              {"\n"}
+              <span className={styles.diffAdd}>
+                + if (c == EOF &amp;&amp; !in_string &amp;&amp; !escaped) &#123;
+              </span>
+              {"\n"}
               {"    return ERROR_UNTERMINATED;\n  }"}
             </code>
           </pre>
@@ -213,8 +220,9 @@ function StepIcon({ icon }: { icon: string }): ReactNode {
 
 function ControlLoop(): ReactNode {
   const { controlLoop } = homepageContent;
-  const [activeId, setActiveId] =
-    useState<(typeof controlLoop.steps)[number]["id"]>(controlLoop.steps[0].id);
+  const [activeId, setActiveId] = useState<(typeof controlLoop.steps)[number]["id"]>(
+    controlLoop.steps[0].id,
+  );
   const activeStep = useMemo(
     () => controlLoop.steps.find((step) => step.id === activeId) ?? controlLoop.steps[0],
     [activeId, controlLoop.steps],

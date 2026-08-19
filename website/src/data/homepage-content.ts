@@ -50,7 +50,8 @@ export const homepageContent = {
   },
   authorityGap: {
     eyebrow: "The authority gap",
-    title: "A diff shows what changed. It does not show what was authorized or independently verified.",
+    title:
+      "A diff shows what changed. It does not show what was authorized or independently verified.",
     text: "Without a durable control record, reviewers have to trust the worker's own report about scope, checks, and completion.",
   },
   controlLoop: {
