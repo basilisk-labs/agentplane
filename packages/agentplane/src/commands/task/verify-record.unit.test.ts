@@ -24,6 +24,7 @@ const mocks = vi.hoisted(() => ({
   inspectTaskIncidents: vi.fn(),
   renderIncidentCollectionPlanOutcome: vi.fn(),
   ensurePrArtifactsSynced: vi.fn(),
+  resolveQualityReviewTargetSha: vi.fn(),
 }));
 
 vi.mock("node:fs/promises", async (importOriginal) => {
@@ -54,6 +55,17 @@ vi.mock("../incidents/shared.js", () => ({
 }));
 vi.mock("../pr/internal/sync.js", () => ({
   ensurePrArtifactsSynced: mocks.ensurePrArtifactsSynced,
+}));
+vi.mock("../shared/quality-review-target.js", () => ({
+  recordedTaskImplementationCommitSha: (task: TaskData) => {
+    const recorded = task.extensions?.implementation_commit;
+    if (recorded && typeof recorded === "object" && "hash" in recorded) {
+      const hash = recorded.hash;
+      if (typeof hash === "string" && hash.trim()) return hash.trim();
+    }
+    return task.commit?.hash?.trim() || null;
+  },
+  resolveQualityReviewTargetSha: mocks.resolveQualityReviewTargetSha,
 }));
 vi.mock("../shared/task-store.js", async (importOriginal) => {
   const actualUnknown: unknown = await importOriginal();
@@ -122,6 +134,7 @@ describe("task verify record (unit)", () => {
     mocks.inspectTaskIncidents.mockReset();
     mocks.renderIncidentCollectionPlanOutcome.mockReset();
     mocks.ensurePrArtifactsSynced.mockReset();
+    mocks.resolveQualityReviewTargetSha.mockReset().mockResolvedValue(null);
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
     mocks.ensureReconciledBeforeMutation.mockResolvedValue();
@@ -183,7 +196,8 @@ describe("task verify record (unit)", () => {
     mocks.loadTaskFromContext.mockResolvedValue(
       mkTask({
         status: "DONE",
-        commit: { hash: "abc", message: "msg" },
+        commit: { hash: "metadata-sha", message: "pre-merge closure" },
+        extensions: { implementation_commit: { hash: "implementation-sha" } },
         doc: undefined,
         doc_version: 3,
         doc_updated_at: "2026-02-01T00:00:00Z",
@@ -208,6 +222,9 @@ describe("task verify record (unit)", () => {
     expect(writes.join("")).toContain("--observation, --impact, --resolution, and --promote");
     expect(writes.join("")).toContain("agentplane task findings add T-1");
     expect(writes.join("")).toContain("--promote --external");
+    expect(mocks.resolveQualityReviewTargetSha).toHaveBeenCalledWith(
+      expect.objectContaining({ headSha: "implementation-sha" }),
+    );
 
     writeSpy.mockRestore();
   });

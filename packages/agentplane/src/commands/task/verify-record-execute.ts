@@ -23,7 +23,10 @@ import {
 import { buildVerifiedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
-import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
+import {
+  recordedTaskImplementationCommitSha,
+  resolveQualityReviewTargetSha,
+} from "../shared/quality-review-target.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import {
   loadCommandContext,
@@ -244,6 +247,7 @@ async function recordVerificationResult(opts: {
           taskId: current.id,
           taskIds: qualityReviewTaskIds,
           lifecycleTaskIds: batchTaskIds,
+          headSha: recordedTaskImplementationCommitSha(current),
           previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
           workflowMode: config.workflow_mode,
         });

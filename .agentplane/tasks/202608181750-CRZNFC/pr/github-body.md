@@ -98,6 +98,8 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
  .../commands/task/direct-task-supervisor.test.ts   |  28 ++--
  .../task-execution-contract-observation.test.ts    |  76 ++++++++++
  .../task/task-execution-contract-observation.ts    |  62 +++++---
+ .../src/commands/task/verify-record-execute.ts     |   6 +-
+ .../src/commands/task/verify-record.unit.test.ts   |  19 ++-
  .../task-run-lifecycle-replay-security.test.ts     | 162 +++++++++++----------
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
@@ -108,7 +110,7 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
  scripts/README.md                                  |  24 +--
  .../baselines/v0.7-compatibility-candidate.json    |   6 +-
  scripts/checks/run-fast-ci-tests.mjs               |   2 +-
- 81 files changed, 541 insertions(+), 1475 deletions(-)
+ 83 files changed, 564 insertions(+), 1477 deletions(-)
 ```
 
 </details>
