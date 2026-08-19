@@ -16,7 +16,12 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
 ## Verification
 
 - State: ok
-- Note: Verified: restore exact implementation ae97cf05c verification after metadata-only pre-merge closure.
+- Note:
+
+```text
+Verified: bind the current record to preserved implementation ae97cf05c after committing the
+worktree observation.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
