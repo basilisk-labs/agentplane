@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 77
+revision: 78
 origin:
   system: "manual"
 depends_on: []
@@ -35,31 +35,35 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-19T02:17:21.890Z"
+  updated_at: "2026-08-19T04:30:59.056Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 3 typed finding(s)."
-  evaluated_sha: "e0b25719468dea7485051fd64981d6a7c7adf415"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "1e2df9fb91e8b4d46af8d2ee7781d6e5c76df23c"
   blueprint_digest: "92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e"
   evidence_refs:
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-021632520-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-021632520-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/ebcb5b48a23ea5966d40b8785e275b3c63527cdac5c6ca74fa672c6bded90090.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-021632520-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-021632520-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-021632520-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-042750490-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-042750490-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/0c84f77592478ed12ec7eb0a2eac0f357d8a88aa9a7d097f0c7446f4fd22c3ed.md"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-042750490-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-042750490-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-042750490-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181750-CRZNFC/README.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/db4f4067d006d8f68dbf674f5badd81e2ae0daeafaf473bf918f2f6cd6aa904b.patch"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/93a83f2d7304d296c57c54ff94c660a88bfccab400b3e6f17666319df6abbc4a.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/verification/20260819021618855-ebe5f636eb8f13e3.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/58343aef03244fad71afd588970c4540e65715218f52a639821f21528a5b4ead.patch"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/4954fd464fff15459990cedad2325ccd1e0e181182b2b3c902097048b97ff720.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/verification/20260819042736120-d71720dbb7d0e5f6.json"
     - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/7ccd6e7b02923ad1c86ea041ac541bbd3d5af42468482f5eb901fb845a97a2ce.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "The previous fixture allowed generated task bootstrap files to be first committed with evaluator artifacts, creating an artificial later implementation identity that does not model the managed branch_pr route."
-    - "The nine-line test-only change fixes ordering and target selection without changing the production resolver or weakening verification freshness checks."
-    - "Residual risk: The full release:prepublish matrix must be rerun from the updated exact head before publication."
+    - "The external TESTER result path now accepts verification outcomes, requires supervisor-owned passed evidence before recording success, and routes failed or blocked verification to TESTER rework."
+    - "A task advance invocation performs at most one built-in verification attempt before yielding an external TESTER boundary, preventing repeated verification commits within one invocation."
+    - "A reserved failed formal-verification replacement refreshes its supervisor episode when the route fingerprint changes instead of attempting to reopen a non-completed episode."
+    - "Focused regression coverage exists for the new verification-result contract and reserved replacement recovery, and the canonical release:prepublish gate passed on the exact candidate tree."
+    - "Historical local commits that are patch-equivalent to upstream are not replayed; recoverability is preserved by dedicated recovery refs. Public release and checkout cleanup remain downstream formal operations."
+    - "Residual risk: The exact candidate must be pushed and all required hosted checks must pass before queue integration."
+    - "Residual risk: Release success still requires exact-SHA GitHub tag/release and three-package npm public readback, followed by confirmation of the automatic 0.7.8-beta.1 development PR."
 token_usage:
   agent_runs: 30
   input_tokens: null
@@ -1020,7 +1024,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-19T04:27:38.517Z"
+doc_updated_at: "2026-08-19T04:30:59.095Z"
 doc_updated_by: "SUPERVISOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
