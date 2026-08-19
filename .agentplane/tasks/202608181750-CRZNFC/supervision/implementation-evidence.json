@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check f49e963a652fc26feee2d575d8ff0ca8db4eee59..306272c451e4cd13b7987bef303b6204f4598680",
+      "command": "git diff --check 28a11843126d91eb12224c567db74e53b1e485dd..785a9fc9eb53eee3eff7bc109e6547b230061f9b",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,22 +13,15 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB f49e963a652fc26feee2d575d8ff0ca8db4eee59..306272c451e4cd13b7987bef303b6204f4598680",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 28a11843126d91eb12224c567db74e53b1e485dd..785a9fc9eb53eee3eff7bc109e6547b230061f9b",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/policy/incidents.md",
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/github-body.md",
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/meta.json",
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/review.md",
-        "M\tpackages/agentplane/assets/policy/incidents.md",
-        "M\tpackages/agentplane/src/commands/incidents/shared.test.ts",
-        "M\tpackages/agentplane/src/commands/incidents/shared.ts",
-        "M\tpackages/agentplane/src/commands/task/verify-record.unit.test.ts",
-        "M\tpackages/agentplane/src/runtime/incidents/plan-strategy.ts",
-        "M\tpackages/agentplane/src/runtime/incidents/resolve.test.ts",
-        "M\tpackages/agentplane/src/runtime/incidents/shared.ts"
+        "M\tpackages/agentplane/src/commands/task/verify-record.unit.test.ts"
       ]
     },
     {
@@ -38,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "f49e963a652fc26feee2d575d8ff0ca8db4eee59",
-  "implementation_commit": "306272c451e4cd13b7987bef303b6204f4598680",
+  "execution_base_commit": "28a11843126d91eb12224c567db74e53b1e485dd",
+  "implementation_commit": "785a9fc9eb53eee3eff7bc109e6547b230061f9b",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
