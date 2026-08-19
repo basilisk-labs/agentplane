@@ -16,7 +16,7 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note: Verified: restore exact implementation ae97cf05c verification after metadata-only pre-merge closure.
 - Canonical workflow state lives in the task README.
 
 <details>
