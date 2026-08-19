@@ -2,10 +2,10 @@
 id: "202608181750-CRZNFC"
 title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref."
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 33
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -27,23 +27,22 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-19T00:09:59.251Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-19T00:11:52.031Z"
+  updated_by: "EVALUATOR"
+  note: "External implementation rework committed 0359c33c, but extensions.implementation_commit remained 6ed0b4b62; evaluator therefore selected stale implementation evidence."
+  attempts: 1
 quality_review:
   state: "rework"
-  updated_at: "2026-08-19T00:00:49.127Z"
+  updated_at: "2026-08-19T00:11:52.031Z"
   updated_by: "EVALUATOR"
-  note: "Autonomous pre-merge closure rewrote task.commit to a metadata-only head, causing evaluator verification_implementation_changed despite a preserved implementation_commit extension."
-  evaluated_sha: "8d89dd8539e3f48c6a619beb4b07a97fe80fc8d2"
+  note: "External implementation rework committed 0359c33c, but extensions.implementation_commit remained 6ed0b4b62; evaluator therefore selected stale implementation evidence."
+  evaluated_sha: "0359c33c191c8a4a3b19750a4627eeac7226be25"
   blueprint_digest: "7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce"
   evidence_refs:
     - ".agentplane/tasks/202608181750-CRZNFC/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json"
-  findings:
-    - "The persisted evaluator target and verification target disagree after metadata-only pre-merge closure."
+  findings: []
 token_usage:
   agent_runs: 10
   input_tokens: null
@@ -528,9 +527,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit:
-  hash: "0359c33c191c8a4a3b19750a4627eeac7226be25"
-  message: "🚧 CRZNFC task: apply external agent result"
+commit: null
 comments:
   -
     author: "INTEGRATOR"
@@ -577,6 +574,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 0359c33c191c. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Implementation rework is blocked until the task authority includes the CLI-promoted incident registry that already exists in this branch and must be closed append-only after its fix. Recommended action: Approve the exact state-bound task scope extension, then resolve INC-20260818-01 through the governed incidents command and continue implementation rework. Requested scope: roots=.agentplane/policy/incidents.md; repository effects=repository_write,security_boundary; request digest=sha256:f3b658d4625f707f0efdd637f5118dcb367a87ba6e58a98d6775bb706e565e18. Agentplane receipt: external-agent-blocker/tr_c5ea6287e209f872a20ae230fa011d48/sha256:88d54df81fcfa4e2f3ad4e7c5b2ccc3ba24c52e35b1129e1b7b8285b4253cace/sha256:f3b658d4625f707f0efdd637f5118dcb367a87ba6e58a98d6775bb706e565e18."
 events:
   -
     type: "status"
@@ -703,8 +703,21 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "verify"
+    at: "2026-08-19T00:11:52.031Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "External implementation rework committed 0359c33c, but extensions.implementation_commit remained 6ed0b4b62; evaluator therefore selected stale implementation evidence."
+  -
+    type: "status"
+    at: "2026-08-19T00:12:42.140Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Implementation rework is blocked until the task authority includes the CLI-promoted incident registry that already exists in this branch and must be closed append-only after its fix. Recommended action: Approve the exact state-bound task scope extension, then resolve INC-20260818-01 through the governed incidents command and continue implementation rework. Requested scope: roots=.agentplane/policy/incidents.md; repository effects=repository_write,security_boundary; request digest=sha256:f3b658d4625f707f0efdd637f5118dcb367a87ba6e58a98d6775bb706e565e18. Agentplane receipt: external-agent-blocker/tr_c5ea6287e209f872a20ae230fa011d48/sha256:88d54df81fcfa4e2f3ad4e7c5b2ccc3ba24c52e35b1129e1b7b8285b4253cace/sha256:f3b658d4625f707f0efdd637f5118dcb367a87ba6e58a98d6775bb706e565e18."
 doc_version: 3
-doc_updated_at: "2026-08-19T00:10:00.290Z"
+doc_updated_at: "2026-08-19T00:12:42.172Z"
 doc_updated_by: "SUPERVISOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
@@ -1116,6 +1129,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-19T00:11:52.031Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: External implementation rework committed 0359c33c, but extensions.implementation_commit remained 6ed0b4b62; evaluator therefore selected stale implementation evidence.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:58336fca55725bee58dbb6b64da15ae8d121192e2a9f766d955c18f5b7fd6d2a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json
+    - old_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+    - current_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181750-CRZNFC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1136,23 +1179,30 @@ sections:
       Fixability: repo-fixable
       IncidentScope: branch_pr pre-merge closure and evaluator verification target selection
       IncidentTags: lifecycle, verification
+
+    - Observation: recordObservedTaskExecutionContract preserved the implementation SHA only inside the observed execution contract and did not refresh extensions.implementation_commit after implementation rework.
+      Impact: Any second implementation/rework episode can leave evaluator and verification targeting an obsolete commit, breaking autonomous continuation.
+      Resolution: Atomically refresh extensions.implementation_commit whenever a supervisor accepts a preserved implementation commit; cover both tasks with and without an execution contract.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
+      IncidentScope: external agent implementation evidence persistence
+      IncidentTags: lifecycle, verification
 extensions:
   agentplane.scope_extension_request:
-    applied_at: "2026-08-18T23:13:59.043Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:72a0c5d215806a3582e1c76216ab7d85925df0f027ce7f7809d9eca695e3c43d"
+    blocker_state_fingerprint: "sha256:88d54df81fcfa4e2f3ad4e7c5b2ccc3ba24c52e35b1129e1b7b8285b4253cace"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Root package.json is an obligatory 0.7.7 version surface explicitly required by the approved release plan and canonical parity checks."
+      rationale: "AgentPlane itself promoted INC-20260818-01 from this task, its defect is fixed in the same release branch, and both authority reconciliation and release:incidents:check require an append-only governed resolution before publication."
       repository_effects:
-        - "release_metadata"
+        - "repository_write"
+        - "security_boundary"
       schema_version: 1
       scope_roots:
-        - "package.json"
-    request_digest: "sha256:ed2c9df6f163e41c815575dec1796699df2aaf333b808e81905e4d24851ea971"
+        - ".agentplane/policy/incidents.md"
+    request_digest: "sha256:f3b658d4625f707f0efdd637f5118dcb367a87ba6e58a98d6775bb706e565e18"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_2ddae8292f5410a72b53c3f110e13e60"
+    status: "pending"
+    transition_id: "tr_c5ea6287e209f872a20ae230fa011d48"
   implementation_commit:
     hash: "6ed0b4b62b786d389f6a2b0ea3730973238c3985"
     message: "🚧 CRZNFC task: apply external agent result"
@@ -1579,6 +1629,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-19T00:11:52.031Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: External implementation rework committed 0359c33c, but extensions.implementation_commit remained 6ed0b4b62; evaluator therefore selected stale implementation evidence.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:58336fca55725bee58dbb6b64da15ae8d121192e2a9f766d955c18f5b7fd6d2a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json
+- old_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+- current_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181750-CRZNFC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1602,6 +1682,14 @@ DecisionContextRef:
   Promotion: incident-candidate
   Fixability: repo-fixable
   IncidentScope: branch_pr pre-merge closure and evaluator verification target selection
+  IncidentTags: lifecycle, verification
+
+- Observation: recordObservedTaskExecutionContract preserved the implementation SHA only inside the observed execution contract and did not refresh extensions.implementation_commit after implementation rework.
+  Impact: Any second implementation/rework episode can leave evaluator and verification targeting an obsolete commit, breaking autonomous continuation.
+  Resolution: Atomically refresh extensions.implementation_commit whenever a supervisor accepts a preserved implementation commit; cover both tasks with and without an execution contract.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
+  IncidentScope: external agent implementation evidence persistence
   IncidentTags: lifecycle, verification
 
 ## Token Usage
