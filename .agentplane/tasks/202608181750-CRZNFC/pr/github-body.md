@@ -15,8 +15,8 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: register the current source fix as the implementation identity before verification.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
