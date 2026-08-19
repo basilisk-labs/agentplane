@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The planner retains the existing source-task-plus-signature fingerprint for active entries and adds a separate archived identity based only on normalized scope and failure, which is the correct distinction between recurrence tracking and archival tombstones.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/dd8cad4bbcb6dac318b792d49878c639ecc7158009a44913abd0360e0bfed4b2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The command path loads the historical archive read-only and uses it only for promotion planning; active registry rendering, mirror writes, advice lookup, and line-budget behavior remain unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/dd8cad4bbcb6dac318b792d49878c639ecc7158009a44913abd0360e0bfed4b2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Regression coverage proves both the runtime case with changed id, date, source task, evidence, advice, and rule and the command-level archive loading/write no-op.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/dd8cad4bbcb6dac318b792d49878c639ecc7158009a44913abd0360e0bfed4b2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The duplicate active entry is removed from both canonical and packaged registries while the richer archived record remains preserved.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/dd8cad4bbcb6dac318b792d49878c639ecc7158009a44913abd0360e0bfed4b2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Archive identity intentionally treats the same normalized failure within the same normalized scope as already resolved; materially different failure classes must use precise observation text rather than reusing an archived description.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/dd8cad4bbcb6dac318b792d49878c639ecc7158009a44913abd0360e0bfed4b2.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
