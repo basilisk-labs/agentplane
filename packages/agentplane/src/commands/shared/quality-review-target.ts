@@ -6,6 +6,7 @@ import {
   resolveBaseBranch,
 } from "@agentplaneorg/core/git";
 import { canonicalizeJson, parseTaskReadme } from "@agentplaneorg/core/tasks";
+import type { TaskData } from "../../backends/task-backend.js";
 import { isRecord } from "../../shared/guards.js";
 
 const SIDE_EFFECT_AUTHORITY_EXTENSION_KEY = "agentplane.side_effect_authority";
@@ -20,6 +21,18 @@ const MANAGED_TASK_ARTIFACT_DIRECTORIES = [
   "evidence/",
   "supervision/",
 ] as const;
+
+export function recordedTaskImplementationCommitSha(
+  task: Pick<TaskData, "commit" | "extensions">,
+): string | null {
+  const recorded = isRecord(task.extensions?.implementation_commit)
+    ? task.extensions.implementation_commit.hash
+    : null;
+  const implementationSha = typeof recorded === "string" ? recorded.trim() : "";
+  if (implementationSha) return implementationSha;
+  const taskCommitSha = task.commit?.hash?.trim() ?? "";
+  return taskCommitSha || null;
+}
 
 function normalizeWorkflowDir(value: string): string {
   return value.replaceAll("\\", "/").replaceAll(/\/+$/g, "");

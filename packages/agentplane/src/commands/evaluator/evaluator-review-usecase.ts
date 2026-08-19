@@ -9,6 +9,7 @@ import {
 } from "../blueprint/snapshot-artifact.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { recordedTaskImplementationCommitSha } from "../shared/quality-review-target.js";
 import { withEvidenceMutationLock } from "../evidence/evidence-mutation-lock.js";
 import {
   assessLocalVerificationRecords,
@@ -240,7 +241,7 @@ async function prepareEvaluatorReviewLocked(
   });
   const verificationTargetSha =
     qualificationPacket?.packet.implementation_sha ??
-    opts.task.commit?.hash?.trim() ??
+    recordedTaskImplementationCommitSha(opts.task) ??
     evaluatedSha;
   const verificationTargetContext = {
     gitRoot,
