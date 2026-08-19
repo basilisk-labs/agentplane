@@ -106,7 +106,8 @@ export function makeRunTaskAdvanceHandler(deps: {
       if (replacement === "not_failed") {
         throw new CliError({
           code: "E_USAGE",
-          message: "task advance --replacement requires a terminal failed operation.",
+          message:
+            "task advance --replacement requires a terminal failed operation or an episode-count-only budget stop.",
         });
       }
       replacementPrepared = true;

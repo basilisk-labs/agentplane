@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   completeSupervisorExecutionEpisode,
+  continueSupervisorExecutionEpisodeAfterEpisodeBudget,
   createSupervisorExecutionEpisodeJournal,
   advanceSupervisorExecutionEpisodeState,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
@@ -67,6 +68,66 @@ function start(opts: {
 }
 
 describe("SupervisorExecutionEpisodeJournal", () => {
+  it("continues only an episode-count budget stop with a larger explicit cap", () => {
+    let current = journal({ max_episodes: 1, max_agent_runs: 1 });
+    const started = startSupervisorExecutionEpisode({
+      journal: current,
+      role: "EVALUATOR",
+      kind: "evaluator_episode",
+      operation_identity: { id: "quality-review" },
+      precondition_fingerprint_digest: FINGERPRINT,
+      authority_ref: "authority",
+      authority_digest: FINGERPRINT,
+      effect_ref: "review",
+      now: NOW,
+    });
+    if (started.status !== "started") throw new Error("expected started episode");
+    current = completeSupervisorExecutionEpisode({
+      journal: started.journal,
+      operation_key: started.operation_key,
+      result: { verdict: "pass" },
+      now: NOW,
+    });
+    expect(current).toMatchObject({
+      status: "stopped",
+      stop: { reason: "budget_exhausted", exhausted_dimensions: ["episodes"] },
+    });
+
+    const continued = continueSupervisorExecutionEpisodeAfterEpisodeBudget({
+      journal: current,
+      state_fingerprint_digest: NEXT_FINGERPRINT,
+      max_episodes: 51,
+      now: NOW,
+    });
+
+    expect(continued).toMatchObject({
+      status: "running",
+      stop: null,
+      budget: { max_episodes: 51 },
+      usage: { episodes: 1 },
+      cursor: { episode: 1, phase: "ready", operation_key: null },
+      state_fingerprint_digest: NEXT_FINGERPRINT,
+      previous_digest: current.digest,
+    });
+  });
+
+  it("does not continue resource-budget exhaustion as an episode extension", () => {
+    const stopped = stopSupervisorExecutionEpisode({
+      journal: journal(),
+      reason: "budget_exhausted",
+      exhausted_dimensions: ["wall_time_ms"],
+      now: NOW,
+    });
+
+    expect(() =>
+      continueSupervisorExecutionEpisodeAfterEpisodeBudget({
+        journal: stopped,
+        state_fingerprint_digest: NEXT_FINGERPRINT,
+        max_episodes: 51,
+        now: NOW,
+      }),
+    ).toThrow(/caused only by the episode-count budget/u);
+  });
   it("is canonical and binds the task state to its digest", () => {
     const first = journal();
     const second = journal();

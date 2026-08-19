@@ -152,6 +152,7 @@ export {
   SUPERVISOR_EPISODE_STOP_REASON_VALUES,
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
+  continueSupervisorExecutionEpisodeAfterEpisodeBudget,
   createSupervisorExecutionEpisodeJournal,
   digestSupervisorEpisodeValue,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,

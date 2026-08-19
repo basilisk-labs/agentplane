@@ -97,6 +97,9 @@ Created: 2026-08-18T17:51:51.714Z
  .../agentplane/src/commands/pr/internal/sync.ts    |   2 +
  .../commands/shared/quality-review-target.test.ts  |  28 +++-
  .../src/commands/shared/quality-review-target.ts   |  13 ++
+ .../shared/supervisor-execution-episode.test.ts    |  57 ++++++++
+ .../shared/supervisor-execution-episode.ts         |  19 ++-
+ .../src/commands/task/advance.command.ts           |   3 +-
  .../commands/task/direct-task-supervisor.test.ts   |  28 ++--
  .../task-execution-contract-observation.test.ts    |  76 ++++++++++
  .../task/task-execution-contract-observation.ts    |  62 +++++---
@@ -107,6 +110,9 @@ Created: 2026-08-18T17:51:51.714Z
  .../src/runtime/incidents/resolve.test.ts          |  34 +++++
  .../agentplane/src/runtime/incidents/shared.ts     |   6 +
  packages/core/package.json                         |   2 +-
+ .../runner/supervisor-execution-episode.test.ts    |  61 ++++++++
+ .../src/runner/supervisor-execution-episode.ts     |  45 ++++++
+ packages/core/src/schemas/index.ts                 |   1 +
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
  packages/spec/examples/acr.json                    |   4 +-
@@ -115,7 +121,7 @@ Created: 2026-08-18T17:51:51.714Z
  scripts/README.md                                  |  24 +--
  .../baselines/v0.7-compatibility-candidate.json    |   6 +-
  scripts/checks/run-fast-ci-tests.mjs               |   2 +-
- 86 files changed, 647 insertions(+), 1490 deletions(-)
+ 92 files changed, 831 insertions(+), 1492 deletions(-)
 ```
 
 </details>
