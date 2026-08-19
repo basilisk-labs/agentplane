@@ -9,7 +9,7 @@
   --home-violet: 124 58 237;
   --home-green: 5 150 105;
   --home-coral: 240 90 71;
-  --home-radius: 10px;
+  --home-radius: 4px;
 
   background: rgb(255 255 255);
   color: rgb(var(--home-black));
@@ -71,7 +71,7 @@
 }
 
 :global(body.agentplane-home) :global(.navbar__item.navbar__link) {
-  border-radius: 6px;
+  border-radius: 4px;
   color: rgb(var(--home-black));
   font-family: var(--ifm-font-family-base);
   font-size: 0.77rem;
@@ -93,7 +93,7 @@
 :global(body.agentplane-home) :global(.navbar-install-command) {
   background: rgb(255 255 255);
   border: 1px solid rgb(var(--home-border));
-  border-radius: 7px;
+  border-radius: 4px;
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.68rem;
   padding: 0.56rem 0.72rem;
@@ -180,7 +180,7 @@
 .installButton,
 .textLink {
   align-items: center;
-  border-radius: 8px;
+  border-radius: 4px;
   display: inline-flex;
   font-size: 0.84rem;
   font-weight: 610;
@@ -257,7 +257,7 @@
   animation: receiptEnter 760ms 80ms cubic-bezier(0.22, 1, 0.36, 1) both;
   background: rgb(255 255 255);
   border: 1px solid rgb(var(--home-border));
-  border-radius: 12px;
+  border-radius: 4px;
   box-shadow: 0 22px 55px rgb(34 44 61 / 0.1);
   min-width: 0;
   overflow: hidden;
@@ -308,7 +308,7 @@
 .receiptType {
   background: rgb(var(--home-surface));
   border: 1px solid rgb(var(--home-border));
-  border-radius: 5px;
+  border-radius: 4px;
   color: rgb(var(--home-text));
   font-size: 0.64rem;
   padding: 0.35rem 0.48rem;
@@ -390,7 +390,7 @@
 .verifiedMark {
   align-items: center;
   border: 1px solid rgb(var(--home-green) / 0.34);
-  border-radius: 999px;
+  border-radius: 4px;
   color: rgb(var(--home-green));
   display: inline-flex;
   flex: 0 0 auto;
@@ -626,7 +626,7 @@
   align-items: center;
   background: rgb(var(--step-soft));
   border: 1px solid rgb(var(--step-color) / 0.16);
-  border-radius: 12px;
+  border-radius: 4px;
   color: rgb(var(--step-color));
   display: inline-flex;
   height: 3.9rem;
