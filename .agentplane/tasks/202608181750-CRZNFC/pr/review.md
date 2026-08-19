@@ -13,7 +13,7 @@ Created: 2026-08-18T17:51:51.714Z
 ## Verification
 
 - State: ok
-- Note: Verified: bind current verification to preserved implementation ae97cf05c after worktree observation closeout.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
