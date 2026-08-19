@@ -113,6 +113,7 @@ export function makeRunTaskAdvanceHandler(deps: {
       replacementPrepared = true;
     }
     let recovery: Parameters<typeof buildAgentActionPacket>[0]["recovery"];
+    let verificationAttempted = false;
     for (let operationCount = 0; operationCount < 32; operationCount += 1) {
       const step = current.workflowStep;
       if (step.kind === "approval") {
@@ -134,6 +135,8 @@ export function makeRunTaskAdvanceHandler(deps: {
         }
       }
       if (step.kind === "agent_episode" && step.episode.purpose === "verification") {
+        if (verificationAttempted) break;
+        verificationAttempted = true;
         const checkout = current.executionPacket.mustRunFrom ?? current.workspace.root;
         const verificationCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });
         const verifyDecision = async () =>

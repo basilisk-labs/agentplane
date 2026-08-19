@@ -98,10 +98,14 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
  .../src/commands/shared/quality-review-target.ts   |  13 ++
  .../shared/supervisor-execution-episode.test.ts    |  57 ++++++++
  .../shared/supervisor-execution-episode.ts         |  19 ++-
- .../src/commands/task/advance.command.ts           |   3 +-
+ .../src/commands/task/advance.command.ts           |   6 +-
  ...direct-task-supervisor-formal-operation.test.ts |  61 ++++++++
  .../direct-task-supervisor-formal-operation.ts     |  15 ++
  .../commands/task/direct-task-supervisor.test.ts   |  28 ++--
+ .../task/external-agent-result-application.ts      | 108 ++++++++++++++
+ .../src/commands/task/external-agent-supervisor.ts |  89 +----------
+ .../external-agent-verification-result.test.ts     | 122 ++++++++++++++++
+ .../task/external-agent-verification-result.ts     | 149 +++++++++++++++++++
  .../task-execution-contract-observation.test.ts    |  76 ++++++++++
  .../task/task-execution-contract-observation.ts    |  62 +++++---
  .../src/commands/task/verify-record-execute.ts     |   6 +-
@@ -122,7 +126,7 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
  scripts/README.md                                  |  24 +--
  .../baselines/v0.7-compatibility-candidate.json    |   6 +-
  scripts/checks/run-fast-ci-tests.mjs               |   2 +-
- 95 files changed, 912 insertions(+), 1496 deletions(-)
+ 99 files changed, 1301 insertions(+), 1578 deletions(-)
 ```
 
 </details>

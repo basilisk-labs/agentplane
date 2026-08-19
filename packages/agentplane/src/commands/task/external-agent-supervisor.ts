@@ -37,29 +37,20 @@ import {
   writeExternalAgentExchange,
   type ExternalAgentExchange,
   type ExternalAgentExchangePaths,
-  type ExternalAgentResultEnvelope,
 } from "./external-agent-exchange.js";
 import {
   assertExternalAgentExchangeIdentity,
   assertExternalAgentSupervisorIntent,
   finalizeCompletedExternalAgentExchange,
 } from "./external-agent-exchange-authority.js";
-import {
-  applyExternalEvaluatorResult,
-  isExternalEvaluatorResultApplied,
-} from "./external-agent-evaluator.js";
-import {
-  applyExternalImplementationResult,
-  applyExternalReadOnlyWorktreeObservation,
-} from "./external-agent-implementation-authority.js";
 import { usesExternalImplementationAuthority } from "./external-agent-purpose.js";
+import {
+  applyAcceptedExternalAgentResult,
+  isExternalAgentResultAlreadyApplied,
+} from "./external-agent-result-application.js";
 import { superviseExternalAgentIssuance } from "./external-agent-supervisor-recovery.js";
 import { recordIssuedExternalAgentEpisode } from "./external-agent-supervisor-episode.js";
-import {
-  applyExternalPlanningResult,
-  assertExternalPlanningResultApplicable,
-  isExternalPlanningResultApplied,
-} from "./external-agent-planning-authority.js";
+import { assertExternalPlanningResultApplicable } from "./external-agent-planning-authority.js";
 import {
   externalAgentResultIdentity,
   refreshExternalAgentRoute,
@@ -295,49 +286,6 @@ export async function issueExternalAgentExchange(opts: {
   });
 }
 
-async function applyAcceptedResult(opts: {
-  command: CommandContext;
-  decision: TaskRouteDecision;
-  exchange: ExternalAgentExchange;
-  work_order: AgentWorkOrderV2;
-  envelope: ExternalAgentResultEnvelope;
-}): Promise<void> {
-  if (opts.exchange.purpose === "planning") {
-    await applyExternalPlanningResult({
-      command: opts.command,
-      exchange: opts.exchange,
-      envelope: opts.envelope,
-    });
-    return;
-  }
-  if (
-    usesExternalImplementationAuthority(opts.exchange.purpose, opts.work_order.authority.sandbox)
-  ) {
-    await applyExternalImplementationResult(opts);
-    return;
-  }
-  if (opts.exchange.purpose === "task_worktree_resolution") {
-    await applyExternalReadOnlyWorktreeObservation({
-      command: opts.command,
-      exchange: opts.exchange,
-      envelope: opts.envelope,
-    });
-    return;
-  }
-  if (opts.exchange.purpose === "quality_review") {
-    await applyExternalEvaluatorResult({
-      command: opts.command,
-      exchange: opts.exchange,
-      semantic: opts.envelope.result,
-    });
-    return;
-  }
-  throw new CliError({
-    code: "E_VALIDATION",
-    message: `External semantic result cannot apply unsupported purpose ${opts.exchange.purpose}.`,
-  });
-}
-
 function assertReadOnlyReturnFresh(opts: {
   exchange: ExternalAgentExchange;
   decision: TaskRouteDecision;
@@ -350,29 +298,6 @@ function assertReadOnlyReturnFresh(opts: {
       message: "External-agent result is stale; request a fresh action packet.",
     });
   }
-}
-
-async function isReadOnlyResultAlreadyApplied(opts: {
-  command: CommandContext;
-  exchange: ExternalAgentExchange;
-  decision: TaskRouteDecision;
-  envelope: ExternalAgentResultEnvelope;
-}): Promise<boolean> {
-  if (opts.exchange.purpose === "planning") {
-    return await isExternalPlanningResultApplied({
-      command: opts.command,
-      exchange: opts.exchange,
-      decision: opts.decision,
-      envelope: opts.envelope,
-    });
-  }
-  if (opts.exchange.purpose === "quality_review") {
-    return await isExternalEvaluatorResultApplied({
-      command: opts.command,
-      exchange: opts.exchange,
-    });
-  }
-  return false;
 }
 
 export async function acceptExternalAgentResult(opts: {
@@ -520,7 +445,7 @@ export async function acceptExternalAgentResult(opts: {
     }
     const alreadyApplied =
       (exchange.status === "result_received" || exchange.status === "accepted") &&
-      (await isReadOnlyResultAlreadyApplied({
+      (await isExternalAgentResultAlreadyApplied({
         command: checkoutCommand,
         exchange,
         decision: current,
@@ -533,7 +458,7 @@ export async function acceptExternalAgentResult(opts: {
       assertReadOnlyReturnFresh({ exchange, decision: current });
     }
     if (!(alreadyApplied && exchange.purpose === "planning")) {
-      await applyAcceptedResult({
+      await applyAcceptedExternalAgentResult({
         command: checkoutCommand,
         decision: current,
         exchange,
