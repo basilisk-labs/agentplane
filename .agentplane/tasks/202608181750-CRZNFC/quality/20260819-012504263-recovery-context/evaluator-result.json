@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Strengthen archive de-duplication so generated id, date, and evidence commit changes cannot re-promote the same resolved failure.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/043345616f1d796823b4166484ac4be5eca88b02ab25f0c53fa9a29cf050cd23.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Remove the duplicate from the active registry and packaged mirror only together with that regression fix, then rerun the full release gate.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/043345616f1d796823b4166484ac4be5eca88b02ab25f0c53fa9a29cf050cd23.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Residual risk: A cleanup-only change would allow repeated re-promotion on the next finish.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/043345616f1d796823b4166484ac4be5eca88b02ab25f0c53fa9a29cf050cd23.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Archived semantic duplicate with different id, date, and evidence commit remains suppressed."
+  ],
+  "hidden_assumptions": [],
+  "recovery_context": "Rework required: the final candidate still contains active INC-20260819-01, a semantic duplicate of archived INC-20260818-01, and therefore fails the mandatory release incident gate."
+}

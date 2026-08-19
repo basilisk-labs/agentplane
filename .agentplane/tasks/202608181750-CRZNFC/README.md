@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 53
+revision: 54
 origin:
   system: "manual"
 depends_on: []
@@ -33,35 +33,34 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-19T01:08:20.674Z"
+  updated_at: "2026-08-19T01:26:43.787Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "ae97cf05cbb4c35182f82a9cda39b4e0d9df733b"
+  note: "EVALUATOR returned rework with 3 typed finding(s)."
+  evaluated_sha: "31ba8d27a80c69076492d004aa66e9164376654a"
   blueprint_digest: "92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e"
   evidence_refs:
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-010706272-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-010706272-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/183f1cc1851b224c1366ad0b9742d6e6f7230f03d4fd177dc13ce7eb4bf2151c.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-010706272-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-010706272-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-010706272-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-012504263-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-012504263-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/7c3f7678fb7180036765d5d47872006a0e502d511220f088dd1b2e7803e760d0.md"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-012504263-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-012504263-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-012504263-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-012504263-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181750-CRZNFC/README.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/50fbf56cbb1cc1aa3883c1823248d3aa018c7f0095df41293d3a9798620f5730.patch"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/7d6dc0c80ba8f842a28ee22b72c977edd577bed05279f9b9eb039b14e6905aa0.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/verification/20260819010653684-0f692ac0f594ec94.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/043345616f1d796823b4166484ac4be5eca88b02ab25f0c53fa9a29cf050cd23.patch"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/682ad86760935fbdc035045aca376a9052f3091b4a42d68dd98e40838b2cdc91.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/verification/20260819012213511-18d6cae7c7db1007.json"
     - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/7ccd6e7b02923ad1c86ea041ac541bbd3d5af42468482f5eb901fb845a97a2ce.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "No blocking correctness, scope, or security finding remains in the evaluated implementation."
-    - "The new observation logic updates extensions.implementation_commit only when a non-undefined preserved commit differs, preserves all other extensions, avoids a backend write when both identity and contract observations are unchanged, and is covered with contract, no-contract, and idempotence tests."
-    - "The active and packaged incident registries are synchronized and empty; the archived record identifies exact enforcement code, regression coverage, and implementation commit 6ed0b4b62."
-    - "The evaluator packet selected ae97cf05c rather than a task-metadata commit, confirming the quality-review target fix works for this rework."
-    - "Residual risk: The release must still pass exact-head hosted checks and public publication readback before it can be considered complete."
+    - "Strengthen archive de-duplication so generated id, date, and evidence commit changes cannot re-promote the same resolved failure."
+    - "Remove the duplicate from the active registry and packaged mirror only together with that regression fix, then rerun the full release gate."
+    - "Residual risk: A cleanup-only change would allow repeated re-promotion on the next finish."
 token_usage:
   agent_runs: 15
   input_tokens: null
@@ -852,7 +851,7 @@ events:
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The workspace contains only intended evaluator evidence artifacts from the stale-but-valid rework verdict for implementation 1c0ecc78b. Preserve and commit the task-local evidence so a fresh evaluator packet can record the same verdict against current state."
 doc_version: 3
-doc_updated_at: "2026-08-19T01:24:51.373Z"
+doc_updated_at: "2026-08-19T01:26:43.807Z"
 doc_updated_by: "SUPERVISOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
