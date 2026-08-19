@@ -13,7 +13,7 @@ Created: 2026-08-18T22:51:48.764Z
 ## Verification
 
 - State: ok
-- Note: Publication path completed; PR #4849 is created and workflow moved from pr_needed to verification_required.
+- Note: After rebase onto current main, task branch still contains only intended homepage redesign changes and remains aligned with PR #4849.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

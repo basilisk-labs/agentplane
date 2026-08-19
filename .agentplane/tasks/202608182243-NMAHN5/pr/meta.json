@@ -3,7 +3,7 @@
   "branch": "task/202608182243-NMAHN5/redesign-the-agentplane-homepage-around-a-clear",
   "created_at": "2026-08-18T22:51:48.764Z",
   "diffstat_sha256": "sha256:27d0d01bd8fdf1fbf559ecc4c2573188d0c5bc0ef966b6e4c312d6066ba1a56b",
-  "last_verified_at": "2026-08-19T12:20:52.843Z",
+  "last_verified_at": "2026-08-19T12:28:46.630Z",
   "last_verified_diffstat_sha256": "sha256:27d0d01bd8fdf1fbf559ecc4c2573188d0c5bc0ef966b6e4c312d6066ba1a56b",
   "pr_number": 4849,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4849",

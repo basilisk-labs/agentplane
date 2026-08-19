@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -24,36 +24,35 @@ plan_approval:
   note: "User approved the refined white-background hybrid design in chat; hero visual must resemble a real Agentplane Receipt with WorkOrder, scoped authority, observed verification, and Recorded in Git status."
 verification:
   state: "ok"
-  updated_at: "2026-08-19T12:20:52.843Z"
+  updated_at: "2026-08-19T12:28:46.630Z"
   updated_by: "CODER"
-  note: "Publication path completed; PR #4849 is created and workflow moved from pr_needed to verification_required."
+  note: "After rebase onto current main, task branch still contains only intended homepage redesign changes and remains aligned with PR #4849."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-19T12:21:21.686Z"
+  updated_at: "2026-08-19T12:28:55.024Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "10418cf3ee50127c6f94e9122073109456bce440"
+  evaluated_sha: "2601e73b3e04c42343904c9e41dbd85b5a262181"
   blueprint_digest: "72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f"
   evidence_refs:
-    - ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122121237-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122121237-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/6fe06bfa2f3db252cac453b7ea7b3d492461fd2cdd53f3c93cdaf2c7167de0d2.md"
-    - ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122121237-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122121237-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122121237-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122854517-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122854517-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/b970b82e8b909fe5a24f113490f4991a7372db3a5d6440c236ca8a4e136d2bc0.md"
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122854517-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122854517-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122854517-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608182243-NMAHN5/README.md"
     - ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/d7e45b15552d96f360bea76f963bd1fd2a18c2820799fd50449840b8c22fe542.patch"
-    - ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/e72b002b598f0f9b758bb44c8251f3b9a46d72305700cae5b840f66248f8e22f.json"
-    - ".agentplane/tasks/202608182243-NMAHN5/verification/20260819122052843-10abe487a851b044.json"
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/7fc7171c0bf8dfb245662e5baaaa67342d96e51829c889553fe27993bd2c990c.json"
     - ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/4d03873199544981788fe06cc57f0aef684033ee4e150bb67cf3b69e648a5600.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Дизайн реализует запрошенный минималистичный и современный путь с понятной цепочкой Authorize/Run/Verify/Record и фокусом на authority + durable proof."
+    - "After rebase on main, homepage UX/positioning remains consistent, with updated commit history and no regression in requested content structure."
 token_usage:
   agent_runs: 2
   input_tokens: null
@@ -254,8 +253,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "10418cf3ee50127c6f94e9122073109456bce440"
+  -
+    type: "verify"
+    at: "2026-08-19T12:28:46.630Z"
+    author: "CODER"
+    state: "ok"
+    note: "After rebase onto current main, task branch still contains only intended homepage redesign changes and remains aligned with PR #4849."
 doc_version: 3
-doc_updated_at: "2026-08-19T12:21:41.929Z"
+doc_updated_at: "2026-08-19T12:28:55.046Z"
 doc_updated_by: "CODER"
 description: "Implement the selected hybrid visual target: compact header from concept 3, icon-led diagrams and evidence storytelling from concept 1, a white background, modern multicolor semantic accents, responsive behavior, and restrained microinteractions. Preserve the current Git-native control-plane positioning and working navigation/CTAs."
 sections:
@@ -304,6 +309,41 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608182243-NMAHN5
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-19T12:28:46.630Z — VERIFY — ok
+
+    By: CODER
+
+    Note: After rebase onto current main, task branch still contains only intended homepage redesign changes and remains aligned with PR #4849.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:eeb567c25b0cdd2e85d2f891a2a665221f9e019ffb4d454994f21ec83e225e8b, input_digest=sha256:72461311a5ab128671c59465061e29e46e7e551fbc88176c3a99de200ac1524c
+
+    Details:
+
+    Command: agentplane pr open 202608182243-NMAHN5 --author CODER
+    Result: pass
+    Evidence: PR remains linked as https://github.com/basilisk-labs/agentplane/pull/4849 with head bbf70dc3c17c...rebased to current main
+    Scope: final task branch head and PR publication alignment
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608182243-NMAHN5-redesign-the-agentplane-homepage-around-a-clear/.agentplane/tasks/202608182243-NMAHN5/blueprint/resolved-snapshot.json
+    - old_digest: 72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f
+    - current_digest: 72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608182243-NMAHN5
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -376,6 +416,41 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608182243-NMAHN5
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-19T12:28:46.630Z — VERIFY — ok
+
+By: CODER
+
+Note: After rebase onto current main, task branch still contains only intended homepage redesign changes and remains aligned with PR #4849.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:eeb567c25b0cdd2e85d2f891a2a665221f9e019ffb4d454994f21ec83e225e8b, input_digest=sha256:72461311a5ab128671c59465061e29e46e7e551fbc88176c3a99de200ac1524c
+
+Details:
+
+Command: agentplane pr open 202608182243-NMAHN5 --author CODER
+Result: pass
+Evidence: PR remains linked as https://github.com/basilisk-labs/agentplane/pull/4849 with head bbf70dc3c17c...rebased to current main
+Scope: final task branch head and PR publication alignment
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608182243-NMAHN5-redesign-the-agentplane-homepage-around-a-clear/.agentplane/tasks/202608182243-NMAHN5/blueprint/resolved-snapshot.json
+- old_digest: 72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f
+- current_digest: 72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608182243-NMAHN5
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

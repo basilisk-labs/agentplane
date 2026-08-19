@@ -1,0 +1,195 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "npm --prefix website run build",
+    "npm --prefix website run typecheck"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "source_code"
+      ],
+      "external_effects": [],
+      "components": [],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:documentation",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write",
+        "source_code"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "website"
+      ],
+      "changed_files": [
+        "website/docusaurus.config.ts",
+        "website/src/data/homepage-content.ts",
+        "website/src/pages/_home.module.css",
+        "website/src/pages/index.tsx"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "cli"
+    ],
+    "escalation_reasons": [],
+    "requires_full_regression": false,
+    "requires_real_e2e": false,
+    "digest": "sha256:cd21ac3d2f3074675f286bbcc851388f20beda6d1783144f5697e3931c56e5a6"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-19T12:28:46.630Z",
+    "updated_by": "CODER",
+    "note": "After rebase onto current main, task branch still contains only intended homepage redesign changes and remains aligned with PR #4849."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 0221381720a5b70e1591aa7e3c103eb8639a6ef7..55b45ac37835a9bb1d9f79f0f2ba6c9a9b5973f3",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 0221381720a5b70e1591aa7e3c103eb8639a6ef7..55b45ac37835a9bb1d9f79f0f2ba6c9a9b5973f3",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\t.agentplane/tasks/202608182243-NMAHN5/README.md",
+          "A\t.agentplane/tasks/202608182243-NMAHN5/blueprint/resolved-snapshot.json",
+          "A\t.agentplane/tasks/202608182243-NMAHN5/pr/diffstat.txt",
+          "A\t.agentplane/tasks/202608182243-NMAHN5/pr/github-body.md",
+          "A\t.agentplane/tasks/202608182243-NMAHN5/pr/github-title.txt",
+          "A\t.agentplane/tasks/202608182243-NMAHN5/pr/meta.json",
+          "A\t.agentplane/tasks/202608182243-NMAHN5/pr/review.md",
+          "M\twebsite/docusaurus.config.ts",
+          "M\twebsite/src/data/homepage-content.ts",
+          "M\twebsite/src/pages/_home.module.css",
+          "M\twebsite/src/pages/index.tsx"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "0221381720a5b70e1591aa7e3c103eb8639a6ef7",
+    "implementation_commit": "55b45ac37835a9bb1d9f79f0f2ba6c9a9b5973f3",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        "?? .agentplane/tasks/202608182243-NMAHN5/README.md",
+        "?? .agentplane/tasks/202608182243-NMAHN5/blueprint/resolved-snapshot.json",
+        "?? .agentplane/tasks/202608182243-NMAHN5/pr/diffstat.txt",
+        "?? .agentplane/tasks/202608182243-NMAHN5/pr/github-body.md",
+        "?? .agentplane/tasks/202608182243-NMAHN5/pr/github-title.txt",
+        "?? .agentplane/tasks/202608182243-NMAHN5/pr/meta.json",
+        "?? .agentplane/tasks/202608182243-NMAHN5/pr/review.md"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608182243-NMAHN5/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608182243-NMAHN5/blueprint/resolved-snapshot.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608182243-NMAHN5/pr/diffstat.txt"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608182243-NMAHN5/pr/github-body.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608182243-NMAHN5/pr/github-title.txt"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608182243-NMAHN5/pr/meta.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608182243-NMAHN5/pr/review.md"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        "?? .agentplane/tasks/202608182243-NMAHN5/README.md",
+        "?? .agentplane/tasks/202608182243-NMAHN5/blueprint/resolved-snapshot.json",
+        "?? .agentplane/tasks/202608182243-NMAHN5/pr/diffstat.txt",
+        "?? .agentplane/tasks/202608182243-NMAHN5/pr/github-body.md",
+        "?? .agentplane/tasks/202608182243-NMAHN5/pr/github-title.txt",
+        "?? .agentplane/tasks/202608182243-NMAHN5/pr/meta.json",
+        "?? .agentplane/tasks/202608182243-NMAHN5/pr/review.md"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608182243-NMAHN5",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608182243-NMAHN5/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

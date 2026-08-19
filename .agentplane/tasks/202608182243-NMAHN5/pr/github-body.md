@@ -16,7 +16,12 @@ Implement the selected hybrid visual target: compact header from concept 3, icon
 ## Verification
 
 - State: ok
-- Note: Publication path completed; PR #4849 is created and workflow moved from pr_needed to verification_required.
+- Note:
+
+```text
+After rebase onto current main, task branch still contains only intended homepage redesign changes
+and remains aligned with PR #4849.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
