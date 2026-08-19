@@ -2,10 +2,10 @@
 id: "202608181750-CRZNFC"
 title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref."
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 54
+revision: 57
 origin:
   system: "manual"
 depends_on: []
@@ -28,9 +28,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-19T01:22:13.511Z"
+  updated_at: "2026-08-19T01:34:30.567Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
   state: "rework"
@@ -237,6 +237,8 @@ execution_contract:
       - "packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+      - "packages/agentplane/src/commands/incidents/shared.test.ts"
+      - "packages/agentplane/src/commands/incidents/shared.ts"
       - "packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts"
       - "packages/agentplane/src/commands/pr/integrate/internal/prepare.ts"
       - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
@@ -250,6 +252,9 @@ execution_contract:
       - "packages/agentplane/src/commands/task/verify-record-execute.ts"
       - "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
       - "packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts"
+      - "packages/agentplane/src/runtime/incidents/plan-strategy.ts"
+      - "packages/agentplane/src/runtime/incidents/resolve.test.ts"
+      - "packages/agentplane/src/runtime/incidents/shared.ts"
       - "packages/core/package.json"
       - "packages/recipes/package.json"
       - "packages/recipes/src/index.ts"
@@ -357,7 +362,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:0eb4b3f460ac99a010d8f2148041bf2a5a88a12d5b7b4deb36b402d67b8fde76"
+      digest: "sha256:1a49c97e7e25ec419a54996e5e86e566d5a0d975027ca6aabc7f4b875fd2e6cd"
       escalation_reasons:
         - "central_component:package.json"
         - "central_path:package.json"
@@ -488,6 +493,8 @@ execution_contract:
           - "packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+          - "packages/agentplane/src/commands/incidents/shared.test.ts"
+          - "packages/agentplane/src/commands/incidents/shared.ts"
           - "packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts"
           - "packages/agentplane/src/commands/pr/integrate/internal/prepare.ts"
           - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
@@ -501,6 +508,9 @@ execution_contract:
           - "packages/agentplane/src/commands/task/verify-record-execute.ts"
           - "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
           - "packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts"
+          - "packages/agentplane/src/runtime/incidents/plan-strategy.ts"
+          - "packages/agentplane/src/runtime/incidents/resolve.test.ts"
+          - "packages/agentplane/src/runtime/incidents/shared.ts"
           - "packages/core/package.json"
           - "packages/recipes/package.json"
           - "packages/recipes/src/index.ts"
@@ -561,8 +571,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "056e47ccab7d14426c203c86593fac5d30dbf8ec"
-  message: "🚧 CRZNFC task: record external evaluator result"
+  hash: "306272c451e4cd13b7987bef303b6204f4598680"
+  message: "🚧 CRZNFC task: apply external agent result"
 comments:
   -
     author: "INTEGRATOR"
@@ -633,6 +643,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The workspace contains only intended evaluator evidence artifacts from the stale-but-valid rework verdict for implementation 1c0ecc78b. Preserve and commit the task-local evidence so a fresh evaluator packet can record the same verdict against current state."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 306272c451e4. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -850,8 +863,22 @@ events:
     at: "2026-08-19T01:24:51.339Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The workspace contains only intended evaluator evidence artifacts from the stale-but-valid rework verdict for implementation 1c0ecc78b. Preserve and commit the task-local evidence so a fresh evaluator packet can record the same verdict against current state."
+  -
+    type: "status"
+    at: "2026-08-19T01:34:24.543Z"
+    author: "SUPERVISOR"
+    from: "DONE"
+    to: "DOING"
+    note: "Implementation committed: 306272c451e4. CLI accepted one state-bound external-agent semantic result."
+    commit: "306272c451e4cd13b7987bef303b6204f4598680"
+  -
+    type: "verify"
+    at: "2026-08-19T01:34:30.567Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-19T01:26:43.807Z"
+doc_updated_at: "2026-08-19T01:34:33.344Z"
 doc_updated_by: "SUPERVISOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
@@ -1797,6 +1824,78 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-19T01:34:30.567Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:bd815fc41f910b853f395b7f52c88baafa122af92a8fa2b28b296cf74452a15a
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181750-CRZNFC Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181750-CRZNFC Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181750-CRZNFC Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181750-CRZNFC Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181750-CRZNFC Verification Contract check hosted_integration
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181750-CRZNFC Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608181750-CRZNFC Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json
+    - old_digest: 92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e
+    - current_digest: 92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181750-CRZNFC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608181750-CRZNFC
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1844,7 +1943,7 @@ extensions:
     status: "applied"
     transition_id: "tr_c5ea6287e209f872a20ae230fa011d48"
   implementation_commit:
-    hash: "1c0ecc78b9a377150857e75e01bda4d3c2ee0bec"
+    hash: "306272c451e4cd13b7987bef303b6204f4598680"
   workflow_route_baseline:
     start_head_sha: "708f0d7d5b813ea2bb4de659d9eb113a752e3c63"
     version: 1
@@ -2796,6 +2895,78 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-19T01:34:30.567Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:bd815fc41f910b853f395b7f52c88baafa122af92a8fa2b28b296cf74452a15a
+
+Details:
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181750-CRZNFC Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181750-CRZNFC Verification Contract check critical_paths
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181750-CRZNFC Verification Contract check docs_contract
+
+Check: full_regression
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181750-CRZNFC Verification Contract check full_regression
+
+Check: hosted_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181750-CRZNFC Verification Contract check hosted_integration
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181750-CRZNFC Verification Contract check real_e2e
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608181750-CRZNFC Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json
+- old_digest: 92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e
+- current_digest: 92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181750-CRZNFC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608181750-CRZNFC
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
