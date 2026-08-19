@@ -15,13 +15,8 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Autonomous pre-merge closure rewrote task.commit to a metadata-only head, causing evaluator
-verification_implementation_changed despite a preserved implementation_commit extension.
-```
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 0e8367dc1e49ae2178e375493fd5ccebc6674c46..6ed0b4b62b786d389f6a2b0ea3730973238c3985",
+      "command": "git diff --check c7106be0fa513dd124feed288744c64f002ea472..0359c33c191c8a4a3b19750a4627eeac7226be25",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 0e8367dc1e49ae2178e375493fd5ccebc6674c46..6ed0b4b62b786d389f6a2b0ea3730973238c3985",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB c7106be0fa513dd124feed288744c64f002ea472..0359c33c191c8a4a3b19750a4627eeac7226be25",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -23,11 +23,11 @@
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/github-title.txt",
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/meta.json",
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/review.md",
-        "A\t.agentplane/tasks/202608181750-CRZNFC/verification/20260818232113208-b19e994d13c2559f.json",
-        "M\tpackages/agentplane/src/commands/pr/integrate/internal/prepare.ts",
-        "M\tpackages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts",
-        "M\tpackages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts",
-        "M\tpackages/agentplane/src/commands/pr/internal/sync.ts"
+        "A\t.agentplane/tasks/202608181750-CRZNFC/verification/20260819000049127-8b8253ff22e376ef.json",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
+        "M\tpackages/agentplane/src/commands/shared/quality-review-target.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/quality-review-target.ts"
       ]
     },
     {
@@ -37,8 +37,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "0e8367dc1e49ae2178e375493fd5ccebc6674c46",
-  "implementation_commit": "6ed0b4b62b786d389f6a2b0ea3730973238c3985",
+  "execution_base_commit": "c7106be0fa513dd124feed288744c64f002ea472",
+  "implementation_commit": "0359c33c191c8a4a3b19750a4627eeac7226be25",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
@@ -47,7 +47,11 @@
       " M .agentplane/tasks/202608181750-CRZNFC/pr/github-title.txt",
       " M .agentplane/tasks/202608181750-CRZNFC/pr/meta.json",
       " M .agentplane/tasks/202608181750-CRZNFC/pr/review.md",
-      "?? .agentplane/tasks/202608181750-CRZNFC/verification/20260818232113208-b19e994d13c2559f.json"
+      " M packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
+      " M packages/agentplane/src/commands/shared/quality-review-target.test.ts",
+      " M packages/agentplane/src/commands/shared/quality-review-target.ts",
+      "?? .agentplane/tasks/202608181750-CRZNFC/verification/20260819000049127-8b8253ff22e376ef.json"
     ],
     "classification": [
       {
@@ -72,7 +76,23 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608181750-CRZNFC/verification/20260818232113208-b19e994d13c2559f.json"
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/quality-review-target.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/quality-review-target.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608181750-CRZNFC/verification/20260819000049127-8b8253ff22e376ef.json"
       }
     ],
     "final": [],
@@ -83,7 +103,11 @@
       " M .agentplane/tasks/202608181750-CRZNFC/pr/github-title.txt",
       " M .agentplane/tasks/202608181750-CRZNFC/pr/meta.json",
       " M .agentplane/tasks/202608181750-CRZNFC/pr/review.md",
-      "?? .agentplane/tasks/202608181750-CRZNFC/verification/20260818232113208-b19e994d13c2559f.json"
+      " M packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
+      " M packages/agentplane/src/commands/shared/quality-review-target.test.ts",
+      " M packages/agentplane/src/commands/shared/quality-review-target.ts",
+      "?? .agentplane/tasks/202608181750-CRZNFC/verification/20260819000049127-8b8253ff22e376ef.json"
     ],
     "unchanged_from_execution_baseline": []
   },
