@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 66
+revision: 67
 origin:
   system: "manual"
 depends_on: []
@@ -35,32 +35,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-19T01:44:04.930Z"
+  updated_at: "2026-08-19T01:52:46.886Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 4 typed finding(s)."
-  evaluated_sha: "785a9fc9eb53eee3eff7bc109e6547b230061f9b"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "dae89d8eff1630807267364d1c4bb08f17c71b3e"
   blueprint_digest: "92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e"
   evidence_refs:
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-014326262-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-014326262-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/59e7bca54bf2537f314e87471286cd3205649f933989cc467797d97dc6a225fb.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-014326262-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-014326262-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-014326262-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-015211726-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-015211726-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/828e5dcda79c4d06cd81c205464876043c928b9bc9e72beca438dfe8a3f491f4.md"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-015211726-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-015211726-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-015211726-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181750-CRZNFC/README.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/30a2f39f1f10642d62438c23bf889e12db4e83dc5b1abd4a6480eac7fbe986ec.patch"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/fb31533f92b9a3c5d8ab6812e2c08c36ac39959f378650661f474df0f15ba16f.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/verification/20260819014306816-cb3a543a3c1704ea.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/b5bd121c24310884549118e81b5ea4b63fe1427e4da18d042202b75d77fb8a23.patch"
+    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/63866bcebe5f0928ec3f2dd48cfd106f83b70c32bc1da467e44a1986832d0eea.json"
+    - ".agentplane/tasks/202608181750-CRZNFC/verification/20260819015158382-0fac88ac77f8fe58.json"
     - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/7ccd6e7b02923ad1c86ea041ac541bbd3d5af42468482f5eb901fb845a97a2ce.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "The failure is reproduced exactly from hosted job 95928116943: verify-record.unit.test.ts was 1016 lines and became an eleventh oversized test."
-    - "The implementation keeps the new implementation_commit assertion and all pre-existing tests while reducing the file to 998 lines."
-    - "Using the real quality-review module for unchanged exports improves mock fidelity; overriding only resolveQualityReviewTargetSha keeps the call-boundary assertion deterministic."
-    - "Vitest 41/41, hotspots:check, focused ESLint, repository typecheck, and diff hygiene all pass."
+    - "Continuation requires a stopped budget_exhausted journal, a durably completed latest operation bound to the stop, and exactly one exhausted dimension: episodes."
+    - "The caller must use explicit --replacement; the cap grows monotonically by one default tranche while usage, operations, prior digest, and state binding remain intact."
+    - "All token, time, agent-run, filesystem, diff, and no-progress stops remain rejected by the continuation function."
+    - "Core and persisted-store regressions plus the existing task-advance recovery suite pass 52/52; the live journal recovery also produced a fresh exact packet."
+    - "Residual risk: Operators can deliberately extend the episode count in repeated 50-episode tranches, but each extension is explicit and cannot increase any resource budget."
 token_usage:
   agent_runs: 24
   input_tokens: null
@@ -942,7 +943,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-19T01:52:01.039Z"
+doc_updated_at: "2026-08-19T01:52:46.916Z"
 doc_updated_by: "SUPERVISOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:

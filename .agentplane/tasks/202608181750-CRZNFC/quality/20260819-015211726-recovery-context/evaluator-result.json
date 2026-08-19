@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Continuation requires a stopped budget_exhausted journal, a durably completed latest operation bound to the stop, and exactly one exhausted dimension: episodes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/b5bd121c24310884549118e81b5ea4b63fe1427e4da18d042202b75d77fb8a23.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The caller must use explicit --replacement; the cap grows monotonically by one default tranche while usage, operations, prior digest, and state binding remain intact.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/b5bd121c24310884549118e81b5ea4b63fe1427e4da18d042202b75d77fb8a23.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "All token, time, agent-run, filesystem, diff, and no-progress stops remain rejected by the continuation function.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/b5bd121c24310884549118e81b5ea4b63fe1427e4da18d042202b75d77fb8a23.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Core and persisted-store regressions plus the existing task-advance recovery suite pass 52/52; the live journal recovery also produced a fresh exact packet.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/b5bd121c24310884549118e81b5ea4b63fe1427e4da18d042202b75d77fb8a23.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Operators can deliberately extend the episode count in repeated 50-episode tranches, but each extension is explicit and cannot increase any resource budget.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/b5bd121c24310884549118e81b5ea4b63fe1427e4da18d042202b75d77fb8a23.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
