@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 5eb2e10acaaf51d971035edbeaaa363a472813fa..dae89d8eff1630807267364d1c4bb08f17c71b3e",
+      "command": "git diff --check 0bdd92c1e0354017d862ac73ba97637c6629a4d0..e0b25719468dea7485051fd64981d6a7c7adf415",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5eb2e10acaaf51d971035edbeaaa363a472813fa..dae89d8eff1630807267364d1c4bb08f17c71b3e",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 0bdd92c1e0354017d862ac73ba97637c6629a4d0..e0b25719468dea7485051fd64981d6a7c7adf415",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,12 +21,7 @@
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/github-body.md",
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/meta.json",
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/review.md",
-        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
-        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
-        "M\tpackages/core/src/runner/supervisor-execution-episode.test.ts",
-        "M\tpackages/core/src/runner/supervisor-execution-episode.ts",
-        "M\tpackages/core/src/schemas/index.ts"
+        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
       ]
     },
     {
@@ -36,47 +31,23 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "5eb2e10acaaf51d971035edbeaaa363a472813fa",
-  "implementation_commit": "dae89d8eff1630807267364d1c4bb08f17c71b3e",
+  "execution_base_commit": "0bdd92c1e0354017d862ac73ba97637c6629a4d0",
+  "implementation_commit": "e0b25719468dea7485051fd64981d6a7c7adf415",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
-      " M packages/agentplane/src/commands/task/advance.command.ts",
-      " M packages/core/src/runner/supervisor-execution-episode.test.ts",
-      " M packages/core/src/runner/supervisor-execution-episode.ts",
-      " M packages/core/src/schemas/index.ts"
+      " M packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/advance.command.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/runner/supervisor-execution-episode.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/runner/supervisor-execution-episode.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/schemas/index.ts"
+        "line": " M packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
-      " M packages/agentplane/src/commands/task/advance.command.ts",
-      " M packages/core/src/runner/supervisor-execution-episode.test.ts",
-      " M packages/core/src/runner/supervisor-execution-episode.ts",
-      " M packages/core/src/schemas/index.ts"
+      " M packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
     ],
     "unchanged_from_execution_baseline": []
   },
