@@ -56,17 +56,8 @@ vi.mock("../incidents/shared.js", () => ({
 vi.mock("../pr/internal/sync.js", () => ({
   ensurePrArtifactsSynced: mocks.ensurePrArtifactsSynced,
 }));
-vi.mock("../shared/quality-review-target.js", () => ({
-  recordedTaskImplementationCommitSha: (task: TaskData) => {
-    const recorded = task.extensions?.implementation_commit;
-    if (recorded && typeof recorded === "object" && "hash" in recorded) {
-      const hash = recorded.hash;
-      if (typeof hash === "string" && hash.trim()) return hash.trim();
-    }
-    const fallbackHash = task.commit?.hash?.trim();
-    if (!fallbackHash) return null;
-    return fallbackHash;
-  },
+vi.mock("../shared/quality-review-target.js", async (importOriginal) => ({
+  ...(await importOriginal()),
   resolveQualityReviewTargetSha: mocks.resolveQualityReviewTargetSha,
 }));
 vi.mock("../shared/task-store.js", async (importOriginal) => {
@@ -124,19 +115,11 @@ function makeWriteThroughBackend(opts: {
 
 describe("task verify record (unit)", () => {
   beforeEach(() => {
-    mocks.readFile.mockReset();
-    mocks.mkdir.mockReset().mockResolvedValue(undefined);
-    mocks.writeJsonStableIfChanged.mockReset().mockResolvedValue(true);
-    mocks.ensureReconciledBeforeMutation.mockReset();
-    mocks.loadCommandContext.mockReset();
-    mocks.loadTaskFromContext.mockReset().mockResolvedValue(mkTask({}));
-    mocks.backendIsLocalFileBackend.mockReset();
-    mocks.getTaskStore.mockReset();
-    mocks.collectTaskIncidents.mockReset();
-    mocks.inspectTaskIncidents.mockReset();
-    mocks.renderIncidentCollectionPlanOutcome.mockReset();
-    mocks.ensurePrArtifactsSynced.mockReset();
-    mocks.resolveQualityReviewTargetSha.mockReset().mockResolvedValue(null);
+    vi.resetAllMocks();
+    mocks.mkdir.mockResolvedValue(undefined);
+    mocks.writeJsonStableIfChanged.mockResolvedValue(true);
+    mocks.loadTaskFromContext.mockResolvedValue(mkTask({}));
+    mocks.resolveQualityReviewTargetSha.mockResolvedValue(null);
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
     mocks.ensureReconciledBeforeMutation.mockResolvedValue();
