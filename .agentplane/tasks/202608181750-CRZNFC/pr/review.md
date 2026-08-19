@@ -101,6 +101,8 @@ Created: 2026-08-18T17:51:51.714Z
  .../shared/supervisor-execution-episode.test.ts    |  57 ++++++++
  .../shared/supervisor-execution-episode.ts         |  19 ++-
  .../src/commands/task/advance.command.ts           |   3 +-
+ ...direct-task-supervisor-formal-operation.test.ts |  61 ++++++++
+ .../direct-task-supervisor-formal-operation.ts     |  15 ++
  .../commands/task/direct-task-supervisor.test.ts   |  28 ++--
  .../task-execution-contract-observation.test.ts    |  76 ++++++++++
  .../task/task-execution-contract-observation.ts    |  62 +++++---
@@ -122,7 +124,7 @@ Created: 2026-08-18T17:51:51.714Z
  scripts/README.md                                  |  24 +--
  .../baselines/v0.7-compatibility-candidate.json    |   6 +-
  scripts/checks/run-fast-ci-tests.mjs               |   2 +-
- 93 files changed, 836 insertions(+), 1496 deletions(-)
+ 95 files changed, 912 insertions(+), 1496 deletions(-)
 ```
 
 </details>
