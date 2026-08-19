@@ -15,13 +15,8 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-External implementation rework committed 0359c33c, but extensions.implementation_commit remained
-6ed0b4b62; evaluator therefore selected stale implementation evidence.
-```
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -33,7 +28,6 @@ External implementation rework committed 0359c33c, but extensions.implementation
 
 ```text
  .agentplane/WORKFLOW.md                            |   2 +-
- .agentplane/policy/incidents.md                    |   1 +
  .../risk-e2e/logs/hosted-boundary-matrix.log       |   7 -
  .../risk-e2e/logs/packaged-candidate-flow.log      |   5 -
  .../samples/sample-01.events.jsonl                 |   1 -
@@ -80,9 +74,9 @@ External implementation rework committed 0359c33c, but extensions.implementation
  docs/assets/readme-headers/skills.svg              |   4 +-
  docs/assets/readme-headers/spec.svg                |   4 +-
  docs/assets/readme-headers/testkit.svg             |   4 +-
+ docs/developer/incident-archive.mdx                |   4 +
  docs/reference/generated-reference.mdx             |  14 +-
  package.json                                       |   2 +-
- packages/agentplane/assets/policy/incidents.md     |   1 +
  packages/agentplane/package.json                   |   6 +-
  ...run-cli.core.pr-flow.integrate-failures.test.ts |   6 +
  .../run-cli.core.pr-flow.integrate-merge.test.ts   |   6 +
@@ -99,6 +93,9 @@ External implementation rework committed 0359c33c, but extensions.implementation
  .../agentplane/src/commands/pr/internal/sync.ts    |   2 +
  .../commands/shared/quality-review-target.test.ts  |  28 +++-
  .../src/commands/shared/quality-review-target.ts   |  13 ++
+ .../commands/task/direct-task-supervisor.test.ts   |  28 ++--
+ .../task-execution-contract-observation.test.ts    |  76 ++++++++++
+ .../task/task-execution-contract-observation.ts    |  62 +++++---
  .../task-run-lifecycle-replay-security.test.ts     | 162 +++++++++++----------
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
@@ -109,7 +106,7 @@ External implementation rework committed 0359c33c, but extensions.implementation
  scripts/README.md                                  |  24 +--
  .../baselines/v0.7-compatibility-candidate.json    |   6 +-
  scripts/checks/run-fast-ci-tests.mjs               |   2 +-
- 77 files changed, 401 insertions(+), 1445 deletions(-)
+ 79 files changed, 539 insertions(+), 1475 deletions(-)
 ```
 
 </details>

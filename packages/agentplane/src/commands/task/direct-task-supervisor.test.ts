@@ -71,6 +71,13 @@ const FINGERPRINT = {
   digest: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 } as const;
 
+function commandContext() {
+  return {
+    resolvedProject: { gitRoot: "/repo" },
+    taskBackend: { writeTask: vi.fn() },
+  } as never;
+}
+
 const journal = {
   status: "running",
   cursor: { episode: 2, phase: "ready", operation_key: null },
@@ -263,7 +270,7 @@ describe("direct task supervisor", () => {
 
       const result = await superviseDirectTaskRun({
         ctx: { cwd: "/repo", rootOverride: null } as never,
-        command: { resolvedProject: { gitRoot: "/repo" } } as never,
+        command: commandContext(),
         task_id: TASK_ID,
         include_remote: false,
       });
@@ -289,7 +296,7 @@ describe("direct task supervisor", () => {
 
     const result = await superviseDirectTaskRun({
       ctx: { cwd: "/repo", rootOverride: null } as never,
-      command: { resolvedProject: { gitRoot: "/repo" } } as never,
+      command: commandContext(),
       task_id: TASK_ID,
       include_remote: false,
     });
@@ -337,7 +344,7 @@ describe("direct task supervisor", () => {
 
     const result = await superviseDirectTaskRun({
       ctx: { cwd: "/repo", rootOverride: null } as never,
-      command: { resolvedProject: { gitRoot: "/repo" } } as never,
+      command: commandContext(),
       task_id: TASK_ID,
       include_remote: false,
     });
@@ -383,7 +390,7 @@ describe("direct task supervisor", () => {
 
     const result = await superviseDirectTaskRun({
       ctx: { cwd: "/repo", rootOverride: null } as never,
-      command: { resolvedProject: { gitRoot: "/repo" } } as never,
+      command: commandContext(),
       task_id: TASK_ID,
       include_remote: false,
     });
@@ -406,7 +413,7 @@ describe("direct task supervisor", () => {
 
     const result = await superviseDirectTaskRun({
       ctx: { cwd: "/repo", rootOverride: null } as never,
-      command: { resolvedProject: { gitRoot: "/repo" } } as never,
+      command: commandContext(),
       task_id: TASK_ID,
       include_remote: false,
     });
@@ -458,7 +465,7 @@ describe("direct task supervisor", () => {
 
     const result = await superviseDirectTaskRun({
       ctx: { cwd: "/repo", rootOverride: null } as never,
-      command: { resolvedProject: { gitRoot: "/repo" } } as never,
+      command: commandContext(),
       task_id: TASK_ID,
       include_remote: false,
     });
@@ -545,6 +552,7 @@ describe("direct task supervisor", () => {
       .mockResolvedValueOnce(executorTask)
       .mockResolvedValueOnce(verifiedTask)
       .mockResolvedValueOnce(verifiedTask)
+      .mockResolvedValueOnce(verifiedTask)
       .mockResolvedValueOnce(verifiedTask);
     mocks.executeEvaluator.mockResolvedValue({
       result: { evaluator_id: "recovery-context", verdict: "pass" },
@@ -575,7 +583,7 @@ describe("direct task supervisor", () => {
 
     const result = await superviseDirectTaskRun({
       ctx: { cwd: "/repo", rootOverride: null } as never,
-      command: { resolvedProject: { gitRoot: "/repo" } } as never,
+      command: commandContext(),
       task_id: TASK_ID,
       include_remote: false,
     });
@@ -708,7 +716,7 @@ describe("direct task supervisor", () => {
 
     const result = await superviseDirectTaskRun({
       ctx: { cwd: "/repo", rootOverride: null } as never,
-      command: { resolvedProject: { gitRoot: "/repo" } } as never,
+      command: commandContext(),
       task_id: TASK_ID,
       include_remote: false,
     });
@@ -797,7 +805,7 @@ describe("direct task supervisor", () => {
 
     const result = await superviseDirectTaskRun({
       ctx: { cwd: "/repo", rootOverride: null } as never,
-      command: { resolvedProject: { gitRoot: "/repo" } } as never,
+      command: commandContext(),
       task_id: TASK_ID,
       include_remote: false,
     });
@@ -895,7 +903,7 @@ describe("direct task supervisor", () => {
 
     const result = await superviseDirectTaskRun({
       ctx: { cwd: "/repo", rootOverride: null } as never,
-      command: { resolvedProject: { gitRoot: "/repo" } } as never,
+      command: commandContext(),
       task_id: TASK_ID,
       include_remote: false,
     });
