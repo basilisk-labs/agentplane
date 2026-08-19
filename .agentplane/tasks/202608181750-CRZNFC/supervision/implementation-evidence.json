@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 5579c51ddccc7ac69d8fde75c2e1f7865b52eadf..ae97cf05cbb4c35182f82a9cda39b4e0d9df733b",
+      "command": "git diff --check f49e963a652fc26feee2d575d8ff0ca8db4eee59..306272c451e4cd13b7987bef303b6204f4598680",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5579c51ddccc7ac69d8fde75c2e1f7865b52eadf..ae97cf05cbb4c35182f82a9cda39b4e0d9df733b",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB f49e963a652fc26feee2d575d8ff0ca8db4eee59..306272c451e4cd13b7987bef303b6204f4598680",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,11 +22,13 @@
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/github-body.md",
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/meta.json",
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/review.md",
-        "M\tdocs/developer/incident-archive.mdx",
         "M\tpackages/agentplane/assets/policy/incidents.md",
-        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
-        "M\tpackages/agentplane/src/commands/task/task-execution-contract-observation.test.ts",
-        "M\tpackages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+        "M\tpackages/agentplane/src/commands/incidents/shared.test.ts",
+        "M\tpackages/agentplane/src/commands/incidents/shared.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.unit.test.ts",
+        "M\tpackages/agentplane/src/runtime/incidents/plan-strategy.ts",
+        "M\tpackages/agentplane/src/runtime/incidents/resolve.test.ts",
+        "M\tpackages/agentplane/src/runtime/incidents/shared.ts"
       ]
     },
     {
@@ -36,8 +38,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "5579c51ddccc7ac69d8fde75c2e1f7865b52eadf",
-  "implementation_commit": "ae97cf05cbb4c35182f82a9cda39b4e0d9df733b",
+  "execution_base_commit": "f49e963a652fc26feee2d575d8ff0ca8db4eee59",
+  "implementation_commit": "306272c451e4cd13b7987bef303b6204f4598680",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
