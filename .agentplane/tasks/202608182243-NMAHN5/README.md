@@ -1,10 +1,11 @@
 ---
 id: "202608182243-NMAHN5"
 title: "Redesign the Agentplane homepage around a clear authority-to-proof happy path"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,51 @@ plan_approval:
   updated_by: "USER"
   note: "User approved the refined white-background hybrid design in chat; hero visual must resemble a real Agentplane Receipt with WorkOrder, scoped authority, observed verification, and Recorded in Git status."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-19T12:20:52.843Z"
+  updated_by: "CODER"
+  note: "Publication path completed; PR #4849 is created and workflow moved from pr_needed to verification_required."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-19T12:21:21.686Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "10418cf3ee50127c6f94e9122073109456bce440"
+  blueprint_digest: "72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f"
+  evidence_refs:
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122121237-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122121237-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/6fe06bfa2f3db252cac453b7ea7b3d492461fd2cdd53f3c93cdaf2c7167de0d2.md"
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122121237-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122121237-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122121237-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608182243-NMAHN5/README.md"
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/d7e45b15552d96f360bea76f963bd1fd2a18c2820799fd50449840b8c22fe542.patch"
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/e72b002b598f0f9b758bb44c8251f3b9a46d72305700cae5b840f66248f8e22f.json"
+    - ".agentplane/tasks/202608182243-NMAHN5/verification/20260819122052843-10abe487a851b044.json"
+    - ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/4d03873199544981788fe06cc57f0aef684033ee4e150bb67cf3b69e648a5600.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Дизайн реализует запрошенный минималистичный и современный путь с понятной цепочкой Authorize/Run/Verify/Record и фокусом на authority + durable proof."
+token_usage:
+  agent_runs: 2
+  input_tokens: null
+  journal_digest: "sha256:d0ea8b94c8015c823e8d40de8e63193464d63a41bbf0cba76919dabdf9ee95b0"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-19T12:21:41.915Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -87,7 +128,10 @@ execution_contract:
       - "documentation"
       - "repository_write"
       - "source_code"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -168,7 +212,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "task_outcome"
 commit:
-  hash: "55b45ac37835a9bb1d9f79f0f2ba6c9a9b5973f3"
+  hash: "10418cf3ee50127c6f94e9122073109456bce440"
   message: "🚧 NMAHN5 task: apply external agent result"
 comments:
   -
@@ -177,6 +221,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 55b45ac37835. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -193,9 +240,23 @@ events:
     to: "DOING"
     note: "Implementation committed: 55b45ac37835. CLI accepted one state-bound external-agent semantic result."
     commit: "55b45ac37835a9bb1d9f79f0f2ba6c9a9b5973f3"
+  -
+    type: "verify"
+    at: "2026-08-19T12:20:52.843Z"
+    author: "CODER"
+    state: "ok"
+    note: "Publication path completed; PR #4849 is created and workflow moved from pr_needed to verification_required."
+  -
+    type: "status"
+    at: "2026-08-19T12:21:41.915Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "10418cf3ee50127c6f94e9122073109456bce440"
 doc_version: 3
-doc_updated_at: "2026-08-18T23:16:00.379Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-19T12:21:41.929Z"
+doc_updated_by: "CODER"
 description: "Implement the selected hybrid visual target: compact header from concept 3, icon-led diagrams and evidence storytelling from concept 1, a white background, modern multicolor semantic accents, responsive behavior, and restrained microinteractions. Preserve the current Git-native control-plane positioning and working navigation/CTAs."
 sections:
   Summary: |-
@@ -214,6 +275,41 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-19T12:20:52.843Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Publication path completed; PR #4849 is created and workflow moved from pr_needed to verification_required.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:eeb567c25b0cdd2e85d2f891a2a665221f9e019ffb4d454994f21ec83e225e8b, input_digest=sha256:f5dc9eecf8791e78cd83c222bd7ddc23c915ff6455fe4b3c717ac10775b542bf
+
+    Details:
+
+    Command: agentplane pr open 202608182243-NMAHN5 --author CODER
+    Result: pass
+    Evidence: success output included "created GitHub PR #4849: https://github.com/basilisk-labs/agentplane/pull/4849"
+    Scope: branch publication flow (task publish/link PR step)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608182243-NMAHN5-redesign-the-agentplane-homepage-around-a-clear/.agentplane/tasks/202608182243-NMAHN5/blueprint/resolved-snapshot.json
+    - old_digest: 72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f
+    - current_digest: 72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608182243-NMAHN5
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608182243-NMAHN5
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -251,6 +347,41 @@ PLANNER fallback scaffold for "Redesign the Agentplane homepage around a clear a
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-19T12:20:52.843Z — VERIFY — ok
+
+By: CODER
+
+Note: Publication path completed; PR #4849 is created and workflow moved from pr_needed to verification_required.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:eeb567c25b0cdd2e85d2f891a2a665221f9e019ffb4d454994f21ec83e225e8b, input_digest=sha256:f5dc9eecf8791e78cd83c222bd7ddc23c915ff6455fe4b3c717ac10775b542bf
+
+Details:
+
+Command: agentplane pr open 202608182243-NMAHN5 --author CODER
+Result: pass
+Evidence: success output included "created GitHub PR #4849: https://github.com/basilisk-labs/agentplane/pull/4849"
+Scope: branch publication flow (task publish/link PR step)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608182243-NMAHN5-redesign-the-agentplane-homepage-around-a-clear/.agentplane/tasks/202608182243-NMAHN5/blueprint/resolved-snapshot.json
+- old_digest: 72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f
+- current_digest: 72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608182243-NMAHN5
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608182243-NMAHN5
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -259,3 +390,16 @@ PLANNER fallback scaffold for "Redesign the Agentplane homepage around a clear a
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/2` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:d0ea8b94c8015c823e8d40de8e63193464d63a41bbf0cba76919dabdf9ee95b0`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-19T12:21:41.915Z`

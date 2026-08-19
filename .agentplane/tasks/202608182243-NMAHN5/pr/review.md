@@ -6,14 +6,14 @@ Created: 2026-08-18T22:51:48.764Z
 
 - Task: `202608182243-NMAHN5`
 - Title: Redesign the Agentplane homepage around a clear authority-to-proof happy path
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608182243-NMAHN5/redesign-the-agentplane-homepage-around-a-clear`
 - Canonical task record: `.agentplane/tasks/202608182243-NMAHN5/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Publication path completed; PR #4849 is created and workflow moved from pr_needed to verification_required.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-18T22:51:48.764Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-18T22:51:48.764Z
+- Updated: 2026-08-19T12:20:15.551Z
 - Branch: task/202608182243-NMAHN5/redesign-the-agentplane-homepage-around-a-clear
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

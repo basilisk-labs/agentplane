@@ -15,14 +15,14 @@ Implement the selected hybrid visual target: compact header from concept 3, icon
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Publication path completed; PR #4849 is created and workflow moved from pr_needed to verification_required.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-18T22:51:48.764Z
+- Updated: 2026-08-19T12:20:15.551Z
 - Branch: task/202608182243-NMAHN5/redesign-the-agentplane-homepage-around-a-clear
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

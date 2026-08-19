@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Дизайн реализует запрошенный минималистичный и современный путь с понятной цепочкой Authorize/Run/Verify/Record и фокусом на authority + durable proof.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/d7e45b15552d96f360bea76f963bd1fd2a18c2820799fd50449840b8c22fe542.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

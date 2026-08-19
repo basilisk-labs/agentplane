@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202608182243-NMAHN5",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-19T12:21:21.686Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "10418cf3ee50127c6f94e9122073109456bce440",
+  "blueprint_digest": "72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f",
+  "findings": [
+    "Дизайн реализует запрошенный минималистичный и современный путь с понятной цепочкой Authorize/Run/Verify/Record и фокусом на authority + durable proof."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/d7e45b15552d96f360bea76f963bd1fd2a18c2820799fd50449840b8c22fe542.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

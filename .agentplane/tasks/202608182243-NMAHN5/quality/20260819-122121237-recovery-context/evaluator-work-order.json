@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608182243-NMAHN5-bc9d9dfdb2ac63274926ba48",
+  "prepared_at": "2026-08-19T12:21:21.237Z",
+  "task": {
+    "id": "202608182243-NMAHN5",
+    "revision": 7,
+    "objective": "Redesign the Agentplane homepage around a clear authority-to-proof happy path\n\nImplement the selected hybrid visual target: compact header from concept 3, icon-led diagrams and evidence storytelling from concept 1, a white background, modern multicolor semantic accents, responsive behavior, and restrained microinteractions. Preserve the current Git-native control-plane positioning and working navigation/CTAs.",
+    "acceptance_criteria": [
+      "npm --prefix website run build",
+      "npm --prefix website run typecheck",
+      "- In scope: Implement the selected hybrid visual target: compact header from concept 3, icon-led diagrams and evidence storytelling from concept 1, a white background, modern multicolor semantic accents, responsive behavior, and restrained microinteractions. Preserve the current Git-native control-plane positioning and working navigation/CTAs.\n- Out of scope: unrelated refactors not required for \"Redesign the Agentplane homepage around a clear authority-to-proof happy path\".",
+      "Implement the selected hybrid homepage in the existing Docusaurus website: compact quiet header, white editorial canvas, concise authority-to-proof story, icon-led four-step loop, one credible repository receipt, and restrained interaction states. Keep the implementation limited to the homepage presentation and shared visual tokens needed by it, preserve existing routes and tracking, and validate responsive rendering plus build and typecheck.",
+      "PLANNER fallback scaffold for \"Redesign the Agentplane homepage around a clear authority-to-proof happy path\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Redesign the Agentplane homepage around a clear authority-to-proof happy path\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "10418cf3ee50127c6f94e9122073109456bce440",
+  "diff_base_sha": "0221381720a5b70e1591aa7e3c103eb8639a6ef7",
+  "blueprint_digest": "72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608182243-NMAHN5/quality/20260819-122121237-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:e74bd2234c82c6856d19656dc45a7b8d6a25ee09c142fca10e6ddef07ac54854",
+    "prompt_path": ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/6fe06bfa2f3db252cac453b7ea7b3d492461fd2cdd53f3c93cdaf2c7167de0d2.md",
+    "result_schema_path": ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608182243-NMAHN5/README.md",
+      "sha256": "sha256:a87042805ddea63ba5170b31301734b762244c16633df24a094b4a076890800d",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/d7e45b15552d96f360bea76f963bd1fd2a18c2820799fd50449840b8c22fe542.patch",
+      "sha256": "sha256:d7e45b15552d96f360bea76f963bd1fd2a18c2820799fd50449840b8c22fe542",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/e72b002b598f0f9b758bb44c8251f3b9a46d72305700cae5b840f66248f8e22f.json",
+      "sha256": "sha256:e72b002b598f0f9b758bb44c8251f3b9a46d72305700cae5b840f66248f8e22f",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608182243-NMAHN5/verification/20260819122052843-10abe487a851b044.json",
+      "sha256": "sha256:25c0284f109c84f4d549ca0e38fdcc477b526941d5a6ebdf0d6f5d6a72543b4f",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608182243-NMAHN5/quality/objects/sha256/4d03873199544981788fe06cc57f0aef684033ee4e150bb67cf3b69e648a5600.json",
+      "sha256": "sha256:4d03873199544981788fe06cc57f0aef684033ee4e150bb67cf3b69e648a5600",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
