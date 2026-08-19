@@ -359,4 +359,65 @@ describe("direct task supervisor formal operation", () => {
       replacement_of_operation_key: started.operation_key,
     });
   });
+
+  it("refreshes a reserved failed-operation replacement before a formal route transition", async () => {
+    const initial = createSupervisorExecutionEpisodeJournal({
+      task_id: TASK_ID,
+      task_revision: null,
+      state_fingerprint_digest: FIRST_FINGERPRINT,
+      budget: {
+        max_episodes: 50,
+        max_agent_runs: 50,
+        max_input_tokens: 3_000_000,
+        max_output_tokens: 1_000_000,
+        max_total_tokens: 4_000_000,
+        max_wall_time_ms: 14_400_000,
+        max_changed_files: 2000,
+        max_diff_lines: null,
+        max_no_progress_episodes: 3,
+      },
+    });
+    const started = startSupervisorExecutionEpisode({
+      journal: initial,
+      role: "EXECUTOR",
+      kind: "agent_episode",
+      operation_identity: { id: "implementation_rework" },
+      precondition_fingerprint_digest: FIRST_FINGERPRINT,
+    });
+    if (started.status !== "started") throw new Error("expected failed operation fixture");
+    const failed = completeSupervisorExecutionEpisode({
+      journal: started.journal,
+      operation_key: started.operation_key,
+      result: { error: "known_pre_result_failure" },
+      failed: true,
+    });
+    const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+      journal: failed,
+      state_fingerprint_digest: FIRST_FINGERPRINT,
+    });
+    const write = vi.fn().mockResolvedValue(undefined);
+    mocks.open.mockResolvedValue({
+      journal: replacement,
+      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+      store: { write },
+    });
+    const run = vi.fn().mockResolvedValue({ verification: "ok" });
+
+    const result = await recordDirectTaskFormalOperation({
+      git_root: "/repo",
+      task_id: TASK_ID,
+      id: "task_verify",
+      decision: vi.fn().mockResolvedValue(decision(NEXT_FINGERPRINT)),
+      run,
+    });
+
+    expect(run).toHaveBeenCalledOnce();
+    expect(result.journal.state_fingerprint_digest).toBe(NEXT_FINGERPRINT);
+    expect(result.journal.operations).toHaveLength(2);
+    expect(result.journal.operations[1]).toMatchObject({
+      kind: "cli_operation",
+      status: "completed",
+      replacement_of_operation_key: started.operation_key,
+    });
+  });
 });

@@ -2,6 +2,7 @@ import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
+  refreshPendingReplacementSupervisorExecutionEpisode,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   startSupervisorExecutionEpisode,
   type SupervisorExecutionEpisodeJournal,
@@ -80,6 +81,20 @@ export async function recordDirectTaskFormalOperation(opts: {
         journal,
         state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
         route_observation: { direct_task_operation: opts.id, resumed: true },
+      });
+      await opened.store.write(journal);
+    }
+    const reservedFailure = journal.operations.at(-1);
+    if (
+      journal.status === "running" &&
+      journal.cursor.phase === "ready" &&
+      journal.cursor.replacement_of_operation_key === reservedFailure?.operation_key &&
+      reservedFailure?.status === "failed" &&
+      journal.state_fingerprint_digest !== before.workflowStep.preconditionFingerprint.digest
+    ) {
+      journal = refreshPendingReplacementSupervisorExecutionEpisode({
+        journal,
+        state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
       });
       await opened.store.write(journal);
     }
