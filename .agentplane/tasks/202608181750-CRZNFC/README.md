@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 72
+revision: 73
 origin:
   system: "manual"
 depends_on: []
@@ -682,6 +682,9 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Provider base-refresh recovery: GitHub updated PR #4846 from 8bbaaa5b341716770900961d17c9c708af0e677d to f5dd3c7989a7de7ccc78f353bcb89b98fc842a85 on current main 0221381720a5b70e1591aa7e3c103eb8639a6ef7; the refreshed composition passed the full local release:prepublish gate before hosted re-verification."
 events:
   -
     type: "status"
@@ -971,9 +974,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "a24a65dcab37169c58949a9ba309cb159625ee25"
+  -
+    type: "comment"
+    at: "2026-08-19T03:29:38.289Z"
+    author: "SUPERVISOR"
+    body: "Provider base-refresh recovery: GitHub updated PR #4846 from 8bbaaa5b341716770900961d17c9c708af0e677d to f5dd3c7989a7de7ccc78f353bcb89b98fc842a85 on current main 0221381720a5b70e1591aa7e3c103eb8639a6ef7; the refreshed composition passed the full local release:prepublish gate before hosted re-verification."
 doc_version: 3
-doc_updated_at: "2026-08-19T02:40:04.725Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-08-19T03:29:38.340Z"
+doc_updated_by: "SUPERVISOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
   Summary: |-
