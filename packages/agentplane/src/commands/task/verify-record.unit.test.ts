@@ -63,7 +63,9 @@ vi.mock("../shared/quality-review-target.js", () => ({
       const hash = recorded.hash;
       if (typeof hash === "string" && hash.trim()) return hash.trim();
     }
-    return task.commit?.hash?.trim() || null;
+    const fallbackHash = task.commit?.hash?.trim();
+    if (!fallbackHash) return null;
+    return fallbackHash;
   },
   resolveQualityReviewTargetSha: mocks.resolveQualityReviewTargetSha,
 }));

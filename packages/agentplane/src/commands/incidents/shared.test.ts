@@ -137,4 +137,37 @@ describe("incident registry mirror writes", () => {
     expect(mirrored).toContain("incident promotion left hidden policy drift");
     expect(mirrored.endsWith("\n")).toBe(true);
   });
+
+  it("loads the historical archive as a repromotion tombstone", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-incidents-"));
+    tempRoots.push(root);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await mkdir(path.join(root, "docs", "developer"), { recursive: true });
+    const registryText = `${compactRegistryHeader}\n`;
+    await writeFile(path.join(root, ".agentplane", "policy", "incidents.md"), registryText, "utf8");
+    await writeFile(
+      path.join(root, "docs", "developer", "incident-archive.mdx"),
+      [
+        "# Incident Archive",
+        "",
+        "- id: INC-20260818-01 | date: 2026-08-18 | scope: Incident registry promotion. | failure: incident promotion left hidden policy drift for the next hook. | advice: retain this archived resolution. | rule: Incident collection MUST not repromote archived failures. | evidence: task OLD-TASK | enforcement: test | fixability: external | state: archived",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const task = mkTask();
+    const result = await collectTaskIncidents({
+      ctx: mkCtx(root, task),
+      taskId: task.id,
+      task,
+      write: true,
+    });
+
+    expect(result.wrote).toBe(false);
+    expect(result.plan.promotable).toHaveLength(0);
+    expect(result.plan.duplicates).toHaveLength(1);
+    expect(await readFile(path.join(root, ".agentplane", "policy", "incidents.md"), "utf8")).toBe(
+      registryText,
+    );
+  });
 });

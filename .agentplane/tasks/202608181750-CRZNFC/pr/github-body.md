@@ -28,7 +28,6 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
 
 ```text
  .agentplane/WORKFLOW.md                            |   2 +-
- .agentplane/policy/incidents.md                    |   1 +
  .../risk-e2e/logs/hosted-boundary-matrix.log       |   7 -
  .../risk-e2e/logs/packaged-candidate-flow.log      |   5 -
  .../samples/sample-01.events.jsonl                 |   1 -
@@ -78,7 +77,6 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
  docs/developer/incident-archive.mdx                |   4 +
  docs/reference/generated-reference.mdx             |  14 +-
  package.json                                       |   2 +-
- packages/agentplane/assets/policy/incidents.md     |   1 +
  packages/agentplane/package.json                   |   6 +-
  ...run-cli.core.pr-flow.integrate-failures.test.ts |   6 +
  .../run-cli.core.pr-flow.integrate-merge.test.ts   |   6 +
@@ -88,6 +86,8 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
  .../evaluator-qualification-packet.test.ts         |   2 +-
  .../evaluator/evaluator-qualification-review.ts    |   7 +-
  .../commands/evaluator/evaluator-review-usecase.ts |   3 +-
+ .../src/commands/incidents/shared.test.ts          |  33 +++++
+ .../agentplane/src/commands/incidents/shared.ts    |   6 +
  .../commands/pr/integrate/internal/prepare.test.ts |   3 +
  .../src/commands/pr/integrate/internal/prepare.ts  |   1 +
  .../branch-task-artifact-ownership.test.ts         | 145 ++++++++++++++++--
@@ -99,8 +99,11 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
  .../task-execution-contract-observation.test.ts    |  76 ++++++++++
  .../task/task-execution-contract-observation.ts    |  62 +++++---
  .../src/commands/task/verify-record-execute.ts     |   6 +-
- .../src/commands/task/verify-record.unit.test.ts   |  19 ++-
+ .../src/commands/task/verify-record.unit.test.ts   |  21 ++-
  .../task-run-lifecycle-replay-security.test.ts     | 162 +++++++++++----------
+ .../src/runtime/incidents/plan-strategy.ts         |  10 +-
+ .../src/runtime/incidents/resolve.test.ts          |  34 +++++
+ .../agentplane/src/runtime/incidents/shared.ts     |   6 +
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
@@ -110,7 +113,7 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
  scripts/README.md                                  |  24 +--
  .../baselines/v0.7-compatibility-candidate.json    |   6 +-
  scripts/checks/run-fast-ci-tests.mjs               |   2 +-
- 83 files changed, 564 insertions(+), 1477 deletions(-)
+ 86 files changed, 652 insertions(+), 1478 deletions(-)
 ```
 
 </details>

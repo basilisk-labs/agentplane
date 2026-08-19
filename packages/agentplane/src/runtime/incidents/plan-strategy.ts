@@ -10,6 +10,7 @@ import type {
 } from "./types.js";
 import {
   buildDerivedIncidentRule,
+  buildArchivedIncidentIdentity,
   buildIncidentFingerprint,
   buildMatchTerms,
   dedupeCaseInsensitive,
@@ -244,6 +245,7 @@ export function planIncidentCollection(opts: {
   task: IncidentPromotionTaskContext;
   findings: string;
   registry: IncidentRegistry;
+  archivedRegistry?: IncidentRegistry;
   now?: Date;
 }): IncidentCollectionPlan {
   const parsed = parseIncidentFindingBlocks(opts.findings);
@@ -265,6 +267,9 @@ export function planIncidentCollection(opts: {
   const seenFingerprints = new Set(
     opts.registry.entries.map((entry) => buildIncidentFingerprint(entry)),
   );
+  const archivedIdentities = new Set(
+    (opts.archivedRegistry?.entries ?? []).map((entry) => buildArchivedIncidentIdentity(entry)),
+  );
 
   for (const candidate of candidates) {
     const issue = buildPromotionIssues(candidate);
@@ -285,7 +290,10 @@ export function planIncidentCollection(opts: {
     });
     const fingerprint = buildIncidentFingerprint(entry);
     const draft: IncidentPromotionDraft = { candidate, entry, fingerprint };
-    if (seenFingerprints.has(fingerprint)) {
+    if (
+      seenFingerprints.has(fingerprint) ||
+      archivedIdentities.has(buildArchivedIncidentIdentity(entry))
+    ) {
       duplicates.push(draft);
       continue;
     }
