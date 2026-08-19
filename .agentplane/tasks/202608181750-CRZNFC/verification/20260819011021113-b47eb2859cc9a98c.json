@@ -1,0 +1,105 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run release:prepublish\nResult: pass\nEvidence: exact candidate passed targeted and complete suites, including 105/105 release-ci-base chunks.\nScope: changed source paths and their unit/integration regressions.\n\nCheck: critical_paths\nCommand: bun run release:prepublish\nResult: pass\nEvidence: significant 204/204 and release-critical 16/16 passed.\nScope: authority, PR integration, evaluator, runner, and release critical paths.\n\nCheck: docs_contract\nCommand: bun run release:prepublish\nResult: pass\nEvidence: documentation, generated reference, policy routing, and agents synchronization gates passed.\nScope: release notes, generated docs/assets, policy mirror, and incident archive.\n\nCheck: full_regression\nCommand: bun run release:prepublish\nResult: pass\nEvidence: release-ci-base completed all 105/105 chunks with no failure.\nScope: full repository regression selected by the release contract.\n\nCheck: hosted_integration\nCommand: independent EVALUATOR packet tr_36393a7d8a2bdc2286fe132d92ab3253\nResult: pass\nEvidence: pre-hosted candidate qualification passed; exact hosted execution remains enforced by the subsequent workflow boundary.\nScope: readiness of ae97cf05c for exact-head hosted checks and protected integration.\n\nCheck: real_e2e\nCommand: bun run release:prepublish\nResult: pass\nEvidence: build, packed install smoke, CLI runtime, release workflow, and migration-sensitive suites passed.\nScope: packaged candidate and canonical release execution behavior.\n\nCheck: task_outcome\nCommand: independent EVALUATOR packet tr_36393a7d8a2bdc2286fe132d92ab3253\nResult: pass\nEvidence: evaluator found no blocking correctness, scope, or security issue and targeted ae97cf05c.\nScope: approved pre-merge implementation outcome; publication and cleanup remain later workflow stages.",
+  "digest": "sha256:b47eb2859cc9a98cbbf51978b53acd338bdf242d5c81e958ff16223a0aaffa51",
+  "implementation_sha": "ae97cf05cbb4c35182f82a9cda39b4e0d9df733b",
+  "input": {
+    "context": {
+      "digest": "sha256:e8474379a763ca6e0e128de1046c6129a4eeecfa9ee27726efe29aa98e54ddd8",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:c2a6fd993b6734129b0ffc1c0871e4bed59fef4d14a7b64de315c30760496dac",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:435d2486bbca298c1c33edabb31244c14f0463ca81784df0921aa45e12e36b33",
+      "digest": "sha256:54e3d6cbc226739edeeee842f14f34fa8b65f6f4a13667ac539d6d57b3b114c4",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "105/105",
+          "reference": "105/105",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "16/16",
+          "reference": "16/16",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "204/204",
+          "reference": "204/204",
+          "source": "missing"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "708f0d7d5b813ea2bb4de659d9eb113a752e3c63",
+      "digest": "sha256:5ef5b6f38c18c087223d388a170986bbe0f97d3d89a3b9278993af14ff3541b9",
+      "strategy": "branch_diff",
+      "target_sha": "ae97cf05cbb4c35182f82a9cda39b4e0d9df733b"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:c7fac13b5bce7a212cbef657415f29244b79cb65c63b17ad731dcac8b1d785d1",
+    "verify_steps_digest": "sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: exact implementation ae97cf05c passed the complete release prepublish gate and independent evaluator review.",
+  "recorded_at": "2026-08-19T01:10:21.113Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1",
+  "task_id": "202608181750-CRZNFC",
+  "verification_command": "agentplane verify 202608181750-CRZNFC --ok --by INTEGRATOR",
+  "verifier": "INTEGRATOR"
+}
