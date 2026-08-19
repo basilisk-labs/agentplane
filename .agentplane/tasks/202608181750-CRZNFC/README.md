@@ -2,10 +2,10 @@
 id: "202608181750-CRZNFC"
 title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref."
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -27,10 +27,10 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-19T00:11:52.031Z"
-  updated_by: "EVALUATOR"
-  note: "External implementation rework committed 0359c33c, but extensions.implementation_commit remained 6ed0b4b62; evaluator therefore selected stale implementation evidence."
+  state: "pending"
+  updated_at: "2026-08-19T00:14:37.277Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 1
 quality_review:
   state: "rework"
@@ -67,7 +67,7 @@ execution_route:
     - "effect_publish"
     - "effect_release_metadata"
     - "effect_schema"
-    - "observed_path_outside_scope:.agentplane/policy/incidents.md"
+    - "effect_security_boundary"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -85,6 +85,7 @@ execution_contract:
       - "release_metadata"
       - "repository_write"
       - "schema"
+      - "security_boundary"
       - "source_code"
       - "tests"
     forbidden_external_effects:
@@ -95,10 +96,10 @@ execution_contract:
       - "destructive_git"
     forbidden_repository_effects:
       - "ci"
-      - "security_boundary"
     writable_roots:
       - ".agentplane/WORKFLOW.md"
       - ".agentplane/config.json"
+      - ".agentplane/policy/incidents.md"
       - ".agentplane/tasks/202608112259-T3ZDDM/evidence"
       - "docs"
       - "package.json"
@@ -116,6 +117,7 @@ execution_contract:
     rationale:
       - "USER-approved blocked-result scope extension: roots=.agentplane/WORKFLOW.md,docs,packages,schemas,scripts,website; repository_effects=dependencies,documentation,public_api,release_metadata,repository_write,schema,source_code,tests"
       - "USER-approved blocked-result scope extension: roots=.agentplane/config.json; repository_effects=release_metadata,repository_write"
+      - "USER-approved blocked-result scope extension: roots=.agentplane/policy/incidents.md; repository_effects=repository_write,security_boundary"
       - "USER-approved blocked-result scope extension: roots=.agentplane/tasks/202608112259-T3ZDDM/evidence; repository_effects=repository_write"
       - "USER-approved blocked-result scope extension: roots=package.json; repository_effects=release_metadata"
       - "legacy structured task fields mapped to the execution contract"
@@ -126,6 +128,7 @@ execution_contract:
       - "release_metadata"
       - "repository_write"
       - "schema"
+      - "security_boundary"
       - "source_code"
       - "tests"
     requirements_uncertainty: "bounded"
@@ -134,6 +137,7 @@ execution_contract:
     scope_roots:
       - ".agentplane/WORKFLOW.md"
       - ".agentplane/config.json"
+      - ".agentplane/policy/incidents.md"
       - ".agentplane/tasks/202608112259-T3ZDDM/evidence"
       - "docs"
       - "package.json"
@@ -142,9 +146,7 @@ execution_contract:
       - "scripts"
       - "website"
   observed:
-    authority_violations:
-      - "verification:verification-record:fail"
-      - "writable_scope:.agentplane/policy/incidents.md"
+    authority_violations: []
     changed_components:
       - ".agentplane"
       - "docs"
@@ -241,31 +243,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "verification-record"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_dependencies"
@@ -274,7 +252,7 @@ execution_contract:
     - "effect_publish"
     - "effect_release_metadata"
     - "effect_schema"
-    - "observed_path_outside_scope:.agentplane/policy/incidents.md"
+    - "effect_security_boundary"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -293,6 +271,7 @@ execution_contract:
         components:
           - ".agentplane/WORKFLOW.md"
           - ".agentplane/config.json"
+          - ".agentplane/policy/incidents.md"
           - ".agentplane/tasks/202608112259-T3ZDDM/evidence"
           - "docs"
           - "package.json"
@@ -311,6 +290,7 @@ execution_contract:
           - "repository_effect:release_metadata"
           - "repository_effect:repository_write"
           - "repository_effect:schema"
+          - "repository_effect:security_boundary"
           - "repository_effect:source_code"
           - "repository_effect:tests"
           - "task_outcome"
@@ -325,13 +305,14 @@ execution_contract:
           - "release_metadata"
           - "repository_write"
           - "schema"
+          - "security_boundary"
           - "source_code"
           - "tests"
         risk:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:b6278b72bf83dd30e5d3bcefcaefc9a3be599ee6192cbf7c8199cc9106dddc77"
+      digest: "sha256:85a4ee012da471e9a6a349c877b0abb8fc503cf64d2bd3fe1e41e405d633db6a"
       escalation_reasons:
         - "central_component:package.json"
         - "central_path:package.json"
@@ -347,6 +328,7 @@ execution_contract:
         - "effect_public_api"
         - "effect_release_metadata"
         - "effect_schema"
+        - "effect_security_boundary"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
         - "unknown_path:.agentplane/tasks/202608112259-T3ZDDM/evidence/risk-e2e/logs/hosted-boundary-matrix.log"
@@ -523,10 +505,10 @@ execution_contract:
       - "repository_effect:release_metadata"
       - "repository_effect:repository_write"
       - "repository_effect:schema"
+      - "repository_effect:security_boundary"
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -577,6 +559,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Implementation rework is blocked until the task authority includes the CLI-promoted incident registry that already exists in this branch and must be closed append-only after its fix. Recommended action: Approve the exact state-bound task scope extension, then resolve INC-20260818-01 through the governed incidents command and continue implementation rework. Requested scope: roots=.agentplane/policy/incidents.md; repository effects=repository_write,security_boundary; request digest=sha256:f3b658d4625f707f0efdd637f5118dcb367a87ba6e58a98d6775bb706e565e18. Agentplane receipt: external-agent-blocker/tr_c5ea6287e209f872a20ae230fa011d48/sha256:88d54df81fcfa4e2f3ad4e7c5b2ccc3ba24c52e35b1129e1b7b8285b4253cace/sha256:f3b658d4625f707f0efdd637f5118dcb367a87ba6e58a98d6775bb706e565e18."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: .agentplane/policy/incidents.md; repository effects: repository_write, security_boundary."
 events:
   -
     type: "status"
@@ -1189,6 +1174,8 @@ sections:
       IncidentTags: lifecycle, verification
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-08-19T00:14:37.277Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:88d54df81fcfa4e2f3ad4e7c5b2ccc3ba24c52e35b1129e1b7b8285b4253cace"
     kind: "task_scope_extension_request"
     request:
@@ -1201,7 +1188,7 @@ extensions:
         - ".agentplane/policy/incidents.md"
     request_digest: "sha256:f3b658d4625f707f0efdd637f5118dcb367a87ba6e58a98d6775bb706e565e18"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_c5ea6287e209f872a20ae230fa011d48"
   implementation_commit:
     hash: "6ed0b4b62b786d389f6a2b0ea3730973238c3985"
