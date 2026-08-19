@@ -53,6 +53,7 @@
  .../run-cli.core.pr-flow.integrate-merge.test.ts   |   6 +
  ...-cli.core.pr-flow.integrate-rebase-race.test.ts |   8 +-
  ...n-cli.core.pr-flow.integrate-strategies.test.ts |   6 +
+ .../run-cli.core.route-decision.pre-merge.test.ts  |   9 +-
  .../evaluator/evaluator-execute.command.test.ts    |   4 +-
  .../evaluator-qualification-packet.test.ts         |   2 +-
  .../evaluator/evaluator-qualification-review.ts    |   7 +-
@@ -90,4 +91,4 @@
  scripts/README.md                                  |  24 +--
  .../baselines/v0.7-compatibility-candidate.json    |   6 +-
  scripts/checks/run-fast-ci-tests.mjs               |   2 +-
- 92 files changed, 831 insertions(+), 1492 deletions(-)
+ 93 files changed, 836 insertions(+), 1496 deletions(-)

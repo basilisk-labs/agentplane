@@ -116,6 +116,10 @@ async function createClosedPreMergeTask(): Promise<{
     root,
   ]);
   await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+  await execFileAsync("git", ["add", "-A"], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "task: persist approved task setup"], {
+    cwd: root,
+  });
 
   await execFileAsync("git", ["checkout", "-b", branchName], { cwd: root });
   await writeFile(path.join(root, "impl.txt"), "implementation\n", "utf8");
@@ -276,9 +280,6 @@ async function createClosedPreMergeTask(): Promise<{
   await execFileAsync("git", ["commit", "-m", "task: record final quality review"], {
     cwd: root,
   });
-  const { stdout: reviewedHeadRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-    cwd: root,
-  });
   const refreshIo = captureStdIO();
   try {
     const refreshCode = await runCli([
@@ -291,7 +292,7 @@ async function createClosedPreMergeTask(): Promise<{
       "--result",
       "pre-merge closure",
       "--commit",
-      reviewedHeadRaw.trim(),
+      implementationSha,
       "--pre-merge-closure",
       "--force",
       "--yes",
