@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 46
+revision: 48
 origin:
   system: "manual"
 depends_on: []
@@ -28,9 +28,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-19T01:12:34.465Z"
+  updated_at: "2026-08-19T01:14:22.894Z"
   updated_by: "INTEGRATOR"
-  note: "Verified: restore exact implementation ae97cf05c verification after metadata-only pre-merge closure."
+  note: "Verified: bind the current record to preserved implementation ae97cf05c after committing the worktree observation."
   attempts: 0
 quality_review:
   state: "pass"
@@ -621,6 +621,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The dirty worktree contains only intended AgentPlane-generated task verification artifacts from restoring verification against preserved implementation ae97cf05c after pre-merge closure wrote an incompatible metadata-head verification. Preserve and commit these task-local artifacts; do not change the implementation identity."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The dirty worktree again contains only intended task-local verification artifacts binding the current Verification Contract to preserved implementation ae97cf05c. Preserve and commit them without changing the implementation identity."
 events:
   -
     type: "status"
@@ -805,8 +808,19 @@ events:
     at: "2026-08-19T01:13:49.894Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The dirty worktree contains only intended AgentPlane-generated task verification artifacts from restoring verification against preserved implementation ae97cf05c after pre-merge closure wrote an incompatible metadata-head verification. Preserve and commit these task-local artifacts; do not change the implementation identity."
+  -
+    type: "verify"
+    at: "2026-08-19T01:14:22.894Z"
+    author: "INTEGRATOR"
+    state: "ok"
+    note: "Verified: bind the current record to preserved implementation ae97cf05c after committing the worktree observation."
+  -
+    type: "comment"
+    at: "2026-08-19T01:15:04.948Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The dirty worktree again contains only intended task-local verification artifacts binding the current Verification Contract to preserved implementation ae97cf05c. Preserve and commit them without changing the implementation identity."
 doc_version: 3
-doc_updated_at: "2026-08-19T01:13:49.925Z"
+doc_updated_at: "2026-08-19T01:15:04.980Z"
 doc_updated_by: "SUPERVISOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
@@ -1469,6 +1483,78 @@ sections:
     By: INTEGRATOR
 
     Note: Verified: restore exact implementation ae97cf05c verification after metadata-only pre-merge closure.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:405a08488533bfd8211b6a8311bec80ffa80f9349594cb1894996fdf34fca0d4
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: exact candidate passed targeted and complete suites, including 105/105 release-ci-base chunks.
+    Scope: changed source paths and their unit/integration regressions.
+
+    Check: critical_paths
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: significant 204/204 and release-critical 16/16 passed.
+    Scope: authority, PR integration, evaluator, runner, and release critical paths.
+
+    Check: docs_contract
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: documentation, generated reference, policy routing, and agents synchronization gates passed.
+    Scope: release notes, generated docs/assets, policy mirror, and incident archive.
+
+    Check: full_regression
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: release-ci-base completed all 105/105 chunks with no failure.
+    Scope: full repository regression selected by the release contract.
+
+    Check: hosted_integration
+    Command: independent EVALUATOR packet tr_36393a7d8a2bdc2286fe132d92ab3253
+    Result: pass
+    Evidence: pre-hosted candidate qualification passed; exact hosted execution remains enforced by the subsequent workflow boundary.
+    Scope: readiness of ae97cf05c for exact-head hosted checks and protected integration.
+
+    Check: real_e2e
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: build, packed install smoke, CLI runtime, release workflow, and migration-sensitive suites passed.
+    Scope: packaged candidate and canonical release execution behavior.
+
+    Check: task_outcome
+    Command: independent EVALUATOR packet tr_36393a7d8a2bdc2286fe132d92ab3253
+    Result: pass
+    Evidence: evaluator found no blocking correctness, scope, or security issue and targeted ae97cf05c.
+    Scope: approved pre-merge implementation outcome; publication and cleanup remain later workflow stages.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json
+    - old_digest: 92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e
+    - current_digest: 92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181750-CRZNFC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-19T01:14:22.894Z — VERIFY — ok
+
+    By: INTEGRATOR
+
+    Note: Verified: bind the current record to preserved implementation ae97cf05c after committing the worktree observation.
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:405a08488533bfd8211b6a8311bec80ffa80f9349594cb1894996fdf34fca0d4
@@ -2259,6 +2345,78 @@ DecisionContextRef:
 By: INTEGRATOR
 
 Note: Verified: restore exact implementation ae97cf05c verification after metadata-only pre-merge closure.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:405a08488533bfd8211b6a8311bec80ffa80f9349594cb1894996fdf34fca0d4
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run release:prepublish
+Result: pass
+Evidence: exact candidate passed targeted and complete suites, including 105/105 release-ci-base chunks.
+Scope: changed source paths and their unit/integration regressions.
+
+Check: critical_paths
+Command: bun run release:prepublish
+Result: pass
+Evidence: significant 204/204 and release-critical 16/16 passed.
+Scope: authority, PR integration, evaluator, runner, and release critical paths.
+
+Check: docs_contract
+Command: bun run release:prepublish
+Result: pass
+Evidence: documentation, generated reference, policy routing, and agents synchronization gates passed.
+Scope: release notes, generated docs/assets, policy mirror, and incident archive.
+
+Check: full_regression
+Command: bun run release:prepublish
+Result: pass
+Evidence: release-ci-base completed all 105/105 chunks with no failure.
+Scope: full repository regression selected by the release contract.
+
+Check: hosted_integration
+Command: independent EVALUATOR packet tr_36393a7d8a2bdc2286fe132d92ab3253
+Result: pass
+Evidence: pre-hosted candidate qualification passed; exact hosted execution remains enforced by the subsequent workflow boundary.
+Scope: readiness of ae97cf05c for exact-head hosted checks and protected integration.
+
+Check: real_e2e
+Command: bun run release:prepublish
+Result: pass
+Evidence: build, packed install smoke, CLI runtime, release workflow, and migration-sensitive suites passed.
+Scope: packaged candidate and canonical release execution behavior.
+
+Check: task_outcome
+Command: independent EVALUATOR packet tr_36393a7d8a2bdc2286fe132d92ab3253
+Result: pass
+Evidence: evaluator found no blocking correctness, scope, or security issue and targeted ae97cf05c.
+Scope: approved pre-merge implementation outcome; publication and cleanup remain later workflow stages.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json
+- old_digest: 92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e
+- current_digest: 92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181750-CRZNFC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-19T01:14:22.894Z — VERIFY — ok
+
+By: INTEGRATOR
+
+Note: Verified: bind the current record to preserved implementation ae97cf05c after committing the worktree observation.
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:405a08488533bfd8211b6a8311bec80ffa80f9349594cb1894996fdf34fca0d4
