@@ -1,0 +1,91 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181750-CRZNFC Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181750-CRZNFC Verification Contract check critical_paths\n\nCheck: docs_contract\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181750-CRZNFC Verification Contract check docs_contract\n\nCheck: full_regression\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181750-CRZNFC Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181750-CRZNFC Verification Contract check hosted_integration\n\nCheck: real_e2e\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181750-CRZNFC Verification Contract check real_e2e\n\nCheck: task_outcome\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks\nScope: branch_pr task 202608181750-CRZNFC Verification Contract check task_outcome",
+  "digest": "sha256:bd18f0cfd748622d43bc8d2ce3a61375c6a389be4e92fe3a207c4eec5aa45819",
+  "implementation_sha": "785a9fc9eb53eee3eff7bc109e6547b230061f9b",
+  "input": {
+    "context": {
+      "digest": "sha256:e8474379a763ca6e0e128de1046c6129a4eeecfa9ee27726efe29aa98e54ddd8",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:d57e4ece6ef42eb03231d958f03388e62578ba2c3b2f172b62d12b06138c643f",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:4a265bf8a2d27a6ebc1990f15de4e11c9a002e7e60f9170c7bbfe9a53fe677df",
+      "digest": "sha256:91fa9ab88ad071011e71cdceb382295b9c81cdc2f37f167051161ff28dbfe67e",
+      "references": [
+        {
+          "digest": "sha256:595b3448a080c882bff8906a539de24b5a60cf2019e6e929f94220b6aedecb49",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608181750-CRZNFC/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "708f0d7d5b813ea2bb4de659d9eb113a752e3c63",
+      "digest": "sha256:579fbbfb6aff1834d582edb6d2e40abc309ee6551e6d7093bfb4fcf1f594b5ef",
+      "strategy": "branch_diff",
+      "target_sha": "785a9fc9eb53eee3eff7bc109e6547b230061f9b"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:1a49c97e7e25ec419a54996e5e86e566d5a0d975027ca6aabc7f4b875fd2e6cd",
+    "verify_steps_digest": "sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-19T01:51:58.382Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1",
+  "task_id": "202608181750-CRZNFC",
+  "verification_command": "agentplane verify 202608181750-CRZNFC --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
