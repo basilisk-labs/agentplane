@@ -114,6 +114,40 @@ describe("incidents runtime", () => {
     ]);
   });
 
+  it("does not repromote an archived incident when mutable metadata and guidance changed", () => {
+    const archivedRegistry = parseIncidentRegistry(
+      [
+        "# Incident Archive",
+        "",
+        "- id: INC-20260818-01 | date: 2026-08-18 | scope: branch_pr task artifact ownership | failure: Generic volatile-evidence deletion bypasses foreign task ownership. | advice: Require task-specific authority for volatile foreign-task deletion. | rule: Branch PR artifact reconciliation MUST require an exact task-specific writable root. | evidence: task OLD-TASK; commit abc123 | enforcement: test | fixability: repo-fixable | state: archived",
+      ].join("\n"),
+    );
+
+    const plan = planIncidentCollection({
+      task: {
+        id: "NEW-TASK",
+        title: "Qualify a later release",
+        description: "Repeat the evaluator after the incident was archived",
+        tags: ["release"],
+        commitHash: "def456",
+      },
+      findings: [
+        "- Observation: Generic volatile-evidence deletion bypasses foreign task ownership.",
+        "  Impact: A later evaluator repeated the resolved finding.",
+        "  Resolution: Require an explicit cleanup allowlist and keep other deletions fail-closed.",
+        "  IncidentScope: branch_pr task artifact ownership",
+        "  IncidentRule: Analogous ownership work MUST review the recorded advice.",
+        "  Fixability: repo-fixable",
+      ].join("\n"),
+      registry: parseIncidentRegistry(createIncidentRegistrySkeleton()),
+      archivedRegistry,
+      now: new Date("2026-08-19T10:00:00.000Z"),
+    });
+
+    expect(plan.promotable).toHaveLength(0);
+    expect(plan.duplicates).toHaveLength(1);
+  });
+
   it("tracks structured findings that are skipped because they are not marked for promotion or external handling", () => {
     const plan = planIncidentCollection({
       task: {

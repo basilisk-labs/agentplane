@@ -25,6 +25,7 @@ import {
 } from "../task/shared.js";
 import type { CommandContext } from "../shared/task-backend.js";
 const INCIDENTS_POLICY_LINE_BUDGET = 100;
+const INCIDENTS_ARCHIVE_PATH = "docs/developer/incident-archive.mdx";
 
 type LoadedTaskIncidents = {
   task: TaskData;
@@ -209,6 +210,10 @@ export async function inspectTaskIncidents(opts: {
 }> {
   const loaded = await loadTaskIncidents(opts.ctx, opts.taskId, opts.task ?? null);
   const { registryPath, registryText, registry } = await loadIncidentRegistry(opts.ctx);
+  const archiveText = await readTextIfExists(
+    path.join(opts.ctx.resolvedProject.gitRoot, INCIDENTS_ARCHIVE_PATH),
+  );
+  const archivedRegistry = parseIncidentRegistry(archiveText ?? "");
   const registryPaths = await resolveIncidentRegistryMirrorPaths(opts.ctx);
   const plan = planIncidentCollection({
     task: {
@@ -221,6 +226,7 @@ export async function inspectTaskIncidents(opts: {
     },
     findings: loaded.findings,
     registry,
+    archivedRegistry,
     now: opts.now,
   });
   return { loaded, registryPath, registryPaths, registryText, registry, plan };

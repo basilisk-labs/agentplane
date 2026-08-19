@@ -134,6 +134,12 @@ export function buildIncidentFingerprint(
   return [entry.sourceTask ?? "", buildIncidentSignature(entry)].join("|");
 }
 
+export function buildArchivedIncidentIdentity(
+  entry: Pick<IncidentRegistryEntry, "scope" | "failure">,
+): string {
+  return [normalizeSearchText(entry.scope), normalizeSearchText(entry.failure)].join("|");
+}
+
 export function buildMatchTerms(opts: {
   scope: string;
   tags: readonly string[];
