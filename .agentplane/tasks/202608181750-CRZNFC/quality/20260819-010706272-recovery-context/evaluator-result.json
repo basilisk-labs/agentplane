@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "No blocking correctness, scope, or security finding remains in the evaluated implementation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/50fbf56cbb1cc1aa3883c1823248d3aa018c7f0095df41293d3a9798620f5730.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The new observation logic updates extensions.implementation_commit only when a non-undefined preserved commit differs, preserves all other extensions, avoids a backend write when both identity and contract observations are unchanged, and is covered with contract, no-contract, and idempotence tests.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/50fbf56cbb1cc1aa3883c1823248d3aa018c7f0095df41293d3a9798620f5730.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The active and packaged incident registries are synchronized and empty; the archived record identifies exact enforcement code, regression coverage, and implementation commit 6ed0b4b62.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/50fbf56cbb1cc1aa3883c1823248d3aa018c7f0095df41293d3a9798620f5730.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The evaluator packet selected ae97cf05c rather than a task-metadata commit, confirming the quality-review target fix works for this rework.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/50fbf56cbb1cc1aa3883c1823248d3aa018c7f0095df41293d3a9798620f5730.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: The release must still pass exact-head hosted checks and public publication readback before it can be considered complete.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/50fbf56cbb1cc1aa3883c1823248d3aa018c7f0095df41293d3a9798620f5730.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
