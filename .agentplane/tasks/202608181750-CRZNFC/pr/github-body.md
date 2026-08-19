@@ -15,8 +15,13 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note:
+
+```text
+Autonomous pre-merge closure rewrote task.commit to a metadata-only head, causing evaluator
+verification_implementation_changed despite a preserved implementation_commit extension.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -85,11 +90,15 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
  ...n-cli.core.pr-flow.integrate-strategies.test.ts |   6 +
  .../evaluator/evaluator-execute.command.test.ts    |   4 +-
  .../evaluator-qualification-packet.test.ts         |   2 +-
+ .../evaluator/evaluator-qualification-review.ts    |   7 +-
+ .../commands/evaluator/evaluator-review-usecase.ts |   3 +-
  .../commands/pr/integrate/internal/prepare.test.ts |   3 +
  .../src/commands/pr/integrate/internal/prepare.ts  |   1 +
  .../branch-task-artifact-ownership.test.ts         | 145 ++++++++++++++++--
  .../pr/internal/branch-task-artifact-ownership.ts  |  39 ++++-
  .../agentplane/src/commands/pr/internal/sync.ts    |   2 +
+ .../commands/shared/quality-review-target.test.ts  |  28 +++-
+ .../src/commands/shared/quality-review-target.ts   |  13 ++
  .../task-run-lifecycle-replay-security.test.ts     | 162 +++++++++++----------
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
@@ -100,7 +109,7 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
  scripts/README.md                                  |  24 +--
  .../baselines/v0.7-compatibility-candidate.json    |   6 +-
  scripts/checks/run-fast-ci-tests.mjs               |   2 +-
- 73 files changed, 354 insertions(+), 1441 deletions(-)
+ 77 files changed, 401 insertions(+), 1445 deletions(-)
 ```
 
 </details>

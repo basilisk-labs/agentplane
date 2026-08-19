@@ -2,10 +2,10 @@
 id: "202608181750-CRZNFC"
 title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref."
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -27,42 +27,23 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-18T23:57:22.772Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
-quality_review:
-  state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-18T23:54:24.043Z"
+  state: "needs_rework"
+  updated_at: "2026-08-19T00:00:49.127Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "6ed0b4b62b786d389f6a2b0ea3730973238c3985"
+  note: "Autonomous pre-merge closure rewrote task.commit to a metadata-only head, causing evaluator verification_implementation_changed despite a preserved implementation_commit extension."
+  attempts: 1
+quality_review:
+  state: "rework"
+  updated_at: "2026-08-19T00:00:49.127Z"
+  updated_by: "EVALUATOR"
+  note: "Autonomous pre-merge closure rewrote task.commit to a metadata-only head, causing evaluator verification_implementation_changed despite a preserved implementation_commit extension."
+  evaluated_sha: "8d89dd8539e3f48c6a619beb4b07a97fe80fc8d2"
   blueprint_digest: "7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce"
   evidence_refs:
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-235329918-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-235329918-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/75c34851f2469ce66d4da656e38d0eae2d7ef80544134baafa777fe71ebe695c.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-235329918-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-235329918-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/20260818-235329918-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608181750-CRZNFC/README.md"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/d6629b98f571a9dd8028d2ce11099313b0927e6931c20316304642319549f053.patch"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/da415562db1708aa338e4ec498775707e8eb7387582de15366e57897c044497e.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/verification/20260818235314976-3d722dbe458311b3.json"
-    - ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/07d3a2d994a7d0df45d44db46db30e7331200d55b9aea7ba949e473a44d57444.json"
-    - ".agentplane/policy/dod.code.md"
-    - ".agentplane/policy/dod.core.md"
-    - ".agentplane/policy/security.must.md"
-    - ".agentplane/policy/workflow.release.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json"
   findings:
-    - "The default path no longer exempts foreign .log, .jsonl, runs, or repro deletions; they contribute the foreign task id and fail validation."
-    - "The exception requires both an exact foreign-task descendant root and path containment within that root, preventing task-id prefix and sibling-root widening."
-    - "Only deletion-class volatile artifacts are eligible; modifications, durable JSON reports, and pr/verify.log or pr/notes.jsonl remain ownership-gated."
-    - "Both PR synchronization and integration preparation derive cleanup roots from the current task execution contract authority, which contains the explicitly approved T3ZDDM evidence root for this release task."
-    - "The full repeated release gate passed 105/105 release-ci-base chunks, workflow 50/50, significant 204/204, release-critical 16/16, package policy, eight migration scenarios, and install smoke."
-    - "Residual risk: The task execution contract is treated as the authoritative source of writable roots; its approval and integrity remain enforced by existing scope-extension and task-lifecycle controls."
+    - "The persisted evaluator target and verification target disagree after metadata-only pre-merge closure."
 token_usage:
   agent_runs: 10
   input_tokens: null
@@ -536,9 +517,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit:
-  hash: "500d113c0b3cd579fe12679e4e0c4cb4988d4ee1"
-  message: "🚧 CRZNFC task: record external evaluator result"
+commit: null
 comments:
   -
     author: "INTEGRATOR"
@@ -688,8 +667,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "verify"
+    at: "2026-08-19T00:00:49.127Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Autonomous pre-merge closure rewrote task.commit to a metadata-only head, causing evaluator verification_implementation_changed despite a preserved implementation_commit extension."
 doc_version: 3
-doc_updated_at: "2026-08-18T23:57:25.262Z"
+doc_updated_at: "2026-08-19T00:00:51.909Z"
 doc_updated_by: "INTEGRATOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
@@ -997,6 +982,38 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-19T00:00:49.127Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Autonomous pre-merge closure rewrote task.commit to a metadata-only head, causing evaluator verification_implementation_changed despite a preserved implementation_commit extension.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:c3bfc7ec771f035141e38d409d19ff2dfe27ad510c92350c22e26898b8649487
+
+    Details:
+
+    The persisted evaluator target and verification target disagree after metadata-only pre-merge closure.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json
+    - old_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+    - current_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181750-CRZNFC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1009,6 +1026,14 @@ sections:
       Fixability: repo-fixable
       IncidentScope: branch_pr task artifact ownership
       IncidentTags: ownership, evidence
+
+    - Observation: task.pre_merge_close used branch head 500d113c as task.commit while extensions.implementation_commit remained 6ed0b4b62; branch verification then recorded 8d89dd853 and evaluator searched for verification at task.commit 500d113c.
+      Impact: The autonomous branch_pr route enters a verification/evaluator freshness loop after successful pre-merge closure.
+      Resolution: Use the preserved typed implementation_commit as evaluator verification target before falling back to task.commit, with regression coverage.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
+      IncidentScope: branch_pr pre-merge closure and evaluator verification target selection
+      IncidentTags: lifecycle, verification
 extensions:
   agentplane.scope_extension_request:
     applied_at: "2026-08-18T23:13:59.043Z"
@@ -1348,6 +1373,38 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-19T00:00:49.127Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Autonomous pre-merge closure rewrote task.commit to a metadata-only head, causing evaluator verification_implementation_changed despite a preserved implementation_commit extension.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:c3bfc7ec771f035141e38d409d19ff2dfe27ad510c92350c22e26898b8649487
+
+Details:
+
+The persisted evaluator target and verification target disagree after metadata-only pre-merge closure.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json
+- old_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+- current_digest: 7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181750-CRZNFC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1364,6 +1421,14 @@ DecisionContextRef:
   Fixability: repo-fixable
   IncidentScope: branch_pr task artifact ownership
   IncidentTags: ownership, evidence
+
+- Observation: task.pre_merge_close used branch head 500d113c as task.commit while extensions.implementation_commit remained 6ed0b4b62; branch verification then recorded 8d89dd853 and evaluator searched for verification at task.commit 500d113c.
+  Impact: The autonomous branch_pr route enters a verification/evaluator freshness loop after successful pre-merge closure.
+  Resolution: Use the preserved typed implementation_commit as evaluator verification target before falling back to task.commit, with regression coverage.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
+  IncidentScope: branch_pr pre-merge closure and evaluator verification target selection
+  IncidentTags: lifecycle, verification
 
 ## Token Usage
 

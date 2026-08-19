@@ -6,7 +6,10 @@ import { promisify } from "node:util";
 import { mkGitRepoRoot } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
-import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
+import {
+  recordedTaskImplementationCommitSha,
+  resolveQualityReviewTargetSha,
+} from "./quality-review-target.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -127,6 +130,29 @@ function implementationReceiptReadme(opts: {
 }
 
 describe("quality review target resolver", () => {
+  it("prefers the preserved implementation commit over a metadata-only task commit", () => {
+    expect(
+      recordedTaskImplementationCommitSha({
+        commit: { hash: "metadata-head", message: "pre-merge closure" },
+        extensions: {
+          implementation_commit: {
+            hash: "reviewed-implementation",
+            message: "implement feature",
+          },
+        },
+      }),
+    ).toBe("reviewed-implementation");
+  });
+
+  it("falls back to task commit when no preserved implementation commit exists", () => {
+    expect(
+      recordedTaskImplementationCommitSha({
+        commit: { hash: "implementation-head", message: "implement feature" },
+        extensions: {},
+      }),
+    ).toBe("implementation-head");
+  });
+
   it("preserves the reviewed semantic target across a strict CLI implementation receipt", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202607240736-IMPLEMENTATION-RECEIPT";

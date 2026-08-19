@@ -1,7 +1,10 @@
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
-import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
+import {
+  recordedTaskImplementationCommitSha,
+  resolveQualityReviewTargetSha,
+} from "../shared/quality-review-target.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import {
   isQualificationTask,
@@ -44,7 +47,7 @@ export async function resolveEvaluatorReviewTarget(opts: {
         taskId: opts.task.id,
         taskIds: normalizeBranchPrBatchTaskIds(opts.task, opts.task.id),
         previousEvaluatedSha:
-          opts.task.quality_review?.evaluated_sha ?? opts.task.commit?.hash ?? null,
+          opts.task.quality_review?.evaluated_sha ?? recordedTaskImplementationCommitSha(opts.task),
         workflowMode: opts.ctx.config.workflow_mode,
       });
   return {
