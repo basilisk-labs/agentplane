@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -66,7 +66,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-19T12:21:41.915Z"
+  updated_at: "2026-08-19T12:29:56.236Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -211,8 +211,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "task_outcome"
 commit:
-  hash: "10418cf3ee50127c6f94e9122073109456bce440"
-  message: "🚧 NMAHN5 task: apply external agent result"
+  hash: "15b6a70c0f61676846167aa0d79768a1bbbe154b"
+  message: "🚧 NMAHN5 task: refresh task artifacts after rebase"
 comments:
   -
     author: "CODER"
@@ -223,6 +223,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -259,8 +262,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "After rebase onto current main, task branch still contains only intended homepage redesign changes and remains aligned with PR #4849."
+  -
+    type: "status"
+    at: "2026-08-19T12:29:56.236Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "15b6a70c0f61676846167aa0d79768a1bbbe154b"
 doc_version: 3
-doc_updated_at: "2026-08-19T12:28:55.046Z"
+doc_updated_at: "2026-08-19T12:29:56.269Z"
 doc_updated_by: "CODER"
 description: "Implement the selected hybrid visual target: compact header from concept 3, icon-led diagrams and evidence storytelling from concept 1, a white background, modern multicolor semantic accents, responsive behavior, and restrained microinteractions. Preserve the current Git-native control-plane positioning and working navigation/CTAs."
 sections:
@@ -356,6 +367,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "2601e73b3e04c42343904c9e41dbd85b5a262181"
+    message: "🚧 NMAHN5 task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "0221381720a5b70e1591aa7e3c103eb8639a6ef7"
     version: 1
@@ -477,4 +491,4 @@ DecisionContextRef:
 - Provenance: `supervisor_journal/agentplane`
 - Journal digest: `sha256:d0ea8b94c8015c823e8d40de8e63193464d63a41bbf0cba76919dabdf9ee95b0`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-19T12:21:41.915Z`
+- Updated at: `2026-08-19T12:29:56.236Z`

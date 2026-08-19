@@ -8,10 +8,10 @@
   "pr_number": 4849,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4849",
   "pre_merge_closure": {
-    "basis_commit": "10418cf3ee50127c6f94e9122073109456bce440",
+    "basis_commit": "15b6a70c0f61676846167aa0d79768a1bbbe154b",
     "branch": "task/202608182243-NMAHN5/redesign-the-agentplane-homepage-around-a-clear",
     "pr_number": 4849,
-    "recorded_at": "2026-08-19T12:21:41.991Z",
+    "recorded_at": "2026-08-19T12:29:56.309Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
