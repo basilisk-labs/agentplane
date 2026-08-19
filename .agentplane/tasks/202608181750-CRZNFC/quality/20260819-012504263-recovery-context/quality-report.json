@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202608181750-CRZNFC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-19T01:26:43.787Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "31ba8d27a80c69076492d004aa66e9164376654a",
+  "blueprint_digest": "92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e",
+  "findings": [
+    "Strengthen archive de-duplication so generated id, date, and evidence commit changes cannot re-promote the same resolved failure.",
+    "Remove the duplicate from the active registry and packaged mirror only together with that regression fix, then rerun the full release gate.",
+    "Residual risk: A cleanup-only change would allow repeated re-promotion on the next finish."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/043345616f1d796823b4166484ac4be5eca88b02ab25f0c53fa9a29cf050cd23.patch"
+  ],
+  "missing_tests": [
+    "Archived semantic duplicate with different id, date, and evidence commit remains suppressed."
+  ],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Rework required: the final candidate still contains active INC-20260819-01, a semantic duplicate of archived INC-20260818-01, and therefore fails the mandatory release incident gate."
+  ]
+}

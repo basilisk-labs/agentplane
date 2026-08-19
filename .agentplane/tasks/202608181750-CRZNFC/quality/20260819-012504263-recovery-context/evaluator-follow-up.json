@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608181750-CRZNFC-185309938f306a3ea2abb34a",
+  "task_id": "202608181750-CRZNFC",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Rework required: the final candidate still contains active INC-20260819-01, a semantic duplicate of archived INC-20260818-01, and therefore fails the mandatory release incident gate.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "Strengthen archive de-duplication so generated id, date, and evidence commit changes cannot re-promote the same resolved failure.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/043345616f1d796823b4166484ac4be5eca88b02ab25f0c53fa9a29cf050cd23.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "Remove the duplicate from the active registry and packaged mirror only together with that regression fix, then rerun the full release gate.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/043345616f1d796823b4166484ac4be5eca88b02ab25f0c53fa9a29cf050cd23.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "Residual risk: A cleanup-only change would allow repeated re-promotion on the next finish.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/043345616f1d796823b4166484ac4be5eca88b02ab25f0c53fa9a29cf050cd23.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608181750-CRZNFC/quality/20260819-012504263-recovery-context/evaluator-result.json"
+}
