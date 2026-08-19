@@ -8,10 +8,10 @@
   "pr_number": 4846,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4846",
   "pre_merge_closure": {
-    "basis_commit": "3909e65b243a835e1738fcb585c9899af5c76b4c",
+    "basis_commit": "a24a65dcab37169c58949a9ba309cb159625ee25",
     "branch": "task/202608181750-CRZNFC/qualify-and-publish-agentplane-0-7-7-from-exact",
     "pr_number": 4846,
-    "recorded_at": "2026-08-19T01:36:07.195Z",
+    "recorded_at": "2026-08-19T02:40:04.770Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
