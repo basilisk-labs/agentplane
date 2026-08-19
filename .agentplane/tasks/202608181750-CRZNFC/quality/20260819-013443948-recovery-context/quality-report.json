@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608181750-CRZNFC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-19T01:35:35.237Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "306272c451e4cd13b7987bef303b6204f4598680",
+  "blueprint_digest": "92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e",
+  "findings": [
+    "The planner retains the existing source-task-plus-signature fingerprint for active entries and adds a separate archived identity based only on normalized scope and failure, which is the correct distinction between recurrence tracking and archival tombstones.",
+    "The command path loads the historical archive read-only and uses it only for promotion planning; active registry rendering, mirror writes, advice lookup, and line-budget behavior remain unchanged.",
+    "Regression coverage proves both the runtime case with changed id, date, source task, evidence, advice, and rule and the command-level archive loading/write no-op.",
+    "The duplicate active entry is removed from both canonical and packaged registries while the richer archived record remains preserved.",
+    "Residual risk: Archive identity intentionally treats the same normalized failure within the same normalized scope as already resolved; materially different failure classes must use precise observation text rather than reusing an archived description."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608181750-CRZNFC/quality/objects/sha256/dd8cad4bbcb6dac318b792d49878c639ecc7158009a44913abd0360e0bfed4b2.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
