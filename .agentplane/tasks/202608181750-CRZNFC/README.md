@@ -2,10 +2,10 @@
 id: "202608181750-CRZNFC"
 title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref."
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 41
+revision: 43
 origin:
   system: "manual"
 depends_on: []
@@ -28,9 +28,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-19T01:06:53.684Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  updated_at: "2026-08-19T01:10:21.113Z"
+  updated_by: "INTEGRATOR"
+  note: "Verified: exact implementation ae97cf05c passed the complete release prepublish gate and independent evaluator review."
   attempts: 0
 quality_review:
   state: "pass"
@@ -63,9 +63,9 @@ quality_review:
     - "The evaluator packet selected ae97cf05c rather than a task-metadata commit, confirming the quality-review target fix works for this rework."
     - "Residual risk: The release must still pass exact-head hosted checks and public publication readback before it can be considered complete."
 token_usage:
-  agent_runs: 10
+  agent_runs: 15
   input_tokens: null
-  journal_digest: "sha256:2529ac46d33c5fc2a6bc9cc90babe1a7a3cb22068ae62f06191edc72c79222c9"
+  journal_digest: "sha256:ac15e220e5c39299597b45859386b35d9a37ffd7909d3d5c350a7fc393680be8"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -75,7 +75,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-18T23:56:20.348Z"
+  updated_at: "2026-08-19T01:10:52.872Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -558,8 +558,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "ae97cf05cbb4c35182f82a9cda39b4e0d9df733b"
-  message: "🚧 CRZNFC task: apply external agent result"
+  hash: "056e47ccab7d14426c203c86593fac5d30dbf8ec"
+  message: "🚧 CRZNFC task: record external evaluator result"
 comments:
   -
     author: "INTEGRATOR"
@@ -615,6 +615,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: ae97cf05cbb4. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -768,9 +771,23 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "verify"
+    at: "2026-08-19T01:10:21.113Z"
+    author: "INTEGRATOR"
+    state: "ok"
+    note: "Verified: exact implementation ae97cf05c passed the complete release prepublish gate and independent evaluator review."
+  -
+    type: "status"
+    at: "2026-08-19T01:10:52.872Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "056e47ccab7d14426c203c86593fac5d30dbf8ec"
 doc_version: 3
-doc_updated_at: "2026-08-19T01:08:20.703Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-19T01:10:52.901Z"
+doc_updated_by: "INTEGRATOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
   Summary: |-
@@ -1283,6 +1300,78 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-19T01:10:21.113Z — VERIFY — ok
+
+    By: INTEGRATOR
+
+    Note: Verified: exact implementation ae97cf05c passed the complete release prepublish gate and independent evaluator review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:c2a6fd993b6734129b0ffc1c0871e4bed59fef4d14a7b64de315c30760496dac
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: exact candidate passed targeted and complete suites, including 105/105 release-ci-base chunks.
+    Scope: changed source paths and their unit/integration regressions.
+
+    Check: critical_paths
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: significant 204/204 and release-critical 16/16 passed.
+    Scope: authority, PR integration, evaluator, runner, and release critical paths.
+
+    Check: docs_contract
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: documentation, generated reference, policy routing, and agents synchronization gates passed.
+    Scope: release notes, generated docs/assets, policy mirror, and incident archive.
+
+    Check: full_regression
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: release-ci-base completed all 105/105 chunks with no failure.
+    Scope: full repository regression selected by the release contract.
+
+    Check: hosted_integration
+    Command: independent EVALUATOR packet tr_36393a7d8a2bdc2286fe132d92ab3253
+    Result: pass
+    Evidence: pre-hosted candidate qualification passed; exact hosted execution remains enforced by the subsequent workflow boundary.
+    Scope: readiness of ae97cf05c for exact-head hosted checks and protected integration.
+
+    Check: real_e2e
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: build, packed install smoke, CLI runtime, release workflow, and migration-sensitive suites passed.
+    Scope: packaged candidate and canonical release execution behavior.
+
+    Check: task_outcome
+    Command: independent EVALUATOR packet tr_36393a7d8a2bdc2286fe132d92ab3253
+    Result: pass
+    Evidence: evaluator found no blocking correctness, scope, or security issue and targeted ae97cf05c.
+    Scope: approved pre-merge implementation outcome; publication and cleanup remain later workflow stages.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json
+    - old_digest: 92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e
+    - current_digest: 92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608181750-CRZNFC
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1331,6 +1420,7 @@ extensions:
     transition_id: "tr_c5ea6287e209f872a20ae230fa011d48"
   implementation_commit:
     hash: "ae97cf05cbb4c35182f82a9cda39b4e0d9df733b"
+    message: "🚧 CRZNFC task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "708f0d7d5b813ea2bb4de659d9eb113a752e3c63"
     version: 1
@@ -1856,6 +1946,78 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-19T01:10:21.113Z — VERIFY — ok
+
+By: INTEGRATOR
+
+Note: Verified: exact implementation ae97cf05c passed the complete release prepublish gate and independent evaluator review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:087112fda882f650b873c038cbbae04edc78d3be18749f2f9cfa4e4c81a6ffc1, input_digest=sha256:c2a6fd993b6734129b0ffc1c0871e4bed59fef4d14a7b64de315c30760496dac
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run release:prepublish
+Result: pass
+Evidence: exact candidate passed targeted and complete suites, including 105/105 release-ci-base chunks.
+Scope: changed source paths and their unit/integration regressions.
+
+Check: critical_paths
+Command: bun run release:prepublish
+Result: pass
+Evidence: significant 204/204 and release-critical 16/16 passed.
+Scope: authority, PR integration, evaluator, runner, and release critical paths.
+
+Check: docs_contract
+Command: bun run release:prepublish
+Result: pass
+Evidence: documentation, generated reference, policy routing, and agents synchronization gates passed.
+Scope: release notes, generated docs/assets, policy mirror, and incident archive.
+
+Check: full_regression
+Command: bun run release:prepublish
+Result: pass
+Evidence: release-ci-base completed all 105/105 chunks with no failure.
+Scope: full repository regression selected by the release contract.
+
+Check: hosted_integration
+Command: independent EVALUATOR packet tr_36393a7d8a2bdc2286fe132d92ab3253
+Result: pass
+Evidence: pre-hosted candidate qualification passed; exact hosted execution remains enforced by the subsequent workflow boundary.
+Scope: readiness of ae97cf05c for exact-head hosted checks and protected integration.
+
+Check: real_e2e
+Command: bun run release:prepublish
+Result: pass
+Evidence: build, packed install smoke, CLI runtime, release workflow, and migration-sensitive suites passed.
+Scope: packaged candidate and canonical release execution behavior.
+
+Check: task_outcome
+Command: independent EVALUATOR packet tr_36393a7d8a2bdc2286fe132d92ab3253
+Result: pass
+Evidence: evaluator found no blocking correctness, scope, or security issue and targeted ae97cf05c.
+Scope: approved pre-merge implementation outcome; publication and cleanup remain later workflow stages.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/release-077-base.TNFizr/repo/.agentplane/worktrees/202608181750-CRZNFC-qualify-and-publish-agentplane-0-7-7-from-exact/.agentplane/tasks/202608181750-CRZNFC/blueprint/resolved-snapshot.json
+- old_digest: 92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e
+- current_digest: 92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608181750-CRZNFC
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1892,12 +2054,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/10` agent runs
+- Completeness: `0/15` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:2529ac46d33c5fc2a6bc9cc90babe1a7a3cb22068ae62f06191edc72c79222c9`
+- Journal digest: `sha256:ac15e220e5c39299597b45859386b35d9a37ffd7909d3d5c350a7fc393680be8`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-18T23:56:20.348Z`
+- Updated at: `2026-08-19T01:10:52.872Z`

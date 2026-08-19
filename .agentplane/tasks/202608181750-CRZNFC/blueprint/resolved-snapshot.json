@@ -28,7 +28,8 @@
       "external_system",
       "merge",
       "network",
-      "publish"
+      "publish",
+      "security"
     ],
     "blueprintRequest": "release.strict"
   },
@@ -66,7 +67,8 @@
         "external_system",
         "merge",
         "network",
-        "publish"
+        "publish",
+        "security"
       ],
       "blueprintRequest": "release.strict"
     },
@@ -489,6 +491,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "7982ba84632f817093b52f0b11b90f93108f1cb098ae744306a815a752ca79ce"
+    "value": "92c99152147027534c55ea4bc31a06349444ab258f03949a5d6a95ded730a64e"
   }
 }
