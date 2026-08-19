@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 50
+revision: 51
 origin:
   system: "manual"
 depends_on: []
@@ -248,6 +248,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts"
       - "packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
       - "packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+      - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+      - "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
       - "packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts"
       - "packages/core/package.json"
       - "packages/recipes/package.json"
@@ -356,7 +358,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:c7fac13b5bce7a212cbef657415f29244b79cb65c63b17ad731dcac8b1d785d1"
+      digest: "sha256:0eb4b3f460ac99a010d8f2148041bf2a5a88a12d5b7b4deb36b402d67b8fde76"
       escalation_reasons:
         - "central_component:package.json"
         - "central_path:package.json"
@@ -497,6 +499,8 @@ execution_contract:
           - "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts"
           - "packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
           - "packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+          - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+          - "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
           - "packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts"
           - "packages/core/package.json"
           - "packages/recipes/package.json"
@@ -1755,8 +1759,7 @@ extensions:
     status: "applied"
     transition_id: "tr_c5ea6287e209f872a20ae230fa011d48"
   implementation_commit:
-    hash: "ae97cf05cbb4c35182f82a9cda39b4e0d9df733b"
-    message: "🚧 CRZNFC task: apply external agent result"
+    hash: "1c0ecc78b9a377150857e75e01bda4d3c2ee0bec"
   workflow_route_baseline:
     start_head_sha: "708f0d7d5b813ea2bb4de659d9eb113a752e3c63"
     version: 1
