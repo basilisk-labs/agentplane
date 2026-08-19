@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check c7106be0fa513dd124feed288744c64f002ea472..0359c33c191c8a4a3b19750a4627eeac7226be25",
+      "command": "git diff --check 5579c51ddccc7ac69d8fde75c2e1f7865b52eadf..ae97cf05cbb4c35182f82a9cda39b4e0d9df733b",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,21 +13,20 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB c7106be0fa513dd124feed288744c64f002ea472..0359c33c191c8a4a3b19750a4627eeac7226be25",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5579c51ddccc7ac69d8fde75c2e1f7865b52eadf..ae97cf05cbb4c35182f82a9cda39b4e0d9df733b",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202608181750-CRZNFC/README.md",
+        "M\t.agentplane/policy/incidents.md",
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/github-body.md",
-        "M\t.agentplane/tasks/202608181750-CRZNFC/pr/github-title.txt",
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/meta.json",
         "M\t.agentplane/tasks/202608181750-CRZNFC/pr/review.md",
-        "A\t.agentplane/tasks/202608181750-CRZNFC/verification/20260819000049127-8b8253ff22e376ef.json",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
-        "M\tpackages/agentplane/src/commands/shared/quality-review-target.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/quality-review-target.ts"
+        "M\tdocs/developer/incident-archive.mdx",
+        "M\tpackages/agentplane/assets/policy/incidents.md",
+        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
+        "M\tpackages/agentplane/src/commands/task/task-execution-contract-observation.test.ts",
+        "M\tpackages/agentplane/src/commands/task/task-execution-contract-observation.ts"
       ]
     },
     {
@@ -37,78 +36,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "c7106be0fa513dd124feed288744c64f002ea472",
-  "implementation_commit": "0359c33c191c8a4a3b19750a4627eeac7226be25",
+  "execution_base_commit": "5579c51ddccc7ac69d8fde75c2e1f7865b52eadf",
+  "implementation_commit": "ae97cf05cbb4c35182f82a9cda39b4e0d9df733b",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M .agentplane/tasks/202608181750-CRZNFC/README.md",
-      " M .agentplane/tasks/202608181750-CRZNFC/pr/github-body.md",
-      " M .agentplane/tasks/202608181750-CRZNFC/pr/github-title.txt",
-      " M .agentplane/tasks/202608181750-CRZNFC/pr/meta.json",
-      " M .agentplane/tasks/202608181750-CRZNFC/pr/review.md",
-      " M packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts",
-      " M packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
-      " M packages/agentplane/src/commands/shared/quality-review-target.test.ts",
-      " M packages/agentplane/src/commands/shared/quality-review-target.ts",
-      "?? .agentplane/tasks/202608181750-CRZNFC/verification/20260819000049127-8b8253ff22e376ef.json"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608181750-CRZNFC/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608181750-CRZNFC/pr/github-body.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608181750-CRZNFC/pr/github-title.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608181750-CRZNFC/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608181750-CRZNFC/pr/review.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/quality-review-target.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/quality-review-target.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608181750-CRZNFC/verification/20260819000049127-8b8253ff22e376ef.json"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202608181750-CRZNFC/README.md",
-      " M .agentplane/tasks/202608181750-CRZNFC/pr/github-body.md",
-      " M .agentplane/tasks/202608181750-CRZNFC/pr/github-title.txt",
-      " M .agentplane/tasks/202608181750-CRZNFC/pr/meta.json",
-      " M .agentplane/tasks/202608181750-CRZNFC/pr/review.md",
-      " M packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts",
-      " M packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
-      " M packages/agentplane/src/commands/shared/quality-review-target.test.ts",
-      " M packages/agentplane/src/commands/shared/quality-review-target.ts",
-      "?? .agentplane/tasks/202608181750-CRZNFC/verification/20260819000049127-8b8253ff22e376ef.json"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
