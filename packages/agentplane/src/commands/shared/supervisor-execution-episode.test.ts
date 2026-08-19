@@ -21,6 +21,7 @@ import { WORKFLOW_OPERATION_REGISTRY, type WorkflowOperation } from "./workflow-
 import { projectTaskTokenUsage } from "../task/task-token-usage.js";
 import {
   createSupervisorEpisodeStore,
+  preparePersistedSupervisorReplacementAfterFailure,
   resolveSupervisorExecutionEpisodePath,
   supervisePersistedWorkflowEpisode,
   tryAcquireSupervisorExecutionLease,
@@ -157,6 +158,62 @@ function successfulOperationResult() {
 }
 
 describe("persisted supervisor execution episodes", () => {
+  it("extends an episode-only budget stop through explicit replacement recovery", async () => {
+    const root = await mkGitRepoRoot();
+    const decision = fixtureDecision(root, 1);
+    const created = createSupervisorExecutionEpisodeJournal({
+      task_id: taskId,
+      task_revision: 1,
+      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      budget: {
+        max_episodes: 1,
+        max_agent_runs: 1,
+        max_input_tokens: null,
+        max_output_tokens: null,
+        max_total_tokens: null,
+        max_wall_time_ms: null,
+        max_changed_files: null,
+        max_diff_lines: null,
+        max_no_progress_episodes: null,
+      },
+    });
+    const started = startSupervisorExecutionEpisode({
+      journal: created,
+      role: "EVALUATOR",
+      kind: "evaluator_episode",
+      operation_identity: { id: "quality-review" },
+      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      authority_ref: "authority",
+      authority_digest: decision.workflowStep.preconditionFingerprint.digest,
+      effect_ref: "review",
+    });
+    if (started.status !== "started") throw new Error("expected started fixture episode");
+    const stopped = completeSupervisorExecutionEpisode({
+      journal: started.journal,
+      operation_key: started.operation_key,
+      result: { verdict: "pass" },
+    });
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    await createSupervisorEpisodeStore(journalPath).write(stopped);
+
+    await expect(
+      preparePersistedSupervisorReplacementAfterFailure({
+        git_root: root,
+        task_id: taskId,
+        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      }),
+    ).resolves.toBe("budget_extended");
+    expect(await createSupervisorEpisodeStore(journalPath).read()).toMatchObject({
+      status: "running",
+      stop: null,
+      budget: { max_episodes: 51 },
+      usage: { episodes: 1 },
+      cursor: { episode: 1, phase: "ready", operation_key: null },
+    });
+  });
   it("does not steal an old lease from a live long-running supervisor", async () => {
     const root = await mkGitRepoRoot();
     const journalPath = await resolveSupervisorExecutionEpisodePath({

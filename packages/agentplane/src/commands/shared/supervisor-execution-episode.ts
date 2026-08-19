@@ -4,6 +4,7 @@ import path from "node:path";
 import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
+  continueSupervisorExecutionEpisodeAfterEpisodeBudget,
   migrateSupervisorExecutionEpisodeJournal,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   recoverSupervisorExecutionEpisodeJournal,
@@ -224,7 +225,7 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
   git_root: string;
   task_id: string;
   state_fingerprint_digest: string;
-}): Promise<"prepared" | "already_prepared" | "not_failed"> {
+}): Promise<"prepared" | "budget_extended" | "already_prepared" | "not_failed"> {
   const journalPath = await resolveSupervisorExecutionEpisodePath({
     git_root: opts.git_root,
     task_id: opts.task_id,
@@ -247,6 +248,22 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
       return "already_prepared";
     }
     const latest = journal.operations.at(-1);
+    const episodeBudgetExhausted =
+      journal.status === "stopped" &&
+      journal.stop?.reason === "budget_exhausted" &&
+      journal.stop.exhausted_dimensions.length === 1 &&
+      journal.stop.exhausted_dimensions[0] === "episodes" &&
+      latest?.status === "completed";
+    if (episodeBudgetExhausted) {
+      const continued = continueSupervisorExecutionEpisodeAfterEpisodeBudget({
+        journal,
+        state_fingerprint_digest: opts.state_fingerprint_digest,
+        max_episodes:
+          journal.budget.max_episodes + DEFAULT_SUPERVISOR_EXECUTION_BUDGET.max_episodes,
+      });
+      if (await opened.store.compareAndSwap(journal.digest, continued)) return "budget_extended";
+      continue;
+    }
     const recoverableFailure =
       journal.status === "stopped" &&
       latest?.status === "failed" &&

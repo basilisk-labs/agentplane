@@ -1016,3 +1016,48 @@ export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
   };
   return createJournal(next);
 }
+
+/**
+ * Continue a long-running control flow after only its episode-count budget was exhausted.
+ * Resource budgets remain terminal; callers must explicitly supply a larger monotonic episode cap.
+ */
+export function continueSupervisorExecutionEpisodeAfterEpisodeBudget(opts: {
+  journal: SupervisorExecutionEpisodeJournal;
+  state_fingerprint_digest: string;
+  max_episodes: number;
+  now?: string;
+}): SupervisorExecutionEpisodeJournal {
+  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+  const now = opts.now ?? new Date().toISOString();
+  const last = journal.operations.at(-1);
+  const exhausted = journal.stop?.exhausted_dimensions ?? [];
+  if (
+    journal.status !== "stopped" ||
+    journal.stop?.reason !== "budget_exhausted" ||
+    journal.cursor.phase !== "stopped" ||
+    last?.status !== "completed" ||
+    journal.stop.operation_key !== last.operation_key ||
+    exhausted.length !== 1 ||
+    exhausted[0] !== "episodes"
+  ) {
+    throw new Error(
+      "Supervisor episode continuation requires a completed stop caused only by the episode-count budget.",
+    );
+  }
+  if (!Number.isInteger(opts.max_episodes) || opts.max_episodes <= journal.budget.max_episodes) {
+    throw new Error(
+      "Supervisor episode continuation requires a larger integer max_episodes budget.",
+    );
+  }
+  const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
+    ...journal,
+    state_fingerprint_digest: opts.state_fingerprint_digest,
+    budget: { ...journal.budget, max_episodes: opts.max_episodes },
+    cursor: { episode: journal.cursor.episode, phase: "ready", operation_key: null },
+    status: "running",
+    stop: null,
+    updated_at: now,
+    previous_digest: journal.digest,
+  };
+  return createJournal(next);
+}
