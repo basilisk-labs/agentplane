@@ -15,8 +15,13 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note:
+
+```text
+External implementation rework committed 0359c33c, but extensions.implementation_commit remained
+6ed0b4b62; evaluator therefore selected stale implementation evidence.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
