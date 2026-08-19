@@ -73,6 +73,7 @@ describe("task execution contract observation", () => {
     expect(writeTask).toHaveBeenCalledOnce();
     expect(persistedTask).toMatchObject({
       blueprint_request: "code.branch_pr",
+      extensions: { implementation_commit: { hash: "abc123" } },
       execution_contract: { selected_mode: "branch_pr" },
     });
     expect(persistedOptions).toEqual({ expectedRevision: 3 });
@@ -146,5 +147,80 @@ describe("task execution contract observation", () => {
     expect(result.escalated).toBe(false);
     expect(result.task.execution_contract?.observed.changed_paths).toEqual(["status-label.txt"]);
     expect(result.task.execution_contract?.observed.authority_violations).toEqual([]);
+    expect(result.task.extensions?.implementation_commit).toEqual({ hash: "abc123" });
+  });
+
+  it("refreshes implementation identity even when the task has no execution contract", async () => {
+    const config = defaultConfig();
+    const task = {
+      id: "202608190000-IMPLID",
+      title: "Implementation identity fixture",
+      description: "Persist the latest accepted rework commit.",
+      status: "DOING",
+      priority: "med",
+      owner: "CODER",
+      revision: 4,
+      depends_on: [],
+      tags: [],
+      verify: [],
+      extensions: { implementation_commit: { hash: "old-sha", message: "old" } },
+    } satisfies TaskData;
+    let persistedTask: TaskData | null = null;
+    const command = {
+      config,
+      backendId: "local",
+      resolvedProject: { gitRoot: "/repo" },
+      taskBackend: {
+        writeTask: (nextTask: TaskData) => {
+          persistedTask = nextTask;
+          return Promise.resolve();
+        },
+        getTask: () => Promise.resolve(persistedTask),
+      },
+    } as unknown as CommandContext;
+
+    const result = await recordObservedTaskExecutionContract({
+      command,
+      task,
+      changed_paths: ["packages/agentplane/src/example.ts"],
+      preserved_commit: "new-sha",
+    });
+
+    expect(result.escalated).toBe(false);
+    expect(result.task.extensions?.implementation_commit).toEqual({ hash: "new-sha" });
+  });
+
+  it("does not rewrite a task when implementation identity and observations are unchanged", async () => {
+    const config = defaultConfig();
+    const task = {
+      id: "202608190000-STABLE",
+      title: "Stable identity fixture",
+      description: "Avoid redundant backend revisions.",
+      status: "DOING",
+      priority: "med",
+      owner: "CODER",
+      revision: 5,
+      depends_on: [],
+      tags: [],
+      verify: [],
+      extensions: { implementation_commit: { hash: "same-sha" } },
+    } satisfies TaskData;
+    const writeTask = vi.fn();
+    const command = {
+      config,
+      backendId: "local",
+      resolvedProject: { gitRoot: "/repo" },
+      taskBackend: { writeTask, getTask: () => Promise.resolve(task) },
+    } as unknown as CommandContext;
+
+    const result = await recordObservedTaskExecutionContract({
+      command,
+      task,
+      changed_paths: [],
+      preserved_commit: "same-sha",
+    });
+
+    expect(result.task).toBe(task);
+    expect(writeTask).not.toHaveBeenCalled();
   });
 });
