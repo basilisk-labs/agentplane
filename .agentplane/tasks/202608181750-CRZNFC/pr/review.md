@@ -6,14 +6,14 @@ Created: 2026-08-18T17:51:51.714Z
 
 - Task: `202608181750-CRZNFC`
 - Title: Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already re...
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608181750-CRZNFC/qualify-and-publish-agentplane-0-7-7-from-exact`
 - Canonical task record: `.agentplane/tasks/202608181750-CRZNFC/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified: exact implementation ae97cf05c passed the complete release prepublish gate and independent evaluator review.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,6 +30,7 @@ Created: 2026-08-18T17:51:51.714Z
 
 ```text
  .agentplane/WORKFLOW.md                            |   2 +-
+ .agentplane/policy/incidents.md                    |   1 +
  .../risk-e2e/logs/hosted-boundary-matrix.log       |   7 -
  .../risk-e2e/logs/packaged-candidate-flow.log      |   5 -
  .../samples/sample-01.events.jsonl                 |   1 -
@@ -79,6 +80,7 @@ Created: 2026-08-18T17:51:51.714Z
  docs/developer/incident-archive.mdx                |   4 +
  docs/reference/generated-reference.mdx             |  14 +-
  package.json                                       |   2 +-
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  packages/agentplane/package.json                   |   6 +-
  ...run-cli.core.pr-flow.integrate-failures.test.ts |   6 +
  .../run-cli.core.pr-flow.integrate-merge.test.ts   |   6 +
@@ -108,7 +110,7 @@ Created: 2026-08-18T17:51:51.714Z
  scripts/README.md                                  |  24 +--
  .../baselines/v0.7-compatibility-candidate.json    |   6 +-
  scripts/checks/run-fast-ci-tests.mjs               |   2 +-
- 79 files changed, 539 insertions(+), 1475 deletions(-)
+ 81 files changed, 541 insertions(+), 1475 deletions(-)
 ```
 
 </details>
