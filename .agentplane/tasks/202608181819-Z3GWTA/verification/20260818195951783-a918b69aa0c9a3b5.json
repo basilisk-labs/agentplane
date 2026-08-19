@@ -1,0 +1,91 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run lint:website\nResult: pass\nEvidence: ESLint exited 0 on the current implementation.\nScope: touched website implementation.\n\nCheck: critical_paths\nCommand: bun run docs:readme-header:check && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: README header artifacts are fresh for v0.7.6 and policy routing is OK.\nScope: public README, attributes, and repository policy gateway.\n\nCheck: full_regression\nCommand: bun run release:demo:check\nResult: pass\nEvidence: a fresh VHS render completed below the 3,000,000-byte limit; committed GIF bytes were restored after the nondeterministic render.\nScope: declared release demo gate.\n\nCheck: hosted_integration\nCommand: agentplane pr open 202608181819-Z3GWTA --author CODER\nResult: pass\nEvidence: GitHub PR 4845 exists and is linked in task metadata; publication of the current clean head remains a subsequent lifecycle action.\nScope: task branch and hosted PR linkage.\n\nCheck: real_e2e\nCommand: bun run docs:site:check\nResult: pass\nEvidence: docs IA, generated artifacts, website typecheck, social-card check, optimized Docusaurus build, navigation check, and design-language check passed.\nScope: public documentation and website build.\n\nCheck: task_outcome\nCommand: privacy phrase scan plus git diff check for docs/launch/**\nResult: pass\nEvidence: unique internal draft phrases have no current-tree matches; deleted launch files render as Binary files differ because docs/launch/** has diff unset.\nScope: requested current-tree private-content boundary and PR diff exposure.",
+  "digest": "sha256:a918b69aa0c9a3b57503ce738eb93b241324afe4e2f28f1eb2d8f50868531e5e",
+  "implementation_sha": "cbd9d5b3c234238194cbfb5f5e760129d5b71493",
+  "input": {
+    "context": {
+      "digest": "sha256:0ae2d6fd19100739a3eb62ee1e1089c36186f4e9976d255c5b393499e1353d45",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:ed0a9e426313098216820ef43728b2ca3f84999fdb340bbe57cbdc52eb52d11e",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:28ab5310e69aaaf37563d557a997f6f5a24ca41930f8b66335b6b01a9c96d45a",
+      "digest": "sha256:54a0b41b1d6d2dd22f1e53fee23fce2a4cbde751878960bf52e17a4f5f2d2b99",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "docs/launch/**",
+          "reference": "docs/launch/**",
+          "source": "missing"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "7d7e964aec30e3551d34c81d3a726f28a6379690",
+      "digest": "sha256:5acc495a9a8a3c85a6ad1878bb461761875e9c77b2d49196d65644a7718e2aa6",
+      "strategy": "branch_diff",
+      "target_sha": "cbd9d5b3c234238194cbfb5f5e760129d5b71493"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:8b43a6e0da00cc759499f5c5ba0bf9fdb41e7a33450c9b655f3d3c8dc5a8a18e",
+    "verify_steps_digest": "sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0"
+  },
+  "kind": "task_verification_record",
+  "note": "All declared checks pass on implementation commit cbd9d5b3c; launch-copy bodies are absent from the current tree and suppressed from deletion diffs.",
+  "recorded_at": "2026-08-18T19:59:51.783Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0",
+  "task_id": "202608181819-Z3GWTA",
+  "verification_command": "agentplane task verify ok 202608181819-Z3GWTA --ok --by TESTER",
+  "verifier": "TESTER"
+}

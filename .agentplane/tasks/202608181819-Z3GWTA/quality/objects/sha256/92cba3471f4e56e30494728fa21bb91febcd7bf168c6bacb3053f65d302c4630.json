@@ -1,0 +1,218 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run docs:readme-header:check",
+    "bun run docs:site:check",
+    "bun run lint:website",
+    "bun run release:demo:check",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "source_code"
+      ],
+      "external_effects": [
+        "external_write"
+      ],
+      "components": [],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "recovery_required"
+      },
+      "evidence_requirements": [
+        "external_effect:external_write",
+        "hosted_integration",
+        "repository_effect:documentation",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        ".agentplane",
+        ".gitattributes",
+        "README.md",
+        "context",
+        "docs",
+        "marketing",
+        "packages/agentplane",
+        "website"
+      ],
+      "changed_files": [
+        ".agentplane/context/derived/reports/release-docs-assimilation.json",
+        ".agentplane/context/derived/reports/release-docs-assimilation.sgr.json",
+        ".agentplane/context/derived/reports/release-docs-coverage-detail.jsonl",
+        ".gitattributes",
+        "README.md",
+        "context/wiki/release-docs/concepts/acr.md",
+        "context/wiki/release-docs/concepts/configuration.md",
+        "context/wiki/release-docs/concepts/recipes.md",
+        "context/wiki/release-docs/docs-domains.md",
+        "context/wiki/release-docs/domains/index.md",
+        "context/wiki/release-docs/domains/launch.md",
+        "docs/assets/agentplane-demo.gif",
+        "docs/assets/agentplane-demo.tape",
+        "docs/compare.mdx",
+        "docs/index.mdx",
+        "docs/launch/checklist.md",
+        "docs/launch/hn.md",
+        "docs/launch/reddit.md",
+        "docs/launch/twitter.md",
+        "docs/listing.md",
+        "docs/manifesto.mdx",
+        "docs/user/overview.mdx",
+        "marketing",
+        "packages/agentplane/README.md",
+        "packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts",
+        "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
+        "website/docusaurus.config.ts",
+        "website/scripts/check-site-content.mjs",
+        "website/src/data/homepage-content.ts",
+        "website/src/pages/_home.module.css",
+        "website/src/pages/index.tsx",
+        "website/static/img/social/docs/launch/checklist.png",
+        "website/static/img/social/docs/launch/hn.png",
+        "website/static/img/social/docs/launch/reddit.png",
+        "website/static/img/social/docs/launch/twitter.png",
+        "website/static/img/social/manifest.json",
+        "website/static/llms-full.txt",
+        "website/static/llms.txt"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "external_effect_requires_real_e2e",
+      "reversibility_recovery_required",
+      "unknown_path:.agentplane/context/derived/reports/release-docs-assimilation.json",
+      "unknown_path:.agentplane/context/derived/reports/release-docs-assimilation.sgr.json",
+      "unknown_path:.agentplane/context/derived/reports/release-docs-coverage-detail.jsonl",
+      "unknown_path:.gitattributes",
+      "unknown_path:marketing"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": true,
+    "digest": "sha256:083d171b3e39fb3c0b074907a74886d1ab153bb031e79029484aeed935648f31"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-18T20:42:06.126Z",
+    "updated_by": "REVIEWER",
+    "note": "PR review rework is complete: stale launch index link removed and literal semantic versions are rejected by the homepage content guard."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608181819-Z3GWTA/verification/20260818204206126-3cfc6d88d6ddb8a9.json",
+      "sha256": "sha256:abf7576548fb4805d94484fd2b2be773ad4df460489c0b7e96f53ef5d6eaabca"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check ca143028b988c7a95583233ff8ee6e9c146927ed..cbd9d5b3c234238194cbfb5f5e760129d5b71493",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB ca143028b988c7a95583233ff8ee6e9c146927ed..cbd9d5b3c234238194cbfb5f5e760129d5b71493",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608181819-Z3GWTA/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608181819-Z3GWTA/pr/github-body.md",
+          "M\t.agentplane/tasks/202608181819-Z3GWTA/pr/meta.json",
+          "M\t.agentplane/tasks/202608181819-Z3GWTA/pr/review.md",
+          "M\t.gitattributes"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "ca143028b988c7a95583233ff8ee6e9c146927ed",
+    "implementation_commit": "cbd9d5b3c234238194cbfb5f5e760129d5b71493",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M .gitattributes"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M .gitattributes"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M .gitattributes"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608181819-Z3GWTA",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608181819-Z3GWTA/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

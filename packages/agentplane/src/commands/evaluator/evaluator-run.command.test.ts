@@ -701,7 +701,8 @@ describe("evaluator run command", () => {
     const frozenDiff = await readFile(path.join(root, actualDiff.path), "utf8");
     expect(frozenDiff).toContain("src/first-change.ts");
     expect(frozenDiff).toContain("src/second-change.ts");
-    expect(frozenDiff).toContain("GIT binary patch");
+    expect(frozenDiff).toContain("Binary files");
+    expect(frozenDiff).not.toContain("GIT binary patch");
     expect(frozenDiff).toContain("rename from src/rename-before.ts");
     expect(frozenDiff).toContain("rename to src/rename-after.ts");
     expect(frozenDiff).toContain(`.agentplane/tasks/${otherTaskId}/README.md`);

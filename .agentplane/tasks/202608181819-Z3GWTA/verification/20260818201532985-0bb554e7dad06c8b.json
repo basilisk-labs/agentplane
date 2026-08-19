@@ -1,0 +1,83 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts --testTimeout 60000\nResult: pass\nEvidence: 21 evaluator tests passed, including binary diff metadata without GIT binary patch payloads.\nScope: evaluator actual-diff evidence generation and review packet behavior.\n\nCheck: critical_paths\nCommand: bun run typecheck && bun run format:check -- packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: TypeScript, formatting, and policy routing passed after the evaluator change.\nScope: changed evaluator code and repository policy gateway.\n\nCheck: full_regression\nCommand: bun run release:demo:check\nResult: pass\nEvidence: a fresh VHS render completed below the 3,000,000-byte limit; committed GIF bytes were restored after the nondeterministic render. The later code delta is isolated to evaluator evidence rendering.\nScope: declared release demo gate and unchanged public demo artifact.\n\nCheck: hosted_integration\nCommand: agentplane pr open 202608181819-Z3GWTA --author CODER\nResult: pass\nEvidence: GitHub PR 4845 exists and is linked in task metadata; publishing the current head is the next lifecycle action.\nScope: task branch and hosted PR linkage.\n\nCheck: real_e2e\nCommand: bun run docs:site:check\nResult: pass\nEvidence: docs IA, generated artifacts, website typecheck, social-card check, optimized Docusaurus build, navigation check, and design-language check passed before the evaluator-only delta.\nScope: public documentation and website build.\n\nCheck: task_outcome\nCommand: current-tree privacy phrase scan plus evaluator binary-payload regression\nResult: pass\nEvidence: unique internal draft phrases have no current-tree matches for this task; current task quality store is empty before regeneration; evaluator no longer passes --binary to Git and its regression test rejects GIT binary patch output.\nScope: requested private-content boundary, PR diff exposure, and evaluator evidence storage.",
+  "digest": "sha256:0bb554e7dad06c8bdec3564d11f2c29f13d2f3d25b9f23606799a4908aa85b22",
+  "implementation_sha": "17b41294f7e560750288c4483ab7f24cfbbfd6b7",
+  "input": {
+    "context": {
+      "digest": "sha256:0ae2d6fd19100739a3eb62ee1e1089c36186f4e9976d255c5b393499e1353d45",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:990ff8d88c6e0416f430396bbdfba7337d199a421aa5ce431da1880067f5d372",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:4cb6b665120beccda9d1dde3b7b40d75dee070ca9fceab607b84cf6011240f09",
+      "digest": "sha256:4cfdec37d05003417cbd3fc56310c6c6a0d226e3054b1cf22ab3a3963a851c68",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "7d7e964aec30e3551d34c81d3a726f28a6379690",
+      "digest": "sha256:a6af5ff2240edac3712b53283f16df1f5521e4bdafd391f870844febc7d1ce75",
+      "strategy": "branch_diff",
+      "target_sha": "17b41294f7e560750288c4483ab7f24cfbbfd6b7"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:922606de82cdada8b1098ffdf8b67d7b3bc132fead9dc42ed406ee6e2e053fdc",
+    "verify_steps_digest": "sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0"
+  },
+  "kind": "task_verification_record",
+  "note": "All declared checks and focused evaluator regressions pass on implementation commit 17b41294f; current evaluator evidence no longer serializes binary payload bodies.",
+  "recorded_at": "2026-08-18T20:15:32.985Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0",
+  "task_id": "202608181819-Z3GWTA",
+  "verification_command": "agentplane task verify ok 202608181819-Z3GWTA --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -23,7 +23,7 @@
   gap: clamp(1.5rem, 4vw, 4rem);
   grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
   min-height: calc(100svh - var(--ifm-navbar-height));
-  padding-top: calc(var(--ifm-navbar-height) + clamp(2rem, 5vw, 4rem));
+  padding-top: clamp(2rem, 5vw, 4rem);
 }
 
 .heroCopy {

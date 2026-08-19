@@ -67,7 +67,7 @@ agentplane_context:
 
 # acr concept
 
-Matched in 83 release/docs source files.
+Matched in 79 release/docs source files.
 
 ## Representative sources
 
@@ -93,10 +93,6 @@ Matched in 83 release/docs source files.
 - `docs/developer/workflow-contract.mdx`: workflow-contract
 - `docs/help/glossary.mdx`: glossary
 - `docs/index.mdx`: Agentplane documentation
-- `docs/launch/checklist.md`: Launch Checklist
-- `docs/launch/hn.md`: Hacker News Launch Draft
-- `docs/launch/reddit.md`: Reddit Launch Draft
-- `docs/launch/twitter.md`: Twitter/X Launch Copy
 - `docs/listing.md`: Listing submission profile
 - `docs/manifesto.mdx`: Why AI work needs a Git-native evidence layer
 - `docs/recipes/hermes-agentplane.mdx`: Hermes Agentplane recipe

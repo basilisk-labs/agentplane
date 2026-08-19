@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608181819-Z3GWTA-585ef38f226133e6434bd0b3",
+  "prepared_at": "2026-08-18T20:16:04.971Z",
+  "task": {
+    "id": "202608181819-Z3GWTA",
+    "revision": 20,
+    "objective": "Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\n\nUnify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth.",
+    "acceptance_criteria": [
+      "bun run docs:readme-header:check",
+      "bun run docs:site:check",
+      "bun run lint:website",
+      "bun run release:demo:check",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Unify public positioning across README, docs, website, SEO, demos, comparisons, and generated discovery surfaces. Move Launch Kit, post drafts, internal messaging strategy, and competitor research into the private agentplane-marketing repository without exposing them in the public code repository. Preserve source-backed claims and current 0.7.6 workflow truth.\n- Out of scope: unrelated refactors not required for \"Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\".",
+      "Reposition AgentPlane around one category contract: the Git-native control plane for coding agents. Migrate internal launch plans, post drafts, competitor research, and private messaging strategy out of the public repository into the authorized private agentplane-marketing repository; then align the public README, documentation, website, SEO, discovery surfaces, examples, and demo around bounded WorkOrders, human-owned approval boundaries, supervisor-observed receipts, and Git-native closure evidence.",
+      "PLANNER fallback scaffold for \"Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "17b41294f7e560750288c4483ab7f24cfbbfd6b7",
+  "diff_base_sha": "7d7e964aec30e3551d34c81d3a726f28a6379690",
+  "blueprint_digest": "55f73b356fcc4b7eae5edc4e504c1414684e0f34f5b84b7d780f58277aec1fae",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608181819-Z3GWTA/quality/20260818-201604971-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:b4fdf0c9a12ad425ccaa8ff488aa9913f080e31b79b902dd7d0f4a2f06d97b97",
+    "prompt_path": ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/d2ac35e9f6ed91b8cc7baed2af3bf22c470ed2654941d2e5be0f5deb390fcc22.md",
+    "result_schema_path": ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608181819-Z3GWTA/README.md",
+      "sha256": "sha256:e9711f54dce5a957298a2738e9efc763fbb65b0b26345d617428b6b524da0d18",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/2abd9847acb9cec18287c4ef70478d2c601d7a0a225abf7c358c400393f3f0ea.patch",
+      "sha256": "sha256:2abd9847acb9cec18287c4ef70478d2c601d7a0a225abf7c358c400393f3f0ea",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/c7c2ddd3deed447bf1a42d82d9e8cd82254bf7d3403a221c685f61639e0cd9de.json",
+      "sha256": "sha256:c7c2ddd3deed447bf1a42d82d9e8cd82254bf7d3403a221c685f61639e0cd9de",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608181819-Z3GWTA/quality/objects/sha256/eafed46fee43d017a057933d11cf3e53dcf84df66a33c23ba4fe0d8f0ecf80a8.json",
+      "sha256": "sha256:eafed46fee43d017a057933d11cf3e53dcf84df66a33c23ba4fe0d8f0ecf80a8",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.direct.md",
+      "sha256": "sha256:efcbc04d1f88c201e1ff4baa872a9b0144ae16acbbeb890f2d3446ca10b9466a",
+      "required": true
+    }
+  ]
+}

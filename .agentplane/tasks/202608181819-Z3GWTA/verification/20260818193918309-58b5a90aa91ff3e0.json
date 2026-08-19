@@ -1,0 +1,83 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run lint:website\nResult: pass\nEvidence: ESLint exited 0 on the reworked task branch.\nScope: touched website implementation.\n\nCheck: critical_paths\nCommand: bun run docs:readme-header:check && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: README header artifacts are fresh for v0.7.6 and policy routing is OK.\nScope: public README and repository policy gateway.\n\nCheck: full_regression\nCommand: bun run release:demo:check\nResult: pass\nEvidence: a fresh VHS render at 700x394 completed and stayed below the 3,000,000-byte limit; the verified output is committed in 60c6cda2f.\nScope: declared release demo gate.\n\nCheck: hosted_integration\nCommand: agentplane pr open 202608181819-Z3GWTA --author CODER\nResult: pass\nEvidence: GitHub PR 4845 exists and is linked in task metadata; current head publication remains owned by the next Agentplane route.\nScope: task branch and hosted PR linkage.\n\nCheck: real_e2e\nCommand: bun run docs:site:check\nResult: pass\nEvidence: docs IA, generated artifacts, website typecheck, social-card check, optimized Docusaurus production build, navigation check, and design-language check passed.\nScope: public documentation and website build.\n\nCheck: task_outcome\nCommand: inspect public diff and published private marketing source of truth\nResult: pass\nEvidence: public Launch Kit files and derived cards are removed; marketing submodule points to published private commit d590b93; canonical control-plane copy is present across README, docs, SEO, homepage, and llms surfaces.\nScope: requested positioning and content-boundary outcome.",
+  "digest": "sha256:58b5a90aa91ff3e08726b2314f66f38724ff3910f2d985c74832f2fb69668253",
+  "implementation_sha": "60c6cda2f54343f58fc4053f4256ffe78de1e159",
+  "input": {
+    "context": {
+      "digest": "sha256:0ae2d6fd19100739a3eb62ee1e1089c36186f4e9976d255c5b393499e1353d45",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:92a97dcecbcd40c02b4d9680c39494cfbbe6f365588f6e103740ee7d83b26102",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:1939e4d85d9c8f273f5ca63bf8ae75381b1af75a883563d643c48c275f2e2b47",
+      "digest": "sha256:29a5df7bf8170ad90c8dd247199a9f5d6705f05bb751bc17ba49a057e67f61da",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "7d7e964aec30e3551d34c81d3a726f28a6379690",
+      "digest": "sha256:14c60ed0f5cbb429dce8b0cbb8973a9749ed8ffd564796e1d4e5e94f1a46e044",
+      "strategy": "branch_diff",
+      "target_sha": "60c6cda2f54343f58fc4053f4256ffe78de1e159"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:87cd6efcb7de7da6e6d191f4b4e2f53626b049ec2104a310942c1de52f0d4110",
+    "verify_steps_digest": "sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0"
+  },
+  "kind": "task_verification_record",
+  "note": "All declared checks pass on implementation commit 60c6cda2f; this record rebinds the already-observed evidence after the verified VHS output was committed.",
+  "recorded_at": "2026-08-18T19:39:18.309Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Reposition AgentPlane as the Git-native control plane for coding agents and remove internal launch materials from the public repository\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:c4bfb185b00811689c594c0c0a308f4fd8d2ab7cf6bb5d9010ed04f7ad3836f0",
+  "task_id": "202608181819-Z3GWTA",
+  "verification_command": "agentplane verify 202608181819-Z3GWTA --ok --by TESTER",
+  "verifier": "TESTER"
+}

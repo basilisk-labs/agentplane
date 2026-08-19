@@ -1,52 +1,53 @@
 ---
 title: "How Agentplane compares"
-description: "Agentplane compared with coding agents, AGENTS.md, Git-only workflows, and CI."
+description: "Where a Git-native control plane fits alongside coding agents, Git, CI, and agent operations platforms."
 ---
 
-# Agentplane is the agent-agnostic evidence layer
+# Agentplane is the Git-native control plane for coding agents
 
-Use any repository-capable coding agent. Agentplane records the evidence that makes its work
-reviewable: task scope, approved plan, role ownership, verification, branch handoff, closure, and
-Agent Change Record.
+Use any repository-capable coding agent as the worker. Agentplane bounds its authority, holds
+approval gates, independently observes repository and Git facts, and records verification,
+recovery, and closure.
 
-## Comparison matrix
+## Compare layers, not logos
 
-| Surface                 | Best at                            | Missing by itself              | Agentplane adds                    |
-| ----------------------- | ---------------------------------- | ------------------------------ | ---------------------------------- |
-| Agent-agnostic codegen  | Generating and editing code        | Durable task evidence          | Lifecycle records and ACR          |
-| `AGENTS.md` / rules     | Instructions and policy            | State, approvals, verification | Commands, gates, artifacts         |
-| Git                     | Diffs and history                  | Intent, plan, verification     | Evidence around the diff           |
-| CI                      | Automated checks                   | Task context and closure state | Verification evidence and ACR gate |
-| Hosted agent dashboards | Central status or remote execution | Repo-local source of truth     | Durable Git-owned evidence         |
+| Layer                          | Primary job                       | What remains missing without Agentplane                                    |
+| ------------------------------ | --------------------------------- | -------------------------------------------------------------------------- |
+| Coding agents                  | Reason, edit, and test            | The worker still reports on its own work                                   |
+| `AGENTS.md` and prompt policy  | Describe rules                    | Instructions alone do not own lifecycle state or proof                     |
+| Git and pull requests          | Record content history and review | Git does not encode delegated authority or semantic intent                 |
+| CI                             | Execute automated checks          | A passing check does not explain scope, approval, or recovery              |
+| Fleet and operations platforms | Run and observe many agents       | Operational breadth may not make the repository control boundary explicit  |
+| Agentplane                     | Control delegated coding work     | Keeps authority, observation, and closure coherent across the other layers |
 
 ## Coding agents
 
-Coding agents are responsible for changing files. Agentplane is responsible for making that work
-traceable after the session is gone.
+Coding agents are responsible for reasoning and changing files. Agentplane is responsible for
+controlling the delegated lifecycle around them.
 
 Use Agentplane when you need a reviewer to answer:
 
 - What was the task?
 - Which plan constrained the work?
-- What evidence proves verification happened?
+- What did the supervisor independently observe?
 - Which commit represents the work?
-- Is the ACR merge-ready?
+- Can the work safely close, or does it need recovery?
 
 ## `AGENTS.md` and `CLAUDE.md`
 
 Instruction files describe policy. They do not record whether a specific agent task followed that
 policy.
 
-Agentplane keeps the policy gateway, then adds task state, plan approval, verification, finish
-metadata, PR artifacts, and ACR.
+Agentplane keeps the policy gateway, then adds scoped authority, task state, plan approval,
+supervisor observation, verification, recovery, finish metadata, PR artifacts, and ACR.
 
 ## Git-only workflows
 
 Git remains the source of truth for content and history. Agentplane does not replace it.
 
-The gap is that a commit hash does not describe the agent's task, plan, verification, or policy
-decisions. Agentplane stores those records beside the commit so review and revert have enough
-context.
+The gap is that a commit hash does not describe delegated authority, semantic intent, approvals,
+verification, or recovery decisions. Agentplane stores those records beside the commit so review
+and revert have enough context.
 
 ## CI
 
@@ -61,19 +62,19 @@ ci` as an ACR readiness gate.
 Hosted runtimes and dashboards are useful when you need remote execution, central queues, or sandbox
 management.
 
-Agentplane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first Git evidence
-layer for AI work in repositories.
+Agentplane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first control plane
+for coding-agent work in repositories.
 
-Hosted dashboards are useful for team visibility, shared history, alerts, and governance.
-Agentplane OSS keeps the durable evidence record in Git, so Cloud can sync and collaborate around
-the record without becoming the only source of truth.
+Fleet-first platforms are strongest when the first job is standing up many workers, connecting
+adapters, and operating them through a dedicated UI. Agentplane is strongest when the first job is
+making delegated authority and proof explicit inside the repository across any coding agent.
 
 ## When to use Agentplane
 
 Use Agentplane when:
 
 - your coding agent changes real repositories;
-- reviewers need task intent, plan, verification, and closure evidence;
+- reviewers need authority, intent, verification, recovery, and closure evidence;
 - AI-written code changes need a repeatable review contract;
 - you want durable artifacts in Git instead of transient chat history.
 
@@ -89,6 +90,9 @@ Do not use Agentplane when:
 Agentplane does not depend on a specific model, editor, hosted runtime, or agent product. Git stores
 the diff. CI runs checks. Agentplane records the evidence around the work.
 
-## Summary
+## Control-plane distinction
 
-Use any coding agent. Keep the evidence in Git.
+The worker's semantic result and the control plane's observed facts are separate records. Agent
+confidence does not silently become supervisor proof.
+
+**Let agents write code. Keep authority and proof in Git.**
