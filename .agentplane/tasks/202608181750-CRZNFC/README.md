@@ -2,10 +2,10 @@
 id: "202608181750-CRZNFC"
 title: "Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already reviewed 0.7.7-beta.1 candidate to stable without semantic code changes, run canonical release gates, integrate the stable version candidate through protected main, publish GitHub Release and all three npm packages at exact merged SHA, verify public readback, confirm automatic 0.7.8-beta.1 development opening, then clean superseded PRs/tasks and reconcile the original dirty checkout behind a recovery ref."
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 58
+revision: 59
 origin:
   system: "manual"
 depends_on: []
@@ -63,9 +63,9 @@ quality_review:
     - "The duplicate active entry is removed from both canonical and packaged registries while the richer archived record remains preserved."
     - "Residual risk: Archive identity intentionally treats the same normalized failure within the same normalized scope as already resolved; materially different failure classes must use precise observation text rather than reusing an archived description."
 token_usage:
-  agent_runs: 15
+  agent_runs: 24
   input_tokens: null
-  journal_digest: "sha256:ac15e220e5c39299597b45859386b35d9a37ffd7909d3d5c350a7fc393680be8"
+  journal_digest: "sha256:7b7f0e2578d1f68482c25f8c3224b8e9609dc81949e05e2aa67976143db3e558"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -75,7 +75,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-19T01:10:52.872Z"
+  updated_at: "2026-08-19T01:36:07.118Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -572,8 +572,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "306272c451e4cd13b7987bef303b6204f4598680"
-  message: "🚧 CRZNFC task: apply external agent result"
+  hash: "3909e65b243a835e1738fcb585c9899af5c76b4c"
+  message: "🚧 CRZNFC task: record external evaluator result"
 comments:
   -
     author: "INTEGRATOR"
@@ -647,6 +647,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 306272c451e4. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -878,9 +881,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-19T01:36:07.118Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "3909e65b243a835e1738fcb585c9899af5c76b4c"
 doc_version: 3
-doc_updated_at: "2026-08-19T01:35:35.274Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-19T01:36:07.148Z"
+doc_updated_by: "INTEGRATOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
   Summary: |-
@@ -1945,6 +1956,7 @@ extensions:
     transition_id: "tr_c5ea6287e209f872a20ae230fa011d48"
   implementation_commit:
     hash: "306272c451e4cd13b7987bef303b6204f4598680"
+    message: "🚧 CRZNFC task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "708f0d7d5b813ea2bb4de659d9eb113a752e3c63"
     version: 1
@@ -3010,12 +3022,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/15` agent runs
+- Completeness: `0/24` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:ac15e220e5c39299597b45859386b35d9a37ffd7909d3d5c350a7fc393680be8`
+- Journal digest: `sha256:7b7f0e2578d1f68482c25f8c3224b8e9609dc81949e05e2aa67976143db3e558`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-19T01:10:52.872Z`
+- Updated at: `2026-08-19T01:36:07.118Z`
