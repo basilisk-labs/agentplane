@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 49
+revision: 50
 origin:
   system: "manual"
 depends_on: []
@@ -624,6 +624,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The dirty worktree again contains only intended task-local verification artifacts binding the current Verification Contract to preserved implementation ae97cf05c. Preserve and commit them without changing the implementation identity."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The workspace source diff is an intended minimal fix for the reproduced verification_implementation_changed loop: verification recording must resolve against extensions.implementation_commit rather than a later metadata-only pre-merge closure commit. The focused patch and regression test pass, but it requires a formal implementation-rework episode before it can become the new implementation identity."
 events:
   -
     type: "status"
@@ -825,8 +828,13 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "Verified: bind current verification to preserved implementation ae97cf05c after worktree observation closeout."
+  -
+    type: "comment"
+    at: "2026-08-19T01:19:11.442Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The workspace source diff is an intended minimal fix for the reproduced verification_implementation_changed loop: verification recording must resolve against extensions.implementation_commit rather than a later metadata-only pre-merge closure commit. The focused patch and regression test pass, but it requires a formal implementation-rework episode before it can become the new implementation identity."
 doc_version: 3
-doc_updated_at: "2026-08-19T01:15:47.438Z"
+doc_updated_at: "2026-08-19T01:19:11.473Z"
 doc_updated_by: "SUPERVISOR"
 description: "Stable patch publication only after PR #4844 merged and Task Hosted Close 32167609851 succeeded. Preserve exact source behavior; change only canonical stable version/release surfaces and release task artifacts. Require exact-head local and hosted evidence, public registry/tag/release readback, and post-release cleanup of superseded PRs #4838, #4839, #4841, and #4843 plus obsolete local task artifacts, without losing recoverability."
 sections:
