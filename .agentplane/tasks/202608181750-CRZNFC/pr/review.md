@@ -13,7 +13,7 @@ Created: 2026-08-18T17:51:51.714Z
 ## Verification
 
 - State: ok
-- Note: Verified: bind the current record to preserved implementation ae97cf05c after committing the worktree observation.
+- Note: Verified: bind current verification to preserved implementation ae97cf05c after worktree observation closeout.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -16,12 +16,7 @@ Stable patch publication only after PR #4844 merged and Task Hosted Close 321676
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Verified: bind the current record to preserved implementation ae97cf05c after committing the
-worktree observation.
-```
+- Note: Verified: bind current verification to preserved implementation ae97cf05c after worktree observation closeout.
 - Canonical workflow state lives in the task README.
 
 <details>
