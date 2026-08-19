@@ -12,8 +12,8 @@ Created: 2026-08-18T17:51:51.714Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Autonomous pre-merge closure rewrote task.commit to a metadata-only head, causing evaluator verification_implementation_changed despite a preserved implementation_commit extension.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
