@@ -6,14 +6,14 @@ Created: 2026-08-18T17:51:51.714Z
 
 - Task: `202608181750-CRZNFC`
 - Title: Qualify and publish AgentPlane 0.7.7 from exact main 708f0d7d5b813ea2bb4de659d9eb113a752e3c63; promote the already re...
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608181750-CRZNFC/qualify-and-publish-agentplane-0-7-7-from-exact`
 - Canonical task record: `.agentplane/tasks/202608181750-CRZNFC/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework: register the current source fix as the implementation identity before verification.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

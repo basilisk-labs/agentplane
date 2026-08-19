@@ -3,22 +3,15 @@
   "branch": "task/202608181750-CRZNFC/qualify-and-publish-agentplane-0-7-7-from-exact",
   "created_at": "2026-08-18T17:51:51.714Z",
   "diffstat_sha256": "sha256:9900faea3fecc4528f36899bf8fce99709753ed3cb02a0977002602b17dedda3",
-  "last_verified_at": "2026-08-19T02:16:18.855Z",
-  "last_verified_diffstat_sha256": "sha256:aa29c8f88c8ef68e73bed2fc9ed66beb7550d48cdee20b699a5aa8fe8efcead8",
+  "last_verified_at": "2026-08-19T03:58:22.311Z",
+  "last_verified_diffstat_sha256": "sha256:9900faea3fecc4528f36899bf8fce99709753ed3cb02a0977002602b17dedda3",
   "pr_number": 4846,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4846",
-  "pre_merge_closure": {
-    "basis_commit": "a24a65dcab37169c58949a9ba309cb159625ee25",
-    "branch": "task/202608181750-CRZNFC/qualify-and-publish-agentplane-0-7-7-from-exact",
-    "pr_number": 4846,
-    "recorded_at": "2026-08-19T02:40:04.770Z",
-    "state": "closed_before_merge"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608181750-CRZNFC",
   "updated_at": "2026-08-18T23:15:22.218Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }
