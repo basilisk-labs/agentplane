@@ -1,10 +1,10 @@
 ---
 id: "202608202112-E6CDHP"
 title: "Fix live GitLab MR transport and provider-neutral mergeability validation"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -19,7 +19,7 @@ risk_flags:
   - "publish"
 blueprint_request: "code.branch_pr"
 verify:
-  - "bun run --filter=agentplane test"
+  - "bun run --filter=agentplane test -- --maxWorkers=4"
 plan_approval:
   state: "approved"
   updated_at: "2026-08-20T21:18:00.049Z"
@@ -233,6 +233,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Extended provider-neutral conflict-route regression coverage for GitLab non-conflict gating states. GitLab mergeable, ci_still_running, not_approved, and draft_status observations now all prove the ordinary non-conflict route without local conflict analysis. Focused tests, TypeScript, formatting, and diff validation pass. Recommended action: Retain the full agentplane test suite and pass --maxWorkers=4 to Vitest, then rerun supervisor verification. Agentplane receipt: external-agent-blocker/tr_0795a8d1fffa6af0296987433dc64d66/sha256:8f4b6c4544a665556e55f8112479a88eb4cec41388c21ea431ee6ec904c2ea1c."
+  -
+    author: "USER"
+    body: "Resolved verification resource contention: retain the full agentplane test suite and bound Vitest concurrency with --maxWorkers=4; continue the approved GitLab qualification plan."
 events:
   -
     type: "status"
@@ -290,9 +293,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Extended provider-neutral conflict-route regression coverage for GitLab non-conflict gating states. GitLab mergeable, ci_still_running, not_approved, and draft_status observations now all prove the ordinary non-conflict route without local conflict analysis. Focused tests, TypeScript, formatting, and diff validation pass. Recommended action: Retain the full agentplane test suite and pass --maxWorkers=4 to Vitest, then rerun supervisor verification. Agentplane receipt: external-agent-blocker/tr_0795a8d1fffa6af0296987433dc64d66/sha256:8f4b6c4544a665556e55f8112479a88eb4cec41388c21ea431ee6ec904c2ea1c."
+  -
+    type: "status"
+    at: "2026-08-20T22:40:03.380Z"
+    author: "USER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resolved verification resource contention: retain the full agentplane test suite and bound Vitest concurrency with --maxWorkers=4; continue the approved GitLab qualification plan."
 doc_version: 3
-doc_updated_at: "2026-08-20T22:38:53.975Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-20T22:40:03.380Z"
+doc_updated_by: "USER"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
   Summary: |-
