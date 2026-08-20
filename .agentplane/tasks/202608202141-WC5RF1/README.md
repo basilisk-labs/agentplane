@@ -2,10 +2,10 @@
 id: "202608202141-WC5RF1"
 title: "Improve the root README around the semantic-agent and deterministic-CLI boundary"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -250,6 +250,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The dirty README.md is intentional hosted-CI implementation rework, not an unrelated conflict; it must be preserved and committed after the task is returned from DONE to DOING."
+  -
+    author: "SUPERVISOR"
+    body: "Reopened for scoped README rework after required hosted checks exposed public-brand casing and external-agent protocol-surface regressions."
 events:
   -
     type: "status"
@@ -348,8 +351,15 @@ events:
     at: "2026-08-20T23:18:28.676Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The dirty README.md is intentional hosted-CI implementation rework, not an unrelated conflict; it must be preserved and committed after the task is returned from DONE to DOING."
+  -
+    type: "status"
+    at: "2026-08-20T23:18:55.555Z"
+    author: "SUPERVISOR"
+    from: "DONE"
+    to: "DOING"
+    note: "Reopened for scoped README rework after required hosted checks exposed public-brand casing and external-agent protocol-surface regressions."
 doc_version: 3
-doc_updated_at: "2026-08-20T23:18:28.711Z"
+doc_updated_at: "2026-08-20T23:18:55.592Z"
 doc_updated_by: "SUPERVISOR"
 description: "Improve the root README around the semantic-agent and deterministic-CLI boundary"
 sections:

@@ -27,8 +27,8 @@ Improve the root README around the semantic-agent and deterministic-CLI boundary
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- README.md | 306 ++++++++++++++++++++++++++------------------------------------
- 1 file changed, 128 insertions(+), 178 deletions(-)
+ README.md | 303 ++++++++++++++++++++++++++------------------------------------
+ 1 file changed, 127 insertions(+), 176 deletions(-)
 ```
 
 </details>
