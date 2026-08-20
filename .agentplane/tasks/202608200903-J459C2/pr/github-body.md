@@ -15,14 +15,8 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Finish resolves the verified implementation SHA correctly but validates the v4 record through the
-legacy workflow-mode identity because assertQualityReviewBeforeFinish omits plan.execution. Pass the
-frozen TaskExecutionContext into verification assessment and add regression coverage.
-```
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>

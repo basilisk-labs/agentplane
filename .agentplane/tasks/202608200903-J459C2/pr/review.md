@@ -12,8 +12,8 @@ Created: 2026-08-20T15:49:58.682Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Finish resolves the verified implementation SHA correctly but validates the v4 record through the legacy workflow-mode identity because assertQualityReviewBeforeFinish omits plan.execution. Pass the frozen TaskExecutionContext into verification assessment and add regression coverage.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
