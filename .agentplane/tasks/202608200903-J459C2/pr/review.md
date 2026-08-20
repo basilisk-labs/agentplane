@@ -13,7 +13,7 @@ Created: 2026-08-20T15:49:58.682Z
 ## Verification
 
 - State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:fast
+- Note: Compatibility candidate is stale and requires an approved scripts/baselines scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

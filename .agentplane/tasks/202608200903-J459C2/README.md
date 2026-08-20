@@ -1,10 +1,10 @@
 ---
 id: "202608200903-J459C2"
 title: "Make task execution authority local and direct execution workspace-safe"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -29,10 +29,10 @@ plan_approval:
   note: "User explicitly approved plan J459C2 in chat on 2026-08-20; one AgentPlane-managed working branch for AP-0001 through AP-1004."
 verification:
   state: "needs_rework"
-  updated_at: "2026-08-20T17:44:05.963Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:fast"
-  attempts: 2
+  updated_at: "2026-08-20T17:54:08.176Z"
+  updated_by: "TESTER"
+  note: "Compatibility candidate is stale and requires an approved scripts/baselines scope extension."
+  attempts: 3
 execution_route:
   frozen: true
   reason_codes:
@@ -101,6 +101,7 @@ execution_contract:
       - "packages/core"
   observed:
     authority_violations:
+      - "verification:recorded-check-1:fail"
       - "verification:recorded-check-2:fail"
     changed_components:
       - "docs"
@@ -197,7 +198,7 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
+        result: "fail"
       -
         id: "recorded-check-2"
         result: "fail"
@@ -412,10 +413,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-1"
       - "verification_recovery:recorded-check-2"
-commit:
-  hash: "4af5cc08ac71b4a79c5536b95bcc810699cc5dd7"
-  message: "🚧 J459C2 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -423,6 +423,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 4af5cc08ac71. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The scoped implementation rework is complete, but the compatibility ratchet cannot pass until its reviewed candidate is regenerated outside the current writable roots. Recommended action: Approve a monotonic scope extension for scripts/baselines, regenerate the candidate with the canonical capture command, inspect the exact delta, and rerun full verification. Requested scope: roots=scripts/baselines; repository effects=public_api,repository_write,tests; request digest=sha256:584bb8d7bcfaf3d1a2ca0021fd0e6c3a4afc27308847dc4de6138e331e6da831. Agentplane receipt: external-agent-blocker/tr_d94fc4f5cd6d2c434dda06bacd31a3a2/sha256:c19c894801889b25eed38b41ee4fe321ee0b4e2ca026010c81dbcc832d3b7f50/sha256:584bb8d7bcfaf3d1a2ca0021fd0e6c3a4afc27308847dc4de6138e331e6da831."
 events:
   -
     type: "status"
@@ -465,8 +468,21 @@ events:
     to: "DOING"
     note: "Implementation committed: 4af5cc08ac71. CLI accepted one state-bound external-agent semantic result."
     commit: "4af5cc08ac71b4a79c5536b95bcc810699cc5dd7"
+  -
+    type: "verify"
+    at: "2026-08-20T17:54:08.176Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Compatibility candidate is stale and requires an approved scripts/baselines scope extension."
+  -
+    type: "status"
+    at: "2026-08-20T17:54:59.739Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The scoped implementation rework is complete, but the compatibility ratchet cannot pass until its reviewed candidate is regenerated outside the current writable roots. Recommended action: Approve a monotonic scope extension for scripts/baselines, regenerate the candidate with the canonical capture command, inspect the exact delta, and rerun full verification. Requested scope: roots=scripts/baselines; repository effects=public_api,repository_write,tests; request digest=sha256:584bb8d7bcfaf3d1a2ca0021fd0e6c3a4afc27308847dc4de6138e331e6da831. Agentplane receipt: external-agent-blocker/tr_d94fc4f5cd6d2c434dda06bacd31a3a2/sha256:c19c894801889b25eed38b41ee4fe321ee0b4e2ca026010c81dbcc832d3b7f50/sha256:584bb8d7bcfaf3d1a2ca0021fd0e6c3a4afc27308847dc4de6138e331e6da831."
 doc_version: 3
-doc_updated_at: "2026-08-20T17:46:46.740Z"
+doc_updated_at: "2026-08-20T17:54:59.739Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue."
 sections:
@@ -571,12 +587,64 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-20T17:54:08.176Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Compatibility candidate is stale and requires an approved scripts/baselines scope extension.
+    Attempts: 3
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67879e381843d230e56183b99fda976f3987ed16bbb5a11e64c052645b4bc2ab, input_digest=sha256:20f0a5eb9dfdf544213f233633de78de77605f7a49f36ae91b0416353cd0be3c
+
+    Details:
+
+    Check: full_regression
+    Command: bun run ci:local:fast
+    Result: fail
+    Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608200903-J459C2 compatibility ratchet
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+    - old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608200903-J459C2
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:c19c894801889b25eed38b41ee4fe321ee0b4e2ca026010c81dbcc832d3b7f50"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "The approved public CLI and lifecycle contract changes intentionally alter the measured compatibility surface. The immutable anchor must remain unchanged, while the reviewed candidate under scripts/baselines must be regenerated and verified."
+      repository_effects:
+        - "public_api"
+        - "repository_write"
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "scripts/baselines"
+    request_digest: "sha256:584bb8d7bcfaf3d1a2ca0021fd0e6c3a4afc27308847dc4de6138e331e6da831"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_d94fc4f5cd6d2c434dda06bacd31a3a2"
   implementation_commit:
     hash: "4af5cc08ac71b4a79c5536b95bcc810699cc5dd7"
   task_execution_context:
@@ -678,6 +746,42 @@ Command: bun run ci:local:fast
 Result: fail
 Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-2
 Scope: branch_pr task 202608200903-J459C2 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+- old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608200903-J459C2
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-20T17:54:08.176Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Compatibility candidate is stale and requires an approved scripts/baselines scope extension.
+Attempts: 3
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67879e381843d230e56183b99fda976f3987ed16bbb5a11e64c052645b4bc2ab, input_digest=sha256:20f0a5eb9dfdf544213f233633de78de77605f7a49f36ae91b0416353cd0be3c
+
+Details:
+
+Check: full_regression
+Command: bun run ci:local:fast
+Result: fail
+Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608200903-J459C2 compatibility ratchet
 
 BlueprintSnapshotRef:
 - state: current
