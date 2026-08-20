@@ -317,7 +317,11 @@ export function resolveDeclaredTaskCheck(command: string): DeclaredTaskCheckReso
     };
   }
 
-  if (base === "agentplane" && invocation.args.length === 1 && invocation.args[0] === "doctor") {
+  if (
+    ["agentplane", "ap"].includes(base) &&
+    invocation.args.length === 1 &&
+    invocation.args[0] === "doctor"
+  ) {
     return {
       ok: true,
       check: { executable: process.execPath, args: [AGENTPLANE_BIN, "doctor"], script: null },

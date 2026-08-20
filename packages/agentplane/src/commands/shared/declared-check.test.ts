@@ -51,4 +51,13 @@ describe("declared task check contract", () => {
       assertSupportedDeclaredTaskChecks(["npm test", "bash -c 'npm test'", "cargo test"]),
     ).toThrow(/command 2.*inline shell evaluation/u);
   });
+
+  it.each(["agentplane doctor", "ap doctor"])(
+    "resolves the supported AgentPlane doctor alias through the repository binary: %s",
+    (command) => {
+      const parsed = parseDeclaredTaskCheck(command);
+      expect(parsed?.executable).toBe(process.execPath);
+      expect(parsed?.args.at(-1)).toBe("doctor");
+    },
+  );
 });
