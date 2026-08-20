@@ -96,6 +96,13 @@ describe("sync-gitlab", () => {
         providerState: "unknown",
       }),
     ).toBe(false);
+    expect(
+      hasCoherentGitLabMrMergeability({
+        state: "pending",
+        mergeable: null,
+        providerState: "preparing",
+      }),
+    ).toBe(false);
   });
 
   it("recovers an uncertain create by re-observing instead of creating a duplicate MR", async () => {
