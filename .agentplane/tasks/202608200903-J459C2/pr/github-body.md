@@ -135,7 +135,8 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../src/runtime/workspace-allocation/types.ts      |  27 ++
  .../baselines/v0.7-compatibility-candidate.json    |  24 +-
  .../check-compatibility-contract-baseline.mjs      |  10 +-
- 108 files changed, 3785 insertions(+), 954 deletions(-)
+ scripts/checks/run-local-ci.mjs                    |  21 +-
+ 109 files changed, 3800 insertions(+), 960 deletions(-)
 ```
 
 </details>
