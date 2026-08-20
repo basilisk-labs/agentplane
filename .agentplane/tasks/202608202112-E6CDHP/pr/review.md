@@ -13,7 +13,7 @@ Created: 2026-08-20T21:18:16.979Z
 ## Verification
 
 - State: needs_rework
-- Note: Rework: Declared check could not run: pnpm --filter @agentplaneorg/agentplane test
+- Note: Rework: Declared check failed: bun run --filter=agentplane test
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
