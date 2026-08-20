@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608202141-WC5RF1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-20T23:22:02.246Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 6 typed finding(s).",
+  "evaluated_sha": "faad4d9504d9910a0bab419e721423887dc2bfec",
+  "blueprint_digest": "a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946",
+  "findings": [
+    "The final README consistently uses the repository's canonical public brand casing Agentplane.",
+    "The first-task path retains the contract-tested command and explicitly names exchange.result_path and exchange.resume_argv.",
+    "The control-plane determinism claim remains qualified: the README does not claim deterministic LLM behavior.",
+    "The frozen product diff is limited to README.md; additional task paths are supervisor-owned evidence and PR metadata.",
+    "The full docs-site contract, targeted 15-test protocol suite, v0.7.1 product contract, Prettier check, and frozen-diff whitespace check pass on the evaluated content.",
+    "Residual risk: The PR cannot be merged until GitHub reports all required checks successful for the exact new head."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/066196a3f58c8c1d20c2687f12f10e06eea16346371f9daa5b356f1566074c81.patch"
+  ],
+  "missing_tests": [
+    "Hosted CI rerun on the successor published SHA."
+  ],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
