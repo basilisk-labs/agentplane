@@ -4,7 +4,7 @@ title: "Fix live GitLab MR transport and provider-neutral mergeability validatio
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -19,7 +19,7 @@ risk_flags:
   - "publish"
 blueprint_request: "code.branch_pr"
 verify:
-  - "pnpm --filter @agentplaneorg/agentplane test"
+  - "bun run --filter=agentplane test"
 plan_approval:
   state: "approved"
   updated_at: "2026-08-20T21:18:00.049Z"

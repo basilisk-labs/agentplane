@@ -31,11 +31,11 @@ Created: 2026-08-20T21:18:16.979Z
 ```text
  .../src/commands/pr/conflict-rework.test.ts        | 22 ++++++++++++++++
  .../agentplane/src/commands/pr/conflict-rework.ts  | 27 +++++++++++++++++---
- .../src/commands/pr/internal/glab-api.test.ts      |  2 ++
+ .../src/commands/pr/internal/glab-api.test.ts      | 26 +++++++++++++++++++
  .../src/commands/pr/internal/glab-api.ts           |  4 ++-
  .../src/commands/pr/internal/sync-gitlab.test.ts   | 26 +++++++++++++++++++
  .../src/commands/pr/internal/sync-gitlab.ts        | 29 ++++++++++++++++++++++
- 6 files changed, 105 insertions(+), 5 deletions(-)
+ 6 files changed, 129 insertions(+), 5 deletions(-)
 ```
 
 </details>

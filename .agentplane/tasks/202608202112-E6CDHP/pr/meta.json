@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608202112-E6CDHP/fix-live-gitlab-mr-transport-and-provider-neutra",
   "created_at": "2026-08-20T21:18:16.979Z",
-  "diffstat_sha256": "sha256:65af8e3ebcdb2bde85fbce8a18b8251d342a414b76f2c436ef4840006e65442a",
+  "diffstat_sha256": "sha256:ec1b81e8518219cf84af943f4610009331508ea86f2461cf91b95ab1c14dabb0",
   "last_verified_at": "2026-08-20T21:32:46.976Z",
   "last_verified_diffstat_sha256": "sha256:65af8e3ebcdb2bde85fbce8a18b8251d342a414b76f2c436ef4840006e65442a",
   "pr_number": 4853,
