@@ -1,0 +1,3 @@
+ packages/agentplane/assets/AGENTS.md               | 11 +++++++++++
+ .../src/shared/builtin-assets.generated.ts         | 23 +++++++++++++---------
+ 2 files changed, 25 insertions(+), 9 deletions(-)

@@ -107,6 +107,17 @@ a normal semantic episode.
 - Response rule: lead with the outcome; preserve required facts, evidence, caveats, blockers, and next actions; remove repetition and optional background before removing decision-critical content.
 - Keep role prompts limited to role-specific behavior; they MUST NOT repeat this shared contract or full gateway command procedures.
 
+### Agent instruction language
+
+Write framework-owned agent-to-agent instructions in simple technical English.
+
+- Write one action, condition, or constraint in each sentence.
+- Name the actor if the actor is not clear.
+- Put a condition before the action that depends on it.
+- Use one term for one concept.
+- Do not use idioms, metaphors, or vague references.
+- Preserve commands, paths, identifiers, enum values, quoted text, user input, logs, and source evidence exactly.
+
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.user.instructions" slot="body" mutability="append_only" -->
 
