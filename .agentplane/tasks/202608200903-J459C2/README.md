@@ -1,10 +1,10 @@
 ---
 id: "202608200903-J459C2"
 title: "Make task execution authority local and direct execution workspace-safe"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 42
 origin:
   system: "manual"
 depends_on: []
@@ -589,6 +589,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 04fba6883822. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator rework is limited to the protected canonical task document and cannot be applied inside this implementation episode's writable roots. Recommended action: Use agentplane task doc set for Verify Steps and Findings with the evaluator-requested task-specific content, record the resulting task artifact commit through AgentPlane, then rerun verification and quality review. Agentplane receipt: external-agent-blocker/tr_dbb14e746b8de31317dc8dc798b3dd9a/sha256:94350d11702831ba366de4d803f2423b6b7a63d03228e1e3efa939531b576803."
 events:
   -
     type: "status"
@@ -777,8 +780,15 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-20T20:58:52.434Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator rework is limited to the protected canonical task document and cannot be applied inside this implementation episode's writable roots. Recommended action: Use agentplane task doc set for Verify Steps and Findings with the evaluator-requested task-specific content, record the resulting task artifact commit through AgentPlane, then rerun verification and quality review. Agentplane receipt: external-agent-blocker/tr_dbb14e746b8de31317dc8dc798b3dd9a/sha256:94350d11702831ba366de4d803f2423b6b7a63d03228e1e3efa939531b576803."
 doc_version: 3
-doc_updated_at: "2026-08-20T20:56:26.642Z"
+doc_updated_at: "2026-08-20T20:58:52.434Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue."
 sections:
