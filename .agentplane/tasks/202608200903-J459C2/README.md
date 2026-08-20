@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 62
+revision: 65
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +29,11 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved plan J459C2 in chat on 2026-08-20; one AgentPlane-managed working branch for AP-0001 through AP-1004."
 verification:
-  state: "pending"
-  updated_at: "2026-08-20T22:21:04.813Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-20T22:47:07.328Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -158,6 +158,7 @@ execution_contract:
       - "docs"
       - "packages/agentplane"
       - "scripts"
+      - "website"
     changed_paths:
       - "docs/adr/0014-task-execution-authority.md"
       - "docs/adr/0015-task-workspace-isolation.md"
@@ -270,13 +271,39 @@ execution_contract:
       - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
       - "scripts/checks/run-local-ci.mjs"
+      - "website/static/img/social/docs/adr/0014-task-execution-authority.png"
+      - "website/static/img/social/docs/adr/0015-task-workspace-isolation.png"
+      - "website/static/img/social/docs/adr/0016-serialized-direct-integration.png"
+      - "website/static/img/social/docs/developer/task-execution-authority.png"
+      - "website/static/img/social/manifest.json"
     external_effects: []
     repository_effects:
       - "documentation"
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -329,7 +356,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:cd9ec12cfb3f8f15cb3e547242716dcf57a5444221a5a2265da4c7b8c96aaadb"
+      digest: "sha256:3be59a049f11d1d30fd26d0965a922cb263b22cf4527f30de9803656dedd224e"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
@@ -372,6 +399,7 @@ execution_contract:
           - "docs"
           - "packages/agentplane"
           - "scripts"
+          - "website"
         changed_files:
           - "docs/adr/0014-task-execution-authority.md"
           - "docs/adr/0015-task-workspace-isolation.md"
@@ -484,6 +512,11 @@ execution_contract:
           - "scripts/baselines/v0.7-compatibility-candidate.json"
           - "scripts/checks/check-compatibility-contract-baseline.mjs"
           - "scripts/checks/run-local-ci.mjs"
+          - "website/static/img/social/docs/adr/0014-task-execution-authority.png"
+          - "website/static/img/social/docs/adr/0015-task-workspace-isolation.png"
+          - "website/static/img/social/docs/adr/0016-serialized-direct-integration.png"
+          - "website/static/img/social/docs/developer/task-execution-authority.png"
+          - "website/static/img/social/manifest.json"
         external_effects: []
         repository_effects:
           - "documentation"
@@ -528,7 +561,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "060ac45a34d19290b15c772c78853f9436ada951"
+  message: "🚧 J459C2 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -605,6 +640,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: website; repository effects: documentation, repository_write."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 060ac45a34d1. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -874,8 +912,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Hosted CI exposed two scoped findings: 13 unused AgentPlane CLI exports and four missing documentation social images with a stale manifest. The code cleanup is inside the current authority, but the required generated website assets are not. Recommended action: Approve website scope, remove only the newly unused AgentPlane CLI exports without widening the Knip baseline, regenerate the four social images and manifest, then run the focused contracts and full task verification. Requested scope: roots=website; repository effects=documentation,repository_write; request digest=sha256:5bca2cd0e74052da35f1f4e671c1edc7c17fffd09aa6f31f4cdac9fae6564673. Agentplane receipt: external-agent-blocker/tr_dac0473f16b6ada2a5ee7894f215b1ed/sha256:e53b99dbae48300d982e439e7c1a07c8a7ac14a0b19b8abba52fba6dd90b8b62/sha256:5bca2cd0e74052da35f1f4e671c1edc7c17fffd09aa6f31f4cdac9fae6564673."
+  -
+    type: "status"
+    at: "2026-08-20T22:36:40.659Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 060ac45a34d1. CLI accepted one state-bound external-agent semantic result."
+    commit: "060ac45a34d19290b15c772c78853f9436ada951"
+  -
+    type: "verify"
+    at: "2026-08-20T22:47:07.328Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-20T22:16:30.275Z"
+doc_updated_at: "2026-08-20T22:47:11.595Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue."
 sections:
@@ -1587,6 +1639,78 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-20T22:47:07.328Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:519f32059d4ea6a20364503c6ebd1b3550335d14b6c9668dc1d923f0468810ef, input_digest=sha256:29481779b9b786f843365af98591ad03396fcfdbe5d86a49fd27eb1e3597514d
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: ap doctor && bun run ci:local:fast && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608200903-J459C2 Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: ap doctor && bun run ci:local:fast && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608200903-J459C2 Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: ap doctor && bun run ci:local:fast && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608200903-J459C2 Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: ap doctor && bun run ci:local:fast && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608200903-J459C2 Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: ap doctor && bun run ci:local:fast && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608200903-J459C2 Verification Contract check hosted_integration
+
+    Check: real_e2e
+    Command: ap doctor && bun run ci:local:fast && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608200903-J459C2 Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: ap doctor && bun run ci:local:fast && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608200903-J459C2 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+    - old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608200903-J459C2
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1616,8 +1740,7 @@ extensions:
     status: "applied"
     transition_id: "tr_dac0473f16b6ada2a5ee7894f215b1ed"
   implementation_commit:
-    hash: "bf575676346cab8e27c40c30fb0378ddedaf913b"
-    message: "🚧 J459C2 task: apply external agent result"
+    hash: "060ac45a34d19290b15c772c78853f9436ada951"
   task_execution_context:
     base_ref: "main"
     base_sha: "292b232b3160b22c47c6cc206fade625e9377fed"
@@ -2338,6 +2461,78 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-20T22:47:07.328Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:519f32059d4ea6a20364503c6ebd1b3550335d14b6c9668dc1d923f0468810ef, input_digest=sha256:29481779b9b786f843365af98591ad03396fcfdbe5d86a49fd27eb1e3597514d
+
+Details:
+
+Check: affected_unit_integration
+Command: ap doctor && bun run ci:local:fast && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608200903-J459C2 Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: ap doctor && bun run ci:local:fast && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608200903-J459C2 Verification Contract check critical_paths
+
+Check: docs_contract
+Command: ap doctor && bun run ci:local:fast && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608200903-J459C2 Verification Contract check docs_contract
+
+Check: full_regression
+Command: ap doctor && bun run ci:local:fast && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608200903-J459C2 Verification Contract check full_regression
+
+Check: hosted_integration
+Command: ap doctor && bun run ci:local:fast && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608200903-J459C2 Verification Contract check hosted_integration
+
+Check: real_e2e
+Command: ap doctor && bun run ci:local:fast && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608200903-J459C2 Verification Contract check real_e2e
+
+Check: task_outcome
+Command: ap doctor && bun run ci:local:fast && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608200903-J459C2 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+- old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608200903-J459C2
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
