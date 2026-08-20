@@ -4,7 +4,7 @@ import { gitEnv } from "@agentplaneorg/core/git";
 
 import { isDotEnvLoadedKey } from "../../../shared/env.js";
 
-export function glabEnv(): NodeJS.ProcessEnv {
+function glabEnv(): NodeJS.ProcessEnv {
   const env = gitEnv();
   for (const key of ["GLAB_TOKEN", "GITLAB_TOKEN"] as const) {
     if (isDotEnvLoadedKey(key)) delete env[key];
@@ -73,14 +73,4 @@ export async function runGlabApiJson<T>(opts: {
   });
   const stdout = String(result.stdout).trim();
   return (stdout ? JSON.parse(stdout) : {}) as T;
-}
-
-export async function runGlabApiNoOutput(opts: {
-  cwd: string;
-  hostname: string;
-  endpoint: string;
-  method: "POST" | "PUT";
-  inputPath?: string;
-}): Promise<void> {
-  await runGlabApiJson(opts);
 }

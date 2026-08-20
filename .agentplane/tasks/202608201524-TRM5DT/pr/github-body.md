@@ -51,8 +51,8 @@ Implement universal GitHub/GitLab hosted change-request support in an isolated b
  .../commands/pr/internal/git-host-identity.test.ts | 115 ++++++
  .../src/commands/pr/internal/git-host-identity.ts  | 274 +++++++++++++
  .../src/commands/pr/internal/glab-api.test.ts      |  43 +++
- .../src/commands/pr/internal/glab-api.ts           |  86 +++++
- .../src/commands/pr/internal/sync-github.ts        |  22 +-
+ .../src/commands/pr/internal/glab-api.ts           |  76 ++++
+ .../src/commands/pr/internal/sync-github.ts        |  34 +-
  .../src/commands/pr/internal/sync-gitlab.test.ts   | 153 ++++++++
  .../src/commands/pr/internal/sync-gitlab.ts        | 428 +++++++++++++++++++++
  .../src/commands/pr/internal/sync-open-step.ts     | 107 ++++--
@@ -82,7 +82,7 @@ Implement universal GitHub/GitLab hosted change-request support in an isolated b
  schemas/pr-meta.schema.json                        |  38 ++
  schemas/task-handoff.schema.json                   |  16 +-
  website/static/llms-full.txt                       |   2 +-
- 55 files changed, 3087 insertions(+), 228 deletions(-)
+ 55 files changed, 3078 insertions(+), 239 deletions(-)
 ```
 
 </details>
