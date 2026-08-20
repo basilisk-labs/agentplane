@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The canonical Verify Steps now enumerate the task-authority, workspace isolation, verification v4, closeout recovery, integration queue, managed-runner, ten-scenario, hermetic-CI, quality, and hosted acceptance boundaries.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/c2adfca967c3f1d049a5870d57ebbfe55326acd0e36367eb018bf7d6a517ee83.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The Findings section records the ambient AGENTPLANE_CLOUD_* causal chain, the exact sanitization fix, removal of the non-causal scheduler workaround, direct polluted-environment proof, supervisor verification, and remaining hosted lifecycle work.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/c2adfca967c3f1d049a5870d57ebbfe55326acd0e36367eb018bf7d6a517ee83.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Supervisor-owned checks pass on the current head: full-fast executed all five groups with ok=true in 369465ms, typecheck passed, policy routing passed, and doctor completed successfully.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/c2adfca967c3f1d049a5870d57ebbfe55326acd0e36367eb018bf7d6a517ee83.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The frozen diff and acceptance evidence retain the approved AP-0001 through AP-1004 architecture, negative cases, recovery semantics, and concurrency-sensitive coverage without an unresolved implementation finding.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/c2adfca967c3f1d049a5870d57ebbfe55326acd0e36367eb018bf7d6a517ee83.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
