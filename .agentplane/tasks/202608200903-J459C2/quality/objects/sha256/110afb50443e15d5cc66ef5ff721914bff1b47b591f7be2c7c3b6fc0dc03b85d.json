@@ -1,0 +1,323 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "ap doctor",
+    "bun run ci:local:fast",
+    "bun run typecheck",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "documentation",
+        "public_api",
+        "repository_write",
+        "schema",
+        "security_boundary",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        ".agentplane/policy",
+        "AGENTS.md",
+        "docs",
+        "packages/agentplane",
+        "packages/core",
+        "scripts/baselines",
+        "scripts/checks"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "material",
+        "reversibility": "recovery_required"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "implementation_risk_validation",
+        "repository_effect:documentation",
+        "repository_effect:public_api",
+        "repository_effect:repository_write",
+        "repository_effect:schema",
+        "repository_effect:security_boundary",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "docs",
+        "packages/agentplane",
+        "scripts"
+      ],
+      "changed_files": [
+        "docs/adr/0014-task-execution-authority.md",
+        "docs/adr/0015-task-workspace-isolation.md",
+        "docs/adr/0016-serialized-direct-integration.md",
+        "docs/adr/README.md",
+        "docs/developer/task-execution-authority.mdx",
+        "packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts",
+        "packages/agentplane/src/commands/branch/work-start.command.ts",
+        "packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts",
+        "packages/agentplane/src/commands/evaluator/evaluator-evidence-compaction.test.ts",
+        "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts",
+        "packages/agentplane/src/commands/evaluator/evaluator-execution-base.ts",
+        "packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts",
+        "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts",
+        "packages/agentplane/src/commands/evaluator/evaluator-review-support.ts",
+        "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
+        "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
+        "packages/agentplane/src/commands/evaluator/evaluator-test-helpers.ts",
+        "packages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts",
+        "packages/agentplane/src/commands/integrate-queue-direct.ts",
+        "packages/agentplane/src/commands/integrate-queue-lane.ts",
+        "packages/agentplane/src/commands/integrate-queue-reservation.ts",
+        "packages/agentplane/src/commands/integrate-queue.command.ts",
+        "packages/agentplane/src/commands/pr/flow-status.ts",
+        "packages/agentplane/src/commands/pr/integrate/queue-state-types.ts",
+        "packages/agentplane/src/commands/pr/integrate/queue-state.test.ts",
+        "packages/agentplane/src/commands/pr/integrate/queue-state.ts",
+        "packages/agentplane/src/commands/pr/internal/sync.ts",
+        "packages/agentplane/src/commands/pr/open.ts",
+        "packages/agentplane/src/commands/provider-ops-results.test.ts",
+        "packages/agentplane/src/commands/shared/declared-check.test.ts",
+        "packages/agentplane/src/commands/shared/declared-check.ts",
+        "packages/agentplane/src/commands/shared/post-commit-pr-artifacts.ts",
+        "packages/agentplane/src/commands/shared/route-cleanup-probe.ts",
+        "packages/agentplane/src/commands/shared/route-decision-blockers.ts",
+        "packages/agentplane/src/commands/shared/route-decision-verification-blocker.ts",
+        "packages/agentplane/src/commands/shared/route-decision-verification.ts",
+        "packages/agentplane/src/commands/shared/route-decision.ts",
+        "packages/agentplane/src/commands/shared/route-gate-priority.ts",
+        "packages/agentplane/src/commands/shared/side-effect-authority.test.ts",
+        "packages/agentplane/src/commands/shared/side-effect-authority.ts",
+        "packages/agentplane/src/commands/shared/task-verification-input-types.ts",
+        "packages/agentplane/src/commands/shared/task-verification-input.test.ts",
+        "packages/agentplane/src/commands/shared/task-verification-input.ts",
+        "packages/agentplane/src/commands/shared/task-verification-record-parser.ts",
+        "packages/agentplane/src/commands/shared/task-verification-records.ts",
+        "packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts",
+        "packages/agentplane/src/commands/task/begin.command.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor.ts",
+        "packages/agentplane/src/commands/task/complete.command.ts",
+        "packages/agentplane/src/commands/task/direct-task-supervisor-operation.ts",
+        "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
+        "packages/agentplane/src/commands/task/direct-task-supervisor.ts",
+        "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts",
+        "packages/agentplane/src/commands/task/finish-close.ts",
+        "packages/agentplane/src/commands/task/finish-closeout-journal.test.ts",
+        "packages/agentplane/src/commands/task/finish-closeout-journal.testkit.ts",
+        "packages/agentplane/src/commands/task/finish-closeout-journal.ts",
+        "packages/agentplane/src/commands/task/finish-command.ts",
+        "packages/agentplane/src/commands/task/finish-execute-close.ts",
+        "packages/agentplane/src/commands/task/finish-execute.ts",
+        "packages/agentplane/src/commands/task/finish-plan.ts",
+        "packages/agentplane/src/commands/task/finish-shared.ts",
+        "packages/agentplane/src/commands/task/finish-types.ts",
+        "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+        "packages/agentplane/src/commands/task/finish.state.unit.test.ts",
+        "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+        "packages/agentplane/src/commands/task/handoff.shared.ts",
+        "packages/agentplane/src/commands/task/mutation-parity.unit.test.ts",
+        "packages/agentplane/src/commands/task/new.spec.ts",
+        "packages/agentplane/src/commands/task/new.ts",
+        "packages/agentplane/src/commands/task/run.command.ts",
+        "packages/agentplane/src/commands/task/shared/transitions.ts",
+        "packages/agentplane/src/commands/task/start-ready.ts",
+        "packages/agentplane/src/commands/task/start.ts",
+        "packages/agentplane/src/commands/task/start.unit.test.ts",
+        "packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts",
+        "packages/agentplane/src/commands/task/task-execution-contract-observation.ts",
+        "packages/agentplane/src/commands/task/verify-record-execute.ts",
+        "packages/agentplane/src/commands/task/verify-record-observed-changes.ts",
+        "packages/agentplane/src/commands/task/verify-record-references.ts",
+        "packages/agentplane/src/commands/task/verify-record.testkit.ts",
+        "packages/agentplane/src/commands/task/verify-record.unit.test.ts",
+        "packages/agentplane/src/runner/context/task-context.ts",
+        "packages/agentplane/src/runner/usecases/agent-work-order.ts",
+        "packages/agentplane/src/runner/usecases/task-run-authority.capabilities.test.ts",
+        "packages/agentplane/src/runner/usecases/task-run-authority.ts",
+        "packages/agentplane/src/runner/usecases/task-run-options.ts",
+        "packages/agentplane/src/runner/usecases/task-run.ts",
+        "packages/agentplane/src/runtime/task-execution-context/architecture-guard.test.ts",
+        "packages/agentplane/src/runtime/task-execution-context/index.ts",
+        "packages/agentplane/src/runtime/task-execution-context/resolve.test.ts",
+        "packages/agentplane/src/runtime/task-execution-context/resolve.ts",
+        "packages/agentplane/src/runtime/task-execution-context/types.ts",
+        "packages/agentplane/src/runtime/task-routing/index.ts",
+        "packages/agentplane/src/runtime/task-routing/resolve.ts",
+        "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts",
+        "packages/agentplane/src/runtime/workspace-allocation/allocate.ts",
+        "packages/agentplane/src/runtime/workspace-allocation/index.ts",
+        "packages/agentplane/src/runtime/workspace-allocation/lease.ts",
+        "packages/agentplane/src/runtime/workspace-allocation/types.ts",
+        "scripts/baselines/v0.7-compatibility-candidate.json",
+        "scripts/checks/check-compatibility-contract-baseline.mjs",
+        "scripts/checks/run-local-ci.mjs"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/declared-check.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/declared-check.ts",
+      "central_path:packages/agentplane/src/commands/shared/post-commit-pr-artifacts.ts",
+      "central_path:packages/agentplane/src/commands/shared/route-cleanup-probe.ts",
+      "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.ts",
+      "central_path:packages/agentplane/src/commands/shared/route-decision-verification-blocker.ts",
+      "central_path:packages/agentplane/src/commands/shared/route-decision-verification.ts",
+      "central_path:packages/agentplane/src/commands/shared/route-decision.ts",
+      "central_path:packages/agentplane/src/commands/shared/route-gate-priority.ts",
+      "central_path:packages/agentplane/src/commands/shared/side-effect-authority.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/side-effect-authority.ts",
+      "central_path:packages/agentplane/src/commands/shared/task-verification-input-types.ts",
+      "central_path:packages/agentplane/src/commands/shared/task-verification-input.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/task-verification-input.ts",
+      "central_path:packages/agentplane/src/commands/shared/task-verification-record-parser.ts",
+      "central_path:packages/agentplane/src/commands/shared/task-verification-records.ts",
+      "central_path:packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts",
+      "central_path:packages/agentplane/src/runtime/task-routing/index.ts",
+      "central_path:packages/agentplane/src/runtime/task-routing/resolve.ts",
+      "central_path:scripts/checks/check-compatibility-contract-baseline.mjs",
+      "central_path:scripts/checks/run-local-ci.mjs",
+      "effect_public_api",
+      "effect_schema",
+      "effect_security_boundary",
+      "external_effect_requires_real_e2e",
+      "material_implementation_uncertainty",
+      "reversibility_recovery_required",
+      "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": true,
+    "digest": "sha256:d47a42956fc625a0d2a2426d9555727e2b3438aabbd90c81159ae3d6b9d1185b"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-20T20:56:24.530Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608200903-J459C2/verification/20260820205624530-f7aae0bfce1b299d.json",
+      "sha256": "sha256:26b2e6fc6c9c954aa6d7ebb488eafa351bc53a42513e9007767d6c1714848866"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check cbebb72f1d9e3a129d032830170d2d358f494951..04fba6883822aac4eb0de48f8db40196dfff5353",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB cbebb72f1d9e3a129d032830170d2d358f494951..04fba6883822aac4eb0de48f8db40196dfff5353",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608200903-J459C2/README.md",
+          "M\t.agentplane/tasks/202608200903-J459C2/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608200903-J459C2/pr/github-body.md",
+          "M\t.agentplane/tasks/202608200903-J459C2/pr/github-title.txt",
+          "M\t.agentplane/tasks/202608200903-J459C2/pr/meta.json",
+          "M\t.agentplane/tasks/202608200903-J459C2/pr/review.md",
+          "M\tscripts/checks/run-local-ci.mjs"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "cbebb72f1d9e3a129d032830170d2d358f494951",
+    "implementation_commit": "04fba6883822aac4eb0de48f8db40196dfff5353",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M .agentplane/tasks/202608200903-J459C2/README.md"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608200903-J459C2/README.md"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M .agentplane/tasks/202608200903-J459C2/README.md"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608200903-J459C2",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608200903-J459C2/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

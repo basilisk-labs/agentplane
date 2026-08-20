@@ -4,7 +4,7 @@ title: "Make task execution authority local and direct execution workspace-safe"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 41
 origin:
   system: "manual"
 depends_on: []
@@ -33,6 +33,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-20T20:58:12.404Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 3 typed finding(s)."
+  evaluated_sha: "04fba6883822aac4eb0de48f8db40196dfff5353"
+  blueprint_digest: "f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518"
+  evidence_refs:
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-205635476-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-205635476-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/1398c2e95c8aa88c882df6718a8c2862056c61409c03b4f4e642371d553d6dcc.md"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-205635476-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-205635476-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-205635476-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-205635476-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608200903-J459C2/README.md"
+    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/c2adfca967c3f1d049a5870d57ebbfe55326acd0e36367eb018bf7d6a517ee83.patch"
+    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/110afb50443e15d5cc66ef5ff721914bff1b47b591f7be2c7c3b6fc0dc03b85d.json"
+    - ".agentplane/tasks/202608200903-J459C2/verification/20260820205624530-f7aae0bfce1b299d.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/a266df3b865d99cb62af6a582bb17bb986f2ecaa45fdbe0c03341b3c6bd67d02.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The canonical task README still contains the PLANNER fallback scaffold under Verify Steps instead of task-specific acceptance checks for the approved AP-0001 through AP-1004 roadmap."
+    - "The canonical task README has an empty Findings section, so it does not record the resolved CI environment defect, verification outcome, or whether residual follow-up remains."
+    - "The full declared check suite, typecheck, policy routing, and doctor passed for implementation commit 04fba6883822aac4eb0de48f8db40196dfff5353; no implementation regression was found in the frozen evidence."
 execution_route:
   frozen: true
   reason_codes:
