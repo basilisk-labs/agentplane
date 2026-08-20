@@ -66,7 +66,9 @@ export async function runGlabApiJson<T>(opts: {
 }): Promise<T> {
   const args = ["api", "--hostname", opts.hostname, opts.endpoint];
   if (opts.method && opts.method !== "GET") args.push("--method", opts.method);
-  if (opts.inputPath) args.push("--input", opts.inputPath);
+  if (opts.inputPath) {
+    args.push("--header", "Content-Type: application/json", "--input", opts.inputPath);
+  }
   const result = await runGlabCommand({
     args,
     cwd: opts.cwd,

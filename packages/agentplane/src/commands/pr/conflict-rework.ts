@@ -29,6 +29,10 @@ import {
   isSettledGithubPrConflict,
 } from "./internal/sync-github.js";
 import {
+  hasCoherentGitLabMrMergeability,
+  isSettledGitLabMrConflict,
+} from "./internal/sync-gitlab.js";
+import {
   resolveGithubBasePullRequestProtection,
   type GithubBasePullRequestProtection,
 } from "./integrate/internal/github-protection.js";
@@ -165,12 +169,28 @@ function tokenFor(value: unknown): string {
   return `sha256:${createHash("sha256").update(JSON.stringify(value), "utf8").digest("hex")}`;
 }
 
+function isSettledProviderConflict(report: PrFlowStatusReport): boolean {
+  if (report.providerObservation?.state !== "found") return false;
+  const mergeability = report.providerObservation.pr.mergeability;
+  return report.pr.provider === "gitlab"
+    ? isSettledGitLabMrConflict(mergeability)
+    : isSettledGithubPrConflict(mergeability);
+}
+
+function hasCoherentProviderMergeability(report: PrFlowStatusReport): boolean {
+  if (report.providerObservation?.state !== "found") return false;
+  const mergeability = report.providerObservation.pr.mergeability;
+  return report.pr.provider === "gitlab"
+    ? hasCoherentGitLabMrMergeability(mergeability)
+    : hasCoherentGithubPrMergeability(mergeability);
+}
+
 function providerConflict(report: PrFlowStatusReport): boolean {
   return (
     report.pr.state === "OPEN" &&
     report.providerObservation?.state === "found" &&
     report.providerObservation.pr.status === "OPEN" &&
-    isSettledGithubPrConflict(report.providerObservation.pr.mergeability)
+    isSettledProviderConflict(report)
   );
 }
 
@@ -186,8 +206,7 @@ export function needsProviderConflictReworkPreparation(report: PrFlowStatusRepor
   ) {
     return false;
   }
-  const mergeability = report.providerObservation.pr.mergeability;
-  return !hasCoherentGithubPrMergeability(mergeability) || isSettledGithubPrConflict(mergeability);
+  return !hasCoherentProviderMergeability(report) || isSettledProviderConflict(report);
 }
 
 async function resolveLocalRef(opts: {
@@ -241,7 +260,7 @@ export async function prepareConflictReworkPacket(opts: {
     opts.report.providerObservation.pr.status === "OPEN"
   ) {
     const mergeability = opts.report.providerObservation.pr.mergeability;
-    if (!hasCoherentGithubPrMergeability(mergeability)) {
+    if (!hasCoherentProviderMergeability(opts.report)) {
       return invalid(
         "provider_mergeability_unknown",
         `Provider mergeability is not settled: state=${mergeability?.state ?? "missing"} provider_state=${mergeability?.providerState ?? "missing"}`,
