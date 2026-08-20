@@ -12,8 +12,8 @@ Created: 2026-08-20T15:49:58.682Z
 
 ## Verification
 
-- State: needs_rework
-- Note: GitHub integration preflight found two unresolved P1 implementation defects: direct closeout discards the allocated workspace context after runner execution, and matching unfinished finish journals are reset to prepared instead of resuming task_state_written or close_commit_written. The evaluator frozen-base review comment is already addressed in the current patch. Reopen implementation for bounded fixes and regression coverage.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
