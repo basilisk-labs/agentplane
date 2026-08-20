@@ -43,46 +43,56 @@ export async function executeFinishPlan(opts: {
   }
   const closeout = await openFinishCloseoutJournal({ ctx, options, plan });
   let closeoutJournal = closeout.journal;
+  const taskStateAlreadyWritten =
+    closeoutJournal.state === "task_state_written" ||
+    closeoutJournal.state === "close_commit_written";
+  const closeCommitAlreadyWritten = closeoutJournal.state === "close_commit_written";
   try {
-    await appendStructuredFindingIfNeeded({ ctx, options, plan });
+    if (!taskStateAlreadyWritten) {
+      await appendStructuredFindingIfNeeded({ ctx, options, plan });
+    }
 
     const loadedState = await loadFinishTasks({ ctx, options, plan });
-    assertFinishPhasePolicy({ ctx, loadedTasks: loadedState.loadedTasks, plan });
-    await assertBlueprintEvidenceBeforeFinish({ ctx, loadedTasks: loadedState.loadedTasks });
-    await collectIncidentsForLoadedTasks({
+    if (!taskStateAlreadyWritten) {
+      assertFinishPhasePolicy({ ctx, loadedTasks: loadedState.loadedTasks, plan });
+      await assertBlueprintEvidenceBeforeFinish({ ctx, loadedTasks: loadedState.loadedTasks });
+    }
+    let incidentOutcome = await collectIncidentsForLoadedTasks({
       ctx,
       taskIds: options.taskIds,
       loadedTasks: loadedState.loadedTasks,
       write: false,
     });
 
-    const tasksMissingCommit = loadedState.loadedTasks
-      .filter(({ task }) => !existingCommitInfo(task))
-      .map(({ taskId }) => taskId);
-    if (!options.commitFromComment && !options.commit && tasksMissingCommit.length > 0) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: [
-          "finish requires --commit <hash> or existing task commit metadata on every task; implicit HEAD fallback was removed.",
-          `tasks_missing_commit=${tasksMissingCommit.join(", ")}`,
-          "Fix:",
-          "  1) Select the implementation commit explicitly: git log --oneline --decorate -n 10",
-          '  2) Re-run finish with: agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <hash>',
-          "  3) If the implementation is still unstaged, use --commit-from-comment with explicit --commit-allow <path-prefix> instead of relying on HEAD.",
-        ].join("\n"),
-      });
-    }
+    if (!taskStateAlreadyWritten) {
+      const tasksMissingCommit = loadedState.loadedTasks
+        .filter(({ task }) => !existingCommitInfo(task))
+        .map(({ taskId }) => taskId);
+      if (!options.commitFromComment && !options.commit && tasksMissingCommit.length > 0) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: [
+            "finish requires --commit <hash> or existing task commit metadata on every task; implicit HEAD fallback was removed.",
+            `tasks_missing_commit=${tasksMissingCommit.join(", ")}`,
+            "Fix:",
+            "  1) Select the implementation commit explicitly: git log --oneline --decorate -n 10",
+            '  2) Re-run finish with: agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <hash>',
+            "  3) If the implementation is still unstaged, use --commit-from-comment with explicit --commit-allow <path-prefix> instead of relying on HEAD.",
+          ].join("\n"),
+        });
+      }
 
-    if (options.commitFromComment || plan.statusCommitRequested) {
-      enforceStatusCommitPolicy({
-        policy: ctx.config.status_commit_policy,
-        action: "finish",
-        confirmed: options.confirmStatusCommit,
-        quiet: options.quiet,
-        statusFrom: loadedState.primaryStatusFrom ?? "UNKNOWN",
-        statusTo: "DONE",
-      });
+      if (options.commitFromComment || plan.statusCommitRequested) {
+        enforceStatusCommitPolicy({
+          policy: ctx.config.status_commit_policy,
+          action: "finish",
+          confirmed: options.confirmStatusCommit,
+          quiet: options.quiet,
+          statusFrom: loadedState.primaryStatusFrom ?? "UNKNOWN",
+          statusTo: "DONE",
+        });
+      }
     }
 
     const taskCommitInfo = await resolveTaskCommitInfo({
@@ -98,72 +108,82 @@ export async function executeFinishPlan(opts: {
       loadedTasks: loadedState.loadedTasks,
       taskCommitInfo,
     });
-    await assertQualityReviewBeforeFinish({
-      ctx,
-      loadedTasks: loadedState.loadedTasks,
-      taskCommitInfo,
-      implementationCommitInfo,
-      execution: plan.execution,
-      workflowMode: resolveFinishWorkflowMode(plan, ctx),
-    });
+    if (!taskStateAlreadyWritten) {
+      await assertQualityReviewBeforeFinish({
+        ctx,
+        loadedTasks: loadedState.loadedTasks,
+        taskCommitInfo,
+        implementationCommitInfo,
+        execution: plan.execution,
+        workflowMode: resolveFinishWorkflowMode(plan, ctx),
+      });
 
-    await assertCloseCommitCanMutateTaskState({ ctx, options, plan });
+      await assertCloseCommitCanMutateTaskState({ ctx, options, plan });
+    }
 
-    await writeFinishedTasks({
-      ctx,
-      loadedTasks: loadedState.loadedTasks,
-      metaTaskId: plan.metaTaskId,
-      author: options.author,
-      body: options.body,
-      force: options.force,
-      resultProvided: plan.resultProvided,
-      resultSummary: plan.resultSummary,
-      riskLevel: plan.riskLevel,
-      breaking: plan.breaking,
-      taskCommitInfo,
-      implementationCommitInfo,
-    });
-    closeoutJournal = await advanceFinishCloseoutJournal({
-      path: closeout.path,
-      journal: closeoutJournal,
-      state: "task_state_written",
-    });
+    if (!taskStateAlreadyWritten) {
+      await writeFinishedTasks({
+        ctx,
+        loadedTasks: loadedState.loadedTasks,
+        metaTaskId: plan.metaTaskId,
+        author: options.author,
+        body: options.body,
+        force: options.force,
+        resultProvided: plan.resultProvided,
+        resultSummary: plan.resultSummary,
+        riskLevel: plan.riskLevel,
+        breaking: plan.breaking,
+        taskCommitInfo,
+        implementationCommitInfo,
+      });
+      closeoutJournal = await advanceFinishCloseoutJournal({
+        path: closeout.path,
+        journal: closeoutJournal,
+        state: "task_state_written",
+      });
+    }
 
-    await refreshAcrArtifactsForFinishedTasks({
-      ctx,
-      cwd: options.cwd,
-      rootOverride: options.rootOverride,
-      loadedTasks: loadedState.loadedTasks,
-      taskCommitInfo,
-      author: options.author,
-      noWriteAcr: options.noWriteAcr,
-    });
-
-    emitNoCloseCommitGuidance({ ctx, options, plan });
-
-    const incidentOutcome = await collectIncidentsForLoadedTasks({
-      ctx,
-      taskIds: options.taskIds,
-      loadedTasks: loadedState.loadedTasks,
-      write: true,
-    });
-    const promotedIncidents = incidentOutcome.plans.reduce(
+    let promotedIncidents = incidentOutcome.plans.reduce(
       (sum, candidate) => sum + candidate.promotable.length,
       0,
     );
+    if (!closeCommitAlreadyWritten) {
+      await refreshAcrArtifactsForFinishedTasks({
+        ctx,
+        cwd: options.cwd,
+        rootOverride: options.rootOverride,
+        loadedTasks: loadedState.loadedTasks,
+        taskCommitInfo,
+        author: options.author,
+        noWriteAcr: options.noWriteAcr,
+      });
 
-    await finalizeCloseTail({
-      ctx,
-      options,
-      plan,
-      primaryTaskId: plan.primaryTaskId,
-      promotedIncidents,
-    });
-    closeoutJournal = await advanceFinishCloseoutJournal({
-      path: closeout.path,
-      journal: closeoutJournal,
-      state: "close_commit_written",
-    });
+      emitNoCloseCommitGuidance({ ctx, options, plan });
+
+      incidentOutcome = await collectIncidentsForLoadedTasks({
+        ctx,
+        taskIds: options.taskIds,
+        loadedTasks: loadedState.loadedTasks,
+        write: true,
+      });
+      promotedIncidents = incidentOutcome.plans.reduce(
+        (sum, candidate) => sum + candidate.promotable.length,
+        0,
+      );
+
+      await finalizeCloseTail({
+        ctx,
+        options,
+        plan,
+        primaryTaskId: plan.primaryTaskId,
+        promotedIncidents,
+      });
+      closeoutJournal = await advanceFinishCloseoutJournal({
+        path: closeout.path,
+        journal: closeoutJournal,
+        state: "close_commit_written",
+      });
+    }
 
     if (resolveFinishWorkflowMode(plan, ctx) === "direct") {
       await clearDirectWorkLockIfMatches({
