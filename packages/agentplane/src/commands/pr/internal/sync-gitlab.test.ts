@@ -7,6 +7,8 @@ vi.mock("./glab-api.js", async (importOriginal) => ({
 }));
 
 import {
+  hasCoherentGitLabMrMergeability,
+  isSettledGitLabMrConflict,
   observeExistingGitLabMrByBranch,
   observeExistingGitLabMrByNumber,
   tryCreateGitLabMr,
@@ -70,6 +72,30 @@ describe("sync-gitlab", () => {
     const lookupCall = (mocks.runGlabApiJson.mock.calls as [GlabCall][])[1]?.[0];
     expect(lookupCall?.hostname).toBe("gitlab.example.test");
     expect(lookupCall?.endpoint).toContain("projects/group%2Fsub%2Fproject/merge_requests?");
+  });
+
+  it("classifies native GitLab conflict and non-conflict states coherently", () => {
+    expect(
+      hasCoherentGitLabMrMergeability({
+        state: "not_conflicting",
+        mergeable: true,
+        providerState: "mergeable",
+      }),
+    ).toBe(true);
+    expect(
+      isSettledGitLabMrConflict({
+        state: "conflicting",
+        mergeable: false,
+        providerState: "conflict",
+      }),
+    ).toBe(true);
+    expect(
+      hasCoherentGitLabMrMergeability({
+        state: "not_conflicting",
+        mergeable: true,
+        providerState: "unknown",
+      }),
+    ).toBe(false);
   });
 
   it("recovers an uncertain create by re-observing instead of creating a duplicate MR", async () => {

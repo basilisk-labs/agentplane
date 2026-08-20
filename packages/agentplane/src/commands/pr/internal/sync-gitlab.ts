@@ -92,6 +92,35 @@ function normalizeGitLabMergeability(record: GitLabMergeRequestRecord): ChangeRe
   };
 }
 
+export function isSettledGitLabMrConflict(
+  mergeability: ChangeRequestMergeability | undefined,
+): boolean {
+  const providerState = trimmed(mergeability?.providerState)?.toLowerCase() ?? null;
+  return (
+    mergeability?.state === "conflicting" &&
+    mergeability.mergeable === false &&
+    providerState === "conflict"
+  );
+}
+
+function isCoherentGitLabMrNonConflict(
+  mergeability: ChangeRequestMergeability | undefined,
+): boolean {
+  const providerState = trimmed(mergeability?.providerState)?.toLowerCase() ?? null;
+  return (
+    mergeability?.state === "not_conflicting" &&
+    mergeability.mergeable === true &&
+    providerState !== null &&
+    GITLAB_NON_CONFLICT_STATES.has(providerState)
+  );
+}
+
+export function hasCoherentGitLabMrMergeability(
+  mergeability: ChangeRequestMergeability | undefined,
+): boolean {
+  return isSettledGitLabMrConflict(mergeability) || isCoherentGitLabMrNonConflict(mergeability);
+}
+
 function normalizeObservedGitLabMergeRequest(
   identity: GitHostIdentity,
   record: GitLabMergeRequestRecord,

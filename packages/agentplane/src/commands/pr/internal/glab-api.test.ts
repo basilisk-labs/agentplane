@@ -33,6 +33,8 @@ describe("glab-api", () => {
         "projects/group%2Frepo/merge_requests/42",
         "--method",
         "PUT",
+        "--header",
+        "Content-Type: application/json",
         "--input",
         "/tmp/payload.json",
       ],
