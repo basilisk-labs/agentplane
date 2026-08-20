@@ -1,3 +1,5 @@
+import { gitRevParse } from "@agentplaneorg/core/git";
+
 import { invalidValueMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { isRecord } from "../../shared/guards.js";
@@ -34,6 +36,57 @@ function resolveBatchArtifactTaskIds(loaded: LoadedFinishTask): string[] {
     (value): value is string => typeof value === "string" && value.length > 0,
   );
   return [...new Set([loaded.taskId, ...includedTaskIds])];
+}
+
+async function isTaskArtifactOnlyAdvance(opts: {
+  ctx: CommandContext;
+  loaded: LoadedFinishTask;
+  artifactTaskIds: readonly string[];
+  fromRef: string;
+  toRef: string;
+}): Promise<boolean> {
+  return await (
+    opts.artifactTaskIds.length === 1
+      ? isTaskLocalOnlyAdvance({
+          gitRoot: opts.ctx.resolvedProject.gitRoot,
+          workflowDir: opts.ctx.config.paths.workflow_dir,
+          taskId: opts.loaded.taskId,
+          tasksPath: opts.ctx.config.paths.tasks_path,
+          fromRef: opts.fromRef,
+          toRef: opts.toRef,
+        })
+      : isTaskSetLocalOnlyAdvance({
+          gitRoot: opts.ctx.resolvedProject.gitRoot,
+          workflowDir: opts.ctx.config.paths.workflow_dir,
+          taskIds: opts.artifactTaskIds,
+          tasksPath: opts.ctx.config.paths.tasks_path,
+          fromRef: opts.fromRef,
+          toRef: opts.toRef,
+        })
+  ).catch(() => false);
+}
+
+async function resolveReviewedImplementationSha(opts: {
+  ctx: CommandContext;
+  loaded: LoadedFinishTask;
+  artifactTaskIds: readonly string[];
+  reviewedSha: string;
+}): Promise<string> {
+  let implementationSha = opts.reviewedSha;
+  for (;;) {
+    const parentSha = await gitRevParse(opts.ctx.resolvedProject.gitRoot, [
+      `${implementationSha}^`,
+    ]).catch(() => null);
+    if (!parentSha) return implementationSha;
+
+    const taskArtifactOnly = await isTaskArtifactOnlyAdvance({
+      ...opts,
+      fromRef: parentSha,
+      toRef: implementationSha,
+    });
+    if (!taskArtifactOnly) return implementationSha;
+    implementationSha = parentSha;
+  }
 }
 
 export async function resolveTaskCommitInfo(opts: {
@@ -152,31 +205,25 @@ export async function resolveImplementationCommitInfo(opts: {
   if (!candidateCommitInfo) return null;
 
   const artifactTaskIds = resolveBatchArtifactTaskIds(loaded);
-  const taskLocalAdvance = await (
-    artifactTaskIds.length === 1
-      ? isTaskLocalOnlyAdvance({
-          gitRoot: opts.ctx.resolvedProject.gitRoot,
-          workflowDir: opts.ctx.config.paths.workflow_dir,
-          taskId: loaded.taskId,
-          tasksPath: opts.ctx.config.paths.tasks_path,
-          fromRef: reviewedSha,
-          toRef: candidateCommitInfo.hash,
-        })
-      : isTaskSetLocalOnlyAdvance({
-          gitRoot: opts.ctx.resolvedProject.gitRoot,
-          workflowDir: opts.ctx.config.paths.workflow_dir,
-          taskIds: artifactTaskIds,
-          tasksPath: opts.ctx.config.paths.tasks_path,
-          fromRef: reviewedSha,
-          toRef: candidateCommitInfo.hash,
-        })
-  ).catch(() => false);
+  const taskLocalAdvance = await isTaskArtifactOnlyAdvance({
+    ctx: opts.ctx,
+    loaded,
+    artifactTaskIds,
+    fromRef: reviewedSha,
+    toRef: candidateCommitInfo.hash,
+  });
   if (!taskLocalAdvance) return null;
 
-  const commitInfo = await readCommitInfo(opts.ctx.resolvedProject.gitRoot, reviewedSha);
+  const implementationSha = await resolveReviewedImplementationSha({
+    ctx: opts.ctx,
+    loaded,
+    artifactTaskIds,
+    reviewedSha,
+  });
+  const commitInfo = await readCommitInfo(opts.ctx.resolvedProject.gitRoot, implementationSha);
   if (!opts.options.quiet) {
     process.stdout.write(
-      `finish detected task-artifact evidence commit; using quality_review.evaluated_sha=${commitInfo.hash} as implementation commit\n`,
+      `finish detected task-artifact evidence commits; using implementation commit ${commitInfo.hash} from quality_review.evaluated_sha=${reviewedSha}\n`,
     );
   }
   return commitInfo;

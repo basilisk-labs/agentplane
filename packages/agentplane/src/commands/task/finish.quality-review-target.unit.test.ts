@@ -5,6 +5,7 @@ import type { CommandContext } from "../shared/task-backend.js";
 import type { LoadedFinishTask, ResolvedCommitInfo } from "./finish-shared.js";
 
 const mocks = vi.hoisted(() => ({
+  gitRevParse: vi.fn(),
   isTaskLocalOnlyAdvance: vi.fn(),
   isTaskSetLocalOnlyAdvance: vi.fn(),
   readCommitInfo: vi.fn(),
@@ -12,6 +13,10 @@ const mocks = vi.hoisted(() => ({
   checkTaskBlueprintSnapshotDrift: vi.fn(),
 }));
 
+vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  gitRevParse: mocks.gitRevParse,
+}));
 vi.mock("../shared/task-local-freshness.js", () => ({
   isTaskLocalOnlyAdvance: mocks.isTaskLocalOnlyAdvance,
   isTaskSetLocalOnlyAdvance: mocks.isTaskSetLocalOnlyAdvance,
@@ -68,6 +73,7 @@ function mkLoadedTask(reviewedSha = "impl-sha"): LoadedFinishTask {
 
 describe("finish quality review target selection", () => {
   beforeEach(() => {
+    mocks.gitRevParse.mockReset().mockRejectedValue(new Error("no parent"));
     mocks.isTaskLocalOnlyAdvance.mockReset();
     mocks.isTaskSetLocalOnlyAdvance.mockReset();
     mocks.readCommitInfo.mockReset();
@@ -140,15 +146,26 @@ describe("finish quality review target selection", () => {
     expect(resolved).toEqual({ hash: "impl-sha", message: "feat: implement T-1" });
   });
 
-  it("preserves a metadata-only reviewed SHA across later evaluator artifacts", async () => {
+  it("walks through metadata-only reviewed commits to the implementation SHA", async () => {
     const artifactCommit: ResolvedCommitInfo = {
       hash: "review-artifacts-sha",
       message: "🧪 T-1 task: record evaluator evidence",
     };
-    mocks.isTaskLocalOnlyAdvance.mockResolvedValue(true);
+    mocks.gitRevParse.mockImplementation((_gitRoot: string, args: string[]) => {
+      if (args[0] === "metadata-sha^") return Promise.resolve("impl-sha");
+      if (args[0] === "impl-sha^") return Promise.resolve("base-sha");
+      return Promise.reject(new Error("unexpected ref"));
+    });
+    mocks.isTaskLocalOnlyAdvance.mockImplementation(
+      ({ fromRef, toRef }: { fromRef: string; toRef: string }) =>
+        Promise.resolve(
+          (fromRef === "metadata-sha" && toRef === "review-artifacts-sha") ||
+            (fromRef === "impl-sha" && toRef === "metadata-sha"),
+        ),
+    );
     mocks.readCommitInfo.mockResolvedValue({
-      hash: "metadata-sha",
-      message: "📝 T-1 docs: record metadata-only work unit",
+      hash: "impl-sha",
+      message: "feat: implement T-1",
     });
     const { resolveImplementationCommitInfo } = await import("./finish-execute-commit.js");
 
@@ -159,7 +176,7 @@ describe("finish quality review target selection", () => {
       taskCommitInfo: artifactCommit,
     });
 
-    expect(mocks.isTaskLocalOnlyAdvance).toHaveBeenCalledWith({
+    expect(mocks.isTaskLocalOnlyAdvance).toHaveBeenNthCalledWith(1, {
       gitRoot: "/repo",
       workflowDir: ".agentplane/tasks",
       taskId: "T-1",
@@ -167,9 +184,25 @@ describe("finish quality review target selection", () => {
       fromRef: "metadata-sha",
       toRef: "review-artifacts-sha",
     });
+    expect(mocks.isTaskLocalOnlyAdvance).toHaveBeenNthCalledWith(2, {
+      gitRoot: "/repo",
+      workflowDir: ".agentplane/tasks",
+      taskId: "T-1",
+      tasksPath: ".agentplane/tasks.json",
+      fromRef: "impl-sha",
+      toRef: "metadata-sha",
+    });
+    expect(mocks.isTaskLocalOnlyAdvance).toHaveBeenNthCalledWith(3, {
+      gitRoot: "/repo",
+      workflowDir: ".agentplane/tasks",
+      taskId: "T-1",
+      tasksPath: ".agentplane/tasks.json",
+      fromRef: "base-sha",
+      toRef: "impl-sha",
+    });
     expect(resolved).toEqual({
-      hash: "metadata-sha",
-      message: "📝 T-1 docs: record metadata-only work unit",
+      hash: "impl-sha",
+      message: "feat: implement T-1",
     });
   });
 
