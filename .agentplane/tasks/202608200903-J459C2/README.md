@@ -1,10 +1,10 @@
 ---
 id: "202608200903-J459C2"
 title: "Make task execution authority local and direct execution workspace-safe"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -29,10 +29,10 @@ plan_approval:
   note: "User explicitly approved plan J459C2 in chat on 2026-08-20; one AgentPlane-managed working branch for AP-0001 through AP-1004."
 verification:
   state: "blocked_external"
-  updated_at: "2026-08-20T20:03:19.312Z"
+  updated_at: "2026-08-20T20:40:29.256Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:fast"
-  attempts: 6
+  attempts: 8
 execution_route:
   frozen: true
   reason_codes:
@@ -108,6 +108,7 @@ execution_contract:
   observed:
     authority_violations:
       - "verification:recorded-check-2:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "docs"
       - "packages/agentplane"
@@ -221,6 +222,7 @@ execution_contract:
       - "packages/agentplane/src/runtime/workspace-allocation/types.ts"
       - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
+      - "scripts/checks/run-local-ci.mjs"
     external_effects: []
     repository_effects:
       - "documentation"
@@ -233,6 +235,9 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-2"
+        result: "fail"
+      -
+        id: "verification-record"
         result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -285,7 +290,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:bfccb645b4c6caf9ca00d3f59448ff4aa36d360c15dc50e9347c55dfa0a8a593"
+      digest: "sha256:d47a42956fc625a0d2a2426d9555727e2b3438aabbd90c81159ae3d6b9d1185b"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
@@ -310,6 +315,7 @@ execution_contract:
         - "central_path:packages/agentplane/src/runtime/task-routing/index.ts"
         - "central_path:packages/agentplane/src/runtime/task-routing/resolve.ts"
         - "central_path:scripts/checks/check-compatibility-contract-baseline.mjs"
+        - "central_path:scripts/checks/run-local-ci.mjs"
         - "effect_public_api"
         - "effect_schema"
         - "effect_security_boundary"
@@ -436,6 +442,7 @@ execution_contract:
           - "packages/agentplane/src/runtime/workspace-allocation/types.ts"
           - "scripts/baselines/v0.7-compatibility-candidate.json"
           - "scripts/checks/check-compatibility-contract-baseline.mjs"
+          - "scripts/checks/run-local-ci.mjs"
         external_effects: []
         repository_effects:
           - "documentation"
@@ -481,6 +488,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:recorded-check-2"
+      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -519,6 +527,18 @@ comments:
   -
     author: "CODER"
     body: "Operator recovery: full-fast reproduced a cross-group cloud-test race; core passes 574/574 in isolation. Stabilize the full-fast scheduler so core does not overlap another Vitest group."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 811850d00776. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Operator recovery: ambient AGENTPLANE_CLOUD_PROVIDER deterministically reproduces the exact 5-file/9-test declared-check failure. Sanitize all cloud overrides in local CI child environments and restore the original group scheduler."
+  -
+    author: "CODER"
+    body: "Resume after recorded verification rework. The blocker is locally actionable and in approved scope: sanitize AGENTPLANE_CLOUD_* from the local CI child environment, remove the ineffective two-wave scheduler workaround, and rerun the declared verification contract."
+  -
+    author: "CODER"
+    body: "Bind the current implementation head for interrupted verification recovery; known rework remains the AGENTPLANE_CLOUD_* CI environment leak."
 events:
   -
     type: "status"
@@ -644,8 +664,50 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Operator recovery: full-fast reproduced a cross-group cloud-test race; core passes 574/574 in isolation. Stabilize the full-fast scheduler so core does not overlap another Vitest group."
+  -
+    type: "status"
+    at: "2026-08-20T20:14:02.992Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 811850d00776. CLI accepted one state-bound external-agent semantic result."
+    commit: "811850d00776e5d7a28e960e89660de3e0f7278f"
+  -
+    type: "status"
+    at: "2026-08-20T20:26:46.631Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Operator recovery: ambient AGENTPLANE_CLOUD_PROVIDER deterministically reproduces the exact 5-file/9-test declared-check failure. Sanitize all cloud overrides in local CI child environments and restore the original group scheduler."
+  -
+    type: "verify"
+    at: "2026-08-20T20:29:46.554Z"
+    author: "TESTER"
+    state: "blocked_external"
+    note: "Full regression is non-hermetic: the declared-check environment leaks AGENTPLANE_CLOUD_* into cloud backend tests, causing deterministic cloud_projection_adoption_required failures. Sanitize cloud override variables in the local CI launcher, then rerun the full contract."
+  -
+    type: "status"
+    at: "2026-08-20T20:30:11.569Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume after recorded verification rework. The blocker is locally actionable and in approved scope: sanitize AGENTPLANE_CLOUD_* from the local CI child environment, remove the ineffective two-wave scheduler workaround, and rerun the declared verification contract."
+  -
+    type: "status"
+    at: "2026-08-20T20:32:34.152Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Bind the current implementation head for interrupted verification recovery; known rework remains the AGENTPLANE_CLOUD_* CI environment leak."
+    commit: "811850d00776e5d7a28e960e89660de3e0f7278f"
+  -
+    type: "verify"
+    at: "2026-08-20T20:40:29.256Z"
+    author: "SUPERVISOR"
+    state: "blocked_external"
+    note: "Rework: Declared check failed: bun run ci:local:fast"
 doc_version: 3
-doc_updated_at: "2026-08-20T20:04:58.230Z"
+doc_updated_at: "2026-08-20T20:40:30.456Z"
 doc_updated_by: "CODER"
 description: "Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue."
 sections:
@@ -902,6 +964,78 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-20T20:29:46.554Z — VERIFY — blocked_external
+
+    By: TESTER
+
+    Note: Full regression is non-hermetic: the declared-check environment leaks AGENTPLANE_CLOUD_* into cloud backend tests, causing deterministic cloud_projection_adoption_required failures. Sanitize cloud override variables in the local CI launcher, then rerun the full contract.
+    Attempts: 7
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67879e381843d230e56183b99fda976f3987ed16bbb5a11e64c052645b4bc2ab, input_digest=sha256:b97f65b537b239a05d6fc3d436a93a2aca2006f8d6c0eddd445cad0f104d40f1
+
+    Details:
+
+    Reproduced with AGENTPLANE_CLOUD_PROVIDER=ambient-provider against task-backend.revision-cas.test.ts and task-backend.cloud-start-refresh.test.ts; failures match the declared-check stale cloud projection errors. The previously added two-wave scheduler does not resolve the failure and should be reverted.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+    - old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608200903-J459C2
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-20T20:40:29.256Z — VERIFY — blocked_external
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:fast
+    Attempts: 8
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67879e381843d230e56183b99fda976f3987ed16bbb5a11e64c052645b4bc2ab, input_digest=sha256:60d552d274e6bd7a0569ea6c86bdfb3ace81b57063f3bfd1c7eaf114ee47e7f0
+
+    Details:
+
+    Command: ap doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608200903-J459C2 declared verification
+
+    Command: bun run ci:local:fast
+    Result: fail
+    Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608200903-J459C2 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+    - old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608200903-J459C2
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -928,7 +1062,7 @@ extensions:
     status: "applied"
     transition_id: "tr_4627b827ccc36adfbf85d7ebbda87cdd"
   implementation_commit:
-    hash: "800556be3abbe1800f28ca8de31ed17640563906"
+    hash: "811850d00776e5d7a28e960e89660de3e0f7278f"
   task_execution_context:
     base_ref: "main"
     base_sha: "292b232b3160b22c47c6cc206fade625e9377fed"
@@ -1168,6 +1302,78 @@ Note: Rework: Declared check failed: bun run ci:local:fast
 Attempts: 6
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67879e381843d230e56183b99fda976f3987ed16bbb5a11e64c052645b4bc2ab, input_digest=sha256:acf2ef6088d1e222485ae4ec08654d8c23fd2ca5c1e5b44f0fd9bd50e4883561
+
+Details:
+
+Command: ap doctor
+Result: pass
+Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608200903-J459C2 declared verification
+
+Command: bun run ci:local:fast
+Result: fail
+Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608200903-J459C2 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+- old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608200903-J459C2
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-20T20:29:46.554Z — VERIFY — blocked_external
+
+By: TESTER
+
+Note: Full regression is non-hermetic: the declared-check environment leaks AGENTPLANE_CLOUD_* into cloud backend tests, causing deterministic cloud_projection_adoption_required failures. Sanitize cloud override variables in the local CI launcher, then rerun the full contract.
+Attempts: 7
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67879e381843d230e56183b99fda976f3987ed16bbb5a11e64c052645b4bc2ab, input_digest=sha256:b97f65b537b239a05d6fc3d436a93a2aca2006f8d6c0eddd445cad0f104d40f1
+
+Details:
+
+Reproduced with AGENTPLANE_CLOUD_PROVIDER=ambient-provider against task-backend.revision-cas.test.ts and task-backend.cloud-start-refresh.test.ts; failures match the declared-check stale cloud projection errors. The previously added two-wave scheduler does not resolve the failure and should be reverted.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+- old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608200903-J459C2
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-20T20:40:29.256Z — VERIFY — blocked_external
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:fast
+Attempts: 8
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67879e381843d230e56183b99fda976f3987ed16bbb5a11e64c052645b4bc2ab, input_digest=sha256:60d552d274e6bd7a0569ea6c86bdfb3ace81b57063f3bfd1c7eaf114ee47e7f0
 
 Details:
 
