@@ -12,7 +12,7 @@ const mocks = vi.hoisted(() => ({
   cmdCommit: vi.fn(),
   ensureReconciledBeforeMutation: vi.fn(),
   loadCommandContext: vi.fn(),
-  loadTaskFromContext: vi.fn(),
+  loadTaskFromContext: vi.fn<(opts: { taskId: string }) => Promise<TaskData>>(),
   backendIsLocalFileBackend: vi.fn(),
   getTaskStore: vi.fn(),
   readCommitInfo: vi.fn(),
@@ -28,17 +28,7 @@ const mocks = vi.hoisted(() => ({
   checkTaskBlueprintSnapshotDrift: vi.fn(),
 }));
 
-vi.mock("./finish-closeout-journal.js", () => ({
-  openFinishCloseoutJournal: vi.fn().mockResolvedValue({
-    path: "/tmp/finish-closeout.json",
-    journal: { state: "prepared" },
-  }),
-  advanceFinishCloseoutJournal: vi.fn(
-    ({ journal, state }: { journal: Record<string, unknown>; state: string }) =>
-      Promise.resolve({ ...journal, state }),
-  ),
-  markFinishCloseoutRecoveryRequired: vi.fn().mockResolvedValue(undefined),
-}));
+vi.mock("./finish-closeout-journal.js", () => import("./finish-closeout-journal.testkit.js"));
 
 vi.mock("../guard/impl/comment-commit.js", () => ({
   commitFromComment: mocks.commitFromComment,
@@ -227,9 +217,7 @@ function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undef
 }
 
 describe("task finish validation", () => {
-  afterEach(() => {
-    vi.unstubAllEnvs();
-  });
+  afterEach(() => vi.unstubAllEnvs());
 
   beforeEach(() => {
     mocks.commitFromComment.mockReset();
@@ -237,9 +225,7 @@ describe("task finish validation", () => {
     mocks.ensureReconciledBeforeMutation.mockReset();
     mocks.loadCommandContext.mockReset();
     mocks.loadTaskFromContext.mockReset();
-    mocks.loadTaskFromContext.mockImplementation(({ taskId }: { taskId: string }) =>
-      Promise.resolve(mkTask({ id: taskId, status: "DOING", tags: ["spike"] })),
-    );
+    mocks.loadTaskFromContext.mockResolvedValue(mkTask({ status: "DOING", tags: ["spike"] }));
     mocks.backendIsLocalFileBackend.mockReset();
     mocks.getTaskStore.mockReset();
     mocks.readCommitInfo.mockReset();

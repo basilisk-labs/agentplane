@@ -31,9 +31,9 @@ import {
 import {
   isWithinRoot,
   readWorkOrder,
-  reportPaths,
   validateStrictEvaluatorResult,
 } from "./evaluator-review-usecase.js";
+import { reportPaths } from "./evaluator-review-support.js";
 
 type CompletedEvaluatorOutcome = {
   result: ReturnType<typeof validateStrictEvaluatorResult>;

@@ -39,17 +39,23 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../src/commands/branch/work-start.command.ts      |  14 +-
  .../commands/evaluator/evaluator-diff-evidence.ts  |  51 +---
  .../evaluator-evidence-compaction.test.ts          |   9 +-
+ .../evaluator/evaluator-execute-supervisor.ts      |   2 +-
+ .../commands/evaluator/evaluator-execution-base.ts |  46 +++
  .../evaluator/evaluator-qualification-review.ts    |   4 +-
- .../commands/evaluator/evaluator-review-usecase.ts |  96 ++++++-
+ .../commands/evaluator/evaluator-review-apply.ts   |   3 +-
+ .../commands/evaluator/evaluator-review-support.ts |  75 +++++
+ .../commands/evaluator/evaluator-review-usecase.ts | 125 ++++-----
  .../evaluator/evaluator-run.command.test.ts        |   2 +-
  .../commands/evaluator/evaluator-test-helpers.ts   |  27 ++
  .../evaluator-verification-contract.test.ts        |   9 +-
+ .../src/commands/integrate-queue-direct.ts         | 195 +++++++++++++
  .../src/commands/integrate-queue-lane.ts           |   6 +-
  .../src/commands/integrate-queue-reservation.ts    |  16 ++
- .../src/commands/integrate-queue.command.ts        | 232 +++++++++++++++-
+ .../src/commands/integrate-queue.command.ts        | 122 ++++----
  packages/agentplane/src/commands/pr/flow-status.ts |   6 +-
+ .../src/commands/pr/integrate/queue-state-types.ts |  50 ++++
  .../src/commands/pr/integrate/queue-state.test.ts  |  41 +++
- .../src/commands/pr/integrate/queue-state.ts       |  18 ++
+ .../src/commands/pr/integrate/queue-state.ts       |  75 ++---
  .../agentplane/src/commands/pr/internal/sync.ts    |  15 +-
  packages/agentplane/src/commands/pr/open.ts        |  32 ++-
  .../src/commands/provider-ops-results.test.ts      |  15 +
@@ -57,27 +63,32 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../src/commands/shared/declared-check.ts          |   6 +-
  .../commands/shared/post-commit-pr-artifacts.ts    |   6 +-
  .../src/commands/shared/route-cleanup-probe.ts     |   3 +-
- .../src/commands/shared/route-decision-blockers.ts |  30 +-
+ .../src/commands/shared/route-decision-blockers.ts |  50 ++--
  .../shared/route-decision-verification-blocker.ts  |   4 +-
  .../commands/shared/route-decision-verification.ts |   3 +
  .../src/commands/shared/route-decision.ts          |  44 +--
+ .../src/commands/shared/route-gate-priority.ts     |  18 ++
  .../commands/shared/side-effect-authority.test.ts  |  26 ++
  .../src/commands/shared/side-effect-authority.ts   |  47 +++-
+ .../shared/task-verification-input-types.ts        |  52 ++++
  .../shared/task-verification-input.test.ts         |  64 ++++-
- .../src/commands/shared/task-verification-input.ts | 104 ++++++-
- .../commands/shared/task-verification-records.ts   | 127 ++++++++-
+ .../src/commands/shared/task-verification-input.ts | 141 ++++++----
+ .../shared/task-verification-record-parser.ts      | 183 ++++++++++++
+ .../commands/shared/task-verification-records.ts   | 206 +++++---------
  .../shared/task-verification-records.v2.test.ts    |   6 +-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
  .../task/branch-task-supervisor-episodes.ts        |  10 +
  .../task/branch-task-supervisor-operations.ts      |   7 +-
  .../src/commands/task/branch-task-supervisor.ts    |   2 +
  .../src/commands/task/complete.command.ts          |  12 +-
+ .../task/direct-task-supervisor-operation.ts       | 106 +++++++
  .../commands/task/direct-task-supervisor.test.ts   |  24 +-
- .../src/commands/task/direct-task-supervisor.ts    |  51 +++-
+ .../src/commands/task/direct-task-supervisor.ts    |  75 +----
  .../external-agent-implementation-authority.ts     |   7 +
  .../src/commands/task/finish-blueprint-evidence.ts |   5 +-
  .../agentplane/src/commands/task/finish-close.ts   |   7 +-
  .../commands/task/finish-closeout-journal.test.ts  | 131 +++++++++
+ .../task/finish-closeout-journal.testkit.ts        |  17 ++
  .../src/commands/task/finish-closeout-journal.ts   | 126 +++++++++
  .../agentplane/src/commands/task/finish-command.ts |  20 +-
  .../src/commands/task/finish-execute-close.ts      |  18 +-
@@ -85,9 +96,9 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../agentplane/src/commands/task/finish-plan.ts    |  18 +-
  .../agentplane/src/commands/task/finish-shared.ts  |   7 +-
  .../agentplane/src/commands/task/finish-types.ts   |   9 +
- .../commands/task/finish.close-tail.unit.test.ts   |  14 +
+ .../commands/task/finish.close-tail.unit.test.ts   |   4 +-
  .../src/commands/task/finish.state.unit.test.ts    |  15 +
- .../commands/task/finish.validation.unit.test.ts   |  15 +
+ .../commands/task/finish.validation.unit.test.ts   |   9 +-
  .../agentplane/src/commands/task/handoff.shared.ts |  17 +-
  .../src/commands/task/mutation-parity.unit.test.ts |  43 +++
  packages/agentplane/src/commands/task/new.spec.ts  |   8 +-
@@ -99,14 +110,17 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../src/commands/task/start.unit.test.ts           |  15 +
  .../task-execution-contract-observation.test.ts    |  24 +-
  .../task/task-execution-contract-observation.ts    |  10 +-
- .../src/commands/task/verify-record-execute.ts     |  62 ++++-
+ .../src/commands/task/verify-record-execute.ts     | 155 ++++-------
  .../task/verify-record-observed-changes.ts         |   8 +-
- .../src/commands/task/verify-record.unit.test.ts   |  43 +++
+ .../src/commands/task/verify-record-references.ts  |  86 ++++++
+ .../src/commands/task/verify-record.testkit.ts     |  57 ++++
+ .../src/commands/task/verify-record.unit.test.ts   |  66 +++--
  .../agentplane/src/runner/context/task-context.ts  |   3 +-
  .../src/runner/usecases/agent-work-order.ts        |   5 +-
  .../task-run-authority.capabilities.test.ts        |  52 ++++
  .../src/runner/usecases/task-run-authority.ts      |  29 ++
- .../agentplane/src/runner/usecases/task-run.ts     |  14 +
+ .../src/runner/usecases/task-run-options.ts        |  27 ++
+ .../agentplane/src/runner/usecases/task-run.ts     |  34 +--
  .../architecture-guard.test.ts                     |  41 +++
  .../src/runtime/task-execution-context/index.ts    |   8 +
  .../runtime/task-execution-context/resolve.test.ts | 104 +++++++
@@ -121,7 +135,7 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../src/runtime/workspace-allocation/types.ts      |  27 ++
  .../baselines/v0.7-compatibility-candidate.json    |  24 +-
  .../check-compatibility-contract-baseline.mjs      |  10 +-
- 94 files changed, 3155 insertions(+), 411 deletions(-)
+ 108 files changed, 3785 insertions(+), 954 deletions(-)
 ```
 
 </details>

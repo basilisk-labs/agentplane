@@ -1,5 +1,4 @@
 import path from "node:path";
-import { readFile } from "node:fs/promises";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import {
@@ -14,7 +13,6 @@ import {
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { recordedTaskImplementationCommitSha } from "../shared/quality-review-target.js";
-import { parsePrMeta } from "../shared/pr-meta.js";
 import { withEvidenceMutationLock } from "../evidence/evidence-mutation-lock.js";
 import {
   assessLocalVerificationRecords,
@@ -34,14 +32,11 @@ import {
   readDirectSupervisionEvidence,
   readVerifiedSupervisorJournalHistory,
   writeEvaluatorArtifact,
-  type EvaluatorEvidenceKind,
-  type FrozenEvaluatorEvidence,
 } from "./evaluator-review-artifacts.js";
 import {
   assertEvaluatorPacketCurrent,
   putEvaluatorEvidenceObject,
   writeEvaluatorPacketManifest,
-  type EvaluatorPacketArtifact,
 } from "./evaluator-evidence-store.js";
 import { resolveEvaluatorReviewTarget } from "./evaluator-qualification-review.js";
 import {
@@ -49,9 +44,6 @@ import {
   verificationRuntimeEvidencePaths,
 } from "./evaluator-verification-records.js";
 import {
-  EVALUATOR_OPINION_FILE,
-  EVALUATOR_PROMPT_FILE,
-  QUALITY_REPORT_FILE,
   renderEvaluatorPrompt,
   safePathSegment,
   timestampPathSegment,
@@ -61,11 +53,16 @@ import {
   evaluatorObjective,
   isWithinRoot,
   relative,
-  uniqueStrings,
   type PreparedEvaluatorReview,
 } from "./evaluator-review-shared.js";
 import type { EvaluatorRunProvenance } from "./evaluator.spec.js";
 import { renderEvaluatorResultOutputSchemaJson } from "./evaluator-result-schema.js";
+import { applyLegacyPrBase } from "./evaluator-execution-base.js";
+import {
+  assertTaskReviewWorkspaceClean,
+  frozenObjectEvidence,
+  reportPaths,
+} from "./evaluator-review-support.js";
 import {
   EVALUATOR_ALLOWED_TOOL_CLASSES,
   EVALUATOR_WORK_ORDER_SCHEMA,
@@ -89,65 +86,7 @@ export { validateStrictEvaluatorResult } from "./evaluator-result-validation.js"
 export { assertResultEvidenceIsFrozen, readWorkOrder } from "./evaluator-work-order.js";
 export type { EvaluatorWorkOrder } from "./evaluator-work-order.js";
 
-const EVALUATOR_WORK_ORDER_FILE = "evaluator-work-order.json";
-const EVALUATOR_RESULT_FILE = "evaluator-result.json";
 const EVALUATOR_PACKET_MANIFEST_FILE = "evaluator-evidence-manifest.json";
-
-async function assertTaskReviewWorkspaceClean(opts: {
-  ctx: CommandContext;
-  taskId: string;
-}): Promise<void> {
-  const [staged, unstaged] = await Promise.all([
-    opts.ctx.git.statusStagedPaths(),
-    opts.ctx.git.statusUnstagedTrackedPaths(),
-  ]);
-  const taskPrefix = `${opts.ctx.config.paths.workflow_dir.replaceAll(/\/+$/gu, "")}/${opts.taskId}/`;
-  const blocking = [...staged, ...unstaged].filter(
-    (entry) => !entry.replaceAll("\\", "/").startsWith(taskPrefix),
-  );
-  if (blocking.length === 0) return;
-  throw new CliError({
-    code: "E_VALIDATION",
-    message:
-      "Evaluator preparation requires committed implementation evidence; tracked paths outside the current task artifact subtree are dirty.",
-    context: { task_id: opts.taskId, blocking_paths: uniqueStrings(blocking) },
-  });
-}
-
-function frozenObjectEvidence(opts: {
-  id: string;
-  kind: EvaluatorEvidenceKind;
-  artifact: EvaluatorPacketArtifact;
-  required: boolean;
-}): FrozenEvaluatorEvidence {
-  return {
-    id: opts.id,
-    kind: opts.kind,
-    path: opts.artifact.path,
-    sha256: opts.artifact.sha256 as `sha256:${string}`,
-    required: opts.required,
-  };
-}
-
-export function reportPaths(reviewDir: string) {
-  return {
-    work_order_path: path.join(reviewDir, EVALUATOR_WORK_ORDER_FILE),
-    report_path: path.join(reviewDir, QUALITY_REPORT_FILE),
-    prompt_path: path.join(reviewDir, EVALUATOR_PROMPT_FILE),
-    opinion_path: path.join(reviewDir, EVALUATOR_OPINION_FILE),
-    result_path: path.join(reviewDir, EVALUATOR_RESULT_FILE),
-  };
-}
-
-export function resolveEvaluatorPromptPath(opts: {
-  gitRoot: string;
-  reviewDir: string;
-  workOrder: EvaluatorWorkOrder;
-}): string {
-  return opts.workOrder.packet
-    ? path.resolve(opts.gitRoot, opts.workOrder.packet.prompt_path)
-    : reportPaths(opts.reviewDir).prompt_path;
-}
 
 type PrepareEvaluatorReviewOptions = {
   ctx: CommandContext;
@@ -161,46 +100,6 @@ type PrepareEvaluatorReviewOptions = {
 type PrepareEvaluatorReviewLockedOptions = Omit<PrepareEvaluatorReviewOptions, "execution"> & {
   execution: TaskExecutionContext;
 };
-
-function hasFrozenTaskBase(task: TaskData): boolean {
-  const stored = task.extensions?.task_execution_context;
-  return (
-    typeof stored === "object" &&
-    stored !== null &&
-    "base_ref" in stored &&
-    typeof stored.base_ref === "string" &&
-    stored.base_ref.trim().length > 0 &&
-    "base_sha" in stored &&
-    typeof stored.base_sha === "string" &&
-    stored.base_sha.trim().length > 0
-  );
-}
-
-async function applyLegacyPrBase(opts: {
-  ctx: CommandContext;
-  task: TaskData;
-  execution: TaskExecutionContext;
-}): Promise<TaskExecutionContext> {
-  if (hasFrozenTaskBase(opts.task)) {
-    return opts.execution;
-  }
-  const metaPath = path.join(
-    opts.ctx.resolvedProject.gitRoot,
-    opts.ctx.config.paths.workflow_dir,
-    opts.task.id,
-    "pr",
-    "meta.json",
-  );
-  try {
-    const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.task.id);
-    const baseSha = meta.base?.trim();
-    return baseSha ? Object.freeze({ ...opts.execution, base_sha: baseSha }) : opts.execution;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return opts.execution;
-    if (opts.execution.selected_mode === "direct") return opts.execution;
-    throw error;
-  }
-}
 
 export async function prepareEvaluatorReview(
   opts: PrepareEvaluatorReviewOptions,
