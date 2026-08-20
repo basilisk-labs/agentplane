@@ -1,10 +1,10 @@
 ---
 id: "202608200903-J459C2"
 title: "Make task execution authority local and direct execution workspace-safe"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -28,10 +28,10 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved plan J459C2 in chat on 2026-08-20; one AgentPlane-managed working branch for AP-0001 through AP-1004."
 verification:
-  state: "blocked_external"
-  updated_at: "2026-08-20T18:05:48.824Z"
-  updated_by: "TESTER"
-  note: "Compatibility provenance enforcement requires a bounded scripts/checks scope extension; full-fast also exposed parallel cloud-backend failures for focused diagnosis."
+  state: "pending"
+  updated_at: "2026-08-20T18:07:27.984Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 4
 execution_route:
   frozen: true
@@ -76,6 +76,7 @@ execution_contract:
       - "packages/agentplane"
       - "packages/core"
       - "scripts/baselines"
+      - "scripts/checks"
   declaration:
     external_effects: []
     implementation_uncertainty: "material"
@@ -84,6 +85,7 @@ execution_contract:
       - "One isolated branch_pr worktree is required because the change is cross-cutting and security-sensitive, while publication and provider effects remain separate lifecycle boundaries."
       - "The approved roadmap changes central lifecycle authority, persisted task compatibility, verification identity, workspace allocation, integration serialization, and managed-runner capability enforcement across source, tests, schemas, policy, and documentation."
       - "USER-approved blocked-result scope extension: roots=scripts/baselines; repository_effects=public_api,repository_write,tests"
+      - "USER-approved blocked-result scope extension: roots=scripts/checks; repository_effects=public_api,repository_write,source_code,tests"
     repository_effects:
       - "documentation"
       - "public_api"
@@ -102,9 +104,9 @@ execution_contract:
       - "packages/agentplane"
       - "packages/core"
       - "scripts/baselines"
+      - "scripts/checks"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
+    authority_violations: []
     changed_components:
       - "docs"
       - "packages/agentplane"
@@ -199,10 +201,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -229,6 +228,7 @@ execution_contract:
           - "packages/agentplane"
           - "packages/core"
           - "scripts/baselines"
+          - "scripts/checks"
         evidence_requirements:
           - "hosted_integration"
           - "implementation_risk_validation"
@@ -253,7 +253,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:3aea0be7312eb5e01152b7e3876e99eac262469a559f71a37ad8a0f1c7f9d6b0"
+      digest: "sha256:da297a48c516d539f3172ce2592e5bea25165d7bfb6a25172daa3bba2cb050ea"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
@@ -418,7 +418,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
@@ -442,6 +441,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The regenerated candidate is current, but exact source-task provenance cannot be qualified within the present scope because the ratchet enforces its reviewed inventories in scripts/checks. Recommended action: Approve scripts/checks, add J459C2 to the exact cumulative and CLI provenance inventories without weakening any digest or delta assertion, correct the candidate attribution, and rerun the ratchet and full CI. Requested scope: roots=scripts/checks; repository effects=public_api,repository_write,source_code,tests; request digest=sha256:eb3d382bc71aba5cb34061656c6efd92eb3e0e55116e1211e41ae0eb00f8452c. Agentplane receipt: external-agent-blocker/tr_4627b827ccc36adfbf85d7ebbda87cdd/sha256:248e58ed2093667fb317822248a204ab36ec1f382cb8bf1f3258c37438e39209/sha256:eb3d382bc71aba5cb34061656c6efd92eb3e0e55116e1211e41ae0eb00f8452c."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: scripts/checks; repository effects: public_api, repository_write, source_code, tests."
 events:
   -
     type: "status"
@@ -710,6 +712,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-08-20T18:07:27.984Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:248e58ed2093667fb317822248a204ab36ec1f382cb8bf1f3258c37438e39209"
     kind: "task_scope_extension_request"
     request:
@@ -724,7 +728,7 @@ extensions:
         - "scripts/checks"
     request_digest: "sha256:eb3d382bc71aba5cb34061656c6efd92eb3e0e55116e1211e41ae0eb00f8452c"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_4627b827ccc36adfbf85d7ebbda87cdd"
   implementation_commit:
     hash: "343f8f2cc4606b01b7b3dc5fa2c22d1383de5abf"
