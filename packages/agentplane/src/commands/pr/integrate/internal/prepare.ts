@@ -49,6 +49,7 @@ import {
   PR_LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD,
 } from "../../internal/freshness.js";
 import { requiresPullRequestMergePath } from "./github-protection.js";
+import { resolveGitLabBaseMergeRequestProtection } from "./gitlab-protection.js";
 
 type PreparedIntegrate = {
   ctx: CommandContext;
@@ -227,10 +228,39 @@ export async function prepareIntegrate(opts: {
     ),
     authorizedForeignArtifactCleanupRoots: task.execution_contract?.authority.writable_roots ?? [],
   });
-  const protectedBaseRequiresPrMerge = await requiresPullRequestMergePath({
-    gitRoot: resolved.gitRoot,
-    baseBranch: base,
-  });
+  let protectedBaseRequiresPrMerge: boolean;
+  if (metaSource.provider?.kind === "gitlab") {
+    const protection = await resolveGitLabBaseMergeRequestProtection({
+      gitRoot: resolved.gitRoot,
+      identity: {
+        hostname: metaSource.provider.hostname,
+        targetProject: metaSource.provider.target_project,
+      },
+      baseBranch: base,
+    });
+    if (protection.state === "unavailable") {
+      throw new CliError({
+        exitCode: exitCodeForError("E_HANDOFF"),
+        code: "E_HANDOFF",
+        message:
+          `Cannot determine GitLab protection for ${protection.baseBranch}; ` +
+          "refusing to select a local merge path.",
+        context: {
+          reason_code: "provider_base_protection_unavailable",
+          base_branch: protection.baseBranch,
+          provider_reason: protection.reason,
+        },
+      });
+    }
+    // The hosted MR remains the sole merge authority for both protected and
+    // explicitly unprotected bases, matching the GitHub integration contract.
+    protectedBaseRequiresPrMerge = true;
+  } else {
+    protectedBaseRequiresPrMerge = await requiresPullRequestMergePath({
+      gitRoot: resolved.gitRoot,
+      baseBranch: base,
+    });
+  }
 
   const branchHeadSha = await gitRevParse(resolved.gitRoot, [branch]);
   const expectedHeadSha = opts.expectedHeadSha?.trim() ?? "";
@@ -397,6 +427,7 @@ export async function prepareIntegrate(opts: {
       typeof metaSource.pr_number === "number" && metaSource.pr_number > 0
         ? metaSource.pr_number
         : null,
+    recorded: metaSource.provider ?? null,
   });
   const closureFreshness = await assessPreMergeClosureFreshness({
     gitRoot: resolved.gitRoot,

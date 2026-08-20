@@ -1,4 +1,3 @@
-import type { GitHostIdentity } from "../../internal/git-host-identity.js";
 import { normalizeGlabTransportError, runGlabApiJson } from "../../internal/glab-api.js";
 
 export type GitLabBaseMergeRequestProtection =
@@ -13,7 +12,7 @@ type GitLabProtectedBranch = {
 
 export async function resolveGitLabBaseMergeRequestProtection(opts: {
   gitRoot: string;
-  identity: GitHostIdentity;
+  identity: { hostname: string; targetProject: string };
   baseBranch: string;
 }): Promise<GitLabBaseMergeRequestProtection> {
   try {

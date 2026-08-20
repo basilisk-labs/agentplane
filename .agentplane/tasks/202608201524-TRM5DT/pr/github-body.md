@@ -42,7 +42,9 @@ Implement universal GitHub/GitLab hosted change-request support in an isolated b
  .../pr/integrate/internal/gitlab-mr-merge.test.ts  |  70 ++++
  .../pr/integrate/internal/gitlab-mr-merge.ts       | 105 +++++
  .../integrate/internal/gitlab-protection.test.ts   |  50 +++
- .../pr/integrate/internal/gitlab-protection.ts     |  39 ++
+ .../pr/integrate/internal/gitlab-protection.ts     |  38 ++
+ .../commands/pr/integrate/internal/prepare.test.ts |  55 ++-
+ .../src/commands/pr/integrate/internal/prepare.ts  |  39 +-
  .../integrate/internal/protected-base-handoff.ts   | 117 ++++--
  .../commands/pr/internal/change-request-model.ts   |  33 ++
  .../pr/internal/change-request-provider.ts         | 294 ++++++++++++++
@@ -80,7 +82,7 @@ Implement universal GitHub/GitLab hosted change-request support in an isolated b
  schemas/pr-meta.schema.json                        |  38 ++
  schemas/task-handoff.schema.json                   |  16 +-
  website/static/llms-full.txt                       |   2 +-
- 53 files changed, 2999 insertions(+), 223 deletions(-)
+ 55 files changed, 3087 insertions(+), 228 deletions(-)
 ```
 
 </details>
