@@ -6,14 +6,14 @@ Created: 2026-08-20T21:18:16.979Z
 
 - Task: `202608202112-E6CDHP`
 - Title: Fix live GitLab MR transport and provider-neutral mergeability validation
-- Status: DOING
+- Status: BLOCKED
 - Branch: `task/202608202112-E6CDHP/fix-live-gitlab-mr-transport-and-provider-neutra`
 - Canonical task record: `.agentplane/tasks/202608202112-E6CDHP/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: blocked_external
+- Note: Full supervisor check exposed a provider-less cleanup compatibility edge: identity fallback recognizes missing push URL but not missing fetch URL. Add the symmetric fetch fallback and rerun focused cleanup tests.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

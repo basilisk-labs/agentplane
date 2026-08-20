@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 03c2f59942fd499e34b304d8d57a11756f59ac0f..6013cfd0a1d6de248b8a55a0e738f3feb0b89358",
+      "command": "git diff --check b933353946eea11153328b94d0ef22c406fdcd4f..cb9e5bb7b917b7047e2ed24382100765b925625c",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,16 +13,22 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 03c2f59942fd499e34b304d8d57a11756f59ac0f..6013cfd0a1d6de248b8a55a0e738f3feb0b89358",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB b933353946eea11153328b94d0ef22c406fdcd4f..cb9e5bb7b917b7047e2ed24382100765b925625c",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202608202112-E6CDHP/README.md",
         "M\t.agentplane/tasks/202608202112-E6CDHP/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608202112-E6CDHP/pr/github-body.md",
+        "M\t.agentplane/tasks/202608202112-E6CDHP/pr/github-title.txt",
         "M\t.agentplane/tasks/202608202112-E6CDHP/pr/meta.json",
         "M\t.agentplane/tasks/202608202112-E6CDHP/pr/review.md",
-        "M\tpackages/agentplane/src/commands/pr/conflict-rework.test.ts"
+        "A\tpackages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts",
+        "M\tpackages/agentplane/src/commands/branch/cleanup-merged-targeted-proof.ts",
+        "M\tpackages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts",
+        "M\tpackages/agentplane/src/commands/pr/integrate/cmd.ts",
+        "A\tpackages/agentplane/src/commands/pr/integrate/internal/route-label.test.ts",
+        "A\tpackages/agentplane/src/commands/pr/integrate/internal/route-label.ts"
       ]
     },
     {
@@ -32,24 +38,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "03c2f59942fd499e34b304d8d57a11756f59ac0f",
-  "implementation_commit": "6013cfd0a1d6de248b8a55a0e738f3feb0b89358",
+  "execution_base_commit": "b933353946eea11153328b94d0ef22c406fdcd4f",
+  "implementation_commit": "cb9e5bb7b917b7047e2ed24382100765b925625c",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M .agentplane/tasks/202608202112-E6CDHP/README.md"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608202112-E6CDHP/README.md"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202608202112-E6CDHP/README.md"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,

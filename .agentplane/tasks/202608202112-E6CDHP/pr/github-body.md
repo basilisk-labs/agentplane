@@ -15,8 +15,14 @@ Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutatio
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: blocked_external
+- Note:
+
+```text
+Full supervisor check exposed a provider-less cleanup compatibility edge: identity fallback
+recognizes missing push URL but not missing fetch URL. Add the symmetric fetch fallback and rerun
+focused cleanup tests.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

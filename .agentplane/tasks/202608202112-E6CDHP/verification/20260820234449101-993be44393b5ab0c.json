@@ -1,0 +1,83 @@
+{
+  "details": "Check: critical_paths\nCommand: bun run --filter=agentplane test -- --maxWorkers=1\nResult: fail\nEvidence: cleanup-merged.targeted.test.ts provider-less task-close fixture failed when publication remote had zero fetch URLs\nScope: cleanup provider fallback compatibility",
+  "digest": "sha256:993be44393b5ab0cc045764747ffff1954c7c1030bb96fd426faff9f61419f41",
+  "implementation_sha": "cb9e5bb7b917b7047e2ed24382100765b925625c",
+  "input": {
+    "context": {
+      "digest": "sha256:c604a3866814dba57d1e8b75bf0340937981e8280dda0ec9356a7987f4282f36",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:7114450552638cafc9bbc3fe40bf9b65ac8c7bdae284eceaa8707e83dfb0d100",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:f63f25b71f7b8b85d685848bc7c91b72bdcd293fb3e3226abad8ea59d0dc631e",
+      "digest": "sha256:ad7bf68f8f8d0882bdf4b21a11d23e143a26c5f193c8a2364314266829127614",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "23fb0196bd6db314e48fe712bf3bb85f9c5ca609",
+      "digest": "sha256:ca28ab3ba125212858bdd3c89c7b6ae1ce4a6fb6fa1e47789b7d01980fbe870c",
+      "strategy": "branch_diff",
+      "target_sha": "cb9e5bb7b917b7047e2ed24382100765b925625c"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:73295117a5a086df05534dcf4510cb71b5b7a5056885cc6eb49c04b2e6c5525f",
+    "verify_steps_digest": "sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c"
+  },
+  "kind": "task_verification_record",
+  "note": "Full supervisor check exposed a provider-less cleanup compatibility edge: identity fallback recognizes missing push URL but not missing fetch URL. Add the symmetric fetch fallback and rerun focused cleanup tests.",
+  "recorded_at": "2026-08-20T23:44:49.101Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Fix live GitLab MR transport and provider-neutral mergeability validation\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Fix live GitLab MR transport and provider-neutral mergeability validation\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c",
+  "task_id": "202608202112-E6CDHP",
+  "verification_command": "agentplane verify 202608202112-E6CDHP --rework --by TESTER",
+  "verifier": "TESTER"
+}
