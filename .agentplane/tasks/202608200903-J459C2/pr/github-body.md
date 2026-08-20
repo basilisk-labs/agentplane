@@ -15,8 +15,14 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note:
+
+```text
+Pre-merge finish fails after evaluator and task-document commits because implementation commit
+normalization stops after one task-artifact layer; resolve the complete task-only first-parent tail
+to the verified code commit and add regression coverage.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -92,11 +98,13 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../src/commands/task/finish-closeout-journal.ts   | 126 +++++++++
  .../agentplane/src/commands/task/finish-command.ts |  20 +-
  .../src/commands/task/finish-execute-close.ts      |  18 +-
+ .../src/commands/task/finish-execute-commit.ts     |  89 ++++--
  .../agentplane/src/commands/task/finish-execute.ts | 291 ++++++++++---------
  .../agentplane/src/commands/task/finish-plan.ts    |  18 +-
  .../agentplane/src/commands/task/finish-shared.ts  |   7 +-
  .../agentplane/src/commands/task/finish-types.ts   |   9 +
  .../commands/task/finish.close-tail.unit.test.ts   |   4 +-
+ .../task/finish.quality-review-target.unit.test.ts |  47 +++-
  .../src/commands/task/finish.state.unit.test.ts    |  15 +
  .../commands/task/finish.validation.unit.test.ts   |   9 +-
  .../agentplane/src/commands/task/handoff.shared.ts |  17 +-
@@ -136,7 +144,7 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../baselines/v0.7-compatibility-candidate.json    |  24 +-
  .../check-compatibility-contract-baseline.mjs      |  10 +-
  scripts/checks/run-local-ci.mjs                    |   6 +
- 109 files changed, 3791 insertions(+), 954 deletions(-)
+ 111 files changed, 3899 insertions(+), 982 deletions(-)
 ```
 
 </details>
