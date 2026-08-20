@@ -46,6 +46,8 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../src/commands/pr/integrate/queue-state.ts       |  18 ++
  .../agentplane/src/commands/pr/internal/sync.ts    |  15 +-
  packages/agentplane/src/commands/pr/open.ts        |  32 ++-
+ .../src/commands/shared/declared-check.test.ts     |   9 +
+ .../src/commands/shared/declared-check.ts          |   6 +-
  .../commands/shared/post-commit-pr-artifacts.ts    |   6 +-
  .../src/commands/shared/route-cleanup-probe.ts     |   3 +-
  .../src/commands/shared/route-decision-blockers.ts |  30 +-
@@ -106,7 +108,7 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../src/runtime/workspace-allocation/index.ts      |  11 +
  .../src/runtime/workspace-allocation/lease.ts      |  93 +++++++
  .../src/runtime/workspace-allocation/types.ts      |  27 ++
- 79 files changed, 2888 insertions(+), 388 deletions(-)
+ 81 files changed, 2902 insertions(+), 389 deletions(-)
 ```
 
 </details>
