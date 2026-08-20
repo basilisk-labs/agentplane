@@ -1,10 +1,10 @@
 ---
 id: "202608202112-E6CDHP"
 title: "Fix live GitLab MR transport and provider-neutral mergeability validation"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -19,18 +19,18 @@ risk_flags:
   - "publish"
 blueprint_request: "code.branch_pr"
 verify:
-  - "bun run --filter=agentplane test -- --maxWorkers=4"
+  - "bun run --filter=agentplane test -- --maxWorkers=1"
 plan_approval:
   state: "approved"
   updated_at: "2026-08-20T21:18:00.049Z"
   updated_by: "USER"
   note: "Approved explicitly by Denis in Codex on 2026-08-21 after reviewing the live GitLab findings and remediation plan."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-20T22:33:56.787Z"
+  state: "blocked_external"
+  updated_at: "2026-08-20T22:58:44.826Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run --filter=agentplane test"
-  attempts: 3
+  note: "Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1"
+  attempts: 4
 execution_route:
   frozen: true
   reason_codes:
@@ -236,6 +236,9 @@ comments:
   -
     author: "USER"
     body: "Resolved verification resource contention: retain the full agentplane test suite and bound Vitest concurrency with --maxWorkers=4; continue the approved GitLab qualification plan."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 6013cfd0a1d6. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -300,9 +303,23 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Resolved verification resource contention: retain the full agentplane test suite and bound Vitest concurrency with --maxWorkers=4; continue the approved GitLab qualification plan."
+  -
+    type: "status"
+    at: "2026-08-20T22:41:31.636Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 6013cfd0a1d6. CLI accepted one state-bound external-agent semantic result."
+    commit: "6013cfd0a1d6de248b8a55a0e738f3feb0b89358"
+  -
+    type: "verify"
+    at: "2026-08-20T22:58:44.826Z"
+    author: "SUPERVISOR"
+    state: "blocked_external"
+    note: "Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1"
 doc_version: 3
-doc_updated_at: "2026-08-20T22:40:03.380Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-08-20T22:58:45.993Z"
+doc_updated_by: "SUPERVISOR"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
   Summary: |-
@@ -426,6 +443,41 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-20T22:58:44.826Z — VERIFY — blocked_external
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1
+    Attempts: 4
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:42c1b7410a7b37b4deaed191497cb172145172e30ed91c94b4677c177e497ac3
+
+    Details:
+
+    Command: bun run --filter=agentplane test -- --maxWorkers=1
+    Result: fail
+    Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608202112-E6CDHP declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+    - old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -433,7 +485,7 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "bedfd34a86d3d29976347e6c7c869d4f153befb5"
+    hash: "6013cfd0a1d6de248b8a55a0e738f3feb0b89358"
   workflow_route_baseline:
     start_head_sha: "60be0145753e9e2aecf31f4bbd8471895db13395"
     version: 1
@@ -547,6 +599,41 @@ VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d07
 Details:
 
 Command: bun run --filter=agentplane test
+Result: fail
+Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608202112-E6CDHP declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+- old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-20T22:58:44.826Z — VERIFY — blocked_external
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1
+Attempts: 4
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:42c1b7410a7b37b4deaed191497cb172145172e30ed91c94b4677c177e497ac3
+
+Details:
+
+Command: bun run --filter=agentplane test -- --maxWorkers=1
 Result: fail
 Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#check-1
 Scope: branch_pr task 202608202112-E6CDHP declared verification
