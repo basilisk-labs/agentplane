@@ -15,8 +15,14 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note:
+
+```text
+Exact-head hosted CI run 32422225125 failed required verify-static and verify-contract checks: 13
+unused AgentPlane CLI exports exceed the zero Knip budget; four documentation social images are
+missing and the generated manifest is stale. Reopen implementation for bounded remediation.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

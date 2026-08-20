@@ -2,10 +2,10 @@
 id: "202608200903-J459C2"
 title: "Make task execution authority local and direct execution workspace-safe"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 58
+revision: 61
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +29,11 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved plan J459C2 in chat on 2026-08-20; one AgentPlane-managed working branch for AP-0001 through AP-1004."
 verification:
-  state: "ok"
-  updated_at: "2026-08-20T21:57:15.353Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-20T22:15:16.257Z"
+  updated_by: "USER"
+  note: "Exact-head hosted CI run 32422225125 failed required verify-static and verify-contract checks: 13 unused AgentPlane CLI exports exceed the zero Knip budget; four documentation social images are missing and the generated manifest is stale. Reopen implementation for bounded remediation."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -550,9 +550,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit:
-  hash: "afa10019f6843124492b8d1552e9dac6136baed7"
-  message: "🚧 J459C2 task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -623,6 +621,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Hosted CI exposed two scoped findings: 13 unused AgentPlane CLI exports and four missing documentation social images with a stale manifest. The code cleanup is inside the current authority, but the required generated website assets are not. Recommended action: Approve website scope, remove only the newly unused AgentPlane CLI exports without widening the Knip baseline, regenerate the four social images and manifest, then run the focused contracts and full task verification. Requested scope: roots=website; repository effects=documentation,repository_write; request digest=sha256:5bca2cd0e74052da35f1f4e671c1edc7c17fffd09aa6f31f4cdac9fae6564673. Agentplane receipt: external-agent-blocker/tr_dac0473f16b6ada2a5ee7894f215b1ed/sha256:e53b99dbae48300d982e439e7c1a07c8a7ac14a0b19b8abba52fba6dd90b8b62/sha256:5bca2cd0e74052da35f1f4e671c1edc7c17fffd09aa6f31f4cdac9fae6564673."
 events:
   -
     type: "status"
@@ -879,9 +880,22 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "afa10019f6843124492b8d1552e9dac6136baed7"
+  -
+    type: "verify"
+    at: "2026-08-20T22:15:16.257Z"
+    author: "USER"
+    state: "needs_rework"
+    note: "Exact-head hosted CI run 32422225125 failed required verify-static and verify-contract checks: 13 unused AgentPlane CLI exports exceed the zero Knip budget; four documentation social images are missing and the generated manifest is stale. Reopen implementation for bounded remediation."
+  -
+    type: "status"
+    at: "2026-08-20T22:16:30.214Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Hosted CI exposed two scoped findings: 13 unused AgentPlane CLI exports and four missing documentation social images with a stale manifest. The code cleanup is inside the current authority, but the required generated website assets are not. Recommended action: Approve website scope, remove only the newly unused AgentPlane CLI exports without widening the Knip baseline, regenerate the four social images and manifest, then run the focused contracts and full task verification. Requested scope: roots=website; repository effects=documentation,repository_write; request digest=sha256:5bca2cd0e74052da35f1f4e671c1edc7c17fffd09aa6f31f4cdac9fae6564673. Agentplane receipt: external-agent-blocker/tr_dac0473f16b6ada2a5ee7894f215b1ed/sha256:e53b99dbae48300d982e439e7c1a07c8a7ac14a0b19b8abba52fba6dd90b8b62/sha256:5bca2cd0e74052da35f1f4e671c1edc7c17fffd09aa6f31f4cdac9fae6564673."
 doc_version: 3
-doc_updated_at: "2026-08-20T21:58:59.002Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-20T22:16:30.275Z"
+doc_updated_by: "SUPERVISOR"
 description: "Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue."
 sections:
   Summary: |-
@@ -1562,6 +1576,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-20T22:15:16.257Z — VERIFY — needs_rework
+
+    By: USER
+
+    Note: Exact-head hosted CI run 32422225125 failed required verify-static and verify-contract checks: 13 unused AgentPlane CLI exports exceed the zero Knip budget; four documentation social images are missing and the generated manifest is stale. Reopen implementation for bounded remediation.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:519f32059d4ea6a20364503c6ebd1b3550335d14b6c9668dc1d923f0468810ef, input_digest=sha256:5715b3389d2cddf8e29bc75c1a1168686e91a5d343f579feb607e4897edd5961
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+    - old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1574,24 +1618,20 @@ sections:
     - No residual local implementation blocker remains. Hosted checks, exact-SHA publication, queued integration, provider merge readback, and final main ancestry verification remain lifecycle steps owned by AgentPlane.
 extensions:
   agentplane.scope_extension_request:
-    applied_at: "2026-08-20T18:07:27.984Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:248e58ed2093667fb317822248a204ab36ec1f382cb8bf1f3258c37438e39209"
+    blocker_state_fingerprint: "sha256:e53b99dbae48300d982e439e7c1a07c8a7ac14a0b19b8abba52fba6dd90b8b62"
     kind: "task_scope_extension_request"
     request:
-      rationale: "The ratchet intentionally hard-codes reviewed source-task inventories. Updating those exact inventories is required to preserve provenance for the intentional CLI topology change; no assertion or immutable baseline anchor will be relaxed."
+      rationale: "The exact PR head cannot pass its required docs-site contract until repository-owned generated social assets and their manifest are updated alongside the task's new documentation pages."
       repository_effects:
-        - "public_api"
+        - "documentation"
         - "repository_write"
-        - "source_code"
-        - "tests"
       schema_version: 1
       scope_roots:
-        - "scripts/checks"
-    request_digest: "sha256:eb3d382bc71aba5cb34061656c6efd92eb3e0e55116e1211e41ae0eb00f8452c"
+        - "website"
+    request_digest: "sha256:5bca2cd0e74052da35f1f4e671c1edc7c17fffd09aa6f31f4cdac9fae6564673"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_4627b827ccc36adfbf85d7ebbda87cdd"
+    status: "pending"
+    transition_id: "tr_dac0473f16b6ada2a5ee7894f215b1ed"
   implementation_commit:
     hash: "bf575676346cab8e27c40c30fb0378ddedaf913b"
     message: "🚧 J459C2 task: apply external agent result"
@@ -2285,6 +2325,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608200903-J459C2
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-20T22:15:16.257Z — VERIFY — needs_rework
+
+By: USER
+
+Note: Exact-head hosted CI run 32422225125 failed required verify-static and verify-contract checks: 13 unused AgentPlane CLI exports exceed the zero Knip budget; four documentation social images are missing and the generated manifest is stale. Reopen implementation for bounded remediation.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:519f32059d4ea6a20364503c6ebd1b3550335d14b6c9668dc1d923f0468810ef, input_digest=sha256:5715b3389d2cddf8e29bc75c1a1168686e91a5d343f579feb607e4897edd5961
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+- old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
