@@ -15,13 +15,8 @@ Improve the root README around the semantic-agent and deterministic-CLI boundary
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework: the recorded implementation identity excludes the committed P1 README correction, so
-verification provenance is stale even though the local checks pass.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

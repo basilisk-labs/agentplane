@@ -12,8 +12,8 @@ Created: 2026-08-20T22:06:49.088Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: the recorded implementation identity excludes the committed P1 README correction, so verification provenance is stale even though the local checks pass.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
