@@ -12,8 +12,8 @@ Created: 2026-08-20T21:35:27.443Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-20T21:35:27.443Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-20T21:35:27.443Z
+- Updated: 2026-08-20T22:08:46.536Z
 - Branch: task/202608202133-1C8P0N/add-ap-te-lite-to-framework-agent-instructions
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
