@@ -6,7 +6,7 @@ Created: 2026-08-20T21:35:27.443Z
 
 - Task: `202608202133-1C8P0N`
 - Title: Add AP-TE Lite to framework agent instructions
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608202133-1C8P0N/add-ap-te-lite-to-framework-agent-instructions`
 - Canonical task record: `.agentplane/tasks/202608202133-1C8P0N/README.md`
 
