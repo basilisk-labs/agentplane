@@ -2,10 +2,10 @@
 id: "202608200903-J459C2"
 title: "Make task execution authority local and direct execution workspace-safe"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 61
+revision: 62
 origin:
   system: "manual"
 depends_on: []
@@ -29,10 +29,10 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved plan J459C2 in chat on 2026-08-20; one AgentPlane-managed working branch for AP-0001 through AP-1004."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-20T22:15:16.257Z"
+  state: "pending"
+  updated_at: "2026-08-20T22:21:04.813Z"
   updated_by: "USER"
-  note: "Exact-head hosted CI run 32422225125 failed required verify-static and verify-contract checks: 13 unused AgentPlane CLI exports exceed the zero Knip budget; four documentation social images are missing and the generated manifest is stale. Reopen implementation for bounded remediation."
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 1
 quality_review:
   state: "pass"
@@ -121,6 +121,7 @@ execution_contract:
       - "packages/core"
       - "scripts/baselines"
       - "scripts/checks"
+      - "website"
   declaration:
     external_effects: []
     implementation_uncertainty: "material"
@@ -130,6 +131,7 @@ execution_contract:
       - "The approved roadmap changes central lifecycle authority, persisted task compatibility, verification identity, workspace allocation, integration serialization, and managed-runner capability enforcement across source, tests, schemas, policy, and documentation."
       - "USER-approved blocked-result scope extension: roots=scripts/baselines; repository_effects=public_api,repository_write,tests"
       - "USER-approved blocked-result scope extension: roots=scripts/checks; repository_effects=public_api,repository_write,source_code,tests"
+      - "USER-approved blocked-result scope extension: roots=website; repository_effects=documentation,repository_write"
     repository_effects:
       - "documentation"
       - "public_api"
@@ -149,9 +151,9 @@ execution_contract:
       - "packages/core"
       - "scripts/baselines"
       - "scripts/checks"
+      - "website"
   observed:
-    authority_violations:
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "docs"
       - "packages/agentplane"
@@ -274,31 +276,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "verification-record"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -326,6 +304,7 @@ execution_contract:
           - "packages/core"
           - "scripts/baselines"
           - "scripts/checks"
+          - "website"
         evidence_requirements:
           - "hosted_integration"
           - "implementation_risk_validation"
@@ -350,7 +329,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:d073033b175d7bffccbc74964ab576051e34104a3669f81e142daf2a469ddeea"
+      digest: "sha256:cd9ec12cfb3f8f15cb3e547242716dcf57a5444221a5a2265da4c7b8c96aaadb"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
@@ -549,7 +528,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -624,6 +602,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Hosted CI exposed two scoped findings: 13 unused AgentPlane CLI exports and four missing documentation social images with a stale manifest. The code cleanup is inside the current authority, but the required generated website assets are not. Recommended action: Approve website scope, remove only the newly unused AgentPlane CLI exports without widening the Knip baseline, regenerate the four social images and manifest, then run the focused contracts and full task verification. Requested scope: roots=website; repository effects=documentation,repository_write; request digest=sha256:5bca2cd0e74052da35f1f4e671c1edc7c17fffd09aa6f31f4cdac9fae6564673. Agentplane receipt: external-agent-blocker/tr_dac0473f16b6ada2a5ee7894f215b1ed/sha256:e53b99dbae48300d982e439e7c1a07c8a7ac14a0b19b8abba52fba6dd90b8b62/sha256:5bca2cd0e74052da35f1f4e671c1edc7c17fffd09aa6f31f4cdac9fae6564673."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: website; repository effects: documentation, repository_write."
 events:
   -
     type: "status"
@@ -1618,6 +1599,8 @@ sections:
     - No residual local implementation blocker remains. Hosted checks, exact-SHA publication, queued integration, provider merge readback, and final main ancestry verification remain lifecycle steps owned by AgentPlane.
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-08-20T22:21:04.813Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:e53b99dbae48300d982e439e7c1a07c8a7ac14a0b19b8abba52fba6dd90b8b62"
     kind: "task_scope_extension_request"
     request:
@@ -1630,7 +1613,7 @@ extensions:
         - "website"
     request_digest: "sha256:5bca2cd0e74052da35f1f4e671c1edc7c17fffd09aa6f31f4cdac9fae6564673"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_dac0473f16b6ada2a5ee7894f215b1ed"
   implementation_commit:
     hash: "bf575676346cab8e27c40c30fb0378ddedaf913b"
