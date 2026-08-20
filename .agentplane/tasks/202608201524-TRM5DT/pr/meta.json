@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:44db24a9717ea7c02cfa25d08330f47a634fa992c595e8d73cbdf017f1143f28",
   "pr_number": 4852,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4852",
+  "pre_merge_closure": {
+    "basis_commit": "c2aecf93396e28dc31d3f8c64f425993bf9f81e5",
+    "branch": "task/202608201524-TRM5DT/implement-provider-neutral-github-and-gitlab-cha",
+    "pr_number": 4852,
+    "recorded_at": "2026-08-20T19:32:53.865Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
