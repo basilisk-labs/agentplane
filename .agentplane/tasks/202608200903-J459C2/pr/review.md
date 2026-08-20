@@ -13,7 +13,7 @@ Created: 2026-08-20T15:49:58.682Z
 ## Verification
 
 - State: needs_rework
-- Note: Rework: Declared check could not run: ap doctor
+- Note: Rework: Declared check failed: bun run ci:local:fast
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
