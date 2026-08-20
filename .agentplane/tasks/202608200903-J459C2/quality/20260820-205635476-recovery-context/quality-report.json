@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608200903-J459C2",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-20T20:58:12.404Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "04fba6883822aac4eb0de48f8db40196dfff5353",
+  "blueprint_digest": "f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518",
+  "findings": [
+    "The canonical task README still contains the PLANNER fallback scaffold under Verify Steps instead of task-specific acceptance checks for the approved AP-0001 through AP-1004 roadmap.",
+    "The canonical task README has an empty Findings section, so it does not record the resolved CI environment defect, verification outcome, or whether residual follow-up remains.",
+    "The full declared check suite, typecheck, policy routing, and doctor passed for implementation commit 04fba6883822aac4eb0de48f8db40196dfff5353; no implementation regression was found in the frozen evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/c2adfca967c3f1d049a5870d57ebbfe55326acd0e36367eb018bf7d6a517ee83.patch"
+  ],
+  "missing_tests": [
+    "A task-document contract check should reject a non-trivial approved task that reaches quality review with the PLANNER fallback Verify Steps scaffold or an empty Findings section."
+  ],
+  "hidden_assumptions": [
+    "The workflow assumed passing mechanical checks were sufficient even though the approved acceptance criteria and dod.core.md also require task-specific Verify Steps and populated Findings."
+  ],
+  "residual_risks": [
+    "Replace the fallback Verify Steps with explicit J459C2 acceptance checks mapped to the completed roadmap and observed verification evidence. Populate Findings with the ambient AGENTPLANE_CLOUD_* root cause, the hermetic CI fix, the removal of the ineffective scheduler workaround, the passing full verification, and an explicit statement of any residual follow-up. Re-run task-document validation and quality review on the resulting head."
+  ]
+}
