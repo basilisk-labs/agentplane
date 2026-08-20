@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -229,6 +229,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): Resolved the scoped README rework by restoring the contract-tested first-task outcome while preserving the approved README structure and positioning."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The uncommitted README.md change is intentional, scoped implementation rework that addresses the current P1 review thread and should be preserved and committed as part of task 202608202141-WC5RF1."
 events:
   -
     type: "status"
@@ -264,8 +267,13 @@ events:
     at: "2026-08-20T22:33:02.209Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): Resolved the scoped README rework by restoring the contract-tested first-task outcome while preserving the approved README structure and positioning."
+  -
+    type: "comment"
+    at: "2026-08-20T22:34:54.259Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The uncommitted README.md change is intentional, scoped implementation rework that addresses the current P1 review thread and should be preserved and committed as part of task 202608202141-WC5RF1."
 doc_version: 3
-doc_updated_at: "2026-08-20T22:33:02.249Z"
+doc_updated_at: "2026-08-20T22:34:54.304Z"
 doc_updated_by: "SUPERVISOR"
 description: "Improve the root README around the semantic-agent and deterministic-CLI boundary"
 sections:
