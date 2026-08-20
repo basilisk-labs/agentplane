@@ -4,7 +4,7 @@ title: "Implement provider-neutral GitHub and GitLab change-request lifecycle"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -33,10 +33,10 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved plan in Codex task on 2026-08-20."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-20T17:34:32.863Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -119,11 +119,91 @@ execution_contract:
       - "scripts/workflow"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "docs"
+      - "packages/agentplane"
+      - "packages/core"
+      - "packages/spec"
+      - "schemas"
+    changed_paths:
+      - "docs/user/branching-and-pr-artifacts.mdx"
+      - "docs/user/cli-reference.generated.mdx"
+      - "docs/user/commands.mdx"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.gitlab.test.ts"
+      - "packages/agentplane/src/commands/pr/branch-publication.ts"
+      - "packages/agentplane/src/commands/pr/check.ts"
+      - "packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts"
+      - "packages/agentplane/src/commands/pr/conflict-rework.ts"
+      - "packages/agentplane/src/commands/pr/flow-status.ts"
+      - "packages/agentplane/src/commands/pr/head-publication.ts"
+      - "packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts"
+      - "packages/agentplane/src/commands/pr/hosted-checks.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/gitlab-protection.test.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/gitlab-protection.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/protected-base-handoff.ts"
+      - "packages/agentplane/src/commands/pr/internal/change-request-model.ts"
+      - "packages/agentplane/src/commands/pr/internal/change-request-provider.ts"
+      - "packages/agentplane/src/commands/pr/internal/git-host-identity.test.ts"
+      - "packages/agentplane/src/commands/pr/internal/git-host-identity.ts"
+      - "packages/agentplane/src/commands/pr/internal/glab-api.test.ts"
+      - "packages/agentplane/src/commands/pr/internal/glab-api.ts"
+      - "packages/agentplane/src/commands/pr/internal/sync-github.ts"
+      - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
+      - "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
+      - "packages/agentplane/src/commands/pr/internal/sync-open-step.ts"
+      - "packages/agentplane/src/commands/pr/internal/sync-update-step.ts"
+      - "packages/agentplane/src/commands/pr/open.ts"
+      - "packages/agentplane/src/commands/pr/pr.spec.ts"
+      - "packages/agentplane/src/commands/pr/provider-head.test.ts"
+      - "packages/agentplane/src/commands/pr/provider-head.ts"
+      - "packages/agentplane/src/commands/shared/pr-meta.test.ts"
+      - "packages/agentplane/src/commands/shared/pr-meta.ts"
+      - "packages/agentplane/src/commands/shared/pr-meta/builders.ts"
+      - "packages/agentplane/src/commands/shared/pr-meta/model.ts"
+      - "packages/agentplane/src/commands/shared/pr-meta/parser.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+      - "packages/agentplane/src/commands/task/hosted-merge-sync.ts"
+      - "packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.lookup.test.ts"
+      - "packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.test.ts"
+      - "packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.ts"
+      - "packages/agentplane/src/commands/task/hosted-merge-sync/model.ts"
+      - "packages/agentplane/src/commands/task/hosted-merge-sync/provider.ts"
+      - "packages/core/schemas/pr-meta.schema.json"
+      - "packages/core/schemas/task-handoff.schema.json"
+      - "packages/core/src/tasks/task-artifact-schema.handoff.ts"
+      - "packages/core/src/tasks/task-artifact-schema.pr-metadata.ts"
+      - "packages/spec/schemas/pr-meta.schema.json"
+      - "packages/spec/schemas/task-handoff.schema.json"
+      - "schemas/pr-meta.schema.json"
+      - "schemas/task-handoff.schema.json"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+      - "schema"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -177,10 +257,23 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:bfced7e5ef215fcee9322b440703736808db126cc2db01c2e93fa5b50496f8a1"
+      digest: "sha256:310f7ede2f189eb9e204d034e9cead155534e8607afdd0139c09f30bdb7d2126"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/tasks"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.gitlab.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/pr-meta.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/pr-meta.ts"
+        - "central_path:packages/agentplane/src/commands/shared/pr-meta/builders.ts"
+        - "central_path:packages/agentplane/src/commands/shared/pr-meta/model.ts"
+        - "central_path:packages/agentplane/src/commands/shared/pr-meta/parser.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+        - "central_path:packages/core/schemas/pr-meta.schema.json"
+        - "central_path:packages/core/schemas/task-handoff.schema.json"
+        - "central_path:packages/core/src/tasks/task-artifact-schema.handoff.ts"
+        - "central_path:packages/core/src/tasks/task-artifact-schema.pr-metadata.ts"
+        - "central_path:schemas/pr-meta.schema.json"
+        - "central_path:schemas/task-handoff.schema.json"
         - "effect_public_api"
         - "effect_schema"
         - "effect_security_boundary"
@@ -190,10 +283,72 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "docs"
+          - "packages/agentplane"
+          - "packages/core"
+          - "packages/spec"
+          - "schemas"
+        changed_files:
+          - "docs/user/branching-and-pr-artifacts.mdx"
+          - "docs/user/cli-reference.generated.mdx"
+          - "docs/user/commands.mdx"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.gitlab.test.ts"
+          - "packages/agentplane/src/commands/pr/branch-publication.ts"
+          - "packages/agentplane/src/commands/pr/check.ts"
+          - "packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts"
+          - "packages/agentplane/src/commands/pr/conflict-rework.ts"
+          - "packages/agentplane/src/commands/pr/flow-status.ts"
+          - "packages/agentplane/src/commands/pr/head-publication.ts"
+          - "packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts"
+          - "packages/agentplane/src/commands/pr/hosted-checks.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/gitlab-protection.test.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/gitlab-protection.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/protected-base-handoff.ts"
+          - "packages/agentplane/src/commands/pr/internal/change-request-model.ts"
+          - "packages/agentplane/src/commands/pr/internal/change-request-provider.ts"
+          - "packages/agentplane/src/commands/pr/internal/git-host-identity.test.ts"
+          - "packages/agentplane/src/commands/pr/internal/git-host-identity.ts"
+          - "packages/agentplane/src/commands/pr/internal/glab-api.test.ts"
+          - "packages/agentplane/src/commands/pr/internal/glab-api.ts"
+          - "packages/agentplane/src/commands/pr/internal/sync-github.ts"
+          - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
+          - "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
+          - "packages/agentplane/src/commands/pr/internal/sync-open-step.ts"
+          - "packages/agentplane/src/commands/pr/internal/sync-update-step.ts"
+          - "packages/agentplane/src/commands/pr/open.ts"
+          - "packages/agentplane/src/commands/pr/pr.spec.ts"
+          - "packages/agentplane/src/commands/pr/provider-head.test.ts"
+          - "packages/agentplane/src/commands/pr/provider-head.ts"
+          - "packages/agentplane/src/commands/shared/pr-meta.test.ts"
+          - "packages/agentplane/src/commands/shared/pr-meta.ts"
+          - "packages/agentplane/src/commands/shared/pr-meta/builders.ts"
+          - "packages/agentplane/src/commands/shared/pr-meta/model.ts"
+          - "packages/agentplane/src/commands/shared/pr-meta/parser.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+          - "packages/agentplane/src/commands/task/hosted-merge-sync.ts"
+          - "packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.lookup.test.ts"
+          - "packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.test.ts"
+          - "packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.ts"
+          - "packages/agentplane/src/commands/task/hosted-merge-sync/model.ts"
+          - "packages/agentplane/src/commands/task/hosted-merge-sync/provider.ts"
+          - "packages/core/schemas/pr-meta.schema.json"
+          - "packages/core/schemas/task-handoff.schema.json"
+          - "packages/core/src/tasks/task-artifact-schema.handoff.ts"
+          - "packages/core/src/tasks/task-artifact-schema.pr-metadata.ts"
+          - "packages/spec/schemas/pr-meta.schema.json"
+          - "packages/spec/schemas/task-handoff.schema.json"
+          - "schemas/pr-meta.schema.json"
+          - "schemas/task-handoff.schema.json"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
+          - "schema"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -230,7 +385,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "90f0339fdc8a99d2420933714b077854f356d482"
+  message: "🚧 TRM5DT task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -238,6 +395,9 @@ comments:
   -
     author: "CODER"
     body: "Recovery: retire the stale blocked external-agent exchange after completed implementation and verification evidence were produced."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 90f0339fdc8a. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -251,9 +411,23 @@ events:
     at: "2026-08-20T17:30:50.337Z"
     author: "CODER"
     body: "Recovery: retire the stale blocked external-agent exchange after completed implementation and verification evidence were produced."
+  -
+    type: "status"
+    at: "2026-08-20T17:31:51.543Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 90f0339fdc8a. CLI accepted one state-bound external-agent semantic result."
+    commit: "90f0339fdc8a99d2420933714b077854f356d482"
+  -
+    type: "verify"
+    at: "2026-08-20T17:34:32.863Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-20T17:30:50.337Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-20T17:34:37.010Z"
+doc_updated_by: "SUPERVISOR"
 description: "Implement universal GitHub/GitLab hosted change-request support in an isolated branch_pr worktree. Preserve current GitHub behavior behind a provider adapter. Resolve provider host/project from the publication Git remote; use existing gh session for GitHub and external glab authentication plus glab api for GitLab without reading or storing tokens. Cover idempotent PR/MR lookup/create/update, normalized metadata, exact-head hosted checks, mergeability and SHA-guarded merge, external-merge reconciliation, typed failures, compatibility migration, docs, and regression/E2E-style CLI fixtures. Do not perform interactive auth, modify credentials, or touch external providers during implementation tests."
 sections:
   Summary: |-
@@ -276,12 +450,80 @@ sections:
     7. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-20T17:34:32.863Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8ce1b958938f29e73b53fa760eadeb68d2a1b636dd8d53ce755683ef086bfaab, input_digest=sha256:8bf115b30da65212ace4337d2ca6c9c2ec1ddda97293c84e9cbf05916253b376
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608201524-TRM5DT Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608201524-TRM5DT Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608201524-TRM5DT Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608201524-TRM5DT Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608201524-TRM5DT Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608201524-TRM5DT Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608201524-TRM5DT-implement-provider-neutral-github-and-gitlab-cha/.agentplane/tasks/202608201524-TRM5DT/blueprint/resolved-snapshot.json
+    - old_digest: e79d8f93b29a9f61a846f9cb71db7cb76e99e0508d3bd4fab66e1fa9cc5c05be
+    - current_digest: e79d8f93b29a9f61a846f9cb71db7cb76e99e0508d3bd4fab66e1fa9cc5c05be
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608201524-TRM5DT
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "90f0339fdc8a99d2420933714b077854f356d482"
   workflow_route_baseline:
     start_head_sha: "292b232b3160b22c47c6cc206fade625e9377fed"
     version: 1
@@ -317,6 +559,72 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-20T17:34:32.863Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8ce1b958938f29e73b53fa760eadeb68d2a1b636dd8d53ce755683ef086bfaab, input_digest=sha256:8bf115b30da65212ace4337d2ca6c9c2ec1ddda97293c84e9cbf05916253b376
+
+Details:
+
+Check: affected_unit_integration
+Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608201524-TRM5DT Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608201524-TRM5DT Verification Contract check critical_paths
+
+Check: docs_contract
+Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608201524-TRM5DT Verification Contract check docs_contract
+
+Check: full_regression
+Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608201524-TRM5DT Verification Contract check full_regression
+
+Check: hosted_integration
+Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608201524-TRM5DT Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608201524-TRM5DT Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608201524-TRM5DT-implement-provider-neutral-github-and-gitlab-cha/.agentplane/tasks/202608201524-TRM5DT/blueprint/resolved-snapshot.json
+- old_digest: e79d8f93b29a9f61a846f9cb71db7cb76e99e0508d3bd4fab66e1fa9cc5c05be
+- current_digest: e79d8f93b29a9f61a846f9cb71db7cb76e99e0508d3bd4fab66e1fa9cc5c05be
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608201524-TRM5DT
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

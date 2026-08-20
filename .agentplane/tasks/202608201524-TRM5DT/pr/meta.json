@@ -3,7 +3,8 @@
   "branch": "task/202608201524-TRM5DT/implement-provider-neutral-github-and-gitlab-cha",
   "created_at": "2026-08-20T16:09:36.710Z",
   "diffstat_sha256": "sha256:cc0f54efa708455cb22747ee49c921164f3c00ccaa277b8438b8a268504350f9",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-20T17:34:32.863Z",
+  "last_verified_diffstat_sha256": "sha256:cc0f54efa708455cb22747ee49c921164f3c00ccaa277b8438b8a268504350f9",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202608201524-TRM5DT",
   "updated_at": "2026-08-20T16:09:36.710Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
