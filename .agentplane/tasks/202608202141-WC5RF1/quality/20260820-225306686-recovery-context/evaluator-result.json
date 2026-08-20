@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The opening establishes the product category and immediately explains the human, coding-agent, and CLI responsibility split without duplicating the older product overview.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/9a7fe3babf9f5068bef6a2b10056a8bbe4ce9ebb703b777b13236c0c015c5834.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The deterministic claim is correctly bounded to authority, transitions, routing, schemas, and stop conditions; the README explicitly says AgentPlane does not make the LLM deterministic.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/9a7fe3babf9f5068bef6a2b10056a8bbe4ce9ebb703b777b13236c0c015c5834.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The quick-start path is executable and retains the literal first-task prefix required by the v0.7.1 product contract.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/9a7fe3babf9f5068bef6a2b10056a8bbe4ce9ebb703b777b13236c0c015c5834.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Trust language distinguishes agent-supplied semantic reports from supervisor-observed repository, Git, check, and provider facts without claiming access to private reasoning.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/9a7fe3babf9f5068bef6a2b10056a8bbe4ce9ebb703b777b13236c0c015c5834.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The frozen product diff is confined to README.md. The final rework also makes the root README header alt text use the canonical AgentPlane spelling.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/9a7fe3babf9f5068bef6a2b10056a8bbe4ce9ebb703b777b13236c0c015c5834.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Supervisor evidence reports passing committed-diff, staged-diff, commit-path, and final-status checks for implementation commit fe9d2e622d46f3d635d3be3eef0bb3c190d0095e; focused product-contract and formatting checks also pass.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/9a7fe3babf9f5068bef6a2b10056a8bbe4ce9ebb703b777b13236c0c015c5834.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted checks and review-thread state still need provider-side confirmation on the newly published head.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/9a7fe3babf9f5068bef6a2b10056a8bbe4ce9ebb703b777b13236c0c015c5834.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

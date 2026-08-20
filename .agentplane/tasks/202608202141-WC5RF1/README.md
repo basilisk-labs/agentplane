@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -29,36 +29,34 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-20T22:22:38.630Z"
+  updated_at: "2026-08-20T22:54:26.452Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 9 typed finding(s)."
-  evaluated_sha: "7d0cee50ba5a9f310b6537a299ea459486f6e627"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "fe9d2e622d46f3d635d3be3eef0bb3c190d0095e"
   blueprint_digest: "a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946"
   evidence_refs:
-    - ".agentplane/tasks/202608202141-WC5RF1/quality/20260820-222138939-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608202141-WC5RF1/quality/20260820-222138939-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/39b288a09a74d78bf4da29afad89594dcbd2186585ddbf0d8d5c4aaca029a986.md"
-    - ".agentplane/tasks/202608202141-WC5RF1/quality/20260820-222138939-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608202141-WC5RF1/quality/20260820-222138939-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608202141-WC5RF1/quality/20260820-222138939-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608202141-WC5RF1/quality/20260820-225306686-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608202141-WC5RF1/quality/20260820-225306686-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/6bb07a66bb940147617ecd8802d8784e2502b7db39c96407447389e35276f24d.md"
+    - ".agentplane/tasks/202608202141-WC5RF1/quality/20260820-225306686-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608202141-WC5RF1/quality/20260820-225306686-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608202141-WC5RF1/quality/20260820-225306686-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608202141-WC5RF1/README.md"
-    - ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/ed8de2f1ed40d0f922a40d1016d9c50b70a3cc525436a5fa1f783293d0e443be.patch"
-    - ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/4b7e11f5d946b9b51d20ad0a51c0f96b44d0359f9b3bd69f2d5a6ff54987c88a.json"
-    - ".agentplane/tasks/202608202141-WC5RF1/verification/20260820221808019-169ff2e60501bf8e.json"
+    - ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/9a7fe3babf9f5068bef6a2b10056a8bbe4ce9ebb703b777b13236c0c015c5834.patch"
+    - ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/827d6ce44f06f089045daa425fb674de2429021e1e31a6ad25b628e413135152.json"
+    - ".agentplane/tasks/202608202141-WC5RF1/verification/20260820225255507-b1a5a2f59f925c2e.json"
     - ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/467d9683f5aa1409ac2ab7a37a6ae28093728977962e4e56fd2a3389fa2c5c9a.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/dod.docs.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The opening now states the category and promise once, then immediately shows the human, coding-agent, and AgentPlane CLI responsibility split required by the positioning source."
-    - "The semantic boundary is technically precise: agents retain interpretation, planning, implementation, testing, and judgment; the CLI owns formalizable policy, authority, lifecycle, Git/PR routing, evidence, recovery, and closure."
-    - "The benefit claims are appropriately separated into agent focus, deterministic workflow mechanics, and verifiable outcomes. The text explicitly disclaims deterministic LLM behavior."
-    - "The user path is materially clearer: installation, directory entry, initialization, first task creation, active-task selection, and the bounded task advance protocol precede deeper lifecycle details."
-    - "The README no longer leads with ACR, Local Context, recipes, transport fields, status duplication, growth copy, or a long demo asset; those concepts are either summarized or routed to focused documentation."
-    - "Trust-language no longer claims access to reasoning. It distinguishes semantic reports from supervisor-observed repository, Git, check, and provider facts."
-    - "The committed change is confined to README.md plus AgentPlane-owned task and review artifacts, and the implementation worktree is clean."
-    - "Residual risk: docs:readme-header:check has a pre-existing baseline failure for fourteen generated SVG assets in both the untouched base checkout and task worktree; README.md itself is not reported stale."
-    - "Residual risk: Broader product-name consistency across the documentation remains separate follow-up work."
+    - "The opening establishes the product category and immediately explains the human, coding-agent, and CLI responsibility split without duplicating the older product overview."
+    - "The deterministic claim is correctly bounded to authority, transitions, routing, schemas, and stop conditions; the README explicitly says AgentPlane does not make the LLM deterministic."
+    - "The quick-start path is executable and retains the literal first-task prefix required by the v0.7.1 product contract."
+    - "Trust language distinguishes agent-supplied semantic reports from supervisor-observed repository, Git, check, and provider facts without claiming access to private reasoning."
+    - "The frozen product diff is confined to README.md. The final rework also makes the root README header alt text use the canonical AgentPlane spelling."
+    - "Supervisor evidence reports passing committed-diff, staged-diff, commit-path, and final-status checks for implementation commit fe9d2e622d46f3d635d3be3eef0bb3c190d0095e; focused product-contract and formatting checks also pass."
+    - "Residual risk: Hosted checks and review-thread state still need provider-side confirmation on the newly published head."
 token_usage:
   agent_runs: 4
   input_tokens: null
@@ -324,7 +322,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-20T22:52:57.689Z"
+doc_updated_at: "2026-08-20T22:54:26.486Z"
 doc_updated_by: "SUPERVISOR"
 description: "Improve the root README around the semantic-agent and deterministic-CLI boundary"
 sections:
