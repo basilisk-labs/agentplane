@@ -4,7 +4,7 @@ title: "Make task execution authority local and direct execution workspace-safe"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -29,10 +29,10 @@ plan_approval:
   note: "User explicitly approved plan J459C2 in chat on 2026-08-20; one AgentPlane-managed working branch for AP-0001 through AP-1004."
 verification:
   state: "needs_rework"
-  updated_at: "2026-08-20T17:34:16.087Z"
+  updated_at: "2026-08-20T17:44:05.963Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check could not run: ap doctor"
-  attempts: 1
+  note: "Rework: Declared check failed: bun run ci:local:fast"
+  attempts: 2
 execution_route:
   frozen: true
   reason_codes:
@@ -101,7 +101,7 @@ execution_contract:
       - "packages/core"
   observed:
     authority_violations:
-      - "verification:recorded-check-1:fail"
+      - "verification:recorded-check-2:fail"
     changed_components:
       - "docs"
       - "packages/agentplane"
@@ -125,6 +125,8 @@ execution_contract:
       - "packages/agentplane/src/commands/pr/integrate/queue-state.ts"
       - "packages/agentplane/src/commands/pr/internal/sync.ts"
       - "packages/agentplane/src/commands/pr/open.ts"
+      - "packages/agentplane/src/commands/shared/declared-check.test.ts"
+      - "packages/agentplane/src/commands/shared/declared-check.ts"
       - "packages/agentplane/src/commands/shared/post-commit-pr-artifacts.ts"
       - "packages/agentplane/src/commands/shared/route-cleanup-probe.ts"
       - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
@@ -194,6 +196,9 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
         result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -244,10 +249,12 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:b854e11765afc2205a756d971ff40843a9c20ae2bfdad7c931044652501d1121"
+      digest: "sha256:27a8e44f648e1e06daf8efcbbf490d43507417db540ae8f0b552bd5b67845559"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/declared-check.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/declared-check.ts"
         - "central_path:packages/agentplane/src/commands/shared/post-commit-pr-artifacts.ts"
         - "central_path:packages/agentplane/src/commands/shared/route-cleanup-probe.ts"
         - "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.ts"
@@ -297,6 +304,8 @@ execution_contract:
           - "packages/agentplane/src/commands/pr/integrate/queue-state.ts"
           - "packages/agentplane/src/commands/pr/internal/sync.ts"
           - "packages/agentplane/src/commands/pr/open.ts"
+          - "packages/agentplane/src/commands/shared/declared-check.test.ts"
+          - "packages/agentplane/src/commands/shared/declared-check.ts"
           - "packages/agentplane/src/commands/shared/post-commit-pr-artifacts.ts"
           - "packages/agentplane/src/commands/shared/route-cleanup-probe.ts"
           - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
@@ -401,7 +410,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:recorded-check-2"
 commit: null
 comments:
   -
@@ -428,8 +437,21 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check could not run: ap doctor"
+  -
+    type: "status"
+    at: "2026-08-20T17:37:11.274Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    commit: "8ef07fb44120b40ada07c915f4b381b08a9c052a"
+  -
+    type: "verify"
+    at: "2026-08-20T17:44:05.963Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:fast"
 doc_version: 3
-doc_updated_at: "2026-08-20T17:34:18.745Z"
+doc_updated_at: "2026-08-20T17:44:07.191Z"
 doc_updated_by: "CODER"
 description: "Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue."
 sections:
@@ -473,6 +495,46 @@ sections:
     Command: ap doctor
     Result: fail
     Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608200903-J459C2 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+    - old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608200903-J459C2
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-20T17:44:05.963Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:fast
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67879e381843d230e56183b99fda976f3987ed16bbb5a11e64c052645b4bc2ab, input_digest=sha256:249cb163508c1bac1d16e89383875b6ff4fe27636a5abdfc261aa7eb12883b7a
+
+    Details:
+
+    Command: ap doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608200903-J459C2 declared verification
+
+    Command: bun run ci:local:fast
+    Result: fail
+    Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-2
     Scope: branch_pr task 202608200903-J459C2 declared verification
 
     BlueprintSnapshotRef:
@@ -558,6 +620,46 @@ Details:
 Command: ap doctor
 Result: fail
 Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608200903-J459C2 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+- old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608200903-J459C2
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-20T17:44:05.963Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:fast
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67879e381843d230e56183b99fda976f3987ed16bbb5a11e64c052645b4bc2ab, input_digest=sha256:249cb163508c1bac1d16e89383875b6ff4fe27636a5abdfc261aa7eb12883b7a
+
+Details:
+
+Command: ap doctor
+Result: pass
+Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608200903-J459C2 declared verification
+
+Command: bun run ci:local:fast
+Result: fail
+Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-2
 Scope: branch_pr task 202608200903-J459C2 declared verification
 
 BlueprintSnapshotRef:
