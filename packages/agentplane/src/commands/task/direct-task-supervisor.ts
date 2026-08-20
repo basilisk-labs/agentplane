@@ -35,7 +35,10 @@ import {
   observedExternalEffectsFromRunnerResult,
   recordObservedTaskExecutionContract,
 } from "./task-execution-contract-observation.js";
-import { executeDirectOperation } from "./direct-task-supervisor-operation.js";
+import {
+  executeDirectOperation,
+  type RetainedDirectWorkspace,
+} from "./direct-task-supervisor-operation.js";
 
 export type { DirectTaskSupervisorResult } from "./direct-task-supervisor-result.js";
 
@@ -75,11 +78,25 @@ function evaluatorAdapterFailureClass(error: unknown): string {
 export async function superviseDirectTaskRun(
   input: DirectTaskSupervisorOptions,
 ): Promise<DirectTaskSupervisorResult> {
+  const retainedWorkspace: { current: RetainedDirectWorkspace | null } = { current: null };
+  try {
+    return await superviseDirectTaskRunWithWorkspace(input, retainedWorkspace);
+  } finally {
+    await retainedWorkspace.current?.release();
+  }
+}
+
+async function superviseDirectTaskRunWithWorkspace(
+  input: DirectTaskSupervisorOptions,
+  retainedWorkspace: { current: RetainedDirectWorkspace | null },
+): Promise<DirectTaskSupervisorResult> {
+  let activeCtx = input.ctx;
+  let activeCommand = input.command;
   const decision = async () =>
     await buildTaskRouteDecision({
-      ctx: input.command,
-      cwd: input.ctx.cwd,
-      rootOverride: input.ctx.rootOverride ?? null,
+      ctx: activeCommand,
+      cwd: activeCtx.cwd,
+      rootOverride: activeCtx.rootOverride ?? null,
       taskId: input.task_id,
       includeRemote: input.include_remote,
     });
@@ -114,14 +131,9 @@ export async function superviseDirectTaskRun(
         },
       });
     }
-    const executionBaseCommit =
-      operation.id === "runner.follow" ? await readDirectTaskHead(input.ctx.cwd) : null;
-    const executionBaselineStatus =
-      operation.id === "runner.follow" ? await readDirectRepositoryStatus(input.ctx.cwd) : null;
-    const executorEventsBefore =
-      operation.id === "runner.follow"
-        ? taskEventCount(await loadTaskFromContext({ ctx: input.command, taskId: input.task_id }))
-        : null;
+    let executionBaseCommit: string | null = null;
+    let executionBaselineStatus: Awaited<ReturnType<typeof readDirectRepositoryStatus>> = null;
+    let executorEventsBefore: number | null = null;
     let persisted: Awaited<ReturnType<typeof supervisePersistedWorkflowEpisode>>;
     try {
       persisted = await supervisePersistedWorkflowEpisode({
@@ -129,7 +141,21 @@ export async function superviseDirectTaskRun(
         git_root: input.command.resolvedProject.gitRoot,
         task_revision: null,
         execute: async ({ operation: invoked }) =>
-          await executeDirectOperation({ input, operation: invoked }),
+          await executeDirectOperation({
+            input,
+            operation: invoked,
+            retainWorkspace: (workspace) => {
+              if (retainedWorkspace.current) {
+                throw new Error("Direct task supervisor already retains a task workspace.");
+              }
+              retainedWorkspace.current = workspace;
+              activeCtx = workspace.ctx;
+              activeCommand = workspace.command;
+              executionBaseCommit = workspace.execution_base_commit;
+              executionBaselineStatus = workspace.execution_baseline_status;
+              executorEventsBefore = workspace.executor_events_before;
+            },
+          }),
         refresh: decision,
       });
     } catch {
@@ -227,7 +253,14 @@ export async function superviseDirectTaskRun(
       });
     }
 
-    const task = await loadTaskFromContext({ ctx: input.command, taskId: input.task_id });
+    if (operation.id === "runner.follow" && !retainedWorkspace.current) {
+      executionBaseCommit = await readDirectTaskHead(activeCtx.cwd);
+      executionBaselineStatus = await readDirectRepositoryStatus(activeCtx.cwd);
+      executorEventsBefore = taskEventCount(
+        await loadTaskFromContext({ ctx: activeCommand, taskId: input.task_id }),
+      );
+    }
+    const task = await loadTaskFromContext({ ctx: activeCommand, taskId: input.task_id });
     executorLifecycleEventDelta =
       taskEventCount(task) - (executorEventsBefore ?? taskEventCount(task));
     if (executorLifecycleEventDelta !== 0) {
@@ -254,8 +287,8 @@ export async function superviseDirectTaskRun(
     }
 
     const implementation = await prepareDirectImplementationEvidence({
-      command: input.command,
-      cwd: input.ctx.cwd,
+      command: activeCommand,
+      cwd: activeCtx.cwd,
       task_id: input.task_id,
       execution_base_commit: executionBaseCommit,
       execution_baseline_status: executionBaselineStatus,
@@ -290,11 +323,11 @@ export async function superviseDirectTaskRun(
       });
     }
     const reconciliation = await recordObservedTaskExecutionContract({
-      command: input.command,
+      command: activeCommand,
       execution:
         input.task_execution ??
         (await resolveTaskExecutionContext({
-          ctx: input.command,
+          ctx: activeCommand,
           tasks: [task],
           primaryTaskId: task.id,
         })),
@@ -329,8 +362,8 @@ export async function superviseDirectTaskRun(
       });
     }
     const verification = await verifyDirectTask({
-      ctx: input.ctx,
-      command: input.command,
+      ctx: activeCtx,
+      command: activeCommand,
       task_id: input.task_id,
       task: reconciliation.task,
       implementation_evidence: implementation.evidence,
@@ -363,14 +396,17 @@ export async function superviseDirectTaskRun(
     // Formal verification mutates the task record. Prepare the read-only
     // evaluator from that exact revision so its work order cannot become stale
     // before the provider is invoked.
-    const evaluatorTask = await loadTaskFromContext({ ctx: input.command, taskId: input.task_id });
+    const evaluatorTask = await loadTaskFromContext({
+      ctx: activeCommand,
+      taskId: input.task_id,
+    });
 
     let evaluatorEpisode: Awaited<ReturnType<typeof runAndApplyDirectTaskEvaluator>>;
     try {
       toolCalls += 1;
       evaluatorEpisode = await runAndApplyDirectTaskEvaluator({
-        ctx: input.ctx,
-        command: input.command,
+        ctx: activeCtx,
+        command: activeCommand,
         task: evaluatorTask,
         task_id: input.task_id,
         evaluator_id: DEFAULT_EVALUATOR_ID,
@@ -439,8 +475,8 @@ export async function superviseDirectTaskRun(
     }
 
     const closeout = await finalizeDirectTask({
-      ctx: input.ctx,
-      command: input.command,
+      ctx: activeCtx,
+      command: activeCommand,
       task_id: input.task_id,
       decision,
       execution_base_commit: executionBaseCommit,
@@ -489,7 +525,7 @@ export async function superviseDirectTaskRun(
       duplicate_executor_context_bytes: duplicateExecutorContextBytes,
     });
     const goldenMetrics = await recordDirectTaskSupervisionGoldenMetrics({
-      command: input.command,
+      command: activeCommand,
       task_id: input.task_id,
       metrics,
       verified_success: true,

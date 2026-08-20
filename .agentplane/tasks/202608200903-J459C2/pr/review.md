@@ -6,14 +6,14 @@ Created: 2026-08-20T15:49:58.682Z
 
 - Task: `202608200903-J459C2`
 - Title: Make task execution authority local and direct execution workspace-safe
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608200903-J459C2/make-task-execution-authority-local-and-direct-e`
 - Canonical task record: `.agentplane/tasks/202608200903-J459C2/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: GitHub integration preflight found two unresolved P1 implementation defects: direct closeout discards the allocated workspace context after runner execution, and matching unfinished finish journals are reset to prepared instead of resuming task_state_written or close_commit_written. The evaluator frozen-base review comment is already addressed in the current patch. Reopen implementation for bounded fixes and regression coverage.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -74,7 +74,7 @@ Created: 2026-08-20T15:49:58.682Z
  .../src/commands/shared/side-effect-authority.ts   |  45 +++
  .../shared/task-verification-input-types.ts        |  52 ++++
  .../shared/task-verification-input.test.ts         |  64 ++++-
- .../src/commands/shared/task-verification-input.ts | 140 ++++++----
+ .../src/commands/shared/task-verification-input.ts | 140 +++++----
  .../shared/task-verification-record-parser.ts      | 183 ++++++++++++
  .../commands/shared/task-verification-records.ts   | 206 +++++---------
  .../shared/task-verification-records.v2.test.ts    |   6 +-
@@ -83,19 +83,20 @@ Created: 2026-08-20T15:49:58.682Z
  .../task/branch-task-supervisor-operations.ts      |   7 +-
  .../src/commands/task/branch-task-supervisor.ts    |   2 +
  .../src/commands/task/complete.command.ts          |  12 +-
- .../task/direct-task-supervisor-operation.ts       | 106 +++++++
- .../commands/task/direct-task-supervisor.test.ts   |  24 +-
- .../src/commands/task/direct-task-supervisor.ts    |  75 +----
+ .../task/direct-task-supervisor-operation.test.ts  | 137 +++++++++
+ .../task/direct-task-supervisor-operation.ts       | 142 ++++++++++
+ .../commands/task/direct-task-supervisor.test.ts   |  92 +++++-
+ .../src/commands/task/direct-task-supervisor.ts    | 159 +++++------
  .../external-agent-implementation-authority.ts     |   7 +
  .../src/commands/task/finish-blueprint-evidence.ts |   8 +-
  .../agentplane/src/commands/task/finish-close.ts   |   7 +-
- .../commands/task/finish-closeout-journal.test.ts  | 131 +++++++++
+ .../commands/task/finish-closeout-journal.test.ts  | 163 +++++++++++
  .../task/finish-closeout-journal.testkit.ts        |  17 ++
- .../src/commands/task/finish-closeout-journal.ts   | 126 +++++++++
+ .../src/commands/task/finish-closeout-journal.ts   | 144 ++++++++++
  .../agentplane/src/commands/task/finish-command.ts |  20 +-
  .../src/commands/task/finish-execute-close.ts      |  18 +-
  .../src/commands/task/finish-execute-commit.ts     |  89 ++++--
- .../agentplane/src/commands/task/finish-execute.ts | 292 +++++++++++---------
+ .../agentplane/src/commands/task/finish-execute.ts | 312 ++++++++++++---------
  .../agentplane/src/commands/task/finish-plan.ts    |  18 +-
  .../agentplane/src/commands/task/finish-shared.ts  |   7 +-
  .../agentplane/src/commands/task/finish-types.ts   |   9 +
@@ -114,11 +115,11 @@ Created: 2026-08-20T15:49:58.682Z
  .../src/commands/task/start.unit.test.ts           |  15 +
  .../task-execution-contract-observation.test.ts    |  24 +-
  .../task/task-execution-contract-observation.ts    |  10 +-
- .../src/commands/task/verify-record-execute.ts     | 155 ++++-------
+ .../src/commands/task/verify-record-execute.ts     | 155 ++++------
  .../task/verify-record-observed-changes.ts         |   8 +-
  .../src/commands/task/verify-record-references.ts  |  86 ++++++
  .../src/commands/task/verify-record.testkit.ts     |  57 ++++
- .../src/commands/task/verify-record.unit.test.ts   |  66 +++--
+ .../src/commands/task/verify-record.unit.test.ts   |  66 ++---
  .../agentplane/src/runner/context/task-context.ts  |   3 +-
  .../src/runner/usecases/agent-work-order.ts        |   5 +-
  .../task-run-authority.capabilities.test.ts        |  52 ++++
@@ -128,14 +129,14 @@ Created: 2026-08-20T15:49:58.682Z
  .../architecture-guard.test.ts                     |  41 +++
  .../src/runtime/task-execution-context/index.ts    |   2 +
  .../runtime/task-execution-context/resolve.test.ts | 104 +++++++
- .../src/runtime/task-execution-context/resolve.ts  | 307 +++++++++++++++++++++
+ .../src/runtime/task-execution-context/resolve.ts  | 307 ++++++++++++++++++++
  .../src/runtime/task-execution-context/types.ts    |  39 +++
  .../agentplane/src/runtime/task-routing/index.ts   |   1 -
  .../agentplane/src/runtime/task-routing/resolve.ts |  20 +-
  .../runtime/workspace-allocation/allocate.test.ts  | 118 ++++++++
  .../src/runtime/workspace-allocation/allocate.ts   | 225 +++++++++++++++
  .../src/runtime/workspace-allocation/index.ts      |   2 +
- .../src/runtime/workspace-allocation/lease.ts      |  93 +++++++
+ .../src/runtime/workspace-allocation/lease.ts      |  93 ++++++
  .../src/runtime/workspace-allocation/types.ts      |  27 ++
  .../baselines/v0.7-compatibility-candidate.json    |  24 +-
  .../check-compatibility-contract-baseline.mjs      |  10 +-
@@ -145,7 +146,7 @@ Created: 2026-08-20T15:49:58.682Z
  .../adr/0016-serialized-direct-integration.png     | Bin 0 -> 64669 bytes
  .../docs/developer/task-execution-authority.png    | Bin 0 -> 60616 bytes
  website/static/img/social/manifest.json            |  32 +++
- 116 files changed, 3937 insertions(+), 986 deletions(-)
+ 117 files changed, 4299 insertions(+), 1019 deletions(-)
 ```
 
 </details>

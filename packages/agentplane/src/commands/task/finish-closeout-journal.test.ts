@@ -128,4 +128,36 @@ describe("finish closeout journal", () => {
       }),
     ).rejects.toThrow("requires recovery");
   });
+
+  it.each(["task_state_written", "close_commit_written"] as const)(
+    "resumes a matching %s request without resetting it to prepared",
+    async (state) => {
+      const root = await mkdtemp(path.join(tmpdir(), "agentplane-finish-journal-"));
+      roots.push(root);
+      await execFileAsync("git", ["init", "-b", "main"], { cwd: root });
+      const fixture = fixtures(root);
+      const opened = await openFinishCloseoutJournal(fixture);
+      const advanced = await advanceFinishCloseoutJournal({
+        path: opened.path,
+        journal: opened.journal,
+        state,
+      });
+      await markFinishCloseoutRecoveryRequired({
+        path: opened.path,
+        journal: advanced,
+        error: new Error("interrupted"),
+        taskId: "TASK-1",
+      });
+
+      const resumed = await openFinishCloseoutJournal(fixture);
+
+      expect(resumed.journal).toMatchObject({
+        state,
+        previous_state: state,
+        recovery: { error: "interrupted" },
+      });
+      const stored = JSON.parse(await readFile(opened.path, "utf8")) as Record<string, unknown>;
+      expect(stored).toMatchObject({ state: "recovery_required", previous_state: state });
+    },
+  );
 });

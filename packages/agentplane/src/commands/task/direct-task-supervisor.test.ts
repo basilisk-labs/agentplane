@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   buildDecision: vi.fn(),
   complete: vi.fn(),
   executeEvaluator: vi.fn(),
+  executeOperation: vi.fn(),
   loadCatalog: vi.fn(),
   loadTask: vi.fn(),
   open: vi.fn(),
@@ -47,6 +48,9 @@ vi.mock("../shared/supervisor-execution-episode.js", () => ({
   openSupervisorExecutionEpisode: mocks.open,
 }));
 vi.mock("../shared/task-backend.js", () => ({ loadTaskFromContext: mocks.loadTask }));
+vi.mock("./direct-task-supervisor-operation.js", () => ({
+  executeDirectOperation: mocks.executeOperation,
+}));
 vi.mock("./direct-task-finalization.js", () => ({
   finishDirectTask: mocks.finish,
   readDirectRepositoryStatus: mocks.readStatus,
@@ -544,6 +548,11 @@ describe("direct task supervisor", () => {
       path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
       write: vi.fn(),
     };
+    const workspaceCommand = {
+      ...commandContext(),
+      resolvedProject: { gitRoot: "/repo/.agentplane/workspaces/task" },
+    } as never;
+    const releaseWorkspace = vi.fn().mockResolvedValue(undefined);
     mocks.buildDecision
       .mockResolvedValueOnce(runner)
       .mockResolvedValueOnce(runner)
@@ -552,15 +561,41 @@ describe("direct task supervisor", () => {
       .mockResolvedValueOnce(complete)
       .mockResolvedValueOnce(complete)
       .mockResolvedValueOnce(done);
-    mocks.supervise.mockResolvedValue({
-      journal,
-      journal_path: store.path,
-      execution: {
-        executable: true,
-        result: { operation_result: { kind: "runner_lifecycle", value: lifecycle } },
-        refreshed_decision: runner,
+    mocks.executeOperation.mockImplementation(
+      ({ retainWorkspace }: { retainWorkspace?: (workspace: unknown) => void }) => {
+        retainWorkspace?.({
+          ctx: { cwd: "/repo/.agentplane/workspaces/task", rootOverride: undefined },
+          command: workspaceCommand,
+          execution_base_commit: "abc123",
+          execution_baseline_status: {
+            command: "git status --short --untracked-files=all",
+            lines: [],
+          },
+          executor_events_before: 0,
+          release: releaseWorkspace,
+        });
+        return Promise.resolve({
+          status: "succeeded",
+          observed_postconditions: ["runner_state_observed"],
+          detail: "runner completed",
+          exit_code: 0,
+          operation_result: { kind: "runner_lifecycle", value: lifecycle },
+        });
       },
-    });
+    );
+    mocks.supervise.mockImplementation(
+      async ({ execute }: { execute: (input: { operation: unknown }) => Promise<unknown> }) => ({
+        journal,
+        journal_path: store.path,
+        execution: {
+          executable: true,
+          result: await execute({
+            operation: { id: "runner.follow", params: { mode: "run", taskId: TASK_ID } },
+          }),
+          refreshed_decision: runner,
+        },
+      }),
+    );
     mocks.loadCatalog.mockResolvedValue([{ id: "recovery-context" }]);
     const executorTask = {
       id: TASK_ID,
@@ -617,16 +652,30 @@ describe("direct task supervisor", () => {
       journal: { status: "stopped", cursor: { phase: "stopped" }, stop: { reason: "completed" } },
     });
     expect(mocks.verifyDirect.mock.calls[0]?.[0]).toMatchObject({
+      ctx: { cwd: "/repo/.agentplane/workspaces/task" },
+      command: workspaceCommand,
       task: { verify: ["bun run test:critical"] },
     });
     expect(mocks.executeEvaluator).toHaveBeenCalledWith(
-      expect.objectContaining({ task: verifiedTask }),
+      expect.objectContaining({
+        ctx: { cwd: "/repo/.agentplane/workspaces/task" },
+        command: workspaceCommand,
+        task: verifiedTask,
+      }),
+    );
+    expect(mocks.resolveCommit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: workspaceCommand,
+        cwd: "/repo/.agentplane/workspaces/task",
+      }),
     );
     expect(mocks.resolveCommit.mock.invocationCallOrder[0]).toBeLessThan(
       mocks.executeEvaluator.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY,
     );
     expect(mocks.finalizeDirect).toHaveBeenCalledWith(
       expect.objectContaining({
+        ctx: { cwd: "/repo/.agentplane/workspaces/task" },
+        command: workspaceCommand,
         execution_base_commit: "abc123",
         allowed_paths: ["packages/agentplane/src/commands/task"],
         declared_checks: 1,
@@ -657,6 +706,7 @@ describe("direct task supervisor", () => {
         duplicate_executor_context_bytes: null,
       },
     });
+    expect(releaseWorkspace).toHaveBeenCalledTimes(1);
   });
 
   it("stops before verification when a declared check fails", async () => {

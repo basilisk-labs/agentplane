@@ -52,6 +52,15 @@ async function readJournal(filePath: string): Promise<FinishCloseoutJournal | nu
   }
 }
 
+function resumeState(
+  journal: FinishCloseoutJournal,
+): Exclude<FinishCloseoutState, "recovery_required"> {
+  if (journal.state !== "recovery_required") return journal.state;
+  return journal.previous_state && journal.previous_state !== "recovery_required"
+    ? journal.previous_state
+    : "prepared";
+}
+
 export async function openFinishCloseoutJournal(opts: {
   ctx: CommandContext;
   options: FinishOptions;
@@ -76,6 +85,15 @@ export async function openFinishCloseoutJournal(opts: {
     throw new Error(
       `Finish closeout for ${primaryTaskId} requires recovery before a different request can run (${filePath}).`,
     );
+  }
+  if (existing && existing.state !== "completed") {
+    return {
+      path: filePath,
+      journal: {
+        ...existing,
+        state: resumeState(existing),
+      },
+    };
   }
   const journal: FinishCloseoutJournal = {
     schema_version: 1,
