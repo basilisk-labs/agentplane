@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,11 @@ plan_approval:
   updated_by: "USER"
   note: "User approved the prepared plan in the Codex dialogue on 2026-08-21."
 verification:
-  state: "ok"
-  updated_at: "2026-08-20T22:43:51.878Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-20T22:49:07.490Z"
+  updated_by: "TESTER"
+  note: "Rework: the recorded implementation identity excludes the committed P1 README correction, so verification provenance is stale even though the local checks pass."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -123,7 +123,8 @@ execution_contract:
     scope_roots:
       - "README.md"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "README.md"
     changed_paths:
@@ -142,6 +143,9 @@ execution_contract:
       -
         id: "recorded-check-3"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -213,9 +217,8 @@ execution_contract:
       - "repository_effect:documentation"
       - "repository_effect:repository_write"
       - "task_outcome"
-commit:
-  hash: "d6c0d58bc70ecf94449ca7427f7371b3675b769b"
-  message: "📝 WC5RF1 docs: restore contract-tested first-task example"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -289,8 +292,20 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "verify"
+    at: "2026-08-20T22:46:08.627Z"
+    author: "TESTER"
+    state: "ok"
+    note: "The scoped README result is locally verified on the current task SHA. The contract-tested first-task example is restored without weakening the approved semantic-agent and deterministic-CLI positioning."
+  -
+    type: "verify"
+    at: "2026-08-20T22:49:07.490Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: the recorded implementation identity excludes the committed P1 README correction, so verification provenance is stale even though the local checks pass."
 doc_version: 3
-doc_updated_at: "2026-08-20T22:43:55.452Z"
+doc_updated_at: "2026-08-20T22:49:08.831Z"
 doc_updated_by: "CODER"
 description: "Improve the root README around the semantic-agent and deterministic-CLI boundary"
 sections:
@@ -386,6 +401,84 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
     Scope: branch_pr task 202608202141-WC5RF1 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202141-WC5RF1-improve-the-root-readme-around-the-semantic-agen/.agentplane/tasks/202608202141-WC5RF1/blueprint/resolved-snapshot.json
+    - old_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+    - current_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202141-WC5RF1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608202141-WC5RF1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-20T22:46:08.627Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: The scoped README result is locally verified on the current task SHA. The contract-tested first-task example is restored without weakening the approved semantic-agent and deterministic-CLI positioning.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:db1ef94ab77cfe1d02b3f5995262b0482f94697efed012384b6c15b0740196a0, input_digest=sha256:eb41247a4ab991cbcf21ce27d2db5f97c10a319b69349d13278ab408ac273004
+
+    Details:
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608202141-WC5RF1
+
+    Check: hosted_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608202141-WC5RF1
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608202141-WC5RF1
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202141-WC5RF1-improve-the-root-readme-around-the-semantic-agen/.agentplane/tasks/202608202141-WC5RF1/blueprint/resolved-snapshot.json
+    - old_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+    - current_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202141-WC5RF1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608202141-WC5RF1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-20T22:49:07.490Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: the recorded implementation identity excludes the committed P1 README correction, so verification provenance is stale even though the local checks pass.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:db1ef94ab77cfe1d02b3f5995262b0482f94697efed012384b6c15b0740196a0, input_digest=sha256:b30cf398936716437dd5803de712109d8e0553b20ed07333aef85b769a370bea
+
+    Details:
 
     BlueprintSnapshotRef:
     - state: current
@@ -522,6 +615,84 @@ Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
 Result: pass
 Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
 Scope: branch_pr task 202608202141-WC5RF1 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202141-WC5RF1-improve-the-root-readme-around-the-semantic-agen/.agentplane/tasks/202608202141-WC5RF1/blueprint/resolved-snapshot.json
+- old_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+- current_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202141-WC5RF1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608202141-WC5RF1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-20T22:46:08.627Z — VERIFY — ok
+
+By: TESTER
+
+Note: The scoped README result is locally verified on the current task SHA. The contract-tested first-task example is restored without weakening the approved semantic-agent and deterministic-CLI positioning.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:db1ef94ab77cfe1d02b3f5995262b0482f94697efed012384b6c15b0740196a0, input_digest=sha256:eb41247a4ab991cbcf21ce27d2db5f97c10a319b69349d13278ab408ac273004
+
+Details:
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608202141-WC5RF1
+
+Check: hosted_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608202141-WC5RF1
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608202141-WC5RF1
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202141-WC5RF1-improve-the-root-readme-around-the-semantic-agen/.agentplane/tasks/202608202141-WC5RF1/blueprint/resolved-snapshot.json
+- old_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+- current_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202141-WC5RF1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608202141-WC5RF1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-20T22:49:07.490Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: the recorded implementation identity excludes the committed P1 README correction, so verification provenance is stale even though the local checks pass.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:db1ef94ab77cfe1d02b3f5995262b0482f94697efed012384b6c15b0740196a0, input_digest=sha256:b30cf398936716437dd5803de712109d8e0553b20ed07333aef85b769a370bea
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current
