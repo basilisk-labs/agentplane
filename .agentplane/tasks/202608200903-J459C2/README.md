@@ -4,7 +4,7 @@ title: "Make task execution authority local and direct execution workspace-safe"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -107,6 +107,7 @@ execution_contract:
     changed_components:
       - "docs"
       - "packages/agentplane"
+      - "scripts"
     changed_paths:
       - "docs/adr/0014-task-execution-authority.md"
       - "docs/adr/0015-task-workspace-isolation.md"
@@ -190,6 +191,7 @@ execution_contract:
       - "packages/agentplane/src/runtime/workspace-allocation/index.ts"
       - "packages/agentplane/src/runtime/workspace-allocation/lease.ts"
       - "packages/agentplane/src/runtime/workspace-allocation/types.ts"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
     external_effects: []
     repository_effects:
       - "documentation"
@@ -247,7 +249,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:cbd01e770b2834934100e2eeb0b9c3f4c1f45a096182221c58970faa6dda7457"
+      digest: "sha256:3aea0be7312eb5e01152b7e3876e99eac262469a559f71a37ad8a0f1c7f9d6b0"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
@@ -273,6 +275,7 @@ execution_contract:
         - "external_effect_requires_real_e2e"
         - "material_implementation_uncertainty"
         - "reversibility_recovery_required"
+        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -282,6 +285,7 @@ execution_contract:
         changed_components:
           - "docs"
           - "packages/agentplane"
+          - "scripts"
         changed_files:
           - "docs/adr/0014-task-execution-authority.md"
           - "docs/adr/0015-task-workspace-isolation.md"
@@ -365,6 +369,7 @@ execution_contract:
           - "packages/agentplane/src/runtime/workspace-allocation/index.ts"
           - "packages/agentplane/src/runtime/workspace-allocation/lease.ts"
           - "packages/agentplane/src/runtime/workspace-allocation/types.ts"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
         external_effects: []
         repository_effects:
           - "documentation"
@@ -409,7 +414,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "343f8f2cc4606b01b7b3dc5fa2c22d1383de5abf"
+  message: "🚧 J459C2 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -423,6 +430,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: scripts/baselines; repository effects: public_api, repository_write, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 343f8f2cc460. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -478,8 +488,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The scoped implementation rework is complete, but the compatibility ratchet cannot pass until its reviewed candidate is regenerated outside the current writable roots. Recommended action: Approve a monotonic scope extension for scripts/baselines, regenerate the candidate with the canonical capture command, inspect the exact delta, and rerun full verification. Requested scope: roots=scripts/baselines; repository effects=public_api,repository_write,tests; request digest=sha256:584bb8d7bcfaf3d1a2ca0021fd0e6c3a4afc27308847dc4de6138e331e6da831. Agentplane receipt: external-agent-blocker/tr_d94fc4f5cd6d2c434dda06bacd31a3a2/sha256:c19c894801889b25eed38b41ee4fe321ee0b4e2ca026010c81dbcc832d3b7f50/sha256:584bb8d7bcfaf3d1a2ca0021fd0e6c3a4afc27308847dc4de6138e331e6da831."
+  -
+    type: "status"
+    at: "2026-08-20T17:58:47.852Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 343f8f2cc460. CLI accepted one state-bound external-agent semantic result."
+    commit: "343f8f2cc4606b01b7b3dc5fa2c22d1383de5abf"
 doc_version: 3
-doc_updated_at: "2026-08-20T17:54:59.739Z"
+doc_updated_at: "2026-08-20T17:58:47.852Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue."
 sections:
@@ -645,7 +663,7 @@ extensions:
     status: "applied"
     transition_id: "tr_d94fc4f5cd6d2c434dda06bacd31a3a2"
   implementation_commit:
-    hash: "4af5cc08ac71b4a79c5536b95bcc810699cc5dd7"
+    hash: "343f8f2cc4606b01b7b3dc5fa2c22d1383de5abf"
   task_execution_context:
     base_ref: "main"
     base_sha: "292b232b3160b22c47c6cc206fade625e9377fed"

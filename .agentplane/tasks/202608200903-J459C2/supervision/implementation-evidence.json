@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 5ba528413b7675515cc9feb9ede97ea9ceee3f77..4af5cc08ac71b4a79c5536b95bcc810699cc5dd7",
+      "command": "git diff --check 536cf88f5979b6b1615bb017f780b93816264bc1..343f8f2cc4606b01b7b3dc5fa2c22d1383de5abf",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5ba528413b7675515cc9feb9ede97ea9ceee3f77..4af5cc08ac71b4a79c5536b95bcc810699cc5dd7",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 536cf88f5979b6b1615bb017f780b93816264bc1..343f8f2cc4606b01b7b3dc5fa2c22d1383de5abf",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,8 +21,7 @@
         "M\t.agentplane/tasks/202608200903-J459C2/pr/github-body.md",
         "M\t.agentplane/tasks/202608200903-J459C2/pr/meta.json",
         "M\t.agentplane/tasks/202608200903-J459C2/pr/review.md",
-        "M\tpackages/agentplane/src/commands/integrate-queue-lane.ts",
-        "M\tpackages/agentplane/src/commands/provider-ops-results.test.ts"
+        "M\tscripts/baselines/v0.7-compatibility-candidate.json"
       ]
     },
     {
@@ -32,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "5ba528413b7675515cc9feb9ede97ea9ceee3f77",
-  "implementation_commit": "4af5cc08ac71b4a79c5536b95bcc810699cc5dd7",
+  "execution_base_commit": "536cf88f5979b6b1615bb017f780b93816264bc1",
+  "implementation_commit": "343f8f2cc4606b01b7b3dc5fa2c22d1383de5abf",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
