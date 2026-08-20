@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -42,33 +42,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-20T19:32:27.899Z"
+  updated_at: "2026-08-20T20:04:38.208Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "bd6d9f8cc17ce45e5be238c7d40847e2c75d035d"
+  evaluated_sha: "71dbf135c0c2d2b2583a92c310c9351573407c4a"
   blueprint_digest: "e79d8f93b29a9f61a846f9cb71db7cb76e99e0508d3bd4fab66e1fa9cc5c05be"
   evidence_refs:
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-193115076-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-193115076-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/73705b70db783fbe99993961b22428d41e5dc7b1a71324b46b25d1bef10ba7e9.md"
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-193115076-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-193115076-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-193115076-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-200344310-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-200344310-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/db440ec328a083f7296fa10078b1e8fd6e52407954c4906291de7fc9276d5294.md"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-200344310-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-200344310-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-200344310-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608201524-TRM5DT/README.md"
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/c8c9a765cccb536c7ea2f66496a21a02aea621ee99035cdf4e28d426a74c2f2a.patch"
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/085e8dc06d939a743bc5282e4b4363aadcbb47c24194f9c0e90df0de1f445fe9.json"
-    - ".agentplane/tasks/202608201524-TRM5DT/verification/20260820193054131-470b6f0cb1f6c5ab.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/5e8f461baee97733b76d473c23e9c52a77b027f374f7f4d0c3342545833953b2.patch"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/435623a9f3d02a873357234f87d268f23e8c48eb6034456a40c2ae9b4d5d9f1f.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/verification/20260820200323787-3d62609170589331.json"
     - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/529e1ac62387109b0d1bcae531e29149e71bbdffdbee3935a832c5c4aa77ee00.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Implementation commit bd6d9f8cc includes the expected website/static/llms-full.txt update and AgentPlane-owned PR artifact refresh; evidence commit e59a672b0 records the resulting checks."
-    - "The focused provider-neutral suite remains green at 41 files and 304 tests, and all declared checks are recorded with exit code 0."
-    - "The rework full local CI exited 0 after build, docs/schema, core tests, docs-site build, workflow lint, 98 Windows platform-critical tests, 101 coverage-guard tests, and the significant coverage contract."
-    - "A fresh evaluator run of bun run docs:site:generate:check reports both generated-reference.mdx and llms-full.txt as fresh."
-    - "Residual risk: Real GitLab.com and self-managed GitLab behavior still requires hosted qualification under an explicitly authorized external-provider test or release gate."
+    - "The implementation dispatches on the persisted provider identity before protection lookup and preserves the existing GitHub compatibility branch."
+    - "GitLab preparation supplies the explicit recorded hostname and target project to resolveGitLabBaseMergeRequestProtection, fails closed when that lookup is unavailable, and treats the hosted MR as sole merge authority for both protected and confirmed-unprotected bases."
+    - "The same recorded provider identity is forwarded to exact-head hosted lookup, enabling self-managed GitLab provider selection and identity-drift checks."
+    - "The regression test proves GitLab protection is called and GitHub protection is not; the focused provider suite passes 41 files and 305 tests, and the new exact SHA passed full local CI."
+    - "Residual risk: A separately authorized hosted qualification should exercise GitLab.com and a self-managed GitLab instance before release promotion."
 token_usage:
   agent_runs: 7
   input_tokens: null
@@ -541,7 +541,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-20T20:03:28.149Z"
+doc_updated_at: "2026-08-20T20:04:38.248Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement universal GitHub/GitLab hosted change-request support in an isolated branch_pr worktree. Preserve current GitHub behavior behind a provider adapter. Resolve provider host/project from the publication Git remote; use existing gh session for GitHub and external glab authentication plus glab api for GitLab without reading or storing tokens. Cover idempotent PR/MR lookup/create/update, normalized metadata, exact-head hosted checks, mergeability and SHA-guarded merge, external-merge reconciliation, typed failures, compatibility migration, docs, and regression/E2E-style CLI fixtures. Do not perform interactive auth, modify credentials, or touch external providers during implementation tests."
 sections:

@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The implementation dispatches on the persisted provider identity before protection lookup and preserves the existing GitHub compatibility branch.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/5e8f461baee97733b76d473c23e9c52a77b027f374f7f4d0c3342545833953b2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "GitLab preparation supplies the explicit recorded hostname and target project to resolveGitLabBaseMergeRequestProtection, fails closed when that lookup is unavailable, and treats the hosted MR as sole merge authority for both protected and confirmed-unprotected bases.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/5e8f461baee97733b76d473c23e9c52a77b027f374f7f4d0c3342545833953b2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The same recorded provider identity is forwarded to exact-head hosted lookup, enabling self-managed GitLab provider selection and identity-drift checks.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/5e8f461baee97733b76d473c23e9c52a77b027f374f7f4d0c3342545833953b2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The regression test proves GitLab protection is called and GitHub protection is not; the focused provider suite passes 41 files and 305 tests, and the new exact SHA passed full local CI.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/5e8f461baee97733b76d473c23e9c52a77b027f374f7f4d0c3342545833953b2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: A separately authorized hosted qualification should exercise GitLab.com and a self-managed GitLab instance before release promotion.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/5e8f461baee97733b76d473c23e9c52a77b027f374f7f4d0c3342545833953b2.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
