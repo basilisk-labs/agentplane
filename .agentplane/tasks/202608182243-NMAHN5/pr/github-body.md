@@ -16,27 +16,18 @@ Implement the selected hybrid visual target: compact header from concept 3, icon
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-After rebase onto current main, task branch still contains only intended homepage redesign changes
-and remains aligned with PR #4849.
-```
+- Note: Task implementation merged in PR #4849 and passed required hosted checks and repo checks.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-19T12:20:15.551Z
+- Updated: 2026-08-19T13:07:09.477Z
 - Branch: task/202608182243-NMAHN5/redesign-the-agentplane-homepage-around-a-clear
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- website/docusaurus.config.ts         |   10 +-
- website/src/data/homepage-content.ts |  200 +++---
- website/src/pages/_home.module.css   | 1291 ++++++++++++++++++++++++----------
- website/src/pages/index.tsx          |  538 +++++++-------
- 4 files changed, 1243 insertions(+), 796 deletions(-)
+No changes detected.
 ```
 
 </details>

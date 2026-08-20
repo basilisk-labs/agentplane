@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: "User approved the refined white-background hybrid design in chat; hero visual must resemble a real Agentplane Receipt with WorkOrder, scoped authority, observed verification, and Recorded in Git status."
 verification:
   state: "ok"
-  updated_at: "2026-08-19T12:28:46.630Z"
-  updated_by: "CODER"
-  note: "After rebase onto current main, task branch still contains only intended homepage redesign changes and remains aligned with PR #4849."
+  updated_at: "2026-08-19T13:07:08.110Z"
+  updated_by: "REVIEWER"
+  note: "Task implementation merged in PR #4849 and passed required hosted checks and repo checks."
   attempts: 0
 quality_review:
   state: "pass"
@@ -130,6 +130,9 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
         result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -270,8 +273,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "15b6a70c0f61676846167aa0d79768a1bbbe154b"
+  -
+    type: "verify"
+    at: "2026-08-19T13:07:08.110Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Task implementation merged in PR #4849 and passed required hosted checks and repo checks."
 doc_version: 3
-doc_updated_at: "2026-08-19T12:29:56.269Z"
+doc_updated_at: "2026-08-19T13:07:09.390Z"
 doc_updated_by: "CODER"
 description: "Implement the selected hybrid visual target: compact header from concept 3, icon-led diagrams and evidence storytelling from concept 1, a white background, modern multicolor semantic accents, responsive behavior, and restrained microinteractions. Preserve the current Git-native control-plane positioning and working navigation/CTAs."
 sections:
@@ -355,6 +364,48 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-19T13:07:08.110Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Task implementation merged in PR #4849 and passed required hosted checks and repo checks.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:eeb567c25b0cdd2e85d2f891a2a665221f9e019ffb4d454994f21ec83e225e8b, input_digest=sha256:2ecce635fabd84350b19563bcf983a49fee1421225835496986d2eed9962bcda
+
+    Details:
+
+    Check: docs_site_check
+    Command: gh pr checks 4849 --required
+    Result: pass
+    Evidence: https://github.com/basilisk-labs/agentplane/actions/runs/32255152053
+    Scope: branch_pr hosted checks and website validation artifacts.
+
+    Check: hosted_pr_merge_state
+    Command: gh pr view 4849 --json state,mergeStateStatus,mergedAt
+    Result: pass
+    Evidence: PR state=MERGED, mergeStateStatus=UNKNOWN, mergedAt=2026-08-19T13:03:00Z
+    Scope: hosted PR lifecycle.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202608182243-NMAHN5/blueprint/resolved-snapshot.json
+    - old_digest: 72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f
+    - current_digest: 72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608182243-NMAHN5
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608182243-NMAHN5
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -465,6 +516,48 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-19T13:07:08.110Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Task implementation merged in PR #4849 and passed required hosted checks and repo checks.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:eeb567c25b0cdd2e85d2f891a2a665221f9e019ffb4d454994f21ec83e225e8b, input_digest=sha256:2ecce635fabd84350b19563bcf983a49fee1421225835496986d2eed9962bcda
+
+Details:
+
+Check: docs_site_check
+Command: gh pr checks 4849 --required
+Result: pass
+Evidence: https://github.com/basilisk-labs/agentplane/actions/runs/32255152053
+Scope: branch_pr hosted checks and website validation artifacts.
+
+Check: hosted_pr_merge_state
+Command: gh pr view 4849 --json state,mergeStateStatus,mergedAt
+Result: pass
+Evidence: PR state=MERGED, mergeStateStatus=UNKNOWN, mergedAt=2026-08-19T13:03:00Z
+Scope: hosted PR lifecycle.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202608182243-NMAHN5/blueprint/resolved-snapshot.json
+- old_digest: 72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f
+- current_digest: 72474d206d5606cf468c912a6209bdb9fd0bec018f37c44ce2cababd3f76661f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608182243-NMAHN5
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608182243-NMAHN5
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

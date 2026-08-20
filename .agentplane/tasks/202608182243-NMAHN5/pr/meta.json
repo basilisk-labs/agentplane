@@ -1,10 +1,14 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-08-19T13:07:09.477Z",
   "base": "main",
   "branch": "task/202608182243-NMAHN5/redesign-the-agentplane-homepage-around-a-clear",
   "created_at": "2026-08-18T22:51:48.764Z",
-  "diffstat_sha256": "sha256:27d0d01bd8fdf1fbf559ecc4c2573188d0c5bc0ef966b6e4c312d6066ba1a56b",
-  "last_verified_at": "2026-08-19T12:28:46.630Z",
-  "last_verified_diffstat_sha256": "sha256:27d0d01bd8fdf1fbf559ecc4c2573188d0c5bc0ef966b6e4c312d6066ba1a56b",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": "2026-08-19T13:07:08.110Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merge_commit": "7d1c62120befd6004891779d784af3dcf5bb4d83",
+  "merged_at": "2026-08-19T13:03:00Z",
   "pr_number": 4849,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4849",
   "pre_merge_closure": {
@@ -15,9 +19,9 @@
     "state": "closed_before_merge"
   },
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202608182243-NMAHN5",
-  "updated_at": "2026-08-19T12:20:15.551Z",
+  "updated_at": "2026-08-19T13:07:09.477Z",
   "verify": {
     "status": "pass"
   }
