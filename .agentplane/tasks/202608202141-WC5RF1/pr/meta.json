@@ -8,10 +8,10 @@
   "pr_number": 4855,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4855",
   "pre_merge_closure": {
-    "basis_commit": "56094c6f042663c22ac6ef20d7f25bac366a53ff",
+    "basis_commit": "b159bc0197ebaeeec5d3a020740e546c719874a5",
     "branch": "task/202608202141-WC5RF1/improve-the-root-readme-around-the-semantic-agen",
     "pr_number": 4855,
-    "recorded_at": "2026-08-20T22:54:54.420Z",
+    "recorded_at": "2026-08-20T23:22:34.505Z",
     "state": "closed_before_merge"
   },
   "provider": {
