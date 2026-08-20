@@ -1,10 +1,10 @@
 ---
 id: "202608200903-J459C2"
 title: "Make task execution authority local and direct execution workspace-safe"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -539,6 +539,9 @@ comments:
   -
     author: "CODER"
     body: "Bind the current implementation head for interrupted verification recovery; known rework remains the AGENTPLANE_CLOUD_* CI environment leak."
+  -
+    author: "CODER"
+    body: "Resume after the completed verification-rework operation. Implement the confirmed local-CI environment sanitization and remove the ineffective scheduler workaround."
 events:
   -
     type: "status"
@@ -706,8 +709,15 @@ events:
     author: "SUPERVISOR"
     state: "blocked_external"
     note: "Rework: Declared check failed: bun run ci:local:fast"
+  -
+    type: "status"
+    at: "2026-08-20T20:40:59.860Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume after the completed verification-rework operation. Implement the confirmed local-CI environment sanitization and remove the ineffective scheduler workaround."
 doc_version: 3
-doc_updated_at: "2026-08-20T20:40:30.456Z"
+doc_updated_at: "2026-08-20T20:40:59.860Z"
 doc_updated_by: "CODER"
 description: "Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue."
 sections:
