@@ -2,240 +2,190 @@
   <img src="docs/assets/readme-headers/agentplane.svg" alt="Agentplane latest release header" style="width:100%;max-width:100%;"/>
 </p>
 
-# Agentplane
+# AgentPlane
 
 **The Git-native control plane for coding agents.**
 
 Let agents write code. Keep authority and proof in Git.
 
-Agentplane puts Codex, Claude Code, Cursor, Aider, and other coding agents on an approved,
-verifiable repository workflow. It bounds delegated work, holds approval gates, independently
-observes repository and Git facts, and records how work closes or recovers.
-
-```text
-install -> init -> task -> run or advance -> terminal evidence
-```
-
-Put coding agents on an approved, verifiable Git workflow.
+AgentPlane keeps work that needs judgment with the coding agent and moves repeatable workflow
+mechanics into a deterministic CLI. Agents interpret intent, design changes, write code, and resolve
+ambiguity. AgentPlane bounds their authority, advances lifecycle state, routes Git and pull-request
+work, observes checks, and records how work closes or recovers.
 
 [![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
-[![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
-[![GitHub stars](https://img.shields.io/github/stars/basilisk-labs/agentplane?style=flat)](https://github.com/basilisk-labs/agentplane/stargazers)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js 24+](https://img.shields.io/badge/Node.js-24%2B-3c873a.svg)](docs/user/prerequisites.mdx)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/basilisk-labs/agentplane)
-
+[![Core CI](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml/badge.svg)](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml)
 [![SLSA v1 provenance](https://img.shields.io/badge/SLSA-v1-success)](https://registry.npmjs.org/-/npm/v1/attestations/agentplane@latest)
-[![Trusted publisher](https://img.shields.io/badge/npm-trusted%20publisher-blue)](https://docs.npmjs.com/generating-provenance-statements)
-[![Recipes signed: Ed25519](https://img.shields.io/badge/recipes-Ed25519%20signed-111827)](https://agentplane.org/docs/recipes)
-[![Discussions](https://img.shields.io/github/discussions/basilisk-labs/agentplane)](https://github.com/basilisk-labs/agentplane/discussions)
+[![Node.js 24+](https://img.shields.io/badge/Node.js-24%2B-3c873a.svg)](docs/user/prerequisites.mdx)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## Install
+## One job for each actor
 
-```bash
-npm i -g agentplane
-agentplane init
-agentplane quickstart
-agentplane demo
-```
+| Actor              | Owns                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------ |
+| **Human**          | Sets the outcome, approves material risk, and reviews the observed result.                       |
+| **Coding agent**   | Understands the problem, plans, implements, tests, and makes semantic judgments.                 |
+| **AgentPlane CLI** | Enforces policy and authority; owns task state, Git/PR routing, evidence, recovery, and closure. |
+
+Anything repeatable enough to formalize belongs in the CLI. This keeps process choreography out of
+the model's context and gives different agents the same repository contract.
+
+- **More focused agents:** model context goes to the problem instead of reconstructing workflow
+  state and remembering lifecycle commands.
+- **Deterministic mechanics:** authority, transitions, routing, schemas, and stop conditions are
+  resolved by code rather than model guesses.
+- **Verifiable outcomes:** reviewers see supervisor-observed repository facts and check results,
+  not only an agent's claim that the work succeeded.
+
+AgentPlane does not make an LLM deterministic. It makes the control plane around the LLM
+deterministic and inspectable.
+
+## Quick start
 
 Requirements: Node.js 24+, Git, and a local terminal.
 
-![Agentplane CLI demo](docs/assets/agentplane-demo.gif)
-
-## What is Agentplane?
-
-Agentplane is the Git-native control plane for coding agents. The coding agent remains the worker:
-it reasons, edits, tests, and reports a result. Agentplane controls the lifecycle around that
-worker: bounded authority, attributable approvals, supervisor-observed proof, verification,
-recovery, and closure.
-
-Use Agentplane when agent changes are consequential enough that a reviewer must know what was
-authorized, what the supervisor observed, which checks ran, and whether the work can safely close.
-
-```text
-authorize -> dispatch -> observe -> verify -> close or recover
+```bash
+npm install -g agentplane
+mkdir my-agent-project
+cd my-agent-project
+agentplane init
+agentplane quickstart
 ```
 
-## What Agentplane writes
+For an existing repository, run `agentplane init` from its root. Initialization creates a
+repository policy gateway and a local workflow contract; it does not require an AgentPlane account.
+The `ap` command is the short alias for agent-facing CLI calls.
 
-`agentplane init` and task lifecycle commands create inspectable operational artifacts:
-
-```text
-AGENTS.md or CLAUDE.md                 Repository policy gateway
-.agentplane/WORKFLOW.md                Workflow/config contract
-.agentplane/agents/                    Installed agent profiles
-.agentplane/tasks/<task-id>/README.md  Task intent, plan, verification, rollback, findings
-.agentplane/tasks/<task-id>/acr.json   Agent Change Record
-.agentplane/tasks/<task-id>/pr/        branch_pr review artifacts when that mode is active
-```
-
-The default quickstart runs locally and writes local project artifacts. It does not require account
-creation. If you enable integrations that publish feedback or artifacts, the integration docs
-explain the destination and opt-in setting.
-
-## Agent Change Record
-
-An Agent Change Record is a machine-readable record of AI-assisted engineering work. It captures
-task intent, workflow state, changed files, verification evidence, and review status.
+## Run a first task
 
 ```bash
-agentplane acr generate <task-id> --work-commit HEAD --write
-agentplane acr validate <task-id> --mode local
-agentplane acr check <task-id> --mode ci
-agentplane acr explain <task-id>
-```
-
-Schema: [`schemas/acr-v0.1.schema.json`](schemas/acr-v0.1.schema.json).
-
-## Local context
-
-Local context is the operational knowledge an agent needs for a specific repository or workflow:
-conventions, constraints, current state, reusable notes, tool instructions, and run history.
-
-```text
-context/raw/**              source material
-context/wiki/**             maintained markdown wiki
-context/facts/**/*.jsonl    sourced facts
-context/graph/**/*.jsonl    entities and relationships
-.agentplane/context/derived disposable generated projection
-```
-
-Initialize it with:
-
-```bash
-agentplane context init
-agentplane context learn changes
-agentplane context learn tasks --tag release --limit 20 --dry-run
-agentplane context search "release checklist"
-agentplane context check
-```
-
-The model matches the LLM Wiki pattern: raw sources stay immutable, the wiki accumulates synthesis,
-and schema/policy files tell agents how to maintain it. Agentplane adds task lifecycle, provenance,
-proposal-before-promotion, and verification gates so context updates remain reviewable.
-
-Read [Local context](docs/user/local-context.mdx).
-
-## First local workflow
-
-A new task stops at a semantic planning boundary. Start that boundary through the external-agent
-protocol:
-
-```bash
-agentplane task create "Inspect Agentplane artifacts and summarize what was created"
+agentplane task create "Add validation for malformed configuration and cover it with tests"
+agentplane task active
 agentplane task advance <task-id> --agent-json
 ```
 
-The first response includes the task ID, selected route, and the exact second command. Give the
-returned packet to Claude Code, Codex, Cursor, Aider, or another external agent. The agent performs
-only the packet's semantic objective, writes the typed result to the exact
-`exchange.result_path`, and executes the exact `exchange.resume_argv`. The legacy
-`exchange.return_invocation` field remains compatibility-only. Its equivalent shell form is:
+`task create` prints the task ID. `task advance` returns one bounded semantic episode for Codex,
+Claude Code, Cursor, Aider, or another repository-capable agent. The packet contains the objective,
+writable scope, relevant context, result schema, and the exact command for returning the result.
+
+When the action is `agent_episode`, give it to the agent. The agent performs only that semantic
+objective and returns the typed result. Run the exact next command emitted by AgentPlane after each
+state change. AgentPlane performs the formal transitions and stops at approval, human, hosted,
+recovery, or terminal boundaries.
+
+After the initial plan exists and is approved, a configured managed runner can execute eligible
+semantic episodes through the same control plane:
 
 ```bash
-agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
+agentplane task run <task-id>
 ```
 
-Agentplane persists the returned plan and emits the exact human approval action when approval is
-required. After that action, continue with `task advance` for an external agent, or use
-`agentplane task run <task-id>` for semantic episodes supported by the configured managed runner.
-Repeat only the action Agentplane returns until it reports a human, hosted/external, recovery, or
-terminal boundary. Agentplane owns plan persistence, worktree/PR operations, verification
-persistence, integration, and closure.
+Read the [task lifecycle](docs/user/task-lifecycle.mdx) for the complete external-agent and managed-
+runner contracts.
 
-When the task reaches `DONE`, Agentplane records the supervisor-observed input, visible output,
-reasoning, and total token aggregate in the task README and ACR. If provider telemetry was not
-observable, the record says `partial` or `unavailable` instead of inventing a zero.
+## How the control loop works
 
-## Agentplane is not
+```text
+human intent
+    -> CLI issues a bounded semantic episode
+        -> agent reasons, edits, tests, and returns a semantic result
+            -> CLI observes facts, runs the formal route, and records evidence
+                -> approval, recovery, or verified completion
+```
 
-- a model provider;
-- a prompt playground;
-- a low-code chatbot builder;
-- a replacement for every agent framework;
-- a black-box runtime that hides operational state.
+The separation is enforced, not advisory:
 
-Agentplane is the control plane around coding-agent work. Harnesses, traces, recipes, and Agent
-Change Records are mechanisms and evidence surfaces within that control plane.
+- A semantic episode cannot perform or claim formal lifecycle transitions.
+- Writable roots and allowed effects are carried in the WorkOrder for that episode.
+- State fingerprints reject stale results instead of applying them to newer task state.
+- Approval and external-effect boundaries return control to the human or configured operator.
+- Verification evidence is derived from declared effects and supervisor-observed results.
 
-## Recipes
-
-Recipes are reusable workflow overlays. Start with the task -> supervisor -> evidence flow first;
-add recipes when you want a repeatable TDD, security review, or documentation update loop.
-
-- [TDD recipe](docs/recipes/tdd.mdx)
-- [Security review recipe](docs/recipes/security-review.mdx)
-- [Docs update recipe](docs/recipes/docs-update.mdx)
-
-## Who uses it
-
-- Solo developers who want future-you to know why an agent changed 19 files.
-- OSS maintainers who require agent-generated PRs to include task intent, plan, checks, and ACR.
-- Engineering teams that make agent work follow a shared lifecycle before review.
-- Platform and security teams that need local, inspectable, policy-aware, CI-gateable AI work.
-
-DCO sign-off and multi-author commits are first-class. Agentplane-managed commits preserve DCO
-identity fallbacks so agent and human co-authoring stays compliant.
-
-Using Agentplane in a real repo? Tell us in
-[Discussions](https://github.com/basilisk-labs/agentplane/discussions). We will add your story to
-[docs/showcase](docs/showcase.mdx).
+The agent is responsible for meaning. The CLI is mechanically authoritative and semantically
+blind: it can prove which files changed and which checks passed, but it does not decide whether the
+implementation is a good solution to the user's problem.
 
 ## Workflow modes
 
-### `direct`
+| Mode        | What AgentPlane manages                                                                    | Use it for                                                 |
+| ----------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `direct`    | A lighter local route with bounded writes, formal verification, and recorded closure.      | Reversible solo work and short feedback loops.             |
+| `branch_pr` | A task worktree and branch, PR artifacts, hosted checks, integration handoff, and closure. | Team review, branch protection, and consequential changes. |
 
-Fast local loops in the current checkout. Use it for solo work, prototypes, and short tasks.
+The agent declares scope, expected effects, uncertainty, and a preferred mode during planning.
+AgentPlane combines that declaration with repository policy. It can strengthen the route when
+observed work requires more isolation or evidence; it does not ask the agent to choreograph Git
+branches, worktrees, publication, or integration manually.
 
-### `branch_pr`
+## Inspectable repository state
 
-Per-task branches, worktrees, PR artifacts, and integration handoff. Use it for teams and stricter
-review boundaries.
+AgentPlane keeps the operating record beside the code:
 
-## Workflow guides
+```text
+AGENTS.md or CLAUDE.md                 repository policy gateway
+.agentplane/WORKFLOW.md                workflow and configuration contract
+.agentplane/tasks/<task-id>/README.md  intent, plan, verification, rollback, findings
+.agentplane/tasks/<task-id>/acr.json   machine-readable Agent Change Record
+.agentplane/tasks/<task-id>/pr/        branch_pr review artifacts when applicable
+```
 
-- [Agentplane + Claude Code](docs/workflow-guides/claude-code.mdx)
-- [Agentplane + Codex](docs/workflow-guides/codex.mdx)
-- [Agentplane + Cursor](docs/workflow-guides/cursor.mdx)
-- [Agentplane + Aider](docs/workflow-guides/aider.mdx)
-- [Agentplane + Hermes Kanban](docs/workflow-guides/hermes-kanban.mdx)
-- [Agentplane + GitHub Actions](docs/workflow-guides/github-actions.mdx)
-- [Agentplane + branch_pr workflow](docs/workflow-guides/branch-pr.mdx)
+Git remains the durable review surface. An [Agent Change Record](docs/reference/acr.mdx) captures
+task intent, execution state, changed files, verification evidence, and review status in a
+machine-readable form. Optional [Local Context](docs/user/local-context.mdx) adds source-backed
+repository knowledge without changing the task lifecycle.
+
+## Trust boundary
+
+AgentPlane distinguishes semantic reports from observable facts:
+
+- Agents return plans, implementation summaries, findings, uncertainty, and semantic evaluations.
+- The supervisor observes repository changes, Git state, executed checks, and available provider
+  telemetry.
+- Evidence records visible inputs, outputs, semantic results, and observable counters; it does not
+  require or claim access to private chain-of-thought.
+- Missing telemetry is recorded as partial or unavailable instead of being replaced with a zero or
+  a guessed value.
+- Humans retain decisions that change approved scope, accept material risk, or cross an external
+  authority boundary.
+
+## When AgentPlane is useful
+
+- A coding-agent change must remain reviewable after the chat or IDE session disappears.
+- Multiple coding agents need one task, policy, verification, and recovery contract.
+- Maintainers need agent-generated pull requests to carry intent, scope, checks, and evidence.
+- Platform or security teams need local, policy-aware, CI-gateable agent work.
+
+AgentPlane is not a model provider, prompt playground, low-code chatbot builder, replacement for
+Git or CI, or a black-box agent runtime. It controls the engineering workflow around coding agents;
+it does not replace the agents that perform the work.
 
 ## Documentation
 
-- [Overview](docs/user/overview.mdx)
-- [Setup](docs/user/setup.mdx)
-- [Workflow](docs/user/workflow.mdx)
-- [Task lifecycle](docs/user/task-lifecycle.mdx)
-- [Commands](docs/user/commands.mdx)
-- [CLI reference](docs/user/cli-reference.generated.mdx)
-- [Architecture](docs/developer/architecture.mdx)
-- [CLI contract](docs/developer/cli-contract.mdx)
+| Need                           | Read                                                                                                |
+| ------------------------------ | --------------------------------------------------------------------------------------------------- |
+| Install and configure          | [Setup](docs/user/setup.mdx)                                                                        |
+| Connect a coding agent         | [Use with coding agents](docs/workflow-guides/index.mdx)                                            |
+| Understand the control loop    | [Task lifecycle](docs/user/task-lifecycle.mdx)                                                      |
+| Choose `direct` or `branch_pr` | [Workflow](docs/user/workflow.mdx)                                                                  |
+| Look up commands and flags     | [CLI reference](docs/user/cli-reference.generated.mdx)                                              |
+| Inspect the evidence format    | [Agent Change Records](docs/reference/acr.mdx)                                                      |
+| Maintain repository knowledge  | [Local Context](docs/user/local-context.mdx)                                                        |
+| Understand internals           | [Architecture](docs/developer/architecture.mdx) and [CLI contract](docs/developer/cli-contract.mdx) |
 
-## Status
+## Project status and support
 
-[![Core CI](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml/badge.svg)](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml)
-[![test:fast](https://img.shields.io/badge/test%3Afast-Core%20CI-2563eb.svg)](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml)
-[![coverage](https://img.shields.io/badge/coverage-Core%20CI-2563eb.svg)](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml)
-[![release:parity](https://img.shields.io/badge/release%3Aparity-Core%20CI-2563eb.svg)](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml)
-[![CLI Contract](https://img.shields.io/badge/CLI-contract-111827.svg)](docs/developer/cli-contract.mdx)
+AgentPlane is pre-1.0 and under active development. Pin the CLI version in automation and review
+the [release notes](docs/releases/README.md) when upgrading.
+
+Ask usage questions or report unexpected behavior in
+[GitHub Discussions](https://github.com/basilisk-labs/agentplane/discussions). Report security
+issues according to [SECURITY.md](SECURITY.md).
 
 ## Contributing
 
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Help us ship this
-
-If Agentplane saved you a bad merge, [star the repo](https://github.com/basilisk-labs/agentplane)
-and drop a note in [Discussions](https://github.com/basilisk-labs/agentplane/discussions). It is
-the only growth signal we use.
-
-## Stargazers over time
-
-[![Stargazers over time](https://api.star-history.com/svg?repos=basilisk-labs/agentplane&type=Date)](https://star-history.com/#basilisk-labs/agentplane&Date)
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
-MIT
+[MIT](LICENSE)
