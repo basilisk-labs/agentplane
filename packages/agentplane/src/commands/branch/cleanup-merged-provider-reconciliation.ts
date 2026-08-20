@@ -7,10 +7,18 @@ import {
   isCanonicalFullCommitOid,
 } from "../shared/git-ops.js";
 import {
+  observeExistingChangeRequestByBranch,
+  observeExistingChangeRequestByNumber,
+} from "../pr/internal/change-request-provider.js";
+import type { ChangeRequestLookupResult } from "../pr/internal/change-request-model.js";
+import type { RecordedGitHostIdentity } from "../pr/internal/git-host-identity.js";
+import {
   observeExistingGithubPrByBranch,
   observeExistingGithubPrByNumber,
   type GithubPrLookupResult,
 } from "../pr/internal/sync-github.js";
+
+export type ProviderPrLookupResult = ChangeRequestLookupResult | GithubPrLookupResult;
 
 export type ProviderReconciliationProof = {
   kind: "exact_head" | "provider_rebase_equivalent";
@@ -150,7 +158,31 @@ export async function observeProviderPr(opts: {
   branch: string;
   baseBranch: string;
   prNumber: number | null;
-}): Promise<GithubPrLookupResult> {
+  recorded?: RecordedGitHostIdentity | null;
+}): Promise<ProviderPrLookupResult> {
+  const observed = opts.prNumber
+    ? await observeExistingChangeRequestByNumber({
+        gitRoot: opts.gitRoot,
+        branch: opts.branch,
+        baseBranch: opts.baseBranch,
+        prNumber: opts.prNumber,
+        recorded: opts.recorded,
+      })
+    : await observeExistingChangeRequestByBranch({
+        gitRoot: opts.gitRoot,
+        branch: opts.branch,
+        baseBranch: opts.baseBranch,
+        requireUnique: true,
+        recorded: opts.recorded,
+      });
+  const unavailableReason = observed.state === "unavailable" ? observed.reason.toLowerCase() : "";
+  const legacyLocalRepository =
+    unavailableReason.includes("publication remote") &&
+    (unavailableReason.includes("must have parseable fetch/push urls") ||
+      unavailableReason.includes("cannot resolve one push url"));
+  if (observed.state !== "unavailable" || !legacyLocalRepository) {
+    return observed;
+  }
   return opts.prNumber
     ? await observeExistingGithubPrByNumber({
         gitRoot: opts.gitRoot,
@@ -171,7 +203,7 @@ export async function validateMergedProviderReceipt(opts: {
   baseBranch: string;
   expectedPrNumber: number | null;
   expectedReconciliation?: ProviderReconciliationProof;
-  result: GithubPrLookupResult;
+  result: ProviderPrLookupResult;
 }): Promise<{ receipt: ProviderMergeReceipt | null; reason: string | null }> {
   if (opts.result.state === "not_found") {
     return { receipt: null, reason: "provider PR was not found for the exact branch and base" };

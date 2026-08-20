@@ -25,6 +25,7 @@ import { maybeRunPreIntegrateBootstrap } from "./internal/pre-integrate-bootstra
 import { maybeRunPostIntegrateBootstrap } from "./internal/post-integrate-bootstrap.js";
 import { prepareIntegrate } from "./internal/prepare.js";
 import { handleProtectedBaseIntegrate } from "./internal/protected-base-handoff.js";
+import { formatIntegrateRoute } from "./internal/route-label.js";
 import { resolveWorktreeForIntegrate } from "./internal/worktree.js";
 import { runVerifyCommands } from "./verify.js";
 
@@ -106,7 +107,7 @@ export async function cmdIntegrate(opts: {
         output.success(
           "integrate dry-run",
           task.id,
-          `base=${base} branch=${branch} verify=${shouldRunVerify ? "yes" : "no"} route=${protectedBaseRequiresPrMerge ? "github-pr" : "local"}`,
+          `base=${base} branch=${branch} verify=${shouldRunVerify ? "yes" : "no"} route=${formatIntegrateRoute({ protectedBaseRequiresPrMerge, provider: metaSource.provider?.kind ?? null })}`,
         );
       }
       return 0;

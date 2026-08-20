@@ -4,7 +4,6 @@ import path from "node:path";
 import { gitProofEnv } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
-import type { GithubPrLookupResult } from "../pr/internal/sync-github.js";
 import {
   gitCommitObjectExists,
   gitProofIsAncestor,
@@ -25,6 +24,7 @@ import {
   observeProviderPr,
   resolveProviderReconciliation,
   validateMergedProviderReceipt as validateStrictMergedProviderReceipt,
+  type ProviderPrLookupResult,
   type ProviderReconciliationProof,
 } from "./cleanup-merged-provider-reconciliation.js";
 import type { CleanupCandidate } from "./cleanup-merged-proof.js";
@@ -96,7 +96,7 @@ function blockedCleanupProof(reason: string) {
   };
 }
 
-function providerUnavailableBecauseRepositoryIsLocal(result: GithubPrLookupResult): boolean {
+function providerUnavailableBecauseRepositoryIsLocal(result: ProviderPrLookupResult): boolean {
   return (
     result.state === "unavailable" &&
     result.reason === "origin is unavailable or is not a GitHub repository"
@@ -107,7 +107,7 @@ async function validateExactMergedProviderReceipt(opts: {
   gitRoot: string;
   baseBranch: string;
   branchHead: string;
-  result: GithubPrLookupResult;
+  result: ProviderPrLookupResult;
 }): Promise<{ prNumber: number | null; reason: string | null; observedHeadSha: string | null }> {
   if (opts.result.state === "not_found") {
     return {
@@ -256,6 +256,7 @@ export async function targetedCleanupProof(opts: {
     branch: opts.branch,
     baseBranch: opts.baseBranch,
     prNumber: recordedPrNumber,
+    recorded: meta?.provider ?? null,
   });
   if (opts.kind === "task") {
     const strictProviderReceipt = await validateStrictMergedProviderReceipt({
