@@ -30,7 +30,8 @@ export function defaultIntegrationQueueWorker(): string {
 
 export function renderIntegrationQueueEntry(entry: IntegrationQueueEntry): string {
   const pr = entry.pr_number ? `#${entry.pr_number}` : "no-pr";
-  return `${entry.status.padEnd(7)} ${entry.task_id} ${pr} route=${entry.route ?? "branch_pr"} priority=${entry.priority} branch=${entry.branch}`;
+  const route = entry.route ? ` route=${entry.route}` : "";
+  return `${entry.status.padEnd(7)} ${entry.task_id} ${pr}${route} priority=${entry.priority} branch=${entry.branch}`;
 }
 
 export function findActiveIntegrationLane(
