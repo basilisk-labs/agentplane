@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608201524-TRM5DT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-20T19:32:27.899Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "bd6d9f8cc17ce45e5be238c7d40847e2c75d035d",
+  "blueprint_digest": "e79d8f93b29a9f61a846f9cb71db7cb76e99e0508d3bd4fab66e1fa9cc5c05be",
+  "findings": [
+    "Implementation commit bd6d9f8cc includes the expected website/static/llms-full.txt update and AgentPlane-owned PR artifact refresh; evidence commit e59a672b0 records the resulting checks.",
+    "The focused provider-neutral suite remains green at 41 files and 304 tests, and all declared checks are recorded with exit code 0.",
+    "The rework full local CI exited 0 after build, docs/schema, core tests, docs-site build, workflow lint, 98 Windows platform-critical tests, 101 coverage-guard tests, and the significant coverage contract.",
+    "A fresh evaluator run of bun run docs:site:generate:check reports both generated-reference.mdx and llms-full.txt as fresh.",
+    "Residual risk: Real GitLab.com and self-managed GitLab behavior still requires hosted qualification under an explicitly authorized external-provider test or release gate."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/c8c9a765cccb536c7ea2f66496a21a02aea621ee99035cdf4e28d426a74c2f2a.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
