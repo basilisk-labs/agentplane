@@ -15,14 +15,8 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Pre-merge finish fails after evaluator and task-document commits because implementation commit
-normalization stops after one task-artifact layer; resolve the complete task-only first-parent tail
-to the verified code commit and add regression coverage.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
