@@ -1,0 +1,660 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "agentplane doctor",
+    "bun run lint:core",
+    "bun run typecheck",
+    "bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "documentation",
+        "public_api",
+        "repository_write",
+        "schema",
+        "security_boundary",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "docs/user",
+        "docs/workflow-guides",
+        "packages/agentplane/src/cli",
+        "packages/agentplane/src/commands/pr",
+        "packages/agentplane/src/commands/shared",
+        "packages/agentplane/src/commands/task",
+        "packages/agentplane/src/commands/task/hosted-merge-sync",
+        "packages/core/schemas",
+        "packages/core/src/tasks",
+        "packages/spec/schemas",
+        "schemas",
+        "scripts/workflow"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:documentation",
+        "repository_effect:public_api",
+        "repository_effect:repository_write",
+        "repository_effect:schema",
+        "repository_effect:security_boundary",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write",
+        "schema",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "docs",
+        "packages/agentplane",
+        "packages/core",
+        "packages/spec",
+        "schemas"
+      ],
+      "changed_files": [
+        "docs/user/branching-and-pr-artifacts.mdx",
+        "docs/user/cli-reference.generated.mdx",
+        "docs/user/commands.mdx",
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.gitlab.test.ts",
+        "packages/agentplane/src/commands/pr/branch-publication.ts",
+        "packages/agentplane/src/commands/pr/check.ts",
+        "packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts",
+        "packages/agentplane/src/commands/pr/conflict-rework.ts",
+        "packages/agentplane/src/commands/pr/flow-status.ts",
+        "packages/agentplane/src/commands/pr/head-publication.ts",
+        "packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts",
+        "packages/agentplane/src/commands/pr/hosted-checks.ts",
+        "packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts",
+        "packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.ts",
+        "packages/agentplane/src/commands/pr/integrate/internal/gitlab-protection.test.ts",
+        "packages/agentplane/src/commands/pr/integrate/internal/gitlab-protection.ts",
+        "packages/agentplane/src/commands/pr/integrate/internal/protected-base-handoff.ts",
+        "packages/agentplane/src/commands/pr/internal/change-request-model.ts",
+        "packages/agentplane/src/commands/pr/internal/change-request-provider.ts",
+        "packages/agentplane/src/commands/pr/internal/git-host-identity.test.ts",
+        "packages/agentplane/src/commands/pr/internal/git-host-identity.ts",
+        "packages/agentplane/src/commands/pr/internal/glab-api.test.ts",
+        "packages/agentplane/src/commands/pr/internal/glab-api.ts",
+        "packages/agentplane/src/commands/pr/internal/sync-github.ts",
+        "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts",
+        "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts",
+        "packages/agentplane/src/commands/pr/internal/sync-open-step.ts",
+        "packages/agentplane/src/commands/pr/internal/sync-update-step.ts",
+        "packages/agentplane/src/commands/pr/open.ts",
+        "packages/agentplane/src/commands/pr/pr.spec.ts",
+        "packages/agentplane/src/commands/pr/provider-head.test.ts",
+        "packages/agentplane/src/commands/pr/provider-head.ts",
+        "packages/agentplane/src/commands/shared/pr-meta.test.ts",
+        "packages/agentplane/src/commands/shared/pr-meta.ts",
+        "packages/agentplane/src/commands/shared/pr-meta/builders.ts",
+        "packages/agentplane/src/commands/shared/pr-meta/model.ts",
+        "packages/agentplane/src/commands/shared/pr-meta/parser.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
+        "packages/agentplane/src/commands/task/hosted-merge-sync.ts",
+        "packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.lookup.test.ts",
+        "packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.test.ts",
+        "packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.ts",
+        "packages/agentplane/src/commands/task/hosted-merge-sync/model.ts",
+        "packages/agentplane/src/commands/task/hosted-merge-sync/provider.ts",
+        "packages/core/schemas/pr-meta.schema.json",
+        "packages/core/schemas/task-handoff.schema.json",
+        "packages/core/src/tasks/task-artifact-schema.handoff.ts",
+        "packages/core/src/tasks/task-artifact-schema.pr-metadata.ts",
+        "packages/spec/schemas/pr-meta.schema.json",
+        "packages/spec/schemas/task-handoff.schema.json",
+        "schemas/pr-meta.schema.json",
+        "schemas/task-handoff.schema.json"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/core/schemas",
+      "central_component:packages/core/src/tasks",
+      "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.gitlab.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/pr-meta.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/pr-meta.ts",
+      "central_path:packages/agentplane/src/commands/shared/pr-meta/builders.ts",
+      "central_path:packages/agentplane/src/commands/shared/pr-meta/model.ts",
+      "central_path:packages/agentplane/src/commands/shared/pr-meta/parser.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
+      "central_path:packages/core/schemas/pr-meta.schema.json",
+      "central_path:packages/core/schemas/task-handoff.schema.json",
+      "central_path:packages/core/src/tasks/task-artifact-schema.handoff.ts",
+      "central_path:packages/core/src/tasks/task-artifact-schema.pr-metadata.ts",
+      "central_path:schemas/pr-meta.schema.json",
+      "central_path:schemas/task-handoff.schema.json",
+      "effect_public_api",
+      "effect_schema",
+      "effect_security_boundary"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:310f7ede2f189eb9e204d034e9cead155534e8607afdd0139c09f30bdb7d2126"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-20T17:34:32.863Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608201524-TRM5DT/verification/20260820173432863-3258d678de04d49b.json",
+      "sha256": "sha256:856f22b9310a57d1c72de1638161e8fd0881a0412211a2b8895f09b070096454"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 292b232b3160b22c47c6cc206fade625e9377fed..90f0339fdc8a99d2420933714b077854f356d482",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 292b232b3160b22c47c6cc206fade625e9377fed..90f0339fdc8a99d2420933714b077854f356d482",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\t.agentplane/tasks/202608201524-TRM5DT/README.md",
+          "A\t.agentplane/tasks/202608201524-TRM5DT/blueprint/resolved-snapshot.json",
+          "A\t.agentplane/tasks/202608201524-TRM5DT/pr/diffstat.txt",
+          "A\t.agentplane/tasks/202608201524-TRM5DT/pr/github-body.md",
+          "A\t.agentplane/tasks/202608201524-TRM5DT/pr/github-title.txt",
+          "A\t.agentplane/tasks/202608201524-TRM5DT/pr/meta.json",
+          "A\t.agentplane/tasks/202608201524-TRM5DT/pr/review.md",
+          "M\tdocs/user/branching-and-pr-artifacts.mdx",
+          "M\tdocs/user/cli-reference.generated.mdx",
+          "M\tdocs/user/commands.mdx",
+          "A\tpackages/agentplane/src/cli/run-cli.core.pr-flow.gitlab.test.ts",
+          "M\tpackages/agentplane/src/commands/pr/branch-publication.ts",
+          "M\tpackages/agentplane/src/commands/pr/check.ts",
+          "M\tpackages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts",
+          "M\tpackages/agentplane/src/commands/pr/conflict-rework.ts",
+          "M\tpackages/agentplane/src/commands/pr/flow-status.ts",
+          "M\tpackages/agentplane/src/commands/pr/head-publication.ts",
+          "A\tpackages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts",
+          "M\tpackages/agentplane/src/commands/pr/hosted-checks.ts",
+          "A\tpackages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts",
+          "A\tpackages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.ts",
+          "A\tpackages/agentplane/src/commands/pr/integrate/internal/gitlab-protection.test.ts",
+          "A\tpackages/agentplane/src/commands/pr/integrate/internal/gitlab-protection.ts",
+          "M\tpackages/agentplane/src/commands/pr/integrate/internal/protected-base-handoff.ts",
+          "A\tpackages/agentplane/src/commands/pr/internal/change-request-model.ts",
+          "A\tpackages/agentplane/src/commands/pr/internal/change-request-provider.ts",
+          "A\tpackages/agentplane/src/commands/pr/internal/git-host-identity.test.ts",
+          "A\tpackages/agentplane/src/commands/pr/internal/git-host-identity.ts",
+          "A\tpackages/agentplane/src/commands/pr/internal/glab-api.test.ts",
+          "A\tpackages/agentplane/src/commands/pr/internal/glab-api.ts",
+          "M\tpackages/agentplane/src/commands/pr/internal/sync-github.ts",
+          "A\tpackages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts",
+          "A\tpackages/agentplane/src/commands/pr/internal/sync-gitlab.ts",
+          "M\tpackages/agentplane/src/commands/pr/internal/sync-open-step.ts",
+          "M\tpackages/agentplane/src/commands/pr/internal/sync-update-step.ts",
+          "M\tpackages/agentplane/src/commands/pr/open.ts",
+          "M\tpackages/agentplane/src/commands/pr/pr.spec.ts",
+          "M\tpackages/agentplane/src/commands/pr/provider-head.test.ts",
+          "M\tpackages/agentplane/src/commands/pr/provider-head.ts",
+          "M\tpackages/agentplane/src/commands/shared/pr-meta.test.ts",
+          "M\tpackages/agentplane/src/commands/shared/pr-meta.ts",
+          "M\tpackages/agentplane/src/commands/shared/pr-meta/builders.ts",
+          "M\tpackages/agentplane/src/commands/shared/pr-meta/model.ts",
+          "M\tpackages/agentplane/src/commands/shared/pr-meta/parser.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
+          "M\tpackages/agentplane/src/commands/task/hosted-merge-sync.ts",
+          "A\tpackages/agentplane/src/commands/task/hosted-merge-sync/gitlab.lookup.test.ts",
+          "A\tpackages/agentplane/src/commands/task/hosted-merge-sync/gitlab.test.ts",
+          "A\tpackages/agentplane/src/commands/task/hosted-merge-sync/gitlab.ts",
+          "M\tpackages/agentplane/src/commands/task/hosted-merge-sync/model.ts",
+          "A\tpackages/agentplane/src/commands/task/hosted-merge-sync/provider.ts",
+          "M\tpackages/core/schemas/pr-meta.schema.json",
+          "M\tpackages/core/schemas/task-handoff.schema.json",
+          "M\tpackages/core/src/tasks/task-artifact-schema.handoff.ts",
+          "M\tpackages/core/src/tasks/task-artifact-schema.pr-metadata.ts",
+          "M\tpackages/spec/schemas/pr-meta.schema.json",
+          "M\tpackages/spec/schemas/task-handoff.schema.json",
+          "M\tschemas/pr-meta.schema.json",
+          "M\tschemas/task-handoff.schema.json"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "292b232b3160b22c47c6cc206fade625e9377fed",
+    "implementation_commit": "90f0339fdc8a99d2420933714b077854f356d482",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M docs/user/branching-and-pr-artifacts.mdx",
+        " M docs/user/cli-reference.generated.mdx",
+        " M docs/user/commands.mdx",
+        " M packages/agentplane/src/commands/pr/branch-publication.ts",
+        " M packages/agentplane/src/commands/pr/check.ts",
+        " M packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts",
+        " M packages/agentplane/src/commands/pr/conflict-rework.ts",
+        " M packages/agentplane/src/commands/pr/flow-status.ts",
+        " M packages/agentplane/src/commands/pr/head-publication.ts",
+        " M packages/agentplane/src/commands/pr/hosted-checks.ts",
+        " M packages/agentplane/src/commands/pr/integrate/internal/protected-base-handoff.ts",
+        " M packages/agentplane/src/commands/pr/internal/sync-github.ts",
+        " M packages/agentplane/src/commands/pr/internal/sync-open-step.ts",
+        " M packages/agentplane/src/commands/pr/internal/sync-update-step.ts",
+        " M packages/agentplane/src/commands/pr/open.ts",
+        " M packages/agentplane/src/commands/pr/pr.spec.ts",
+        " M packages/agentplane/src/commands/pr/provider-head.test.ts",
+        " M packages/agentplane/src/commands/pr/provider-head.ts",
+        " M packages/agentplane/src/commands/shared/pr-meta.test.ts",
+        " M packages/agentplane/src/commands/shared/pr-meta.ts",
+        " M packages/agentplane/src/commands/shared/pr-meta/builders.ts",
+        " M packages/agentplane/src/commands/shared/pr-meta/model.ts",
+        " M packages/agentplane/src/commands/shared/pr-meta/parser.ts",
+        " M packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
+        " M packages/agentplane/src/commands/task/hosted-merge-sync.ts",
+        " M packages/agentplane/src/commands/task/hosted-merge-sync/model.ts",
+        " M packages/core/schemas/pr-meta.schema.json",
+        " M packages/core/schemas/task-handoff.schema.json",
+        " M packages/core/src/tasks/task-artifact-schema.handoff.ts",
+        " M packages/core/src/tasks/task-artifact-schema.pr-metadata.ts",
+        " M packages/spec/schemas/pr-meta.schema.json",
+        " M packages/spec/schemas/task-handoff.schema.json",
+        " M schemas/pr-meta.schema.json",
+        " M schemas/task-handoff.schema.json",
+        "?? .agentplane/tasks/202608201524-TRM5DT/README.md",
+        "?? .agentplane/tasks/202608201524-TRM5DT/blueprint/resolved-snapshot.json",
+        "?? .agentplane/tasks/202608201524-TRM5DT/pr/diffstat.txt",
+        "?? .agentplane/tasks/202608201524-TRM5DT/pr/github-body.md",
+        "?? .agentplane/tasks/202608201524-TRM5DT/pr/github-title.txt",
+        "?? .agentplane/tasks/202608201524-TRM5DT/pr/meta.json",
+        "?? .agentplane/tasks/202608201524-TRM5DT/pr/review.md",
+        "?? packages/agentplane/src/cli/run-cli.core.pr-flow.gitlab.test.ts",
+        "?? packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts",
+        "?? packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts",
+        "?? packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.ts",
+        "?? packages/agentplane/src/commands/pr/integrate/internal/gitlab-protection.test.ts",
+        "?? packages/agentplane/src/commands/pr/integrate/internal/gitlab-protection.ts",
+        "?? packages/agentplane/src/commands/pr/internal/change-request-model.ts",
+        "?? packages/agentplane/src/commands/pr/internal/change-request-provider.ts",
+        "?? packages/agentplane/src/commands/pr/internal/git-host-identity.test.ts",
+        "?? packages/agentplane/src/commands/pr/internal/git-host-identity.ts",
+        "?? packages/agentplane/src/commands/pr/internal/glab-api.test.ts",
+        "?? packages/agentplane/src/commands/pr/internal/glab-api.ts",
+        "?? packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts",
+        "?? packages/agentplane/src/commands/pr/internal/sync-gitlab.ts",
+        "?? packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.lookup.test.ts",
+        "?? packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.test.ts",
+        "?? packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.ts",
+        "?? packages/agentplane/src/commands/task/hosted-merge-sync/provider.ts"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M docs/user/branching-and-pr-artifacts.mdx"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M docs/user/cli-reference.generated.mdx"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M docs/user/commands.mdx"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/branch-publication.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/check.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/conflict-rework.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/flow-status.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/head-publication.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/hosted-checks.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/integrate/internal/protected-base-handoff.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/internal/sync-github.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/internal/sync-open-step.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/internal/sync-update-step.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/open.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/pr.spec.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/provider-head.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/pr/provider-head.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/shared/pr-meta.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/shared/pr-meta.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/shared/pr-meta/builders.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/shared/pr-meta/model.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/shared/pr-meta/parser.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/hosted-merge-sync.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/hosted-merge-sync/model.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/core/schemas/pr-meta.schema.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/core/schemas/task-handoff.schema.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/core/src/tasks/task-artifact-schema.handoff.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/core/src/tasks/task-artifact-schema.pr-metadata.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/spec/schemas/pr-meta.schema.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/spec/schemas/task-handoff.schema.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M schemas/pr-meta.schema.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M schemas/task-handoff.schema.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608201524-TRM5DT/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608201524-TRM5DT/blueprint/resolved-snapshot.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608201524-TRM5DT/pr/diffstat.txt"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608201524-TRM5DT/pr/github-body.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608201524-TRM5DT/pr/github-title.txt"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608201524-TRM5DT/pr/meta.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608201524-TRM5DT/pr/review.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/cli/run-cli.core.pr-flow.gitlab.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/pr/integrate/internal/gitlab-protection.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/pr/integrate/internal/gitlab-protection.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/pr/internal/change-request-model.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/pr/internal/change-request-provider.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/pr/internal/git-host-identity.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/pr/internal/git-host-identity.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/pr/internal/glab-api.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/pr/internal/glab-api.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.lookup.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/task/hosted-merge-sync/provider.ts"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M docs/user/branching-and-pr-artifacts.mdx",
+        " M docs/user/cli-reference.generated.mdx",
+        " M docs/user/commands.mdx",
+        " M packages/agentplane/src/commands/pr/branch-publication.ts",
+        " M packages/agentplane/src/commands/pr/check.ts",
+        " M packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts",
+        " M packages/agentplane/src/commands/pr/conflict-rework.ts",
+        " M packages/agentplane/src/commands/pr/flow-status.ts",
+        " M packages/agentplane/src/commands/pr/head-publication.ts",
+        " M packages/agentplane/src/commands/pr/hosted-checks.ts",
+        " M packages/agentplane/src/commands/pr/integrate/internal/protected-base-handoff.ts",
+        " M packages/agentplane/src/commands/pr/internal/sync-github.ts",
+        " M packages/agentplane/src/commands/pr/internal/sync-open-step.ts",
+        " M packages/agentplane/src/commands/pr/internal/sync-update-step.ts",
+        " M packages/agentplane/src/commands/pr/open.ts",
+        " M packages/agentplane/src/commands/pr/pr.spec.ts",
+        " M packages/agentplane/src/commands/pr/provider-head.test.ts",
+        " M packages/agentplane/src/commands/pr/provider-head.ts",
+        " M packages/agentplane/src/commands/shared/pr-meta.test.ts",
+        " M packages/agentplane/src/commands/shared/pr-meta.ts",
+        " M packages/agentplane/src/commands/shared/pr-meta/builders.ts",
+        " M packages/agentplane/src/commands/shared/pr-meta/model.ts",
+        " M packages/agentplane/src/commands/shared/pr-meta/parser.ts",
+        " M packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
+        " M packages/agentplane/src/commands/task/hosted-merge-sync.ts",
+        " M packages/agentplane/src/commands/task/hosted-merge-sync/model.ts",
+        " M packages/core/schemas/pr-meta.schema.json",
+        " M packages/core/schemas/task-handoff.schema.json",
+        " M packages/core/src/tasks/task-artifact-schema.handoff.ts",
+        " M packages/core/src/tasks/task-artifact-schema.pr-metadata.ts",
+        " M packages/spec/schemas/pr-meta.schema.json",
+        " M packages/spec/schemas/task-handoff.schema.json",
+        " M schemas/pr-meta.schema.json",
+        " M schemas/task-handoff.schema.json",
+        "?? .agentplane/tasks/202608201524-TRM5DT/README.md",
+        "?? .agentplane/tasks/202608201524-TRM5DT/blueprint/resolved-snapshot.json",
+        "?? .agentplane/tasks/202608201524-TRM5DT/pr/diffstat.txt",
+        "?? .agentplane/tasks/202608201524-TRM5DT/pr/github-body.md",
+        "?? .agentplane/tasks/202608201524-TRM5DT/pr/github-title.txt",
+        "?? .agentplane/tasks/202608201524-TRM5DT/pr/meta.json",
+        "?? .agentplane/tasks/202608201524-TRM5DT/pr/review.md",
+        "?? packages/agentplane/src/cli/run-cli.core.pr-flow.gitlab.test.ts",
+        "?? packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts",
+        "?? packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts",
+        "?? packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.ts",
+        "?? packages/agentplane/src/commands/pr/integrate/internal/gitlab-protection.test.ts",
+        "?? packages/agentplane/src/commands/pr/integrate/internal/gitlab-protection.ts",
+        "?? packages/agentplane/src/commands/pr/internal/change-request-model.ts",
+        "?? packages/agentplane/src/commands/pr/internal/change-request-provider.ts",
+        "?? packages/agentplane/src/commands/pr/internal/git-host-identity.test.ts",
+        "?? packages/agentplane/src/commands/pr/internal/git-host-identity.ts",
+        "?? packages/agentplane/src/commands/pr/internal/glab-api.test.ts",
+        "?? packages/agentplane/src/commands/pr/internal/glab-api.ts",
+        "?? packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts",
+        "?? packages/agentplane/src/commands/pr/internal/sync-gitlab.ts",
+        "?? packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.lookup.test.ts",
+        "?? packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.test.ts",
+        "?? packages/agentplane/src/commands/task/hosted-merge-sync/gitlab.ts",
+        "?? packages/agentplane/src/commands/task/hosted-merge-sync/provider.ts"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608201524-TRM5DT",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608201524-TRM5DT/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
