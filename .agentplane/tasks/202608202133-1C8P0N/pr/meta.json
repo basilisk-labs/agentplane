@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:aaa274e42b1c880da37d932674428500b49e98ef7f2ee6e0302de83f311fd31e",
   "pr_number": 4854,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4854",
+  "pre_merge_closure": {
+    "basis_commit": "0f07d8f1386d87d667054fd5da3cde792df8e7e7",
+    "branch": "task/202608202133-1C8P0N/add-ap-te-lite-to-framework-agent-instructions",
+    "pr_number": 4854,
+    "recorded_at": "2026-08-20T22:15:57.734Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
