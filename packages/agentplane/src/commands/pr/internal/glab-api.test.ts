@@ -42,4 +42,28 @@ describe("glab-api", () => {
       expect.any(Function),
     );
   });
+
+  it("keeps read-only requests host-bound without adding a JSON body header", async () => {
+    mocks.execFile.mockImplementation(
+      (
+        _command: string,
+        _args: string[],
+        _options: Record<string, unknown>,
+        callback: (error: Error | null, stdout: string, stderr: string) => void,
+      ) => callback(null, '{"iid":42}', ""),
+    );
+
+    await runGlabApiJson({
+      cwd: "/repo",
+      hostname: "gitlab.example.test",
+      endpoint: "projects/group%2Frepo/merge_requests/42",
+    });
+
+    expect(mocks.execFile).toHaveBeenLastCalledWith(
+      "glab",
+      ["api", "--hostname", "gitlab.example.test", "projects/group%2Frepo/merge_requests/42"],
+      expect.objectContaining({ cwd: "/repo", encoding: "utf8" }),
+      expect.any(Function),
+    );
+  });
 });
