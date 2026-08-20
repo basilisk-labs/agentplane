@@ -54,6 +54,7 @@ type ForwardCompatiblePrMetaRecord = {
   branch?: unknown;
   pr_number?: unknown;
   pr_url?: unknown;
+  provider?: unknown;
   created_at?: unknown;
   updated_at?: unknown;
   status?: unknown;
@@ -114,6 +115,7 @@ function buildForwardCompatiblePrMeta(
     branch,
     pr_number: asOptionalInteger(parsed.pr_number),
     pr_url: asNonEmptyString(parsed.pr_url),
+    provider: asProviderIdentity(parsed.provider),
     created_at: createdAt,
     updated_at: updatedAt,
     status,
@@ -139,6 +141,34 @@ function buildForwardCompatiblePrMeta(
     (meta as PrMeta & { pre_merge_closure?: unknown }).pre_merge_closure = parsed.pre_merge_closure;
   }
   return meta;
+}
+
+function asProviderIdentity(value: unknown): PrMeta["provider"] {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const record = value as Record<string, unknown>;
+  const kind = asNonEmptyString(record.kind);
+  const hostname = asNonEmptyString(record.hostname);
+  const remote = asNonEmptyString(record.remote);
+  const sourceProject = asNonEmptyString(record.source_project);
+  const targetProject = asNonEmptyString(record.target_project);
+  if (
+    record.schema_version !== 1 ||
+    (kind !== "github" && kind !== "gitlab") ||
+    !hostname ||
+    !remote ||
+    !sourceProject ||
+    !targetProject
+  ) {
+    return undefined;
+  }
+  return {
+    schema_version: 1,
+    kind,
+    hostname,
+    remote,
+    source_project: sourceProject,
+    target_project: targetProject,
+  };
 }
 
 function asMergeStrategy(value: unknown): "squash" | "merge" | "rebase" | undefined {

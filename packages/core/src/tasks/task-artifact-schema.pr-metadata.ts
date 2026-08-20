@@ -36,6 +36,17 @@ export const TASK_PR_META_ZOD_SCHEMA = z
     base: NON_EMPTY_STRING.optional(),
     pr_number: z.number().int().min(1).optional(),
     pr_url: NON_EMPTY_STRING.optional(),
+    provider: z
+      .object({
+        schema_version: z.literal(1),
+        kind: z.enum(["github", "gitlab"]),
+        hostname: NON_EMPTY_STRING,
+        remote: NON_EMPTY_STRING,
+        source_project: NON_EMPTY_STRING,
+        target_project: NON_EMPTY_STRING,
+      })
+      .strict()
+      .optional(),
     created_at: ISO_UTC_TIMESTAMP,
     updated_at: ISO_UTC_TIMESTAMP,
     status: z.enum(PR_STATUS_VALUES).optional(),

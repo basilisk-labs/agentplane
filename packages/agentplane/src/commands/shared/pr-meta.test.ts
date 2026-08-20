@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PassThrough } from "node:stream";
 
 import {
+  buildObservedChangeRequestMeta,
   buildObservedGithubPrMeta,
   buildOpenedPrMeta,
   buildIntegratedPrMeta,
@@ -253,6 +254,55 @@ describe("pr-meta shell invocations", () => {
         },
       }),
     );
+  });
+
+  it("persists GitLab host identity while keeping legacy metadata forward compatible", () => {
+    const provider = {
+      schema_version: 1 as const,
+      kind: "gitlab" as const,
+      hostname: "gitlab.example.test",
+      remote: "fork",
+      source_project: "denis/project",
+      target_project: "group/project",
+    };
+    const meta = buildObservedChangeRequestMeta({
+      meta: {
+        schema_version: 1,
+        task_id: "202601010101-ABCDE",
+        branch: "task/202601010101-ABCDE/example",
+        base: "main",
+        created_at: "2026-01-27T00:00:00Z",
+        updated_at: "2026-01-27T00:00:00Z",
+        last_verified_sha: null,
+        last_verified_at: null,
+        verify: { status: "pass" },
+      },
+      observed: {
+        prNumber: 42,
+        prUrl: "https://gitlab.example.test/group/project/-/merge_requests/42",
+        status: "OPEN",
+        mergedAt: null,
+        mergeCommit: null,
+        base: "main",
+        baseSha: "base-sha",
+        headSha: "head-sha",
+        headRef: "task/202601010101-ABCDE/example",
+        providerIdentity: provider,
+      },
+      at: "2026-01-28T00:00:00Z",
+    });
+
+    expect(parsePrMeta(JSON.stringify(meta), "202601010101-ABCDE")).toMatchObject({
+      pr_number: 42,
+      provider,
+    });
+    expect(
+      buildUpdatedPrMeta({
+        meta,
+        branch: "task/202601010101-ABCDE/example",
+        at: "2026-01-29T00:00:00Z",
+      }).provider,
+    ).toEqual(provider);
   });
 
   it("records first-class branch_pr batch metadata alongside legacy related task ids", () => {

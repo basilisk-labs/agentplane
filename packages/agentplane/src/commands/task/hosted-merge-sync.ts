@@ -12,7 +12,8 @@ import {
   needsHostedMergeSync,
   needsHostedMergeSyncFromLocalMeta,
 } from "./hosted-merge-sync/builders.js";
-import { resolveHostedMergedPr } from "./hosted-merge-sync/github.js";
+import { resolveHostedMergedChangeRequest } from "./hosted-merge-sync/provider.js";
+
 import { findLocallyShippedBranchPrTasks } from "./hosted-merge-sync/local-branch.js";
 import { readPrMetaIfPresent, resolveLocalMergedPrMeta } from "./hosted-merge-sync/pr-meta.js";
 import type { HostedMergeSyncResult, HostedMergeTarget } from "./hosted-merge-sync/model.js";
@@ -23,10 +24,10 @@ export {
   findDoneBranchPrTasksWithOpenPrArtifacts,
   findLocallyShippedBranchPrTasks,
 } from "./hosted-merge-sync/local-branch.js";
-export {
-  resolveHostedMergedPr,
-  resolveHostedMergeTargetFromEvent,
-} from "./hosted-merge-sync/github.js";
+// Compatibility export: callers that use the legacy PR-specific helper keep the
+// exact GitHub transport behavior. Internal reconciliation uses the provider router.
+export { resolveHostedMergedPr } from "./hosted-merge-sync/github.js";
+export { resolveHostedMergeTargetFromProviderEvent as resolveHostedMergeTargetFromEvent } from "./hosted-merge-sync/provider.js";
 export { resolveLocalMergedPrMeta } from "./hosted-merge-sync/pr-meta.js";
 
 async function syncHostedMergedTask(opts: {
@@ -180,9 +181,10 @@ export async function syncHostedMergedTasks(opts: {
       continue;
     }
 
-    const mergedPr = await resolveHostedMergedPr({
+    const mergedPr = await resolveHostedMergedChangeRequest({
       cwd: opts.ctx.resolvedProject.gitRoot,
       branch,
+      recorded: prMetaRecord.meta.provider ?? null,
     });
     if (!mergedPr?.mergeCommit?.oid) {
       nextTasks.push(task);

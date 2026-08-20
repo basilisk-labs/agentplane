@@ -4,10 +4,11 @@ import { CliError } from "../../../shared/errors.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../../shared/write-if-changed.js";
 import {
-  buildObservedGithubPrMeta,
+  buildObservedChangeRequestMeta,
   buildUpdatedPrMeta,
   resolvePrBatchIncludedTaskIds,
   type PrMeta,
+  withPrArtifactLifecycleState,
 } from "../../shared/pr-meta.js";
 import {
   buildGithubPrTitle,
@@ -18,9 +19,12 @@ import {
 } from "./review-template.js";
 import { computePrDiffstat } from "./sync-branch.js";
 import {
-  shouldPersistObservedGithubPrIdentity,
-  tryLookupExistingGithubPrByBranch,
-} from "./sync-github.js";
+  resolveChangeRequestIdentity,
+  shouldPersistObservedChangeRequestIdentity,
+  tryLookupExistingChangeRequestByBranch,
+  tryUpdateChangeRequest,
+} from "./change-request-provider.js";
+import { toRecordedGitHostIdentity, type GitHostIdentity } from "./git-host-identity.js";
 import { digestPrDiffstatText } from "./freshness.js";
 import type { PrSyncCommonState } from "./sync-model.js";
 
@@ -47,15 +51,34 @@ export async function runPrUpdateSync(common: PrSyncCommonState): Promise<{ meta
     base: common.baseBranch,
     diffstatDigest: digestPrDiffstatText(diffstat ? `${diffstat}\n` : ""),
   });
-  const observedGithubPr = await tryLookupExistingGithubPrByBranch({
-    gitRoot: common.resolved.gitRoot,
-    branch: common.branch,
-    baseBranch: common.baseBranch,
-  });
-  if (shouldPersistObservedGithubPrIdentity(observedGithubPr)) {
-    nextMeta = buildObservedGithubPrMeta({
+  let identity: GitHostIdentity | null = null;
+  try {
+    identity = await resolveChangeRequestIdentity({
+      gitRoot: common.resolved.gitRoot,
+      branch: common.branch,
+      recorded: common.existingMeta?.provider ?? null,
+    });
+  } catch (error) {
+    // A recorded identity is a security boundary: drift must fail closed. Legacy
+    // local-only packets without any publication remote remain refreshable.
+    if (common.existingMeta?.provider) throw error;
+  }
+  if (identity) nextMeta.provider = toRecordedGitHostIdentity(identity);
+  let observedChangeRequest = identity
+    ? await tryLookupExistingChangeRequestByBranch({
+        gitRoot: common.resolved.gitRoot,
+        branch: common.branch,
+        baseBranch: common.baseBranch,
+        identity,
+      })
+    : null;
+  if (shouldPersistObservedChangeRequestIdentity(observedChangeRequest)) {
+    nextMeta = buildObservedChangeRequestMeta({
       meta: nextMeta,
-      observed: observedGithubPr!,
+      observed: {
+        ...observedChangeRequest!,
+        providerIdentity: toRecordedGitHostIdentity(observedChangeRequest!.identity),
+      },
       at: common.now,
     });
   }
@@ -79,6 +102,35 @@ export async function runPrUpdateSync(common: PrSyncCommonState): Promise<{ meta
     handoffNotes: common.handoffNotes,
     autoSummary: nextAutoSummary,
   });
+  if (identity && observedChangeRequest?.status === "OPEN") {
+    const updated = await tryUpdateChangeRequest({
+      gitRoot: common.resolved.gitRoot,
+      identity,
+      observed: observedChangeRequest,
+      title: githubTitle,
+      body: githubBody,
+    });
+    if (updated.observed && shouldPersistObservedChangeRequestIdentity(updated.observed)) {
+      nextMeta = buildObservedChangeRequestMeta({
+        meta: nextMeta,
+        observed: {
+          ...updated.observed,
+          providerIdentity: toRecordedGitHostIdentity(updated.observed.identity),
+        },
+        at: common.now,
+      });
+    }
+    if (updated.artifactState) {
+      nextMeta = withPrArtifactLifecycleState(
+        nextMeta,
+        {
+          kind: updated.artifactState,
+          reason: updated.stagedReason ?? "remote change-request update could not be confirmed",
+        },
+        common.now,
+      );
+    }
+  }
   const errors: string[] = [];
   validateArtifactsLanguage({
     texts: {

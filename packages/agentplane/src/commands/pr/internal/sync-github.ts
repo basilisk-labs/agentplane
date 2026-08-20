@@ -10,6 +10,7 @@ import {
   withGhTransportRetry,
 } from "../../shared/gh-transport.js";
 import { ghEnv } from "./gh-api.js";
+import type { GitHostIdentity } from "./git-host-identity.js";
 
 type GithubPullLookupRecord = {
   number?: number;
@@ -244,15 +245,16 @@ export async function observeExistingGithubPrByBranch(opts: {
   branch: string;
   baseBranch?: string | null;
   requireUnique?: boolean;
+  identity?: GitHostIdentity;
 }): Promise<GithubPrLookupResult> {
-  const repo = await resolveGithubRepoFromOrigin(opts.gitRoot);
+  const repo = opts.identity?.targetProject ?? (await resolveGithubRepoFromOrigin(opts.gitRoot));
   if (!repo) {
     return {
       state: "unavailable",
       reason: "origin is unavailable or is not a GitHub repository",
     };
   }
-  const owner = repo.split("/")[0]?.trim() ?? "";
+  const owner = (opts.identity?.sourceProject ?? repo).split("/")[0]?.trim() ?? "";
   if (!owner) {
     return { state: "unavailable", reason: "GitHub repository owner could not be resolved" };
   }
@@ -300,6 +302,7 @@ export async function tryLookupExistingGithubPrByBranch(opts: {
   gitRoot: string;
   branch: string;
   baseBranch?: string | null;
+  identity?: GitHostIdentity;
 }): Promise<ObservedGithubPr | null> {
   const result = await observeExistingGithubPrByBranch(opts);
   return result.state === "found" ? result.pr : null;
@@ -310,11 +313,12 @@ export async function observeExistingGithubPrByNumber(opts: {
   prNumber: number;
   branch?: string | null;
   baseBranch?: string | null;
+  identity?: GitHostIdentity;
 }): Promise<GithubPrLookupResult> {
   if (!Number.isInteger(opts.prNumber) || opts.prNumber <= 0) {
     return { state: "unavailable", reason: "GitHub PR number is invalid" };
   }
-  const repo = await resolveGithubRepoFromOrigin(opts.gitRoot);
+  const repo = opts.identity?.targetProject ?? (await resolveGithubRepoFromOrigin(opts.gitRoot));
   if (!repo) {
     return {
       state: "unavailable",
@@ -329,6 +333,7 @@ export async function tryLookupExistingGithubPrByNumber(opts: {
   prNumber: number;
   branch?: string | null;
   baseBranch?: string | null;
+  identity?: GitHostIdentity;
 }): Promise<ObservedGithubPr | null> {
   const result = await observeExistingGithubPrByNumber(opts);
   return result.state === "found" ? result.pr : null;
@@ -338,8 +343,9 @@ export async function tryLookupExistingGithubPrByBranchPrefix(opts: {
   gitRoot: string;
   branchPrefix: string;
   baseBranch?: string | null;
+  identity?: GitHostIdentity;
 }): Promise<ObservedGithubPr | null> {
-  const repo = await resolveGithubRepoFromOrigin(opts.gitRoot);
+  const repo = opts.identity?.targetProject ?? (await resolveGithubRepoFromOrigin(opts.gitRoot));
   if (!repo) return null;
   const query = new URLSearchParams({ state: "all", per_page: "100" });
   const baseBranch = opts.baseBranch?.trim() ?? "";
@@ -429,12 +435,13 @@ export async function tryCreateGithubPr(opts: {
   baseBranch: string | null;
   title: string;
   body: string;
+  identity?: GitHostIdentity;
 }): Promise<{
   observed: ObservedGithubPr | null;
   stagedReason: string | null;
   artifactState: "remote_staged" | "remote_failed" | null;
 }> {
-  const repo = await resolveGithubRepoFromOrigin(opts.gitRoot);
+  const repo = opts.identity?.targetProject ?? (await resolveGithubRepoFromOrigin(opts.gitRoot));
   if (!repo) {
     return {
       observed: null,
@@ -460,7 +467,10 @@ export async function tryCreateGithubPr(opts: {
         {
           title: opts.title,
           body: opts.body,
-          head: opts.branch,
+          head:
+            opts.identity && opts.identity.sourceProject !== opts.identity.targetProject
+              ? `${opts.identity.sourceProject.split("/")[0]}:${opts.branch}`
+              : opts.branch,
           base: baseBranch,
         },
         null,

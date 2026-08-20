@@ -9,7 +9,7 @@ export const prSpec: CommandSpec<PrGroupParsed> = {
   id: ["pr"],
   group: "PR",
   summary:
-    "Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).",
+    "Manage local review artifacts and hosted GitHub PR or GitLab MR publication for a task (branch_pr workflow).",
   synopsis: [
     "agentplane pr <open|update|check|flow status|conflict-rework|note|close|close-superseded> <task-id|pr-number> [options]",
   ],
@@ -57,7 +57,7 @@ export const prOpenSpec: CommandSpec<PrOpenParsed> = {
   id: ["pr", "open"],
   group: "PR",
   summary:
-    "Create PR artifacts for a task and, unless --sync-only is set, publish/link the remote GitHub PR.",
+    "Create PR artifacts for a task and, unless --sync-only is set, publish/link the remote GitHub PR or GitLab MR.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     {
@@ -84,13 +84,13 @@ export const prOpenSpec: CommandSpec<PrOpenParsed> = {
       kind: "boolean",
       name: "sync-only",
       default: false,
-      description: "Only write local PR artifacts; do not create a remote GitHub PR.",
+      description: "Only write local PR artifacts; do not create a remote GitHub PR or GitLab MR.",
     },
   ],
   examples: [
     {
       cmd: "agentplane pr open 202602030608-F1Q8AB --author CODER",
-      why: "Sync local artifacts, publish the task branch to origin if needed, and create/link the GitHub PR.",
+      why: "Sync local artifacts, publish the task branch if needed, and create/link the GitHub PR or GitLab MR.",
     },
   ],
   validateRaw: (raw) => {
@@ -117,7 +117,7 @@ export type PrUpdateParsed = { taskId: string; includeTaskIds: string[] };
 export const prUpdateSpec: CommandSpec<PrUpdateParsed> = {
   id: ["pr", "update"],
   group: "PR",
-  summary: "Update PR artifacts (review packet, diffstat, and GitHub projections).",
+  summary: "Update review artifacts and the linked hosted change request.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     {
@@ -171,7 +171,7 @@ export const prCheckSpec: CommandSpec<PrCheckParsed> = {
       kind: "boolean",
       name: "hosted",
       default: false,
-      description: "Require hosted GitHub PR checks to be complete and stable.",
+      description: "Require hosted GitHub PR or GitLab MR checks to be complete and stable.",
     },
     {
       kind: "string",
@@ -196,7 +196,7 @@ export const prCheckSpec: CommandSpec<PrCheckParsed> = {
       name: "required-check",
       valueHint: "<name>",
       repeatable: true,
-      description: "Repeatable hosted check name that must appear in the PR rollup.",
+      description: "Repeatable hosted check name that must appear in the provider rollup.",
     },
   ],
   examples: [
@@ -226,7 +226,7 @@ export type PrFlowStatusParsed = { taskId: string; json: boolean };
 export const prFlowStatusSpec: CommandSpec<PrFlowStatusParsed> = {
   id: ["pr", "flow", "status"],
   group: "PR",
-  summary: "Show branch_pr task branch, remote PR, close-tail, and next-action state.",
+  summary: "Show branch_pr task branch, hosted change request, close-tail, and next-action state.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
   examples: [

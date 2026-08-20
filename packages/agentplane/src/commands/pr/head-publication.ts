@@ -81,7 +81,7 @@ export async function resolvePrHeadPublicationStatus(opts: {
     if (!hostedHeadSha) {
       return {
         state: "unavailable",
-        reason: "GitHub PR head SHA is unavailable",
+        reason: "Hosted change-request head SHA is unavailable",
         ...evidence,
       };
     }

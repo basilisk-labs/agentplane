@@ -206,7 +206,7 @@
           "anyOf": [
             {
               "type": "string",
-              "enum": ["awaiting_github_merge"]
+              "enum": ["awaiting_github_merge", "awaiting_provider_merge"]
             },
             {
               "type": "null"
@@ -230,8 +230,20 @@
               "type": "string",
               "enum": [
                 "github_pr_merge_then_hosted_close",
-                "github_task_pr_merge_then_hosted_close"
+                "github_task_pr_merge_then_hosted_close",
+                "provider_change_request_merge_then_hosted_close"
               ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": ["github", "gitlab"]
             },
             {
               "type": "null"

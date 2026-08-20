@@ -32,6 +32,7 @@ import {
   resolveGithubBasePullRequestProtection,
   type GithubBasePullRequestProtection,
 } from "./integrate/internal/github-protection.js";
+import { resolveGitLabBaseMergeRequestProtection } from "./integrate/internal/gitlab-protection.js";
 
 const MAX_CANDIDATE_CONFLICT_PATHS = 32;
 
@@ -62,7 +63,7 @@ export type ConflictReworkPacket = {
   schema_version: 1;
   task_id: string;
   provider: {
-    name: "github";
+    name: "github" | "gitlab";
     pr_number: number;
     pr_url: string | null;
     state: "OPEN";
@@ -77,7 +78,7 @@ export type ConflictReworkPacket = {
     };
   };
   base_protection: {
-    provider: "github";
+    provider: "github" | "gitlab";
     base: string;
     state: "protected_pull_request_merge";
   };
@@ -222,14 +223,17 @@ export async function prepareConflictReworkPacket(opts: {
   if (opts.report.providerObservation?.state === "unavailable") {
     return invalid(
       "provider_pr_unavailable",
-      `GitHub PR state is unavailable: ${opts.report.providerObservation.reason}`,
+      `Hosted change-request state is unavailable: ${opts.report.providerObservation.reason}`,
     );
   }
   if (
     opts.report.providerObservation?.state === "not_found" ||
     opts.report.pr.state === "not_found"
   ) {
-    return invalid("provider_pr_missing", "GitHub PR is not available for conflict preparation.");
+    return invalid(
+      "provider_pr_missing",
+      "Hosted change request is not available for conflict preparation.",
+    );
   }
   if (
     opts.report.pr.state === "OPEN" &&
@@ -240,7 +244,7 @@ export async function prepareConflictReworkPacket(opts: {
     if (!hasCoherentGithubPrMergeability(mergeability)) {
       return invalid(
         "provider_mergeability_unknown",
-        `GitHub mergeability is not settled: state=${mergeability?.state ?? "missing"} provider_state=${mergeability?.providerState ?? "missing"}`,
+        `Provider mergeability is not settled: state=${mergeability?.state ?? "missing"} provider_state=${mergeability?.providerState ?? "missing"}`,
       );
     }
   }
@@ -256,6 +260,8 @@ export async function prepareConflictReworkPacket(opts: {
     return invalid("provider_pr_unavailable", "provider conflict observation is unavailable");
   }
   const observed = observation.pr;
+  const provider: "github" | "gitlab" = observed.provider === "gitlab" ? "gitlab" : "github";
+  const providerLabel = provider === "gitlab" ? "GitLab" : "GitHub";
   const taskBranch = trimmed(opts.report.branch.name);
   const localHead = trimmed(opts.report.branch.headSha);
   const providerHead = trimmed(observed.headSha);
@@ -298,7 +304,16 @@ export async function prepareConflictReworkPacket(opts: {
   }
   const baseProtection =
     opts.baseProtection ??
-    (await resolveGithubBasePullRequestProtection({ gitRoot: opts.gitRoot, baseBranch: base }));
+    (provider === "gitlab"
+      ? await resolveGitLabBaseMergeRequestProtection({
+          gitRoot: opts.gitRoot,
+          identity: observed.identity,
+          baseBranch: base,
+        })
+      : await resolveGithubBasePullRequestProtection({
+          gitRoot: opts.gitRoot,
+          baseBranch: base,
+        }));
   if (baseProtection.baseBranch !== base) {
     return invalid(
       "provider_base_protection_mismatch",
@@ -308,13 +323,13 @@ export async function prepareConflictReworkPacket(opts: {
   if (baseProtection.state === "unavailable") {
     return invalid(
       "provider_base_protection_unavailable",
-      `GitHub base protection cannot be confirmed for ${base}: ${baseProtection.reason}`,
+      `${providerLabel} base protection cannot be confirmed for ${base}: ${baseProtection.reason}`,
     );
   }
   if (baseProtection.state !== "protected") {
     return invalid(
       "provider_base_unprotected",
-      `GitHub does not currently confirm ${base} requires the protected pull-request merge path`,
+      `${providerLabel} does not currently confirm ${base} is protected from direct integration`,
     );
   }
   if (opts.taskWorktree.state === "not_present") {
@@ -472,7 +487,7 @@ export async function prepareConflictReworkPacket(opts: {
     schema_version: 1 as const,
     task_id: opts.taskId,
     provider: {
-      name: "github" as const,
+      name: provider,
       pr_number: prNumber,
       pr_url: opts.report.pr.prUrl,
       state: "OPEN" as const,
@@ -487,7 +502,7 @@ export async function prepareConflictReworkPacket(opts: {
       },
     },
     base_protection: {
-      provider: "github" as const,
+      provider,
       base,
       state: "protected_pull_request_merge" as const,
     },

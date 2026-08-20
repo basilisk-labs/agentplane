@@ -30,7 +30,7 @@ import {
   validateSnapshotContents,
 } from "./internal/pr-artifact-snapshot.js";
 import { computePrDiffstat } from "./internal/sync-branch.js";
-import { tryLookupExistingGithubPrByBranch } from "./internal/sync-github.js";
+import { tryLookupExistingChangeRequestByBranch } from "./internal/change-request-provider.js";
 import { waitForHostedChecks } from "./hosted-checks.js";
 import { ghEnv } from "./internal/gh-api.js";
 
@@ -307,23 +307,28 @@ export async function cmdPrCheck(opts: {
       typeof selectedSnapshot.meta?.pr_number === "number" && selectedSnapshot.meta.pr_number > 0
         ? selectedSnapshot.meta.pr_number
         : null;
-    if (prNumber === null && branchForFreshness) {
-      const observedPr = await tryLookupExistingGithubPrByBranch({
+    let observedProvider = selectedSnapshot.meta?.provider?.kind ?? null;
+    if (branchForFreshness && (prNumber === null || observedProvider === null)) {
+      const observedPr = await tryLookupExistingChangeRequestByBranch({
         gitRoot: resolved.gitRoot,
         branch: branchForFreshness,
         baseBranch: selectedSnapshot.meta?.base ?? null,
+        recorded: selectedSnapshot.meta?.provider ?? null,
       });
       prNumber = observedPr?.prNumber ?? null;
+      observedProvider = observedPr?.provider ?? observedProvider;
     }
-    const reviewThreads = await checkGithubUnresolvedReviewThreads({
-      gitRoot: resolved.gitRoot,
-      prNumber,
-    });
-    if (reviewThreads.checked && prNumber !== null) {
-      throwIfGithubReviewThreadsUnresolved({
+    if (observedProvider !== "gitlab") {
+      const reviewThreads = await checkGithubUnresolvedReviewThreads({
+        gitRoot: resolved.gitRoot,
         prNumber,
-        unresolved: reviewThreads.unresolved,
       });
+      if (reviewThreads.checked && prNumber !== null) {
+        throwIfGithubReviewThreadsUnresolved({
+          prNumber,
+          unresolved: reviewThreads.unresolved,
+        });
+      }
     }
     if (opts.hosted === true) {
       const hosted = await waitForHostedChecks({
@@ -333,6 +338,9 @@ export async function cmdPrCheck(opts: {
         pollIntervalMs: opts.pollIntervalMs ?? null,
         timeoutMs: opts.timeoutMs ?? null,
         requiredChecks: opts.requiredChecks ?? [],
+        branch: branchForFreshness,
+        expectedHeadSha: branchHeadSha,
+        recordedProvider: selectedSnapshot.meta?.provider ?? null,
       });
       output.success(
         "hosted checks",
@@ -341,10 +349,13 @@ export async function cmdPrCheck(opts: {
       );
     }
 
-    const mergeDiagnostic = await lookupGithubMergeDiagnostic({
-      gitRoot: resolved.gitRoot,
-      prNumber,
-    });
+    const mergeDiagnostic =
+      observedProvider === "gitlab"
+        ? null
+        : await lookupGithubMergeDiagnostic({
+            gitRoot: resolved.gitRoot,
+            prNumber,
+          });
     if (mergeDiagnostic?.mergeStateStatus === "BLOCKED") {
       output.line(
         `merge_state: BLOCKED review=${mergeDiagnostic.reviewDecision ?? "unknown"} auto_merge=${mergeDiagnostic.autoMergeRequest ? "enabled" : "disabled"}`,

@@ -11,10 +11,14 @@ import {
 } from "../../../shared/task-handoff.js";
 import { requireOpenGithubPrAtHead } from "../../provider-head.js";
 import { runProtectedBaseGithubMerge } from "./github-pr-merge.js";
+import { runProtectedBaseGitLabMerge } from "./gitlab-mr-merge.js";
+import { resolveChangeRequestIdentity } from "../../internal/change-request-provider.js";
+import type { RecordedGitHostIdentity } from "../../internal/git-host-identity.js";
 
 type IntegratePrMetaSource = {
   pr_number?: unknown;
   pr_url?: unknown;
+  provider?: RecordedGitHostIdentity | null;
 };
 
 async function recordProtectedBaseIntegrateHandoff(opts: {
@@ -26,6 +30,7 @@ async function recordProtectedBaseIntegrateHandoff(opts: {
   prNumber: number | null;
   prUrl: string | null;
   providerBaseSha: string;
+  provider: "github" | "gitlab";
 }): Promise<void> {
   const paths = resolveTaskHandoffPaths({
     git_root: opts.ctx.resolvedProject.gitRoot,
@@ -33,10 +38,11 @@ async function recordProtectedBaseIntegrateHandoff(opts: {
     task_id: opts.taskId,
   });
   const handoffShowCommand = `agentplane task handoff show ${opts.taskId}`;
+  const providerLabel = opts.provider === "gitlab" ? "GitLab MR" : "GitHub PR";
   const prLabel =
     typeof opts.prNumber === "number" && opts.prNumber > 0
-      ? `GitHub PR #${opts.prNumber}`
-      : `the GitHub PR for branch ${opts.branch}`;
+      ? `${providerLabel} #${opts.prNumber}`
+      : `the ${providerLabel} for branch ${opts.branch}`;
   const prUrl = opts.prUrl?.trim() ?? "";
   const prMetaPath = path.join(opts.ctx.config.paths.workflow_dir, opts.taskId, "pr", "meta.json");
   const taskReadmePath = path.join(opts.ctx.config.paths.workflow_dir, opts.taskId, "README.md");
@@ -46,11 +52,11 @@ async function recordProtectedBaseIntegrateHandoff(opts: {
       task_id: opts.taskId,
       created_at: new Date().toISOString(),
       from_role: "INTEGRATOR",
-      reason: `branch_pr integration is waiting for the GitHub PR merge into ${opts.base}.`,
+      reason: `branch_pr integration is waiting for the ${providerLabel} merge into ${opts.base}.`,
       note:
         prUrl.length > 0
-          ? `Continue the primary branch_pr merge route for ${prLabel}: ${prUrl}. After GitHub merges it, wait for Task Hosted Close, then pull ${opts.base}.`
-          : `Continue the primary branch_pr merge route for ${prLabel}. After GitHub merges it, wait for Task Hosted Close, then pull ${opts.base}.`,
+          ? `Continue the primary branch_pr merge route for ${prLabel}: ${prUrl}. After the provider merges it, wait for Task Hosted Close, then pull ${opts.base}.`
+          : `Continue the primary branch_pr merge route for ${prLabel}. After the provider merges it, wait for Task Hosted Close, then pull ${opts.base}.`,
       branch: opts.branch,
       base_branch: opts.base,
       head_sha: opts.branchHeadSha,
@@ -58,9 +64,13 @@ async function recordProtectedBaseIntegrateHandoff(opts: {
       pr_branch: opts.branch,
       route: {
         kind: "protected_base_integrate",
-        status: "awaiting_github_merge",
+        status: opts.provider === "github" ? "awaiting_github_merge" : "awaiting_provider_merge",
         local_mutation: "not_performed",
-        finalize_via: "github_task_pr_merge_then_hosted_close",
+        finalize_via:
+          opts.provider === "github"
+            ? "github_task_pr_merge_then_hosted_close"
+            : "provider_change_request_merge_then_hosted_close",
+        provider: opts.provider,
         pr_number: opts.prNumber,
         pr_url: prUrl.length > 0 ? prUrl : null,
         provider_base_sha: opts.providerBaseSha,
@@ -70,8 +80,8 @@ async function recordProtectedBaseIntegrateHandoff(opts: {
       next_actions: [
         handoffShowCommand,
         prUrl.length > 0
-          ? `Continue GitHub PR merge for ${prLabel}: ${prUrl}`
-          : `Continue GitHub PR merge for ${prLabel}`,
+          ? `Continue ${providerLabel} merge for ${prLabel}: ${prUrl}`
+          : `Continue ${providerLabel} merge for ${prLabel}`,
         `Wait for Task Hosted Close to finish`,
         `git pull --ff-only`,
       ],
@@ -107,9 +117,11 @@ export async function handleProtectedBaseIntegrate(opts: {
     base: opts.base,
     expectedHeadSha,
     prNumber: recordedPrNumber,
+    ...(opts.metaSource.provider ? { recorded: opts.metaSource.provider } : {}),
   });
   const prNumber = observedPr.prNumber;
   const prUrl = observedPr.prUrl;
+  const provider = observedPr.provider === "gitlab" ? "gitlab" : "github";
   const providerBaseSha = observedPr.baseSha?.trim() ?? "";
   if (!providerBaseSha) {
     throw new CliError({
@@ -117,49 +129,81 @@ export async function handleProtectedBaseIntegrate(opts: {
       code: "E_VALIDATION",
       message:
         `Cannot record protected-base handoff for ${opts.taskId}: ` +
-        "GitHub PR base SHA is unavailable",
+        `${provider === "gitlab" ? "GitLab MR" : "GitHub PR"} base SHA is unavailable`,
     });
   }
+  const providerLabel = provider === "gitlab" ? "GitLab MR" : "GitHub PR";
   const prUrlTarget = prUrl?.trim() ?? "";
-  const prTarget = prUrlTarget.length > 0 ? prUrlTarget : prNumber === null ? "" : String(prNumber);
+  const prTarget =
+    provider === "github" && prUrlTarget.length > 0
+      ? prUrlTarget
+      : prNumber === null
+        ? ""
+        : String(prNumber);
   const prHint =
-    prNumber === null ? `the GitHub PR for branch ${opts.branch}` : `GitHub PR #${prNumber}`;
+    prNumber === null
+      ? `the ${providerLabel} for branch ${opts.branch}`
+      : `${providerLabel} #${prNumber}`;
   let protectedBaseMergeFailure: string | null = null;
 
   if (prTarget) {
     try {
-      const githubMerge = await runProtectedBaseGithubMerge({
-        gitRoot: opts.ctx.resolvedProject.gitRoot,
-        prTarget,
-        expectedHeadSha,
-        preMutationGuard: opts.preMutationGuard,
-      });
+      const providerMerge =
+        provider === "gitlab"
+          ? {
+              ...(await runProtectedBaseGitLabMerge({
+                gitRoot: opts.ctx.resolvedProject.gitRoot,
+                identity: await resolveChangeRequestIdentity({
+                  gitRoot: opts.ctx.resolvedProject.gitRoot,
+                  branch: opts.branch,
+                  recorded: opts.metaSource.provider ?? null,
+                }),
+                prNumber,
+                expectedHeadSha,
+                preMutationGuard: opts.preMutationGuard,
+              })),
+              provider: "gitlab" as const,
+            }
+          : {
+              ...(await runProtectedBaseGithubMerge({
+                gitRoot: opts.ctx.resolvedProject.gitRoot,
+                prTarget,
+                expectedHeadSha,
+                preMutationGuard: opts.preMutationGuard,
+              })),
+              provider: "github" as const,
+            };
       await recordProtectedBaseIntegrateHandoff({
         ...opts,
         prNumber,
         prUrl,
         providerBaseSha,
+        provider,
       });
-      if (githubMerge.status === "merged") {
+      if (providerMerge.status === "merged") {
+        const reasonCode =
+          providerMerge.provider === "github"
+            ? "protected_base_github_merge_completed"
+            : "protected_base_gitlab_merge_completed";
         throw new CliError({
           exitCode: exitCodeForError("E_HANDOFF"),
           code: "E_HANDOFF",
-          message: `${githubMerge.detail}. Wait for Task Hosted Close to finish the closure tail, then pull ${opts.base}.`,
+          message: `${providerMerge.detail}. Wait for Task Hosted Close to finish the closure tail, then pull ${opts.base}.`,
           context: withDiagnosticContext(
             {
               task_id: opts.taskId,
               branch: opts.branch,
               base_branch: opts.base,
-              reason_code: "protected_base_github_merge_completed",
+              reason_code: reasonCode,
             },
             {
-              state: `branch_pr GitHub PR merged for ${opts.taskId}`,
+              state: `branch_pr ${providerLabel} merged for ${opts.taskId}`,
               likelyCause: `branch_pr keeps the integration lane occupied until Task Hosted Close lands the close tail on ${opts.base}`,
               hint: "Wait for Task Hosted Close to finish, then pull the base branch before releasing the queue lane.",
               nextAction: {
                 command: `git pull --ff-only`,
                 reason: "refresh the base checkout after Task Hosted Close finishes",
-                reasonCode: "protected_base_github_merge_completed",
+                reasonCode,
               },
             },
           ),
@@ -168,7 +212,7 @@ export async function handleProtectedBaseIntegrate(opts: {
       throw new CliError({
         exitCode: exitCodeForError("E_HANDOFF"),
         code: "E_HANDOFF",
-        message: `${githubMerge.detail}. Wait for GitHub to merge the PR, let Task Hosted Close finish the closure tail, then pull ${opts.base}.`,
+        message: `${providerMerge.detail}. Wait for the provider to merge the change request, let Task Hosted Close finish the closure tail, then pull ${opts.base}.`,
         context: withDiagnosticContext(
           {
             task_id: opts.taskId,
@@ -177,12 +221,13 @@ export async function handleProtectedBaseIntegrate(opts: {
             reason_code: "protected_base_auto_merge_enabled",
           },
           {
-            state: `branch_pr GitHub PR merge queued for ${opts.taskId}`,
-            likelyCause: `branch_pr uses the GitHub task PR merge as the primary finalization route for protected base ${opts.base}`,
-            hint: "Wait for GitHub to merge the task PR and Task Hosted Close to finish, then pull the base branch.",
+            state: `branch_pr ${providerLabel} merge queued for ${opts.taskId}`,
+            likelyCause: `branch_pr uses the hosted change-request merge as the primary finalization route for protected base ${opts.base}`,
+            hint: "Wait for the provider to merge the change request and Task Hosted Close to finish, then pull the base branch.",
             nextAction: {
               command: `git pull --ff-only`,
-              reason: "refresh the base checkout after GitHub completes the task PR merge",
+              reason:
+                "refresh the base checkout after the provider completes the change-request merge",
               reasonCode: "protected_base_auto_merge_wait",
             },
           },
@@ -192,7 +237,8 @@ export async function handleProtectedBaseIntegrate(opts: {
       if (!(err instanceof CliError) || err.code !== "E_HANDOFF") throw err;
       if (
         err.context?.reason_code === "protected_base_auto_merge_enabled" ||
-        err.context?.reason_code === "protected_base_github_merge_completed"
+        err.context?.reason_code === "protected_base_github_merge_completed" ||
+        err.context?.reason_code === "protected_base_gitlab_merge_completed"
       ) {
         throw err;
       }
@@ -205,14 +251,15 @@ export async function handleProtectedBaseIntegrate(opts: {
     prNumber,
     prUrl,
     providerBaseSha,
+    provider,
   });
   throw new CliError({
     exitCode: exitCodeForError("E_HANDOFF"),
     code: "E_HANDOFF",
     message:
-      `branch_pr integrates into ${opts.base} through the task GitHub PR, not by mutating ${opts.base} directly. ` +
+      `branch_pr integrates into ${opts.base} through the hosted change request, not by mutating ${opts.base} directly. ` +
       (protectedBaseMergeFailure ? `${protectedBaseMergeFailure}. ` : "") +
-      `Continue the GitHub PR merge route for ${prHint}, let Task Hosted Close finish the closure tail, then pull ${opts.base}.`,
+      `Continue the ${providerLabel} merge route for ${prHint}, let Task Hosted Close finish the closure tail, then pull ${opts.base}.`,
     context: withDiagnosticContext(
       {
         task_id: opts.taskId,
@@ -221,12 +268,12 @@ export async function handleProtectedBaseIntegrate(opts: {
         reason_code: "protected_base_integrate_handoff",
       },
       {
-        state: `branch_pr integrate is waiting on the GitHub task PR merge for ${opts.taskId}`,
-        likelyCause: `the configured branch_pr route finalizes protected base ${opts.base} through the GitHub task PR`,
-        hint: "Inspect the persisted lane artifact, continue the GitHub PR merge route, and let Task Hosted Close finish the close tail.",
+        state: `branch_pr integrate is waiting on the ${providerLabel} merge for ${opts.taskId}`,
+        likelyCause: `the configured branch_pr route finalizes protected base ${opts.base} through the hosted change request`,
+        hint: `Inspect the persisted lane artifact, continue the ${providerLabel} merge route, and let Task Hosted Close finish the close tail.`,
         nextAction: {
           command: `agentplane task handoff show ${opts.taskId}`,
-          reason: "inspect the persisted GitHub PR merge route before continuing",
+          reason: `inspect the persisted ${providerLabel} merge route before continuing`,
           reasonCode: "protected_base_integrate_handoff",
         },
       },

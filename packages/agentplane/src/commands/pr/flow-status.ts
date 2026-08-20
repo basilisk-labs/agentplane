@@ -36,12 +36,12 @@ import {
 
 import { readTaskPrArtifact, resolvePrPaths } from "./internal/pr-paths.js";
 import {
-  observeExistingGithubPrByBranch,
-  observeExistingGithubPrByNumber,
-  type GithubPrLookupResult,
-} from "./internal/sync-github.js";
+  observeExistingChangeRequestByBranch,
+  observeExistingChangeRequestByNumber,
+} from "./internal/change-request-provider.js";
+import type { ChangeRequestLookupResult } from "./internal/change-request-model.js";
 
-type ProviderName = "github";
+type ProviderName = "github" | "gitlab";
 
 type RemotePrStatus =
   | { provider: ProviderName; state: "not_found"; source: "lookup" | "metadata" }
@@ -80,7 +80,7 @@ export type PrFlowStatusReport = {
     metaHeadSha: string | null;
   };
   pr: RemotePrStatus;
-  providerObservation?: GithubPrLookupResult;
+  providerObservation?: ChangeRequestLookupResult;
   publication?: PrHeadPublicationStatus;
   closeTail: CloseTailStatus;
   hostedChecks: HostedChecksSummary;
@@ -199,7 +199,7 @@ function remoteStatusFromLocalEvidence(
   const status = meta?.status;
   if (status === "OPEN" || status === "CLOSED" || status === "MERGED") {
     return {
-      provider: "github",
+      provider: meta?.provider?.kind ?? "github",
       state: status,
       source: "metadata",
       prNumber: Number.isInteger(prNumber) && prNumber > 0 ? prNumber : null,
@@ -211,7 +211,7 @@ function remoteStatusFromLocalEvidence(
   }
   if (queueEntry?.status === "queued" && queueEntry.pr_number) {
     return {
-      provider: "github",
+      provider: meta?.provider?.kind ?? "github",
       state: "OPEN",
       source: "metadata",
       prNumber: queueEntry.pr_number,
@@ -221,7 +221,7 @@ function remoteStatusFromLocalEvidence(
       mergeCommit: null,
     };
   }
-  return { provider: "github", state: "not_found", source: "metadata" };
+  return { provider: meta?.provider?.kind ?? "github", state: "not_found", source: "metadata" };
 }
 
 async function resolveReviewThreadsStatus(opts: {
@@ -272,7 +272,7 @@ async function resolveHandoffStatus(opts: {
 }
 
 function remoteStatusFromObservation(
-  observation: GithubPrLookupResult,
+  observation: ChangeRequestLookupResult,
   meta: PrMeta | null,
   queueEntry: IntegrationQueueEntry | null,
 ): RemotePrStatus {
@@ -280,11 +280,11 @@ function remoteStatusFromObservation(
     return remoteStatusFromLocalEvidence(meta, queueEntry);
   }
   if (observation.state === "not_found") {
-    return { provider: "github", state: "not_found", source: "lookup" };
+    return { provider: meta?.provider?.kind ?? "github", state: "not_found", source: "lookup" };
   }
   const observed = observation.pr;
   return {
-    provider: "github",
+    provider: observed.provider,
     state: observed.status,
     source: "lookup",
     prNumber: observed.prNumber,
@@ -311,6 +311,7 @@ async function resolveCloseTailStatus(opts: {
   remotePr: RemotePrStatus;
   preMergeClosureRecorded: boolean;
   preMergeClosureRecordedOnBase: boolean;
+  meta: PrMeta | null;
 }): Promise<CloseTailStatus> {
   const base = opts.baseBranch?.trim() ?? "";
   if (base) {
@@ -341,15 +342,16 @@ async function resolveCloseTailStatus(opts: {
     taskId: opts.taskId,
     commit: mergeCommit,
   });
-  const observation = await observeExistingGithubPrByBranch({
+  const observation = await observeExistingChangeRequestByBranch({
     gitRoot: opts.gitRoot,
     branch,
     baseBranch: base || null,
+    recorded: opts.meta?.provider ?? null,
   });
   if (observation.state === "unavailable") {
     return {
       state: "unavailable",
-      provider: "github",
+      provider: opts.meta?.provider?.kind ?? "github",
       branch,
       reason: observation.reason,
     };
@@ -358,13 +360,19 @@ async function resolveCloseTailStatus(opts: {
   if (observed?.status === "OPEN" || observed?.status === "MERGED") {
     return {
       state: observed.status === "MERGED" ? "merged" : "open",
-      provider: "github",
+      provider: observed.provider,
       branch,
       prNumber: observed.prNumber,
       prUrl: observed.prUrl,
     };
   }
-  return { state: "not_found", provider: "github", branch, prNumber: null, prUrl: null };
+  return {
+    state: "not_found",
+    provider: opts.meta?.provider?.kind ?? "github",
+    branch,
+    prNumber: null,
+    prUrl: null,
+  };
 }
 
 function deriveNextAction(report: PrFlowStatusReport): string {
@@ -389,7 +397,7 @@ function deriveNextAction(report: PrFlowStatusReport): string {
     return `wait hosted checks and merge close-tail PR #${report.closeTail.prNumber ?? "unknown"}`;
   }
   if (report.closeTail.state === "unavailable") {
-    return `retry GitHub close-tail lookup for ${report.closeTail.branch}`;
+    return `retry hosted close-tail lookup for ${report.closeTail.branch}`;
   }
   return `wait hosted close, or run agentplane task hosted-close-pr ${report.task.id}`;
 }
@@ -441,25 +449,27 @@ export async function resolvePrFlowStatus(opts: {
   const branchHeadSha = await resolveBranchHeadSha(resolved.gitRoot, branch);
   const baseHint = normalizeBaseBranch(meta?.base) ?? normalizeBaseBranch(queueEntry?.base);
   const storedPrNumber = Number(meta?.pr_number ?? queueEntry?.pr_number ?? 0);
-  const observedByNumber: GithubPrLookupResult | null =
+  const observedByNumber: ChangeRequestLookupResult | null =
     Number.isInteger(storedPrNumber) && storedPrNumber > 0
-      ? await observeExistingGithubPrByNumber({
+      ? await observeExistingChangeRequestByNumber({
           gitRoot: resolved.gitRoot,
           prNumber: storedPrNumber,
-          branch,
+          branch: branch ?? "",
           baseBranch: baseHint,
+          recorded: meta?.provider ?? null,
         })
       : null;
-  const providerObservation: GithubPrLookupResult =
+  const providerObservation: ChangeRequestLookupResult =
     observedByNumber?.state === "found" || observedByNumber?.state === "unavailable" || !branch
       ? (observedByNumber ?? {
           state: "unavailable",
-          reason: "task branch and recorded GitHub PR number are unavailable",
+          reason: "task branch and recorded hosted change-request number are unavailable",
         })
-      : await observeExistingGithubPrByBranch({
+      : await observeExistingChangeRequestByBranch({
           gitRoot: resolved.gitRoot,
           branch,
           baseBranch: baseHint,
+          recorded: meta?.provider ?? null,
         });
   const pr = remoteStatusFromObservation(providerObservation, meta, queueEntry);
   const publication = await resolvePrHeadPublicationStatus({
@@ -502,11 +512,20 @@ export async function resolvePrFlowStatus(opts: {
     remotePr: pr,
     preMergeClosureRecorded,
     preMergeClosureRecordedOnBase,
+    meta,
   });
   const prNumber = pr.state === "not_found" ? null : pr.prNumber;
   const [hostedChecks, reviewThreads, handoff] = await Promise.all([
-    resolveHostedChecksStatus({ gitRoot: resolved.gitRoot, prNumber }),
-    resolveReviewThreadsStatus({ gitRoot: resolved.gitRoot, prNumber }),
+    resolveHostedChecksStatus({
+      gitRoot: resolved.gitRoot,
+      prNumber,
+      branch,
+      expectedHeadSha: branchHeadSha,
+      recordedProvider: meta?.provider ?? null,
+    }),
+    pr.provider === "gitlab"
+      ? Promise.resolve({ checked: false as const, reason: "GitHub review threads do not apply" })
+      : resolveReviewThreadsStatus({ gitRoot: resolved.gitRoot, prNumber }),
     resolveHandoffStatus({
       gitRoot: resolved.gitRoot,
       workflowDir: config.paths.workflow_dir,

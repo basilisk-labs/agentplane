@@ -3,6 +3,7 @@ import type { TaskPrMeta } from "@agentplaneorg/core/schemas";
 import type { TaskData } from "../../../backends/task-backend.js";
 
 export type HostedMergedPr = {
+  provider?: "github" | "gitlab";
   number: number;
   title?: string | null;
   url?: string | null;

@@ -5,14 +5,22 @@ const mocks = vi.hoisted(() => ({
   observeByNumber: vi.fn(),
 }));
 
-vi.mock("./internal/sync-github.js", () => ({
-  observeExistingGithubPrByBranch: mocks.observeByBranch,
-  observeExistingGithubPrByNumber: mocks.observeByNumber,
+vi.mock("./internal/change-request-provider.js", () => ({
+  observeExistingChangeRequestByBranch: mocks.observeByBranch,
+  observeExistingChangeRequestByNumber: mocks.observeByNumber,
 }));
 
 import { requireOpenGithubPrAtHead } from "./provider-head.js";
 
 const observed = {
+  provider: "github" as const,
+  identity: {
+    provider: "github" as const,
+    hostname: "github.com",
+    remote: "origin",
+    sourceProject: "example/repo",
+    targetProject: "example/repo",
+  },
   prNumber: 101,
   prUrl: "https://github.com/example/repo/pull/101",
   status: "OPEN" as const,
@@ -45,6 +53,7 @@ describe("GitHub provider head guard", () => {
       prNumber: 101,
       branch: "task/T-1/work",
       baseBranch: "main",
+      recorded: undefined,
     });
     expect(mocks.observeByBranch).not.toHaveBeenCalled();
   });
@@ -64,7 +73,7 @@ describe("GitHub provider head guard", () => {
     }).catch((err: unknown) => err);
     expect(caught).toMatchObject({
       code: "E_NETWORK",
-      context: { reason_code: "github_pr_state_unavailable" },
+      context: { reason_code: "change_request_state_unavailable" },
     });
     expect(caught).toBeInstanceOf(Error);
     if (caught instanceof Error) {
