@@ -38,11 +38,15 @@ export type IntegrationQueueStatus =
 
 export type IntegrationQueueEntry = {
   task_id: string;
+  route?: "direct" | "branch_pr";
   branch: string;
   base: string;
   head_sha: string;
   base_sha: string;
   changed_paths: string[];
+  implementation_commit?: string;
+  verified_input_digest?: string;
+  workspace_id?: string;
   pr_number: number | null;
   pr_url: string | null;
   priority: number;
@@ -131,6 +135,20 @@ function parseQueueState(text: string): IntegrationQueueState {
       typeof maybe.updated_at === "string" &&
       typeof status === "string" &&
       INTEGRATION_QUEUE_STATUSES.has(status as IntegrationQueueStatus);
+    if (maybe.route !== undefined && maybe.route !== "direct" && maybe.route !== "branch_pr") {
+      throw invalidQueueState(`entry ${index} has an unknown execution route`);
+    }
+    if (
+      maybe.route === "direct" &&
+      (typeof maybe.implementation_commit !== "string" ||
+        !maybe.implementation_commit.trim() ||
+        typeof maybe.verified_input_digest !== "string" ||
+        !/^sha256:[0-9a-f]{64}$/u.test(maybe.verified_input_digest) ||
+        typeof maybe.workspace_id !== "string" ||
+        !maybe.workspace_id.trim())
+    ) {
+      throw invalidQueueState(`direct entry ${index} is missing its verified integration identity`);
+    }
     if (!valid) throw invalidQueueState(`entry ${index} is malformed or has an unknown status`);
     if (
       (status === "claimed" || status === "handoff") &&

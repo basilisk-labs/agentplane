@@ -1,14 +1,17 @@
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
-import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
+import {
+  resolveTaskExecutionContext,
+  type TaskExecutionContext,
+} from "../../runtime/task-execution-context/index.js";
 import { CliError } from "../../shared/errors.js";
 import {
   checkTaskBlueprintSnapshotDrift,
   buildTaskBlueprintResolvedSnapshot,
 } from "../blueprint/snapshot-artifact.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
-import type { CommandContext } from "../shared/task-backend.js";
+import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { recordedTaskImplementationCommitSha } from "../shared/quality-review-target.js";
 import { withEvidenceMutationLock } from "../evidence/evidence-mutation-lock.js";
 import {
@@ -21,7 +24,6 @@ import {
   renderActualDiff,
   resolveActualDiffNames,
   resolveEvaluatorDiffBase,
-  resolveEvaluatorDiffBaseRef,
 } from "./evaluator-diff-evidence.js";
 import {
   evaluatorQualityDir,
@@ -151,12 +153,33 @@ type PrepareEvaluatorReviewOptions = {
   evaluator: EvaluatorModule;
   provenance: EvaluatorRunProvenance;
   at?: string;
+  execution?: TaskExecutionContext;
+};
+
+type PrepareEvaluatorReviewLockedOptions = Omit<PrepareEvaluatorReviewOptions, "execution"> & {
+  execution: TaskExecutionContext;
 };
 
 export async function prepareEvaluatorReview(
   opts: PrepareEvaluatorReviewOptions,
 ): Promise<PreparedEvaluatorReview> {
-  const ctx = withEffectiveTaskWorkflowMode(opts.ctx, opts.task);
+  const ctx = opts.ctx;
+  const taskIds = normalizeBranchPrBatchTaskIds(opts.task, opts.task.id);
+  const tasks = await Promise.all(
+    taskIds.map(async (taskId) =>
+      taskId === opts.task.id
+        ? opts.task
+        : await loadTaskFromContext({ ctx, taskId, preferBranchSnapshot: true }),
+    ),
+  );
+  const execution =
+    opts.execution ??
+    (await resolveTaskExecutionContext({
+      ctx,
+      tasks,
+      primaryTaskId: opts.task.id,
+      authoritativeTaskSource: "task_worktree",
+    }));
   await assertTaskReviewWorkspaceClean({ ctx, taskId: opts.task.id });
   const gitRoot = ctx.resolvedProject.gitRoot;
   return await withEvidenceMutationLock(
@@ -165,12 +188,12 @@ export async function prepareEvaluatorReview(
       workflowDir: ctx.config.paths.workflow_dir,
       taskId: opts.task.id,
     },
-    () => prepareEvaluatorReviewLocked({ ...opts, ctx }, gitRoot),
+    () => prepareEvaluatorReviewLocked({ ...opts, ctx, execution }, gitRoot),
   );
 }
 
 async function prepareEvaluatorReviewLocked(
-  opts: PrepareEvaluatorReviewOptions,
+  opts: PrepareEvaluatorReviewLockedOptions,
   gitRoot: string,
 ): Promise<PreparedEvaluatorReview> {
   if (
@@ -201,14 +224,14 @@ async function prepareEvaluatorReviewLocked(
     ctx: opts.ctx,
     task: opts.task,
     reason: "preparation",
+    execution: opts.execution,
   });
   const diffBaseSha = await resolveEvaluatorDiffBase({
     gitRoot,
     evaluatedSha,
-    baseRef: evaluatedSha
-      ? await resolveEvaluatorDiffBaseRef({ ctx: opts.ctx, taskId: opts.task.id })
-      : null,
-    allowSingleCommitFallback: opts.ctx.config.workflow_mode !== "branch_pr",
+    baseRef:
+      evaluatedSha && opts.execution.selected_mode === "branch_pr" ? opts.execution.base_sha : null,
+    allowSingleCommitFallback: opts.execution.selected_mode !== "branch_pr",
   });
   const taskArtifactPrefixes = normalizeBranchPrBatchTaskIds(opts.task, opts.task.id).map(
     (taskId) => `${opts.ctx.config.paths.workflow_dir.replaceAll("\\", "/")}/${taskId}/`,
@@ -247,7 +270,8 @@ async function prepareEvaluatorReviewLocked(
     gitRoot,
     workflowDir: opts.ctx.config.paths.workflow_dir,
     taskIds: normalizeBranchPrBatchTaskIds(opts.task, opts.task.id),
-    workflowMode: opts.ctx.config.workflow_mode,
+    workflowMode: opts.execution.selected_mode,
+    execution: opts.execution,
   } as const;
   const recordPaths = await verificationRecordPaths(taskRoot, opts.task, verificationTargetSha, {
     ...verificationTargetContext,
@@ -571,10 +595,16 @@ export async function assertWorkOrderCurrent(opts: {
     });
   }
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
+  const execution = await resolveTaskExecutionContext({
+    ctx: opts.ctx,
+    tasks: [opts.task],
+    primaryTaskId: opts.task.id,
+  });
   const { evaluatedSha: currentSha } = await resolveEvaluatorReviewTarget({
     ctx: opts.ctx,
     task: opts.task,
     reason: "staleness",
+    execution,
   });
   if (currentSha !== opts.workOrder.evaluated_sha) {
     throw new CliError({

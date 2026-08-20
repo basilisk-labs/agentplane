@@ -100,11 +100,11 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     {
       kind: "string",
       name: "route",
-      valueHint: "<repository|auto|direct|branch_pr>",
-      choices: ["repository", "auto", "direct", "branch_pr"],
-      default: "repository",
+      valueHint: "<auto|direct|branch_pr>",
+      choices: ["auto", "direct", "branch_pr"],
+      default: "auto",
       description:
-        "Task execution route. repository preserves legacy behavior; auto may escalate a direct repository to branch_pr when isolation risk requires it.",
+        "Task execution route. auto selects direct unless repository policy or isolation risk requires branch_pr.",
     },
     {
       kind: "string",

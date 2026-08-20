@@ -14,6 +14,8 @@ import { stat } from "node:fs/promises";
 import path from "node:path";
 
 import { cmdStart } from "./start.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
+import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
 
 async function fileExists(filePath: string): Promise<boolean> {
   try {
@@ -31,9 +33,10 @@ async function assertBranchPrStartReadyLocation(opts: {
   taskId: string;
   author: string;
   body: string;
+  workflowMode: TaskExecutionRouteMode;
 }): Promise<void> {
   const { ctx } = opts;
-  if (ctx.config.workflow_mode !== "branch_pr") return;
+  if (opts.workflowMode !== "branch_pr") return;
 
   const relativeReadmePath = path.join(ctx.config.paths.workflow_dir, opts.taskId, "README.md");
   const baseReadmePath = path.join(ctx.resolvedProject.gitRoot, relativeReadmePath);
@@ -90,14 +93,20 @@ export async function cmdTaskStartReady(opts: {
   quiet: boolean;
 }): Promise<number> {
   try {
-    const ctx =
+    const initialCtx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const taskCommand = await loadTaskCommandContext({
+      ctx: initialCtx,
+      taskIds: [opts.taskId],
+    });
+    const ctx = taskCommand.command;
     await assertBranchPrStartReadyLocation({
       ctx,
       taskId: opts.taskId,
       author: opts.author,
       body: opts.body,
+      workflowMode: taskCommand.execution.selected_mode,
     });
     await ctx.taskBackend.refreshProjectionBeforeTaskStart?.();
     const result = await cmdStart({
@@ -116,6 +125,7 @@ export async function cmdTaskStartReady(opts: {
       force: opts.force,
       yes: opts.yes,
       quiet: true,
+      taskExecution: taskCommand.execution,
     });
     if (!opts.quiet) {
       process.stdout.write(`${successMessage("ready", opts.taskId)}\n`);

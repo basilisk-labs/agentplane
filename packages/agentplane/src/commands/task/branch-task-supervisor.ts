@@ -1,4 +1,5 @@
 import type { CommandCtx } from "../../cli/spec/spec.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
 import { CliError } from "../../shared/errors.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
@@ -148,6 +149,7 @@ export type BranchTaskSupervisorOptions = {
   ctx: CommandCtx;
   command: CommandContext;
   task_id: string;
+  task_execution?: TaskExecutionContext;
   sandbox_override?: string;
   danger_authority?: {
     danger_full_access_authorized: true;

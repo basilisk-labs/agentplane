@@ -217,7 +217,7 @@ describe("runCli route decision verification freshness", () => {
     expect(stale.blockers).toContainEqual({
       code: "verification_required",
       summary:
-        "the passing verification record does not cover the current verification input (reason_code=verification_implementation_changed)",
+        "the passing verification record does not cover the current verification input (reason_code=verification_implementation_changed); recovery: Run the required checks against the current implementation and record fresh verification.",
     });
   });
 

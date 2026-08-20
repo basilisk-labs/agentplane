@@ -52,15 +52,20 @@ export async function buildTaskResumeContext(opts: {
   include_runner_state?: boolean;
   preobserved_branch?: string | null;
   fresh_head?: boolean;
+  workflow_mode?: "direct" | "branch_pr";
+  task?: TaskData;
 }): Promise<TaskResumeContext> {
   const ctx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const task = await loadTaskFromContext({
-    ctx,
-    taskId: opts.task_id,
-    preferBranchSnapshot: ctx.config.workflow_mode === "branch_pr",
-  });
+  const workflowMode = opts.workflow_mode ?? ctx.config.workflow_mode;
+  const task =
+    opts.task ??
+    (await loadTaskFromContext({
+      ctx,
+      taskId: opts.task_id,
+      preferBranchSnapshot: workflowMode === "branch_pr",
+    }));
   const handoffPaths = resolveTaskHandoffPaths({
     git_root: ctx.resolvedProject.gitRoot,
     workflow_dir: ctx.config.paths.workflow_dir,
@@ -84,7 +89,7 @@ export async function buildTaskResumeContext(opts: {
     (await resolveBaseBranch({
       cwd: ctx.resolvedProject.gitRoot,
       rootOverride: ctx.resolvedProject.gitRoot,
-      mode: ctx.config.workflow_mode,
+      mode: workflowMode,
     }).catch(() => null));
 
   let runner: TaskHandoffRunnerHint;

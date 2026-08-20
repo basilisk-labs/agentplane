@@ -347,6 +347,7 @@ export async function assembleRunnerTaskContext(opts: {
   task_id: string;
   task?: TaskData;
   dependency_backend?: Pick<CommandContext["taskBackend"], "getTask" | "getTasks">;
+  workflow_mode?: "direct" | "branch_pr";
 }): Promise<RunnerTaskContextEnvelope> {
   try {
     const ctx =
@@ -361,7 +362,7 @@ export async function assembleRunnerTaskContext(opts: {
       (await loadTaskFromContext({
         ctx,
         taskId: opts.task_id,
-        preferBranchSnapshot: ctx.config.workflow_mode === "branch_pr",
+        preferBranchSnapshot: (opts.workflow_mode ?? ctx.config.workflow_mode) === "branch_pr",
       }));
     const dependencyState = toRunnerDependencyState(
       await resolveTaskDependencyState(task, opts.dependency_backend ?? ctx.taskBackend),

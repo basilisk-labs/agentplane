@@ -9,7 +9,7 @@ import { mkGitRepoRootWithBranch } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
 import type { TaskData } from "../../backends/task-backend.js";
-import { resolveVerificationInputIdentity } from "./task-verification-input.js";
+import { resolveLegacyVerificationInputIdentity } from "./task-verification-input.js";
 import { assessLocalVerificationRecords } from "./task-verification-records.js";
 
 const execFileAsync = promisify(execFile);
@@ -64,9 +64,9 @@ async function writeRecord(
   root: string,
   implementationSha: string,
   details = DETAILS,
-  environment?: Parameters<typeof resolveVerificationInputIdentity>[0]["environment"],
+  environment?: Parameters<typeof resolveLegacyVerificationInputIdentity>[0]["environment"],
 ): Promise<string> {
-  const verificationInput = await resolveVerificationInputIdentity({
+  const verificationInput = await resolveLegacyVerificationInputIdentity({
     gitRoot: root,
     workflowDir: ".agentplane/tasks",
     taskIds: [TASK_ID],

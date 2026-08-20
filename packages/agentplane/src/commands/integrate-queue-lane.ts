@@ -30,7 +30,7 @@ export function defaultIntegrationQueueWorker(): string {
 
 export function renderIntegrationQueueEntry(entry: IntegrationQueueEntry): string {
   const pr = entry.pr_number ? `#${entry.pr_number}` : "no-pr";
-  return `${entry.status.padEnd(7)} ${entry.task_id} ${pr} priority=${entry.priority} branch=${entry.branch}`;
+  return `${entry.status.padEnd(7)} ${entry.task_id} ${pr} route=${entry.route ?? "branch_pr"} priority=${entry.priority} branch=${entry.branch}`;
 }
 
 export function findActiveIntegrationLane(
@@ -106,6 +106,7 @@ export async function rejectIfQueuedEntryPublicationIsStale(opts: {
   gitRoot: string;
   entry: IntegrationQueueEntry;
 }): Promise<IntegrationQueueEntry | null> {
+  if (opts.entry.route === "direct") return null;
   let upstreamRef: string | null = null;
   let upstreamHead: string | null = null;
   try {
@@ -182,6 +183,7 @@ export async function recoverStaleActiveLane(opts: {
   entry: IntegrationQueueEntry;
   quiet: boolean;
 }): Promise<boolean> {
+  if (opts.entry.route === "direct") return false;
   const report = await resolvePrFlowStatus({
     ctx: opts.ctx,
     cwd: opts.cwd,
@@ -236,6 +238,7 @@ export async function normalizeTerminalQueueEntries(opts: {
   }[] = [];
 
   for (const entry of candidates) {
+    if (entry.route === "direct") continue;
     const report = await resolvePrFlowStatus({
       ctx: opts.ctx,
       cwd: opts.cwd,

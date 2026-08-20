@@ -7,6 +7,9 @@ import {
 import { createCliEmitter, emitCommandResults, emptyStateMessage } from "../cli/output.js";
 import { CliError } from "../shared/errors.js";
 import { sleep } from "../backends/task-backend/shared/concurrency.js";
+import { gitCurrentBranch, gitDiffNames } from "@agentplaneorg/core/git";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { loadTaskCommandContext } from "../runtime/task-execution-context/index.js";
 import type { CommandContext } from "./shared/task-backend.js";
 import { loadBackendTask } from "./shared/task-backend.js";
 import { gitRevParse } from "./shared/git-ops.js";
@@ -23,6 +26,7 @@ import {
   upsertQueuedEntry,
   withIntegrationQueueMutex,
   writeIntegrationQueue,
+  type IntegrationQueueEntry,
 } from "./pr/integrate/queue-state.js";
 import { prepareConflictReworkPacket } from "./pr/conflict-rework.js";
 import { resolvePrFlowStatus } from "./pr/flow-status.js";
@@ -60,9 +64,160 @@ import type {
 } from "./integrate-queue.spec.js";
 import { integrateQueueSpec } from "./integrate-queue.spec.js";
 import { waitForHostedChecks } from "./pr/hosted-checks.js";
+import path from "node:path";
+import { assessLocalVerificationRecords } from "./shared/task-verification-records.js";
+
+function nonEmptyRef(value: string | undefined, fallback: string): string {
+  const normalized = value?.trim();
+  if (normalized) return normalized;
+  return fallback;
+}
 
 const DEFAULT_QUEUE_POLL_INTERVAL_MS = 30_000;
 const DEFAULT_QUEUE_WAIT_TIMEOUT_MS = 10 * 60_000;
+
+async function prepareDirectQueueCandidate(opts: {
+  commandCtx: CommandContext;
+  taskId: string;
+  branch?: string;
+  base?: string;
+}) {
+  const taskCommand = await loadTaskCommandContext({
+    ctx: opts.commandCtx,
+    taskIds: [opts.taskId],
+  });
+  const { execution, primary_task: task } = taskCommand;
+  if (execution.selected_mode !== "direct") return null;
+  if (String(task.status).toUpperCase() !== "DONE") {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Direct integration candidate ${task.id} must be DONE before enqueue.`,
+    });
+  }
+  if (task.verification?.state !== "ok" || task.quality_review?.state !== "pass") {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Direct integration candidate ${task.id} requires current verification and passing EVALUATOR review.`,
+    });
+  }
+  const branch = nonEmptyRef(opts.branch, `agentplane/workspace/${task.id}`);
+  const base = nonEmptyRef(opts.base, execution.base_ref);
+  const [branchHeadSha, currentBaseSha] = await Promise.all([
+    gitRevParse(opts.commandCtx.resolvedProject.gitRoot, [branch]),
+    gitRevParse(opts.commandCtx.resolvedProject.gitRoot, [base]),
+  ]);
+  const verificationAssessment = await assessLocalVerificationRecords({
+    taskRoot: path.join(
+      taskCommand.command.resolvedProject.gitRoot,
+      taskCommand.command.config.paths.workflow_dir,
+      task.id,
+    ),
+    task,
+    evaluatedSha: branchHeadSha,
+    targetContext: {
+      gitRoot: taskCommand.command.resolvedProject.gitRoot,
+      workflowDir: taskCommand.command.config.paths.workflow_dir,
+      taskIds: execution.task_ids,
+      execution,
+    },
+  });
+  if (!verificationAssessment.accepted || !verificationAssessment.currentInputDigest) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Direct integration candidate ${task.id} has no current v4 verification identity (${verificationAssessment.reason}).`,
+      context: {
+        reason_code: verificationAssessment.reason,
+        task_id: task.id,
+      },
+    });
+  }
+  if (currentBaseSha !== execution.base_sha) {
+    const baseChangedPaths = await gitDiffNames(
+      opts.commandCtx.resolvedProject.gitRoot,
+      execution.base_sha,
+      currentBaseSha,
+    );
+    const candidateChangedPaths = await gitDiffNames(
+      opts.commandCtx.resolvedProject.gitRoot,
+      execution.base_sha,
+      branchHeadSha,
+    );
+    if (baseChangedPaths.some((changedPath) => candidateChangedPaths.includes(changedPath))) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: `Direct integration candidate ${task.id} conflicts with base changes after ${execution.base_sha}.`,
+      });
+    }
+  }
+  return {
+    task,
+    branch,
+    base,
+    branchHeadSha,
+    baseSha: execution.base_sha,
+    implementationCommit: branchHeadSha,
+    verifiedInputDigest: verificationAssessment.currentInputDigest,
+    workspaceId: `task:${task.id}:base:${execution.base_sha}`,
+    changedPaths: await gitDiffNames(
+      opts.commandCtx.resolvedProject.gitRoot,
+      execution.base_sha,
+      branchHeadSha,
+    ),
+  };
+}
+
+async function integrateDirectQueueEntry(opts: {
+  commandCtx: CommandContext;
+  entry: IntegrationQueueEntry;
+  dryRun: boolean;
+}): Promise<number> {
+  const gitRoot = opts.commandCtx.resolvedProject.gitRoot;
+  const currentBranch = await gitCurrentBranch(gitRoot);
+  if (currentBranch !== opts.entry.base) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Direct integration must run from base checkout ${opts.entry.base}; current=${currentBranch}.`,
+    });
+  }
+  if (opts.dryRun) return 0;
+  try {
+    await execFileAsync("git", ["merge", "--no-ff", "--no-edit", opts.entry.branch], {
+      cwd: gitRoot,
+    });
+  } catch (error) {
+    await execFileAsync("git", ["merge", "--abort"], { cwd: gitRoot }).catch((abortError) => {
+      void abortError;
+    });
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Direct integration candidate ${opts.entry.task_id} requires conflict rework; the merge was aborted.`,
+      context: {
+        reason_code: "semantic_conflict_rework_required",
+        task_id: opts.entry.task_id,
+        cause: error instanceof Error ? error.message : String(error),
+      },
+    });
+  }
+  if (opts.entry.changed_paths.length > 0) {
+    const { stdout } = await execFileAsync(
+      "git",
+      ["diff", "--name-only", opts.entry.head_sha, "HEAD", "--", ...opts.entry.changed_paths],
+      { cwd: gitRoot },
+    );
+    if (stdout.trim()) {
+      throw new CliError({
+        code: "E_GIT_RACE",
+        message: `Direct integration changed verified candidate content for ${opts.entry.task_id}: ${stdout.trim()}`,
+        context: {
+          reason_code: "verification_implementation_changed",
+          task_id: opts.entry.task_id,
+          verified_input_digest: opts.entry.verified_input_digest ?? null,
+        },
+      });
+    }
+  }
+  return 0;
+}
 
 async function claimFreshIntegrationQueueEntry(opts: {
   gitRoot: string;
@@ -123,6 +278,46 @@ export function makeRunIntegrateQueueEnqueueHandler(
 ) {
   return async (ctx: CommandCtx, p: IntegrateQueueEnqueueParsed): Promise<number> => {
     const commandCtx = await getCtx("integrate queue enqueue");
+    const hasTaskBackend =
+      typeof (commandCtx as unknown as { taskBackend?: { getTask?: unknown } }).taskBackend
+        ?.getTask === "function";
+    const direct = hasTaskBackend
+      ? await prepareDirectQueueCandidate({
+          commandCtx,
+          taskId: p.taskId,
+          branch: p.branch ?? undefined,
+          base: p.base ?? undefined,
+        })
+      : null;
+    if (direct) {
+      await withIntegrationQueueMutex(commandCtx.resolvedProject.gitRoot, async () => {
+        const queue = await readIntegrationQueue(commandCtx.resolvedProject.gitRoot);
+        const refreshed = upsertQueuedEntry(queue, {
+          task_id: direct.task.id,
+          route: "direct",
+          branch: direct.branch,
+          base: direct.base,
+          head_sha: direct.branchHeadSha,
+          base_sha: direct.baseSha,
+          changed_paths: direct.changedPaths,
+          implementation_commit: direct.implementationCommit,
+          verified_input_digest: direct.verifiedInputDigest,
+          workspace_id: direct.workspaceId,
+          pr_number: null,
+          pr_url: null,
+          priority: p.priority,
+        });
+        await writeIntegrationQueue(commandCtx.resolvedProject.gitRoot, refreshed);
+      });
+      if (!p.quiet) {
+        createCliEmitter().success(
+          "queued integration",
+          direct.task.id,
+          `route=direct branch=${direct.branch}`,
+        );
+      }
+      return 0;
+    }
     const prepared = await prepareIntegrate({
       ctx: commandCtx,
       cwd: ctx.cwd,
@@ -137,6 +332,7 @@ export function makeRunIntegrateQueueEnqueueHandler(
       const queue = await readIntegrationQueue(prepared.resolved.gitRoot);
       const refreshed = upsertQueuedEntry(queue, {
         task_id: prepared.task.id,
+        route: "branch_pr",
         branch: prepared.branch,
         base: prepared.base,
         head_sha: prepared.branchHeadSha,
@@ -512,7 +708,7 @@ export function makeRunIntegrateQueueRunNextHandler(
       });
       let criticalSectionStarted = false;
       try {
-        if (p.hosted) {
+        if (p.hosted && claimedEntry.route !== "direct") {
           await waitForHostedChecks({
             gitRoot,
             prNumber: claimedEntry.pr_number,
@@ -533,20 +729,26 @@ export function makeRunIntegrateQueueRunNextHandler(
           entry: integrationEntry,
           terminalStatus: p.dryRun ? "queued" : "done",
           run: () =>
-            cmdIntegrate({
-              ctx: commandCtx,
-              cwd: ctx.cwd,
-              rootOverride: ctx.rootOverride,
-              taskId: integrationEntry.task_id,
-              branch: integrationEntry.branch,
-              base: integrationEntry.base,
-              expectedHeadSha: integrationEntry.head_sha,
-              expectedBaseSha: integrationEntry.base_sha,
-              mergeStrategy: "merge",
-              runVerify: p.runVerify,
-              dryRun: p.dryRun,
-              quiet: p.quiet,
-            }),
+            integrationEntry.route === "direct"
+              ? integrateDirectQueueEntry({
+                  commandCtx,
+                  entry: integrationEntry,
+                  dryRun: p.dryRun,
+                })
+              : cmdIntegrate({
+                  ctx: commandCtx,
+                  cwd: ctx.cwd,
+                  rootOverride: ctx.rootOverride,
+                  taskId: integrationEntry.task_id,
+                  branch: integrationEntry.branch,
+                  base: integrationEntry.base,
+                  expectedHeadSha: integrationEntry.head_sha,
+                  expectedBaseSha: integrationEntry.base_sha,
+                  mergeStrategy: "merge",
+                  runVerify: p.runVerify,
+                  dryRun: p.dryRun,
+                  quiet: p.quiet,
+                }),
         });
       } catch (err) {
         if (criticalSectionStarted) {

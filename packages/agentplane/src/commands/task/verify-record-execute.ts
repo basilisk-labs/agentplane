@@ -39,8 +39,11 @@ import { resolveVerificationInputIdentity } from "../shared/task-verification-in
 import {
   reconcileTaskExecutionContract,
   resolveTaskExecutionContract,
-  withEffectiveTaskWorkflowMode,
 } from "../../runtime/task-routing/index.js";
+import {
+  loadTaskCommandContext,
+  resolveTaskExecutionContext,
+} from "../../runtime/task-execution-context/index.js";
 
 import { buildStructuredFindingMutationPlan } from "./findings.js";
 import {
@@ -194,8 +197,12 @@ async function recordVerificationResult(opts: {
       message: backendNotSupportedMessage("task docs"),
     });
   }
-  const routedTask = await loadTaskFromContext({ ctx: initialCtx, taskId: opts.taskId });
-  const ctx = withEffectiveTaskWorkflowMode(initialCtx, routedTask);
+  const taskCommand = await loadTaskCommandContext({
+    ctx: initialCtx,
+    taskIds: [opts.taskId],
+  });
+  const ctx = taskCommand.command;
+  const workflowMode = taskCommand.execution.selected_mode;
   await ensureReconciledBeforeMutation({ ctx, command: "verify", taskIds: [opts.taskId] });
   const backend = ctx.taskBackend;
   const config = ctx.config;
@@ -219,7 +226,7 @@ async function recordVerificationResult(opts: {
             requestedMode:
               current.execution_route?.requested_mode ??
               current.execution_route?.selected_mode ??
-              "repository",
+              "auto",
           });
         const doc =
           (typeof current.doc === "string" ? current.doc : "") ||
@@ -249,13 +256,14 @@ async function recordVerificationResult(opts: {
           lifecycleTaskIds: batchTaskIds,
           headSha: recordedTaskImplementationCommitSha(current),
           previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
-          workflowMode: config.workflow_mode,
+          workflowMode,
         });
         const observedChangedPaths = await resolveObservedVerificationChangedPaths({
           ctx,
           evaluatedSha,
           taskId: current.id,
           artifactTaskIds: qualityReviewTaskIds,
+          execution: taskCommand.execution,
         });
         const observedExecutionContract = reconcileTaskExecutionContract({
           contract: baseExecutionContract,
@@ -264,7 +272,7 @@ async function recordVerificationResult(opts: {
         const contractTask = { ...current, execution_contract: observedExecutionContract };
         const parsedDetails = parseVerificationCheckDetails(opts.details);
         const requiresConcreteDetails =
-          config.workflow_mode === "branch_pr" &&
+          workflowMode === "branch_pr" &&
           (current.status === "DONE" || Boolean(current.commit?.hash?.trim()));
         if (opts.state === "ok" && requiresConcreteDetails && parsedDetails === null) {
           throw new CliError({
@@ -310,15 +318,32 @@ async function recordVerificationResult(opts: {
             },
           });
         }
+        const batchTasks = await Promise.all(
+          batchTaskIds.map(async (taskId) =>
+            taskId === current.id
+              ? contractTask
+              : await loadTaskFromContext({
+                  ctx,
+                  taskId,
+                  preferBranchSnapshot: workflowMode === "branch_pr",
+                }),
+          ),
+        );
+        const verificationExecutionContext = await resolveTaskExecutionContext({
+          ctx,
+          tasks: batchTasks,
+          primaryTaskId: current.id,
+          authoritativeTaskSource: taskCommand.execution.authoritative_task_source,
+        });
         const verificationInput = await resolveVerificationInputIdentity({
           gitRoot: resolved.gitRoot,
           workflowDir: config.paths.workflow_dir,
-          taskIds: qualityReviewTaskIds,
+          taskIds: batchTaskIds,
           targetSha: evaluatedSha,
           verifySteps: verificationScope,
           verificationContractDigest:
             observedExecutionContract.verification.contract?.digest ?? null,
-          workflowMode: config.workflow_mode,
+          execution: verificationExecutionContext,
           verificationDetails: opts.details,
         });
         if (
@@ -427,7 +452,19 @@ async function recordVerificationResult(opts: {
           changed_paths: observedChangedPaths,
           verification_results: verificationResults,
         }).contract;
-        intents.unshift(setTaskFieldsIntent({ execution_contract: reconciledContract }));
+        intents.unshift(
+          setTaskFieldsIntent({
+            execution_contract: reconciledContract,
+            extensions: {
+              ...current.extensions,
+              task_execution_context: {
+                schema_version: 1,
+                base_ref: verificationExecutionContext.base_ref,
+                base_sha: verificationExecutionContext.base_sha,
+              },
+            },
+          }),
+        );
         if (opts.by === "EVALUATOR") {
           const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx, task: current }).catch(
             () => null,
@@ -469,13 +506,14 @@ async function recordVerificationResult(opts: {
     throw error;
   }
 
-  if (config.workflow_mode === "branch_pr") {
+  if (workflowMode === "branch_pr") {
     const syncResult = await ensurePrArtifactsSynced({
       ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
       author: opts.by,
+      workflowMode,
     });
     if (syncResult) {
       const { metaPath } = await resolvePrPaths({
@@ -510,7 +548,7 @@ async function recordVerificationResult(opts: {
       registryPaths: collected.registryPaths,
       taskId: opts.taskId,
     });
-  } else if (config.workflow_mode === "branch_pr") {
+  } else if (workflowMode === "branch_pr") {
     const inspected = await inspectTaskIncidents({
       ctx,
       taskId: opts.taskId,
@@ -543,7 +581,7 @@ async function recordVerificationResult(opts: {
         `state=${opts.state} readme=${relReadmePath}${extra}`,
       )}\n`,
     );
-    if (incidentSummary && config.workflow_mode === "branch_pr") {
+    if (incidentSummary && workflowMode === "branch_pr") {
       process.stdout.write(`${infoMessage(incidentSummary)}\n`);
     }
   }

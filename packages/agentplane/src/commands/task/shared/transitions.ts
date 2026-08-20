@@ -1,7 +1,8 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import { resolveBaseBranch } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
-import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+import { normalizeTaskStatus, type TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
+import type { TaskExecutionContext } from "../../../runtime/task-execution-context/index.js";
 
 import { infoMessage, warnMessage } from "../../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
@@ -63,9 +64,11 @@ export async function ensureLifecycleCommentCommitLocation(opts: {
   rootOverride?: string;
   command: "task start-ready" | "task set-status" | "finish";
   taskId: string;
+  workflowMode?: TaskExecutionRouteMode;
 }): Promise<void> {
   if (!opts.enabled) return;
-  if (opts.ctx.config.workflow_mode === "direct") return;
+  const workflowMode = opts.workflowMode ?? opts.ctx.config.workflow_mode;
+  if (workflowMode === "direct") return;
 
   if (opts.command === "finish") {
     throw new CliError({
@@ -83,7 +86,7 @@ export async function ensureLifecycleCommentCommitLocation(opts: {
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
     cliBaseOpt: null,
-    mode: opts.ctx.config.workflow_mode,
+    mode: workflowMode,
   });
   if (!baseBranch) {
     throw new CliError({
@@ -178,15 +181,17 @@ export type TaskTransitionCommentCommandOptions = {
   force: boolean;
   yes?: boolean;
   quiet: boolean;
+  taskExecution?: TaskExecutionContext;
 };
 
 async function resolveTaskTransitionExecutorAgent(opts: {
   ctx: Pick<CommandContext, "config" | "resolvedProject">;
   taskId: string;
   author?: string;
+  workflowMode?: TaskExecutionRouteMode;
 }): Promise<string | undefined> {
   const author = opts.author?.trim() ?? "";
-  if (opts.ctx.config.workflow_mode !== "direct") {
+  if ((opts.workflowMode ?? opts.ctx.config.workflow_mode) !== "direct") {
     return author || undefined;
   }
   const lock = await readDirectWorkLock(opts.ctx.resolvedProject.agentplaneDir);
@@ -213,6 +218,7 @@ export async function runTaskTransitionCommentCommit(opts: {
   quiet: boolean;
   progressMessage?: string;
   resolveExecutorAgent?: boolean;
+  workflowMode?: TaskExecutionRouteMode;
 }): Promise<{ hash: string; message: string; staged: string[] }> {
   if (opts.progressMessage && !opts.quiet) {
     process.stdout.write(`${infoMessage(opts.progressMessage)}\n`);
@@ -222,6 +228,7 @@ export async function runTaskTransitionCommentCommit(opts: {
         ctx: opts.ctx,
         taskId: opts.taskId,
         author: opts.author,
+        workflowMode: opts.workflowMode,
       })
     : undefined;
   const result = await commitFromComment({
@@ -250,6 +257,7 @@ export async function runTaskTransitionCommentCommit(opts: {
     rootOverride: opts.rootOverride,
     taskId: opts.taskId,
     quiet: opts.quiet,
+    workflowMode: opts.workflowMode,
   });
   return result;
 }
@@ -274,6 +282,7 @@ export async function runOptionalTaskTransitionCommentCommit(opts: {
   quiet: boolean;
   progressMessage?: string;
   resolveExecutorAgent?: boolean;
+  workflowMode?: TaskExecutionRouteMode;
 }): Promise<{ hash: string; message: string; staged: string[] } | null> {
   if (!opts.enabled) return null;
   return runTaskTransitionCommentCommit({
@@ -295,6 +304,7 @@ export async function runOptionalTaskTransitionCommentCommit(opts: {
     quiet: opts.quiet,
     progressMessage: opts.progressMessage,
     resolveExecutorAgent: opts.resolveExecutorAgent,
+    workflowMode: opts.workflowMode,
   });
 }
 

@@ -5,6 +5,7 @@ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend
 import { CliError } from "../../shared/errors.js";
 
 import { cmdFinish } from "./finish-command.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 import { existingCommitInfo } from "./finish-shared.js";
 import { readCommitInfo } from "./shared.js";
 import { assertEvaluatorQualityReviewPassed } from "./quality-review-gate.js";
@@ -118,9 +119,14 @@ export function makeRunTaskCompleteHandler(
   getCtx: (cmd: string) => Promise<CommandContext>,
 ): CommandHandler<TaskCompleteParsed> {
   return async (ctx: CommandCtx, p: TaskCompleteParsed): Promise<number> => {
-    const command = await getCtx("task complete");
-    const workflowMode = command.config.workflow_mode;
-    const task = await loadTaskFromContext({ ctx: command, taskId: p.taskId });
+    const initialCommand = await getCtx("task complete");
+    const taskCommand = await loadTaskCommandContext({
+      ctx: initialCommand,
+      taskIds: [p.taskId],
+    });
+    const command = taskCommand.command;
+    const workflowMode = taskCommand.execution.selected_mode;
+    const task = taskCommand.primary_task;
     const unsafeOverrideUsed = assertCompletionEvidenceReady({
       task,
       acceptUnobserved: p.acceptUnobserved,

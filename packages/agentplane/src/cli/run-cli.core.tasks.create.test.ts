@@ -332,6 +332,44 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     });
   });
 
+  it("task new defaults high-risk work to automatic branch_pr routing", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Deploy a patch",
+        "--description",
+        "Deploy a high-risk patch without an explicit route",
+        "--owner",
+        "CODER",
+        "--tag",
+        "release",
+        "--task-kind",
+        "release",
+        "--mutation-scope",
+        "release",
+        "--risk",
+        "deploy",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = io.stdout.trim();
+    } finally {
+      io.restore();
+    }
+
+    const created = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(created.frontmatter.execution_route).toMatchObject({
+      requested_mode: "auto",
+      selected_mode: "branch_pr",
+    });
+  });
+
   it("task new can preview the resolved blueprint route without changing stdout", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();

@@ -11,6 +11,7 @@ import {
   tryLookupExistingGithubPrByBranchPrefix,
 } from "../pr/internal/sync-github.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
 
 import { taskCloseAlreadyRecordedOnBase } from "./close-tail-state.js";
 import { createTaskCloseCommit } from "./finish-shared.js";
@@ -39,14 +40,15 @@ export async function ensureFinishRunsOnBaseBranch(opts: {
   baseBranchOverride?: string;
   taskIds: string[];
   preMergeClosure?: boolean;
+  workflowMode: TaskExecutionRouteMode;
 }): Promise<void> {
-  if (opts.ctx.config.workflow_mode !== "branch_pr") return;
+  if (opts.workflowMode !== "branch_pr") return;
 
   const baseBranch = await resolveBaseBranch({
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
     cliBaseOpt: opts.baseBranchOverride ?? null,
-    mode: opts.ctx.config.workflow_mode,
+    mode: opts.workflowMode,
   });
   if (!baseBranch) {
     throw new CliError({
@@ -229,6 +231,7 @@ export async function materializeBranchPrCloseTail(opts: {
       closeUnstageOthers: opts.closeUnstageOthers,
       allowPolicy: opts.allowPolicy,
       additionalTaskIds: opts.additionalTaskIds,
+      workflowMode: "branch_pr",
     });
   } finally {
     try {

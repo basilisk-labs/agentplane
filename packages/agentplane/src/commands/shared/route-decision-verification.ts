@@ -1,6 +1,7 @@
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { RouteBatchOwnership } from "./route-batch-ownership.js";
@@ -66,6 +67,7 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
   resume: TaskResumeContext;
   prFlow: PrFlowStatusReport | null;
   batchOwnership: RouteBatchOwnership;
+  execution?: TaskExecutionContext;
   onAssessment?: (assessment: VerificationRecordAssessment) => void;
 }): Promise<boolean> {
   const taskIds =
@@ -109,6 +111,7 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
       workflowDir: opts.ctx.config.paths.workflow_dir,
       taskIds,
       workflowMode: "branch_pr",
+      ...(opts.execution ? { execution: opts.execution } : {}),
     },
     snapshotRef:
       liveBranchHead ??

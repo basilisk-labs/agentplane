@@ -6,6 +6,7 @@ export function addVerificationRequiredBlocker(opts: {
   task: TaskData;
   acceptedVerificationRecord?: boolean;
   verificationReason?: string | null;
+  verificationRecoveryHint?: string | null;
   finalizedDoneTask?: boolean;
 }): void {
   if (opts.finalizedDoneTask === true) return;
@@ -26,7 +27,8 @@ export function addVerificationRequiredBlocker(opts: {
     summary:
       opts.task.verification?.state === "ok"
         ? opts.verificationReason
-          ? `the passing verification record does not cover the current verification input (reason_code=${opts.verificationReason})`
+          ? `the passing verification record does not cover the current verification input (reason_code=${opts.verificationReason})` +
+            (opts.verificationRecoveryHint ? `; recovery: ${opts.verificationRecoveryHint}` : "")
           : "the passing verification record does not cover the current implementation head"
         : "the recorded task implementation does not have a passing verification record",
   });

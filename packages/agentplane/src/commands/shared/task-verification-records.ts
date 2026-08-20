@@ -6,9 +6,11 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
 import {
   resolveVerificationInputIdentity,
+  resolveLegacyVerificationInputIdentity,
   verificationInputDigest,
   verificationInputInvalidationReason,
   type VerificationEvidenceReference,
@@ -22,6 +24,7 @@ export type VerificationRecordTargetContext = {
   taskIds?: readonly string[];
   workflowMode?: "direct" | "branch_pr";
   baseRef?: string | null;
+  execution?: TaskExecutionContext;
   evidenceRef?: string | null;
 };
 
@@ -40,15 +43,56 @@ type VerificationRecordAssessmentReason =
   | "verification_environment_changed"
   | "verification_evidence_changed"
   | "verification_input_changed"
-  | "verification_legacy_unverifiable";
+  | "verification_legacy_unverifiable"
+  | "verification_route_context_changed";
 
 export type VerificationRecordAssessment = {
   accepted: boolean;
   reason: VerificationRecordAssessmentReason;
+  recoveryHint: string | null;
   recordPath: string | null;
   recordedInputDigest: string | null;
   currentInputDigest: string | null;
 };
+
+function verificationRecoveryHint(reason: VerificationRecordAssessmentReason): string | null {
+  switch (reason) {
+    case "verification_route_context_changed": {
+      return "Recompute the task route and record fresh v4 verification against that execution context.";
+    }
+    case "verification_implementation_changed": {
+      return "Run the required checks against the current implementation and record fresh verification.";
+    }
+    case "verification_steps_changed": {
+      return "Run the current Verify Steps and record their results.";
+    }
+    case "verification_contract_changed": {
+      return "Run the checks selected by the current verification contract and record fresh verification.";
+    }
+    case "verification_context_changed": {
+      return "Refresh the prepared task context, rerun the required checks, and record fresh verification.";
+    }
+    case "verification_environment_changed": {
+      return "Rerun verification in the current environment and record its environment identity.";
+    }
+    case "verification_evidence_changed": {
+      return "Regenerate the referenced evidence and record verification with its current digest.";
+    }
+    case "verification_contract_evidence_missing": {
+      return "Record concrete results for every check required by the verification contract.";
+    }
+    case "verification_missing": {
+      return "Run the task Verify Steps and record a passing verification result.";
+    }
+    case "verification_current":
+    case "verification_reused_equivalent_input": {
+      return null;
+    }
+    default: {
+      return "Inspect the verification record diagnostics and record fresh v4 verification.";
+    }
+  }
+}
 
 function sha256(value: string): `sha256:${string}` {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
@@ -134,6 +178,46 @@ function parseEvidenceReferences(value: unknown): VerificationEvidenceReference[
   return references.length === value.length ? references : null;
 }
 
+function parseVerificationExecution(value: unknown): VerificationInputIdentity["execution"] | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const execution = value as Record<string, unknown>;
+  const taskIds = execution.task_ids;
+  const reasonCodes = execution.reason_codes;
+  if (
+    !isSha256(execution.digest) ||
+    typeof execution.primary_task_id !== "string" ||
+    !execution.primary_task_id.trim() ||
+    !Array.isArray(taskIds) ||
+    taskIds.length === 0 ||
+    !taskIds.every((item) => typeof item === "string" && item.trim()) ||
+    !taskIds.includes(execution.primary_task_id) ||
+    !["direct", "branch_pr"].includes(String(execution.repository_mode)) ||
+    !["direct", "branch_pr"].includes(String(execution.selected_mode)) ||
+    !["auto", "direct", "branch_pr"].includes(String(execution.requested_mode)) ||
+    ![
+      "execution_contract",
+      "execution_route",
+      "repository_floor",
+      "repository_default",
+      "legacy_migration",
+    ].includes(String(execution.route_source)) ||
+    !Array.isArray(reasonCodes) ||
+    !reasonCodes.every((item) => typeof item === "string") ||
+    typeof execution.base_ref !== "string" ||
+    !execution.base_ref.trim() ||
+    typeof execution.base_sha !== "string" ||
+    !/^[0-9a-f]{40,64}$/u.test(execution.base_sha) ||
+    !["base_checkout", "task_worktree", "task_branch_snapshot", "backend_projection"].includes(
+      String(execution.authoritative_task_source),
+    )
+  ) {
+    return null;
+  }
+  const { digest, authoritative_task_source: _source, ...identityPayload } = execution;
+  if (digest !== sha256(JSON.stringify(canonicalizeJson(identityPayload)))) return null;
+  return execution as unknown as NonNullable<VerificationInputIdentity["execution"]>;
+}
+
 function parseVerificationInput(value: unknown): VerificationInputIdentity | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const input = value as Record<string, unknown>;
@@ -141,8 +225,9 @@ function parseVerificationInput(value: unknown): VerificationInputIdentity | nul
   const context = input.context;
   const environment = input.environment;
   const evidence = input.evidence;
+  const execution = input.schema_version === 4 ? parseVerificationExecution(input.execution) : null;
   if (
-    (input.schema_version !== 2 && input.schema_version !== 3) ||
+    (input.schema_version !== 2 && input.schema_version !== 3 && input.schema_version !== 4) ||
     input.kind !== "task_verification_input" ||
     !implementation ||
     typeof implementation !== "object" ||
@@ -155,7 +240,9 @@ function parseVerificationInput(value: unknown): VerificationInputIdentity | nul
     Array.isArray(environment) ||
     !evidence ||
     typeof evidence !== "object" ||
-    Array.isArray(evidence)
+    Array.isArray(evidence) ||
+    (input.schema_version === 4 && !execution) ||
+    (input.schema_version !== 4 && input.execution !== undefined)
   ) {
     return null;
   }
@@ -175,6 +262,9 @@ function parseVerificationInput(value: unknown): VerificationInputIdentity | nul
         !/^[0-9a-f]{40,64}$/u.test(implementationRecord.base_sha))) ||
     !isSha256(input.verify_steps_digest) ||
     (input.schema_version === 3 && !isSha256(input.verification_contract_digest)) ||
+    (input.schema_version === 4 &&
+      input.verification_contract_digest !== undefined &&
+      !isSha256(input.verification_contract_digest)) ||
     (input.schema_version === 2 && input.verification_contract_digest !== undefined) ||
     !isSha256(contextRecord.digest) ||
     !Array.isArray(contextRecord.paths) ||
@@ -205,6 +295,7 @@ function parseVerificationInput(value: unknown): VerificationInputIdentity | nul
     !isSha256(input.digest) ||
     input.digest !==
       verificationInputDigest({
+        executionDigest: execution?.digest,
         implementationDigest: String(implementationRecord.digest),
         verifyStepsDigest: String(input.verify_steps_digest),
         verificationContractDigest:
@@ -241,6 +332,7 @@ function rejectedAssessment(
   return {
     accepted: false,
     reason,
+    recoveryHint: verificationRecoveryHint(reason),
     recordPath: opts.recordPath ?? null,
     recordedInputDigest: opts.recordedInputDigest ?? null,
     currentInputDigest: opts.currentInputDigest ?? null,
@@ -299,19 +391,34 @@ async function assessCurrentVerification(
     if (!recordedInput || !targetContext || !evaluatedSha) {
       return rejectedAssessment("verification_invalid_record");
     }
-    const currentInput = await resolveVerificationInputIdentity({
+    if (targetContext.execution && recordedInput.schema_version !== 4) {
+      return rejectedAssessment("verification_route_context_changed", {
+        recordedInputDigest: recordedInput.digest,
+      });
+    }
+    const identityOptions = {
       gitRoot: targetContext.gitRoot,
       workflowDir: targetContext.workflowDir,
       taskIds: targetContext.taskIds ?? [task.id],
       targetSha: evaluatedSha,
       verifySteps: task.sections?.["Verify Steps"] ?? "",
       verificationContractDigest: task.execution_contract?.verification.contract?.digest ?? null,
-      workflowMode: targetContext.workflowMode ?? "direct",
-      baseRef: targetContext.baseRef,
       environment: recordedInput.environment.runtime,
       verificationDetails: typeof record.details === "string" ? record.details : null,
       evidenceRef: targetContext.evidenceRef,
-    }).catch(() => null);
+    };
+    const currentInput = await (
+      targetContext.execution
+        ? resolveVerificationInputIdentity({
+            ...identityOptions,
+            execution: targetContext.execution,
+          })
+        : resolveLegacyVerificationInputIdentity({
+            ...identityOptions,
+            workflowMode: targetContext.workflowMode ?? "direct",
+            baseRef: targetContext.baseRef,
+          })
+    ).catch(() => null);
     if (!currentInput) {
       return rejectedAssessment("verification_invalid_record", {
         recordedInputDigest: recordedInput.digest,
@@ -324,6 +431,7 @@ async function assessCurrentVerification(
           recordedInput.implementation.target_sha === currentInput.implementation.target_sha
             ? "verification_current"
             : "verification_reused_equivalent_input",
+        recoveryHint: null,
         recordPath: null,
         recordedInputDigest: recordedInput.digest,
         currentInputDigest: currentInput.digest,
@@ -341,6 +449,9 @@ async function assessCurrentVerification(
   if (record.schema_version !== 1) {
     return rejectedAssessment("verification_invalid_record");
   }
+  if (targetContext?.execution) {
+    return rejectedAssessment("verification_route_context_changed");
+  }
   if (record.scope_digest !== scopeDigest) {
     return rejectedAssessment("verification_metadata_changed");
   }
@@ -349,6 +460,7 @@ async function assessCurrentVerification(
       ? {
           accepted: true,
           reason: "verification_current",
+          recoveryHint: null,
           recordPath: null,
           recordedInputDigest: null,
           currentInputDigest: null,
@@ -374,6 +486,7 @@ async function assessCurrentVerification(
     ? {
         accepted: true,
         reason: "verification_current",
+        recoveryHint: null,
         recordPath: null,
         recordedInputDigest: null,
         currentInputDigest: null,

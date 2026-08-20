@@ -15,7 +15,6 @@ import type {
 import { computeVerificationContractKernel } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
-import type { CommandContext } from "../../commands/shared/task-backend.js";
 import { gitPathIsUnderPrefix } from "../../shared/git-path.js";
 import {
   ALL_EXTERNAL_EFFECTS,
@@ -283,7 +282,7 @@ export function resolveTaskExecutionContract(opts: {
   declaration?: TaskExecutionDeclarationInput;
 }): TaskExecutionContract {
   const repository_mode = repositoryMode(opts.config);
-  const requestedMode = opts.requestedMode ?? "repository";
+  const requestedMode = opts.requestedMode ?? "auto";
   const declaration = opts.declaration
     ? normalizeTaskExecutionDeclaration(opts.declaration)
     : legacyDeclaration({ task: opts.task, requestedMode });
@@ -422,7 +421,7 @@ export function resolveTaskExecutionRoute(opts: {
   requestedMode?: TaskExecutionRouteRequest;
   declaration?: TaskExecutionDeclarationInput;
 }): TaskExecutionRoute {
-  const requestedMode = opts.requestedMode ?? "repository";
+  const requestedMode = opts.requestedMode ?? "auto";
   if (!opts.declaration) {
     return resolveLegacyTaskExecutionRoute({
       config: opts.config,
@@ -574,19 +573,4 @@ export function resolveEffectiveTaskWorkflowMode(
   const repoMode = repositoryMode(config);
   if (repoMode === "branch_pr") return "branch_pr";
   return task.execution_contract?.selected_mode ?? task.execution_route?.selected_mode ?? repoMode;
-}
-
-export function withEffectiveTaskWorkflowMode(
-  ctx: CommandContext,
-  task: Pick<TaskData, "execution_route" | "execution_contract">,
-): CommandContext {
-  const workflowMode = resolveEffectiveTaskWorkflowMode(task, ctx.config);
-  if (workflowMode === ctx.config.workflow_mode) return ctx;
-  return {
-    ...ctx,
-    config: {
-      ...ctx.config,
-      workflow_mode: workflowMode,
-    },
-  };
 }

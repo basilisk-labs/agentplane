@@ -41,6 +41,16 @@ function enqueue(taskId: string, priority = 0) {
   };
 }
 
+function directEnqueue(taskId: string) {
+  return {
+    ...enqueue(taskId),
+    route: "direct" as const,
+    implementation_commit: `implementation-${taskId}`,
+    verified_input_digest: `sha256:${taskId.codePointAt(0)!.toString(16).padStart(2, "0").repeat(32)}`,
+    workspace_id: `task:${taskId}:base:base-1`,
+  };
+}
+
 function legacyAdoptionReceipt(entry: IntegrationQueueEntry) {
   if (!entry.pr_number) throw new Error("legacy receipt fixture requires a PR number");
   return createLegacyProtectedConflictAdoptionReceipt({
@@ -120,6 +130,37 @@ async function waitForHolderReady(ready: Promise<void>, holder: Promise<unknown>
 }
 
 describe("integration queue state", () => {
+  it("serializes three verified direct candidates in enqueue order", () => {
+    let state = emptyIntegrationQueue();
+    for (const [index, taskId] of ["A", "B", "C"].entries()) {
+      state = upsertQueuedEntry(
+        state,
+        directEnqueue(taskId),
+        clock(`2026-08-20T00:00:0${index}.000Z`),
+      );
+    }
+
+    const integrated: string[] = [];
+    for (let index = 0; index < 3; index += 1) {
+      const claimed = claimNextQueuedEntry(state, {
+        worker: "direct-integrator",
+        clock: clock(`2026-08-20T00:01:0${index}.000Z`),
+      });
+      expect(claimed.entry).not.toBeNull();
+      integrated.push(claimed.entry!.task_id);
+      state = markQueueEntry(
+        claimed.state,
+        claimed.entry!.task_id,
+        "done",
+        undefined,
+        clock(`2026-08-20T00:02:0${index}.000Z`),
+      );
+    }
+
+    expect(integrated).toEqual(["A", "B", "C"]);
+    expect(state.entries.every((entry) => entry.status === "done")).toBe(true);
+  });
+
   it("claims the highest priority queued entry first", () => {
     const state = upsertQueuedEntry(
       upsertQueuedEntry(emptyIntegrationQueue(), enqueue("T-1", 0), clock("2026-01-01T00:00:00Z")),

@@ -11,9 +11,10 @@ export async function resolveDoneCleanupProbe(opts: {
   resume: TaskResumeContext;
   task: TaskData;
   onDiagnostic?: (message: string) => void;
+  workflowMode?: "direct" | "branch_pr";
 }): Promise<RouteCleanupProbe> {
   if (
-    opts.ctx.config.workflow_mode !== "branch_pr" ||
+    (opts.workflowMode ?? opts.ctx.config.workflow_mode) !== "branch_pr" ||
     String(opts.task.status).toUpperCase() !== "DONE"
   ) {
     return { state: "not_requested" };

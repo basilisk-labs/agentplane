@@ -36,10 +36,10 @@ import {
   inferTaskRouteBranch,
 } from "./route-decision-workspace.js";
 import {
-  loadBackendTask,
   loadCommandContext,
   resolveCommandGitCommonDir,
   resolveTaskBranchFromContext,
+  type loadBackendTask,
   type CommandContext,
 } from "./task-backend.js";
 import { buildRouteSourceConfidence } from "./route-decision-source-confidence.js";
@@ -55,7 +55,7 @@ import { taskCloseAlreadyRecordedOnBase } from "../task/close-tail-state.js";
 import { inspectTaskWorktreeRouteState } from "./task-worktree-foreign-artifact-route.js";
 import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
 import { hydrateTaskSideEffectAuthority } from "./side-effect-authority-store.js";
-import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 export { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
 
 const routeGitSnapshots = new WeakMap<TaskRouteDecision, GitSnapshot>();
@@ -110,14 +110,14 @@ function hasRemoteProviderEvidence(prFlow: PrFlowStatusReport | null): boolean {
 async function resolveLocalRecordedCloseFlow(opts: {
   ctx: CommandContext;
   task: Awaited<ReturnType<typeof loadBackendTask>>["task"];
+  workflowMode: "direct" | "branch_pr";
   onDiagnostic?: (message: string) => void;
 }): Promise<PrFlowStatusReport | null> {
   try {
     const { content } = await readTaskPrMetaArtifact({
       ctx: opts.ctx,
       taskId: opts.task.id,
-      preferBranchSnapshot:
-        opts.ctx.config.workflow_mode === "branch_pr" && opts.task.status !== "DONE",
+      preferBranchSnapshot: opts.workflowMode === "branch_pr" && opts.task.status !== "DONE",
     });
     if (content === null) return null;
     const meta = parsePrMeta(content, opts.task.id);
@@ -297,14 +297,13 @@ export async function buildTaskRouteDecision(opts: {
   const initialCtx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const { task: loadedTask } = await loadBackendTask({
+  const taskCommand = await loadTaskCommandContext({
     ctx: initialCtx,
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride ?? null,
-    taskId: opts.taskId,
-    preferBranchSnapshot: initialCtx.config.workflow_mode === "branch_pr",
+    taskIds: [opts.taskId],
   });
-  const ctx = withEffectiveTaskWorkflowMode(initialCtx, loadedTask);
+  const ctx = taskCommand.command;
+  const workflowMode = taskCommand.execution.selected_mode;
+  const loadedTask = taskCommand.primary_task;
   const task = await hydrateTaskSideEffectAuthority({
     gitRoot: ctx.resolvedProject.gitRoot,
     taskId: opts.taskId,
@@ -322,6 +321,8 @@ export async function buildTaskRouteDecision(opts: {
     ...(Object.hasOwn(opts, "preobservedBranch")
       ? { preobserved_branch: opts.preobservedBranch ?? null }
       : {}),
+    workflow_mode: workflowMode,
+    task,
   });
   const baseCheckoutPath = await findRouteWorktreePath(
     ctx.resolvedProject.gitRoot,
@@ -332,7 +333,7 @@ export async function buildTaskRouteDecision(opts: {
     localDiagnostics.push(message);
   };
   let prFlow: PrFlowStatusReport | null = null;
-  const remoteEnabled = ctx.config.workflow_mode === "branch_pr" && opts.includeRemote !== false;
+  const remoteEnabled = workflowMode === "branch_pr" && opts.includeRemote !== false;
   if (remoteEnabled) {
     try {
       prFlow = await traceRemoteProviderState({
@@ -345,6 +346,7 @@ export async function buildTaskRouteDecision(opts: {
             rootOverride: opts.rootOverride ?? undefined,
             integrationQueueRoot: baseCheckoutPath,
             taskId: opts.taskId,
+            workflowMode,
           }),
       });
     } catch (err) {
@@ -354,20 +356,22 @@ export async function buildTaskRouteDecision(opts: {
       prFlow = await resolveLocalRecordedCloseFlow({
         ctx,
         task,
+        workflowMode,
         onDiagnostic: recordLocalDiagnostic,
       });
       prFlow ??= await resolveLocalTaskBranchFlow({ ctx, task });
     }
-  } else if (ctx.config.workflow_mode === "branch_pr") {
+  } else if (workflowMode === "branch_pr") {
     prFlow = await resolveLocalRecordedCloseFlow({
       ctx,
       task,
+      workflowMode,
       onDiagnostic: recordLocalDiagnostic,
     });
     prFlow ??= await resolveLocalTaskBranchFlow({ ctx, task });
   }
   const batchOwnership =
-    ctx.config.workflow_mode === "branch_pr"
+    workflowMode === "branch_pr"
       ? await resolveBatchOwnership({ ctx, task })
       : { role: "none" as const };
   const inferredBranch = inferTaskRouteBranch(resume, prFlow);
@@ -394,6 +398,7 @@ export async function buildTaskRouteDecision(opts: {
     resume,
     task,
     onDiagnostic: recordLocalDiagnostic,
+    workflowMode,
   });
   const qualityReviewTargetSha =
     task.quality_review?.state === "blocked" &&
@@ -406,14 +411,15 @@ export async function buildTaskRouteDecision(opts: {
           taskIds: batchOwnership.role === "none" ? [task.id] : batchOwnership.allTaskIds,
           headSha: prFlow?.branch.headSha ?? resume.head_sha,
           previousEvaluatedSha: task.quality_review.evaluated_sha,
-          workflowMode: ctx.config.workflow_mode,
+          workflowMode,
         }).catch(() => null)
       : null;
   const blockers = await deriveBlockers({
     ctx,
     task,
     resume,
-    workflowMode: ctx.config.workflow_mode,
+    workflowMode,
+    execution: taskCommand.execution,
     prFlow,
     batchOwnership,
     cleanupProbe,
@@ -423,7 +429,7 @@ export async function buildTaskRouteDecision(opts: {
   const routeStateInput: WorkflowRouteStateInput = {
     task,
     resume,
-    workflowMode: ctx.config.workflow_mode,
+    workflowMode,
     prFlow,
     cleanupProbe,
     blockers,
@@ -438,7 +444,7 @@ export async function buildTaskRouteDecision(opts: {
     withBootstrapWorkflowFingerprint(routeStateInput),
   );
   if (
-    ctx.config.workflow_mode === "branch_pr" &&
+    workflowMode === "branch_pr" &&
     provisionalWorkflowStep.kind === "cli_operation" &&
     provisionalWorkflowStep.operation.id === "integration.enqueue"
   ) {
@@ -460,7 +466,7 @@ export async function buildTaskRouteDecision(opts: {
     withBootstrapWorkflowFingerprint(finalRouteStateInput),
   );
   const taskWorktreePath =
-    ctx.config.workflow_mode === "branch_pr" ? taskWorktreeCleanliness.worktreePath : null;
+    workflowMode === "branch_pr" ? taskWorktreeCleanliness.worktreePath : null;
   const fingerprintPaths = {
     baseCheckoutPath,
     taskWorktreePath,
@@ -503,7 +509,7 @@ export async function buildTaskRouteDecision(opts: {
   });
   const partial = {
     task: taskSummary(task),
-    workflowMode: ctx.config.workflow_mode,
+    workflowMode,
     workspace: {
       root: resume.workspace_root,
       branch: resume.branch,

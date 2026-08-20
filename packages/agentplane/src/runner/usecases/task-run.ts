@@ -32,6 +32,7 @@ import {
   assertRunnerCheckoutAuthority,
   assertRunnerPolicyCompatibility,
   assertRunnerTaskExecutable,
+  assertTaskRunnerPreExecutionCapabilities,
 } from "./task-run-authority.js";
 import { acquireTaskRunnerActiveClaim } from "./task-run-active-claim.js";
 import { inspectTaskRunnerClaimedRunAuthority } from "./task-run-active-claim-authority.js";
@@ -86,6 +87,7 @@ import {
   type RunnerRecipeContext,
   type RunnerTarget,
 } from "../types.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type {
   ExecutedTaskRunnerExecution,
   PreparedTaskRunnerExecution,
@@ -112,6 +114,7 @@ export async function prepareTaskRunnerExecution(opts: {
   sandbox_override?: string;
   effect_source_run_id?: string | null;
   resolved_not_applied_source?: boolean;
+  task_execution?: TaskExecutionContext;
 }): Promise<PreparedTaskRunnerExecution> {
   const command =
     opts.ctx ??
@@ -138,12 +141,21 @@ export async function prepareTaskRunnerExecution(opts: {
     execution_context: executionContext,
     execution_profile: executionProfile,
     semantic_role: semanticRole(opts.execution_role),
+    task_execution: opts.task_execution,
   });
   executionProfile = preparedWorkOrder.execution_profile;
   const taskEnvelope = preparedWorkOrder.task_envelope;
   const base_prompts = preparedWorkOrder.provider_prompts;
   const blueprint = preparedWorkOrder.blueprint;
   const route_decision = preparedWorkOrder.route_decision;
+  if (opts.task_execution) {
+    assertTaskRunnerPreExecutionCapabilities({
+      execution: opts.task_execution,
+      taskId: opts.task_id,
+      network: preparedWorkOrder.work_order.authority.network,
+      externalSideEffects: preparedWorkOrder.work_order.authority.external_side_effects,
+    });
+  }
   const framework_explain = appendFrameworkExplainBehaviorInputs(
     executionContext.frameworkExplain,
     collectTaskRunnerFrameworkExplainBehaviorInputs(base_prompts),
@@ -321,6 +333,7 @@ export async function executeTaskRunnerExecution(opts: {
   include_route_runner_state?: boolean;
   sandbox_override?: string;
   replay_provenance?: TaskRunnerReplayProvenance;
+  task_execution?: TaskExecutionContext;
 }): Promise<ExecutedTaskRunnerExecution> {
   const ctx =
     opts.ctx ??
@@ -380,6 +393,7 @@ export async function executeTaskRunnerExecution(opts: {
         ...(opts.replay_provenance?.action === "resume_effect"
           ? { resolved_not_applied_source: true }
           : {}),
+        task_execution: opts.task_execution,
       });
     } catch (err) {
       if (err instanceof RunnerPreparationCliError) {

@@ -11,6 +11,7 @@ import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
 import { buildTaskRouteDecision } from "../../commands/shared/route-decision.js";
 import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import {
   makeReadOnlyExecutionContext,
   type ReadOnlyExecutionContext,
@@ -138,12 +139,13 @@ export async function prepareAgentWorkOrder(opts: {
   semantic_selector?: SemanticRetrievalSelector;
   prepared_route_decision?: TaskRouteDecision;
   semantic_role?: AgentWorkOrderRole;
+  task_execution?: TaskExecutionContext;
 }): Promise<AgentWorkOrderPreparationResult> {
   const includeRunnerState = opts.include_runner_state;
   const executionContext =
     opts.execution_context ?? (await makeReadOnlyExecutionContext(opts.command_ctx));
   const remotePreparation = resolveAgentWorkOrderRemotePreparation({
-    workflow_mode: executionContext.config.workflow_mode,
+    workflow_mode: opts.task_execution?.selected_mode ?? executionContext.config.workflow_mode,
     include_remote: opts.include_remote,
   });
   const executionProfile = consumeExecutionProfileBudget({
@@ -166,6 +168,7 @@ export async function prepareAgentWorkOrder(opts: {
           cwd: opts.cwd,
           rootOverride: opts.root_override ?? null,
           task_id: opts.task_id,
+          workflow_mode: opts.task_execution?.selected_mode,
         }),
       fingerprintInputs: (envelope) => ({
         task_id: opts.task_id,

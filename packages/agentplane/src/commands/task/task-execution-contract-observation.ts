@@ -3,17 +3,25 @@ import type { TaskExternalEffect, TaskVerificationObservation } from "@agentplan
 import type { RunnerResult } from "../../runner/types.js";
 import { reconcileTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
 export async function recordObservedTaskExecutionContract(opts: {
   command: CommandContext;
+  execution: TaskExecutionContext;
   task: TaskData;
   changed_paths: readonly string[];
   observed_external_effects?: readonly TaskExternalEffect[];
   verification_results?: readonly TaskVerificationObservation[];
   preserved_commit?: string;
 }): Promise<{ task: TaskData; escalated: boolean }> {
+  if (!opts.execution.task_ids.includes(opts.task.id)) {
+    throw new Error(`Execution context does not authorize task ${opts.task.id}.`);
+  }
   const current = opts.task.execution_contract;
-  const taskArtifactPrefix = `.agentplane/tasks/${opts.task.id}/`;
+  const workflowDir = opts.command.config.paths.workflow_dir
+    .replaceAll("\\", "/")
+    .replaceAll(/\/+$/gu, "");
+  const taskArtifactPrefix = `${workflowDir}/${opts.task.id}/`;
   const productChangedPaths = opts.changed_paths.filter(
     (changedPath) => !changedPath.replaceAll("\\", "/").startsWith(taskArtifactPrefix),
   );

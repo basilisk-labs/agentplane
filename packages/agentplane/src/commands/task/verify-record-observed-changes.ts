@@ -1,8 +1,8 @@
 import {
   resolveActualDiffNames,
   resolveEvaluatorDiffBase,
-  resolveEvaluatorDiffBaseRef,
 } from "../evaluator/evaluator-diff-evidence.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 export async function resolveObservedVerificationChangedPaths(opts: {
@@ -10,13 +10,11 @@ export async function resolveObservedVerificationChangedPaths(opts: {
   evaluatedSha: string | null;
   taskId: string;
   artifactTaskIds: readonly string[];
+  execution: TaskExecutionContext;
 }): Promise<string[]> {
   if (!opts.evaluatedSha) return [];
   const { config, resolvedProject } = opts.ctx;
-  const baseRef =
-    config.workflow_mode === "branch_pr"
-      ? await resolveEvaluatorDiffBaseRef({ ctx: opts.ctx, taskId: opts.taskId })
-      : null;
+  const baseRef = opts.execution.selected_mode === "branch_pr" ? opts.execution.base_sha : null;
   const diffBaseSha = await resolveEvaluatorDiffBase({
     gitRoot: resolvedProject.gitRoot,
     evaluatedSha: opts.evaluatedSha,

@@ -2,6 +2,7 @@ import { CliError } from "../../shared/errors.js";
 
 import { backendUsesLocalTaskStore, type CommandContext } from "../shared/task-backend.js";
 import { getTaskStore } from "../shared/task-store.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
 import { requireStructuredComment } from "./shared.js";
 import type {
@@ -13,8 +14,10 @@ import type {
 export function resolveFinishExecutionPlan(opts: {
   ctx: CommandContext;
   options: FinishOptions;
+  execution: TaskExecutionContext;
 }): FinishExecutionPlan {
-  const { ctx, options } = opts;
+  const { ctx, options, execution } = opts;
+  const workflowMode = execution.selected_mode;
   const { prefix, min_chars: minChars } = ctx.config.tasks.comments.verified;
   requireStructuredComment(options.body, prefix, minChars);
 
@@ -34,7 +37,7 @@ export function resolveFinishExecutionPlan(opts: {
         "--commit-from-comment cannot be combined with --status-commit in finish; use one deterministic commit path.",
     });
   }
-  if (ctx.config.workflow_mode === "branch_pr" && options.commitFromComment) {
+  if (workflowMode === "branch_pr" && options.commitFromComment) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
@@ -45,7 +48,7 @@ export function resolveFinishExecutionPlan(opts: {
       ].join("\n"),
     });
   }
-  if (options.preMergeClosure === true && ctx.config.workflow_mode !== "branch_pr") {
+  if (options.preMergeClosure === true && workflowMode !== "branch_pr") {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
@@ -69,7 +72,7 @@ export function resolveFinishExecutionPlan(opts: {
   if (
     (options.closeCommit || options.noCloseCommit) &&
     options.taskIds.length !== 1 &&
-    ctx.config.workflow_mode !== "branch_pr"
+    workflowMode !== "branch_pr"
   ) {
     throw new CliError({
       exitCode: 2,
@@ -138,13 +141,13 @@ export function resolveFinishExecutionPlan(opts: {
   const store = useStore ? getTaskStore(ctx) : null;
   const backendWritesTaskReadmes = ctx.taskBackend.capabilities.writes_task_readmes === true;
   const defaultDirectCloseCommit =
-    ctx.config.workflow_mode === "direct" &&
+    workflowMode === "direct" &&
     backendWritesTaskReadmes &&
     options.taskIds.length === 1 &&
     !options.commitFromComment &&
     !statusCommitRequested;
   const defaultBranchPrCloseCommit =
-    ctx.config.workflow_mode === "branch_pr" &&
+    workflowMode === "branch_pr" &&
     backendWritesTaskReadmes &&
     options.taskIds.length > 0 &&
     !options.commitFromComment &&
@@ -160,7 +163,7 @@ export function resolveFinishExecutionPlan(opts: {
     (defaultDirectCloseCommit && options.noCloseCommit !== true) ||
     (defaultBranchPrCloseCommit && options.noCloseCommit !== true);
   const closeAdditionalTaskIds =
-    ctx.config.workflow_mode === "branch_pr" && shouldCloseCommit
+    workflowMode === "branch_pr" && shouldCloseCommit
       ? options.taskIds.slice(1).filter(Boolean)
       : [];
 
@@ -191,6 +194,7 @@ export function resolveFinishExecutionPlan(opts: {
   }
 
   return {
+    execution,
     useStore,
     store,
     statusCommitRequested,

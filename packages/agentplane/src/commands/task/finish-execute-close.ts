@@ -13,7 +13,11 @@ import { parsePrMeta } from "../shared/pr-meta.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import { createTaskCloseCommit } from "./finish-shared.js";
 import { materializeBranchPrCloseTail } from "./finish-close.js";
-import type { FinishExecutionPlan, FinishOptions } from "./finish-types.js";
+import {
+  resolveFinishWorkflowMode,
+  type FinishExecutionPlan,
+  type FinishOptions,
+} from "./finish-types.js";
 
 function isActiveTaskArtifactPath(opts: {
   relPath: string;
@@ -31,6 +35,7 @@ export async function assertCloseCommitCanMutateTaskState(opts: {
   plan: FinishExecutionPlan;
 }): Promise<void> {
   const { ctx, options, plan } = opts;
+  const workflowMode = resolveFinishWorkflowMode(plan, ctx);
   if (!plan.shouldCloseCommit) return;
 
   const taskId = plan.primaryTaskId ?? options.taskIds[0];
@@ -50,7 +55,7 @@ export async function assertCloseCommitCanMutateTaskState(opts: {
         cwd: options.cwd,
         repoRoot: ctx.resolvedProject.gitRoot,
         gitDir: lockInfo.gitDir,
-        workflowMode: ctx.config.workflow_mode,
+        workflowMode,
         mutationKind: "close_tail",
         taskId,
         indexLockPath: lockInfo.lockPath,
@@ -84,7 +89,7 @@ export async function assertCloseCommitCanMutateTaskState(opts: {
 
   const unstaged = await ctx.git.statusUnstagedTrackedPaths();
   const ignored =
-    ctx.config.workflow_mode === "direct"
+    workflowMode === "direct"
       ? await resolveIgnoredDirectCloseDirtyPaths({ ctx, taskId })
       : plan.preMergeClosure
         ? unstaged.filter((relPath) =>
@@ -103,7 +108,7 @@ export async function assertCloseCommitCanMutateTaskState(opts: {
     code: "E_GIT",
     message: [
       "finish --close-commit requires a clean tracked working tree before mutating task state.",
-      `Why: deterministic ${ctx.config.workflow_mode} close commits stage only the finished task artifacts; other tracked changes would make commit creation fail after the task is marked DONE.`,
+      `Why: deterministic ${workflowMode} close commits stage only the finished task artifacts; other tracked changes would make commit creation fail after the task is marked DONE.`,
       `Dirty tracked paths: ${blockingUnstaged.slice(0, 12).join(", ")}${blockingUnstaged.length > 12 ? ` (+${blockingUnstaged.length - 12} more)` : ""}`,
       "Fix: commit, stash, or move unrelated lifecycle changes into a batch close branch before rerunning finish.",
       "Branch PR metadata-only recovery: run finish with --no-close-commit on the base checkout, commit the resulting task artifacts on a closure branch, and open that branch through the normal PR route.",
@@ -121,13 +126,14 @@ export async function finalizeCloseTail(opts: {
   promotedIncidents: number;
 }): Promise<void> {
   const { ctx, options, plan, primaryTaskId, promotedIncidents } = opts;
+  const workflowMode = resolveFinishWorkflowMode(plan, ctx);
   if (!plan.shouldCloseCommit || !primaryTaskId) return;
 
   if (!options.quiet) {
     process.stdout.write("task marked DONE; creating deterministic close commit\n");
   }
   const closeUnstageOthers = options.closeCommit === true && options.closeUnstageOthers === true;
-  if (ctx.config.workflow_mode === "branch_pr") {
+  if (workflowMode === "branch_pr") {
     if (plan.preMergeClosure) {
       await markPreMergeClosure({ ctx, taskId: primaryTaskId });
       await createTaskCloseCommit({
@@ -140,6 +146,7 @@ export async function finalizeCloseTail(opts: {
         closeUnstageOthers,
         allowPolicy: promotedIncidents > 0,
         additionalTaskIds: plan.closeAdditionalTaskIds,
+        workflowMode,
       });
       if (!options.quiet) {
         process.stdout.write(
@@ -182,6 +189,7 @@ export async function finalizeCloseTail(opts: {
     closeUnstageOthers,
     allowPolicy: promotedIncidents > 0,
     additionalTaskIds: plan.closeAdditionalTaskIds,
+    workflowMode,
   });
 }
 

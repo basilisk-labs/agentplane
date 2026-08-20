@@ -47,6 +47,7 @@ import {
   observedExternalEffectsFromRunnerResult,
   recordObservedTaskExecutionContract,
 } from "./task-execution-contract-observation.js";
+import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
 function operationId(decision: TaskRouteDecision): string | null {
   return decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation.id : null;
@@ -202,6 +203,7 @@ async function executeBranchImplementationEpisode(opts: {
         execution_role: step.episode.role,
         ...(opts.input.sandbox_override ? { sandbox_override: opts.input.sandbox_override } : {}),
         ...(opts.input.danger_authority ? { danger_authority: opts.input.danger_authority } : {}),
+        task_execution: opts.input.task_execution,
       });
     } catch (error) {
       journal = completeSupervisorExecutionEpisode({
@@ -304,8 +306,16 @@ async function executeBranchImplementationEpisode(opts: {
       });
     }
     const commit = implementation.evidence.implementation_commit;
+    const taskExecution =
+      opts.input.task_execution ??
+      (await resolveTaskExecutionContext({
+        ctx: command,
+        tasks: [currentTask],
+        primaryTaskId: currentTask.id,
+      }));
     const reconciliation = await recordObservedTaskExecutionContract({
       command,
+      execution: taskExecution,
       task: currentTask,
       changed_paths: implementation.evidence.changed_paths,
       observed_external_effects: observedExternalEffectsFromRunnerResult(lifecycle.result),

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { buildStateFingerprint, type StateFingerprint } from "@agentplaneorg/core/schemas";
 
 import {
+  assessWorkflowOperationCapability,
   appendSideEffectAuthorityAudit,
   createSideEffectAuthorityRecord,
   evaluateWorkflowOperationAuthority,
@@ -388,5 +389,30 @@ describe("side-effect authority", () => {
         fingerprint: fingerprint(),
       }),
     ).toMatchObject({ state: "allowed", authority: null });
+  });
+
+  it("escalates a direct route before a provider side effect", () => {
+    expect(
+      assessWorkflowOperationCapability({
+        execution: { selected_mode: "direct" },
+        operationId: "pr.open",
+      }),
+    ).toEqual({
+      state: "escalation_required",
+      effect_class: "external_reversible",
+      from: "direct",
+      to: "branch_pr",
+      reason_code: "side_effect_requires_isolation",
+      requires_approval: true,
+    });
+  });
+
+  it("allows a direct candidate to consume queue-owned integration authority", () => {
+    expect(
+      assessWorkflowOperationCapability({
+        execution: { selected_mode: "direct" },
+        operationId: "integration.run_next",
+      }),
+    ).toEqual({ state: "allowed", effect_class: "external_pre_authorized" });
   });
 });

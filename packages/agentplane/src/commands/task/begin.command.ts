@@ -164,7 +164,7 @@ export function makeRunTaskBeginHandler(
         mutationScope: p.mutationScope,
         riskFlags: [],
         blueprintRequest: p.blueprintRequest,
-        route: "repository",
+        route: "auto",
         dependsOn: [],
         verify: p.verify,
         showBlueprint: false,

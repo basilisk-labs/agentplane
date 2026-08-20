@@ -4,11 +4,28 @@ import type { TaskData, TaskWriteOptions } from "../../backends/task-backend.js"
 import type { CommandContext } from "../shared/task-backend.js";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import { defaultConfig } from "@agentplaneorg/core/config";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
 import {
   observedExternalEffectsFromRunnerResult,
   recordObservedTaskExecutionContract,
 } from "./task-execution-contract-observation.js";
+
+function executionFor(task: TaskData): TaskExecutionContext {
+  return {
+    schema_version: 1,
+    primary_task_id: task.id,
+    task_ids: [task.id],
+    repository_mode: "direct",
+    selected_mode: task.execution_contract?.selected_mode ?? "direct",
+    requested_mode: "auto",
+    route_source: "execution_contract",
+    reason_codes: task.execution_contract?.reason_codes ?? [],
+    base_ref: "main",
+    base_sha: "0".repeat(40),
+    authoritative_task_source: "backend_projection",
+  };
+}
 
 describe("task execution contract observation", () => {
   it("replaces a direct-only blueprint during observed branch escalation", async () => {
@@ -64,6 +81,7 @@ describe("task execution contract observation", () => {
 
     const result = await recordObservedTaskExecutionContract({
       command,
+      execution: executionFor(task),
       task,
       changed_paths: [".github/workflows/ci.yml"],
       preserved_commit: "abc123",
@@ -95,6 +113,7 @@ describe("task execution contract observation", () => {
   it("excludes CLI-owned current-task artifacts from product scope reconciliation", async () => {
     const config = defaultConfig();
     config.workflow_mode = "direct";
+    config.paths.workflow_dir = ".ap/tasks";
     const task = {
       id: "202608120000-SCOPE1",
       title: "Scoped fixture",
@@ -139,8 +158,9 @@ describe("task execution contract observation", () => {
 
     const result = await recordObservedTaskExecutionContract({
       command,
+      execution: executionFor(task),
       task,
-      changed_paths: ["status-label.txt", `.agentplane/tasks/${task.id}/README.md`],
+      changed_paths: ["status-label.txt", `.ap/tasks/${task.id}/README.md`],
       preserved_commit: "abc123",
     });
 
@@ -181,6 +201,7 @@ describe("task execution contract observation", () => {
 
     const result = await recordObservedTaskExecutionContract({
       command,
+      execution: executionFor(task),
       task,
       changed_paths: ["packages/agentplane/src/example.ts"],
       preserved_commit: "new-sha",
@@ -215,6 +236,7 @@ describe("task execution contract observation", () => {
 
     const result = await recordObservedTaskExecutionContract({
       command,
+      execution: executionFor(task),
       task,
       changed_paths: [],
       preserved_commit: "same-sha",

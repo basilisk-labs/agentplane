@@ -28,6 +28,7 @@ import { cmdTaskSetStatus } from "./set-status.js";
 import { recordObservedTaskExecutionContract } from "./task-execution-contract-observation.js";
 import { cmdVerifyParsed } from "./verify-record.js";
 import { loadTaskFromContext } from "../shared/task-backend.js";
+import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
 function pathFromStatusLine(line: string): string {
   const raw = line.length >= 4 ? line.slice(3).trim() : "";
@@ -413,8 +414,14 @@ export async function applyExternalImplementationResult(opts: {
     ctx: opts.command,
     taskId: opts.exchange.task_id,
   });
+  const execution = await resolveTaskExecutionContext({
+    ctx: opts.command,
+    tasks: [currentTask],
+    primaryTaskId: currentTask.id,
+  });
   const reconciliation = await recordObservedTaskExecutionContract({
     command: opts.command,
+    execution,
     task: currentTask,
     changed_paths: implementation.evidence.changed_paths,
     preserved_commit: implementation.evidence.implementation_commit,
