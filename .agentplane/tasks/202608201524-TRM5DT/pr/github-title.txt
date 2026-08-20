@@ -1,1 +1,1 @@
-✅ TRM5DT task: Implement provider-neutral GitHub and GitLab change-request lifecycle [202608201524-TRM5DT]
+🚧 TRM5DT task: Implement provider-neutral GitHub and GitLab change-request lifecycle [202608201524-TRM5DT]
