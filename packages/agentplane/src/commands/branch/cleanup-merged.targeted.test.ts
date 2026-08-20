@@ -974,9 +974,16 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
 
     const io = captureStdIO();
     try {
-      expect(
-        await runCli(["cleanup", "merged", "--task-id", taskId, "--yes", "--root", root]),
-      ).toBe(0);
+      const result = await runCli([
+        "cleanup",
+        "merged",
+        "--task-id",
+        taskId,
+        "--yes",
+        "--root",
+        root,
+      ]);
+      expect(result, io.stderr).toBe(0);
       expect(io.stdout).toContain("proof=patch_equivalent");
     } finally {
       io.restore();

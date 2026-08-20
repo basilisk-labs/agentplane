@@ -6,14 +6,14 @@ Created: 2026-08-20T21:18:16.979Z
 
 - Task: `202608202112-E6CDHP`
 - Title: Fix live GitLab MR transport and provider-neutral mergeability validation
-- Status: BLOCKED
+- Status: DOING
 - Branch: `task/202608202112-E6CDHP/fix-live-gitlab-mr-transport-and-provider-neutra`
 - Canonical task record: `.agentplane/tasks/202608202112-E6CDHP/README.md`
 
 ## Verification
 
-- State: blocked_external
-- Note: Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,13 +29,20 @@ Created: 2026-08-20T21:18:16.979Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/pr/conflict-rework.test.ts        | 25 ++++++++++++++++
- .../agentplane/src/commands/pr/conflict-rework.ts  | 27 +++++++++++++++---
- .../src/commands/pr/internal/glab-api.test.ts      | 26 +++++++++++++++++
- .../src/commands/pr/internal/glab-api.ts           |  4 ++-
- .../src/commands/pr/internal/sync-gitlab.test.ts   | 33 ++++++++++++++++++++++
- .../src/commands/pr/internal/sync-gitlab.ts        | 29 +++++++++++++++++++
- 6 files changed, 139 insertions(+), 5 deletions(-)
+ .../cleanup-merged-provider-reconciliation.test.ts | 69 ++++++++++++++++++++++
+ .../cleanup-merged-provider-reconciliation.ts      | 36 ++++++++++-
+ .../branch/cleanup-merged-targeted-proof.ts        |  7 ++-
+ .../branch/cleanup-merged.targeted.test.ts         | 13 +++-
+ .../src/commands/pr/conflict-rework.test.ts        | 25 ++++++++
+ .../agentplane/src/commands/pr/conflict-rework.ts  | 27 +++++++--
+ .../agentplane/src/commands/pr/integrate/cmd.ts    |  3 +-
+ .../pr/integrate/internal/route-label.test.ts      | 17 ++++++
+ .../commands/pr/integrate/internal/route-label.ts  |  7 +++
+ .../src/commands/pr/internal/glab-api.test.ts      | 26 ++++++++
+ .../src/commands/pr/internal/glab-api.ts           |  4 +-
+ .../src/commands/pr/internal/sync-gitlab.test.ts   | 33 +++++++++++
+ .../src/commands/pr/internal/sync-gitlab.ts        | 29 +++++++++
+ 13 files changed, 282 insertions(+), 14 deletions(-)
 ```
 
 </details>
