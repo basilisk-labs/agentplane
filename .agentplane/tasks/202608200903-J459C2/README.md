@@ -1,10 +1,10 @@
 ---
 id: "202608200903-J459C2"
 title: "Make task execution authority local and direct execution workspace-safe"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 42
+revision: 45
 origin:
   system: "manual"
 depends_on: []
@@ -592,6 +592,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator rework is limited to the protected canonical task document and cannot be applied inside this implementation episode's writable roots. Recommended action: Use agentplane task doc set for Verify Steps and Findings with the evaluator-requested task-specific content, record the resulting task artifact commit through AgentPlane, then rerun verification and quality review. Agentplane receipt: external-agent-blocker/tr_dbb14e746b8de31317dc8dc798b3dd9a/sha256:94350d11702831ba366de4d803f2423b6b7a63d03228e1e3efa939531b576803."
+  -
+    author: "CODER"
+    body: "Resolve quality rework: replace fallback verification with task-specific acceptance and record final findings."
 events:
   -
     type: "status"
@@ -787,9 +790,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator rework is limited to the protected canonical task document and cannot be applied inside this implementation episode's writable roots. Recommended action: Use agentplane task doc set for Verify Steps and Findings with the evaluator-requested task-specific content, record the resulting task artifact commit through AgentPlane, then rerun verification and quality review. Agentplane receipt: external-agent-blocker/tr_dbb14e746b8de31317dc8dc798b3dd9a/sha256:94350d11702831ba366de4d803f2423b6b7a63d03228e1e3efa939531b576803."
+  -
+    type: "status"
+    at: "2026-08-20T20:59:55.604Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resolve quality rework: replace fallback verification with task-specific acceptance and record final findings."
 doc_version: 3
-doc_updated_at: "2026-08-20T20:58:52.434Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-20T20:59:55.604Z"
+doc_updated_by: "CODER"
 description: "Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue."
 sections:
   Summary: |-
@@ -811,11 +821,16 @@ sections:
     9. Enforce declared capabilities before managed-runner invocation, retain post-run observation as defense in depth, and implement evidence-preserving direct-to-branch_pr escalation without unnecessary executor replay. Do not claim arbitrary shell execution is sandboxed.
     10. Delete migrated legacy runtime semantics, add read-time migration and architecture guards, record ADRs for task authority, workspace isolation, and serialized integration, then run focused suites, typecheck, policy routing, doctor, full local CI, independent evaluator review, and all ten end-to-end acceptance cases. Stop for any scope outside the declared roots, verification-contract weakening, destructive migration, credentials, deployment, publication, or provider action; require fresh approval at those boundaries.
   Verify Steps: |-
-    PLANNER fallback scaffold for "Make task execution authority local and direct execution workspace-safe". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Make task execution authority local and direct execution workspace-safe". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run focused task-authority and route tests. Expected: TaskExecutionContext and TaskCommandContext own selected_mode, route provenance, authoritative task source, base_ref, and frozen base_sha; repository workflow_mode is not read as runtime authority.
+    2. Run focused workspace-allocation and batch-context tests. Expected: automated direct and branch_pr work receive isolated leases, base checkout remains single-writer, private paths stay outside semantic digests, and mixed route/base batches fail closed.
+    3. Run focused verification and finish tests. Expected: verification identity v4 is workspace-neutral and bound to frozen task/base identity; v3 is audit-only; closeout journal recovery is idempotent across prepared, task_state_written, close_commit_written, completed, and recovery_required phases.
+    4. Run focused integration-queue and managed-runner tests. Expected: the existing serialized queue handles direct candidates, rechecks base/conflicts/equivalence/freshness, preserves conflict_rework, rejects undeclared capabilities before invocation, and escalates direct to branch_pr without unnecessary executor replay.
+    5. Exercise the ten end-to-end acceptance scenarios: repository-direct finish, task branch_pr finish, risk-driven escalation, custom workflow_dir, frozen base identity, parallel direct isolation, mixed-context rejection, workspace-neutral verification identity, interrupted closeout recovery, and serialized parallel A/B/C integration.
+    6. Run node --check scripts/checks/run-local-ci.mjs, bunx prettier --check scripts/checks/run-local-ci.mjs, bunx eslint scripts/checks/run-local-ci.mjs, and git diff --check. Expected: the CI hermeticity rework is syntactically and structurally clean.
+    7. Run AGENTPLANE_CLOUD_PROVIDER=ambient-provider bun run ci:local:fast. Expected: all five verification groups execute and verification_metrics reports ok=true, proving cloud fixture identity is not overridden by the parent environment.
+    8. Run ap doctor, bun run ci:local:fast, bun run typecheck, and node .agentplane/policy/check-routing.mjs. Expected: every declared local check passes without weakening the verification contract.
+    9. Perform independent EVALUATOR review against the frozen diff and acceptance evidence. Expected: verdict pass with no unresolved implementation finding.
+    10. Publish the exact task head, require hosted checks for that SHA, integrate through the AgentPlane queue, and verify provider readback plus main ancestry before closure.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-08-20T17:34:16.087Z — VERIFY — needs_rework
@@ -1193,7 +1208,12 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Confirmed root cause: the local CI launcher inherited AGENTPLANE_CLOUD_* overrides from the supervisor environment, so cloud backend tests preferred ambient provider identity over fixture settings and reported stale projection/adoption errors.
+    - Resolution: scripts/checks/run-local-ci.mjs now removes endpoint, token, project id, provider, remote-create policy, and auto-push cloud overrides before constructing child environments. The ineffective two-wave scheduler workaround was removed and the original concurrency-2 scheduler restored.
+    - Direct proof: AGENTPLANE_CLOUD_PROVIDER=ambient-provider bun run ci:local:fast passed all five groups with ok=true in 393741 ms. Supervisor-owned declared verification independently passed all required checks; its full-fast run reported ok=true in 365468 ms.
+    - The approved AP-0001 through AP-1004 implementation, migration guards, ADRs, focused regression coverage, verification identity v4, workspace allocation, closeout recovery, serialized integration, and managed-runner capability enforcement are present in the committed task diff.
+    - No residual local implementation blocker remains. Hosted checks, exact-SHA publication, queued integration, provider merge readback, and final main ancestry verification remain lifecycle steps owned by AgentPlane.
 extensions:
   agentplane.scope_extension_request:
     applied_at: "2026-08-20T18:07:27.984Z"
@@ -1251,11 +1271,16 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Make task execution authority local and direct execution workspace-safe". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Make task execution authority local and direct execution workspace-safe". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run focused task-authority and route tests. Expected: TaskExecutionContext and TaskCommandContext own selected_mode, route provenance, authoritative task source, base_ref, and frozen base_sha; repository workflow_mode is not read as runtime authority.
+2. Run focused workspace-allocation and batch-context tests. Expected: automated direct and branch_pr work receive isolated leases, base checkout remains single-writer, private paths stay outside semantic digests, and mixed route/base batches fail closed.
+3. Run focused verification and finish tests. Expected: verification identity v4 is workspace-neutral and bound to frozen task/base identity; v3 is audit-only; closeout journal recovery is idempotent across prepared, task_state_written, close_commit_written, completed, and recovery_required phases.
+4. Run focused integration-queue and managed-runner tests. Expected: the existing serialized queue handles direct candidates, rechecks base/conflicts/equivalence/freshness, preserves conflict_rework, rejects undeclared capabilities before invocation, and escalates direct to branch_pr without unnecessary executor replay.
+5. Exercise the ten end-to-end acceptance scenarios: repository-direct finish, task branch_pr finish, risk-driven escalation, custom workflow_dir, frozen base identity, parallel direct isolation, mixed-context rejection, workspace-neutral verification identity, interrupted closeout recovery, and serialized parallel A/B/C integration.
+6. Run node --check scripts/checks/run-local-ci.mjs, bunx prettier --check scripts/checks/run-local-ci.mjs, bunx eslint scripts/checks/run-local-ci.mjs, and git diff --check. Expected: the CI hermeticity rework is syntactically and structurally clean.
+7. Run AGENTPLANE_CLOUD_PROVIDER=ambient-provider bun run ci:local:fast. Expected: all five verification groups execute and verification_metrics reports ok=true, proving cloud fixture identity is not overridden by the parent environment.
+8. Run ap doctor, bun run ci:local:fast, bun run typecheck, and node .agentplane/policy/check-routing.mjs. Expected: every declared local check passes without weakening the verification contract.
+9. Perform independent EVALUATOR review against the frozen diff and acceptance evidence. Expected: verdict pass with no unresolved implementation finding.
+10. Publish the exact task head, require hosted checks for that SHA, integrate through the AgentPlane queue, and verify provider readback plus main ancestry before closure.
 
 ## Verification
 
@@ -1639,3 +1664,9 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Confirmed root cause: the local CI launcher inherited AGENTPLANE_CLOUD_* overrides from the supervisor environment, so cloud backend tests preferred ambient provider identity over fixture settings and reported stale projection/adoption errors.
+- Resolution: scripts/checks/run-local-ci.mjs now removes endpoint, token, project id, provider, remote-create policy, and auto-push cloud overrides before constructing child environments. The ineffective two-wave scheduler workaround was removed and the original concurrency-2 scheduler restored.
+- Direct proof: AGENTPLANE_CLOUD_PROVIDER=ambient-provider bun run ci:local:fast passed all five groups with ok=true in 393741 ms. Supervisor-owned declared verification independently passed all required checks; its full-fast run reported ok=true in 365468 ms.
+- The approved AP-0001 through AP-1004 implementation, migration guards, ADRs, focused regression coverage, verification identity v4, workspace allocation, closeout recovery, serialized integration, and managed-runner capability enforcement are present in the committed task diff.
+- No residual local implementation blocker remains. Hosted checks, exact-SHA publication, queued integration, provider merge readback, and final main ancestry verification remain lifecycle steps owned by AgentPlane.
