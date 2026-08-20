@@ -103,6 +103,7 @@ export async function executeFinishPlan(opts: {
       loadedTasks: loadedState.loadedTasks,
       taskCommitInfo,
       implementationCommitInfo,
+      execution: plan.execution,
       workflowMode: resolveFinishWorkflowMode(plan, ctx),
     });
 
