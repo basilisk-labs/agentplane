@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CliError } from "../../../../shared/errors.js";
 
@@ -32,6 +32,7 @@ const mocks = vi.hoisted(() => ({
   isTaskLocalOnlyAdvance: vi.fn(),
   ensurePrArtifactsSynced: vi.fn(),
   requiresPullRequestMergePath: vi.fn(),
+  resolveGitLabBaseMergeRequestProtection: vi.fn(),
   requireOpenGithubPrAtHead: vi.fn(),
   assessPreMergeClosureFreshness: vi.fn(),
   requireCleanTaskWorktree: vi.fn(),
@@ -88,6 +89,9 @@ vi.mock("../../internal/sync.js", () => ({
 }));
 vi.mock("./github-protection.js", () => ({
   requiresPullRequestMergePath: mocks.requiresPullRequestMergePath,
+}));
+vi.mock("./gitlab-protection.js", () => ({
+  resolveGitLabBaseMergeRequestProtection: mocks.resolveGitLabBaseMergeRequestProtection,
 }));
 vi.mock("../../provider-head.js", () => ({
   requireOpenGithubPrAtHead: mocks.requireOpenGithubPrAtHead,
@@ -186,6 +190,10 @@ function seedCommon(): void {
   mocks.isTaskLocalOnlyAdvance.mockResolvedValue(false);
   mocks.ensurePrArtifactsSynced.mockResolvedValue({ branch: "task/T-1" });
   mocks.requiresPullRequestMergePath.mockResolvedValue(false);
+  mocks.resolveGitLabBaseMergeRequestProtection.mockResolvedValue({
+    state: "unprotected",
+    baseBranch: "main",
+  });
   mocks.requireOpenGithubPrAtHead.mockResolvedValue({
     prNumber: 101,
     prUrl: "https://github.com/example/repo/pull/101",
@@ -209,6 +217,51 @@ function seedCommon(): void {
 }
 
 describe("pr/integrate/internal/prepare", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("routes GitLab integration preparation through GitLab protection", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    const provider = {
+      schema_version: 1 as const,
+      kind: "gitlab" as const,
+      hostname: "gitlab.example.test",
+      remote: "origin",
+      source_project: "fork/project",
+      target_project: "group/project",
+    };
+    mocks.parsePrMeta.mockReturnValue({
+      branch: "task/T-1",
+      head_sha: "deadbeef",
+      last_verified_sha: null,
+      provider,
+    });
+    mocks.resolveGitLabBaseMergeRequestProtection.mockResolvedValue({
+      state: "protected",
+      baseBranch: "main",
+    });
+
+    await expect(
+      prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
+    ).resolves.toMatchObject({
+      protectedBaseRequiresPrMerge: true,
+    });
+
+    expect(mocks.resolveGitLabBaseMergeRequestProtection).toHaveBeenCalledWith({
+      gitRoot: "/repo",
+      identity: {
+        hostname: "gitlab.example.test",
+        targetProject: "group/project",
+      },
+      baseBranch: "main",
+    });
+    expect(mocks.requiresPullRequestMergePath).not.toHaveBeenCalled();
+    expect(mocks.requireOpenGithubPrAtHead).toHaveBeenCalledWith(
+      expect.objectContaining({ recorded: provider }),
+    );
+  });
+
   it("rejects when workflow mode is not branch_pr", async () => {
     const { prepareIntegrate } = await import("./prepare.js");
     seedCommon();
