@@ -16,7 +16,7 @@ Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutatio
 ## Verification
 
 - State: needs_rework
-- Note: Rework: Declared check could not run: pnpm --filter @agentplaneorg/agentplane test
+- Note: Rework: Declared check failed: bun run --filter=agentplane test
 - Canonical workflow state lives in the task README.
 
 <details>
