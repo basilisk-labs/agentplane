@@ -22,7 +22,7 @@ Improve the root README around the semantic-agent and deterministic-CLI boundary
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-20T22:06:49.088Z
+- Updated: 2026-08-20T22:21:33.308Z
 - Branch: task/202608202141-WC5RF1/improve-the-root-readme-around-the-semantic-agen
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
