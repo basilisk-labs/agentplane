@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608200903-J459C2-e3e71afca4aa89bbe5b24bcb",
+  "prepared_at": "2026-08-20T23:35:37.497Z",
+  "task": {
+    "id": "202608200903-J459C2",
+    "revision": 71,
+    "objective": "Make task execution authority local and direct execution workspace-safe\n\nImplement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue.",
+    "acceptance_criteria": [
+      "ap doctor",
+      "bun run ci:local:fast",
+      "bun run typecheck",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue.\n- Out of scope: unrelated refactors not required for \"Make task execution authority local and direct execution workspace-safe\".",
+      "1. Establish test-first regression coverage for repository-direct/task-branch_pr finish, risk-driven route escalation, custom workflow_dir, frozen base identity, and parallel direct isolation; keep every published commit green rather than merging red tests.\n2. Add TaskExecutionContext and TaskCommandContext with one resolver. Bind selected route, route provenance, compatible task batch, authoritative task source, base_ref, and immutable base_sha without mutating CommandContext; retain only a deprecated compatibility wrapper and add static guards against lifecycle reads of repository workflow_mode.\n3. Make auto the creation default, remove user-facing repository route, normalize legacy records on read, unify create/new routing, and preserve branch_pr as the repository safety floor.\n4. Implement two-phase authoritative task loading and migrate route oracle, task run, PR lifecycle, quality/evaluator, verification, and finish callers to TaskCommandContext. Reject mixed-mode or mixed-base batches.\n5. Add WorkspaceAllocationContext and a route-independent allocator. Default automated direct and branch_pr execution to isolated worktrees; keep base checkout behind a single-writer lease. Persist leases and absolute paths only in private Git-common runtime state, preserve reachable implementation commits, and fail closed during cleanup.\n6. Introduce verification input identity v4 using TaskExecutionContext, base_ref plus base_sha, route/task digests, and workspace-neutral inputs. Migrate callers to assessment-first diagnostics with exact invalidation reasons and explicit v3 audit-only compatibility.\n7. Rebuild finish around the loaded task context and an idempotent CAS-backed closeout journal with prepared, task_state_written, close_commit_written, completed, and recovery_required phases. Route verification, close-tail selection, base validation, and direct-lock cleanup exclusively through selected_mode.\n8. Generalize the existing serialized integration queue for direct implementation candidates instead of creating a competing queue. Recheck base identity, conflicts, semantic equivalence, and verification freshness before integration; preserve explicit conflict_rework and parallel A/B/C coverage.\n9. Enforce declared capabilities before managed-runner invocation, retain post-run observation as defense in depth, and implement evidence-preserving direct-to-branch_pr escalation without unnecessary executor replay. Do not claim arbitrary shell execution is sandboxed.\n10. Delete migrated legacy runtime semantics, add read-time migration and architecture guards, record ADRs for task authority, workspace isolation, and serialized integration, then run focused suites, typecheck, policy routing, doctor, full local CI, independent evaluator review, and all ten end-to-end acceptance cases. Stop for any scope outside the declared roots, verification-contract weakening, destructive migration, credentials, deployment, publication, or provider action; require fresh approval at those boundaries.",
+      "1. Run focused task-authority and route tests. Expected: TaskExecutionContext and TaskCommandContext own selected_mode, route provenance, authoritative task source, base_ref, and frozen base_sha; repository workflow_mode is not read as runtime authority.\n2. Run focused workspace-allocation and batch-context tests. Expected: automated direct and branch_pr work receive isolated leases, base checkout remains single-writer, private paths stay outside semantic digests, and mixed route/base batches fail closed.\n3. Run focused verification and finish tests. Expected: verification identity v4 is workspace-neutral and bound to frozen task/base identity; v3 is audit-only; closeout journal recovery is idempotent across prepared, task_state_written, close_commit_written, completed, and recovery_required phases.\n4. Run focused integration-queue and managed-runner tests. Expected: the existing serialized queue handles direct candidates, rechecks base/conflicts/equivalence/freshness, preserves conflict_rework, rejects undeclared capabilities before invocation, and escalates direct to branch_pr without unnecessary executor replay.\n5. Exercise the ten end-to-end acceptance scenarios: repository-direct finish, task branch_pr finish, risk-driven escalation, custom workflow_dir, frozen base identity, parallel direct isolation, mixed-context rejection, workspace-neutral verification identity, interrupted closeout recovery, and serialized parallel A/B/C integration.\n6. Run node --check scripts/checks/run-local-ci.mjs, bunx prettier --check scripts/checks/run-local-ci.mjs, bunx eslint scripts/checks/run-local-ci.mjs, and git diff --check. Expected: the CI hermeticity rework is syntactically and structurally clean.\n7. Run AGENTPLANE_CLOUD_PROVIDER=ambient-provider bun run ci:local:fast. Expected: all five verification groups execute and verification_metrics reports ok=true, proving cloud fixture identity is not overridden by the parent environment.\n8. Run ap doctor, bun run ci:local:fast, bun run typecheck, and node .agentplane/policy/check-routing.mjs. Expected: every declared local check passes without weakening the verification contract.\n9. Perform independent EVALUATOR review against the frozen diff and acceptance evidence. Expected: verdict pass with no unresolved implementation finding.\n10. Publish the exact task head, require hosted checks for that SHA, integrate through the AgentPlane queue, and verify provider readback plus main ancestry before closure."
+    ]
+  },
+  "evaluated_sha": "e9f620a293dadd7e252ea263883e4010d6870d58",
+  "diff_base_sha": "292b232b3160b22c47c6cc206fade625e9377fed",
+  "blueprint_digest": "f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608200903-J459C2/quality/20260820-233537497-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:27bd91767df8baa3499bfef9d652949a8c91a9c128a144fd65be91af917c2d6b",
+    "prompt_path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/23fbcf8bc2ca34e68b40a99f492be23c20f1dc9a95dd66a98ceaa250190b5f44.md",
+    "result_schema_path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608200903-J459C2/README.md",
+      "sha256": "sha256:91bdda29b703d0d0608eb221ec8656fd3a20bdc91bf489df4f6d7d000f1179b9",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/7099d7f392eb7db0e8c4e3c32284fb801274c15623981c6133088058ebc96ae7.patch",
+      "sha256": "sha256:7099d7f392eb7db0e8c4e3c32284fb801274c15623981c6133088058ebc96ae7",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/ffb8e1f076d1896c3cd78951bebeabb62055769c9d58b1d1afc5b4b458d4e1be.json",
+      "sha256": "sha256:ffb8e1f076d1896c3cd78951bebeabb62055769c9d58b1d1afc5b4b458d4e1be",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608200903-J459C2/verification/20260820233520106-dcbfacba0cb8ecf6.json",
+      "sha256": "sha256:0f552de2765d3ec62e75b7966935baffad2d3c470cc17cd374b408f212bf4c18",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/a266df3b865d99cb62af6a582bb17bb986f2ecaa45fdbe0c03341b3c6bd67d02.json",
+      "sha256": "sha256:a266df3b865d99cb62af6a582bb17bb986f2ecaa45fdbe0c03341b3c6bd67d02",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

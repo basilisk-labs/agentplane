@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Implementation commit e9f620a293dadd7e252ea263883e4010d6870d58 retains the direct workspace and its lease through evidence, contract reconciliation, verification, evaluator review, finish, and golden-metrics persistence, then releases it in a guaranteed outer finally block.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/7099d7f392eb7db0e8c4e3c32284fb801274c15623981c6133088058ebc96ae7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The operation captures pre-run workspace head/status and task event count, so implementation evidence and lifecycle-mutation detection are measured against the isolated executor checkout rather than the base checkout.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/7099d7f392eb7db0e8c4e3c32284fb801274c15623981c6133088058ebc96ae7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Matching unfinished closeout journals reconcile recovery_required to their last durable phase; task_state_written and close_commit_written explicitly skip already-completed mutation groups before progressing to completion.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/7099d7f392eb7db0e8c4e3c32284fb801274c15623981c6133088058ebc96ae7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Regression coverage passes across 7 focused files and 47 tests, including retained workspace ownership, lease transfer/release, and both journal resume phases.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/7099d7f392eb7db0e8c4e3c32284fb801274c15623981c6133088058ebc96ae7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Supervisor full-fast executed all five groups with ok=true in 357698ms; typecheck, policy routing, both doctor invocations, Knip, lint, formatting, and committed-diff checks passed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/7099d7f392eb7db0e8c4e3c32284fb801274c15623981c6133088058ebc96ae7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: The updated exact head must pass hosted checks and the three GitHub review threads must be resolved against that head before integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/7099d7f392eb7db0e8c4e3c32284fb801274c15623981c6133088058ebc96ae7.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
