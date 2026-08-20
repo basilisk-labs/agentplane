@@ -2,10 +2,10 @@
 id: "202608202141-WC5RF1"
 title: "Improve the root README around the semantic-agent and deterministic-CLI boundary"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -57,9 +57,9 @@ quality_review:
     - "The full docs-site contract, targeted 15-test protocol suite, v0.7.1 product contract, Prettier check, and frozen-diff whitespace check pass on the evaluated content."
     - "Residual risk: The PR cannot be merged until GitHub reports all required checks successful for the exact new head."
 token_usage:
-  agent_runs: 10
+  agent_runs: 15
   input_tokens: null
-  journal_digest: "sha256:38482e60a9b07d94ec3d44922d1e5c2daed27ca5e8192aa7adf7571bfb09e262"
+  journal_digest: "sha256:6f5d505bb50917d70f67256f250ae51a791a3a53ac42993353809b59637d947e"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -69,7 +69,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-20T22:54:54.341Z"
+  updated_at: "2026-08-20T23:22:34.417Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -216,8 +216,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "faad4d9504d9910a0bab419e721423887dc2bfec"
-  message: "🚧 WC5RF1 task: apply external agent result"
+  hash: "b159bc0197ebaeeec5d3a020740e546c719874a5"
+  message: "🚧 WC5RF1 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -255,6 +255,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: faad4d9504d9. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -374,9 +377,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-20T23:22:34.417Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "b159bc0197ebaeeec5d3a020740e546c719874a5"
 doc_version: 3
-doc_updated_at: "2026-08-20T23:22:02.274Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-20T23:22:34.450Z"
+doc_updated_by: "CODER"
 description: "Improve the root README around the semantic-agent and deterministic-CLI boundary"
 sections:
   Summary: |-
@@ -673,6 +684,7 @@ sections:
 extensions:
   implementation_commit:
     hash: "faad4d9504d9910a0bab419e721423887dc2bfec"
+    message: "🚧 WC5RF1 task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "60be0145753e9e2aecf31f4bbd8471895db13395"
     version: 1
@@ -986,12 +998,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/10` agent runs
+- Completeness: `0/15` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:38482e60a9b07d94ec3d44922d1e5c2daed27ca5e8192aa7adf7571bfb09e262`
+- Journal digest: `sha256:6f5d505bb50917d70f67256f250ae51a791a3a53ac42993353809b59637d947e`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-20T22:54:54.341Z`
+- Updated at: `2026-08-20T23:22:34.417Z`
