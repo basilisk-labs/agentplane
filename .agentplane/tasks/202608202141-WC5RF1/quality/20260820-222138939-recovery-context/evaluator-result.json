@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The opening now states the category and promise once, then immediately shows the human, coding-agent, and AgentPlane CLI responsibility split required by the positioning source.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/ed8de2f1ed40d0f922a40d1016d9c50b70a3cc525436a5fa1f783293d0e443be.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The semantic boundary is technically precise: agents retain interpretation, planning, implementation, testing, and judgment; the CLI owns formalizable policy, authority, lifecycle, Git/PR routing, evidence, recovery, and closure.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/ed8de2f1ed40d0f922a40d1016d9c50b70a3cc525436a5fa1f783293d0e443be.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The benefit claims are appropriately separated into agent focus, deterministic workflow mechanics, and verifiable outcomes. The text explicitly disclaims deterministic LLM behavior.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/ed8de2f1ed40d0f922a40d1016d9c50b70a3cc525436a5fa1f783293d0e443be.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The user path is materially clearer: installation, directory entry, initialization, first task creation, active-task selection, and the bounded task advance protocol precede deeper lifecycle details.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/ed8de2f1ed40d0f922a40d1016d9c50b70a3cc525436a5fa1f783293d0e443be.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The README no longer leads with ACR, Local Context, recipes, transport fields, status duplication, growth copy, or a long demo asset; those concepts are either summarized or routed to focused documentation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/ed8de2f1ed40d0f922a40d1016d9c50b70a3cc525436a5fa1f783293d0e443be.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Trust-language no longer claims access to reasoning. It distinguishes semantic reports from supervisor-observed repository, Git, check, and provider facts.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/ed8de2f1ed40d0f922a40d1016d9c50b70a3cc525436a5fa1f783293d0e443be.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "The committed change is confined to README.md plus AgentPlane-owned task and review artifacts, and the implementation worktree is clean.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/ed8de2f1ed40d0f922a40d1016d9c50b70a3cc525436a5fa1f783293d0e443be.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-8",
+      "severity": "medium",
+      "summary": "Residual risk: docs:readme-header:check has a pre-existing baseline failure for fourteen generated SVG assets in both the untouched base checkout and task worktree; README.md itself is not reported stale.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/ed8de2f1ed40d0f922a40d1016d9c50b70a3cc525436a5fa1f783293d0e443be.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-9",
+      "severity": "medium",
+      "summary": "Residual risk: Broader product-name consistency across the documentation remains separate follow-up work.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/ed8de2f1ed40d0f922a40d1016d9c50b70a3cc525436a5fa1f783293d0e443be.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The quick-start example assumes a newly created or otherwise unambiguous repository when task active selects work.",
+    "The generated header alt text intentionally retains Agentplane capitalization because its generator contract is outside the approved scope."
+  ]
+}
