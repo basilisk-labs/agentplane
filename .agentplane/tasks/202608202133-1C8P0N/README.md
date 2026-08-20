@@ -4,7 +4,7 @@ title: "Add AP-TE Lite to framework agent instructions"
 status: "DOING"
 priority: "normal"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -25,10 +25,10 @@ plan_approval:
   updated_by: "USER"
   note: "User approved implementation and the generated asset scope in this conversation."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-20T22:10:08.324Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -86,11 +86,32 @@ execution_contract:
       - "packages/agentplane/src/shared/builtin-assets.generated.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/assets/AGENTS.md"
+      - "packages/agentplane/src/shared/builtin-assets.generated.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+      - "source_code"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -124,17 +145,23 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:a5967a84d1f25ba9c8071108719d781e32465f828dd5d07691d88524d33d2ced"
+      digest: "sha256:978d324413c65b7028dea9f7fe407748be27cd9d6cbd8d19761101d80e053fad"
       escalation_reasons: []
       execution_groups:
         - "docs-schema"
         - "core"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/assets/AGENTS.md"
+          - "packages/agentplane/src/shared/builtin-assets.generated.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
+          - "source_code"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -202,8 +229,14 @@ events:
     to: "DOING"
     note: "Implementation committed after AP-TE Lite, generated asset, role prompt audit, and required checks passed."
     commit: "1b3a79d06829e04bc250e824c42aedad541711f8"
+  -
+    type: "verify"
+    at: "2026-08-20T22:10:08.324Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-20T21:40:54.481Z"
+doc_updated_at: "2026-08-20T22:10:12.109Z"
 doc_updated_by: "CODER"
 description: "Replacement for 202608202107-NZ3PDK. Add the approved AP-TE Lite v0 convention to the shared prompt contract, audit bundled role prompts, and refresh the canonical generated built-in asset table. No linter, schema change, controlled dictionary, or historical rewrite."
 sections:
@@ -226,6 +259,66 @@ sections:
     6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-20T22:10:08.324Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:2b99ccd220a66f6c9eb1fd74ad5a8747233967811cb781a00e9c4da2ff560f19, input_digest=sha256:e69224562a04ebb96361f4b7377b746634f5ba7b19a94c5e1904156de1a569cd
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run agents:check && bun run assets:builtin:check && bun run format:changed && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608202133-1C8P0N/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202133-1C8P0N Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run agents:check && bun run assets:builtin:check && bun run format:changed && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608202133-1C8P0N/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202133-1C8P0N Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: bun run agents:check && bun run assets:builtin:check && bun run format:changed && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608202133-1C8P0N/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202133-1C8P0N Verification Contract check docs_contract
+
+    Check: hosted_integration
+    Command: bun run agents:check && bun run assets:builtin:check && bun run format:changed && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608202133-1C8P0N/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202133-1C8P0N Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: bun run agents:check && bun run assets:builtin:check && bun run format:changed && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608202133-1C8P0N/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202133-1C8P0N Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202133-1C8P0N-add-ap-te-lite-to-framework-agent-instructions/.agentplane/tasks/202608202133-1C8P0N/blueprint/resolved-snapshot.json
+    - old_digest: 863ce2a3407976990cb57312ff9ed13cdf7db6530b6c30a7f89783df781c8d06
+    - current_digest: 863ce2a3407976990cb57312ff9ed13cdf7db6530b6c30a7f89783df781c8d06
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202133-1C8P0N
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608202133-1C8P0N
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -266,6 +359,66 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-20T22:10:08.324Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:2b99ccd220a66f6c9eb1fd74ad5a8747233967811cb781a00e9c4da2ff560f19, input_digest=sha256:e69224562a04ebb96361f4b7377b746634f5ba7b19a94c5e1904156de1a569cd
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run agents:check && bun run assets:builtin:check && bun run format:changed && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608202133-1C8P0N/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202133-1C8P0N Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run agents:check && bun run assets:builtin:check && bun run format:changed && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608202133-1C8P0N/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202133-1C8P0N Verification Contract check critical_paths
+
+Check: docs_contract
+Command: bun run agents:check && bun run assets:builtin:check && bun run format:changed && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608202133-1C8P0N/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202133-1C8P0N Verification Contract check docs_contract
+
+Check: hosted_integration
+Command: bun run agents:check && bun run assets:builtin:check && bun run format:changed && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608202133-1C8P0N/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202133-1C8P0N Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: bun run agents:check && bun run assets:builtin:check && bun run format:changed && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608202133-1C8P0N/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202133-1C8P0N Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202133-1C8P0N-add-ap-te-lite-to-framework-agent-instructions/.agentplane/tasks/202608202133-1C8P0N/blueprint/resolved-snapshot.json
+- old_digest: 863ce2a3407976990cb57312ff9ed13cdf7db6530b6c30a7f89783df781c8d06
+- current_digest: 863ce2a3407976990cb57312ff9ed13cdf7db6530b6c30a7f89783df781c8d06
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202133-1C8P0N
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608202133-1C8P0N
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
