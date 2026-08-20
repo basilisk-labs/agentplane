@@ -1,10 +1,10 @@
 ---
 id: "202608202112-E6CDHP"
 title: "Fix live GitLab MR transport and provider-neutral mergeability validation"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -230,6 +230,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: bedfd34a86d3. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Extended provider-neutral conflict-route regression coverage for GitLab non-conflict gating states. GitLab mergeable, ci_still_running, not_approved, and draft_status observations now all prove the ordinary non-conflict route without local conflict analysis. Focused tests, TypeScript, formatting, and diff validation pass. Recommended action: Retain the full agentplane test suite and pass --maxWorkers=4 to Vitest, then rerun supervisor verification. Agentplane receipt: external-agent-blocker/tr_0795a8d1fffa6af0296987433dc64d66/sha256:8f4b6c4544a665556e55f8112479a88eb4cec41388c21ea431ee6ec904c2ea1c."
 events:
   -
     type: "status"
@@ -280,8 +283,15 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run --filter=agentplane test"
+  -
+    type: "status"
+    at: "2026-08-20T22:38:53.975Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Extended provider-neutral conflict-route regression coverage for GitLab non-conflict gating states. GitLab mergeable, ci_still_running, not_approved, and draft_status observations now all prove the ordinary non-conflict route without local conflict analysis. Focused tests, TypeScript, formatting, and diff validation pass. Recommended action: Retain the full agentplane test suite and pass --maxWorkers=4 to Vitest, then rerun supervisor verification. Agentplane receipt: external-agent-blocker/tr_0795a8d1fffa6af0296987433dc64d66/sha256:8f4b6c4544a665556e55f8112479a88eb4cec41388c21ea431ee6ec904c2ea1c."
 doc_version: 3
-doc_updated_at: "2026-08-20T22:34:00.290Z"
+doc_updated_at: "2026-08-20T22:38:53.975Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
