@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -247,6 +247,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The only tracked worktree change is the intentional README.md implementation rework that resolves the two hosted CI failures; preserve it for the current task."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The dirty README.md is intentional hosted-CI implementation rework, not an unrelated conflict; it must be preserved and committed after the task is returned from DONE to DOING."
 events:
   -
     type: "status"
@@ -340,8 +343,13 @@ events:
     at: "2026-08-20T23:15:21.545Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The only tracked worktree change is the intentional README.md implementation rework that resolves the two hosted CI failures; preserve it for the current task."
+  -
+    type: "comment"
+    at: "2026-08-20T23:18:28.676Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The dirty README.md is intentional hosted-CI implementation rework, not an unrelated conflict; it must be preserved and committed after the task is returned from DONE to DOING."
 doc_version: 3
-doc_updated_at: "2026-08-20T23:15:21.577Z"
+doc_updated_at: "2026-08-20T23:18:28.711Z"
 doc_updated_by: "SUPERVISOR"
 description: "Improve the root README around the semantic-agent and deterministic-CLI boundary"
 sections:
