@@ -427,27 +427,30 @@ describe("provider conflict rework packet", () => {
     },
   );
 
-  it("keeps coherent GitLab mergeable truth on the ordinary route", async () => {
-    const git = primeGit();
-    const nonConflicting = report();
-    nonConflicting.pr.provider = "gitlab";
-    if (nonConflicting.providerObservation?.state !== "found") {
-      throw new Error("fixture error");
-    }
-    nonConflicting.providerObservation.pr.mergeability = {
-      state: "not_conflicting",
-      mergeable: true,
-      providerState: "mergeable",
-    };
+  it.each(["mergeable", "ci_still_running", "not_approved", "draft_status"] as const)(
+    "keeps coherent GitLab %s truth on the ordinary route",
+    async (providerState) => {
+      const git = primeGit();
+      const nonConflicting = report();
+      nonConflicting.pr.provider = "gitlab";
+      if (nonConflicting.providerObservation?.state !== "found") {
+        throw new Error("fixture error");
+      }
+      nonConflicting.providerObservation.pr.mergeability = {
+        state: "not_conflicting",
+        mergeable: true,
+        providerState,
+      };
 
-    expect(hasProviderReportedMergeConflict(nonConflicting)).toBe(false);
-    expect(needsProviderConflictReworkPreparation(nonConflicting)).toBe(false);
-    await expect(prepare({ git, report: nonConflicting })).resolves.toMatchObject({
-      state: "not_conflicting",
-    });
-    expect(git.calls.mergeBase).toEqual([]);
-    expect(git.calls.diffNames).toBe(0);
-  });
+      expect(hasProviderReportedMergeConflict(nonConflicting)).toBe(false);
+      expect(needsProviderConflictReworkPreparation(nonConflicting)).toBe(false);
+      await expect(prepare({ git, report: nonConflicting })).resolves.toMatchObject({
+        state: "not_conflicting",
+      });
+      expect(git.calls.mergeBase).toEqual([]);
+      expect(git.calls.diffNames).toBe(0);
+    },
+  );
 
   it.each([
     ["absent mergeability", undefined],
