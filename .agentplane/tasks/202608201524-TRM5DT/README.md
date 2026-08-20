@@ -1,10 +1,10 @@
 ---
 id: "202608201524-TRM5DT"
 title: "Implement provider-neutral GitHub and GitLab change-request lifecycle"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -428,6 +428,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 90f0339fdc8a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator finding is actionable, but the required generated website artifact is outside this executor episode's writable roots. Recommended action: Extend authority to website/static, run bun run docs:site:generate, verify only the expected generated projection changes, then rerun bun run docs:site:generate:check and bun run ci:local:full. Requested scope: roots=website/static; repository effects=documentation,repository_write; request digest=sha256:0b4196edbff440940b5a3c60e6dd21daeb847a67657de384812f5d36a620a595. Agentplane receipt: external-agent-blocker/tr_a5e0b3929c499e6a28f66ab5bf41e9b7/sha256:6d541590590589c1c64675f3b8bf4105544b30756040ab9eb08a7d3784a3db04/sha256:0b4196edbff440940b5a3c60e6dd21daeb847a67657de384812f5d36a620a595."
 events:
   -
     type: "status"
@@ -455,8 +458,15 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-20T19:17:34.410Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator finding is actionable, but the required generated website artifact is outside this executor episode's writable roots. Recommended action: Extend authority to website/static, run bun run docs:site:generate, verify only the expected generated projection changes, then rerun bun run docs:site:generate:check and bun run ci:local:full. Requested scope: roots=website/static; repository effects=documentation,repository_write; request digest=sha256:0b4196edbff440940b5a3c60e6dd21daeb847a67657de384812f5d36a620a595. Agentplane receipt: external-agent-blocker/tr_a5e0b3929c499e6a28f66ab5bf41e9b7/sha256:6d541590590589c1c64675f3b8bf4105544b30756040ab9eb08a7d3784a3db04/sha256:0b4196edbff440940b5a3c60e6dd21daeb847a67657de384812f5d36a620a595."
 doc_version: 3
-doc_updated_at: "2026-08-20T17:34:37.010Z"
+doc_updated_at: "2026-08-20T19:17:34.410Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement universal GitHub/GitLab hosted change-request support in an isolated branch_pr worktree. Preserve current GitHub behavior behind a provider adapter. Resolve provider host/project from the publication Git remote; use existing gh session for GitHub and external glab authentication plus glab api for GitLab without reading or storing tokens. Cover idempotent PR/MR lookup/create/update, normalized metadata, exact-head hosted checks, mergeability and SHA-guarded merge, external-merge reconciliation, typed failures, compatibility migration, docs, and regression/E2E-style CLI fixtures. Do not perform interactive auth, modify credentials, or touch external providers during implementation tests."
 sections:
@@ -552,6 +562,21 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:6d541590590589c1c64675f3b8bf4105544b30756040ab9eb08a7d3784a3db04"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "The provider-neutral implementation changes public CLI and documentation content consumed by the generated llms-full projection. The full documentation gate requires that checked-in projection to be regenerated before PR publication."
+      repository_effects:
+        - "documentation"
+        - "repository_write"
+      schema_version: 1
+      scope_roots:
+        - "website/static"
+    request_digest: "sha256:0b4196edbff440940b5a3c60e6dd21daeb847a67657de384812f5d36a620a595"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_a5e0b3929c499e6a28f66ab5bf41e9b7"
   implementation_commit:
     hash: "90f0339fdc8a99d2420933714b077854f356d482"
   workflow_route_baseline:
