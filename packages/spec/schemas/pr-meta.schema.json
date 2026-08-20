@@ -63,6 +63,44 @@
       "type": "string",
       "minLength": 1
     },
+    "provider": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "number",
+          "const": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["github", "gitlab"]
+        },
+        "hostname": {
+          "type": "string",
+          "minLength": 1
+        },
+        "remote": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_project": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_project": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "hostname",
+        "remote",
+        "source_project",
+        "target_project"
+      ],
+      "additionalProperties": false
+    },
     "created_at": {
       "type": "string",
       "format": "date-time",

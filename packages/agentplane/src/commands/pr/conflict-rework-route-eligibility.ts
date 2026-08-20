@@ -24,7 +24,7 @@ type ConflictRouteEvidenceHandoff = {
   created_at: string | null;
   from_role: string | null;
   route_kind: "protected_base_integrate";
-  route_status: "awaiting_github_merge";
+  route_status: "awaiting_github_merge" | "awaiting_provider_merge";
   branch: string;
   base: string;
   head_sha: string;
@@ -143,7 +143,8 @@ function matchingProtectedBaseHandoff(
   if (!report.handoff.present) return null;
   if (
     report.handoff.routeKind !== "protected_base_integrate" ||
-    report.handoff.routeStatus !== "awaiting_github_merge" ||
+    (report.handoff.routeStatus !== "awaiting_github_merge" &&
+      report.handoff.routeStatus !== "awaiting_provider_merge") ||
     report.handoff.branch !== identity.taskBranch ||
     report.handoff.prBranch !== identity.taskBranch ||
     report.handoff.baseBranch !== identity.base ||
@@ -171,7 +172,10 @@ function handoffEvidence(
     created_at: trimmed(handoff.createdAt),
     from_role: trimmed(handoff.fromRole),
     route_kind: "protected_base_integrate",
-    route_status: "awaiting_github_merge",
+    route_status:
+      handoff.routeStatus === "awaiting_provider_merge"
+        ? "awaiting_provider_merge"
+        : "awaiting_github_merge",
     branch,
     base,
     head_sha: headSha,

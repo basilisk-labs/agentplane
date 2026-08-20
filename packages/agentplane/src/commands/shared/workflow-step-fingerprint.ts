@@ -135,7 +135,7 @@ function providerComponent(state: WorkflowRouteStateInput): StateFingerprintComp
     return unavailableComponent(
       "workflow_route_provider",
       "provider_observation_unavailable",
-      evidence,
+      authorityScope,
     );
   }
   if (flow.pr.source !== "lookup" && !flow.providerObservation) {

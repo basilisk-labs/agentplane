@@ -16,14 +16,15 @@ import { maybeAutoCommitTaskPrArtifacts } from "./internal/auto-commit.js";
 import { type PrOpenOutcome, syncPrArtifacts } from "./internal/sync.js";
 
 function prOpenOutcomeDetails(
-  meta: { pr_number?: number; pr_url?: string },
+  meta: { pr_number?: number; pr_url?: string; provider?: { kind?: string } },
   openOutcome: PrOpenOutcome | null,
 ): string {
   if (openOutcome) return openOutcome.message;
   if (typeof meta.pr_number === "number" && meta.pr_number > 0) {
+    const label = meta.provider?.kind === "gitlab" ? "GitLab MR" : "GitHub PR";
     return meta.pr_url?.trim()
-      ? `linked to GitHub PR #${meta.pr_number}: ${meta.pr_url.trim()}`
-      : `linked to GitHub PR #${meta.pr_number}`;
+      ? `linked to ${label} #${meta.pr_number}: ${meta.pr_url.trim()}`
+      : `linked to ${label} #${meta.pr_number}`;
   }
   return "local PR artifacts synced; remote PR creation staged";
 }
@@ -110,7 +111,7 @@ export async function cmdPrOpen(opts: {
         throw new CliError({
           exitCode: exitCodeForError("E_GIT"),
           code: "E_GIT",
-          message: `Unable to publish task branch for GitHub PR creation. PR artifacts were left unchanged after publish failure (${reason}).`,
+          message: `Unable to publish task branch for hosted change-request creation. PR artifacts were left unchanged after publish failure (${reason}).`,
         });
       }
     }

@@ -5,6 +5,7 @@ export {
 } from "./pr-meta/lifecycle.js";
 export {
   buildIntegratedPrMeta,
+  buildObservedChangeRequestMeta,
   buildObservedGithubPrMeta,
   buildOpenedPrMeta,
   buildUpdatedPrMeta,

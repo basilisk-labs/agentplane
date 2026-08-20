@@ -4,7 +4,7 @@ import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../../shared/write-if-changed.js";
 import { CliError } from "../../../shared/errors.js";
 import {
-  buildObservedGithubPrMeta,
+  buildObservedChangeRequestMeta,
   buildOpenedPrMeta,
   resolvePrBatchIncludedTaskIds,
   type PrMeta,
@@ -19,11 +19,13 @@ import {
 } from "./review-template.js";
 import { computePrDiffstat } from "./sync-branch.js";
 import {
-  formatGithubPrLink,
-  shouldPersistObservedGithubPrIdentity,
-  tryCreateGithubPr,
-  tryLookupExistingGithubPrByBranch,
-} from "./sync-github.js";
+  formatChangeRequestLink,
+  observeExistingChangeRequestByBranch,
+  resolveChangeRequestIdentity,
+  shouldPersistObservedChangeRequestIdentity,
+  tryCreateChangeRequest,
+} from "./change-request-provider.js";
+import { toRecordedGitHostIdentity, type GitHostIdentity } from "./git-host-identity.js";
 import { digestPrDiffstatText } from "./freshness.js";
 import type { PrOpenOutcome, PrRemoteMode, PrSyncCommonState } from "./sync-model.js";
 
@@ -52,11 +54,30 @@ export async function runPrOpenSync(
     base: common.baseBranch,
     diffstatDigest: digestPrDiffstatText(diffstat ? `${diffstat}\n` : ""),
   });
+  let identity: GitHostIdentity | null = null;
+  let identityFailure: string | null = null;
+  try {
+    identity = await resolveChangeRequestIdentity({
+      gitRoot: common.resolved.gitRoot,
+      branch: common.branch,
+      recorded: common.existingMeta?.provider ?? null,
+    });
+    nextMeta.provider = toRecordedGitHostIdentity(identity);
+  } catch (error) {
+    identityFailure = error instanceof Error ? error.message : String(error);
+  }
   const linkedExistingOutcome =
     typeof nextMeta.pr_number === "number" && nextMeta.pr_number > 0
       ? {
           action: "linked-existing" as const,
-          message: formatGithubPrLink(nextMeta.pr_number, nextMeta.pr_url ?? null, "linked to"),
+          message: formatChangeRequestLink(
+            {
+              provider: nextMeta.provider?.kind ?? "github",
+              prNumber: nextMeta.pr_number,
+              prUrl: nextMeta.pr_url ?? null,
+            },
+            "linked to",
+          ),
         }
       : null;
   let openOutcome: PrOpenOutcome | undefined;
@@ -71,22 +92,28 @@ export async function runPrOpenSync(
       diffstat,
     }),
   });
-  const observedGithubPr = await tryLookupExistingGithubPrByBranch({
-    gitRoot: common.resolved.gitRoot,
-    branch: common.branch,
-    baseBranch: common.baseBranch,
-  });
-  if (observedGithubPr) {
-    if (shouldPersistObservedGithubPrIdentity(observedGithubPr)) {
-      nextMeta = buildObservedGithubPrMeta({
+  const observedChangeRequest = identity
+    ? await observeExistingChangeRequestByBranch({
+        gitRoot: common.resolved.gitRoot,
+        branch: common.branch,
+        baseBranch: common.baseBranch,
+        identity,
+      }).then((result) => (result.state === "found" ? result.pr : null))
+    : null;
+  if (observedChangeRequest) {
+    if (shouldPersistObservedChangeRequestIdentity(observedChangeRequest)) {
+      nextMeta = buildObservedChangeRequestMeta({
         meta: nextMeta,
-        observed: observedGithubPr,
+        observed: {
+          ...observedChangeRequest,
+          providerIdentity: toRecordedGitHostIdentity(observedChangeRequest.identity),
+        },
         at: common.now,
       });
     }
     openOutcome = {
       action: "linked-existing",
-      message: formatGithubPrLink(observedGithubPr.prNumber, observedGithubPr.prUrl, "linked to"),
+      message: formatChangeRequestLink(observedChangeRequest, "linked to"),
       artifactState: "open",
     };
   } else if (opts.remoteMode === "sync-only") {
@@ -96,37 +123,43 @@ export async function runPrOpenSync(
       artifactState: "open",
     };
   } else {
-    const createdGithubPr = await tryCreateGithubPr({
-      gitRoot: common.resolved.gitRoot,
-      branch: common.branch,
-      baseBranch: common.baseBranch,
-      title: githubTitle,
-      body: githubBody,
-    });
-    if (createdGithubPr.observed) {
-      if (shouldPersistObservedGithubPrIdentity(createdGithubPr.observed)) {
-        nextMeta = buildObservedGithubPrMeta({
+    const createdChangeRequest = identity
+      ? await tryCreateChangeRequest({
+          gitRoot: common.resolved.gitRoot,
+          branch: common.branch,
+          baseBranch: common.baseBranch,
+          title: githubTitle,
+          body: githubBody,
+          identity,
+        })
+      : {
+          observed: null,
+          stagedReason: identityFailure ?? "Git host identity unavailable",
+          artifactState: "remote_failed" as const,
+        };
+    if (createdChangeRequest.observed) {
+      if (shouldPersistObservedChangeRequestIdentity(createdChangeRequest.observed)) {
+        nextMeta = buildObservedChangeRequestMeta({
           meta: nextMeta,
-          observed: createdGithubPr.observed,
+          observed: {
+            ...createdChangeRequest.observed,
+            providerIdentity: toRecordedGitHostIdentity(createdChangeRequest.observed.identity),
+          },
           at: common.now,
         });
       }
       openOutcome = {
         action: "created",
-        message: formatGithubPrLink(
-          createdGithubPr.observed.prNumber,
-          createdGithubPr.observed.prUrl,
-          "created",
-        ),
+        message: formatChangeRequestLink(createdChangeRequest.observed, "created"),
         artifactState: "open",
       };
     } else {
-      const artifactState = createdGithubPr.artifactState ?? "remote_staged";
+      const artifactState = createdChangeRequest.artifactState ?? "remote_staged";
       nextMeta = withPrArtifactLifecycleState(
         nextMeta,
         {
           kind: artifactState,
-          reason: createdGithubPr.stagedReason ?? "remote PR creation unavailable",
+          reason: createdChangeRequest.stagedReason ?? "remote change-request creation unavailable",
         },
         common.now,
       );
@@ -134,8 +167,8 @@ export async function runPrOpenSync(
         action: "staged",
         message:
           artifactState === "remote_failed"
-            ? `local PR artifacts synced; remote PR creation failed (${createdGithubPr.stagedReason ?? "remote creation unavailable"})`
-            : `local PR artifacts synced; remote PR creation staged (${createdGithubPr.stagedReason ?? "remote creation unavailable"})`,
+            ? `local PR artifacts synced; remote change-request creation failed (${createdChangeRequest.stagedReason ?? "remote creation unavailable"})`
+            : `local PR artifacts synced; remote change-request creation staged (${createdChangeRequest.stagedReason ?? "remote creation unavailable"})`,
         artifactState,
       };
     }

@@ -2,10 +2,8 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitRefreshBranchTrackingRef } from "@agentplaneorg/core/git";
 
 import { gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
-import {
-  observeExistingGithubPrByBranch,
-  parseGithubRepoFromRemoteUrl,
-} from "./internal/sync-github.js";
+import { observeExistingChangeRequestByBranch } from "./internal/change-request-provider.js";
+import { parseGitRemoteUrl } from "./internal/git-host-identity.js";
 import { ghEnv } from "./internal/gh-api.js";
 
 const GIT_OBJECT_ID_PATTERN = /^[0-9a-f]{40}(?:[0-9a-f]{24})?$/i;
@@ -89,15 +87,19 @@ async function gitResolveRemoteUrls(opts: {
   }
 }
 
-async function remoteTargetsShareGithubRepository(opts: {
+async function remoteTargetsShareRepository(opts: {
   gitRoot: string;
   remote: string;
 }): Promise<boolean> {
   const urls = await gitResolveRemoteUrls(opts);
   if (!urls) return false;
-  const fetchRepo = parseGithubRepoFromRemoteUrl(urls.fetchUrl);
-  const pushRepo = parseGithubRepoFromRemoteUrl(urls.pushUrl);
-  return Boolean(fetchRepo && pushRepo && fetchRepo === pushRepo);
+  const fetchRepo = parseGitRemoteUrl(urls.fetchUrl);
+  const pushRepo = parseGitRemoteUrl(urls.pushUrl);
+  return Boolean(
+    fetchRepo &&
+    fetchRepo.hostname === pushRepo?.hostname &&
+    fetchRepo.project === pushRepo.project,
+  );
 }
 
 async function gitSetBranchUpstream(opts: {
@@ -161,7 +163,7 @@ async function pushRebasedBranchWithObservedLease(opts: {
     return false;
   }
   if (
-    !(await remoteTargetsShareGithubRepository({
+    !(await remoteTargetsShareRepository({
       gitRoot: opts.gitRoot,
       remote: opts.remote,
     }))
@@ -169,7 +171,7 @@ async function pushRebasedBranchWithObservedLease(opts: {
     return false;
   }
 
-  const observation = await observeExistingGithubPrByBranch({
+  const observation = await observeExistingChangeRequestByBranch({
     gitRoot: opts.gitRoot,
     branch: opts.branch,
     baseBranch,

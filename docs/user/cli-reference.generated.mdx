@@ -1518,11 +1518,11 @@ agentplane pr check <task-id> [options]
 Options:
 
 - `--branch <name>`: Task branch to validate when local artifacts are stale or ambiguous.
-- `--hosted`: Require hosted GitHub PR checks to be complete and stable. (default=false)
+- `--hosted`: Require hosted GitHub PR or GitLab MR checks to be complete and stable. (default=false)
 - `--stable-polls <count>`: Consecutive hosted-ready polls required when --hosted is enabled.
 - `--poll-interval-ms <ms>`: Delay between hosted-check polls when --hosted is enabled.
 - `--timeout-ms <ms>`: Maximum hosted-check wait time when --hosted is enabled.
-- `--required-check <name>`: Repeatable hosted check name that must appear in the PR rollup. (repeatable)
+- `--required-check <name>`: Repeatable hosted check name that must appear in the provider rollup. (repeatable)
 
 Examples:
 
@@ -1618,7 +1618,7 @@ agentplane pr conflict-rework 202602030608-F1Q8AB --recover-diverged-head --expe
 
 ### pr flow status
 
-Show branch_pr task branch, remote PR, close-tail, and next-action state.
+Show branch_pr task branch, hosted change request, close-tail, and next-action state.
 
 Usage:
 
@@ -1670,7 +1670,7 @@ agentplane pr note 202602030608-F1Q8AB --author REVIEWER --body "LGTM"
 
 ### pr open
 
-Create PR artifacts for a task and, unless --sync-only is set, publish/link the remote GitHub PR.
+Create PR artifacts for a task and, unless --sync-only is set, publish/link the remote GitHub PR or GitLab MR.
 
 Usage:
 
@@ -1683,7 +1683,7 @@ Options:
 - `--author <id>`: Author id (e.g. CODER). (required)
 - `--branch <name>`: Branch name (default: current branch).
 - `--include-task <task-id>`: Repeatable. Record an additional related task id on this primary PR. (repeatable)
-- `--sync-only`: Only write local PR artifacts; do not create a remote GitHub PR. (default=false)
+- `--sync-only`: Only write local PR artifacts; do not create a remote GitHub PR or GitLab MR. (default=false)
 
 Examples:
 
@@ -1691,11 +1691,11 @@ Examples:
 agentplane pr open 202602030608-F1Q8AB --author CODER
 ```
 
-- Sync local artifacts, publish the task branch to origin if needed, and create/link the GitHub PR.
+- Sync local artifacts, publish the task branch if needed, and create/link the GitHub PR or GitLab MR.
 
 ### pr update
 
-Update PR artifacts (review packet, diffstat, and GitHub projections).
+Update review artifacts and the linked hosted change request.
 
 Usage:
 

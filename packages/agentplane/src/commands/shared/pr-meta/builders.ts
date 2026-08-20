@@ -1,6 +1,6 @@
 import { buildPrBatchMeta, normalizeRelatedTaskIds, nowOrExisting } from "./helpers.js";
 import { withPrArtifactLifecycleState } from "./lifecycle.js";
-import type { ObservedGithubPrState, PrMeta } from "./model.js";
+import type { ObservedChangeRequestState, ObservedGithubPrState, PrMeta } from "./model.js";
 
 const DIFFSTAT_DIGEST_FIELD = "diffstat_sha256";
 const LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD = "last_verified_diffstat_sha256";
@@ -66,6 +66,7 @@ export function buildOpenedPrMeta(opts: {
     branch: opts.branch,
     pr_number: opts.previousMeta?.pr_number,
     pr_url: opts.previousMeta?.pr_url,
+    provider: opts.previousMeta?.provider,
     created_at: opts.previousMeta?.created_at ?? opts.at,
     updated_at: changed ? opts.at : (opts.previousMeta?.updated_at ?? opts.at),
     status: opts.previousMeta?.status,
@@ -123,11 +124,20 @@ export function buildObservedGithubPrMeta(opts: {
   observed: ObservedGithubPrState;
   at: string;
 }): PrMeta {
+  return buildObservedChangeRequestMeta(opts);
+}
+
+export function buildObservedChangeRequestMeta(opts: {
+  meta: PrMeta;
+  observed: ObservedChangeRequestState;
+  at: string;
+}): PrMeta {
   const nextStatus = opts.observed.status;
   const nextMeta: PrMeta = {
     ...omitTrackedLiveHead(opts.meta),
     pr_number: opts.observed.prNumber,
     pr_url: opts.observed.prUrl ?? opts.meta.pr_url,
+    provider: opts.observed.providerIdentity ?? opts.meta.provider,
     status: nextStatus,
     base: opts.observed.base ?? opts.meta.base,
     updated_at: opts.meta.updated_at,
@@ -150,6 +160,7 @@ export function buildObservedGithubPrMeta(opts: {
   const changed =
     nextMeta.pr_number !== opts.meta.pr_number ||
     (nextMeta.pr_url ?? null) !== (opts.meta.pr_url ?? null) ||
+    JSON.stringify(nextMeta.provider ?? null) !== JSON.stringify(opts.meta.provider ?? null) ||
     nextMeta.status !== opts.meta.status ||
     (nextMeta.base ?? null) !== (opts.meta.base ?? null) ||
     (nextMeta.merged_at ?? null) !== (opts.meta.merged_at ?? null) ||

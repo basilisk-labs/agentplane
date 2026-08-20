@@ -16,11 +16,12 @@ const RUNNER_OUTCOME_STATUS_VALUES = [
   "cancelled",
 ] as const;
 const HANDOFF_ROUTE_KIND_VALUES = ["protected_base_integrate"] as const;
-const HANDOFF_ROUTE_STATUS_VALUES = ["awaiting_github_merge"] as const;
+const HANDOFF_ROUTE_STATUS_VALUES = ["awaiting_github_merge", "awaiting_provider_merge"] as const;
 const HANDOFF_LOCAL_MUTATION_VALUES = ["not_performed"] as const;
 const HANDOFF_FINALIZE_VIA_VALUES = [
   "github_pr_merge_then_hosted_close",
   "github_task_pr_merge_then_hosted_close",
+  "provider_change_request_merge_then_hosted_close",
 ] as const;
 const RUNNER_NEXT_ACTION_VALUES = [
   "run",
@@ -45,6 +46,7 @@ export const TASK_HANDOFF_ROUTE_ZOD_SCHEMA = z
     status: z.enum(HANDOFF_ROUTE_STATUS_VALUES).nullable().optional(),
     local_mutation: z.enum(HANDOFF_LOCAL_MUTATION_VALUES).nullable().optional(),
     finalize_via: z.enum(HANDOFF_FINALIZE_VIA_VALUES).nullable().optional(),
+    provider: z.enum(["github", "gitlab"]).nullable().optional(),
     pr_number: z.number().int().min(1).nullable().optional(),
     pr_url: NULLABLE_NON_EMPTY_STRING.optional(),
     provider_base_sha: NULLABLE_NON_EMPTY_STRING.optional(),

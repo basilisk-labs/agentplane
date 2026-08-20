@@ -3,8 +3,23 @@ import { runProcess } from "@agentplaneorg/core/process";
 import { CliError } from "../../shared/errors.js";
 import { normalizeGhTransportError, resolveGhCommand } from "../shared/gh-transport.js";
 import { ghEnv } from "./internal/gh-api.js";
+import {
+  observeExistingChangeRequestByNumber,
+  resolveChangeRequestIdentity,
+} from "./internal/change-request-provider.js";
+import type { RecordedGitHostIdentity } from "./internal/git-host-identity.js";
+import { runGlabApiJson } from "./internal/glab-api.js";
 
 type HostedCheckRow = { name?: string | null; state?: string | null };
+
+type GitLabPipeline = {
+  id?: number | null;
+  project_id?: number | null;
+  sha?: string | null;
+  status?: string | null;
+};
+
+type GitLabJob = { name?: string | null; status?: string | null };
 
 export type HostedChecksSummary =
   | {
@@ -31,7 +46,16 @@ function parseGhPrChecks(stdout: string): HostedCheckRow[] {
 }
 
 function isFailingGhCheckState(state: string): boolean {
-  return ["FAIL", "FAILURE", "ERROR", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED"].includes(state);
+  return [
+    "FAIL",
+    "FAILED",
+    "FAILURE",
+    "ERROR",
+    "TIMED_OUT",
+    "CANCELED",
+    "CANCELLED",
+    "ACTION_REQUIRED",
+  ].includes(state);
 }
 
 function isPassingGhCheckState(state: string): boolean {
@@ -68,15 +92,106 @@ export async function resolveHostedChecksStatus(opts: {
   gitRoot: string;
   prNumber: number | null;
   requiredChecks?: readonly string[];
+  branch?: string | null;
+  expectedHeadSha?: string | null;
+  recordedProvider?: RecordedGitHostIdentity | null;
 }): Promise<HostedChecksSummary> {
   if (opts.prNumber === null || opts.prNumber <= 0) {
-    return { checked: false, reason: "GitHub PR number is not recorded in PR metadata" };
+    return {
+      checked: false,
+      reason: "Hosted change-request number is not recorded in PR metadata",
+    };
+  }
+  const branch = opts.branch?.trim() ?? "";
+  let githubRepo: string | null = null;
+  if (branch) {
+    try {
+      const identity = await resolveChangeRequestIdentity({
+        gitRoot: opts.gitRoot,
+        branch,
+        recorded: opts.recordedProvider,
+      });
+      if (identity.provider === "gitlab") {
+        const project = encodeURIComponent(identity.targetProject);
+        const pipelines = await runGlabApiJson<GitLabPipeline[]>({
+          cwd: opts.gitRoot,
+          hostname: identity.hostname,
+          endpoint: `projects/${project}/merge_requests/${opts.prNumber}/pipelines`,
+        });
+        if (!Array.isArray(pipelines)) {
+          return { checked: false, reason: "GitLab MR pipeline lookup returned invalid data" };
+        }
+        const expectedHeadSha = opts.expectedHeadSha?.trim() ?? "";
+        const pipeline = pipelines.find(
+          (candidate) => !expectedHeadSha || candidate.sha?.trim() === expectedHeadSha,
+        );
+        if (!pipeline || !Number.isInteger(pipeline.id) || Number(pipeline.id) <= 0) {
+          return {
+            checked: false,
+            reason: expectedHeadSha
+              ? `GitLab has no MR pipeline for exact head ${expectedHeadSha}`
+              : "GitLab MR has no pipeline",
+          };
+        }
+        const projectId = Number(pipeline.project_id);
+        const jobs = await runGlabApiJson<GitLabJob[]>({
+          cwd: opts.gitRoot,
+          hostname: identity.hostname,
+          endpoint: `projects/${Number.isInteger(projectId) && projectId > 0 ? projectId : project}/pipelines/${pipeline.id}/jobs?per_page=100`,
+        });
+        const rows: HostedCheckRow[] = Array.isArray(jobs)
+          ? jobs.map((job) => ({ name: job.name ?? null, state: job.status ?? null }))
+          : [];
+        if (rows.length === 0) {
+          rows.push({ name: `GitLab pipeline #${pipeline.id}`, state: pipeline.status ?? null });
+        }
+        return summarizeHostedChecks(rows, opts.requiredChecks ?? []);
+      }
+      githubRepo = identity.targetProject;
+      const expectedHeadSha = opts.expectedHeadSha?.trim() ?? "";
+      if (expectedHeadSha) {
+        const observation = await observeExistingChangeRequestByNumber({
+          gitRoot: opts.gitRoot,
+          branch,
+          prNumber: opts.prNumber,
+          identity,
+        });
+        if (observation.state !== "found") {
+          return {
+            checked: false,
+            reason:
+              observation.state === "unavailable"
+                ? observation.reason
+                : `GitHub PR #${opts.prNumber} was not found for ${branch}`,
+          };
+        }
+        if (observation.pr.headSha !== expectedHeadSha) {
+          return {
+            checked: false,
+            reason: `GitHub PR #${opts.prNumber} is not at exact head ${expectedHeadSha}`,
+          };
+        }
+      }
+    } catch (error) {
+      return {
+        checked: false,
+        reason: error instanceof Error ? error.message : String(error),
+      };
+    }
   }
   const gh = resolveGhCommand();
   try {
     const result = await runProcess({
       command: gh.command,
-      args: [...gh.argsPrefix, "pr", "checks", String(opts.prNumber), "--json", "name,state"],
+      args: [
+        ...gh.argsPrefix,
+        "pr",
+        "checks",
+        String(opts.prNumber),
+        ...(githubRepo ? ["--repo", githubRepo] : []),
+        "--json",
+        "name,state",
+      ],
       cwd: opts.gitRoot,
       env: ghEnv(),
       encoding: "utf8",
@@ -132,6 +247,9 @@ export async function waitForHostedChecks(opts: {
   timeoutMs?: number | null;
   requiredChecks?: readonly string[];
   quiet?: boolean;
+  branch?: string | null;
+  expectedHeadSha?: string | null;
+  recordedProvider?: RecordedGitHostIdentity | null;
 }): Promise<Extract<HostedChecksSummary, { checked: true }>> {
   const stableTarget = Math.max(1, opts.stablePolls);
   const pollIntervalMs = opts.pollIntervalMs ?? DEFAULT_HOSTED_POLL_INTERVAL_MS;
@@ -145,6 +263,9 @@ export async function waitForHostedChecks(opts: {
       gitRoot: opts.gitRoot,
       prNumber: opts.prNumber,
       requiredChecks: opts.requiredChecks ?? [],
+      branch: opts.branch,
+      expectedHeadSha: opts.expectedHeadSha,
+      recordedProvider: opts.recordedProvider,
     });
     if (hostedChecksFailed(lastStatus)) {
       const message = renderHostedCheckFailure(lastStatus);

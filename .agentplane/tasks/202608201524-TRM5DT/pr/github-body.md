@@ -1,0 +1,85 @@
+Task: `202608201524-TRM5DT`
+Title: Implement provider-neutral GitHub and GitLab change-request lifecycle
+Canonical task record: `.agentplane/tasks/202608201524-TRM5DT/README.md`
+
+## Summary
+
+Implement provider-neutral GitHub and GitLab change-request lifecycle
+
+Implement universal GitHub/GitLab hosted change-request support in an isolated branch_pr worktree. Preserve current GitHub behavior behind a provider adapter. Resolve provider host/project from the publication Git remote; use existing gh session for GitHub and external glab authentication plus glab api for GitLab without reading or storing tokens. Cover idempotent PR/MR lookup/create/update, normalized metadata, exact-head hosted checks, mergeability and SHA-guarded merge, external-merge reconciliation, typed failures, compatibility migration, docs, and regression/E2E-style CLI fixtures. Do not perform interactive auth, modify credentials, or touch external providers during implementation tests.
+
+## Scope
+
+- In scope: Implement universal GitHub/GitLab hosted change-request support in an isolated branch_pr worktree. Preserve current GitHub behavior behind a provider adapter. Resolve provider host/project from the publication Git remote; use existing gh session for GitHub and external glab authentication plus glab api for GitLab without reading or storing tokens. Cover idempotent PR/MR lookup/create/update, normalized metadata, exact-head hosted checks, mergeability and SHA-guarded merge, external-merge reconciliation, typed failures, compatibility migration, docs, and regression/E2E-style CLI fixtures. Do not perform interactive auth, modify credentials, or touch external providers during implementation tests.
+- Out of scope: unrelated refactors not required for "Implement provider-neutral GitHub and GitLab change-request lifecycle".
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-08-20T16:09:36.710Z
+- Branch: task/202608201524-TRM5DT/implement-provider-neutral-github-and-gitlab-cha
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ docs/user/branching-and-pr-artifacts.mdx           |  42 +-
+ docs/user/cli-reference.generated.mdx              |  14 +-
+ docs/user/commands.mdx                             |   2 +-
+ .../src/cli/run-cli.core.pr-flow.gitlab.test.ts    | 151 ++++++++
+ .../src/commands/pr/branch-publication.ts          |  22 +-
+ packages/agentplane/src/commands/pr/check.ts       |  39 +-
+ .../pr/conflict-rework-route-eligibility.ts        |  10 +-
+ .../agentplane/src/commands/pr/conflict-rework.ts  |  35 +-
+ packages/agentplane/src/commands/pr/flow-status.ts |  69 ++--
+ .../agentplane/src/commands/pr/head-publication.ts |   2 +-
+ .../src/commands/pr/hosted-checks.gitlab.test.ts   |  76 ++++
+ .../agentplane/src/commands/pr/hosted-checks.ts    | 127 +++++-
+ .../pr/integrate/internal/gitlab-mr-merge.test.ts  |  70 ++++
+ .../pr/integrate/internal/gitlab-mr-merge.ts       | 105 +++++
+ .../integrate/internal/gitlab-protection.test.ts   |  50 +++
+ .../pr/integrate/internal/gitlab-protection.ts     |  39 ++
+ .../integrate/internal/protected-base-handoff.ts   | 117 ++++--
+ .../commands/pr/internal/change-request-model.ts   |  33 ++
+ .../pr/internal/change-request-provider.ts         | 294 ++++++++++++++
+ .../commands/pr/internal/git-host-identity.test.ts | 115 ++++++
+ .../src/commands/pr/internal/git-host-identity.ts  | 274 +++++++++++++
+ .../src/commands/pr/internal/glab-api.test.ts      |  43 +++
+ .../src/commands/pr/internal/glab-api.ts           |  86 +++++
+ .../src/commands/pr/internal/sync-github.ts        |  22 +-
+ .../src/commands/pr/internal/sync-gitlab.test.ts   | 153 ++++++++
+ .../src/commands/pr/internal/sync-gitlab.ts        | 428 +++++++++++++++++++++
+ .../src/commands/pr/internal/sync-open-step.ts     | 107 ++++--
+ .../src/commands/pr/internal/sync-update-step.ts   |  76 +++-
+ packages/agentplane/src/commands/pr/open.ts        |   9 +-
+ packages/agentplane/src/commands/pr/pr.spec.ts     |  16 +-
+ .../src/commands/pr/provider-head.test.ts          |  17 +-
+ .../agentplane/src/commands/pr/provider-head.ts    |  50 ++-
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  50 +++
+ packages/agentplane/src/commands/shared/pr-meta.ts |   1 +
+ .../src/commands/shared/pr-meta/builders.ts        |  13 +-
+ .../src/commands/shared/pr-meta/model.ts           |   7 +-
+ .../src/commands/shared/pr-meta/parser.ts          |  30 ++
+ .../commands/shared/workflow-step-fingerprint.ts   |   2 +-
+ .../src/commands/task/hosted-merge-sync.ts         |  14 +-
+ .../task/hosted-merge-sync/gitlab.lookup.test.ts   |  54 +++
+ .../commands/task/hosted-merge-sync/gitlab.test.ts |  32 ++
+ .../src/commands/task/hosted-merge-sync/gitlab.ts  | 113 ++++++
+ .../src/commands/task/hosted-merge-sync/model.ts   |   1 +
+ .../commands/task/hosted-merge-sync/provider.ts    |  33 ++
+ packages/core/schemas/pr-meta.schema.json          |  38 ++
+ packages/core/schemas/task-handoff.schema.json     |  16 +-
+ .../core/src/tasks/task-artifact-schema.handoff.ts |   4 +-
+ .../src/tasks/task-artifact-schema.pr-metadata.ts  |  11 +
+ packages/spec/schemas/pr-meta.schema.json          |  38 ++
+ packages/spec/schemas/task-handoff.schema.json     |  16 +-
+ schemas/pr-meta.schema.json                        |  38 ++
+ schemas/task-handoff.schema.json                   |  16 +-
+ 52 files changed, 2998 insertions(+), 222 deletions(-)
+```
+
+</details>
