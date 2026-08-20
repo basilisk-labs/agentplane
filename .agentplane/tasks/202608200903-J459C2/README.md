@@ -1,10 +1,11 @@
 ---
 id: "202608200903-J459C2"
 title: "Make task execution authority local and direct execution workspace-safe"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 57
+revision: 58
 origin:
   system: "manual"
 depends_on: []
@@ -62,6 +63,20 @@ quality_review:
     - "The finish call site supplies plan.execution and the verification gate requires and forwards it to hasAcceptedVerificationRecord."
     - "Regression coverage asserts the exact execution context reaches the verification target, while the full supervisor check set passes for implementation SHA bf5756763."
     - "Residual risk: Hosted provider checks must pass for the exact published pre-merge head."
+token_usage:
+  agent_runs: 17
+  input_tokens: null
+  journal_digest: "sha256:3cb1d7f11e08ba57fd2266af684c0126cdf54f8152e734c7877724cd38c893fb"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-20T21:58:58.992Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -536,8 +551,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "bf575676346cab8e27c40c30fb0378ddedaf913b"
-  message: "🚧 J459C2 task: apply external agent result"
+  hash: "afa10019f6843124492b8d1552e9dac6136baed7"
+  message: "🚧 J459C2 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -605,6 +620,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: bf575676346c. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -853,9 +871,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-20T21:58:58.992Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "afa10019f6843124492b8d1552e9dac6136baed7"
 doc_version: 3
-doc_updated_at: "2026-08-20T21:57:19.553Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-20T21:58:59.002Z"
+doc_updated_by: "CODER"
 description: "Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue."
 sections:
   Summary: |-
@@ -1568,6 +1594,7 @@ extensions:
     transition_id: "tr_4627b827ccc36adfbf85d7ebbda87cdd"
   implementation_commit:
     hash: "bf575676346cab8e27c40c30fb0378ddedaf913b"
+    message: "🚧 J459C2 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "292b232b3160b22c47c6cc206fade625e9377fed"
@@ -2278,3 +2305,16 @@ DecisionContextRef:
 - Direct proof: AGENTPLANE_CLOUD_PROVIDER=ambient-provider bun run ci:local:fast passed all five groups with ok=true in 393741 ms. Supervisor-owned declared verification independently passed all required checks; its full-fast run reported ok=true in 365468 ms.
 - The approved AP-0001 through AP-1004 implementation, migration guards, ADRs, focused regression coverage, verification identity v4, workspace allocation, closeout recovery, serialized integration, and managed-runner capability enforcement are present in the committed task diff.
 - No residual local implementation blocker remains. Hosted checks, exact-SHA publication, queued integration, provider merge readback, and final main ancestry verification remain lifecycle steps owned by AgentPlane.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/17` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:3cb1d7f11e08ba57fd2266af684c0126cdf54f8152e734c7877724cd38c893fb`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-20T21:58:58.992Z`
