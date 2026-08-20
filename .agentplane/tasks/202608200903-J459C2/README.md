@@ -1,10 +1,10 @@
 ---
 id: "202608200903-J459C2"
 title: "Make task execution authority local and direct execution workspace-safe"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +28,11 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved plan J459C2 in chat on 2026-08-20; one AgentPlane-managed working branch for AP-0001 through AP-1004."
 verification:
-  state: "pending"
-  updated_at: "2026-08-20T18:07:27.984Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 4
+  state: "blocked_external"
+  updated_at: "2026-08-20T19:07:59.191Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:fast"
+  attempts: 5
 execution_route:
   frozen: true
   reason_codes:
@@ -106,7 +106,8 @@ execution_contract:
       - "scripts/baselines"
       - "scripts/checks"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-2:fail"
     changed_components:
       - "docs"
       - "packages/agentplane"
@@ -119,10 +120,16 @@ execution_contract:
       - "docs/developer/task-execution-authority.mdx"
       - "packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
+      - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+      - "packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts"
       - "packages/agentplane/src/commands/branch/work-start.command.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-evidence-compaction.test.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-test-helpers.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts"
       - "packages/agentplane/src/commands/integrate-queue-lane.ts"
       - "packages/agentplane/src/commands/integrate-queue-reservation.ts"
       - "packages/agentplane/src/commands/integrate-queue.command.ts"
@@ -151,6 +158,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
       - "packages/agentplane/src/commands/task/branch-task-supervisor.ts"
       - "packages/agentplane/src/commands/task/complete.command.ts"
+      - "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts"
       - "packages/agentplane/src/commands/task/direct-task-supervisor.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
       - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
@@ -167,16 +175,19 @@ execution_contract:
       - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
       - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
       - "packages/agentplane/src/commands/task/handoff.shared.ts"
+      - "packages/agentplane/src/commands/task/mutation-parity.unit.test.ts"
       - "packages/agentplane/src/commands/task/new.spec.ts"
       - "packages/agentplane/src/commands/task/new.ts"
       - "packages/agentplane/src/commands/task/run.command.ts"
       - "packages/agentplane/src/commands/task/shared/transitions.ts"
       - "packages/agentplane/src/commands/task/start-ready.ts"
       - "packages/agentplane/src/commands/task/start.ts"
+      - "packages/agentplane/src/commands/task/start.unit.test.ts"
       - "packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
       - "packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
       - "packages/agentplane/src/commands/task/verify-record-execute.ts"
       - "packages/agentplane/src/commands/task/verify-record-observed-changes.ts"
+      - "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
       - "packages/agentplane/src/runner/context/task-context.ts"
       - "packages/agentplane/src/runner/usecases/agent-work-order.ts"
       - "packages/agentplane/src/runner/usecases/task-run-authority.capabilities.test.ts"
@@ -195,13 +206,20 @@ execution_contract:
       - "packages/agentplane/src/runtime/workspace-allocation/lease.ts"
       - "packages/agentplane/src/runtime/workspace-allocation/types.ts"
       - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/checks/check-compatibility-contract-baseline.mjs"
     external_effects: []
     repository_effects:
       - "documentation"
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -253,10 +271,11 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:da297a48c516d539f3172ce2592e5bea25165d7bfb6a25172daa3bba2cb050ea"
+      digest: "sha256:472b8238654f681b0553f432ea049f333a9678b103bdd3ffdfeb05c1effec029"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/declared-check.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/declared-check.ts"
         - "central_path:packages/agentplane/src/commands/shared/post-commit-pr-artifacts.ts"
@@ -273,6 +292,7 @@ execution_contract:
         - "central_path:packages/agentplane/src/commands/shared/task-verification-records.v2.test.ts"
         - "central_path:packages/agentplane/src/runtime/task-routing/index.ts"
         - "central_path:packages/agentplane/src/runtime/task-routing/resolve.ts"
+        - "central_path:scripts/checks/check-compatibility-contract-baseline.mjs"
         - "effect_public_api"
         - "effect_schema"
         - "effect_security_boundary"
@@ -298,10 +318,16 @@ execution_contract:
           - "docs/developer/task-execution-authority.mdx"
           - "packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
+          - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+          - "packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts"
           - "packages/agentplane/src/commands/branch/work-start.command.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-evidence-compaction.test.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-test-helpers.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts"
           - "packages/agentplane/src/commands/integrate-queue-lane.ts"
           - "packages/agentplane/src/commands/integrate-queue-reservation.ts"
           - "packages/agentplane/src/commands/integrate-queue.command.ts"
@@ -330,6 +356,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
           - "packages/agentplane/src/commands/task/branch-task-supervisor.ts"
           - "packages/agentplane/src/commands/task/complete.command.ts"
+          - "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts"
           - "packages/agentplane/src/commands/task/direct-task-supervisor.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
           - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
@@ -346,16 +373,19 @@ execution_contract:
           - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
           - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
           - "packages/agentplane/src/commands/task/handoff.shared.ts"
+          - "packages/agentplane/src/commands/task/mutation-parity.unit.test.ts"
           - "packages/agentplane/src/commands/task/new.spec.ts"
           - "packages/agentplane/src/commands/task/new.ts"
           - "packages/agentplane/src/commands/task/run.command.ts"
           - "packages/agentplane/src/commands/task/shared/transitions.ts"
           - "packages/agentplane/src/commands/task/start-ready.ts"
           - "packages/agentplane/src/commands/task/start.ts"
+          - "packages/agentplane/src/commands/task/start.unit.test.ts"
           - "packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
           - "packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
           - "packages/agentplane/src/commands/task/verify-record-execute.ts"
           - "packages/agentplane/src/commands/task/verify-record-observed-changes.ts"
+          - "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
           - "packages/agentplane/src/runner/context/task-context.ts"
           - "packages/agentplane/src/runner/usecases/agent-work-order.ts"
           - "packages/agentplane/src/runner/usecases/task-run-authority.capabilities.test.ts"
@@ -374,6 +404,7 @@ execution_contract:
           - "packages/agentplane/src/runtime/workspace-allocation/lease.ts"
           - "packages/agentplane/src/runtime/workspace-allocation/types.ts"
           - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "scripts/checks/check-compatibility-contract-baseline.mjs"
         external_effects: []
         repository_effects:
           - "documentation"
@@ -418,6 +449,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-2"
 commit: null
 comments:
   -
@@ -444,6 +476,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: scripts/checks; repository effects: public_api, repository_write, source_code, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: dbd6c6314f05. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -527,8 +562,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The regenerated candidate is current, but exact source-task provenance cannot be qualified within the present scope because the ratchet enforces its reviewed inventories in scripts/checks. Recommended action: Approve scripts/checks, add J459C2 to the exact cumulative and CLI provenance inventories without weakening any digest or delta assertion, correct the candidate attribution, and rerun the ratchet and full CI. Requested scope: roots=scripts/checks; repository effects=public_api,repository_write,source_code,tests; request digest=sha256:eb3d382bc71aba5cb34061656c6efd92eb3e0e55116e1211e41ae0eb00f8452c. Agentplane receipt: external-agent-blocker/tr_4627b827ccc36adfbf85d7ebbda87cdd/sha256:248e58ed2093667fb317822248a204ab36ec1f382cb8bf1f3258c37438e39209/sha256:eb3d382bc71aba5cb34061656c6efd92eb3e0e55116e1211e41ae0eb00f8452c."
+  -
+    type: "status"
+    at: "2026-08-20T18:48:09.099Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: dbd6c6314f05. CLI accepted one state-bound external-agent semantic result."
+    commit: "dbd6c6314f054b0c52b1566b3001879a39547253"
+  -
+    type: "verify"
+    at: "2026-08-20T19:07:59.191Z"
+    author: "SUPERVISOR"
+    state: "blocked_external"
+    note: "Rework: Declared check failed: bun run ci:local:fast"
 doc_version: 3
-doc_updated_at: "2026-08-20T18:07:05.919Z"
+doc_updated_at: "2026-08-20T19:08:00.313Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue."
 sections:
@@ -705,6 +754,46 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-20T19:07:59.191Z — VERIFY — blocked_external
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:fast
+    Attempts: 5
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67879e381843d230e56183b99fda976f3987ed16bbb5a11e64c052645b4bc2ab, input_digest=sha256:a3618abf609425382fa25c55af7e31dfdc19551280b8995dba4ac3b607ad191a
+
+    Details:
+
+    Command: ap doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608200903-J459C2 declared verification
+
+    Command: bun run ci:local:fast
+    Result: fail
+    Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608200903-J459C2 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+    - old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608200903-J459C2
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -731,7 +820,7 @@ extensions:
     status: "applied"
     transition_id: "tr_4627b827ccc36adfbf85d7ebbda87cdd"
   implementation_commit:
-    hash: "343f8f2cc4606b01b7b3dc5fa2c22d1383de5abf"
+    hash: "dbd6c6314f054b0c52b1566b3001879a39547253"
   task_execution_context:
     base_ref: "main"
     base_sha: "292b232b3160b22c47c6cc206fade625e9377fed"
@@ -903,6 +992,46 @@ Command: bun run ci:local:fast
 Result: fail
 Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-2
 Scope: branch_pr task 202608200903-J459C2 compatibility and full regression
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+- old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608200903-J459C2
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-20T19:07:59.191Z — VERIFY — blocked_external
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:fast
+Attempts: 5
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67879e381843d230e56183b99fda976f3987ed16bbb5a11e64c052645b4bc2ab, input_digest=sha256:a3618abf609425382fa25c55af7e31dfdc19551280b8995dba4ac3b607ad191a
+
+Details:
+
+Command: ap doctor
+Result: pass
+Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608200903-J459C2 declared verification
+
+Command: bun run ci:local:fast
+Result: fail
+Evidence: .agentplane/tasks/202608200903-J459C2/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608200903-J459C2 declared verification
 
 BlueprintSnapshotRef:
 - state: current
