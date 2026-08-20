@@ -32,8 +32,8 @@ verification provenance is stale even though the local checks pass.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- README.md | 304 ++++++++++++++++++++++++++------------------------------------
- 1 file changed, 127 insertions(+), 177 deletions(-)
+ README.md | 306 ++++++++++++++++++++++++++------------------------------------
+ 1 file changed, 128 insertions(+), 178 deletions(-)
 ```
 
 </details>
