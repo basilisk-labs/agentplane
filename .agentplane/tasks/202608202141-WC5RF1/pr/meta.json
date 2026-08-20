@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608202141-WC5RF1/improve-the-root-readme-around-the-semantic-agen",
   "created_at": "2026-08-20T22:06:49.088Z",
-  "diffstat_sha256": "sha256:97f630eeecf8401c64d60e3b530a7adb3ef90af6c36fcb636559de3e3ad04514",
+  "diffstat_sha256": "sha256:3b2513f985608b4b443557c6bf3e9ed3c1e9ada5ca605d642512915781a4559b",
   "last_verified_at": "2026-08-20T22:49:07.490Z",
   "last_verified_diffstat_sha256": "sha256:97f630eeecf8401c64d60e3b530a7adb3ef90af6c36fcb636559de3e3ad04514",
   "pr_number": 4855,

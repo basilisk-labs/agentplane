@@ -29,8 +29,8 @@ Created: 2026-08-20T22:06:49.088Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- README.md | 304 ++++++++++++++++++++++++++------------------------------------
- 1 file changed, 127 insertions(+), 177 deletions(-)
+ README.md | 306 ++++++++++++++++++++++++++------------------------------------
+ 1 file changed, 128 insertions(+), 178 deletions(-)
 ```
 
 </details>
