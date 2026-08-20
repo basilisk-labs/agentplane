@@ -1,0 +1,48 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 5ba528413b7675515cc9feb9ede97ea9ceee3f77..4af5cc08ac71b4a79c5536b95bcc810699cc5dd7",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5ba528413b7675515cc9feb9ede97ea9ceee3f77..4af5cc08ac71b4a79c5536b95bcc810699cc5dd7",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608200903-J459C2/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608200903-J459C2/pr/github-body.md",
+        "M\t.agentplane/tasks/202608200903-J459C2/pr/meta.json",
+        "M\t.agentplane/tasks/202608200903-J459C2/pr/review.md",
+        "M\tpackages/agentplane/src/commands/integrate-queue-lane.ts",
+        "M\tpackages/agentplane/src/commands/provider-ops-results.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "5ba528413b7675515cc9feb9ede97ea9ceee3f77",
+  "implementation_commit": "4af5cc08ac71b4a79c5536b95bcc810699cc5dd7",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608200903-J459C2"
+}
