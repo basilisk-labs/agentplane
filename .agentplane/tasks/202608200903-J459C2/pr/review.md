@@ -12,8 +12,8 @@ Created: 2026-08-20T15:49:58.682Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Compatibility candidate is stale and requires an approved scripts/baselines scope extension.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -111,7 +111,8 @@ Created: 2026-08-20T15:49:58.682Z
  .../src/runtime/workspace-allocation/index.ts      |  11 +
  .../src/runtime/workspace-allocation/lease.ts      |  93 +++++++
  .../src/runtime/workspace-allocation/types.ts      |  27 ++
- 82 files changed, 2918 insertions(+), 389 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |  24 +-
+ 83 files changed, 2933 insertions(+), 398 deletions(-)
 ```
 
 </details>

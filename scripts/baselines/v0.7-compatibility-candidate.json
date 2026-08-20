@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
-      "cli_topology": "f1f582f3cdd1711ce16fa52c9b6dacd81804c3a8fa94882c2192133dbfb89d13",
+      "cli_topology": "cf2776c1b126042ea1b5b5341169205fb8d35c77fc4142eee62335058548e701",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "2fb42f5eff1ad0ae173d8dd6a147a2cbb545b835539f8182df96ec067b8f2cb1"
+    "surface_sha256": "1c200a1ab2a8882beed7a811b1836b9a63c0d408a2699f9207113bd8671e4fb3"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -1201,12 +1201,12 @@
             "valueHint": "<command>"
           },
           {
-            "choices": ["repository", "auto", "direct", "branch_pr"],
+            "choices": ["auto", "direct", "branch_pr"],
             "command": "task new",
-            "default": "repository",
+            "default": "auto",
             "kind": "string",
             "name": "route",
-            "valueHint": "<repository|auto|direct|branch_pr>"
+            "valueHint": "<auto|direct|branch_pr>"
           },
           {
             "command": "task plan approve",
@@ -2261,7 +2261,7 @@
         "202608181404-CR1F9W"
       ],
       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; and canonicalizes setup and execution profile selection to standard while retaining legacy init aliases.",
-      "to_sha256": "f1f582f3cdd1711ce16fa52c9b6dacd81804c3a8fa94882c2192133dbfb89d13"
+      "to_sha256": "cf2776c1b126042ea1b5b5341169205fb8d35c77fc4142eee62335058548e701"
     },
     {
       "classification": "additive",
@@ -2443,7 +2443,12 @@
     },
     "from_sha256": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
     "section": "package_manifests",
-    "source_tasks": ["202608021231-SHYJGK", "202608112259-T3ZDDM", "202608171853-X3FD5M"],
+    "source_tasks": [
+      "202608021231-SHYJGK",
+      "202608112259-T3ZDDM",
+      "202608171853-X3FD5M",
+      "202608200903-J459C2"
+    ],
     "to_sha256": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff"
   },
   "release_version_delta": {
@@ -2462,7 +2467,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "7ca181bfc8d7ab0dabb1d2fc5aa24bb97e8d90075dce980e28960739fce1b327",
+    "surface_sha256": "1d0960ea609b865c934f96a7c521ada1685f2954448b2b28e3498b9d48c9e88d",
     "to_sha256": "d449602b1ca11e75c32b0dbecf50ff0d2729c67ce6ff64a2e4bf1b5f12955ee4",
     "to_version": "0.7.8-beta.1"
   },
@@ -2514,6 +2519,7 @@
     "202608112213-NWJCBW",
     "202608112259-T3ZDDM",
     "202608171853-X3FD5M",
-    "202608181404-CR1F9W"
+    "202608181404-CR1F9W",
+    "202608200903-J459C2"
   ]
 }
