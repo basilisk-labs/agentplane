@@ -1,16 +1,16 @@
 <p align="center">
-  <img src="docs/assets/readme-headers/agentplane.svg" alt="AgentPlane latest release header" style="width:100%;max-width:100%;"/>
+  <img src="docs/assets/readme-headers/agentplane.svg" alt="Agentplane latest release header" style="width:100%;max-width:100%;"/>
 </p>
 
-# AgentPlane
+# Agentplane
 
 **The Git-native control plane for coding agents.**
 
 Let agents write code. Keep authority and proof in Git.
 
-AgentPlane keeps work that needs judgment with the coding agent and moves repeatable workflow
+Agentplane keeps work that needs judgment with the coding agent and moves repeatable workflow
 mechanics into a deterministic CLI. Agents interpret intent, design changes, write code, and resolve
-ambiguity. AgentPlane bounds their authority, advances lifecycle state, routes Git and pull-request
+ambiguity. Agentplane bounds their authority, advances lifecycle state, routes Git and pull-request
 work, observes checks, and records how work closes or recovers.
 
 [![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
@@ -25,7 +25,7 @@ work, observes checks, and records how work closes or recovers.
 | ------------------ | ------------------------------------------------------------------------------------------------ |
 | **Human**          | Sets the outcome, approves material risk, and reviews the observed result.                       |
 | **Coding agent**   | Understands the problem, plans, implements, tests, and makes semantic judgments.                 |
-| **AgentPlane CLI** | Enforces policy and authority; owns task state, Git/PR routing, evidence, recovery, and closure. |
+| **Agentplane CLI** | Enforces policy and authority; owns task state, Git/PR routing, evidence, recovery, and closure. |
 
 Anything repeatable enough to formalize belongs in the CLI. This keeps process choreography out of
 the model's context and gives different agents the same repository contract.
@@ -37,7 +37,7 @@ the model's context and gives different agents the same repository contract.
 - **Verifiable outcomes:** reviewers see supervisor-observed repository facts and check results,
   not only an agent's claim that the work succeeded.
 
-AgentPlane does not make an LLM deterministic. It makes the control plane around the LLM
+Agentplane does not make an LLM deterministic. It makes the control plane around the LLM
 deterministic and inspectable.
 
 ## Quick start
@@ -53,7 +53,7 @@ agentplane quickstart
 ```
 
 For an existing repository, run `agentplane init` from its root. Initialization creates a
-repository policy gateway and a local workflow contract; it does not require an AgentPlane account.
+repository policy gateway and a local workflow contract; it does not require an Agentplane account.
 The `ap` command is the short alias for agent-facing CLI calls.
 
 ## Run a first task
@@ -66,11 +66,12 @@ agentplane task advance <task-id> --agent-json
 
 `task create` prints the task ID. `task advance` returns one bounded semantic episode for Codex,
 Claude Code, Cursor, Aider, or another repository-capable agent. The packet contains the objective,
-writable scope, relevant context, result schema, and the exact command for returning the result.
+writable scope, relevant context, result schema, an `exchange.result_path` for the typed result, and
+the exact `exchange.resume_argv` command for returning it.
 
 When the action is `agent_episode`, give it to the agent. The agent performs only that semantic
-objective and returns the typed result. Run the exact next command emitted by AgentPlane after each
-state change. AgentPlane performs the formal transitions and stops at approval, human, hosted,
+objective and returns the typed result. Run the exact next command emitted by Agentplane after each
+state change. Agentplane performs the formal transitions and stops at approval, human, hosted,
 recovery, or terminal boundaries.
 
 After the initial plan exists and is approved, a configured managed runner can execute eligible
@@ -107,19 +108,19 @@ implementation is a good solution to the user's problem.
 
 ## Workflow modes
 
-| Mode        | What AgentPlane manages                                                                    | Use it for                                                 |
+| Mode        | What Agentplane manages                                                                    | Use it for                                                 |
 | ----------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
 | `direct`    | A lighter local route with bounded writes, formal verification, and recorded closure.      | Reversible solo work and short feedback loops.             |
 | `branch_pr` | A task worktree and branch, PR artifacts, hosted checks, integration handoff, and closure. | Team review, branch protection, and consequential changes. |
 
 The agent declares scope, expected effects, uncertainty, and a preferred mode during planning.
-AgentPlane combines that declaration with repository policy. It can strengthen the route when
+Agentplane combines that declaration with repository policy. It can strengthen the route when
 observed work requires more isolation or evidence; it does not ask the agent to choreograph Git
 branches, worktrees, publication, or integration manually.
 
 ## Inspectable repository state
 
-AgentPlane keeps the operating record beside the code:
+Agentplane keeps the operating record beside the code:
 
 ```text
 AGENTS.md or CLAUDE.md                 repository policy gateway
@@ -136,7 +137,7 @@ repository knowledge without changing the task lifecycle.
 
 ## Trust boundary
 
-AgentPlane distinguishes semantic reports from observable facts:
+Agentplane distinguishes semantic reports from observable facts:
 
 - Agents return plans, implementation summaries, findings, uncertainty, and semantic evaluations.
 - The supervisor observes repository changes, Git state, executed checks, and available provider
@@ -148,14 +149,14 @@ AgentPlane distinguishes semantic reports from observable facts:
 - Humans retain decisions that change approved scope, accept material risk, or cross an external
   authority boundary.
 
-## When AgentPlane is useful
+## When Agentplane is useful
 
 - A coding-agent change must remain reviewable after the chat or IDE session disappears.
 - Multiple coding agents need one task, policy, verification, and recovery contract.
 - Maintainers need agent-generated pull requests to carry intent, scope, checks, and evidence.
 - Platform or security teams need local, policy-aware, CI-gateable agent work.
 
-AgentPlane is not a model provider, prompt playground, low-code chatbot builder, replacement for
+Agentplane is not a model provider, prompt playground, low-code chatbot builder, replacement for
 Git or CI, or a black-box agent runtime. It controls the engineering workflow around coding agents;
 it does not replace the agents that perform the work.
 
@@ -174,7 +175,7 @@ it does not replace the agents that perform the work.
 
 ## Project status and support
 
-AgentPlane is pre-1.0 and under active development. Pin the CLI version in automation and review
+Agentplane is pre-1.0 and under active development. Pin the CLI version in automation and review
 the [release notes](docs/releases/README.md) when upgrading.
 
 Ask usage questions or report unexpected behavior in

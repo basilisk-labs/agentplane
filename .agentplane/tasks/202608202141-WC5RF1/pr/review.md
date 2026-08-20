@@ -6,7 +6,7 @@ Created: 2026-08-20T22:06:49.088Z
 
 - Task: `202608202141-WC5RF1`
 - Title: Improve the root README around the semantic-agent and deterministic-CLI boundary
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608202141-WC5RF1/improve-the-root-readme-around-the-semantic-agen`
 - Canonical task record: `.agentplane/tasks/202608202141-WC5RF1/README.md`
 
@@ -29,8 +29,8 @@ Created: 2026-08-20T22:06:49.088Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- README.md | 306 ++++++++++++++++++++++++++------------------------------------
- 1 file changed, 128 insertions(+), 178 deletions(-)
+ README.md | 303 ++++++++++++++++++++++++++------------------------------------
+ 1 file changed, 127 insertions(+), 176 deletions(-)
 ```
 
 </details>
