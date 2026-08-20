@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -226,6 +226,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Resolved the scoped README rework by restoring the contract-tested first-task outcome while preserving the approved README structure and positioning."
 events:
   -
     type: "status"
@@ -256,9 +259,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "28e558d85eaea57a1144c32715b2632b34f98676"
+  -
+    type: "comment"
+    at: "2026-08-20T22:33:02.209Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Resolved the scoped README rework by restoring the contract-tested first-task outcome while preserving the approved README structure and positioning."
 doc_version: 3
-doc_updated_at: "2026-08-20T22:23:57.204Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-20T22:33:02.249Z"
+doc_updated_by: "SUPERVISOR"
 description: "Improve the root README around the semantic-agent and deterministic-CLI boundary"
 sections:
   Summary: |-
