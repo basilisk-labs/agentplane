@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608202133-1C8P0N/add-ap-te-lite-to-framework-agent-instructions",
+  "created_at": "2026-08-20T21:35:27.443Z",
+  "diffstat_sha256": "sha256:aaa274e42b1c880da37d932674428500b49e98ef7f2ee6e0302de83f311fd31e",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608202133-1C8P0N",
+  "updated_at": "2026-08-20T21:35:27.443Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
