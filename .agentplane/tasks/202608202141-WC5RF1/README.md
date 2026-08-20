@@ -4,7 +4,7 @@ title: "Improve the root README around the semantic-agent and deterministic-CLI 
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,10 @@ plan_approval:
   updated_by: "USER"
   note: "User approved the prepared plan in the Codex dialogue on 2026-08-21."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-20T22:18:08.019Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -76,11 +76,24 @@ execution_contract:
       - "README.md"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "README.md"
+    changed_paths:
+      - "README.md"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -110,16 +123,20 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:b93612aaf5983b6c59a50ee903610427f87e45a708da6699a96b8590a73cccbc"
+      digest: "sha256:30b20e6658ee0f44fe42b8dad9b5a20e76e3844341f28112c28df4fcafbe05d5"
       escalation_reasons: []
       execution_groups:
         - "docs-schema"
         - "core"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "README.md"
+        changed_files:
+          - "README.md"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -148,11 +165,16 @@ execution_contract:
       - "repository_effect:documentation"
       - "repository_effect:repository_write"
       - "task_outcome"
-commit: null
+commit:
+  hash: "7d0cee50ba5a9f310b6537a299ea459486f6e627"
+  message: "🚧 WC5RF1 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 7d0cee50ba5a. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -161,9 +183,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-20T22:17:00.127Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 7d0cee50ba5a. CLI accepted one state-bound external-agent semantic result."
+    commit: "7d0cee50ba5a9f310b6537a299ea459486f6e627"
+  -
+    type: "verify"
+    at: "2026-08-20T22:18:08.019Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-20T22:06:47.263Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-20T22:18:16.632Z"
+doc_updated_by: "SUPERVISOR"
 description: "Improve the root README around the semantic-agent and deterministic-CLI boundary"
 sections:
   Summary: |-
@@ -182,12 +218,62 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-20T22:18:08.019Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:db1ef94ab77cfe1d02b3f5995262b0482f94697efed012384b6c15b0740196a0, input_digest=sha256:746d893fa39b04935120499cb7780f1e0b93d31dd912f08e3ea121b839acf42b
+
+    Details:
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202141-WC5RF1 Verification Contract check docs_contract
+
+    Check: hosted_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202141-WC5RF1 Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202141-WC5RF1 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202141-WC5RF1-improve-the-root-readme-around-the-semantic-agen/.agentplane/tasks/202608202141-WC5RF1/blueprint/resolved-snapshot.json
+    - old_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+    - current_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202141-WC5RF1
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "7d0cee50ba5a9f310b6537a299ea459486f6e627"
   workflow_route_baseline:
     start_head_sha: "60be0145753e9e2aecf31f4bbd8471895db13395"
     version: 1
@@ -219,6 +305,54 @@ PLANNER fallback scaffold for "Improve the root README around the semantic-agent
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-20T22:18:08.019Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:db1ef94ab77cfe1d02b3f5995262b0482f94697efed012384b6c15b0740196a0, input_digest=sha256:746d893fa39b04935120499cb7780f1e0b93d31dd912f08e3ea121b839acf42b
+
+Details:
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202141-WC5RF1 Verification Contract check docs_contract
+
+Check: hosted_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202141-WC5RF1 Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202141-WC5RF1 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202141-WC5RF1-improve-the-root-readme-around-the-semantic-agen/.agentplane/tasks/202608202141-WC5RF1/blueprint/resolved-snapshot.json
+- old_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+- current_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202141-WC5RF1
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
