@@ -4,7 +4,7 @@ title: "Make task execution authority local and direct execution workspace-safe"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 52
+revision: 53
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +28,11 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved plan J459C2 in chat on 2026-08-20; one AgentPlane-managed working branch for AP-0001 through AP-1004."
 verification:
-  state: "ok"
-  updated_at: "2026-08-20T21:24:46.131Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-20T21:29:32.773Z"
+  updated_by: "TESTER"
+  note: "Finish resolves the verified implementation SHA correctly but validates the v4 record through the legacy workflow-mode identity because assertQualityReviewBeforeFinish omits plan.execution. Pass the frozen TaskExecutionContext into verification assessment and add regression coverage."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -535,9 +535,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit:
-  hash: "08f0b1161f6d5c53f75f63b8562bd9f76ed9e235"
-  message: "🚧 J459C2 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -830,8 +828,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "verify"
+    at: "2026-08-20T21:29:32.773Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Finish resolves the verified implementation SHA correctly but validates the v4 record through the legacy workflow-mode identity because assertQualityReviewBeforeFinish omits plan.execution. Pass the frozen TaskExecutionContext into verification assessment and add regression coverage."
 doc_version: 3
-doc_updated_at: "2026-08-20T21:24:48.227Z"
+doc_updated_at: "2026-08-20T21:29:37.847Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue."
 sections:
@@ -1410,6 +1414,36 @@ sections:
     - repeat_allowed: false
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
+
+    ### 2026-08-20T21:29:32.773Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Finish resolves the verified implementation SHA correctly but validates the v4 record through the legacy workflow-mode identity because assertQualityReviewBeforeFinish omits plan.execution. Pass the frozen TaskExecutionContext into verification assessment and add regression coverage.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:519f32059d4ea6a20364503c6ebd1b3550335d14b6c9668dc1d923f0468810ef, input_digest=sha256:1bd87f412a08fc544bc46e86cd6b758fd753f29fedb6501c8a7029f2cb606e2a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+    - old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane finish 202608200903-J459C2 --author CODER --body 'Verified: pre-merge closure packet is ready for the task PR.' --result 'pre-merge closure' --commit 28b3eb2b9911525fd63bc5e6431bd10317087ce6 --pre-merge-closure
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -2036,6 +2070,36 @@ DecisionContextRef:
 - repeat_allowed: false
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
+
+### 2026-08-20T21:29:32.773Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Finish resolves the verified implementation SHA correctly but validates the v4 record through the legacy workflow-mode identity because assertQualityReviewBeforeFinish omits plan.execution. Pass the frozen TaskExecutionContext into verification assessment and add regression coverage.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:519f32059d4ea6a20364503c6ebd1b3550335d14b6c9668dc1d923f0468810ef, input_digest=sha256:1bd87f412a08fc544bc46e86cd6b758fd753f29fedb6501c8a7029f2cb606e2a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608200903-J459C2-make-task-execution-authority-local-and-direct-e/.agentplane/tasks/202608200903-J459C2/blueprint/resolved-snapshot.json
+- old_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- current_digest: f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608200903-J459C2
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane finish 202608200903-J459C2 --author CODER --body 'Verified: pre-merge closure packet is ready for the task PR.' --result 'pre-merge closure' --commit 28b3eb2b9911525fd63bc5e6431bd10317087ce6 --pre-merge-closure
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
 
 <!-- END VERIFICATION RESULTS -->
 

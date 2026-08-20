@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
 import type { TaskData } from "../../backends/task-backend.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { LoadedFinishTask, ResolvedCommitInfo } from "./finish-shared.js";
 
@@ -71,6 +72,22 @@ function mkLoadedTask(reviewedSha = "impl-sha"): LoadedFinishTask {
   };
 }
 
+function mkExecution(): TaskExecutionContext {
+  return {
+    schema_version: 1,
+    primary_task_id: "T-1",
+    task_ids: ["T-1"],
+    repository_mode: "branch_pr",
+    selected_mode: "branch_pr",
+    requested_mode: "branch_pr",
+    route_source: "execution_contract",
+    reason_codes: ["agent_preferred_branch_pr"],
+    base_ref: "main",
+    base_sha: "base-sha",
+    authoritative_task_source: "task_worktree",
+  };
+}
+
 describe("finish quality review target selection", () => {
   beforeEach(() => {
     mocks.gitRevParse.mockReset().mockRejectedValue(new Error("no parent"));
@@ -100,8 +117,17 @@ describe("finish quality review target selection", () => {
         loadedTasks: [loaded],
         taskCommitInfo: { hash: "impl-sha", message: "feat: implementation" },
         implementationCommitInfo: null,
+        execution: mkExecution(),
       }),
     ).rejects.toThrow("finish requires a current verification record");
+    const verificationCall = mocks.hasAcceptedVerificationRecord.mock.calls.at(-1)?.[0] as
+      | {
+          evaluatedSha?: string | null;
+          targetContext?: { execution?: TaskExecutionContext };
+        }
+      | undefined;
+    expect(verificationCall?.evaluatedSha).toBe("impl-sha");
+    expect(verificationCall?.targetContext?.execution).toEqual(mkExecution());
   });
 
   it("prefers explicit --implementation-commit over artifact --commit", async () => {

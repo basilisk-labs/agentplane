@@ -7,6 +7,7 @@ import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { isTaskSetLocalOnlyAdvance } from "../shared/task-local-freshness.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import {
   hasAcceptedVerificationRecord,
   requiredVerificationContractChecks,
@@ -70,6 +71,7 @@ export async function assertQualityReviewBeforeFinish(opts: {
   loadedTasks: readonly LoadedFinishTask[];
   taskCommitInfo: ResolvedCommitInfo | null;
   implementationCommitInfo: ResolvedCommitInfo | null;
+  execution: TaskExecutionContext;
   workflowMode?: TaskExecutionRouteMode;
 }): Promise<void> {
   const workflowMode = opts.workflowMode ?? opts.ctx.config.workflow_mode;
@@ -104,6 +106,7 @@ export async function assertQualityReviewBeforeFinish(opts: {
           workflowDir: opts.ctx.config.paths.workflow_dir,
           taskIds,
           workflowMode,
+          execution: opts.execution,
         },
         snapshotRef: expectedSha,
       });

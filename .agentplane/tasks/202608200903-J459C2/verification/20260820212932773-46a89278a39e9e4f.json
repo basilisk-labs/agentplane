@@ -1,0 +1,106 @@
+{
+  "details": null,
+  "digest": "sha256:46a89278a39e9e4fe40a7dbfcae93ad05c83d78a2c671be8da6dc7a5a635ee45",
+  "implementation_sha": "08f0b1161f6d5c53f75f63b8562bd9f76ed9e235",
+  "input": {
+    "context": {
+      "digest": "sha256:c604a3866814dba57d1e8b75bf0340937981e8280dda0ec9356a7987f4282f36",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:1bd87f412a08fc544bc46e86cd6b758fd753f29fedb6501c8a7029f2cb606e2a",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "292b232b3160b22c47c6cc206fade625e9377fed",
+      "digest": "sha256:663f84d9c951dacd23965e1e01f277183823e1b3d7656d1c6e4664eb5060f0cc",
+      "primary_task_id": "202608200903-J459C2",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_public_api",
+        "effect_schema",
+        "effect_security_boundary",
+        "material_implementation_uncertainty",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608200903-J459C2"
+      ]
+    },
+    "implementation": {
+      "base_sha": "292b232b3160b22c47c6cc206fade625e9377fed",
+      "digest": "sha256:b205488f36c3897ec6f550eed498a525dc6c7e845e2dd66946a9c5a93bd62886",
+      "strategy": "branch_diff",
+      "target_sha": "08f0b1161f6d5c53f75f63b8562bd9f76ed9e235"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:d073033b175d7bffccbc74964ab576051e34104a3669f81e142daf2a469ddeea",
+    "verify_steps_digest": "sha256:519f32059d4ea6a20364503c6ebd1b3550335d14b6c9668dc1d923f0468810ef"
+  },
+  "kind": "task_verification_record",
+  "note": "Finish resolves the verified implementation SHA correctly but validates the v4 record through the legacy workflow-mode identity because assertQualityReviewBeforeFinish omits plan.execution. Pass the frozen TaskExecutionContext into verification assessment and add regression coverage.",
+  "recorded_at": "2026-08-20T21:29:32.773Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run focused task-authority and route tests. Expected: TaskExecutionContext and TaskCommandContext own selected_mode, route provenance, authoritative task source, base_ref, and frozen base_sha; repository workflow_mode is not read as runtime authority.\n2. Run focused workspace-allocation and batch-context tests. Expected: automated direct and branch_pr work receive isolated leases, base checkout remains single-writer, private paths stay outside semantic digests, and mixed route/base batches fail closed.\n3. Run focused verification and finish tests. Expected: verification identity v4 is workspace-neutral and bound to frozen task/base identity; v3 is audit-only; closeout journal recovery is idempotent across prepared, task_state_written, close_commit_written, completed, and recovery_required phases.\n4. Run focused integration-queue and managed-runner tests. Expected: the existing serialized queue handles direct candidates, rechecks base/conflicts/equivalence/freshness, preserves conflict_rework, rejects undeclared capabilities before invocation, and escalates direct to branch_pr without unnecessary executor replay.\n5. Exercise the ten end-to-end acceptance scenarios: repository-direct finish, task branch_pr finish, risk-driven escalation, custom workflow_dir, frozen base identity, parallel direct isolation, mixed-context rejection, workspace-neutral verification identity, interrupted closeout recovery, and serialized parallel A/B/C integration.\n6. Run node --check scripts/checks/run-local-ci.mjs, bunx prettier --check scripts/checks/run-local-ci.mjs, bunx eslint scripts/checks/run-local-ci.mjs, and git diff --check. Expected: the CI hermeticity rework is syntactically and structurally clean.\n7. Run AGENTPLANE_CLOUD_PROVIDER=ambient-provider bun run ci:local:fast. Expected: all five verification groups execute and verification_metrics reports ok=true, proving cloud fixture identity is not overridden by the parent environment.\n8. Run ap doctor, bun run ci:local:fast, bun run typecheck, and node .agentplane/policy/check-routing.mjs. Expected: every declared local check passes without weakening the verification contract.\n9. Perform independent EVALUATOR review against the frozen diff and acceptance evidence. Expected: verdict pass with no unresolved implementation finding.\n10. Publish the exact task head, require hosted checks for that SHA, integrate through the AgentPlane queue, and verify provider readback plus main ancestry before closure.",
+  "scope_digest": "sha256:519f32059d4ea6a20364503c6ebd1b3550335d14b6c9668dc1d923f0468810ef",
+  "task_id": "202608200903-J459C2",
+  "verification_command": "agentplane task verify rework 202608200903-J459C2 --rework --by TESTER",
+  "verifier": "TESTER"
+}

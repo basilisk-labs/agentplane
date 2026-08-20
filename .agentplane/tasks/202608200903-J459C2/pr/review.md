@@ -12,8 +12,8 @@ Created: 2026-08-20T15:49:58.682Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Finish resolves the verified implementation SHA correctly but validates the v4 record through the legacy workflow-mode identity because assertQualityReviewBeforeFinish omits plan.execution. Pass the frozen TaskExecutionContext into verification assessment and add regression coverage.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -87,7 +87,7 @@ Created: 2026-08-20T15:49:58.682Z
  .../commands/task/direct-task-supervisor.test.ts   |  24 +-
  .../src/commands/task/direct-task-supervisor.ts    |  75 +----
  .../external-agent-implementation-authority.ts     |   7 +
- .../src/commands/task/finish-blueprint-evidence.ts |   5 +-
+ .../src/commands/task/finish-blueprint-evidence.ts |   8 +-
  .../agentplane/src/commands/task/finish-close.ts   |   7 +-
  .../commands/task/finish-closeout-journal.test.ts  | 131 +++++++++
  .../task/finish-closeout-journal.testkit.ts        |  17 ++
@@ -95,12 +95,12 @@ Created: 2026-08-20T15:49:58.682Z
  .../agentplane/src/commands/task/finish-command.ts |  20 +-
  .../src/commands/task/finish-execute-close.ts      |  18 +-
  .../src/commands/task/finish-execute-commit.ts     |  89 ++++--
- .../agentplane/src/commands/task/finish-execute.ts | 291 ++++++++++---------
+ .../agentplane/src/commands/task/finish-execute.ts | 292 +++++++++++---------
  .../agentplane/src/commands/task/finish-plan.ts    |  18 +-
  .../agentplane/src/commands/task/finish-shared.ts  |   7 +-
  .../agentplane/src/commands/task/finish-types.ts   |   9 +
  .../commands/task/finish.close-tail.unit.test.ts   |   4 +-
- .../task/finish.quality-review-target.unit.test.ts |  47 +++-
+ .../task/finish.quality-review-target.unit.test.ts |  73 ++++-
  .../src/commands/task/finish.state.unit.test.ts    |  15 +
  .../commands/task/finish.validation.unit.test.ts   |   9 +-
  .../agentplane/src/commands/task/handoff.shared.ts |  17 +-
@@ -140,7 +140,7 @@ Created: 2026-08-20T15:49:58.682Z
  .../baselines/v0.7-compatibility-candidate.json    |  24 +-
  .../check-compatibility-contract-baseline.mjs      |  10 +-
  scripts/checks/run-local-ci.mjs                    |   6 +
- 111 files changed, 3899 insertions(+), 982 deletions(-)
+ 111 files changed, 3929 insertions(+), 982 deletions(-)
 ```
 
 </details>
