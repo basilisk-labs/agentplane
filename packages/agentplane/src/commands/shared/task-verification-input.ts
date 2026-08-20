@@ -17,7 +17,6 @@ import type {
 export type {
   VerificationEnvironment,
   VerificationEvidenceReference,
-  VerificationExecutionIdentity,
   VerificationInputIdentity,
 } from "./task-verification-input-types.js";
 

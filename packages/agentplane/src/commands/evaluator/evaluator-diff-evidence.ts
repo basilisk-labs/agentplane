@@ -4,8 +4,6 @@ import { gitEnv, gitIsAncestor, gitMergeBase, gitRevParse } from "@agentplaneorg
 import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { CliError } from "../../shared/errors.js";
-import type { CommandContext } from "../shared/task-backend.js";
-import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
 const execFileNative = promisify(execFile);
 
@@ -65,16 +63,6 @@ export async function resolveEvaluatorDiffBase(opts: {
       }`,
     });
   }
-}
-
-export function resolveEvaluatorDiffBaseRef(opts: {
-  ctx: CommandContext;
-  taskId: string;
-  execution: TaskExecutionContext;
-}): string | null {
-  void opts.ctx;
-  void opts.taskId;
-  return opts.execution.base_ref.trim() || null;
 }
 
 export async function renderActualDiff(

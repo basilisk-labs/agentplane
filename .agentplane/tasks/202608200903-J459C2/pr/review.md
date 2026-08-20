@@ -12,8 +12,8 @@ Created: 2026-08-20T15:49:58.682Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Exact-head hosted CI run 32422225125 failed required verify-static and verify-contract checks: 13 unused AgentPlane CLI exports exceed the zero Knip budget; four documentation social images are missing and the generated manifest is stale. Reopen implementation for bounded remediation.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -39,7 +39,7 @@ Created: 2026-08-20T15:49:58.682Z
  ...-cli.critical.agent-efficiency-baseline.test.ts |   5 +-
  .../branch/cleanup-merged-provider-rebase.test.ts  |   4 +-
  .../src/commands/branch/work-start.command.ts      |  14 +-
- .../commands/evaluator/evaluator-diff-evidence.ts  |  51 +---
+ .../commands/evaluator/evaluator-diff-evidence.ts  |  49 +---
  .../evaluator-evidence-compaction.test.ts          |   9 +-
  .../evaluator/evaluator-execute-supervisor.ts      |   2 +-
  .../commands/evaluator/evaluator-execution-base.ts |  46 +++
@@ -71,10 +71,10 @@ Created: 2026-08-20T15:49:58.682Z
  .../src/commands/shared/route-decision.ts          |  44 +--
  .../src/commands/shared/route-gate-priority.ts     |  18 ++
  .../commands/shared/side-effect-authority.test.ts  |  26 ++
- .../src/commands/shared/side-effect-authority.ts   |  47 +++-
+ .../src/commands/shared/side-effect-authority.ts   |  45 +++
  .../shared/task-verification-input-types.ts        |  52 ++++
  .../shared/task-verification-input.test.ts         |  64 ++++-
- .../src/commands/shared/task-verification-input.ts | 141 ++++++----
+ .../src/commands/shared/task-verification-input.ts | 140 ++++++----
  .../shared/task-verification-record-parser.ts      | 183 ++++++++++++
  .../commands/shared/task-verification-records.ts   | 206 +++++---------
  .../shared/task-verification-records.v2.test.ts    |   6 +-
@@ -126,7 +126,7 @@ Created: 2026-08-20T15:49:58.682Z
  .../src/runner/usecases/task-run-options.ts        |  27 ++
  .../agentplane/src/runner/usecases/task-run.ts     |  34 +--
  .../architecture-guard.test.ts                     |  41 +++
- .../src/runtime/task-execution-context/index.ts    |   8 +
+ .../src/runtime/task-execution-context/index.ts    |   2 +
  .../runtime/task-execution-context/resolve.test.ts | 104 +++++++
  .../src/runtime/task-execution-context/resolve.ts  | 307 +++++++++++++++++++++
  .../src/runtime/task-execution-context/types.ts    |  39 +++
@@ -134,13 +134,18 @@ Created: 2026-08-20T15:49:58.682Z
  .../agentplane/src/runtime/task-routing/resolve.ts |  20 +-
  .../runtime/workspace-allocation/allocate.test.ts  | 118 ++++++++
  .../src/runtime/workspace-allocation/allocate.ts   | 225 +++++++++++++++
- .../src/runtime/workspace-allocation/index.ts      |  11 +
+ .../src/runtime/workspace-allocation/index.ts      |   2 +
  .../src/runtime/workspace-allocation/lease.ts      |  93 +++++++
  .../src/runtime/workspace-allocation/types.ts      |  27 ++
  .../baselines/v0.7-compatibility-candidate.json    |  24 +-
  .../check-compatibility-contract-baseline.mjs      |  10 +-
  scripts/checks/run-local-ci.mjs                    |   6 +
- 111 files changed, 3929 insertions(+), 982 deletions(-)
+ .../docs/adr/0014-task-execution-authority.png     | Bin 0 -> 62644 bytes
+ .../docs/adr/0015-task-workspace-isolation.png     | Bin 0 -> 64475 bytes
+ .../adr/0016-serialized-direct-integration.png     | Bin 0 -> 64669 bytes
+ .../docs/developer/task-execution-authority.png    | Bin 0 -> 60616 bytes
+ website/static/img/social/manifest.json            |  32 +++
+ 116 files changed, 3937 insertions(+), 986 deletions(-)
 ```
 
 </details>
