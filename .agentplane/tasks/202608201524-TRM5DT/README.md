@@ -2,10 +2,10 @@
 id: "202608201524-TRM5DT"
 title: "Implement provider-neutral GitHub and GitLab change-request lifecycle"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -71,9 +71,9 @@ quality_review:
     - "Residual risk: The exact published SHA still requires a fresh successful hosted CI run before merge."
     - "Residual risk: Real GitLab.com and self-managed GitLab behavior remains fixture-qualified until a separately authorized live GitLab qualification is performed."
 token_usage:
-  agent_runs: 9
+  agent_runs: 11
   input_tokens: null
-  journal_digest: "sha256:32c61b5fd122ab0f1528ce379a53d551449d04341dffbcc15d0bc80432a20a83"
+  journal_digest: "sha256:a51837e7fffd9c4a7e3945678eb097a11e15fe9cc90103d8a522831ca61c0dc9"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -83,7 +83,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-20T20:05:07.703Z"
+  updated_at: "2026-08-20T20:31:57.781Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -444,8 +444,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "c2b5a231ab68f3de8d1916b0e90281ae0e1bd313"
-  message: "🚧 TRM5DT task: apply external agent result"
+  hash: "a45d6692aabf15108b4f3e5bd712d40bb1db2162"
+  message: "🚧 TRM5DT task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -477,6 +477,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: c2b5a231ab68. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -569,9 +572,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-20T20:31:57.781Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "a45d6692aabf15108b4f3e5bd712d40bb1db2162"
 doc_version: 3
-doc_updated_at: "2026-08-20T20:31:17.628Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-20T20:31:57.811Z"
+doc_updated_by: "CODER"
 description: "Implement universal GitHub/GitLab hosted change-request support in an isolated branch_pr worktree. Preserve current GitHub behavior behind a provider adapter. Resolve provider host/project from the publication Git remote; use existing gh session for GitHub and external glab authentication plus glab api for GitLab without reading or storing tokens. Cover idempotent PR/MR lookup/create/update, normalized metadata, exact-head hosted checks, mergeability and SHA-guarded merge, external-merge reconciliation, typed failures, compatibility migration, docs, and regression/E2E-style CLI fixtures. Do not perform interactive auth, modify credentials, or touch external providers during implementation tests."
 sections:
   Summary: |-
@@ -883,6 +894,7 @@ extensions:
     transition_id: "tr_a5e0b3929c499e6a28f66ab5bf41e9b7"
   implementation_commit:
     hash: "c2b5a231ab68f3de8d1916b0e90281ae0e1bd313"
+    message: "🚧 TRM5DT task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "292b232b3160b22c47c6cc206fade625e9377fed"
     version: 1
@@ -1194,12 +1206,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/9` agent runs
+- Completeness: `0/11` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:32c61b5fd122ab0f1528ce379a53d551449d04341dffbcc15d0bc80432a20a83`
+- Journal digest: `sha256:a51837e7fffd9c4a7e3945678eb097a11e15fe9cc90103d8a522831ca61c0dc9`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-20T20:05:07.703Z`
+- Updated at: `2026-08-20T20:31:57.781Z`
