@@ -6,14 +6,14 @@ Created: 2026-08-20T15:49:58.682Z
 
 - Task: `202608200903-J459C2`
 - Title: Make task execution authority local and direct execution workspace-safe
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608200903-J459C2/make-task-execution-authority-local-and-direct-e`
 - Canonical task record: `.agentplane/tasks/202608200903-J459C2/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Exact-head hosted CI run 32422225125 failed required verify-static and verify-contract checks: 13 unused AgentPlane CLI exports exceed the zero Knip budget; four documentation social images are missing and the generated manifest is stale. Reopen implementation for bounded remediation.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
