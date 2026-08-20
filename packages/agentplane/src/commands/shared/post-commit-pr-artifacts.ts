@@ -5,6 +5,7 @@ import { gitEnv } from "@agentplaneorg/core/git";
 import type { CommandContext } from "../shared/task-backend.js";
 import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
 import { isTaskLocalOnlyAdvance } from "./task-local-freshness.js";
+import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
 
 function isUnknownRevisionError(err: unknown): boolean {
   const message = err instanceof Error ? err.message : String(err);
@@ -35,8 +36,10 @@ export async function refreshBranchPrArtifactsAfterTaskCommit(opts: {
   rootOverride?: string;
   taskId: string;
   quiet: boolean;
+  workflowMode?: TaskExecutionRouteMode;
 }): Promise<void> {
-  if (opts.ctx.config.workflow_mode !== "branch_pr") return;
+  const workflowMode = opts.workflowMode ?? opts.ctx.config.workflow_mode;
+  if (workflowMode !== "branch_pr") return;
 
   try {
     const gitRoot = opts.ctx.resolvedProject.gitRoot;
@@ -59,6 +62,7 @@ export async function refreshBranchPrArtifactsAfterTaskCommit(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
+      workflowMode,
     });
   } catch (err) {
     if (opts.quiet) return;

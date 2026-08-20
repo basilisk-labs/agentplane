@@ -6,6 +6,7 @@ import {
   resolveQualityReviewTargetSha,
 } from "../shared/quality-review-target.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import {
   isQualificationTask,
   readCurrentQualificationPacket,
@@ -22,6 +23,7 @@ export async function resolveEvaluatorReviewTarget(opts: {
   ctx: CommandContext;
   task: TaskData;
   reason: "preparation" | "staleness";
+  execution: TaskExecutionContext;
 }): Promise<ResolvedEvaluatorReviewTarget> {
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const workflowDir = opts.ctx.config.paths.workflow_dir;
@@ -48,7 +50,7 @@ export async function resolveEvaluatorReviewTarget(opts: {
         taskIds: normalizeBranchPrBatchTaskIds(opts.task, opts.task.id),
         previousEvaluatedSha:
           opts.task.quality_review?.evaluated_sha ?? recordedTaskImplementationCommitSha(opts.task),
-        workflowMode: opts.ctx.config.workflow_mode,
+        workflowMode: opts.execution.selected_mode,
       });
   return {
     evaluatedSha,

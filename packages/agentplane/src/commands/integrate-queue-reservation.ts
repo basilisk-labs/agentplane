@@ -269,6 +269,22 @@ export async function validateClaimedEntryPublication(opts: {
   entry: IntegrationQueueEntry | null;
 }): Promise<IntegrationQueueEntry | null> {
   if (!opts.entry) return null;
+  if (opts.entry.route === "direct") {
+    const localStale = await rejectIfQueuedEntryIsStale({
+      gitRoot: opts.gitRoot,
+      entry: opts.entry,
+    });
+    if (!localStale) return opts.entry;
+    await markRetainedClaimRework({
+      gitRoot: opts.gitRoot,
+      expected: opts.entry,
+      stale: localStale,
+    });
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: localStale.reason ?? "queued direct entry is stale",
+    });
+  }
   let stale: IntegrationQueueEntry | null;
   try {
     stale = await rejectIfQueuedEntryPublicationIsStale({

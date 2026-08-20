@@ -150,7 +150,7 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
     p.blueprintRequest,
     BLUEPRINT_REQUEST_VALUES,
   );
-  const route = p.route ?? "repository";
+  const route = p.route ?? "auto";
 
   return {
     ...p,

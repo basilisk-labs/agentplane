@@ -1,4 +1,5 @@
 import { ensureDocSections, normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
@@ -387,7 +388,9 @@ export async function createTaskCloseCommit(opts: {
   allowPolicy?: boolean;
   closeRefreshTaskArtifacts?: boolean;
   additionalTaskIds?: string[];
+  workflowMode?: TaskExecutionRouteMode;
 }): Promise<void> {
+  const workflowMode = opts.workflowMode ?? opts.ctx.config.workflow_mode;
   const additionalTaskAllow = (opts.additionalTaskIds ?? [])
     .filter((taskId) => taskId && taskId !== opts.taskId)
     .map((taskId) => `${opts.ctx.config.paths.workflow_dir}/${taskId}`);
@@ -402,7 +405,7 @@ export async function createTaskCloseCommit(opts: {
     allow: additionalTaskAllow,
     autoAllow: false,
     allowTasks: true,
-    allowBase: opts.ctx.config.workflow_mode === "branch_pr",
+    allowBase: workflowMode === "branch_pr",
     allowPolicy: opts.allowPolicy === true,
     allowConfig: false,
     allowHooks: false,
@@ -411,7 +414,7 @@ export async function createTaskCloseCommit(opts: {
     quiet: opts.quiet,
     closeUnstageOthers: opts.closeUnstageOthers === true,
     closeCheckOnly: false,
-    closeStageTaskArtifacts: opts.ctx.config.workflow_mode === "branch_pr",
+    closeStageTaskArtifacts: workflowMode === "branch_pr",
     closeRefreshTaskArtifacts: opts.closeRefreshTaskArtifacts,
   });
 }

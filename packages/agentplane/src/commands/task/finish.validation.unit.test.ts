@@ -28,6 +28,18 @@ const mocks = vi.hoisted(() => ({
   checkTaskBlueprintSnapshotDrift: vi.fn(),
 }));
 
+vi.mock("./finish-closeout-journal.js", () => ({
+  openFinishCloseoutJournal: vi.fn().mockResolvedValue({
+    path: "/tmp/finish-closeout.json",
+    journal: { state: "prepared" },
+  }),
+  advanceFinishCloseoutJournal: vi.fn(
+    ({ journal, state }: { journal: Record<string, unknown>; state: string }) =>
+      Promise.resolve({ ...journal, state }),
+  ),
+  markFinishCloseoutRecoveryRequired: vi.fn().mockResolvedValue(undefined),
+}));
+
 vi.mock("../guard/impl/comment-commit.js", () => ({
   commitFromComment: mocks.commitFromComment,
 }));
@@ -225,6 +237,9 @@ describe("task finish validation", () => {
     mocks.ensureReconciledBeforeMutation.mockReset();
     mocks.loadCommandContext.mockReset();
     mocks.loadTaskFromContext.mockReset();
+    mocks.loadTaskFromContext.mockImplementation(({ taskId }: { taskId: string }) =>
+      Promise.resolve(mkTask({ id: taskId, status: "DOING", tags: ["spike"] })),
+    );
     mocks.backendIsLocalFileBackend.mockReset();
     mocks.getTaskStore.mockReset();
     mocks.readCommitInfo.mockReset();

@@ -6,6 +6,7 @@ import { gitEnv, gitRevParse, gitShowFile, resolveBaseBranch } from "@agentplane
 import { execFileAsync, runProcess } from "@agentplaneorg/core/process";
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import { parseVerificationCheckDetails } from "./verification-details.js";
 
 const VERIFICATION_CONTEXT_BASENAMES = new Set([
@@ -69,8 +70,9 @@ export type VerificationEnvironment = {
 };
 
 export type VerificationInputIdentity = {
-  schema_version: 2 | 3;
+  schema_version: 2 | 3 | 4;
   kind: "task_verification_input";
+  execution?: VerificationExecutionIdentity;
   implementation: {
     strategy: "branch_diff" | "tree";
     digest: `sha256:${string}`;
@@ -93,6 +95,20 @@ export type VerificationInputIdentity = {
     references: VerificationEvidenceReference[];
   };
   digest: `sha256:${string}`;
+};
+
+export type VerificationExecutionIdentity = {
+  digest: `sha256:${string}`;
+  primary_task_id: string;
+  task_ids: string[];
+  repository_mode: "direct" | "branch_pr";
+  selected_mode: "direct" | "branch_pr";
+  requested_mode: "auto" | "direct" | "branch_pr";
+  route_source: TaskExecutionContext["route_source"];
+  reason_codes: string[];
+  base_ref: string;
+  base_sha: string;
+  authoritative_task_source: TaskExecutionContext["authoritative_task_source"];
 };
 
 export type VerificationEvidenceReference = {
@@ -320,6 +336,7 @@ async function implementationIdentity(opts: {
   targetSha: string;
   workflowMode: "direct" | "branch_pr";
   baseRef?: string | null;
+  baseSha?: string | null;
 }): Promise<VerificationInputIdentity["implementation"]> {
   if (opts.workflowMode === "branch_pr") {
     const base =
@@ -330,9 +347,9 @@ async function implementationIdentity(opts: {
         cliBaseOpt: null,
         mode: "branch_pr",
       }).catch(() => null));
-    const baseSha = base
-      ? await gitRevParse(opts.gitRoot, [`${base}^{commit}`]).catch(() => null)
-      : null;
+    const baseSha =
+      opts.baseSha ??
+      (base ? await gitRevParse(opts.gitRoot, [`${base}^{commit}`]).catch(() => null) : null);
     if (baseSha) {
       const { stdout: mergeBase } = await execFileAsync(
         "git",
@@ -405,6 +422,7 @@ function currentVerificationEnvironment(): VerificationEnvironment {
 }
 
 export function verificationInputDigest(opts: {
+  executionDigest?: string | null;
   implementationDigest: string;
   verifyStepsDigest: string;
   verificationContractDigest?: string | null;
@@ -415,6 +433,7 @@ export function verificationInputDigest(opts: {
   return sha256(
     JSON.stringify(
       canonicalizeJson({
+        ...(opts.executionDigest ? { execution_digest: opts.executionDigest } : {}),
         implementation_digest: opts.implementationDigest,
         verify_steps_digest: opts.verifyStepsDigest,
         ...(opts.verificationContractDigest
@@ -428,28 +447,66 @@ export function verificationInputDigest(opts: {
   );
 }
 
-export async function resolveVerificationInputIdentity(opts: {
+function verificationExecutionIdentity(
+  execution: TaskExecutionContext,
+): VerificationExecutionIdentity {
+  const identityPayload = {
+    primary_task_id: execution.primary_task_id,
+    task_ids: [...execution.task_ids].toSorted(),
+    repository_mode: execution.repository_mode,
+    selected_mode: execution.selected_mode,
+    requested_mode: execution.requested_mode,
+    route_source: execution.route_source,
+    reason_codes: [...execution.reason_codes].toSorted(),
+    base_ref: execution.base_ref,
+    base_sha: execution.base_sha,
+  };
+  const payload = {
+    ...identityPayload,
+    authoritative_task_source: execution.authoritative_task_source,
+  };
+  return {
+    digest: sha256(JSON.stringify(canonicalizeJson(identityPayload))),
+    ...payload,
+  };
+}
+
+type VerificationInputIdentityBaseOptions = {
   gitRoot: string;
   workflowDir: string;
   taskIds: readonly string[];
   targetSha: string | null;
   verifySteps: string;
   verificationContractDigest?: string | null;
-  workflowMode: "direct" | "branch_pr";
   environment?: VerificationEnvironment;
-  baseRef?: string | null;
   verificationDetails?: string | null;
   evidenceRef?: string | null;
-}): Promise<VerificationInputIdentity | null> {
+};
+
+async function resolveVerificationInputIdentityInternal(
+  opts: VerificationInputIdentityBaseOptions & {
+    workflowMode: "direct" | "branch_pr";
+    execution?: TaskExecutionContext;
+    baseRef?: string | null;
+  },
+): Promise<VerificationInputIdentity | null> {
   if (!opts.targetSha || !/^[0-9a-f]{40,64}$/u.test(opts.targetSha)) return null;
+  const execution = opts.execution ? verificationExecutionIdentity(opts.execution) : null;
+  if (
+    execution &&
+    [...new Set(opts.taskIds)].toSorted().join("\0") !== execution.task_ids.join("\0")
+  ) {
+    throw new Error("Verification task ids must match TaskExecutionContext.task_ids.");
+  }
   const [implementation, context, evidence] = await Promise.all([
     implementationIdentity({
       gitRoot: opts.gitRoot,
       workflowDir: opts.workflowDir,
       taskIds: opts.taskIds,
       targetSha: opts.targetSha,
-      workflowMode: opts.workflowMode,
-      baseRef: opts.baseRef,
+      workflowMode: execution?.selected_mode ?? opts.workflowMode,
+      baseRef: execution?.base_ref ?? opts.baseRef,
+      baseSha: execution?.base_sha,
     }),
     verificationContext({ gitRoot: opts.gitRoot, targetSha: opts.targetSha }),
     verificationEvidence({
@@ -467,6 +524,7 @@ export async function resolveVerificationInputIdentity(opts: {
   const verifyStepsDigest = sha256(opts.verifySteps.trim());
   const verificationContractDigest = opts.verificationContractDigest?.trim() ?? null;
   const digest = verificationInputDigest({
+    executionDigest: execution?.digest,
     implementationDigest: implementation.digest,
     verifyStepsDigest,
     verificationContractDigest,
@@ -475,8 +533,9 @@ export async function resolveVerificationInputIdentity(opts: {
     evidenceDigest: evidence.digest,
   });
   return {
-    schema_version: verificationContractDigest ? 3 : 2,
+    schema_version: execution ? 4 : verificationContractDigest ? 3 : 2,
     kind: "task_verification_input",
+    ...(execution ? { execution } : {}),
     implementation,
     verify_steps_digest: verifyStepsDigest,
     ...(verificationContractDigest
@@ -489,11 +548,31 @@ export async function resolveVerificationInputIdentity(opts: {
   };
 }
 
+export function resolveVerificationInputIdentity(
+  opts: VerificationInputIdentityBaseOptions & { execution: TaskExecutionContext },
+): Promise<VerificationInputIdentity | null> {
+  return resolveVerificationInputIdentityInternal({
+    ...opts,
+    workflowMode: opts.execution.selected_mode,
+  });
+}
+
+/** Read-only compatibility for auditing pre-v4 records. New lifecycle code must use execution. */
+export function resolveLegacyVerificationInputIdentity(
+  opts: VerificationInputIdentityBaseOptions & {
+    workflowMode: "direct" | "branch_pr";
+    baseRef?: string | null;
+  },
+): Promise<VerificationInputIdentity | null> {
+  return resolveVerificationInputIdentityInternal(opts);
+}
+
 export function verificationInputInvalidationReason(opts: {
   recorded: VerificationInputIdentity;
   current: VerificationInputIdentity;
 }):
   | "verification_current"
+  | "verification_route_context_changed"
   | "verification_implementation_changed"
   | "verification_steps_changed"
   | "verification_contract_changed"
@@ -502,6 +581,9 @@ export function verificationInputInvalidationReason(opts: {
   | "verification_evidence_changed"
   | "verification_input_changed" {
   if (opts.recorded.digest === opts.current.digest) return "verification_current";
+  if (opts.recorded.execution?.digest !== opts.current.execution?.digest) {
+    return "verification_route_context_changed";
+  }
   if (opts.recorded.implementation.digest !== opts.current.implementation.digest) {
     return "verification_implementation_changed";
   }

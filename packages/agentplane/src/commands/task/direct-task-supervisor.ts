@@ -4,6 +4,15 @@ import {
 } from "@agentplaneorg/core/schemas";
 
 import type { CommandCtx } from "../../cli/spec/spec.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+import {
+  loadTaskCommandContext,
+  resolveTaskExecutionContext,
+} from "../../runtime/task-execution-context/index.js";
+import {
+  allocateTaskWorkspace,
+  releaseWorkspaceLease,
+} from "../../runtime/workspace-allocation/index.js";
 import { CliError } from "../../shared/errors.js";
 import { executeTaskRunnerExecution } from "../../runner/usecases/task-run.js";
 import {
@@ -50,6 +59,7 @@ export type DirectTaskSupervisorOptions = {
   command: CommandContext;
   task_id: string;
   include_remote: boolean;
+  task_execution?: TaskExecutionContext;
   sandbox_override?: string;
   danger_authority?: {
     danger_full_access_authorized: true;
@@ -104,15 +114,35 @@ async function executeDirectOperation(opts: {
       exit_code: 1,
     };
   }
-  const executed = await executeTaskRunnerExecution({
+  const taskCommand = await loadTaskCommandContext({
     ctx: input.command,
-    cwd: input.ctx.cwd,
-    rootOverride: input.ctx.rootOverride ?? null,
-    task_id: operation.params.taskId,
-    ...(input.include_remote ? { include_remote: true } : {}),
-    ...(input.danger_authority ? { danger_authority: input.danger_authority } : {}),
-    ...(input.sandbox_override ? { sandbox_override: input.sandbox_override } : {}),
+    taskIds: [operation.params.taskId],
   });
+  const allocation = await allocateTaskWorkspace({
+    ctx: taskCommand.command,
+    execution: taskCommand.execution,
+  });
+  let executed: Awaited<ReturnType<typeof executeTaskRunnerExecution>>;
+  try {
+    const workspaceTaskCommand = await loadTaskCommandContext({
+      ctx: taskCommand.command,
+      taskIds: [operation.params.taskId],
+      baseRef: taskCommand.execution.base_ref,
+      baseSha: taskCommand.execution.base_sha,
+    });
+    executed = await executeTaskRunnerExecution({
+      ctx: workspaceTaskCommand.command,
+      cwd: allocation.workspace_root,
+      rootOverride: null,
+      task_id: operation.params.taskId,
+      ...(input.include_remote ? { include_remote: true } : {}),
+      ...(input.danger_authority ? { danger_authority: input.danger_authority } : {}),
+      ...(input.sandbox_override ? { sandbox_override: input.sandbox_override } : {}),
+      task_execution: workspaceTaskCommand.execution,
+    });
+  } finally {
+    await releaseWorkspaceLease(allocation.lease);
+  }
   const lifecycle = projectExecutedTaskRunnerLifecycleResult({
     task_id: operation.params.taskId,
     execution: executed,
@@ -351,6 +381,13 @@ export async function superviseDirectTaskRun(
     }
     const reconciliation = await recordObservedTaskExecutionContract({
       command: input.command,
+      execution:
+        input.task_execution ??
+        (await resolveTaskExecutionContext({
+          ctx: input.command,
+          tasks: [task],
+          primaryTaskId: task.id,
+        })),
       task,
       changed_paths: implementation.evidence.changed_paths,
       observed_external_effects: observedExternalEffectsFromRunnerResult(lifecycle.result),

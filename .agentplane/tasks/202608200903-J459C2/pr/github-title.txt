@@ -1,0 +1,1 @@
+🚧 J459C2 task: Make task execution authority local and direct execution workspace-safe [202608200903-J459C2]

@@ -1,0 +1,63 @@
+---
+title: "Task Execution Authority"
+description: "Developer rules for task-local lifecycle authority, workspace isolation, verification, and direct integration."
+---
+
+## Invariants
+
+Repository mode is policy. The selected task route is lifecycle authority. Workspace allocation is
+a separate physical-execution decision.
+
+Use these rules in CLI, runtime, runner, evaluator, verification, finish, PR, and integration code:
+
+1. Do not read `ctx.config.workflow_mode` to choose task lifecycle behavior.
+2. Do not infer workspace isolation from `direct` or `branch_pr`.
+3. Do not run two writable agents in one checkout.
+4. Load task lifecycle state through `TaskCommandContext`.
+5. Pass `TaskExecutionContext` to route-sensitive APIs.
+6. Use `WorkspaceAllocationContext` for physical execution and cleanup.
+7. Use `TaskExecutionContext.base_ref` and `base_sha` for diff, quality, verification, and finish.
+8. Keep absolute workspace paths out of semantic identities.
+9. Block undeclared external capabilities before runner invocation; retain post-run observation as
+   defense in depth.
+10. Integrate direct candidates through the serialized queue, never by concurrent base writes.
+
+## Loading sequence
+
+Task commands use a two-phase load:
+
+1. read the minimal task route identity;
+2. resolve selected mode against repository policy and task risk/effects;
+3. locate the route-authoritative task workspace or snapshot;
+4. reload authoritative task state;
+5. build the final immutable `TaskExecutionContext`.
+
+Do not emulate this by cloning or mutating repository config.
+
+## Route and capability changes
+
+`auto` is the creation default. High-risk effects, material uncertainty, or the repository
+`branch_pr` floor can raise a direct preference to `branch_pr`. Preserve reason codes, implementation
+commit, changed paths, and evidence when escalation happens so the branch supervisor can continue
+from a handoff instead of repeating implementation.
+
+When a known direct runner request includes network or external side-effect capability, stop before
+adapter creation with `side_effect_requires_isolation`. Re-resolve the route and reuse the preserved
+implementation only after branch authority is established.
+
+## Verification and finish
+
+New lifecycle qualification requires verification input v4. Older records are audit-only. Consume
+the assessment object rather than a boolean so the CLI can report the exact invalidation reason and
+recovery action.
+
+Finish loads task execution authority before planning. Its closeout journal progresses through
+`prepared`, `task_state_written`, `close_commit_written`, and `completed`; failures persist
+`recovery_required`. Recovery must resume or reconcile that journal rather than guessing whether a
+partial close succeeded.
+
+## References
+
+- [ADR 0014: Task Execution Authority](../adr/0014-task-execution-authority.md)
+- [ADR 0015: Task Workspace Isolation](../adr/0015-task-workspace-isolation.md)
+- [ADR 0016: Serialized Direct Integration](../adr/0016-serialized-direct-integration.md)

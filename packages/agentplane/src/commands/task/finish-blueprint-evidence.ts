@@ -3,6 +3,7 @@ import path from "node:path";
 import { CliError } from "../../shared/errors.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { gitIsAncestor } from "@agentplaneorg/core/git";
+import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { isTaskSetLocalOnlyAdvance } from "../shared/task-local-freshness.js";
@@ -69,7 +70,9 @@ export async function assertQualityReviewBeforeFinish(opts: {
   loadedTasks: readonly LoadedFinishTask[];
   taskCommitInfo: ResolvedCommitInfo | null;
   implementationCommitInfo: ResolvedCommitInfo | null;
+  workflowMode?: TaskExecutionRouteMode;
 }): Promise<void> {
+  const workflowMode = opts.workflowMode ?? opts.ctx.config.workflow_mode;
   const taskIds = opts.loadedTasks.map(({ taskId }) => taskId);
   for (const loaded of opts.loadedTasks) {
     const snapshot = await checkTaskBlueprintSnapshotDrift({
@@ -100,7 +103,7 @@ export async function assertQualityReviewBeforeFinish(opts: {
           gitRoot: opts.ctx.resolvedProject.gitRoot,
           workflowDir: opts.ctx.config.paths.workflow_dir,
           taskIds,
-          workflowMode: opts.ctx.config.workflow_mode,
+          workflowMode,
         },
         snapshotRef: expectedSha,
       });

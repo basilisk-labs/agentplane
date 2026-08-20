@@ -1,5 +1,6 @@
 import type { CommandContext } from "../shared/task-backend.js";
 import type { TaskStore } from "../shared/task-store.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
 export type FinishOptions = {
   ctx?: CommandContext;
@@ -64,6 +65,7 @@ export type FinishStructuredFinding = {
 };
 
 export type FinishExecutionPlan = {
+  execution: TaskExecutionContext;
   useStore: boolean;
   store: TaskStore | null;
   statusCommitRequested: boolean;
@@ -78,3 +80,10 @@ export type FinishExecutionPlan = {
   preMergeClosure: boolean;
   closeAdditionalTaskIds: string[];
 };
+
+export function resolveFinishWorkflowMode(
+  plan: FinishExecutionPlan,
+  ctx: CommandContext,
+): "direct" | "branch_pr" {
+  return plan.execution?.selected_mode ?? ctx.config.workflow_mode;
+}

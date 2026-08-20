@@ -408,13 +408,15 @@ export async function resolvePrFlowStatus(opts: {
   rootOverride?: string;
   integrationQueueRoot?: string | null;
   taskId: string;
+  workflowMode?: "direct" | "branch_pr";
 }): Promise<PrFlowStatusReport> {
   const { resolved, config, prDir } = await resolvePrPaths({ ...opts, ctx: opts.ctx });
-  if (config.workflow_mode !== "branch_pr") {
+  const workflowMode = opts.workflowMode ?? config.workflow_mode;
+  if (workflowMode !== "branch_pr") {
     throw new CliError({
       exitCode: exitCodeForError("E_USAGE"),
       code: "E_USAGE",
-      message: `Invalid workflow_mode: ${config.workflow_mode} (expected branch_pr)`,
+      message: `Invalid workflow_mode: ${workflowMode} (expected branch_pr)`,
     });
   }
   const { task } = await loadBackendTask({

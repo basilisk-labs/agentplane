@@ -1,19 +1,11 @@
 import { execFile } from "node:child_process";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { promisify } from "node:util";
-import {
-  gitEnv,
-  gitIsAncestor,
-  gitMergeBase,
-  gitRevParse,
-  resolveBaseBranch,
-} from "@agentplaneorg/core/git";
+import { gitEnv, gitIsAncestor, gitMergeBase, gitRevParse } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { CliError } from "../../shared/errors.js";
-import { parsePrMetaForwardCompatible } from "../shared/pr-meta.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
 const execFileNative = promisify(execFile);
 
@@ -75,41 +67,14 @@ export async function resolveEvaluatorDiffBase(opts: {
   }
 }
 
-export async function resolveEvaluatorDiffBaseRef(opts: {
+export function resolveEvaluatorDiffBaseRef(opts: {
   ctx: CommandContext;
   taskId: string;
-}): Promise<string | null> {
-  const gitRoot = opts.ctx.resolvedProject.gitRoot;
-  const metaPath = path.join(
-    gitRoot,
-    opts.ctx.config.paths.workflow_dir,
-    opts.taskId,
-    "pr",
-    "meta.json",
-  );
-  try {
-    const meta = parsePrMetaForwardCompatible(await readFile(metaPath, "utf8"), opts.taskId);
-    if (meta.base?.trim()) return meta.base.trim();
-  } catch (error) {
-    if (
-      (error as NodeJS.ErrnoException | null)?.code !== "ENOENT" &&
-      opts.ctx.config.workflow_mode === "branch_pr"
-    ) {
-      throw new CliError({
-        code: "E_VALIDATION",
-        message: `Unable to read the evaluator diff base from task PR metadata: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-      });
-    }
-  }
-  const base = await resolveBaseBranch({
-    cwd: gitRoot,
-    rootOverride: gitRoot,
-    cliBaseOpt: null,
-    mode: opts.ctx.config.workflow_mode,
-  }).catch(() => null);
-  return base?.trim() ?? null;
+  execution: TaskExecutionContext;
+}): string | null {
+  void opts.ctx;
+  void opts.taskId;
+  return opts.execution.base_ref.trim() || null;
 }
 
 export async function renderActualDiff(

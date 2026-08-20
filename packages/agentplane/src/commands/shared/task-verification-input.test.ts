@@ -5,8 +5,10 @@ import { promisify } from "node:util";
 
 import { mkGitRepoRootWithBranch } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
 import {
+  resolveLegacyVerificationInputIdentity,
   resolveVerificationInputIdentity,
   verificationInputInvalidationReason,
   type VerificationEnvironment,
@@ -42,7 +44,7 @@ async function identity(
   verifySteps = "Run tests.",
   verificationDetails?: string,
 ) {
-  const value = await resolveVerificationInputIdentity({
+  const value = await resolveLegacyVerificationInputIdentity({
     gitRoot: root,
     workflowDir: ".agentplane/tasks",
     taskIds: [TASK_ID],
@@ -58,7 +60,7 @@ async function identity(
 }
 
 async function directIdentity(root: string, targetSha: string) {
-  const value = await resolveVerificationInputIdentity({
+  const value = await resolveLegacyVerificationInputIdentity({
     gitRoot: root,
     workflowDir: ".agentplane/tasks",
     taskIds: [TASK_ID],
@@ -180,11 +182,11 @@ describe("task verification input identity", () => {
       environment: ENVIRONMENT,
       baseRef: "main",
     };
-    const before = await resolveVerificationInputIdentity({
+    const before = await resolveLegacyVerificationInputIdentity({
       ...base,
       verificationContractDigest: `sha256:${"a".repeat(64)}`,
     });
-    const after = await resolveVerificationInputIdentity({
+    const after = await resolveLegacyVerificationInputIdentity({
       ...base,
       verificationContractDigest: `sha256:${"b".repeat(64)}`,
     });
@@ -194,6 +196,56 @@ describe("task verification input identity", () => {
     expect(before.digest).not.toBe(after.digest);
     expect(verificationInputInvalidationReason({ recorded: before, current: after })).toBe(
       "verification_contract_changed",
+    );
+  });
+
+  it("binds verification v4 to the frozen task execution context", async () => {
+    const { root, implementationSha } = await makeTaskBranch();
+    const { stdout } = await execFileAsync("git", ["rev-parse", "main"], { cwd: root });
+    const execution = {
+      schema_version: 1,
+      primary_task_id: TASK_ID,
+      task_ids: [TASK_ID],
+      repository_mode: "direct",
+      selected_mode: "branch_pr",
+      requested_mode: "auto",
+      route_source: "execution_contract",
+      reason_codes: ["risk_publish"],
+      base_ref: "main",
+      base_sha: stdout.trim(),
+      authoritative_task_source: "task_branch_snapshot",
+    } satisfies TaskExecutionContext;
+    const before = await resolveVerificationInputIdentity({
+      gitRoot: root,
+      workflowDir: ".agentplane/tasks",
+      taskIds: [TASK_ID],
+      targetSha: implementationSha,
+      verifySteps: "Run tests.",
+      verificationContractDigest: `sha256:${"a".repeat(64)}`,
+      environment: ENVIRONMENT,
+      execution,
+    });
+    const after = await resolveVerificationInputIdentity({
+      gitRoot: root,
+      workflowDir: ".agentplane/tasks",
+      taskIds: [TASK_ID],
+      targetSha: implementationSha,
+      verifySteps: "Run tests.",
+      verificationContractDigest: `sha256:${"a".repeat(64)}`,
+      environment: ENVIRONMENT,
+      execution: { ...execution, route_source: "execution_route" },
+    });
+    if (!before || !after) throw new Error("expected execution-bound verification inputs");
+
+    expect(before.schema_version).toBe(4);
+    expect(before.execution).toMatchObject({
+      primary_task_id: TASK_ID,
+      base_ref: "main",
+      base_sha: stdout.trim(),
+      selected_mode: "branch_pr",
+    });
+    expect(verificationInputInvalidationReason({ recorded: before, current: after })).toBe(
+      "verification_route_context_changed",
     );
   });
 
@@ -276,7 +328,7 @@ describe("task verification input identity", () => {
     ].join("\n");
     const fromFilesystem = await identity(root, evidenceSha, "Run tests.", details);
     await unlink(path.join(root, evidencePath));
-    const fromGit = await resolveVerificationInputIdentity({
+    const fromGit = await resolveLegacyVerificationInputIdentity({
       gitRoot: root,
       workflowDir: ".agentplane/tasks",
       taskIds: [TASK_ID],
@@ -310,7 +362,7 @@ describe("task verification input identity", () => {
     await execFileAsync("git", ["rebase", "main"], { cwd: root });
     const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
     const contextChanged = await identity(root, stdout.trim());
-    const environmentChanged = await resolveVerificationInputIdentity({
+    const environmentChanged = await resolveLegacyVerificationInputIdentity({
       gitRoot: root,
       workflowDir: ".agentplane/tasks",
       taskIds: [TASK_ID],

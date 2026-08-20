@@ -4,6 +4,7 @@ import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 import type { StateFingerprint } from "@agentplaneorg/core/schemas";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import { isRecord } from "../../shared/guards.js";
 import type {
   WorkflowOperation,
@@ -14,7 +15,7 @@ import type {
 /** Durable task extension owned by the formal workflow control plane. */
 export const SIDE_EFFECT_AUTHORITY_EXTENSION_KEY = "agentplane.side_effect_authority";
 
-type SideEffectClass =
+export type SideEffectClass =
   | "local_reversible"
   | "external_reversible"
   | "external_high_risk"
@@ -147,6 +148,50 @@ export type WorkflowAuthorityDecision =
       requirement: AuthorityRequirement;
       reason: string;
     };
+
+export type WorkflowOperationCapabilityDecision =
+  | { state: "allowed"; effect_class: SideEffectClass }
+  | {
+      state: "escalation_required";
+      effect_class: SideEffectClass;
+      from: "direct";
+      to: "branch_pr";
+      reason_code: "side_effect_requires_isolation";
+      requires_approval: boolean;
+    }
+  | {
+      state: "approval_required";
+      effect_class: "semantic_decision";
+      reason_code: "semantic_decision_user_only";
+    };
+
+export function assessWorkflowOperationCapability(opts: {
+  execution: Pick<TaskExecutionContext, "selected_mode">;
+  operationId: WorkflowOperationId;
+}): WorkflowOperationCapabilityDecision {
+  const requirement = WORKFLOW_OPERATION_AUTHORITY_POLICY[opts.operationId];
+  if (requirement.class === "semantic_decision") {
+    return {
+      state: "approval_required",
+      effect_class: requirement.class,
+      reason_code: "semantic_decision_user_only",
+    };
+  }
+  if (
+    opts.execution.selected_mode === "direct" &&
+    (requirement.class === "external_reversible" || requirement.class === "external_high_risk")
+  ) {
+    return {
+      state: "escalation_required",
+      effect_class: requirement.class,
+      from: "direct",
+      to: "branch_pr",
+      reason_code: "side_effect_requires_isolation",
+      requires_approval: requirement.requiresAuthority,
+    };
+  }
+  return { state: "allowed", effect_class: requirement.class };
+}
 
 function sha256(value: unknown): string {
   const canonical = JSON.stringify(canonicalizeJson(value));

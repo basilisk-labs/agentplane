@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608200903-J459C2/make-task-execution-authority-local-and-direct-e",
+  "created_at": "2026-08-20T15:49:58.682Z",
+  "diffstat_sha256": "sha256:dfd4235ebdfe6c0007756991d5e67e71ab36e81647da30782acbbadbe93d06e2",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608200903-J459C2",
+  "updated_at": "2026-08-20T15:49:58.682Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

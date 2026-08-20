@@ -4,6 +4,7 @@ import { realpath } from "node:fs/promises";
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import { CliError } from "../../shared/errors.js";
 import { readRecipeRunProfile } from "../adapters/recipe-run-profile.js";
 import { normalizeRecipeArtifactPrefixes } from "../result-manifest-policy.js";
@@ -16,6 +17,34 @@ import { RUNNER_DANGER_FULL_ACCESS_SANDBOX, type RunnerContextBundle } from "../
 
 function isEnforcedCapabilityLevel(level: string | undefined): boolean {
   return level === "native" || level === "wrapper";
+}
+
+export function assertTaskRunnerPreExecutionCapabilities(opts: {
+  execution: Pick<TaskExecutionContext, "selected_mode">;
+  taskId: string;
+  network: "deny" | "allowed" | "allowlisted";
+  externalSideEffects: readonly string[];
+}): void {
+  if (opts.execution.selected_mode !== "direct") return;
+  const requestedCapabilities = [
+    ...(opts.network === "deny" ? [] : ["network_read"]),
+    ...opts.externalSideEffects,
+  ];
+  if (requestedCapabilities.length === 0) return;
+  throw new CliError({
+    exitCode: exitCodeForError("E_VALIDATION"),
+    code: "E_VALIDATION",
+    message:
+      `${opts.taskId}: direct execution cannot start with external capabilities ` +
+      `${requestedCapabilities.join(", ")}; resolve the task route as branch_pr before invoking the runner.`,
+    context: {
+      reason_code: "side_effect_requires_isolation",
+      task_id: opts.taskId,
+      selected_mode: opts.execution.selected_mode,
+      required_mode: "branch_pr",
+      requested_capabilities: requestedCapabilities,
+    },
+  });
 }
 
 export function assertRunnerPolicyCompatibility(bundle: RunnerContextBundle): void {

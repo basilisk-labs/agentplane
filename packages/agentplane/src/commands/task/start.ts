@@ -8,6 +8,7 @@ import { loadCommandContext, type CommandContext } from "../shared/task-backend.
 import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
 import { writeTaskBlueprintResolvedSnapshot } from "../blueprint/snapshot-artifact.js";
 import { withWorkflowRouteBaseline } from "../shared/workflow-step-policy-scope.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 
 import {
   applyTaskStatusTransitionCommand,
@@ -67,9 +68,14 @@ function assertStartDocRequirements(task: TaskData, config: CommandContext["conf
 
 export async function cmdStart(opts: TaskTransitionCommentCommandOptions): Promise<number> {
   try {
-    const ctx =
+    const initialCtx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const taskCommand = opts.taskExecution
+      ? { command: initialCtx, execution: opts.taskExecution }
+      : await loadTaskCommandContext({ ctx: initialCtx, taskIds: [opts.taskId] });
+    const ctx = taskCommand.command;
+    const workflowMode = taskCommand.execution.selected_mode;
 
     if (opts.force) {
       await ensureActionApproved({
@@ -89,6 +95,7 @@ export async function cmdStart(opts: TaskTransitionCommentCommandOptions): Promi
       rootOverride: opts.rootOverride,
       command: "task start-ready",
       taskId: opts.taskId,
+      workflowMode,
     });
     const preparedComment = prepareTaskTransitionComment({
       body: opts.body,
@@ -155,15 +162,17 @@ export async function cmdStart(opts: TaskTransitionCommentCommandOptions): Promi
       quiet: opts.quiet,
       progressMessage: "task marked DOING; creating commit from start comment",
       resolveExecutorAgent: true,
+      workflowMode,
     });
 
-    if (ctx.config.workflow_mode === "branch_pr") {
+    if (workflowMode === "branch_pr") {
       await ensurePrArtifactsSynced({
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,
         author: opts.author,
+        workflowMode,
       });
     }
 

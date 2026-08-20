@@ -18,10 +18,19 @@ import {
 import { clearDirectWorkLockIfMatches, resolveBranchPrCloseTailState } from "./finish-close.js";
 import { appendFinishStructuredFinding } from "./finish-findings.js";
 import { enforceStatusCommitPolicy } from "./shared.js";
-import type { FinishExecutionPlan, FinishOptions } from "./finish-types.js";
+import {
+  resolveFinishWorkflowMode,
+  type FinishExecutionPlan,
+  type FinishOptions,
+} from "./finish-types.js";
 import { collectIncidentsForLoadedTasks, loadFinishTasks } from "./finish-execute-load.js";
 import { resolveImplementationCommitInfo, resolveTaskCommitInfo } from "./finish-execute-commit.js";
 import { assertCloseCommitCanMutateTaskState, finalizeCloseTail } from "./finish-execute-close.js";
+import {
+  advanceFinishCloseoutJournal,
+  markFinishCloseoutRecoveryRequired,
+  openFinishCloseoutJournal,
+} from "./finish-closeout-journal.js";
 
 export async function executeFinishPlan(opts: {
   ctx: CommandContext;
@@ -32,143 +41,172 @@ export async function executeFinishPlan(opts: {
   if (await shouldSkipAlreadyHandledBranchPrCloseTail({ ctx, options, plan })) {
     return 0;
   }
+  const closeout = await openFinishCloseoutJournal({ ctx, options, plan });
+  let closeoutJournal = closeout.journal;
+  try {
+    await appendStructuredFindingIfNeeded({ ctx, options, plan });
 
-  await appendStructuredFindingIfNeeded({ ctx, options, plan });
-
-  const loadedState = await loadFinishTasks({ ctx, options, plan });
-  assertFinishPhasePolicy({ ctx, loadedTasks: loadedState.loadedTasks });
-  await assertBlueprintEvidenceBeforeFinish({ ctx, loadedTasks: loadedState.loadedTasks });
-  await collectIncidentsForLoadedTasks({
-    ctx,
-    taskIds: options.taskIds,
-    loadedTasks: loadedState.loadedTasks,
-    write: false,
-  });
-
-  const tasksMissingCommit = loadedState.loadedTasks
-    .filter(({ task }) => !existingCommitInfo(task))
-    .map(({ taskId }) => taskId);
-  if (!options.commitFromComment && !options.commit && tasksMissingCommit.length > 0) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: [
-        "finish requires --commit <hash> or existing task commit metadata on every task; implicit HEAD fallback was removed.",
-        `tasks_missing_commit=${tasksMissingCommit.join(", ")}`,
-        "Fix:",
-        "  1) Select the implementation commit explicitly: git log --oneline --decorate -n 10",
-        '  2) Re-run finish with: agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <hash>',
-        "  3) If the implementation is still unstaged, use --commit-from-comment with explicit --commit-allow <path-prefix> instead of relying on HEAD.",
-      ].join("\n"),
-    });
-  }
-
-  if (options.commitFromComment || plan.statusCommitRequested) {
-    enforceStatusCommitPolicy({
-      policy: ctx.config.status_commit_policy,
-      action: "finish",
-      confirmed: options.confirmStatusCommit,
-      quiet: options.quiet,
-      statusFrom: loadedState.primaryStatusFrom ?? "UNKNOWN",
-      statusTo: "DONE",
-    });
-  }
-
-  const taskCommitInfo = await resolveTaskCommitInfo({
-    ctx,
-    options,
-    plan,
-    primaryStatusFrom: loadedState.primaryStatusFrom,
-    primaryTag: loadedState.primaryTag,
-  });
-  const implementationCommitInfo = await resolveImplementationCommitInfo({
-    ctx,
-    options,
-    loadedTasks: loadedState.loadedTasks,
-    taskCommitInfo,
-  });
-  await assertQualityReviewBeforeFinish({
-    ctx,
-    loadedTasks: loadedState.loadedTasks,
-    taskCommitInfo,
-    implementationCommitInfo,
-  });
-
-  await assertCloseCommitCanMutateTaskState({ ctx, options, plan });
-
-  await writeFinishedTasks({
-    ctx,
-    loadedTasks: loadedState.loadedTasks,
-    metaTaskId: plan.metaTaskId,
-    author: options.author,
-    body: options.body,
-    force: options.force,
-    resultProvided: plan.resultProvided,
-    resultSummary: plan.resultSummary,
-    riskLevel: plan.riskLevel,
-    breaking: plan.breaking,
-    taskCommitInfo,
-    implementationCommitInfo,
-  });
-
-  await refreshAcrArtifactsForFinishedTasks({
-    ctx,
-    cwd: options.cwd,
-    rootOverride: options.rootOverride,
-    loadedTasks: loadedState.loadedTasks,
-    taskCommitInfo,
-    author: options.author,
-    noWriteAcr: options.noWriteAcr,
-  });
-
-  emitNoCloseCommitGuidance({ ctx, options, plan });
-
-  const incidentOutcome = await collectIncidentsForLoadedTasks({
-    ctx,
-    taskIds: options.taskIds,
-    loadedTasks: loadedState.loadedTasks,
-    write: true,
-  });
-  const promotedIncidents = incidentOutcome.plans.reduce(
-    (sum, candidate) => sum + candidate.promotable.length,
-    0,
-  );
-
-  await finalizeCloseTail({
-    ctx,
-    options,
-    plan,
-    primaryTaskId: plan.primaryTaskId,
-    promotedIncidents,
-  });
-
-  if (ctx.config.workflow_mode === "direct") {
-    await clearDirectWorkLockIfMatches({
-      agentplaneDir: ctx.resolvedProject.agentplaneDir,
+    const loadedState = await loadFinishTasks({ ctx, options, plan });
+    assertFinishPhasePolicy({ ctx, loadedTasks: loadedState.loadedTasks, plan });
+    await assertBlueprintEvidenceBeforeFinish({ ctx, loadedTasks: loadedState.loadedTasks });
+    await collectIncidentsForLoadedTasks({
+      ctx,
       taskIds: options.taskIds,
+      loadedTasks: loadedState.loadedTasks,
+      write: false,
     });
-  }
 
-  if (!options.quiet) {
-    const incidentPlan = incidentOutcome.plans[0] ?? {
-      candidates: [],
-      skipped: [],
-      promotable: [],
-      duplicates: [],
-    };
-    process.stdout.write(
-      `${renderIncidentCollectionPlanOutcome(incidentPlan, {
-        wrote: promotedIncidents > 0,
-        context: "finish",
-        promotedIds: incidentPlan.promotable.map((item) => item.entry.id),
-        registryPaths: incidentOutcome.registryPaths[0] ?? [],
-        taskId: options.taskIds[0] ?? null,
-      })}\n`,
+    const tasksMissingCommit = loadedState.loadedTasks
+      .filter(({ task }) => !existingCommitInfo(task))
+      .map(({ taskId }) => taskId);
+    if (!options.commitFromComment && !options.commit && tasksMissingCommit.length > 0) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: [
+          "finish requires --commit <hash> or existing task commit metadata on every task; implicit HEAD fallback was removed.",
+          `tasks_missing_commit=${tasksMissingCommit.join(", ")}`,
+          "Fix:",
+          "  1) Select the implementation commit explicitly: git log --oneline --decorate -n 10",
+          '  2) Re-run finish with: agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <hash>',
+          "  3) If the implementation is still unstaged, use --commit-from-comment with explicit --commit-allow <path-prefix> instead of relying on HEAD.",
+        ].join("\n"),
+      });
+    }
+
+    if (options.commitFromComment || plan.statusCommitRequested) {
+      enforceStatusCommitPolicy({
+        policy: ctx.config.status_commit_policy,
+        action: "finish",
+        confirmed: options.confirmStatusCommit,
+        quiet: options.quiet,
+        statusFrom: loadedState.primaryStatusFrom ?? "UNKNOWN",
+        statusTo: "DONE",
+      });
+    }
+
+    const taskCommitInfo = await resolveTaskCommitInfo({
+      ctx,
+      options,
+      plan,
+      primaryStatusFrom: loadedState.primaryStatusFrom,
+      primaryTag: loadedState.primaryTag,
+    });
+    const implementationCommitInfo = await resolveImplementationCommitInfo({
+      ctx,
+      options,
+      loadedTasks: loadedState.loadedTasks,
+      taskCommitInfo,
+    });
+    await assertQualityReviewBeforeFinish({
+      ctx,
+      loadedTasks: loadedState.loadedTasks,
+      taskCommitInfo,
+      implementationCommitInfo,
+      workflowMode: resolveFinishWorkflowMode(plan, ctx),
+    });
+
+    await assertCloseCommitCanMutateTaskState({ ctx, options, plan });
+
+    await writeFinishedTasks({
+      ctx,
+      loadedTasks: loadedState.loadedTasks,
+      metaTaskId: plan.metaTaskId,
+      author: options.author,
+      body: options.body,
+      force: options.force,
+      resultProvided: plan.resultProvided,
+      resultSummary: plan.resultSummary,
+      riskLevel: plan.riskLevel,
+      breaking: plan.breaking,
+      taskCommitInfo,
+      implementationCommitInfo,
+    });
+    closeoutJournal = await advanceFinishCloseoutJournal({
+      path: closeout.path,
+      journal: closeoutJournal,
+      state: "task_state_written",
+    });
+
+    await refreshAcrArtifactsForFinishedTasks({
+      ctx,
+      cwd: options.cwd,
+      rootOverride: options.rootOverride,
+      loadedTasks: loadedState.loadedTasks,
+      taskCommitInfo,
+      author: options.author,
+      noWriteAcr: options.noWriteAcr,
+    });
+
+    emitNoCloseCommitGuidance({ ctx, options, plan });
+
+    const incidentOutcome = await collectIncidentsForLoadedTasks({
+      ctx,
+      taskIds: options.taskIds,
+      loadedTasks: loadedState.loadedTasks,
+      write: true,
+    });
+    const promotedIncidents = incidentOutcome.plans.reduce(
+      (sum, candidate) => sum + candidate.promotable.length,
+      0,
     );
-    process.stdout.write("finished\n");
-  }
 
-  return 0;
+    await finalizeCloseTail({
+      ctx,
+      options,
+      plan,
+      primaryTaskId: plan.primaryTaskId,
+      promotedIncidents,
+    });
+    closeoutJournal = await advanceFinishCloseoutJournal({
+      path: closeout.path,
+      journal: closeoutJournal,
+      state: "close_commit_written",
+    });
+
+    if (resolveFinishWorkflowMode(plan, ctx) === "direct") {
+      await clearDirectWorkLockIfMatches({
+        agentplaneDir: ctx.resolvedProject.agentplaneDir,
+        taskIds: options.taskIds,
+      });
+    }
+
+    if (!options.quiet) {
+      const incidentPlan = incidentOutcome.plans[0] ?? {
+        candidates: [],
+        skipped: [],
+        promotable: [],
+        duplicates: [],
+      };
+      process.stdout.write(
+        `${renderIncidentCollectionPlanOutcome(incidentPlan, {
+          wrote: promotedIncidents > 0,
+          context: "finish",
+          promotedIds: incidentPlan.promotable.map((item) => item.entry.id),
+          registryPaths: incidentOutcome.registryPaths[0] ?? [],
+          taskId: options.taskIds[0] ?? null,
+        })}\n`,
+      );
+      process.stdout.write("finished\n");
+    }
+
+    await advanceFinishCloseoutJournal({
+      path: closeout.path,
+      journal: closeoutJournal,
+      state: "completed",
+    });
+    return 0;
+  } catch (error) {
+    await markFinishCloseoutRecoveryRequired({
+      path: closeout.path,
+      journal: closeoutJournal,
+      error,
+      taskId: plan.primaryTaskId,
+    }).catch((journalError) => {
+      void journalError;
+    });
+    throw error;
+  }
 }
 
 function emitNoCloseCommitGuidance(opts: {
@@ -177,7 +215,7 @@ function emitNoCloseCommitGuidance(opts: {
   plan: FinishExecutionPlan;
 }): void {
   if (opts.options.quiet) return;
-  if (opts.ctx.config.workflow_mode !== "direct") return;
+  if (resolveFinishWorkflowMode(opts.plan, opts.ctx) !== "direct") return;
   if (opts.options.noCloseCommit !== true) return;
   if (opts.plan.shouldCloseCommit) return;
   process.stdout.write(
@@ -188,6 +226,7 @@ function emitNoCloseCommitGuidance(opts: {
 function assertFinishPhasePolicy(opts: {
   ctx: CommandContext;
   loadedTasks: LoadedFinishTask[];
+  plan: FinishExecutionPlan;
 }): void {
   const engine = new PolicyEngine();
   for (const { taskId, task } of opts.loadedTasks) {
@@ -201,7 +240,7 @@ function assertFinishPhasePolicy(opts: {
           status: task.status,
           planApprovalState: task.plan_approval?.state ?? null,
           verificationState: task.verification?.state ?? null,
-          workflowMode: opts.ctx.config.workflow_mode,
+          workflowMode: resolveFinishWorkflowMode(opts.plan, opts.ctx),
         },
         git: { stagedPaths: [] },
       }),
@@ -214,7 +253,7 @@ export async function shouldSkipAlreadyHandledBranchPrCloseTail(opts: {
   options: FinishOptions;
   plan: FinishExecutionPlan;
 }): Promise<boolean> {
-  if (opts.ctx.config.workflow_mode !== "branch_pr") return false;
+  if (resolveFinishWorkflowMode(opts.plan, opts.ctx) !== "branch_pr") return false;
   if (!opts.plan.shouldCloseCommit || !opts.plan.primaryTaskId) return false;
   if (opts.plan.preMergeClosure) return false;
 

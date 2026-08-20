@@ -112,6 +112,7 @@ export async function ensurePrArtifactsSynced(opts: {
   taskId: string;
   author?: string;
   branch?: string;
+  workflowMode?: "direct" | "branch_pr";
 }): Promise<{
   branch: string;
   prDir: string;
@@ -121,7 +122,8 @@ export async function ensurePrArtifactsSynced(opts: {
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
   const { resolved, config, prDir, metaPath } = await resolvePrPaths({ ...opts, ctx });
-  if (config.workflow_mode !== "branch_pr") return null;
+  const workflowMode = opts.workflowMode ?? config.workflow_mode;
+  if (workflowMode !== "branch_pr") return null;
 
   const resolvedBranch = await resolvePrSyncBranch({
     gitRoot: resolved.gitRoot,
@@ -142,7 +144,7 @@ export async function ensurePrArtifactsSynced(opts: {
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
     cliBaseOpt: null,
-    mode: config.workflow_mode,
+    mode: workflowMode,
   });
   if (resolvedBranch.source === "current" && baseBranch && branch === baseBranch) {
     return null;
@@ -193,6 +195,7 @@ export async function syncPrArtifacts(opts: {
   branch?: string;
   includeTaskIds?: string[];
   remoteMode?: PrRemoteMode;
+  workflowMode?: "direct" | "branch_pr";
 }): Promise<{
   meta: PrMeta;
   prDir: string;
@@ -203,6 +206,7 @@ export async function syncPrArtifacts(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const workflowMode = opts.workflowMode ?? ctx.config.workflow_mode;
     emitTraceEvent({
       component: "pr-sync",
       event: "sync_started",
@@ -213,6 +217,7 @@ export async function syncPrArtifacts(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
+      preferBranchSnapshot: workflowMode === "branch_pr",
     });
     const {
       resolved,
@@ -231,11 +236,11 @@ export async function syncPrArtifacts(opts: {
     );
 
     try {
-      if (config.workflow_mode !== "branch_pr") {
+      if (workflowMode !== "branch_pr") {
         throw new CliError({
           exitCode: exitCodeForError("E_USAGE"),
           code: "E_USAGE",
-          message: workflowModeMessage(config.workflow_mode, "branch_pr"),
+          message: workflowModeMessage(workflowMode, "branch_pr"),
         });
       }
 
@@ -275,7 +280,7 @@ export async function syncPrArtifacts(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride ?? null,
         cliBaseOpt: null,
-        mode: config.workflow_mode,
+        mode: workflowMode,
       });
       const validatedIncludedTaskIds = await validateBranchPrBatchIncludedTasks({
         ctx,

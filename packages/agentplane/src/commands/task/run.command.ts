@@ -38,8 +38,7 @@ import { buildTaskRunExecutionPreview } from "./run-execution-preview.js";
 import { followRunnerLogs } from "./run-logs-follow.js";
 import { superviseBranchTaskRun } from "./branch-task-supervisor.js";
 import { superviseDirectTaskRun } from "./direct-task-supervisor.js";
-import { loadTaskFromContext } from "../shared/task-backend.js";
-import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 
 export {
   makeRunTaskRunResolveEffectHandler,
@@ -107,10 +106,11 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
       const initialCommandCtx = await deps.getPreparationContext("task run", {
         includeRemote: parsed.remote,
       });
-      const commandCtx = withEffectiveTaskWorkflowMode(
-        initialCommandCtx,
-        await loadTaskFromContext({ ctx: initialCommandCtx, taskId: parsed.taskId }),
-      );
+      const taskCommand = await loadTaskCommandContext({
+        ctx: initialCommandCtx,
+        taskIds: [parsed.taskId],
+      });
+      const commandCtx = taskCommand.command;
       const prepared = await prepareTaskRunnerExecution({
         ctx: commandCtx,
         cwd: ctx.cwd,
@@ -120,6 +120,7 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
         ...(parsed.remote ? { include_remote: true } : {}),
         danger_authority: dangerAuthority,
         sandbox_override: parsed.sandbox,
+        task_execution: taskCommand.execution,
       });
       const lifecycle = projectPreparedTaskRunnerLifecycleResult({
         task_id: parsed.taskId,
@@ -143,12 +144,13 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
     const initialCommandCtx = await deps.getExecutionContext("task run", {
       includeRemote: parsed.remote,
     });
-    const commandCtx = withEffectiveTaskWorkflowMode(
-      initialCommandCtx,
-      await loadTaskFromContext({ ctx: initialCommandCtx, taskId: parsed.taskId }),
-    );
+    const taskCommand = await loadTaskCommandContext({
+      ctx: initialCommandCtx,
+      taskIds: [parsed.taskId],
+    });
+    const commandCtx = taskCommand.command;
 
-    if (commandCtx.config?.workflow_mode === "direct") {
+    if (taskCommand.execution.selected_mode === "direct") {
       const supervised = await superviseDirectTaskRun({
         ctx,
         command: commandCtx,
@@ -156,6 +158,7 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
         include_remote: parsed.remote,
         ...(parsed.sandbox ? { sandbox_override: parsed.sandbox } : {}),
         ...(dangerAuthority ? { danger_authority: dangerAuthority } : {}),
+        task_execution: taskCommand.execution,
       });
       if (parsed.json) {
         output.json(supervised);
@@ -178,13 +181,14 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
         : 0;
     }
 
-    if (commandCtx.config?.workflow_mode === "branch_pr") {
+    if (taskCommand.execution.selected_mode === "branch_pr") {
       const supervised = await superviseBranchTaskRun({
         ctx,
         command: commandCtx,
         task_id: parsed.taskId,
         ...(parsed.sandbox ? { sandbox_override: parsed.sandbox } : {}),
         ...(dangerAuthority ? { danger_authority: dangerAuthority } : {}),
+        task_execution: taskCommand.execution,
       });
       if (parsed.json) {
         output.json(supervised);
@@ -216,6 +220,7 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
       ...(parsed.remote ? { include_remote: true } : {}),
       danger_authority: dangerAuthority,
       sandbox_override: parsed.sandbox,
+      task_execution: taskCommand.execution,
     });
     const lifecycle = projectExecutedTaskRunnerLifecycleResult({
       task_id: parsed.taskId,

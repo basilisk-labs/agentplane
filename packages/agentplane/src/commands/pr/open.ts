@@ -4,12 +4,8 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
-import {
-  loadCommandContext,
-  loadTaskFromContext,
-  type CommandContext,
-} from "../shared/task-backend.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import { pushTaskBranchUpstreamIfConfigured } from "./branch-publication.js";
 import { maybeAutoCommitTaskPrArtifacts } from "./internal/auto-commit.js";
@@ -67,14 +63,20 @@ export async function cmdPrOpen(opts: {
     const initialCtx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const commandCtx = withEffectiveTaskWorkflowMode(
-      initialCtx,
-      await loadTaskFromContext({
-        ctx: initialCtx,
-        taskId: opts.taskId,
-        preferBranchSnapshot: true,
-      }),
-    );
+    const taskCommand = await loadTaskCommandContext({
+      ctx: initialCtx,
+      taskIds: [opts.taskId, ...(opts.includeTaskIds ?? [])],
+      primaryTaskId: opts.taskId,
+    });
+    const commandCtx = taskCommand.command;
+    const workflowMode = taskCommand.execution.selected_mode;
+    if (workflowMode !== "branch_pr") {
+      throw new CliError({
+        exitCode: exitCodeForError("E_USAGE"),
+        code: "E_USAGE",
+        message: "PR open requires a branch_pr TaskExecutionContext.",
+      });
+    }
 
     const initialSync = await syncPrArtifacts({
       ctx: commandCtx,
@@ -86,6 +88,7 @@ export async function cmdPrOpen(opts: {
       branch: opts.branch,
       includeTaskIds: opts.includeTaskIds,
       remoteMode: "sync-only",
+      workflowMode,
     });
     if (initialSync.meta.branch) {
       await maybeAutoCommitTaskPrArtifacts({
@@ -128,6 +131,7 @@ export async function cmdPrOpen(opts: {
           branch: opts.branch,
           includeTaskIds: opts.includeTaskIds,
           remoteMode: "auto",
+          workflowMode,
         });
 
     if (!opts.quiet) {

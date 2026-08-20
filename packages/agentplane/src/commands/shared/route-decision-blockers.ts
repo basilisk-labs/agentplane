@@ -1,6 +1,7 @@
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { ConflictReworkPreparation } from "../pr/conflict-rework.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
@@ -184,6 +185,7 @@ async function qualityReviewIsFreshForHead(opts: {
   headSha: string | null;
   batchOwnership: RouteBatchOwnership;
   expectedState: "pass" | "rework";
+  workflowMode: "direct" | "branch_pr";
 }): Promise<boolean> {
   const review = opts.task.quality_review;
   if (review?.state !== opts.expectedState || !hasAcceptedQualityReviewProvenance(review)) {
@@ -203,7 +205,7 @@ async function qualityReviewIsFreshForHead(opts: {
     taskIds,
     headSha: opts.headSha,
     previousEvaluatedSha: review.evaluated_sha,
-    workflowMode: opts.ctx.config.workflow_mode,
+    workflowMode: opts.workflowMode,
   }).catch(() => null);
   return expectedSha === review.evaluated_sha;
 }
@@ -211,6 +213,7 @@ async function qualityReviewIsFreshForHead(opts: {
 async function readTaskPrMeta(opts: {
   ctx: CommandContext;
   taskId: string;
+  workflowMode: "direct" | "branch_pr";
 }): Promise<PrMeta | null> {
   const { content } = await readTaskPrArtifact({
     ctx: opts.ctx,
@@ -222,7 +225,7 @@ async function readTaskPrMeta(opts: {
       "pr",
     ),
     fileName: "meta.json",
-    preferBranchSnapshot: opts.ctx.config.workflow_mode === "branch_pr",
+    preferBranchSnapshot: opts.workflowMode === "branch_pr",
   });
   if (content === null) return null;
   try {
@@ -235,6 +238,7 @@ async function readTaskPrMeta(opts: {
 async function readLocalPreMergeState(opts: {
   ctx: CommandContext;
   taskId: string;
+  workflowMode: "direct" | "branch_pr";
 }): Promise<{ open: boolean }> {
   const meta = await readTaskPrMeta(opts);
   return { open: meta?.status === "OPEN" };
@@ -288,7 +292,8 @@ export async function deriveBlockers(opts: {
   ctx: CommandContext;
   task: TaskData;
   resume: TaskResumeContext;
-  workflowMode: string;
+  workflowMode: "direct" | "branch_pr";
+  execution?: TaskExecutionContext;
   prFlow: PrFlowStatusReport | null;
   batchOwnership: RouteBatchOwnership;
   cleanupProbe: RouteCleanupProbe;
@@ -325,6 +330,7 @@ export async function deriveBlockers(opts: {
   }
   if (opts.workflowMode === "branch_pr") {
     let verificationReason: string | null = null;
+    let verificationRecoveryHint: string | null = null;
     const finalizedDoneTask =
       normalizedTaskStatus === "DONE" &&
       opts.prFlow?.pr.state === "MERGED" &&
@@ -336,12 +342,15 @@ export async function deriveBlockers(opts: {
         opts.task.verification?.state === "ok" && !finalizedDoneTask
           ? await hasAcceptedVerificationForCurrentImplementation({
               ...opts,
+              execution: opts.execution,
               onAssessment: (assessment) => {
                 verificationReason = assessment.reason;
+                verificationRecoveryHint = assessment.recoveryHint;
               },
             })
           : undefined,
       verificationReason,
+      verificationRecoveryHint,
       finalizedDoneTask,
     });
   }
@@ -361,7 +370,11 @@ export async function deriveBlockers(opts: {
     opts.prFlow.branch.name &&
     opts.prFlow.branch.headSha
   ) {
-    const meta = await readTaskPrMeta({ ctx: opts.ctx, taskId: opts.task.id });
+    const meta = await readTaskPrMeta({
+      ctx: opts.ctx,
+      taskId: opts.task.id,
+      workflowMode: opts.workflowMode,
+    });
     const freshness = meta
       ? await assessPreMergeClosureFreshness({
           gitRoot: opts.ctx.resolvedProject.gitRoot,
@@ -393,6 +406,7 @@ export async function deriveBlockers(opts: {
         headSha: opts.prFlow.branch.headSha,
         batchOwnership: opts.batchOwnership,
         expectedState: "pass",
+        workflowMode: opts.workflowMode,
       }))
     ) {
       addBlocker(
@@ -473,6 +487,7 @@ export async function deriveBlockers(opts: {
         headSha: opts.prFlow?.branch.headSha ?? opts.resume.head_sha,
         batchOwnership: opts.batchOwnership,
         expectedState: "rework",
+        workflowMode: opts.workflowMode,
       });
     }
     if (implementationReworkRequired) {
@@ -540,9 +555,14 @@ export async function deriveBlockers(opts: {
           headSha,
           batchOwnership: opts.batchOwnership,
           expectedState: "pass",
+          workflowMode: opts.workflowMode,
         });
         if (reviewIsFresh) {
-          const preMerge = await readLocalPreMergeState({ ctx: opts.ctx, taskId: opts.task.id });
+          const preMerge = await readLocalPreMergeState({
+            ctx: opts.ctx,
+            taskId: opts.task.id,
+            workflowMode: opts.workflowMode,
+          });
           if (opts.prFlow?.pr.state === "OPEN" || preMerge.open) {
             addBlocker(
               blockers,

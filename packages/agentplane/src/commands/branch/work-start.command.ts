@@ -2,9 +2,8 @@ import type { CommandHandler, CommandSpec, CommandCtx } from "../../cli/spec/spe
 import { usageError } from "../../cli/spec/errors.js";
 
 import type { CommandContext } from "../shared/task-backend.js";
-import { loadTaskFromContext } from "../shared/task-backend.js";
 import { cmdWorkStart } from "./index.js";
-import { withEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 
 export type WorkStartParsed = {
   taskId: string;
@@ -72,11 +71,12 @@ export function makeRunWorkStartHandler(
 ): CommandHandler<WorkStartParsed> {
   return async (ctx: CommandCtx, p: WorkStartParsed) => {
     const initialCommandCtx = await getCtx("work start");
-    const commandCtx = withEffectiveTaskWorkflowMode(
-      initialCommandCtx,
-      await loadTaskFromContext({ ctx: initialCommandCtx, taskId: p.taskId }),
-    );
-    const mode = commandCtx.config.workflow_mode;
+    const taskCommand = await loadTaskCommandContext({
+      ctx: initialCommandCtx,
+      taskIds: [p.taskId],
+    });
+    const commandCtx = taskCommand.command;
+    const mode = taskCommand.execution.selected_mode;
     if (mode === "branch_pr" && !p.worktree) {
       throw usageError({
         spec: workStartSpec,
