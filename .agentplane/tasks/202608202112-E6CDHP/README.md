@@ -1,10 +1,10 @@
 ---
 id: "202608202112-E6CDHP"
 title: "Fix live GitLab MR transport and provider-neutral mergeability validation"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,10 @@ plan_approval:
   updated_by: "USER"
   note: "Approved explicitly by Denis in Codex on 2026-08-21 after reviewing the live GitLab findings and remediation plan."
 verification:
-  state: "blocked_external"
-  updated_at: "2026-08-20T22:58:44.826Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1"
+  state: "pending"
+  updated_at: "2026-08-20T23:23:45.089Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 4
 execution_route:
   frozen: true
@@ -66,8 +66,10 @@ execution_contract:
       - "release_metadata"
       - "security_boundary"
     writable_roots:
+      - "packages/agentplane/src/commands/branch"
       - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.ts"
+      - "packages/agentplane/src/commands/pr/integrate"
       - "packages/agentplane/src/commands/pr/internal"
   declaration:
     external_effects:
@@ -80,6 +82,7 @@ execution_contract:
       - "Provider writes remain operator-controlled and will be performed only after local code verification."
       - "The requested GitLab support requires a reviewable branch because it changes hosted mutation and merge routing behavior."
       - "The two defects are narrowly reproduced and can be covered by existing GitLab transport and conflict-route test seams."
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/branch,packages/agentplane/src/commands/pr/integrate; repository_effects=repository_write,source_code,tests"
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -88,12 +91,13 @@ execution_contract:
     reversibility: "recovery_required"
     schema_version: 2
     scope_roots:
+      - "packages/agentplane/src/commands/branch"
       - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.ts"
+      - "packages/agentplane/src/commands/pr/integrate"
       - "packages/agentplane/src/commands/pr/internal"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -108,10 +112,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -132,8 +133,10 @@ execution_contract:
     contract:
       declared:
         components:
+          - "packages/agentplane/src/commands/branch"
           - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
           - "packages/agentplane/src/commands/pr/conflict-rework.ts"
+          - "packages/agentplane/src/commands/pr/integrate"
           - "packages/agentplane/src/commands/pr/internal"
         evidence_requirements:
           - "external_effect:external_write"
@@ -156,7 +159,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:f5dc97b5706d81976944fc1bed745d482896061d7df775b0d6bfa88099fe2113"
+      digest: "sha256:e0281740312f2150ae0c8455630283e4e310985fd1d4d753f8103d3f07f8a288"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -215,7 +218,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
@@ -245,6 +247,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Live GitLab guarded-integration qualification exposed a third provider-specific defect anticipated by the approved plan. Targeted cleanup reconciliation still observes GitHub only, so GitLab tasks report unavailable cleanup identity and state-bound integration authority cannot be granted. Integrate dry-run also hard-codes the hosted route label as github-pr. Recommended action: Approve the bounded provider-neutral scope extension, then replace GitHub-only cleanup observation with the existing change-request abstraction and make the dry-run route label provider-neutral. Requested scope: roots=packages/agentplane/src/commands/branch,packages/agentplane/src/commands/pr/integrate; repository effects=repository_write,source_code,tests; request digest=sha256:70b0582829d15378430386ccb57f65ba52c09d1391cbb78270812d1f50507943. Agentplane receipt: external-agent-blocker/tr_d8407a031f9e61846e4252a349ebf8b2/sha256:f62f8e0237e72867647e6931b38325f6b6d26f83ce0121ee04ad01fe2009d5ca/sha256:70b0582829d15378430386ccb57f65ba52c09d1391cbb78270812d1f50507943."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/branch, packages/agentplane/src/commands/pr/integrate; repository effects: repository_write, source_code, tests."
 events:
   -
     type: "status"
@@ -505,6 +510,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-08-20T23:23:45.089Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:f62f8e0237e72867647e6931b38325f6b6d26f83ce0121ee04ad01fe2009d5ca"
     kind: "task_scope_extension_request"
     request:
@@ -519,7 +526,7 @@ extensions:
         - "packages/agentplane/src/commands/pr/integrate"
     request_digest: "sha256:70b0582829d15378430386ccb57f65ba52c09d1391cbb78270812d1f50507943"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_d8407a031f9e61846e4252a349ebf8b2"
   implementation_commit:
     hash: "6013cfd0a1d6de248b8a55a0e738f3feb0b89358"
