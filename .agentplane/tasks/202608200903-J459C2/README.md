@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 65
+revision: 66
 origin:
   system: "manual"
 depends_on: []
@@ -37,32 +37,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-20T21:58:43.143Z"
+  updated_at: "2026-08-20T22:48:58.403Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 4 typed finding(s)."
-  evaluated_sha: "bf575676346cab8e27c40c30fb0378ddedaf913b"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "060ac45a34d19290b15c772c78853f9436ada951"
   blueprint_digest: "f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518"
   evidence_refs:
-    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-215727699-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-215727699-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/45ec249fe21e51ec372d25efff3021531912c9ab9d63b734e1bae40cf270bec0.md"
-    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-215727699-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-215727699-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-215727699-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-224731708-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-224731708-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/37d0f4a30048f55273b7a631cf0feb49a74944273f2bf933168874098f0dbec0.md"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-224731708-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-224731708-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-224731708-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608200903-J459C2/README.md"
-    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/d2c2c36c120feed7b0eaa3c759db712715a31e3fd08c3bfc177b82d9d157c4a1.patch"
-    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/53fa3e81582cdf8b26a097dee34f53e2d2a88704c8dc302da2277040a82890e8.json"
-    - ".agentplane/tasks/202608200903-J459C2/verification/20260820215715353-4b437de31b81b8de.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/cbf186c8c2f14109f733b76e8e891993dc3c2b2d8b4b0eae3e59596e7263e173.patch"
+    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/994a3ecb372f9473dd7ddc215569b2aef01f4035c9287e0bdde9450a7db5e689.json"
+    - ".agentplane/tasks/202608200903-J459C2/verification/20260820224707328-a676b98cf5e5e615.json"
     - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/a266df3b865d99cb62af6a582bb17bb986f2ecaa45fdbe0c03341b3c6bd67d02.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No unresolved implementation finding in the scoped execution-context plumbing change."
-    - "The finish call site supplies plan.execution and the verification gate requires and forwards it to hasAcceptedVerificationRecord."
-    - "Regression coverage asserts the exact execution context reaches the verification target, while the full supervisor check set passes for implementation SHA bf5756763."
-    - "Residual risk: Hosted provider checks must pass for the exact published pre-merge head."
+    - "Implementation commit 060ac45a34d19290b15c772c78853f9436ada951 removes only unused exports or one unused helper and adds exactly the four generated social images plus their manifest entries."
+    - "The AgentPlane CLI unused-code budget is restored to files=0/0 and total=0/0 while the existing core compatibility baseline remains unchanged."
+    - "Current supervisor evidence binds verification identity v4 to implementation 060ac45a34d19290b15c772c78853f9436ada951 and records all declared checks as passed."
+    - "The full-fast run executed all five groups with ok=true in 592042ms; typecheck, policy routing, both doctor invocations, docs site, lint, formatting, social image consistency, and committed-diff checks passed."
+    - "Residual risk: Hosted checks must still qualify the newly published exact head before integration; this is a lifecycle gate, not an implementation finding."
 token_usage:
   agent_runs: 17
   input_tokens: null
@@ -927,7 +928,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-20T22:47:11.595Z"
+doc_updated_at: "2026-08-20T22:48:58.436Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue."
 sections:

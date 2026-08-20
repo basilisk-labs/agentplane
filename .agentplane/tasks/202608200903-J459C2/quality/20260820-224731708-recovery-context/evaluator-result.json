@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Implementation commit 060ac45a34d19290b15c772c78853f9436ada951 removes only unused exports or one unused helper and adds exactly the four generated social images plus their manifest entries.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/cbf186c8c2f14109f733b76e8e891993dc3c2b2d8b4b0eae3e59596e7263e173.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The AgentPlane CLI unused-code budget is restored to files=0/0 and total=0/0 while the existing core compatibility baseline remains unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/cbf186c8c2f14109f733b76e8e891993dc3c2b2d8b4b0eae3e59596e7263e173.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Current supervisor evidence binds verification identity v4 to implementation 060ac45a34d19290b15c772c78853f9436ada951 and records all declared checks as passed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/cbf186c8c2f14109f733b76e8e891993dc3c2b2d8b4b0eae3e59596e7263e173.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The full-fast run executed all five groups with ok=true in 592042ms; typecheck, policy routing, both doctor invocations, docs site, lint, formatting, social image consistency, and committed-diff checks passed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/cbf186c8c2f14109f733b76e8e891993dc3c2b2d8b4b0eae3e59596e7263e173.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted checks must still qualify the newly published exact head before integration; this is a lifecycle gate, not an implementation finding.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/cbf186c8c2f14109f733b76e8e891993dc3c2b2d8b4b0eae3e59596e7263e173.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
