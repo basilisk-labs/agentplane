@@ -38,7 +38,7 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../commands/evaluator/evaluator-diff-evidence.ts  |  51 +---
  .../evaluator/evaluator-qualification-review.ts    |   4 +-
  .../commands/evaluator/evaluator-review-usecase.ts |  52 +++-
- .../src/commands/integrate-queue-lane.ts           |   5 +-
+ .../src/commands/integrate-queue-lane.ts           |   6 +-
  .../src/commands/integrate-queue-reservation.ts    |  16 ++
  .../src/commands/integrate-queue.command.ts        | 232 +++++++++++++++-
  packages/agentplane/src/commands/pr/flow-status.ts |   6 +-
@@ -46,6 +46,7 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../src/commands/pr/integrate/queue-state.ts       |  18 ++
  .../agentplane/src/commands/pr/internal/sync.ts    |  15 +-
  packages/agentplane/src/commands/pr/open.ts        |  32 ++-
+ .../src/commands/provider-ops-results.test.ts      |  15 +
  .../src/commands/shared/declared-check.test.ts     |   9 +
  .../src/commands/shared/declared-check.ts          |   6 +-
  .../commands/shared/post-commit-pr-artifacts.ts    |   6 +-
@@ -108,7 +109,7 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../src/runtime/workspace-allocation/index.ts      |  11 +
  .../src/runtime/workspace-allocation/lease.ts      |  93 +++++++
  .../src/runtime/workspace-allocation/types.ts      |  27 ++
- 81 files changed, 2902 insertions(+), 389 deletions(-)
+ 82 files changed, 2918 insertions(+), 389 deletions(-)
 ```
 
 </details>

@@ -48,6 +48,21 @@ describe("typed provider and release result renderers", () => {
         text: "queued  T-1 #101 priority=0 branch=task/T-1/work",
       },
     ]);
+
+    const directResult: IntegrationQueueListResult = {
+      ...result,
+      queue: {
+        ...queue,
+        entries: [{ ...queue.entries[0], route: "direct" as const }],
+      },
+      active_entries: [{ ...queue.entries[0], route: "direct" as const }],
+    };
+    expect(renderIntegrationQueueListResult(directResult, false)).toEqual([
+      {
+        kind: "line",
+        text: "queued  T-1 #101 route=direct priority=0 branch=task/T-1/work",
+      },
+    ]);
   });
 
   it("maps a typed doctor outcome to one exit code while keeping audit and disposition out of JSON", () => {
