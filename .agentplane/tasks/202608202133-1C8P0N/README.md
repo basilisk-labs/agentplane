@@ -4,7 +4,7 @@ title: "Add AP-TE Lite to framework agent instructions"
 status: "DOING"
 priority: "normal"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -30,6 +30,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-20T22:13:25.435Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "1fb801edebfc73e67c61045dffa97c1988308f09"
+  blueprint_digest: "863ce2a3407976990cb57312ff9ed13cdf7db6530b6c30a7f89783df781c8d06"
+  evidence_refs:
+    - ".agentplane/tasks/202608202133-1C8P0N/quality/20260820-221121625-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608202133-1C8P0N/quality/20260820-221121625-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608202133-1C8P0N/quality/objects/sha256/32e490d251c57c7d74bd8de39be79a5787e6891e6dd4dfb4235bebab9012e843.md"
+    - ".agentplane/tasks/202608202133-1C8P0N/quality/20260820-221121625-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608202133-1C8P0N/quality/20260820-221121625-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608202133-1C8P0N/quality/20260820-221121625-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608202133-1C8P0N/README.md"
+    - ".agentplane/tasks/202608202133-1C8P0N/quality/objects/sha256/6e8522b299e43580980f85276416a391ba862b9def989aca46089592b50e4ef3.patch"
+    - ".agentplane/tasks/202608202133-1C8P0N/quality/objects/sha256/b99fdbfa29f8565685aabd76cb59eeb784e6557efd0690524a362eb0596c18cb.json"
+    - ".agentplane/tasks/202608202133-1C8P0N/verification/20260820221008324-c2f19ada78788177.json"
+    - ".agentplane/tasks/202608202133-1C8P0N/quality/objects/sha256/8c0eecd5370dcdf48ded00e92bbada5bbad8d3a8ed6eca80343bc2858cb4254d.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The shared prompt contract contains the six approved AP-TE Lite rules and keeps role-specific prompts subordinate to the shared contract."
+    - "The generated asset update is deterministic and the recorded agents, asset freshness, formatting, and policy routing checks all passed."
+    - "Bundled role prompts were audited without a historical rewrite, which matches the explicit task boundary."
+    - "Residual risk: Existing role prompt prose may not be fully normalized until a separately approved historical rewrite or linter is introduced."
 execution_route:
   frozen: true
   reason_codes:

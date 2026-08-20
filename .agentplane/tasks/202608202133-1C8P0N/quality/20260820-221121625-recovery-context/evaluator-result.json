@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The shared prompt contract contains the six approved AP-TE Lite rules and keeps role-specific prompts subordinate to the shared contract.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202133-1C8P0N/quality/objects/sha256/6e8522b299e43580980f85276416a391ba862b9def989aca46089592b50e4ef3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The generated asset update is deterministic and the recorded agents, asset freshness, formatting, and policy routing checks all passed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202133-1C8P0N/quality/objects/sha256/6e8522b299e43580980f85276416a391ba862b9def989aca46089592b50e4ef3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Bundled role prompts were audited without a historical rewrite, which matches the explicit task boundary.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202133-1C8P0N/quality/objects/sha256/6e8522b299e43580980f85276416a391ba862b9def989aca46089592b50e4ef3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: Existing role prompt prose may not be fully normalized until a separately approved historical rewrite or linter is introduced.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608202133-1C8P0N/quality/objects/sha256/6e8522b299e43580980f85276416a391ba862b9def989aca46089592b50e4ef3.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The user accepts convention-only enforcement and no sentence-by-sentence rewrite of existing role prompts in this iteration."
+  ]
+}
