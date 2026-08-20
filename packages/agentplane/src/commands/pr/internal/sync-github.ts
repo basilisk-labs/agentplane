@@ -99,7 +99,7 @@ export function hasCoherentGithubPrMergeability(
   return isSettledGithubPrConflict(mergeability) || isCoherentGithubPrNonConflict(mergeability);
 }
 
-export function parseGithubRepoFromRemoteUrl(remoteUrl: string): string | null {
+function parseGithubRepoFromRemoteUrl(remoteUrl: string): string | null {
   const trimmed = remoteUrl.trim();
   if (!trimmed) return null;
   const httpsMatch = /^https?:\/\/github\.com\/([^/]+)\/([^/]+?)(?:\.git)?\/?$/.exec(trimmed);
@@ -371,16 +371,6 @@ export async function tryLookupExistingGithubPrByBranchPrefix(opts: {
     if (message.trim().length > 0) return null;
     return null;
   }
-}
-
-export function formatGithubPrLink(
-  prNumber: number,
-  prUrl: string | null,
-  verb: "linked to" | "created",
-): string {
-  return prUrl?.trim()
-    ? `${verb} GitHub PR #${prNumber}: ${prUrl.trim()}`
-    : `${verb} GitHub PR #${prNumber}`;
 }
 
 export function shouldPersistObservedGithubPrIdentity(observed: ObservedGithubPr | null): boolean {

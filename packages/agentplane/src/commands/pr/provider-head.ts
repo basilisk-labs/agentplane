@@ -18,7 +18,7 @@ export function isProviderHeadUnavailableError(err: unknown): err is CliError {
   );
 }
 
-export async function requireOpenChangeRequestAtHead(opts: {
+async function requireOpenChangeRequestAtHead(opts: {
   gitRoot: string;
   branch: string;
   base: string;
