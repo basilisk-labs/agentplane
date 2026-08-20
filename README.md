@@ -59,7 +59,7 @@ The `ap` command is the short alias for agent-facing CLI calls.
 ## Run a first task
 
 ```bash
-agentplane task create "Add validation for malformed configuration and cover it with tests"
+agentplane task create "Inspect Agentplane artifacts and summarize what was created"
 agentplane task active
 agentplane task advance <task-id> --agent-json
 ```
