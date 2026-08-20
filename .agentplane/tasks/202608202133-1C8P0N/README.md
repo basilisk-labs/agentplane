@@ -1,10 +1,11 @@
 ---
 id: "202608202133-1C8P0N"
 title: "Add AP-TE Lite to framework agent instructions"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "normal"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -59,6 +60,20 @@ quality_review:
     - "The generated asset update is deterministic and the recorded agents, asset freshness, formatting, and policy routing checks all passed."
     - "Bundled role prompts were audited without a historical rewrite, which matches the explicit task boundary."
     - "Residual risk: Existing role prompt prose may not be fully normalized until a separately approved historical rewrite or linter is introduced."
+token_usage:
+  agent_runs: 4
+  input_tokens: null
+  journal_digest: "sha256:eb490356f874554d49919e317f508fcc1a82ad140642d9d7dc7bd979f602c0d9"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-20T22:15:57.621Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -223,8 +238,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "task_outcome"
 commit:
-  hash: "1b3a79d06829e04bc250e824c42aedad541711f8"
-  message: "🚧 1C8P0N task: add AP-TE Lite to agent instructions"
+  hash: "0f07d8f1386d87d667054fd5da3cde792df8e7e7"
+  message: "🚧 1C8P0N task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -235,6 +250,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed after AP-TE Lite, generated asset, role prompt audit, and required checks passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -264,8 +282,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-20T22:15:57.621Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "0f07d8f1386d87d667054fd5da3cde792df8e7e7"
 doc_version: 3
-doc_updated_at: "2026-08-20T22:10:12.109Z"
+doc_updated_at: "2026-08-20T22:15:57.643Z"
 doc_updated_by: "CODER"
 description: "Replacement for 202608202107-NZ3PDK. Add the approved AP-TE Lite v0 convention to the shared prompt contract, audit bundled role prompts, and refresh the canonical generated built-in asset table. No linter, schema change, controlled dictionary, or historical rewrite."
 sections:
@@ -354,6 +380,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "1fb801edebfc73e67c61045dffa97c1988308f09"
+    message: "🚧 1C8P0N task: add AP-TE Lite to agent instructions"
   workflow_route_baseline:
     start_head_sha: "60be0145753e9e2aecf31f4bbd8471895db13395"
     version: 1
@@ -456,3 +485,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:eb490356f874554d49919e317f508fcc1a82ad140642d9d7dc7bd979f602c0d9`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-20T22:15:57.621Z`
