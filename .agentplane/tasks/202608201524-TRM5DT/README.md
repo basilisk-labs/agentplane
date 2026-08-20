@@ -1,10 +1,11 @@
 ---
 id: "202608201524-TRM5DT"
 title: "Implement provider-neutral GitHub and GitLab change-request lifecycle"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -68,6 +69,20 @@ quality_review:
     - "The rework full local CI exited 0 after build, docs/schema, core tests, docs-site build, workflow lint, 98 Windows platform-critical tests, 101 coverage-guard tests, and the significant coverage contract."
     - "A fresh evaluator run of bun run docs:site:generate:check reports both generated-reference.mdx and llms-full.txt as fresh."
     - "Residual risk: Real GitLab.com and self-managed GitLab behavior still requires hosted qualification under an explicitly authorized external-provider test or release gate."
+token_usage:
+  agent_runs: 7
+  input_tokens: null
+  journal_digest: "sha256:d7e13493f48f3dc5c737e5309bbac820d894aca67b710f8782fd7f4b068444a0"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-20T19:32:53.755Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -424,8 +439,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "bd6d9f8cc17ce45e5be238c7d40847e2c75d035d"
-  message: "🚧 TRM5DT task: apply external agent result"
+  hash: "c2aecf93396e28dc31d3f8c64f425993bf9f81e5"
+  message: "🚧 TRM5DT task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -445,6 +460,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: bd6d9f8cc17c. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -493,9 +511,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-20T19:32:53.755Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "c2aecf93396e28dc31d3f8c64f425993bf9f81e5"
 doc_version: 3
-doc_updated_at: "2026-08-20T19:30:59.104Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-20T19:32:53.772Z"
+doc_updated_by: "CODER"
 description: "Implement universal GitHub/GitLab hosted change-request support in an isolated branch_pr worktree. Preserve current GitHub behavior behind a provider adapter. Resolve provider host/project from the publication Git remote; use existing gh session for GitHub and external glab authentication plus glab api for GitLab without reading or storing tokens. Cover idempotent PR/MR lookup/create/update, normalized metadata, exact-head hosted checks, mergeability and SHA-guarded merge, external-merge reconciliation, typed failures, compatibility migration, docs, and regression/E2E-style CLI fixtures. Do not perform interactive auth, modify credentials, or touch external providers during implementation tests."
 sections:
   Summary: |-
@@ -675,6 +701,7 @@ extensions:
     transition_id: "tr_a5e0b3929c499e6a28f66ab5bf41e9b7"
   implementation_commit:
     hash: "bd6d9f8cc17ce45e5be238c7d40847e2c75d035d"
+    message: "🚧 TRM5DT task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "292b232b3160b22c47c6cc206fade625e9377fed"
     version: 1
@@ -850,3 +877,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/7` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:d7e13493f48f3dc5c737e5309bbac820d894aca67b710f8782fd7f4b068444a0`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-20T19:32:53.755Z`
