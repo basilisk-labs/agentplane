@@ -109,6 +109,30 @@
       "svgSha256": "8ee4b00a9dc22b2390eadf505c6022ce67099f2dbb42775c3f38b0cf667d1758"
     },
     {
+      "route": "/docs/adr/0014-task-execution-authority",
+      "output": "static/img/social/docs/adr/0014-task-execution-authority.png",
+      "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+      "title": "ADR 0014: Task Execution Authority",
+      "svgSha256": "9543f124c060e3cf0426d5ab6e173a73c7e17616237fb213e9d48693328184e1"
+    },
+    {
+      "route": "/docs/adr/0015-task-workspace-isolation",
+      "output": "static/img/social/docs/adr/0015-task-workspace-isolation.png",
+      "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+      "title": "ADR 0015: Task Workspace Isolation",
+      "svgSha256": "119505d7d53bbb8066fffa49f1f1a856664b238b047968da68e033465b5c185b"
+    },
+    {
+      "route": "/docs/adr/0016-serialized-direct-integration",
+      "output": "static/img/social/docs/adr/0016-serialized-direct-integration.png",
+      "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+      "title": "ADR 0016: Serialized Direct Integration",
+      "svgSha256": "ec8b917bc39fa4dc8d2277a4b17ea496f627c35993f4bc29c33f79c396a399e8"
+    },
+    {
       "route": "/docs/archive/v0-3/cli-bug-ledger-v0-3-x",
       "output": "static/img/social/docs/archive/v0-3/cli-bug-ledger-v0-3-x.png",
       "section": "Archive",
@@ -443,6 +467,14 @@
       "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Schema Validation Strategy",
       "svgSha256": "f2fa14f70647e4ae2e5d1c4184907539c32c804811a62032b413e6c5f4609d02"
+    },
+    {
+      "route": "/docs/developer/task-execution-authority",
+      "output": "static/img/social/docs/developer/task-execution-authority.png",
+      "section": "Developer",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+      "title": "Task Execution Authority",
+      "svgSha256": "8f29985e586aa274392b69dfa4608434da3c9056f8c1c6661637a723c4f77602"
     },
     {
       "route": "/docs/developer/testing-and-quality",
