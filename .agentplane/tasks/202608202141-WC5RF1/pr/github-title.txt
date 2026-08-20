@@ -1,1 +1,1 @@
-✅ WC5RF1 task: Improve the root README around the semantic-agent and deterministic-CLI boundary [202608202141-WC5RF1]
+🚧 WC5RF1 task: Improve the root README around the semantic-agent and deterministic-CLI boundary [202608202141-WC5RF1]

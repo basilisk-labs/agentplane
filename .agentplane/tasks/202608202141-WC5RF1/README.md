@@ -2,10 +2,10 @@
 id: "202608202141-WC5RF1"
 title: "Improve the root README around the semantic-agent and deterministic-CLI boundary"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: "User approved the prepared plan in the Codex dialogue on 2026-08-21."
 verification:
   state: "ok"
-  updated_at: "2026-08-20T22:18:08.019Z"
+  updated_at: "2026-08-20T22:43:51.878Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
   state: "pass"
@@ -214,8 +214,8 @@ execution_contract:
       - "repository_effect:repository_write"
       - "task_outcome"
 commit:
-  hash: "28e558d85eaea57a1144c32715b2632b34f98676"
-  message: "🚧 WC5RF1 task: record external evaluator result"
+  hash: "d6c0d58bc70ecf94449ca7427f7371b3675b769b"
+  message: "📝 WC5RF1 docs: restore contract-tested first-task example"
 comments:
   -
     author: "CODER"
@@ -232,6 +232,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The uncommitted README.md change is intentional, scoped implementation rework that addresses the current P1 review thread and should be preserved and committed as part of task 202608202141-WC5RF1."
+  -
+    author: "CODER"
+    body: "Implementation rework committed: restore the contract-tested first-task README example required by the release product contract."
 events:
   -
     type: "status"
@@ -272,9 +275,23 @@ events:
     at: "2026-08-20T22:34:54.259Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The uncommitted README.md change is intentional, scoped implementation rework that addresses the current P1 review thread and should be preserved and committed as part of task 202608202141-WC5RF1."
+  -
+    type: "status"
+    at: "2026-08-20T22:40:22.724Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Implementation rework committed: restore the contract-tested first-task README example required by the release product contract."
+    commit: "d6c0d58bc70ecf94449ca7427f7371b3675b769b"
+  -
+    type: "verify"
+    at: "2026-08-20T22:43:51.878Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-20T22:34:54.304Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-20T22:43:55.452Z"
+doc_updated_by: "CODER"
 description: "Improve the root README around the semantic-agent and deterministic-CLI boundary"
 sections:
   Summary: |-
@@ -335,6 +352,54 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-20T22:43:51.878Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:db1ef94ab77cfe1d02b3f5995262b0482f94697efed012384b6c15b0740196a0, input_digest=sha256:4737bb08d1fedde4acc14112d3e0f9067ad71fa607e46fac03e7794dec432d81
+
+    Details:
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202141-WC5RF1 Verification Contract check docs_contract
+
+    Check: hosted_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202141-WC5RF1 Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202141-WC5RF1 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202141-WC5RF1-improve-the-root-readme-around-the-semantic-agen/.agentplane/tasks/202608202141-WC5RF1/blueprint/resolved-snapshot.json
+    - old_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+    - current_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202141-WC5RF1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608202141-WC5RF1
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -423,6 +488,54 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-20T22:43:51.878Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:db1ef94ab77cfe1d02b3f5995262b0482f94697efed012384b6c15b0740196a0, input_digest=sha256:4737bb08d1fedde4acc14112d3e0f9067ad71fa607e46fac03e7794dec432d81
+
+Details:
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202141-WC5RF1 Verification Contract check docs_contract
+
+Check: hosted_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202141-WC5RF1 Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608202141-WC5RF1/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202141-WC5RF1 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202141-WC5RF1-improve-the-root-readme-around-the-semantic-agen/.agentplane/tasks/202608202141-WC5RF1/blueprint/resolved-snapshot.json
+- old_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+- current_digest: a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202141-WC5RF1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608202141-WC5RF1
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
