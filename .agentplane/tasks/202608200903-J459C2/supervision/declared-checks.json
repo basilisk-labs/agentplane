@@ -1,0 +1,17 @@
+{
+  "checks": [
+    {
+      "command": "ap doctor",
+      "duration_ms": 1,
+      "exit_code": null,
+      "script": null,
+      "stderr_tail": "process command is not in the allowed executable set: ap",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check could not run: ap doctor",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202608200903-J459C2"
+}
