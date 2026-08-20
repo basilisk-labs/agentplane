@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 536cf88f5979b6b1615bb017f780b93816264bc1..343f8f2cc4606b01b7b3dc5fa2c22d1383de5abf",
+      "command": "git diff --check 9b109d10495a224c1e86df3408bb54d03b8418bb..dbd6c6314f054b0c52b1566b3001879a39547253",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,15 +13,28 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 536cf88f5979b6b1615bb017f780b93816264bc1..343f8f2cc4606b01b7b3dc5fa2c22d1383de5abf",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 9b109d10495a224c1e86df3408bb54d03b8418bb..dbd6c6314f054b0c52b1566b3001879a39547253",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
         "M\t.agentplane/tasks/202608200903-J459C2/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608200903-J459C2/pr/github-body.md",
+        "M\t.agentplane/tasks/202608200903-J459C2/pr/github-title.txt",
         "M\t.agentplane/tasks/202608200903-J459C2/pr/meta.json",
         "M\t.agentplane/tasks/202608200903-J459C2/pr/review.md",
-        "M\tscripts/baselines/v0.7-compatibility-candidate.json"
+        "M\tpackages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-evidence-compaction.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-test-helpers.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
+        "M\tpackages/agentplane/src/commands/task/mutation-parity.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/start.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.unit.test.ts",
+        "M\tscripts/baselines/v0.7-compatibility-candidate.json",
+        "M\tscripts/checks/check-compatibility-contract-baseline.mjs"
       ]
     },
     {
@@ -31,8 +44,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "536cf88f5979b6b1615bb017f780b93816264bc1",
-  "implementation_commit": "343f8f2cc4606b01b7b3dc5fa2c22d1383de5abf",
+  "execution_base_commit": "9b109d10495a224c1e86df3408bb54d03b8418bb",
+  "implementation_commit": "dbd6c6314f054b0c52b1566b3001879a39547253",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],

@@ -6,14 +6,14 @@ Created: 2026-08-20T15:49:58.682Z
 
 - Task: `202608200903-J459C2`
 - Title: Make task execution authority local and direct execution workspace-safe
-- Status: DOING
+- Status: BLOCKED
 - Branch: `task/202608200903-J459C2/make-task-execution-authority-local-and-direct-e`
 - Canonical task record: `.agentplane/tasks/202608200903-J459C2/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: blocked_external
+- Note: Rework: Declared check failed: bun run ci:local:fast
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
