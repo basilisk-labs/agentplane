@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608200903-J459C2",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-20T21:58:43.143Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 4 typed finding(s).",
+  "evaluated_sha": "bf575676346cab8e27c40c30fb0378ddedaf913b",
+  "blueprint_digest": "f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518",
+  "findings": [
+    "No unresolved implementation finding in the scoped execution-context plumbing change.",
+    "The finish call site supplies plan.execution and the verification gate requires and forwards it to hasAcceptedVerificationRecord.",
+    "Regression coverage asserts the exact execution context reaches the verification target, while the full supervisor check set passes for implementation SHA bf5756763.",
+    "Residual risk: Hosted provider checks must pass for the exact published pre-merge head."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/d2c2c36c120feed7b0eaa3c759db712715a31e3fd08c3bfc177b82d9d157c4a1.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
