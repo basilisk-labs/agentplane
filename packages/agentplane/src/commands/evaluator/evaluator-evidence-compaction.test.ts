@@ -3,14 +3,21 @@ import path from "node:path";
 import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
-import { addTask, commitPath, prepareTypedReview } from "./evaluator-test-helpers.js";
+import {
+  addTask,
+  commitPath,
+  freezeTaskExecutionBase,
+  prepareTypedReview,
+} from "./evaluator-test-helpers.js";
 
 describe("evaluator evidence compaction", () => {
   it("stores repeated immutable inputs once and keeps review directories compact", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const taskId = "202605240900-EVCP";
+    await commitPath(root, "README.md", "base\n", "chore: establish base");
     await addTask(root, taskId);
+    await freezeTaskExecutionBase(root, taskId);
     await commitPath(
       root,
       "src/large-review-target.ts",

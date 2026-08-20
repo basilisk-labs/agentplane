@@ -6,14 +6,14 @@ Created: 2026-08-20T15:49:58.682Z
 
 - Task: `202608200903-J459C2`
 - Title: Make task execution authority local and direct execution workspace-safe
-- Status: BLOCKED
+- Status: DOING
 - Branch: `task/202608200903-J459C2/make-task-execution-authority-local-and-direct-e`
 - Canonical task record: `.agentplane/tasks/202608200903-J459C2/README.md`
 
 ## Verification
 
-- State: blocked_external
-- Note: Compatibility provenance enforcement requires a bounded scripts/checks scope extension; full-fast also exposed parallel cloud-backend failures for focused diagnosis.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -36,10 +36,16 @@ Created: 2026-08-20T15:49:58.682Z
  docs/developer/task-execution-authority.mdx        |  63 +++++
  ...un-cli.core.route-decision.verification.test.ts |   2 +-
  .../src/cli/run-cli.core.tasks.create.test.ts      |  38 +++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   5 +-
+ .../branch/cleanup-merged-provider-rebase.test.ts  |   4 +-
  .../src/commands/branch/work-start.command.ts      |  14 +-
  .../commands/evaluator/evaluator-diff-evidence.ts  |  51 +---
+ .../evaluator-evidence-compaction.test.ts          |   9 +-
  .../evaluator/evaluator-qualification-review.ts    |   4 +-
- .../commands/evaluator/evaluator-review-usecase.ts |  52 +++-
+ .../commands/evaluator/evaluator-review-usecase.ts |  96 ++++++-
+ .../evaluator/evaluator-run.command.test.ts        |   2 +-
+ .../commands/evaluator/evaluator-test-helpers.ts   |  27 ++
+ .../evaluator-verification-contract.test.ts        |   9 +-
  .../src/commands/integrate-queue-lane.ts           |   6 +-
  .../src/commands/integrate-queue-reservation.ts    |  16 ++
  .../src/commands/integrate-queue.command.ts        | 232 +++++++++++++++-
@@ -68,6 +74,7 @@ Created: 2026-08-20T15:49:58.682Z
  .../task/branch-task-supervisor-operations.ts      |   7 +-
  .../src/commands/task/branch-task-supervisor.ts    |   2 +
  .../src/commands/task/complete.command.ts          |  12 +-
+ .../commands/task/direct-task-supervisor.test.ts   |  24 +-
  .../src/commands/task/direct-task-supervisor.ts    |  51 +++-
  .../external-agent-implementation-authority.ts     |   7 +
  .../src/commands/task/finish-blueprint-evidence.ts |   5 +-
@@ -84,16 +91,19 @@ Created: 2026-08-20T15:49:58.682Z
  .../src/commands/task/finish.state.unit.test.ts    |  15 +
  .../commands/task/finish.validation.unit.test.ts   |  15 +
  .../agentplane/src/commands/task/handoff.shared.ts |  17 +-
+ .../src/commands/task/mutation-parity.unit.test.ts |  43 +++
  packages/agentplane/src/commands/task/new.spec.ts  |   8 +-
  packages/agentplane/src/commands/task/new.ts       |   2 +-
  .../agentplane/src/commands/task/run.command.ts    |  29 +-
  .../src/commands/task/shared/transitions.ts        |  18 +-
  .../agentplane/src/commands/task/start-ready.ts    |  14 +-
  packages/agentplane/src/commands/task/start.ts     |  13 +-
+ .../src/commands/task/start.unit.test.ts           |  15 +
  .../task-execution-contract-observation.test.ts    |  24 +-
  .../task/task-execution-contract-observation.ts    |  10 +-
  .../src/commands/task/verify-record-execute.ts     |  62 ++++-
  .../task/verify-record-observed-changes.ts         |   8 +-
+ .../src/commands/task/verify-record.unit.test.ts   |  43 +++
  .../agentplane/src/runner/context/task-context.ts  |   3 +-
  .../src/runner/usecases/agent-work-order.ts        |   5 +-
  .../task-run-authority.capabilities.test.ts        |  52 ++++
@@ -112,7 +122,8 @@ Created: 2026-08-20T15:49:58.682Z
  .../src/runtime/workspace-allocation/lease.ts      |  93 +++++++
  .../src/runtime/workspace-allocation/types.ts      |  27 ++
  .../baselines/v0.7-compatibility-candidate.json    |  24 +-
- 83 files changed, 2933 insertions(+), 398 deletions(-)
+ .../check-compatibility-contract-baseline.mjs      |  10 +-
+ 94 files changed, 3155 insertions(+), 411 deletions(-)
 ```
 
 </details>

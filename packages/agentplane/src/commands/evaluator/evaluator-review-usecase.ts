@@ -1,4 +1,5 @@
 import path from "node:path";
+import { readFile } from "node:fs/promises";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import {
@@ -13,6 +14,7 @@ import {
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { recordedTaskImplementationCommitSha } from "../shared/quality-review-target.js";
+import { parsePrMeta } from "../shared/pr-meta.js";
 import { withEvidenceMutationLock } from "../evidence/evidence-mutation-lock.js";
 import {
   assessLocalVerificationRecords,
@@ -160,6 +162,46 @@ type PrepareEvaluatorReviewLockedOptions = Omit<PrepareEvaluatorReviewOptions, "
   execution: TaskExecutionContext;
 };
 
+function hasFrozenTaskBase(task: TaskData): boolean {
+  const stored = task.extensions?.task_execution_context;
+  return (
+    typeof stored === "object" &&
+    stored !== null &&
+    "base_ref" in stored &&
+    typeof stored.base_ref === "string" &&
+    stored.base_ref.trim().length > 0 &&
+    "base_sha" in stored &&
+    typeof stored.base_sha === "string" &&
+    stored.base_sha.trim().length > 0
+  );
+}
+
+async function applyLegacyPrBase(opts: {
+  ctx: CommandContext;
+  task: TaskData;
+  execution: TaskExecutionContext;
+}): Promise<TaskExecutionContext> {
+  if (hasFrozenTaskBase(opts.task)) {
+    return opts.execution;
+  }
+  const metaPath = path.join(
+    opts.ctx.resolvedProject.gitRoot,
+    opts.ctx.config.paths.workflow_dir,
+    opts.task.id,
+    "pr",
+    "meta.json",
+  );
+  try {
+    const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.task.id);
+    const baseSha = meta.base?.trim();
+    return baseSha ? Object.freeze({ ...opts.execution, base_sha: baseSha }) : opts.execution;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return opts.execution;
+    if (opts.execution.selected_mode === "direct") return opts.execution;
+    throw error;
+  }
+}
+
 export async function prepareEvaluatorReview(
   opts: PrepareEvaluatorReviewOptions,
 ): Promise<PreparedEvaluatorReview> {
@@ -172,7 +214,7 @@ export async function prepareEvaluatorReview(
         : await loadTaskFromContext({ ctx, taskId, preferBranchSnapshot: true }),
     ),
   );
-  const execution =
+  const resolvedExecution =
     opts.execution ??
     (await resolveTaskExecutionContext({
       ctx,
@@ -180,6 +222,9 @@ export async function prepareEvaluatorReview(
       primaryTaskId: opts.task.id,
       authoritativeTaskSource: "task_worktree",
     }));
+  const execution =
+    opts.execution ??
+    (await applyLegacyPrBase({ ctx, task: opts.task, execution: resolvedExecution }));
   await assertTaskReviewWorkspaceClean({ ctx, taskId: opts.task.id });
   const gitRoot = ctx.resolvedProject.gitRoot;
   return await withEvidenceMutationLock(
@@ -229,8 +274,7 @@ async function prepareEvaluatorReviewLocked(
   const diffBaseSha = await resolveEvaluatorDiffBase({
     gitRoot,
     evaluatedSha,
-    baseRef:
-      evaluatedSha && opts.execution.selected_mode === "branch_pr" ? opts.execution.base_sha : null,
+    baseRef: evaluatedSha ? opts.execution.base_sha : null,
     allowSingleCommitFallback: opts.execution.selected_mode !== "branch_pr",
   });
   const taskArtifactPrefixes = normalizeBranchPrBatchTaskIds(opts.task, opts.task.id).map(

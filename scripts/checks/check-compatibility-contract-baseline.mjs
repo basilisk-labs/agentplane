@@ -347,6 +347,7 @@ function validateReviewedCandidate({
     "202608112213-NWJCBW",
     "202608171853-X3FD5M",
     "202608181404-CR1F9W",
+    "202608200903-J459C2",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -386,6 +387,7 @@ function validateReviewedCandidate({
     "202608112259-T3ZDDM",
     "202608171853-X3FD5M",
     "202608181404-CR1F9W",
+    "202608200903-J459C2",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -2000,9 +2002,9 @@ function validateReviewedCandidate({
       command: "task new",
       name: "route",
       kind: "string",
-      valueHint: "<repository|auto|direct|branch_pr>",
-      default: "repository",
-      choices: ["repository", "auto", "direct", "branch_pr"],
+      valueHint: "<auto|direct|branch_pr>",
+      default: "auto",
+      choices: ["auto", "direct", "branch_pr"],
     },
     {
       command: "task plan approve",
@@ -2527,7 +2529,7 @@ function validateReviewedCandidate({
       kind: "option",
       command: "task new",
       name: "route",
-      source_task: "202608061646-WCARQG",
+      source_task: "202608200903-J459C2",
     },
     {
       kind: "option",

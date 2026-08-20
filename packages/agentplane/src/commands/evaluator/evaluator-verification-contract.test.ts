@@ -6,7 +6,12 @@ import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 
-import { addTask, commitPath, prepareTypedReview } from "./evaluator-test-helpers.js";
+import {
+  addTask,
+  commitPath,
+  freezeTaskExecutionBase,
+  prepareTypedReview,
+} from "./evaluator-test-helpers.js";
 
 describe("evaluator verification contract", () => {
   it("fails closed when passing verification has no persisted contract", async () => {
@@ -41,7 +46,9 @@ describe("evaluator verification contract", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const taskId = "202605240900-EV26";
+    await commitPath(root, "README.md", "base\n", "chore: establish base");
     await addTask(root, taskId);
+    await freezeTaskExecutionBase(root, taskId);
     await commitPath(root, "src/evaluated.ts", "export const evaluated = true;\n", "feat: target");
     const command = await loadCommandContext({ cwd: root, rootOverride: root });
     const contract = resolveTaskExecutionContract({

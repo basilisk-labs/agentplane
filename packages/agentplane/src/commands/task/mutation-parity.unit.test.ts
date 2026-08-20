@@ -7,6 +7,7 @@ import { renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/c
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData, TaskEvent } from "../../backends/task-backend.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import {
   makeTaskBackendDouble,
   makeTaskCommandContext,
@@ -51,6 +52,23 @@ function mkCtx(backend: TaskBackend, overrides: Partial<CommandContext> = {}): C
     overrides,
     configureConfig: (config) => Object.assign(config, mkConfig()),
   });
+}
+
+function executionContext(ctx: CommandContext, taskId = "T-1"): TaskExecutionContext {
+  const mode = ctx.config.workflow_mode === "branch_pr" ? "branch_pr" : "direct";
+  return {
+    schema_version: 1,
+    primary_task_id: taskId,
+    task_ids: [taskId],
+    repository_mode: mode,
+    selected_mode: mode,
+    requested_mode: mode,
+    route_source: "execution_contract",
+    reason_codes: [],
+    base_ref: "main",
+    base_sha: "a".repeat(40),
+    authoritative_task_source: "base_checkout",
+  };
 }
 
 function normalizeComments(task: TaskData): NonNullable<TaskData["comments"]> {
@@ -307,6 +325,7 @@ async function runStartScenario(mode: BackendMode) {
       taskId: "T-1",
       author: "CODER",
       body: "Start: this comment is long enough to satisfy the min_chars requirement.",
+      taskExecution: executionContext(ctx),
       commitFromComment: false,
       commitAllow: [],
       commitAutoAllow: false,
@@ -525,6 +544,30 @@ async function runVerifyRecordScenario(mode: BackendMode) {
     backendUsesLocalTaskStore: () => mode === "local",
     loadCommandContext: vi.fn(),
     loadTaskFromContext,
+  }));
+  vi.doMock("../../runtime/task-execution-context/index.js", () => ({
+    loadTaskCommandContext: ({
+      ctx: command,
+      taskIds,
+    }: {
+      ctx: CommandContext;
+      taskIds: string[];
+    }) => {
+      const task = cloneTask(currentTask);
+      return Promise.resolve({
+        command,
+        execution: executionContext(command, taskIds[0]),
+        primary_task: task,
+        tasks: [task],
+      });
+    },
+    resolveTaskExecutionContext: ({
+      ctx: command,
+      primaryTaskId,
+    }: {
+      ctx: CommandContext;
+      primaryTaskId?: string;
+    }) => Promise.resolve(executionContext(command, primaryTaskId)),
   }));
   vi.doMock("../shared/task-store.js", async () => {
     const actual = await vi.importActual("../shared/task-store.js");

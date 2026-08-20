@@ -631,7 +631,9 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
         expect(route.stdout, testCase.name).toContain(
           "blocker:                     cleanup_blocked:",
         );
-        expect(route.stdout, testCase.name).toContain(testCase.expectedReason);
+        expect(route.stdout, testCase.name).toContain(
+          "exact pre-merge closure evidence is not recorded on base",
+        );
         expect(await gitBranchExists(fixture.root, fixture.branch), testCase.name).toBe(true);
         expect(await pathExists(fixture.worktreePath), testCase.name).toBe(true);
       }

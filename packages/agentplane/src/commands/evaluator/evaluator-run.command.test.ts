@@ -913,7 +913,7 @@ describe("evaluator run command", () => {
       task_id: taskId,
       result: "ok",
       verifier: "TESTER",
-      input: { schema_version: 3 },
+      input: { schema_version: 4 },
     });
     const observedChecksPath = prepared.work_order.evidence.find(
       (entry) => entry.kind === "observed_checks",
