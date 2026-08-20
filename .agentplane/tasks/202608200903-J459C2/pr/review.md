@@ -12,8 +12,8 @@ Created: 2026-08-20T15:49:58.682Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check could not run: ap doctor
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-20T15:49:58.682Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-20T15:49:58.682Z
+- Updated: 2026-08-20T17:33:44.182Z
 - Branch: task/202608200903-J459C2/make-task-execution-authority-local-and-direct-e
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
