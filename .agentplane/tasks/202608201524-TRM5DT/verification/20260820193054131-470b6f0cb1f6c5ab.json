@@ -1,0 +1,91 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks\nScope: branch_pr task 202608201524-TRM5DT Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks\nScope: branch_pr task 202608201524-TRM5DT Verification Contract check critical_paths\n\nCheck: docs_contract\nCommand: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks\nScope: branch_pr task 202608201524-TRM5DT Verification Contract check docs_contract\n\nCheck: full_regression\nCommand: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks\nScope: branch_pr task 202608201524-TRM5DT Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks\nScope: branch_pr task 202608201524-TRM5DT Verification Contract check hosted_integration\n\nCheck: task_outcome\nCommand: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks\nScope: branch_pr task 202608201524-TRM5DT Verification Contract check task_outcome",
+  "digest": "sha256:470b6f0cb1f6c5abfdee5b20335ed05dba52438b7d7b60ee4cb91fcaa82afe91",
+  "implementation_sha": "bd6d9f8cc17ce45e5be238c7d40847e2c75d035d",
+  "input": {
+    "context": {
+      "digest": "sha256:c604a3866814dba57d1e8b75bf0340937981e8280dda0ec9356a7987f4282f36",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:e1a910a6f1d8951ba30dd0f00775e9dc8d9a504507dc89d1b5504a90fd5f76ea",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:29d1141f164bb1294ed99692269ed7c8e8d9dbf52ef29f06b32a0280dc67ad75",
+      "digest": "sha256:308039e469e5e2ce5cabe56a6a65f7c9bff62b066a18e9b084dd10683c2a0972",
+      "references": [
+        {
+          "digest": "sha256:3bb5929c773e1326d1130dc08c8fd0c02b8e9df06df8489a6eb1caa593e128b5",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "292b232b3160b22c47c6cc206fade625e9377fed",
+      "digest": "sha256:6245797554f4f8049dd16e2551c6ff6f47484a8b4e7ee007ba3b2697eff4be71",
+      "strategy": "branch_diff",
+      "target_sha": "bd6d9f8cc17ce45e5be238c7d40847e2c75d035d"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:5d31f6e97d615f1fc4b1b98c7aae1a7e2f1e02231d0ec0f006ed9449bd66299c",
+    "verify_steps_digest": "sha256:8ce1b958938f29e73b53fa760eadeb68d2a1b636dd8d53ce755683ef086bfaab"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-20T19:30:54.131Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run lint:core`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `node .agentplane/policy/check-routing.mjs`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Run `agentplane doctor`. Expected: it succeeds and confirms the requested outcome for this task.\n6. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n7. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:8ce1b958938f29e73b53fa760eadeb68d2a1b636dd8d53ce755683ef086bfaab",
+  "task_id": "202608201524-TRM5DT",
+  "verification_command": "agentplane verify 202608201524-TRM5DT --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

@@ -4,7 +4,7 @@ title: "Implement provider-neutral GitHub and GitLab change-request lifecycle"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -33,10 +33,10 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved plan in Codex task on 2026-08-20."
 verification:
-  state: "pending"
-  updated_at: "2026-08-20T19:18:26.030Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
+  state: "ok"
+  updated_at: "2026-08-20T19:30:54.131Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
   state: "rework"
@@ -158,6 +158,7 @@ execution_contract:
       - "packages/core"
       - "packages/spec"
       - "schemas"
+      - "website"
     changed_paths:
       - "docs/user/branching-and-pr-artifacts.mdx"
       - "docs/user/cli-reference.generated.mdx"
@@ -211,6 +212,7 @@ execution_contract:
       - "packages/spec/schemas/task-handoff.schema.json"
       - "schemas/pr-meta.schema.json"
       - "schemas/task-handoff.schema.json"
+      - "website/static/llms-full.txt"
     external_effects: []
     repository_effects:
       - "documentation"
@@ -218,7 +220,25 @@ execution_contract:
       - "schema"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -273,7 +293,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:f28951a5b0943cc3a9c694c41a1ccc61e635894d082841c4de3e352cb422fd36"
+      digest: "sha256:5d31f6e97d615f1fc4b1b98c7aae1a7e2f1e02231d0ec0f006ed9449bd66299c"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/tasks"
@@ -305,6 +325,7 @@ execution_contract:
           - "packages/core"
           - "packages/spec"
           - "schemas"
+          - "website"
         changed_files:
           - "docs/user/branching-and-pr-artifacts.mdx"
           - "docs/user/cli-reference.generated.mdx"
@@ -358,6 +379,7 @@ execution_contract:
           - "packages/spec/schemas/task-handoff.schema.json"
           - "schemas/pr-meta.schema.json"
           - "schemas/task-handoff.schema.json"
+          - "website/static/llms-full.txt"
         external_effects: []
         repository_effects:
           - "documentation"
@@ -401,7 +423,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "bd6d9f8cc17ce45e5be238c7d40847e2c75d035d"
+  message: "🚧 TRM5DT task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -418,6 +442,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: website/static; repository effects: documentation, repository_write."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: bd6d9f8cc17c. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -452,8 +479,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator finding is actionable, but the required generated website artifact is outside this executor episode's writable roots. Recommended action: Extend authority to website/static, run bun run docs:site:generate, verify only the expected generated projection changes, then rerun bun run docs:site:generate:check and bun run ci:local:full. Requested scope: roots=website/static; repository effects=documentation,repository_write; request digest=sha256:0b4196edbff440940b5a3c60e6dd21daeb847a67657de384812f5d36a620a595. Agentplane receipt: external-agent-blocker/tr_a5e0b3929c499e6a28f66ab5bf41e9b7/sha256:6d541590590589c1c64675f3b8bf4105544b30756040ab9eb08a7d3784a3db04/sha256:0b4196edbff440940b5a3c60e6dd21daeb847a67657de384812f5d36a620a595."
+  -
+    type: "status"
+    at: "2026-08-20T19:28:13.307Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: bd6d9f8cc17c. CLI accepted one state-bound external-agent semantic result."
+    commit: "bd6d9f8cc17ce45e5be238c7d40847e2c75d035d"
+  -
+    type: "verify"
+    at: "2026-08-20T19:30:54.131Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-20T19:17:34.410Z"
+doc_updated_at: "2026-08-20T19:30:59.104Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement universal GitHub/GitLab hosted change-request support in an isolated branch_pr worktree. Preserve current GitHub behavior behind a provider adapter. Resolve provider host/project from the publication Git remote; use existing gh session for GitHub and external glab authentication plus glab api for GitLab without reading or storing tokens. Cover idempotent PR/MR lookup/create/update, normalized metadata, exact-head hosted checks, mergeability and SHA-guarded merge, external-merge reconciliation, typed failures, compatibility migration, docs, and regression/E2E-style CLI fixtures. Do not perform interactive auth, modify credentials, or touch external providers during implementation tests."
 sections:
@@ -543,6 +584,72 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-20T19:30:54.131Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8ce1b958938f29e73b53fa760eadeb68d2a1b636dd8d53ce755683ef086bfaab, input_digest=sha256:e1a910a6f1d8951ba30dd0f00775e9dc8d9a504507dc89d1b5504a90fd5f76ea
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608201524-TRM5DT Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608201524-TRM5DT Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608201524-TRM5DT Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608201524-TRM5DT Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608201524-TRM5DT Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608201524-TRM5DT Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608201524-TRM5DT-implement-provider-neutral-github-and-gitlab-cha/.agentplane/tasks/202608201524-TRM5DT/blueprint/resolved-snapshot.json
+    - old_digest: e79d8f93b29a9f61a846f9cb71db7cb76e99e0508d3bd4fab66e1fa9cc5c05be
+    - current_digest: e79d8f93b29a9f61a846f9cb71db7cb76e99e0508d3bd4fab66e1fa9cc5c05be
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608201524-TRM5DT
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608201524-TRM5DT
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -567,7 +674,7 @@ extensions:
     status: "applied"
     transition_id: "tr_a5e0b3929c499e6a28f66ab5bf41e9b7"
   implementation_commit:
-    hash: "90f0339fdc8a99d2420933714b077854f356d482"
+    hash: "bd6d9f8cc17ce45e5be238c7d40847e2c75d035d"
   workflow_route_baseline:
     start_head_sha: "292b232b3160b22c47c6cc206fade625e9377fed"
     version: 1
@@ -663,6 +770,72 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-20T19:30:54.131Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8ce1b958938f29e73b53fa760eadeb68d2a1b636dd8d53ce755683ef086bfaab, input_digest=sha256:e1a910a6f1d8951ba30dd0f00775e9dc8d9a504507dc89d1b5504a90fd5f76ea
+
+Details:
+
+Check: affected_unit_integration
+Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608201524-TRM5DT Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608201524-TRM5DT Verification Contract check critical_paths
+
+Check: docs_contract
+Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608201524-TRM5DT Verification Contract check docs_contract
+
+Check: full_regression
+Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608201524-TRM5DT Verification Contract check full_regression
+
+Check: hosted_integration
+Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608201524-TRM5DT Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: agentplane doctor && bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608201524-TRM5DT/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608201524-TRM5DT Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608201524-TRM5DT-implement-provider-neutral-github-and-gitlab-cha/.agentplane/tasks/202608201524-TRM5DT/blueprint/resolved-snapshot.json
+- old_digest: e79d8f93b29a9f61a846f9cb71db7cb76e99e0508d3bd4fab66e1fa9cc5c05be
+- current_digest: e79d8f93b29a9f61a846f9cb71db7cb76e99e0508d3bd4fab66e1fa9cc5c05be
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608201524-TRM5DT
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608201524-TRM5DT
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
