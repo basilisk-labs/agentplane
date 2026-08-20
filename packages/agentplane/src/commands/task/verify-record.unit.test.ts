@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import {
@@ -18,6 +19,8 @@ const mocks = vi.hoisted(() => ({
   loadCommandContext: vi.fn(),
   loadTaskFromContext:
     vi.fn<(opts: { ctx: CommandContext; taskId: string }) => Promise<TaskData>>(),
+  loadTaskCommandContext: vi.fn(),
+  resolveTaskExecutionContext: vi.fn(),
   backendIsLocalFileBackend: vi.fn<(ctx: CommandContext) => boolean>(),
   getTaskStore: vi.fn(),
   collectTaskIncidents: vi.fn(),
@@ -47,6 +50,10 @@ vi.mock("../shared/task-backend.js", () => ({
 }));
 vi.mock("../shared/reconcile-check.js", () => ({
   ensureReconciledBeforeMutation: mocks.ensureReconciledBeforeMutation,
+}));
+vi.mock("../../runtime/task-execution-context/index.js", () => ({
+  loadTaskCommandContext: mocks.loadTaskCommandContext,
+  resolveTaskExecutionContext: mocks.resolveTaskExecutionContext,
 }));
 vi.mock("../incidents/shared.js", () => ({
   collectTaskIncidents: mocks.collectTaskIncidents,
@@ -98,6 +105,23 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
   });
 }
 
+function executionContext(ctx: CommandContext, taskId = "T-1"): TaskExecutionContext {
+  const mode = ctx.config.workflow_mode === "branch_pr" ? "branch_pr" : "direct";
+  return {
+    schema_version: 1,
+    primary_task_id: taskId,
+    task_ids: [taskId],
+    repository_mode: mode,
+    selected_mode: mode,
+    requested_mode: mode,
+    route_source: "execution_contract",
+    reason_codes: [],
+    base_ref: "main",
+    base_sha: "a".repeat(40),
+    authoritative_task_source: "base_checkout",
+  };
+}
+
 function makeWriteThroughBackend(opts: {
   getTaskDoc: () => Promise<string>;
   writeTask: TaskBackend["writeTask"];
@@ -119,6 +143,25 @@ describe("task verify record (unit)", () => {
     mocks.mkdir.mockResolvedValue(undefined);
     mocks.writeJsonStableIfChanged.mockResolvedValue(true);
     mocks.loadTaskFromContext.mockResolvedValue(mkTask({}));
+    mocks.loadTaskCommandContext.mockImplementation(
+      async ({ ctx, taskIds }: { ctx: CommandContext; taskIds: string[] }) => {
+        const tasks = await Promise.all(
+          taskIds.map((taskId) => mocks.loadTaskFromContext({ ctx, taskId })),
+        );
+        const primaryTask = tasks[0];
+        if (!primaryTask) throw new Error("Missing primary task fixture.");
+        return {
+          command: ctx,
+          execution: executionContext(ctx, primaryTask.id),
+          primary_task: primaryTask,
+          tasks,
+        };
+      },
+    );
+    mocks.resolveTaskExecutionContext.mockImplementation(
+      ({ ctx, primaryTaskId }: { ctx: CommandContext; primaryTaskId?: string }) =>
+        Promise.resolve(executionContext(ctx, primaryTaskId)),
+    );
     mocks.resolveQualityReviewTargetSha.mockResolvedValue(null);
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);

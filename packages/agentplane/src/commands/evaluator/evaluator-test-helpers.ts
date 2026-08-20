@@ -5,6 +5,8 @@ import { promisify } from "node:util";
 
 import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+import { applyTaskMutation } from "../shared/task-mutation.js";
+import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { cmdTaskAdd } from "../workflow.js";
 
 import {
@@ -44,6 +46,31 @@ export async function commitPath(
   await execFileAsync("git", ["commit", "-m", message], { cwd: root });
   const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
   return stdout.trim();
+}
+
+export async function freezeTaskExecutionBase(root: string, taskId: string): Promise<string> {
+  const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+  const baseSha = stdout.trim();
+  const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+  await applyTaskMutation({
+    ctx,
+    taskId,
+    build: (current) => ({
+      intents: setTaskFieldsIntent({
+        extensions: {
+          ...current.extensions,
+          task_execution_context: { base_ref: "main", base_sha: baseSha },
+        },
+      }),
+    }),
+  });
+  await execFileAsync("git", ["add", "--", `.agentplane/tasks/${taskId}/README.md`], {
+    cwd: root,
+  });
+  await execFileAsync("git", ["commit", "-m", `test: freeze ${taskId} execution base`], {
+    cwd: root,
+  });
+  return baseSha;
 }
 
 export async function prepareTypedReview(

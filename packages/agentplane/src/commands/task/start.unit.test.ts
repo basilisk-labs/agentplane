@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import { makeTaskCommandContext, makeTaskFixture } from "@agentplane/testkit/task";
 import type { CommandContext } from "../shared/task-backend.js";
 
@@ -13,6 +14,19 @@ const mockGetTaskStore = vi.fn();
 const mockWriteTaskBlueprintResolvedSnapshot =
   vi.fn<(opts: { ctx: CommandContext; task: TaskData }) => Promise<unknown>>();
 const describeCompatible = typeof process.versions.bun === "string" ? describe.skip : describe;
+const TASK_EXECUTION: TaskExecutionContext = {
+  schema_version: 1,
+  primary_task_id: "T-1",
+  task_ids: ["T-1"],
+  repository_mode: "direct",
+  selected_mode: "direct",
+  requested_mode: "direct",
+  route_source: "execution_contract",
+  reason_codes: [],
+  base_ref: "main",
+  base_sha: "a".repeat(40),
+  authoritative_task_source: "base_checkout",
+};
 
 vi.mock("../shared/task-backend.js", () => ({
   backendUsesLocalTaskStore: mockBackendIsLocalFileBackend,
@@ -128,6 +142,7 @@ describeCompatible("task start command (unit)", () => {
       confirmStatusCommit: false,
       force: false,
       quiet: true,
+      taskExecution: TASK_EXECUTION,
     });
 
     expect(rc).toBe(0);

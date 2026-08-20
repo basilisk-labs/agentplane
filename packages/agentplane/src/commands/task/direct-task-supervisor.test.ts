@@ -1,6 +1,8 @@
 import type * as CoreSchemas from "@agentplaneorg/core/schemas";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+
 const mocks = vi.hoisted(() => ({
   advance: vi.fn(),
   applyEvaluator: vi.fn(),
@@ -64,17 +66,37 @@ vi.mock("./direct-task-verification.js", () => ({
 }));
 vi.mock("./verify-record.js", () => ({ cmdVerifyParsed: mocks.verify }));
 
-import { superviseDirectTaskRun } from "./direct-task-supervisor.js";
+import { superviseDirectTaskRun as superviseDirectTaskRunImpl } from "./direct-task-supervisor.js";
 
 const TASK_ID = "202607290000-RF10A1";
 const FINGERPRINT = {
   digest: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 } as const;
+const TASK_EXECUTION: TaskExecutionContext = {
+  schema_version: 1,
+  primary_task_id: TASK_ID,
+  task_ids: [TASK_ID],
+  repository_mode: "direct",
+  selected_mode: "direct",
+  requested_mode: "direct",
+  route_source: "execution_contract",
+  reason_codes: [],
+  base_ref: "main",
+  base_sha: "a".repeat(40),
+  authoritative_task_source: "base_checkout",
+};
+
+function superviseDirectTaskRun(
+  opts: Parameters<typeof superviseDirectTaskRunImpl>[0],
+): ReturnType<typeof superviseDirectTaskRunImpl> {
+  return superviseDirectTaskRunImpl({ ...opts, task_execution: TASK_EXECUTION });
+}
 
 function commandContext() {
   return {
     resolvedProject: { gitRoot: "/repo" },
     taskBackend: { writeTask: vi.fn() },
+    config: { paths: { workflow_dir: ".agentplane/tasks" } },
   } as never;
 }
 

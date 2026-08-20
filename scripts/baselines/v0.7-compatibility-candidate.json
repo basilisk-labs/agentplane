@@ -1859,7 +1859,7 @@
             "command": "task new",
             "kind": "option",
             "name": "route",
-            "source_task": "202608061646-WCARQG"
+            "source_task": "202608200903-J459C2"
           },
           {
             "command": "task run",
@@ -2258,9 +2258,10 @@
         "202608110235-WCJJRD",
         "202608112213-NWJCBW",
         "202608171853-X3FD5M",
-        "202608181404-CR1F9W"
+        "202608181404-CR1F9W",
+        "202608200903-J459C2"
       ],
-      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; and canonicalizes setup and execution profile selection to standard while retaining legacy init aliases.",
+      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route.",
       "to_sha256": "cf2776c1b126042ea1b5b5341169205fb8d35c77fc4142eee62335058548e701"
     },
     {
@@ -2443,12 +2444,7 @@
     },
     "from_sha256": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
     "section": "package_manifests",
-    "source_tasks": [
-      "202608021231-SHYJGK",
-      "202608112259-T3ZDDM",
-      "202608171853-X3FD5M",
-      "202608200903-J459C2"
-    ],
+    "source_tasks": ["202608021231-SHYJGK", "202608112259-T3ZDDM", "202608171853-X3FD5M"],
     "to_sha256": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff"
   },
   "release_version_delta": {
