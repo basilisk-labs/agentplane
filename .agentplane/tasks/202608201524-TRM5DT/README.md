@@ -1,10 +1,10 @@
 ---
 id: "202608201524-TRM5DT"
 title: "Implement provider-neutral GitHub and GitLab change-request lifecycle"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -33,10 +33,10 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved plan in Codex task on 2026-08-20."
 verification:
-  state: "ok"
-  updated_at: "2026-08-20T17:34:32.863Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  state: "pending"
+  updated_at: "2026-08-20T19:18:26.030Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 quality_review:
   state: "rework"
@@ -115,6 +115,7 @@ execution_contract:
       - "packages/spec/schemas"
       - "schemas"
       - "scripts/workflow"
+      - "website/static"
   declaration:
     external_effects: []
     implementation_uncertainty: "bounded"
@@ -123,6 +124,7 @@ execution_contract:
       - "Implementation and fixture verification are local-only; glab authentication remains user-owned and no provider or credential mutation is authorized."
       - "The feature crosses public metadata, provider routing, CLI transport, hosted checks, merge, recovery, tests, and documentation, so the listed roots are the minimal coherent lifecycle scope."
       - "The user explicitly approved an isolated branch implementation and the repository requires branch_pr worktree isolation."
+      - "USER-approved blocked-result scope extension: roots=website/static; repository_effects=documentation,repository_write"
     repository_effects:
       - "documentation"
       - "public_api"
@@ -147,6 +149,7 @@ execution_contract:
       - "packages/spec/schemas"
       - "schemas"
       - "scripts/workflow"
+      - "website/static"
   observed:
     authority_violations: []
     changed_components:
@@ -215,25 +218,7 @@ execution_contract:
       - "schema"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -264,6 +249,7 @@ execution_contract:
           - "packages/spec/schemas"
           - "schemas"
           - "scripts/workflow"
+          - "website/static"
         evidence_requirements:
           - "hosted_integration"
           - "repository_effect:documentation"
@@ -287,7 +273,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:310f7ede2f189eb9e204d034e9cead155534e8607afdd0139c09f30bdb7d2126"
+      digest: "sha256:f28951a5b0943cc3a9c694c41a1ccc61e635894d082841c4de3e352cb422fd36"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/tasks"
@@ -415,9 +401,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "90f0339fdc8a99d2420933714b077854f356d482"
-  message: "🚧 TRM5DT task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -431,6 +415,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator finding is actionable, but the required generated website artifact is outside this executor episode's writable roots. Recommended action: Extend authority to website/static, run bun run docs:site:generate, verify only the expected generated projection changes, then rerun bun run docs:site:generate:check and bun run ci:local:full. Requested scope: roots=website/static; repository effects=documentation,repository_write; request digest=sha256:0b4196edbff440940b5a3c60e6dd21daeb847a67657de384812f5d36a620a595. Agentplane receipt: external-agent-blocker/tr_a5e0b3929c499e6a28f66ab5bf41e9b7/sha256:6d541590590589c1c64675f3b8bf4105544b30756040ab9eb08a7d3784a3db04/sha256:0b4196edbff440940b5a3c60e6dd21daeb847a67657de384812f5d36a620a595."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: website/static; repository effects: documentation, repository_write."
 events:
   -
     type: "status"
@@ -563,6 +550,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-08-20T19:18:26.030Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:6d541590590589c1c64675f3b8bf4105544b30756040ab9eb08a7d3784a3db04"
     kind: "task_scope_extension_request"
     request:
@@ -575,7 +564,7 @@ extensions:
         - "website/static"
     request_digest: "sha256:0b4196edbff440940b5a3c60e6dd21daeb847a67657de384812f5d36a620a595"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_a5e0b3929c499e6a28f66ab5bf41e9b7"
   implementation_commit:
     hash: "90f0339fdc8a99d2420933714b077854f356d482"
