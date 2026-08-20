@@ -4,7 +4,7 @@ title: "Fix live GitLab MR transport and provider-neutral mergeability validatio
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -27,10 +27,10 @@ plan_approval:
   note: "Approved explicitly by Denis in Codex on 2026-08-21 after reviewing the live GitLab findings and remediation plan."
 verification:
   state: "needs_rework"
-  updated_at: "2026-08-20T21:57:23.176Z"
+  updated_at: "2026-08-20T22:33:56.787Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run --filter=agentplane test"
-  attempts: 2
+  attempts: 3
 execution_route:
   frozen: true
   reason_codes:
@@ -227,6 +227,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 94b7f9f2d424. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: bedfd34a86d3. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -263,8 +266,22 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run --filter=agentplane test"
+  -
+    type: "status"
+    at: "2026-08-20T21:59:24.974Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: bedfd34a86d3. CLI accepted one state-bound external-agent semantic result."
+    commit: "bedfd34a86d3d29976347e6c7c869d4f153befb5"
+  -
+    type: "verify"
+    at: "2026-08-20T22:33:56.787Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run --filter=agentplane test"
 doc_version: 3
-doc_updated_at: "2026-08-20T21:57:25.216Z"
+doc_updated_at: "2026-08-20T22:34:00.290Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
@@ -354,6 +371,41 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-20T22:33:56.787Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run --filter=agentplane test
+    Attempts: 3
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:03a827dc25608c1d1b7a95a6cc4b3628fbc95bff6df1b261896e25f830894b33
+
+    Details:
+
+    Command: bun run --filter=agentplane test
+    Result: fail
+    Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608202112-E6CDHP declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+    - old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -361,7 +413,7 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "94b7f9f2d424ac259818990a94710fef73b86e65"
+    hash: "bedfd34a86d3d29976347e6c7c869d4f153befb5"
   workflow_route_baseline:
     start_head_sha: "60be0145753e9e2aecf31f4bbd8471895db13395"
     version: 1
@@ -436,6 +488,41 @@ Note: Rework: Declared check failed: bun run --filter=agentplane test
 Attempts: 2
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:179416083480576715af982d232e48512e185c34155bb1be605bedf3d58545ae
+
+Details:
+
+Command: bun run --filter=agentplane test
+Result: fail
+Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608202112-E6CDHP declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+- old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-20T22:33:56.787Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run --filter=agentplane test
+Attempts: 3
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:03a827dc25608c1d1b7a95a6cc4b3628fbc95bff6df1b261896e25f830894b33
 
 Details:
 
