@@ -97,25 +97,11 @@ export type {
   PreparedTaskRunnerExecution,
 } from "./task-run-execution.js";
 export type { TaskRunnerReplayProvenance } from "./task-run-replay-anchor.js";
+import type { PrepareTaskRunnerExecutionOptions } from "./task-run-options.js";
 
-export async function prepareTaskRunnerExecution(opts: {
-  ctx?: CommandContext;
-  cwd: string;
-  rootOverride?: string | null;
-  task_id: string;
-  mode: RunnerExecutionContract["mode"];
-  run_id?: string;
-  recipe?: RunnerRecipeContext;
-  target?: RunnerTarget;
-  danger_authority?: RunnerDangerFullAccessAuthority | null;
-  execution_role?: string;
-  include_remote?: boolean;
-  include_route_runner_state?: boolean;
-  sandbox_override?: string;
-  effect_source_run_id?: string | null;
-  resolved_not_applied_source?: boolean;
-  task_execution?: TaskExecutionContext;
-}): Promise<PreparedTaskRunnerExecution> {
+export async function prepareTaskRunnerExecution(
+  opts: PrepareTaskRunnerExecutionOptions,
+): Promise<PreparedTaskRunnerExecution> {
   const command =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));

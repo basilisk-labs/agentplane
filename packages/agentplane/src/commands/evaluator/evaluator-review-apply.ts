@@ -21,13 +21,12 @@ import {
   isWithinRoot,
   readWorkOrder,
   relative,
-  reportPaths,
-  resolveEvaluatorPromptPath,
   uniqueStrings,
   validateStrictEvaluatorResult,
   type EvaluatorWorkOrder,
   type HumanEvaluatorReviewInput,
 } from "./evaluator-review-usecase.js";
+import { reportPaths, resolveEvaluatorPromptPath } from "./evaluator-review-support.js";
 
 async function persistReview(opts: {
   ctx: CommandContext;
