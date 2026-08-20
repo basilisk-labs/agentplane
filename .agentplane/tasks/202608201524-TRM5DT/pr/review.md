@@ -12,8 +12,8 @@ Created: 2026-08-20T16:09:36.710Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-20T16:09:36.710Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-20T16:09:36.710Z
+- Updated: 2026-08-20T19:14:45.190Z
 - Branch: task/202608201524-TRM5DT/implement-provider-neutral-github-and-gitlab-cha
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -81,7 +81,8 @@ Created: 2026-08-20T16:09:36.710Z
  packages/spec/schemas/task-handoff.schema.json     |  16 +-
  schemas/pr-meta.schema.json                        |  38 ++
  schemas/task-handoff.schema.json                   |  16 +-
- 52 files changed, 2998 insertions(+), 222 deletions(-)
+ website/static/llms-full.txt                       |   2 +-
+ 53 files changed, 2999 insertions(+), 223 deletions(-)
 ```
 
 </details>

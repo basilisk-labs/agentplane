@@ -50,4 +50,5 @@
  packages/spec/schemas/task-handoff.schema.json     |  16 +-
  schemas/pr-meta.schema.json                        |  38 ++
  schemas/task-handoff.schema.json                   |  16 +-
- 52 files changed, 2998 insertions(+), 222 deletions(-)
+ website/static/llms-full.txt                       |   2 +-
+ 53 files changed, 2999 insertions(+), 223 deletions(-)
