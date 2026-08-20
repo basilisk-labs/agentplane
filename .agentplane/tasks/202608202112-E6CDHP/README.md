@@ -4,7 +4,7 @@ title: "Fix live GitLab MR transport and provider-neutral mergeability validatio
 status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -239,6 +239,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 6013cfd0a1d6. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "USER"
+    body: "Live GitLab canary exposed an additional provider-specific merge-path defect anticipated by the approved plan: cleanup reconciliation still performs GitHub-only provider lookup and integrate dry-run labels the hosted route as github-pr. Resume for a bounded provider-neutral repair."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Live GitLab guarded-integration qualification exposed a third provider-specific defect anticipated by the approved plan. Targeted cleanup reconciliation still observes GitHub only, so GitLab tasks report unavailable cleanup identity and state-bound integration authority cannot be granted. Integrate dry-run also hard-codes the hosted route label as github-pr. Recommended action: Approve the bounded provider-neutral scope extension, then replace GitHub-only cleanup observation with the existing change-request abstraction and make the dry-run route label provider-neutral. Requested scope: roots=packages/agentplane/src/commands/branch,packages/agentplane/src/commands/pr/integrate; repository effects=repository_write,source_code,tests; request digest=sha256:70b0582829d15378430386ccb57f65ba52c09d1391cbb78270812d1f50507943. Agentplane receipt: external-agent-blocker/tr_d8407a031f9e61846e4252a349ebf8b2/sha256:f62f8e0237e72867647e6931b38325f6b6d26f83ce0121ee04ad01fe2009d5ca/sha256:70b0582829d15378430386ccb57f65ba52c09d1391cbb78270812d1f50507943."
 events:
   -
     type: "status"
@@ -317,8 +323,22 @@ events:
     author: "SUPERVISOR"
     state: "blocked_external"
     note: "Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1"
+  -
+    type: "status"
+    at: "2026-08-20T23:22:11.674Z"
+    author: "USER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Live GitLab canary exposed an additional provider-specific merge-path defect anticipated by the approved plan: cleanup reconciliation still performs GitHub-only provider lookup and integrate dry-run labels the hosted route as github-pr. Resume for a bounded provider-neutral repair."
+  -
+    type: "status"
+    at: "2026-08-20T23:23:05.842Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Live GitLab guarded-integration qualification exposed a third provider-specific defect anticipated by the approved plan. Targeted cleanup reconciliation still observes GitHub only, so GitLab tasks report unavailable cleanup identity and state-bound integration authority cannot be granted. Integrate dry-run also hard-codes the hosted route label as github-pr. Recommended action: Approve the bounded provider-neutral scope extension, then replace GitHub-only cleanup observation with the existing change-request abstraction and make the dry-run route label provider-neutral. Requested scope: roots=packages/agentplane/src/commands/branch,packages/agentplane/src/commands/pr/integrate; repository effects=repository_write,source_code,tests; request digest=sha256:70b0582829d15378430386ccb57f65ba52c09d1391cbb78270812d1f50507943. Agentplane receipt: external-agent-blocker/tr_d8407a031f9e61846e4252a349ebf8b2/sha256:f62f8e0237e72867647e6931b38325f6b6d26f83ce0121ee04ad01fe2009d5ca/sha256:70b0582829d15378430386ccb57f65ba52c09d1391cbb78270812d1f50507943."
 doc_version: 3
-doc_updated_at: "2026-08-20T22:58:45.993Z"
+doc_updated_at: "2026-08-20T23:23:05.842Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
@@ -484,6 +504,23 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:f62f8e0237e72867647e6931b38325f6b6d26f83ce0121ee04ad01fe2009d5ca"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "The authorized live canary proved that guarded GitLab integration reaches cleanup reconciliation, which still uses GitHub-only provider lookup; these files are outside the original two-defect writable roots."
+      repository_effects:
+        - "repository_write"
+        - "source_code"
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/commands/branch"
+        - "packages/agentplane/src/commands/pr/integrate"
+    request_digest: "sha256:70b0582829d15378430386ccb57f65ba52c09d1391cbb78270812d1f50507943"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_d8407a031f9e61846e4252a349ebf8b2"
   implementation_commit:
     hash: "6013cfd0a1d6de248b8a55a0e738f3feb0b89358"
   workflow_route_baseline:
