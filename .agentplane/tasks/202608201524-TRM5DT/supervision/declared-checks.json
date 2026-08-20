@@ -1,0 +1,49 @@
+{
+  "checks": [
+    {
+      "command": "agentplane doctor",
+      "duration_ms": 14604,
+      "exit_code": 0,
+      "script": null,
+      "stderr_tail": "13 verified_via=task, 202607221908-YD5J89@main:d183683d77ba verified_via=task, 202607300112-48RH1X@main:d8b93f77c2cb verified_via=task, 202607300150-MGCHE6@main:2c8d47c38939 verified_via=task\n- [WARN] State: nested task/recovery worktrees are registered in the primary repository\nLikely cause: an internal recovery or task checkout created another worktree, restoring a historical checkout graph into the shared Git worktree registry\nNext action: agentplane cleanup merged --fetch (classify provider-proven merged candidates before removing only clean obsolete registrations)\nDetails: Affected registrations: 9\n  - Examples: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606141629-3KVKMY-add-deepwiki-auto-sync-badge under /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV, /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606171318-HMV399-platform-sync under /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV, /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202606181941-HP0WZT-fix-close-dirty-state-regressions under /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV, /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607211613-0ZXQXK-test-context-assimilation-on-main under /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV, /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252218-XBHBE5-archive-resolved-knowledgeref-guard-incident under /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV\n- [INFO] Runtime mode: repo-local (repo-local framework binary)\n- [INFO] Active binary: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608201524-TRM5DT-implement-provider-neutral-github-and-gitlab-cha/packages/agentplane/bin/agentplane.js\n- [INFO] Resolved agentplane: 0.7.8-beta.1 @ /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608201524-TRM5DT-implement-provider-neutral-github-and-gitlab-cha/packages/agentplane\n- [INFO] Resolved @agentplaneorg/core: 0.7.8-beta.1 @ /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608201524-TRM5DT-implement-provider-neutral-github-and-gitlab-cha/packages/core\n- [INFO] Framework repo root: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608201524-TRM5DT-implement-provider-neutral-github-and-gitlab-cha\n- [INFO] Framework agentplane root: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608201524-TRM5DT-implement-provider-neutral-github-and-gitlab-cha/packages/agentplane\n- [INFO] Framework core root: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608201524-TRM5DT-implement-provider-neutral-github-and-gitlab-cha/packages/core\n- [INFO] Project blueprint compatibility: compatible; trusted=0\n- [WARN] DONE task is missing implementation commit hash: 202607310026-4V5K9V (finish with --commit <hash>).\n- [WARN] DONE task is missing implementation commit hash: 202607311706-5N483Q (finish with --commit <hash>).\n- [INFO] Historical task archive contains 152 DONE tasks with unknown implementation commit hashes across 152 distinct commit hashes. Examples: 029370e80cf37953258bff636c743a58707f1d85 (1 task: 202608020907-FMGM4Z); 04ea2e6e3ed8831e79520000b321ddc423c2377f (1 task: 202608020545-Y4HQ7A); 06207ca15571411f94e28c49d6b52e3a43468bf3 (1 task: 202607221848-VBV9B1); +149 more hash groups\n- [INFO] DONE task implementation commit resolves to a historical close commit reference: 202608131733-KECD7J -> c6922d42e58cd245976281dfe6faa839f3b6c0c8 (✅ KECD7J close: record passing incident review)\n- [WARN] DONE task implementation commit points to a close commit: 202607242234-S7WDVM -> 573a735dd372dfcd82367625e7925cc47d00da92 (🧐 S7WDVM task: pre-merge closure)\n",
+      "stdout_tail": "✅ doctor (OK)\n"
+    },
+    {
+      "command": "bun run lint:core",
+      "duration_ms": 106972,
+      "exit_code": 0,
+      "script": "lint:core",
+      "stderr_tail": "$ eslint packages scripts eslint.config.cjs vitest.config.ts\n",
+      "stdout_tail": ""
+    },
+    {
+      "command": "bun run typecheck",
+      "duration_ms": 311,
+      "exit_code": 0,
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "command": "bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts",
+      "duration_ms": 39204,
+      "exit_code": 0,
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608201524-TRM5DT-implement-provider-neutral-github-and-gitlab-cha\n\n\n Test Files  41 passed (41)\n      Tests  304 passed (304)\n   Start at  20:33:54\n   Duration  38.69s (transform 31.37s, setup 0ms, import 42.59s, tests 68.42s, environment 8ms)\n\n"
+    },
+    {
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "duration_ms": 59,
+      "exit_code": 0,
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "policy routing OK\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202608201524-TRM5DT"
+}
