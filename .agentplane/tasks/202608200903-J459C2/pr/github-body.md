@@ -15,8 +15,8 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
 
 ## Verification
 
-- State: needs_rework
-- Note: Compatibility candidate is stale and requires an approved scripts/baselines scope extension.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -109,7 +109,8 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../src/runtime/workspace-allocation/index.ts      |  11 +
  .../src/runtime/workspace-allocation/lease.ts      |  93 +++++++
  .../src/runtime/workspace-allocation/types.ts      |  27 ++
- 82 files changed, 2918 insertions(+), 389 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |  24 +-
+ 83 files changed, 2933 insertions(+), 398 deletions(-)
 ```
 
 </details>
