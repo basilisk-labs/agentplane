@@ -3,17 +3,10 @@
   "branch": "task/202608202141-WC5RF1/improve-the-root-readme-around-the-semantic-agen",
   "created_at": "2026-08-20T22:06:49.088Z",
   "diffstat_sha256": "sha256:97f630eeecf8401c64d60e3b530a7adb3ef90af6c36fcb636559de3e3ad04514",
-  "last_verified_at": "2026-08-20T22:43:51.878Z",
+  "last_verified_at": "2026-08-20T22:49:07.490Z",
   "last_verified_diffstat_sha256": "sha256:97f630eeecf8401c64d60e3b530a7adb3ef90af6c36fcb636559de3e3ad04514",
   "pr_number": 4855,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4855",
-  "pre_merge_closure": {
-    "basis_commit": "28e558d85eaea57a1144c32715b2632b34f98676",
-    "branch": "task/202608202141-WC5RF1/improve-the-root-readme-around-the-semantic-agen",
-    "pr_number": 4855,
-    "recorded_at": "2026-08-20T22:23:57.338Z",
-    "state": "closed_before_merge"
-  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -27,6 +20,6 @@
   "task_id": "202608202141-WC5RF1",
   "updated_at": "2026-08-20T22:21:33.308Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }

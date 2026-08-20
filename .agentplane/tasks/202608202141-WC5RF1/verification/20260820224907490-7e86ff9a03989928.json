@@ -1,0 +1,83 @@
+{
+  "details": null,
+  "digest": "sha256:7e86ff9a03989928da569b12b008bcea23af0a175e8c381b11a9852712179364",
+  "implementation_sha": "7d0cee50ba5a9f310b6537a299ea459486f6e627",
+  "input": {
+    "context": {
+      "digest": "sha256:c604a3866814dba57d1e8b75bf0340937981e8280dda0ec9356a7987f4282f36",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:b30cf398936716437dd5803de712109d8e0553b20ed07333aef85b769a370bea",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "23fb0196bd6db314e48fe712bf3bb85f9c5ca609",
+      "digest": "sha256:94961ae2b0d8bb5b6095b4b64a23a5eb382d7317e52b4a1fd3eae0a57555830f",
+      "strategy": "branch_diff",
+      "target_sha": "7d0cee50ba5a9f310b6537a299ea459486f6e627"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:30b20e6658ee0f44fe42b8dad9b5a20e76e3844341f28112c28df4fcafbe05d5",
+    "verify_steps_digest": "sha256:db1ef94ab77cfe1d02b3f5995262b0482f94697efed012384b6c15b0740196a0"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: the recorded implementation identity excludes the committed P1 README correction, so verification provenance is stale even though the local checks pass.",
+  "recorded_at": "2026-08-20T22:49:07.490Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Improve the root README around the semantic-agent and deterministic-CLI boundary\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Improve the root README around the semantic-agent and deterministic-CLI boundary\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:db1ef94ab77cfe1d02b3f5995262b0482f94697efed012384b6c15b0740196a0",
+  "task_id": "202608202141-WC5RF1",
+  "verification_command": "agentplane task verify rework 202608202141-WC5RF1 --rework --by TESTER",
+  "verifier": "TESTER"
+}
