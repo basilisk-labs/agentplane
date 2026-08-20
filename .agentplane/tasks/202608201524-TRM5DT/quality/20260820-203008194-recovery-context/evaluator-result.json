@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The scoped implementation commit c2b5a231a changes only three provider implementation files plus AgentPlane-owned PR projections; four internal helpers lose unintended exports and two dead helpers are removed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/b90d2c0aeb770964571d8bd64fa4c1cd32f44e1a0c6d8828d515c5d54cfe8824.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "A fresh evaluator run of bun run knip:check passes with the agentplane CLI at files=0/0 and total=0/0, directly resolving the hosted verify-static failure.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/b90d2c0aeb770964571d8bd64fa4c1cd32f44e1a0c6d8828d515c5d54cfe8824.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Supervisor evidence records a clean final repository state, passing diff checks, the focused 39-file/253-test provider suite, typecheck, the exact verify-static equivalent, and the full local CI with exit code 0.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/b90d2c0aeb770964571d8bd64fa4c1cd32f44e1a0c6d8828d515c5d54cfe8824.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The rework does not widen Knip baselines, alter glab authentication, change provider contracts, or modify runtime control flow.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/b90d2c0aeb770964571d8bd64fa4c1cd32f44e1a0c6d8828d515c5d54cfe8824.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: The exact published SHA still requires a fresh successful hosted CI run before merge.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/b90d2c0aeb770964571d8bd64fa4c1cd32f44e1a0c6d8828d515c5d54cfe8824.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Real GitLab.com and self-managed GitLab behavior remains fixture-qualified until a separately authorized live GitLab qualification is performed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/b90d2c0aeb770964571d8bd64fa4c1cd32f44e1a0c6d8828d515c5d54cfe8824.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

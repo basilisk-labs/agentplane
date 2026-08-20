@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -42,33 +42,34 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-20T20:04:38.208Z"
+  updated_at: "2026-08-20T20:31:17.596Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "71dbf135c0c2d2b2583a92c310c9351573407c4a"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "c2b5a231ab68f3de8d1916b0e90281ae0e1bd313"
   blueprint_digest: "e79d8f93b29a9f61a846f9cb71db7cb76e99e0508d3bd4fab66e1fa9cc5c05be"
   evidence_refs:
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-200344310-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-200344310-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/db440ec328a083f7296fa10078b1e8fd6e52407954c4906291de7fc9276d5294.md"
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-200344310-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-200344310-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-200344310-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-203008194-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-203008194-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/1e4631f62ffa986d814bb75b7e32c52c69a52eabe24e5f85a072e70b2d79ec94.md"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-203008194-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-203008194-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-203008194-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608201524-TRM5DT/README.md"
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/5e8f461baee97733b76d473c23e9c52a77b027f374f7f4d0c3342545833953b2.patch"
-    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/435623a9f3d02a873357234f87d268f23e8c48eb6034456a40c2ae9b4d5d9f1f.json"
-    - ".agentplane/tasks/202608201524-TRM5DT/verification/20260820200323787-3d62609170589331.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/b90d2c0aeb770964571d8bd64fa4c1cd32f44e1a0c6d8828d515c5d54cfe8824.patch"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/7b9e684c5d57d4fba54177ce7469ef1941f778893633d06ae1464501660a5518.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/verification/20260820202951306-40642a1034f86c84.json"
     - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/529e1ac62387109b0d1bcae531e29149e71bbdffdbee3935a832c5c4aa77ee00.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The implementation dispatches on the persisted provider identity before protection lookup and preserves the existing GitHub compatibility branch."
-    - "GitLab preparation supplies the explicit recorded hostname and target project to resolveGitLabBaseMergeRequestProtection, fails closed when that lookup is unavailable, and treats the hosted MR as sole merge authority for both protected and confirmed-unprotected bases."
-    - "The same recorded provider identity is forwarded to exact-head hosted lookup, enabling self-managed GitLab provider selection and identity-drift checks."
-    - "The regression test proves GitLab protection is called and GitHub protection is not; the focused provider suite passes 41 files and 305 tests, and the new exact SHA passed full local CI."
-    - "Residual risk: A separately authorized hosted qualification should exercise GitLab.com and a self-managed GitLab instance before release promotion."
+    - "The scoped implementation commit c2b5a231a changes only three provider implementation files plus AgentPlane-owned PR projections; four internal helpers lose unintended exports and two dead helpers are removed."
+    - "A fresh evaluator run of bun run knip:check passes with the agentplane CLI at files=0/0 and total=0/0, directly resolving the hosted verify-static failure."
+    - "Supervisor evidence records a clean final repository state, passing diff checks, the focused 39-file/253-test provider suite, typecheck, the exact verify-static equivalent, and the full local CI with exit code 0."
+    - "The rework does not widen Knip baselines, alter glab authentication, change provider contracts, or modify runtime control flow."
+    - "Residual risk: The exact published SHA still requires a fresh successful hosted CI run before merge."
+    - "Residual risk: Real GitLab.com and self-managed GitLab behavior remains fixture-qualified until a separately authorized live GitLab qualification is performed."
 token_usage:
   agent_runs: 9
   input_tokens: null
@@ -569,7 +570,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-20T20:29:54.059Z"
+doc_updated_at: "2026-08-20T20:31:17.628Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement universal GitHub/GitLab hosted change-request support in an isolated branch_pr worktree. Preserve current GitHub behavior behind a provider adapter. Resolve provider host/project from the publication Git remote; use existing gh session for GitHub and external glab authentication plus glab api for GitLab without reading or storing tokens. Cover idempotent PR/MR lookup/create/update, normalized metadata, exact-head hosted checks, mergeability and SHA-guarded merge, external-merge reconciliation, typed failures, compatibility migration, docs, and regression/E2E-style CLI fixtures. Do not perform interactive auth, modify credentials, or touch external providers during implementation tests."
 sections:
