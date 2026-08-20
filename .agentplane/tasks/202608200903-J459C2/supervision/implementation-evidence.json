@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check acebec5f59820ab75485d25d07c3192ca6edba3e..800556be3abbe1800f28ca8de31ed17640563906",
+      "command": "git diff --check 5a1eb710a8fccdc86eaa2fd520312e6a0fb1887d..811850d00776e5d7a28e960e89660de3e0f7278f",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB acebec5f59820ab75485d25d07c3192ca6edba3e..800556be3abbe1800f28ca8de31ed17640563906",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5a1eb710a8fccdc86eaa2fd520312e6a0fb1887d..811850d00776e5d7a28e960e89660de3e0f7278f",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -23,32 +23,7 @@
         "M\t.agentplane/tasks/202608200903-J459C2/pr/github-title.txt",
         "M\t.agentplane/tasks/202608200903-J459C2/pr/meta.json",
         "M\t.agentplane/tasks/202608200903-J459C2/pr/review.md",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts",
-        "A\tpackages/agentplane/src/commands/evaluator/evaluator-execution-base.ts",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-review-apply.ts",
-        "A\tpackages/agentplane/src/commands/evaluator/evaluator-review-support.ts",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
-        "A\tpackages/agentplane/src/commands/integrate-queue-direct.ts",
-        "M\tpackages/agentplane/src/commands/integrate-queue.command.ts",
-        "A\tpackages/agentplane/src/commands/pr/integrate/queue-state-types.ts",
-        "M\tpackages/agentplane/src/commands/pr/integrate/queue-state.ts",
-        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.ts",
-        "A\tpackages/agentplane/src/commands/shared/route-gate-priority.ts",
-        "A\tpackages/agentplane/src/commands/shared/task-verification-input-types.ts",
-        "M\tpackages/agentplane/src/commands/shared/task-verification-input.ts",
-        "A\tpackages/agentplane/src/commands/shared/task-verification-record-parser.ts",
-        "M\tpackages/agentplane/src/commands/shared/task-verification-records.ts",
-        "A\tpackages/agentplane/src/commands/task/direct-task-supervisor-operation.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor.ts",
-        "A\tpackages/agentplane/src/commands/task/finish-closeout-journal.testkit.ts",
-        "M\tpackages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
-        "M\tpackages/agentplane/src/commands/task/finish.validation.unit.test.ts",
-        "M\tpackages/agentplane/src/commands/task/verify-record-execute.ts",
-        "A\tpackages/agentplane/src/commands/task/verify-record-references.ts",
-        "A\tpackages/agentplane/src/commands/task/verify-record.testkit.ts",
-        "M\tpackages/agentplane/src/commands/task/verify-record.unit.test.ts",
-        "A\tpackages/agentplane/src/runner/usecases/task-run-options.ts",
-        "M\tpackages/agentplane/src/runner/usecases/task-run.ts"
+        "M\tscripts/checks/run-local-ci.mjs"
       ]
     },
     {
@@ -58,179 +33,23 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "acebec5f59820ab75485d25d07c3192ca6edba3e",
-  "implementation_commit": "800556be3abbe1800f28ca8de31ed17640563906",
+  "execution_base_commit": "5a1eb710a8fccdc86eaa2fd520312e6a0fb1887d",
+  "implementation_commit": "811850d00776e5d7a28e960e89660de3e0f7278f",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M .agentplane/tasks/202608200903-J459C2/README.md",
-      " M packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts",
-      " M packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts",
-      " M packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
-      " M packages/agentplane/src/commands/integrate-queue.command.ts",
-      " M packages/agentplane/src/commands/pr/integrate/queue-state.ts",
-      " M packages/agentplane/src/commands/shared/route-decision-blockers.ts",
-      " M packages/agentplane/src/commands/shared/task-verification-input.ts",
-      " M packages/agentplane/src/commands/shared/task-verification-records.ts",
-      " M packages/agentplane/src/commands/task/direct-task-supervisor.ts",
-      " M packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
-      " M packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
-      " M packages/agentplane/src/commands/task/verify-record-execute.ts",
-      " M packages/agentplane/src/commands/task/verify-record.unit.test.ts",
-      " M packages/agentplane/src/runner/usecases/task-run.ts",
-      "?? packages/agentplane/src/commands/evaluator/evaluator-execution-base.ts",
-      "?? packages/agentplane/src/commands/evaluator/evaluator-review-support.ts",
-      "?? packages/agentplane/src/commands/integrate-queue-direct.ts",
-      "?? packages/agentplane/src/commands/pr/integrate/queue-state-types.ts",
-      "?? packages/agentplane/src/commands/shared/route-gate-priority.ts",
-      "?? packages/agentplane/src/commands/shared/task-verification-input-types.ts",
-      "?? packages/agentplane/src/commands/shared/task-verification-record-parser.ts",
-      "?? packages/agentplane/src/commands/task/direct-task-supervisor-operation.ts",
-      "?? packages/agentplane/src/commands/task/finish-closeout-journal.testkit.ts",
-      "?? packages/agentplane/src/commands/task/verify-record-references.ts",
-      "?? packages/agentplane/src/commands/task/verify-record.testkit.ts",
-      "?? packages/agentplane/src/runner/usecases/task-run-options.ts"
+      " M .agentplane/tasks/202608200903-J459C2/README.md"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202608200903-J459C2/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/integrate-queue.command.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/pr/integrate/queue-state.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/route-decision-blockers.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/task-verification-input.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/task-verification-records.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/direct-task-supervisor.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/verify-record-execute.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/verify-record.unit.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/runner/usecases/task-run.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/evaluator/evaluator-execution-base.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/evaluator/evaluator-review-support.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/integrate-queue-direct.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/pr/integrate/queue-state-types.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/shared/route-gate-priority.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/shared/task-verification-input-types.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/shared/task-verification-record-parser.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/task/direct-task-supervisor-operation.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/task/finish-closeout-journal.testkit.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/task/verify-record-references.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/task/verify-record.testkit.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/runner/usecases/task-run-options.ts"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202608200903-J459C2/README.md",
-      " M packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts",
-      " M packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts",
-      " M packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
-      " M packages/agentplane/src/commands/integrate-queue.command.ts",
-      " M packages/agentplane/src/commands/pr/integrate/queue-state.ts",
-      " M packages/agentplane/src/commands/shared/route-decision-blockers.ts",
-      " M packages/agentplane/src/commands/shared/task-verification-input.ts",
-      " M packages/agentplane/src/commands/shared/task-verification-records.ts",
-      " M packages/agentplane/src/commands/task/direct-task-supervisor.ts",
-      " M packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
-      " M packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
-      " M packages/agentplane/src/commands/task/verify-record-execute.ts",
-      " M packages/agentplane/src/commands/task/verify-record.unit.test.ts",
-      " M packages/agentplane/src/runner/usecases/task-run.ts",
-      "?? packages/agentplane/src/commands/evaluator/evaluator-execution-base.ts",
-      "?? packages/agentplane/src/commands/evaluator/evaluator-review-support.ts",
-      "?? packages/agentplane/src/commands/integrate-queue-direct.ts",
-      "?? packages/agentplane/src/commands/pr/integrate/queue-state-types.ts",
-      "?? packages/agentplane/src/commands/shared/route-gate-priority.ts",
-      "?? packages/agentplane/src/commands/shared/task-verification-input-types.ts",
-      "?? packages/agentplane/src/commands/shared/task-verification-record-parser.ts",
-      "?? packages/agentplane/src/commands/task/direct-task-supervisor-operation.ts",
-      "?? packages/agentplane/src/commands/task/finish-closeout-journal.testkit.ts",
-      "?? packages/agentplane/src/commands/task/verify-record-references.ts",
-      "?? packages/agentplane/src/commands/task/verify-record.testkit.ts",
-      "?? packages/agentplane/src/runner/usecases/task-run-options.ts"
+      " M .agentplane/tasks/202608200903-J459C2/README.md"
     ],
     "unchanged_from_execution_baseline": []
   },
