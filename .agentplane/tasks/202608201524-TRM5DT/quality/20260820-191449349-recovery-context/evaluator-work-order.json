@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608201524-TRM5DT-bdd186a18b5ca29a888071d2",
+  "prepared_at": "2026-08-20T19:14:49.349Z",
+  "task": {
+    "id": "202608201524-TRM5DT",
+    "revision": 8,
+    "objective": "Implement provider-neutral GitHub and GitLab change-request lifecycle\n\nImplement universal GitHub/GitLab hosted change-request support in an isolated branch_pr worktree. Preserve current GitHub behavior behind a provider adapter. Resolve provider host/project from the publication Git remote; use existing gh session for GitHub and external glab authentication plus glab api for GitLab without reading or storing tokens. Cover idempotent PR/MR lookup/create/update, normalized metadata, exact-head hosted checks, mergeability and SHA-guarded merge, external-merge reconciliation, typed failures, compatibility migration, docs, and regression/E2E-style CLI fixtures. Do not perform interactive auth, modify credentials, or touch external providers during implementation tests.",
+    "acceptance_criteria": [
+      "agentplane doctor",
+      "bun run lint:core",
+      "bun run typecheck",
+      "bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Implement universal GitHub/GitLab hosted change-request support in an isolated branch_pr worktree. Preserve current GitHub behavior behind a provider adapter. Resolve provider host/project from the publication Git remote; use existing gh session for GitHub and external glab authentication plus glab api for GitLab without reading or storing tokens. Cover idempotent PR/MR lookup/create/update, normalized metadata, exact-head hosted checks, mergeability and SHA-guarded merge, external-merge reconciliation, typed failures, compatibility migration, docs, and regression/E2E-style CLI fixtures. Do not perform interactive auth, modify credentials, or touch external providers during implementation tests.\n- Out of scope: unrelated refactors not required for \"Implement provider-neutral GitHub and GitLab change-request lifecycle\".",
+      "Implement GitHub/GitLab support as one provider-neutral change-request lifecycle in branch_pr isolation. First extract the shared repository identity, authenticated CLI transport, normalized change-request observation, and provider registry while keeping the existing GitHub adapter behavior-compatible. Then add a GitLab adapter backed by external glab authentication and explicit glab api calls, resolving host and project from the actual publication remote and never reading, storing, or initiating credentials. Migrate PR metadata and artifacts compatibly, route open/update/check/head/merge/conflict/reconciliation through the provider contract, preserve exact-head and effect-journal safety, add focused fixtures for GitLab.com/self-managed/fork/error/recovery cases, update user documentation, and run targeted plus full regression gates. No live provider writes or credential changes are part of implementation verification; real hosted qualification remains a separately authorized release gate.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/pr-meta.test.ts packages/core/src/tasks/task-artifact-schema.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run lint:core`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `node .agentplane/policy/check-routing.mjs`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Run `agentplane doctor`. Expected: it succeeds and confirms the requested outcome for this task.\n6. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n7. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "90f0339fdc8a99d2420933714b077854f356d482",
+  "diff_base_sha": "292b232b3160b22c47c6cc206fade625e9377fed",
+  "blueprint_digest": "e79d8f93b29a9f61a846f9cb71db7cb76e99e0508d3bd4fab66e1fa9cc5c05be",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-191449349-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:e5cf133b8dd3be683f51473eaa522aea424011d6c673e5b3ac5ce9b103c268c8",
+    "prompt_path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/d2971268cbea2762c9a61e04c4f3def0ec551a6189c5e69927658bb8ee686d2c.md",
+    "result_schema_path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608201524-TRM5DT/README.md",
+      "sha256": "sha256:e98db5297c87e5101f97c1dea406397cfec6d2f3074a619ee4ca6ba33a663bd7",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/61b90cfb23cf87f45b1dc0314dadebf8b50860f91442635ef6df833ccc72ecb5.patch",
+      "sha256": "sha256:61b90cfb23cf87f45b1dc0314dadebf8b50860f91442635ef6df833ccc72ecb5",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/3578dd78f8157d4f40ac415a2e0324f0509f60b71b23db5b432e436e57854f81.json",
+      "sha256": "sha256:3578dd78f8157d4f40ac415a2e0324f0509f60b71b23db5b432e436e57854f81",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608201524-TRM5DT/verification/20260820173432863-3258d678de04d49b.json",
+      "sha256": "sha256:856f22b9310a57d1c72de1638161e8fd0881a0412211a2b8895f09b070096454",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/529e1ac62387109b0d1bcae531e29149e71bbdffdbee3935a832c5c4aa77ee00.json",
+      "sha256": "sha256:529e1ac62387109b0d1bcae531e29149e71bbdffdbee3935a832c5c4aa77ee00",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

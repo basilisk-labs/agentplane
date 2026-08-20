@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "High: bun run docs:site:generate:check exits 1 because website/static/llms-full.txt is stale. This is a directly reproduced required full-regression failure and cannot be overridden by the task verification projection reporting ok.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/61b90cfb23cf87f45b1dc0314dadebf8b50860f91442635ef6df833ccc72ecb5.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The provider-neutral GitHub/GitLab implementation, focused 41-file/304-test suite, full-fast groups, agentplane doctor, lint:core, typecheck, routing policy check, schema sync, and CLI docs freshness have passed according to the recorded execution evidence.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/61b90cfb23cf87f45b1dc0314dadebf8b50860f91442635ef6df833ccc72ecb5.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The stale generated website artifact is outside the implementation episode's writable roots, so correcting it requires a fresh executor authority scope rather than an evaluator mutation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/61b90cfb23cf87f45b1dc0314dadebf8b50860f91442635ef6df833ccc72ecb5.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: Real GitLab.com and self-managed GitLab qualification remains a later hosted/release gate because this implementation task forbids external-provider effects during tests.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/61b90cfb23cf87f45b1dc0314dadebf8b50860f91442635ef6df833ccc72ecb5.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Regenerate website/static/llms-full.txt, rerun bun run docs:site:generate:check, and rerun bun run ci:local:full before PR publication."
+  ],
+  "hidden_assumptions": [
+    "A persisted verification status of ok is not sufficient when a broader required gate is independently reproducible as failing."
+  ],
+  "recovery_context": "The implementation is committed and its focused/full-fast checks are green. Extend executor authority to website/static/llms-full.txt, regenerate the projection, rerun the documentation projection check and full local CI, then repeat evaluation before opening the PR."
+}

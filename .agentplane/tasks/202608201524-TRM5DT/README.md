@@ -4,7 +4,7 @@ title: "Implement provider-neutral GitHub and GitLab change-request lifecycle"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -38,6 +38,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-20T19:16:43.681Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 4 typed finding(s)."
+  evaluated_sha: "90f0339fdc8a99d2420933714b077854f356d482"
+  blueprint_digest: "e79d8f93b29a9f61a846f9cb71db7cb76e99e0508d3bd4fab66e1fa9cc5c05be"
+  evidence_refs:
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-191449349-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-191449349-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/d2971268cbea2762c9a61e04c4f3def0ec551a6189c5e69927658bb8ee686d2c.md"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-191449349-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-191449349-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-191449349-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/20260820-191449349-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/README.md"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/61b90cfb23cf87f45b1dc0314dadebf8b50860f91442635ef6df833ccc72ecb5.patch"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/3578dd78f8157d4f40ac415a2e0324f0509f60b71b23db5b432e436e57854f81.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/verification/20260820173432863-3258d678de04d49b.json"
+    - ".agentplane/tasks/202608201524-TRM5DT/quality/objects/sha256/529e1ac62387109b0d1bcae531e29149e71bbdffdbee3935a832c5c4aa77ee00.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "High: bun run docs:site:generate:check exits 1 because website/static/llms-full.txt is stale. This is a directly reproduced required full-regression failure and cannot be overridden by the task verification projection reporting ok."
+    - "The provider-neutral GitHub/GitLab implementation, focused 41-file/304-test suite, full-fast groups, agentplane doctor, lint:core, typecheck, routing policy check, schema sync, and CLI docs freshness have passed according to the recorded execution evidence."
+    - "The stale generated website artifact is outside the implementation episode's writable roots, so correcting it requires a fresh executor authority scope rather than an evaluator mutation."
+    - "Residual risk: Real GitLab.com and self-managed GitLab qualification remains a later hosted/release gate because this implementation task forbids external-provider effects during tests."
 execution_route:
   frozen: true
   reason_codes:
