@@ -6,7 +6,7 @@ Created: 2026-08-20T16:09:36.710Z
 
 - Task: `202608201524-TRM5DT`
 - Title: Implement provider-neutral GitHub and GitLab change-request lifecycle
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608201524-TRM5DT/implement-provider-neutral-github-and-gitlab-cha`
 - Canonical task record: `.agentplane/tasks/202608201524-TRM5DT/README.md`
 
