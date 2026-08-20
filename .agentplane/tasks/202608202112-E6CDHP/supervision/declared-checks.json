@@ -1,0 +1,17 @@
+{
+  "checks": [
+    {
+      "command": "pnpm --filter @agentplaneorg/agentplane test",
+      "duration_ms": 1,
+      "exit_code": null,
+      "script": null,
+      "stderr_tail": "process command is not in the allowed executable set: pnpm",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check could not run: pnpm --filter @agentplaneorg/agentplane test",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202608202112-E6CDHP"
+}

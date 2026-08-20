@@ -15,14 +15,14 @@ Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutatio
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check could not run: pnpm --filter @agentplaneorg/agentplane test
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-20T21:18:16.979Z
+- Updated: 2026-08-20T21:32:39.733Z
 - Branch: task/202608202112-E6CDHP/fix-live-gitlab-mr-transport-and-provider-neutra
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

@@ -4,7 +4,7 @@ title: "Fix live GitLab MR transport and provider-neutral mergeability validatio
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +26,11 @@ plan_approval:
   updated_by: "USER"
   note: "Approved explicitly by Denis in Codex on 2026-08-21 after reviewing the live GitLab findings and remediation plan."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-20T21:32:46.976Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check could not run: pnpm --filter @agentplaneorg/agentplane test"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -92,7 +92,8 @@ execution_contract:
       - "packages/agentplane/src/commands/pr/conflict-rework.ts"
       - "packages/agentplane/src/commands/pr/internal"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -107,7 +108,10 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -211,9 +215,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "69eb542b0b7a12904f58c1f6b4cba9c082f46129"
-  message: "🚧 E6CDHP task: apply external agent result"
+      - "verification_recovery:recorded-check-1"
+commit: null
 comments:
   -
     author: "CODER"
@@ -237,8 +240,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 69eb542b0b7a. CLI accepted one state-bound external-agent semantic result."
     commit: "69eb542b0b7a12904f58c1f6b4cba9c082f46129"
+  -
+    type: "verify"
+    at: "2026-08-20T21:32:46.976Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check could not run: pnpm --filter @agentplaneorg/agentplane test"
 doc_version: 3
-doc_updated_at: "2026-08-20T21:31:34.442Z"
+doc_updated_at: "2026-08-20T21:32:48.276Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
@@ -258,6 +267,41 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-20T21:32:46.976Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check could not run: pnpm --filter @agentplaneorg/agentplane test
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:724d2c89195564727b67f0e61eeaeafbbc4c4ec555feff38e6ac7a018f6f5085
+
+    Details:
+
+    Command: pnpm --filter @agentplaneorg/agentplane test
+    Result: fail
+    Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608202112-E6CDHP declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+    - old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -297,6 +341,41 @@ PLANNER fallback scaffold for "Fix live GitLab MR transport and provider-neutral
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-20T21:32:46.976Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check could not run: pnpm --filter @agentplaneorg/agentplane test
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:724d2c89195564727b67f0e61eeaeafbbc4c4ec555feff38e6ac7a018f6f5085
+
+Details:
+
+Command: pnpm --filter @agentplaneorg/agentplane test
+Result: fail
+Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608202112-E6CDHP declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+- old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
