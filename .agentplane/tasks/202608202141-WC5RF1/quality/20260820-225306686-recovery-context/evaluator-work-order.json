@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608202141-WC5RF1-72af8637330b8c2f9518b560",
+  "prepared_at": "2026-08-20T22:53:06.686Z",
+  "task": {
+    "id": "202608202141-WC5RF1",
+    "revision": 18,
+    "objective": "Improve the root README around the semantic-agent and deterministic-CLI boundary\n\nImprove the root README around the semantic-agent and deterministic-CLI boundary",
+    "acceptance_criteria": [
+      "- In scope: Improve the root README around the semantic-agent and deterministic-CLI boundary.\n- Out of scope: unrelated refactors not required for \"Improve the root README around the semantic-agent and deterministic-CLI boundary\".",
+      "Rewrite the root README as a concise product entry point centered on the human-agent-control-plane split, with an executable quick start, a compact workflow explanation, and clear documentation routes.",
+      "PLANNER fallback scaffold for \"Improve the root README around the semantic-agent and deterministic-CLI boundary\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Improve the root README around the semantic-agent and deterministic-CLI boundary\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "fe9d2e622d46f3d635d3be3eef0bb3c190d0095e",
+  "diff_base_sha": "60be0145753e9e2aecf31f4bbd8471895db13395",
+  "blueprint_digest": "a248e393dac1bbd033b4170944771af2eefd6ac9878f769982a5b08e518c2946",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608202141-WC5RF1/quality/20260820-225306686-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:da62dd5655dadcc34da9b369e1679521e614e6339f9b808aceb64443efbc0bb0",
+    "prompt_path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/6bb07a66bb940147617ecd8802d8784e2502b7db39c96407447389e35276f24d.md",
+    "result_schema_path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608202141-WC5RF1/README.md",
+      "sha256": "sha256:7f159a4b16893f89616213a4f8c22420118b98cffed00d1e789ba5fa6cc24405",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/9a7fe3babf9f5068bef6a2b10056a8bbe4ce9ebb703b777b13236c0c015c5834.patch",
+      "sha256": "sha256:9a7fe3babf9f5068bef6a2b10056a8bbe4ce9ebb703b777b13236c0c015c5834",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/827d6ce44f06f089045daa425fb674de2429021e1e31a6ad25b628e413135152.json",
+      "sha256": "sha256:827d6ce44f06f089045daa425fb674de2429021e1e31a6ad25b628e413135152",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608202141-WC5RF1/verification/20260820225255507-b1a5a2f59f925c2e.json",
+      "sha256": "sha256:ed678c763eb9cae5a51ae993cf4f87599d0fff3ef7d4f22dc937e196265bba07",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608202141-WC5RF1/quality/objects/sha256/467d9683f5aa1409ac2ab7a37a6ae28093728977962e4e56fd2a3389fa2c5c9a.json",
+      "sha256": "sha256:467d9683f5aa1409ac2ab7a37a6ae28093728977962e4e56fd2a3389fa2c5c9a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.docs.md",
+      "sha256": "sha256:67cf60d5b18640db0c0141b9a6fea266f6cf89aecc8e7bda542e43ab7b4ef0ea",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

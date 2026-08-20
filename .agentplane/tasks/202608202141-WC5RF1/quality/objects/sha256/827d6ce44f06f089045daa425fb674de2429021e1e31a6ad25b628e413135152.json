@@ -1,0 +1,140 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "documentation",
+        "repository_write"
+      ],
+      "external_effects": [],
+      "components": [
+        "README.md"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:documentation",
+        "repository_effect:repository_write",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "README.md"
+      ],
+      "changed_files": [
+        "README.md"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "docs_contract",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core"
+    ],
+    "escalation_reasons": [],
+    "requires_full_regression": false,
+    "requires_real_e2e": false,
+    "digest": "sha256:30b20e6658ee0f44fe42b8dad9b5a20e76e3844341f28112c28df4fcafbe05d5"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-20T22:52:55.507Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608202141-WC5RF1/verification/20260820225255507-b1a5a2f59f925c2e.json",
+      "sha256": "sha256:ed678c763eb9cae5a51ae993cf4f87599d0fff3ef7d4f22dc937e196265bba07"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 685eba7b2dda1d7d193372d57215dc31e7c5c450..fe9d2e622d46f3d635d3be3eef0bb3c190d0095e",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 685eba7b2dda1d7d193372d57215dc31e7c5c450..fe9d2e622d46f3d635d3be3eef0bb3c190d0095e",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608202141-WC5RF1/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608202141-WC5RF1/pr/github-body.md",
+          "M\t.agentplane/tasks/202608202141-WC5RF1/pr/meta.json",
+          "M\t.agentplane/tasks/202608202141-WC5RF1/pr/review.md",
+          "M\tREADME.md"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "685eba7b2dda1d7d193372d57215dc31e7c5c450",
+    "implementation_commit": "fe9d2e622d46f3d635d3be3eef0bb3c190d0095e",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608202141-WC5RF1",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608202141-WC5RF1/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
