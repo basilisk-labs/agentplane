@@ -3,8 +3,8 @@
   "branch": "task/202608202141-WC5RF1/improve-the-root-readme-around-the-semantic-agen",
   "created_at": "2026-08-20T22:06:49.088Z",
   "diffstat_sha256": "sha256:758f99638930d4c508d4af807a7a3b94e5226d1282f87bfce0fe7ff93b5470d6",
-  "last_verified_at": "2026-08-20T22:52:55.507Z",
-  "last_verified_diffstat_sha256": "sha256:3b2513f985608b4b443557c6bf3e9ed3c1e9ada5ca605d642512915781a4559b",
+  "last_verified_at": "2026-08-20T23:20:25.508Z",
+  "last_verified_diffstat_sha256": "sha256:758f99638930d4c508d4af807a7a3b94e5226d1282f87bfce0fe7ff93b5470d6",
   "pr_number": 4855,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4855",
   "pre_merge_closure": {
