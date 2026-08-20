@@ -6,7 +6,7 @@ Created: 2026-08-20T15:49:58.682Z
 
 - Task: `202608200903-J459C2`
 - Title: Make task execution authority local and direct execution workspace-safe
-- Status: BLOCKED
+- Status: DOING
 - Branch: `task/202608200903-J459C2/make-task-execution-authority-local-and-direct-e`
 - Canonical task record: `.agentplane/tasks/202608200903-J459C2/README.md`
 
@@ -137,8 +137,8 @@ Created: 2026-08-20T15:49:58.682Z
  .../src/runtime/workspace-allocation/types.ts      |  27 ++
  .../baselines/v0.7-compatibility-candidate.json    |  24 +-
  .../check-compatibility-contract-baseline.mjs      |  10 +-
- scripts/checks/run-local-ci.mjs                    |  21 +-
- 109 files changed, 3800 insertions(+), 960 deletions(-)
+ scripts/checks/run-local-ci.mjs                    |   6 +
+ 109 files changed, 3791 insertions(+), 954 deletions(-)
 ```
 
 </details>

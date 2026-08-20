@@ -28,6 +28,12 @@ function sanitizeGitProcessEnv(env) {
   delete nextEnv.AGENTPLANE_ALLOW_HOOKS;
   delete nextEnv.AGENTPLANE_ALLOW_CI;
   delete nextEnv.AGENTPLANE_ALLOW_UPGRADE;
+  delete nextEnv.AGENTPLANE_CLOUD_ENDPOINT;
+  delete nextEnv.AGENTPLANE_CLOUD_TOKEN;
+  delete nextEnv.AGENTPLANE_CLOUD_PROJECT_ID;
+  delete nextEnv.AGENTPLANE_CLOUD_PROVIDER;
+  delete nextEnv.AGENTPLANE_CLOUD_REMOTE_CREATE_POLICY;
+  delete nextEnv.AGENTPLANE_CLOUD_AUTO_PUSH_ON_MUTATION;
   return nextEnv;
 }
 
@@ -467,21 +473,12 @@ async function runFullFastPath() {
     env: groupEnv,
     timeoutMs: LOCAL_VITEST_SUITE_TIMEOUT_MS,
   }));
-  const coreWave = groups.filter(({ id }) => id === "docs-schema" || id === "core");
-  const remainingWave = groups.filter(({ id }) => id !== "docs-schema" && id !== "core");
-  const coreResult = await runVerificationGroups(coreWave, {
-    concurrency: Math.min(2, coreWave.length),
+  const result = await runVerificationGroups(groups, {
+    concurrency: Math.min(2, groups.length),
     cwd: process.cwd(),
     env: baseEnv,
   });
-  const remainingResult = await runVerificationGroups(remainingWave, {
-    concurrency: Math.min(2, remainingWave.length),
-    cwd: process.cwd(),
-    env: baseEnv,
-  });
-  const results = [...coreResult.results, ...remainingResult.results];
-  const ok = coreResult.ok && remainingResult.ok;
-  renderVerificationGroupResults(results);
+  renderVerificationGroupResults(result.results);
   process.stdout.write(
     `${JSON.stringify({
       schema_version: 1,
@@ -489,13 +486,13 @@ async function runFullFastPath() {
       route: "full-fast",
       wall_clock_ms: Math.round(performance.now() - startedAt),
       selected_groups: groups.length + 1,
-      executed_groups: results.length + buildResult.results.length,
+      executed_groups: result.results.length + buildResult.results.length,
       parallel_group_concurrency: 2,
       build_invocations: 1,
-      ok,
+      ok: result.ok,
     })}\n`,
   );
-  if (!ok) throw new Error("Full verification group failed.");
+  if (!result.ok) throw new Error("Full verification group failed.");
 }
 
 function renderVerificationGroupResults(results) {
