@@ -4,7 +4,7 @@ title: "Make task execution authority local and direct execution workspace-safe"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 56
+revision: 57
 origin:
   system: "manual"
 depends_on: []
@@ -36,32 +36,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-20T21:25:52.269Z"
+  updated_at: "2026-08-20T21:58:43.143Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 4 typed finding(s)."
-  evaluated_sha: "08f0b1161f6d5c53f75f63b8562bd9f76ed9e235"
+  evaluated_sha: "bf575676346cab8e27c40c30fb0378ddedaf913b"
   blueprint_digest: "f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518"
   evidence_refs:
-    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-212455712-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-212455712-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/601bb4f555ef5c101f28d5ee47cc06e40ae00807a45173f981852800ad98b968.md"
-    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-212455712-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-212455712-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-212455712-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-215727699-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-215727699-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/45ec249fe21e51ec372d25efff3021531912c9ab9d63b734e1bae40cf270bec0.md"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-215727699-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-215727699-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-215727699-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608200903-J459C2/README.md"
-    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/450942a955239971ff815e8eba3a7fcafaa7584cf525b235b1252015b6edb7cc.patch"
-    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/f98fd4cd843acd9de2fd36e696073b8cfcf49cb4a72db89f5aef92da5f15381a.json"
-    - ".agentplane/tasks/202608200903-J459C2/verification/20260820212446131-8e21e5dfb9034ccc.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/d2c2c36c120feed7b0eaa3c759db712715a31e3fd08c3bfc177b82d9d157c4a1.patch"
+    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/53fa3e81582cdf8b26a097dee34f53e2d2a88704c8dc302da2277040a82890e8.json"
+    - ".agentplane/tasks/202608200903-J459C2/verification/20260820215715353-4b437de31b81b8de.json"
     - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/a266df3b865d99cb62af6a582bb17bb986f2ecaa45fdbe0c03341b3c6bd67d02.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No unresolved implementation finding in the scoped rework."
-    - "The regression reproduces the prior metadata/evaluator tail and proves that the resolver returns impl-sha rather than metadata-sha."
-    - "The shared task-set predicate is retained for linked batches, so recursive normalization does not widen artifact ownership."
-    - "Residual risk: Hosted provider checks must still pass for the exact published head before integration."
+    - "No unresolved implementation finding in the scoped execution-context plumbing change."
+    - "The finish call site supplies plan.execution and the verification gate requires and forwards it to hasAcceptedVerificationRecord."
+    - "Regression coverage asserts the exact execution context reaches the verification target, while the full supervisor check set passes for implementation SHA bf5756763."
+    - "Residual risk: Hosted provider checks must pass for the exact published pre-merge head."
 execution_route:
   frozen: true
   reason_codes:
