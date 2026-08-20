@@ -15,8 +15,13 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: blocked_external
+- Note:
+
+```text
+Compatibility provenance enforcement requires a bounded scripts/checks scope extension; full-fast
+also exposed parallel cloud-backend failures for focused diagnosis.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
