@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608202133-1C8P0N",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-20T22:13:25.435Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 4 typed finding(s).",
+  "evaluated_sha": "1fb801edebfc73e67c61045dffa97c1988308f09",
+  "blueprint_digest": "863ce2a3407976990cb57312ff9ed13cdf7db6530b6c30a7f89783df781c8d06",
+  "findings": [
+    "The shared prompt contract contains the six approved AP-TE Lite rules and keeps role-specific prompts subordinate to the shared contract.",
+    "The generated asset update is deterministic and the recorded agents, asset freshness, formatting, and policy routing checks all passed.",
+    "Bundled role prompts were audited without a historical rewrite, which matches the explicit task boundary.",
+    "Residual risk: Existing role prompt prose may not be fully normalized until a separately approved historical rewrite or linter is introduced."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608202133-1C8P0N/quality/objects/sha256/6e8522b299e43580980f85276416a391ba862b9def989aca46089592b50e4ef3.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The user accepts convention-only enforcement and no sentence-by-sentence rewrite of existing role prompts in this iteration."
+  ],
+  "residual_risks": []
+}
