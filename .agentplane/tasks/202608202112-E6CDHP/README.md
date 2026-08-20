@@ -4,7 +4,7 @@ title: "Fix live GitLab MR transport and provider-neutral mergeability validatio
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +26,11 @@ plan_approval:
   updated_by: "USER"
   note: "Approved explicitly by Denis in Codex on 2026-08-21 after reviewing the live GitLab findings and remediation plan."
 verification:
-  state: "pending"
-  updated_at: "2026-08-20T23:23:45.089Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 4
+  state: "blocked_external"
+  updated_at: "2026-08-20T23:44:49.101Z"
+  updated_by: "TESTER"
+  note: "Full supervisor check exposed a provider-less cleanup compatibility edge: identity fallback recognizes missing push URL but not missing fetch URL. Add the symmetric fetch fallback and rerun focused cleanup tests."
+  attempts: 5
 execution_route:
   frozen: true
   reason_codes:
@@ -97,12 +97,20 @@ execution_contract:
       - "packages/agentplane/src/commands/pr/integrate"
       - "packages/agentplane/src/commands/pr/internal"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
+      - "packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts"
+      - "packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts"
+      - "packages/agentplane/src/commands/branch/cleanup-merged-targeted-proof.ts"
+      - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.ts"
+      - "packages/agentplane/src/commands/pr/integrate/cmd.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/route-label.test.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/route-label.ts"
       - "packages/agentplane/src/commands/pr/internal/glab-api.test.ts"
       - "packages/agentplane/src/commands/pr/internal/glab-api.ts"
       - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
@@ -112,7 +120,10 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -159,7 +170,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:e0281740312f2150ae0c8455630283e4e310985fd1d4d753f8103d3f07f8a288"
+      digest: "sha256:73295117a5a086df05534dcf4510cb71b5b7a5056885cc6eb49c04b2e6c5525f"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -172,8 +183,15 @@ execution_contract:
         changed_components:
           - "packages/agentplane"
         changed_files:
+          - "packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts"
+          - "packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts"
+          - "packages/agentplane/src/commands/branch/cleanup-merged-targeted-proof.ts"
+          - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
           - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
           - "packages/agentplane/src/commands/pr/conflict-rework.ts"
+          - "packages/agentplane/src/commands/pr/integrate/cmd.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/route-label.test.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/route-label.ts"
           - "packages/agentplane/src/commands/pr/internal/glab-api.test.ts"
           - "packages/agentplane/src/commands/pr/internal/glab-api.ts"
           - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
@@ -218,6 +236,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
@@ -250,6 +269,18 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/branch, packages/agentplane/src/commands/pr/integrate; repository effects: repository_write, source_code, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: cb9e5bb7b917. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "USER"
+    body: "Resume after recorded verification rework to add the symmetric provider-less fetch URL fallback; scope and approval remain unchanged."
+  -
+    author: "CODER"
+    body: "Recovery: commit the verified fetch/push cleanup fallback repair while retiring the interrupted verification owner"
+  -
+    author: "CODER"
+    body: "Resume: implementation repair is committed | details: repeat verification from the clean task worktree"
 events:
   -
     type: "status"
@@ -342,9 +373,44 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Live GitLab guarded-integration qualification exposed a third provider-specific defect anticipated by the approved plan. Targeted cleanup reconciliation still observes GitHub only, so GitLab tasks report unavailable cleanup identity and state-bound integration authority cannot be granted. Integrate dry-run also hard-codes the hosted route label as github-pr. Recommended action: Approve the bounded provider-neutral scope extension, then replace GitHub-only cleanup observation with the existing change-request abstraction and make the dry-run route label provider-neutral. Requested scope: roots=packages/agentplane/src/commands/branch,packages/agentplane/src/commands/pr/integrate; repository effects=repository_write,source_code,tests; request digest=sha256:70b0582829d15378430386ccb57f65ba52c09d1391cbb78270812d1f50507943. Agentplane receipt: external-agent-blocker/tr_d8407a031f9e61846e4252a349ebf8b2/sha256:f62f8e0237e72867647e6931b38325f6b6d26f83ce0121ee04ad01fe2009d5ca/sha256:70b0582829d15378430386ccb57f65ba52c09d1391cbb78270812d1f50507943."
+  -
+    type: "status"
+    at: "2026-08-20T23:31:19.722Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: cb9e5bb7b917. CLI accepted one state-bound external-agent semantic result."
+    commit: "cb9e5bb7b917b7047e2ed24382100765b925625c"
+  -
+    type: "verify"
+    at: "2026-08-20T23:44:49.101Z"
+    author: "TESTER"
+    state: "blocked_external"
+    note: "Full supervisor check exposed a provider-less cleanup compatibility edge: identity fallback recognizes missing push URL but not missing fetch URL. Add the symmetric fetch fallback and rerun focused cleanup tests."
+  -
+    type: "status"
+    at: "2026-08-20T23:45:06.540Z"
+    author: "USER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume after recorded verification rework to add the symmetric provider-less fetch URL fallback; scope and approval remain unchanged."
+  -
+    type: "status"
+    at: "2026-08-20T23:53:30.892Z"
+    author: "CODER"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Recovery: commit the verified fetch/push cleanup fallback repair while retiring the interrupted verification owner"
+  -
+    type: "status"
+    at: "2026-08-20T23:53:34.666Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume: implementation repair is committed | details: repeat verification from the clean task worktree"
 doc_version: 3
-doc_updated_at: "2026-08-20T23:23:05.842Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-20T23:53:34.666Z"
+doc_updated_by: "CODER"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
   Summary: |-
@@ -503,6 +569,42 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-20T23:44:49.101Z — VERIFY — blocked_external
+
+    By: TESTER
+
+    Note: Full supervisor check exposed a provider-less cleanup compatibility edge: identity fallback recognizes missing push URL but not missing fetch URL. Add the symmetric fetch fallback and rerun focused cleanup tests.
+    Attempts: 5
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:7114450552638cafc9bbc3fe40bf9b65ac8c7bdae284eceaa8707e83dfb0d100
+
+    Details:
+
+    Check: critical_paths
+    Command: bun run --filter=agentplane test -- --maxWorkers=1
+    Result: fail
+    Evidence: cleanup-merged.targeted.test.ts provider-less task-close fixture failed when publication remote had zero fetch URLs
+    Scope: cleanup provider fallback compatibility
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+    - old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -529,7 +631,7 @@ extensions:
     status: "applied"
     transition_id: "tr_d8407a031f9e61846e4252a349ebf8b2"
   implementation_commit:
-    hash: "6013cfd0a1d6de248b8a55a0e738f3feb0b89358"
+    hash: "cb9e5bb7b917b7047e2ed24382100765b925625c"
   workflow_route_baseline:
     start_head_sha: "60be0145753e9e2aecf31f4bbd8471895db13395"
     version: 1
@@ -681,6 +783,42 @@ Command: bun run --filter=agentplane test -- --maxWorkers=1
 Result: fail
 Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#check-1
 Scope: branch_pr task 202608202112-E6CDHP declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+- old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-20T23:44:49.101Z — VERIFY — blocked_external
+
+By: TESTER
+
+Note: Full supervisor check exposed a provider-less cleanup compatibility edge: identity fallback recognizes missing push URL but not missing fetch URL. Add the symmetric fetch fallback and rerun focused cleanup tests.
+Attempts: 5
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:7114450552638cafc9bbc3fe40bf9b65ac8c7bdae284eceaa8707e83dfb0d100
+
+Details:
+
+Check: critical_paths
+Command: bun run --filter=agentplane test -- --maxWorkers=1
+Result: fail
+Evidence: cleanup-merged.targeted.test.ts provider-less task-close fixture failed when publication remote had zero fetch URLs
+Scope: cleanup provider fallback compatibility
 
 BlueprintSnapshotRef:
 - state: current

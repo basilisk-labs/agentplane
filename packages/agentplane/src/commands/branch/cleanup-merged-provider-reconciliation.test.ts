@@ -3,11 +3,18 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   observeByBranch: vi.fn(),
   observeByNumber: vi.fn(),
+  observeGithubByBranch: vi.fn(),
+  observeGithubByNumber: vi.fn(),
 }));
 
 vi.mock("../pr/internal/change-request-provider.js", () => ({
   observeExistingChangeRequestByBranch: mocks.observeByBranch,
   observeExistingChangeRequestByNumber: mocks.observeByNumber,
+}));
+
+vi.mock("../pr/internal/sync-github.js", () => ({
+  observeExistingGithubPrByBranch: mocks.observeGithubByBranch,
+  observeExistingGithubPrByNumber: mocks.observeGithubByNumber,
 }));
 
 import { observeProviderPr } from "./cleanup-merged-provider-reconciliation.js";
@@ -66,4 +73,31 @@ describe("observeProviderPr", () => {
       recorded,
     });
   });
+
+  it.each(["fetch", "push"])(
+    "preserves the legacy GitHub fallback when the publication remote has no %s URL",
+    async (direction) => {
+      mocks.observeByNumber.mockResolvedValue({
+        state: "unavailable",
+        reason: `Cannot resolve one ${direction} URL for publication remote origin; found 0 candidates`,
+      });
+      mocks.observeGithubByNumber.mockResolvedValue({ state: "not_found" });
+
+      await expect(
+        observeProviderPr({
+          gitRoot: "/repo",
+          branch: "task/T-1/work",
+          baseBranch: "main",
+          prNumber: 42,
+        }),
+      ).resolves.toEqual({ state: "not_found" });
+
+      expect(mocks.observeGithubByNumber).toHaveBeenCalledWith({
+        gitRoot: "/repo",
+        branch: "task/T-1/work",
+        baseBranch: "main",
+        prNumber: 42,
+      });
+    },
+  );
 });

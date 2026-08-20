@@ -3,8 +3,8 @@
   "branch": "task/202608202112-E6CDHP/fix-live-gitlab-mr-transport-and-provider-neutra",
   "created_at": "2026-08-20T21:18:16.979Z",
   "diffstat_sha256": "sha256:dc05949603785db313d88992e71bd42943bb9e023d887ba697992740b2d37c5e",
-  "last_verified_at": "2026-08-20T22:58:44.826Z",
-  "last_verified_diffstat_sha256": "sha256:2d41712f094f8a6ab063a6793eaf337a7dcda2270c75da9589daf116b7644445",
+  "last_verified_at": "2026-08-20T23:44:49.101Z",
+  "last_verified_diffstat_sha256": "sha256:dc05949603785db313d88992e71bd42943bb9e023d887ba697992740b2d37c5e",
   "pr_number": 4853,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4853",
   "provider": {

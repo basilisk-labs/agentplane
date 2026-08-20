@@ -179,6 +179,7 @@ export async function observeProviderPr(opts: {
   const legacyLocalRepository =
     unavailableReason.includes("publication remote") &&
     (unavailableReason.includes("must have parseable fetch/push urls") ||
+      unavailableReason.includes("cannot resolve one fetch url") ||
       unavailableReason.includes("cannot resolve one push url"));
   if (observed.state !== "unavailable" || !legacyLocalRepository) {
     return observed;
