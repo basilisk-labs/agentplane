@@ -296,4 +296,11 @@ describe("task-scoped execution grants", () => {
     ).toString("base64url");
     expect(() => parseHostUserDecision(encoded)).toThrow(/fields are malformed/u);
   });
+
+  it("rejects excessive base64url padding without a backtracking expression", () => {
+    const encoded = Buffer.from('{"origin":"user"}', "utf8").toString("base64url");
+    expect(() => parseHostUserDecision(`${encoded}${"=".repeat(100_000)}`)).toThrow(
+      /canonical base64url/u,
+    );
+  });
 });

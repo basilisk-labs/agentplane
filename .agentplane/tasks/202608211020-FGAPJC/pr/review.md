@@ -75,15 +75,15 @@ Created: 2026-08-21T10:27:11.359Z
  .../workspace-allocation/rediscover.test.ts        |  48 ++
  .../src/runtime/workspace-allocation/rediscover.ts |  47 ++
  packages/core/src/tasks/index.ts                   |  32 ++
- .../core/src/tasks/plan-execution-grant.test.ts    | 299 ++++++++++
- packages/core/src/tasks/plan-execution-grant.ts    | 488 ++++++++++++++++
+ .../core/src/tasks/plan-execution-grant.test.ts    | 306 ++++++++++
+ packages/core/src/tasks/plan-execution-grant.ts    | 499 ++++++++++++++++
  packages/core/src/tasks/task-execution-base.ts     |  59 ++
  packages/core/src/tasks/task-store.ts              |   1 +
  packages/core/src/tasks/tasks-export.ts            |   2 +
  .../baselines/v0.7-compatibility-candidate.json    |  41 +-
  .../check-compatibility-contract-baseline.mjs      |  27 +
  website/static/llms-full.txt                       |  43 +-
- 54 files changed, 3720 insertions(+), 267 deletions(-)
+ 54 files changed, 3738 insertions(+), 267 deletions(-)
 ```
 
 </details>

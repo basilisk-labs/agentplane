@@ -377,12 +377,23 @@ export function isExecutionGrantActive(opts: {
   );
 }
 
+function removeValidBase64UrlPadding(encoded: string): string | null {
+  let paddingStart = encoded.length;
+  while (paddingStart > 0 && encoded.charCodeAt(paddingStart - 1) === 61) {
+    paddingStart -= 1;
+  }
+  if (encoded.length - paddingStart > 2) return null;
+  return paddingStart === encoded.length ? encoded : encoded.slice(0, paddingStart);
+}
+
 export function parseHostUserDecision(encoded: string): HostUserDecision {
   const normalized = encoded.trim();
   let value: unknown;
   try {
+    const unpadded = removeValidBase64UrlPadding(normalized);
+    if (unpadded === null) throw new Error("invalid base64url padding");
     const decoded = Buffer.from(normalized, "base64url");
-    if (decoded.length === 0 || decoded.toString("base64url") !== normalized.replace(/=+$/u, "")) {
+    if (decoded.length === 0 || decoded.toString("base64url") !== unpadded) {
       throw new Error("non-canonical base64url");
     }
     value = JSON.parse(decoded.toString("utf8"));
