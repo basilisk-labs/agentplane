@@ -15,14 +15,19 @@ Fix the packaged-candidate-flow qualification regression exposed after rebasing 
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: needs_rework
+- Note:
+
+```text
+Rework: Declared check failed: node scripts/qualification/run-v0.7.1-release-qualification.mjs
+--mode audit --profile full --fail-on-scenario-failure --scenario packaged-candidate-flow
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-21T12:41:06.582Z
+- Updated: 2026-08-21T21:04:38.003Z
 - Branch: task/202608211236-XEC2NE/repair-packaged-candidate-verification-contract
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

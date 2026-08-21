@@ -4,7 +4,7 @@ title: "Repair packaged candidate verification-contract refresh after managed up
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +27,11 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved the prepared plan in Codex on 2026-08-21."
 verification:
-  state: "pending"
-  updated_at: "2026-08-21T17:13:07.957Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-21T21:04:44.428Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --fail-on-scenario-failure --scenario packaged-candidate-flow"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -95,7 +95,8 @@ execution_contract:
       - "packages/agentplane/test"
       - "scripts/lib/installed-migration-matrix.mjs"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -106,7 +107,10 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -208,9 +212,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "a2db162a53c1405c06a4c72cdcb0a406da174cc4"
-  message: "🚧 XEC2NE task: apply external agent result"
+      - "verification_recovery:recorded-check-1"
+commit: null
 comments:
   -
     author: "CODER"
@@ -247,8 +250,14 @@ events:
     to: "DOING"
     note: "Implementation committed: a2db162a53c1. CLI accepted one state-bound external-agent semantic result."
     commit: "a2db162a53c1405c06a4c72cdcb0a406da174cc4"
+  -
+    type: "verify"
+    at: "2026-08-21T21:04:44.428Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --fail-on-scenario-failure --scenario packaged-candidate-flow"
 doc_version: 3
-doc_updated_at: "2026-08-21T17:16:29.139Z"
+doc_updated_at: "2026-08-21T21:04:45.463Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the packaged-candidate-flow qualification regression exposed after rebasing PR #4853 onto current main. The direct upgrade scenario must record verification evidence that covers the exact evaluated diff, including .agentplane/agents/UPGRADER.json, without weakening evaluator enforcement. Validate the focused packaged-candidate-flow and relevant tests, publish and merge the prerequisite PR, then refresh PR #4853."
 sections:
@@ -268,6 +277,41 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-21T21:04:44.428Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --fail-on-scenario-failure --scenario packaged-candidate-flow
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:420e55f562620587a5fff7e29aa97da200497386784ba9ef82e96c218d22ea21, input_digest=sha256:477fb1eb3836c4a31f56330d19958048b36051fcc7a207ca00684893545edc26
+
+    Details:
+
+    Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --fail-on-scenario-failure --scenario packaged-candidate-flow
+    Result: fail
+    Evidence: .agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608211236-XEC2NE declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211236-XEC2NE-repair-packaged-candidate-verification-contract/.agentplane/tasks/202608211236-XEC2NE/blueprint/resolved-snapshot.json
+    - old_digest: a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03
+    - current_digest: a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608211236-XEC2NE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608211236-XEC2NE
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -295,6 +339,10 @@ extensions:
     transition_id: "tr_7e2472510d4cbba63c98f39fdbb588a8"
   implementation_commit:
     hash: "a2db162a53c1405c06a4c72cdcb0a406da174cc4"
+  task_execution_context:
+    base_ref: "main"
+    base_sha: "3cc2c4424893a61cf576d3bd82622216030b8bb1"
+    schema_version: 1
   workflow_route_baseline:
     start_head_sha: "3cc2c4424893a61cf576d3bd82622216030b8bb1"
     version: 1
@@ -326,6 +374,41 @@ PLANNER fallback scaffold for "Repair packaged candidate verification-contract r
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-21T21:04:44.428Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --fail-on-scenario-failure --scenario packaged-candidate-flow
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:420e55f562620587a5fff7e29aa97da200497386784ba9ef82e96c218d22ea21, input_digest=sha256:477fb1eb3836c4a31f56330d19958048b36051fcc7a207ca00684893545edc26
+
+Details:
+
+Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --fail-on-scenario-failure --scenario packaged-candidate-flow
+Result: fail
+Evidence: .agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608211236-XEC2NE declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211236-XEC2NE-repair-packaged-candidate-verification-contract/.agentplane/tasks/202608211236-XEC2NE/blueprint/resolved-snapshot.json
+- old_digest: a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03
+- current_digest: a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608211236-XEC2NE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608211236-XEC2NE
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

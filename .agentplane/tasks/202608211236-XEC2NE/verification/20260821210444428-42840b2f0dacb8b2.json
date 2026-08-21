@@ -1,0 +1,112 @@
+{
+  "details": "Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --fail-on-scenario-failure --scenario packaged-candidate-flow\nResult: fail\nEvidence: .agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608211236-XEC2NE declared verification",
+  "digest": "sha256:42840b2f0dacb8b290a481a51c400cc7f985c4bf2b7e58052cc56dace1cbab06",
+  "implementation_sha": "a2db162a53c1405c06a4c72cdcb0a406da174cc4",
+  "input": {
+    "context": {
+      "digest": "sha256:c604a3866814dba57d1e8b75bf0340937981e8280dda0ec9356a7987f4282f36",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:477fb1eb3836c4a31f56330d19958048b36051fcc7a207ca00684893545edc26",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:56a1261b6e2e6d4ddcfce68190c2601a6910ccbe79fffd09469813184a8dac17",
+      "digest": "sha256:b24b9d59c7892b7572c9cef4edb31f7b15d7397716a879f02ba2b16813e745c9",
+      "references": [
+        {
+          "digest": "sha256:b408cd843de6eb91cca37a1080a863ca76ba3681b2e3247ab459af4ed433f0ba",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "3cc2c4424893a61cf576d3bd82622216030b8bb1",
+      "digest": "sha256:637d1904c9c9dd3ca7355b959c34780205cd75127518c4f7614108165acfab3d",
+      "primary_task_id": "202608211236-XEC2NE",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_external_write",
+        "effect_publish",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608211236-XEC2NE"
+      ]
+    },
+    "implementation": {
+      "base_sha": "3cc2c4424893a61cf576d3bd82622216030b8bb1",
+      "digest": "sha256:c0835ca058629b3151f4032d56ca315b44ae6c7ba46a29850745d7dcb5f8c7bf",
+      "strategy": "branch_diff",
+      "target_sha": "a2db162a53c1405c06a4c72cdcb0a406da174cc4"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:aaa1d16d79481edb8756af3890a34c4b9576d39c55a9cf62506eadf30968514e",
+    "verify_steps_digest": "sha256:420e55f562620587a5fff7e29aa97da200497386784ba9ef82e96c218d22ea21"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --fail-on-scenario-failure --scenario packaged-candidate-flow",
+  "recorded_at": "2026-08-21T21:04:44.428Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Repair packaged candidate verification-contract refresh after managed upgrade\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Repair packaged candidate verification-contract refresh after managed upgrade\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:420e55f562620587a5fff7e29aa97da200497386784ba9ef82e96c218d22ea21",
+  "task_id": "202608211236-XEC2NE",
+  "verification_command": "agentplane verify 202608211236-XEC2NE --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
