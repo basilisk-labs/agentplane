@@ -325,12 +325,25 @@ describe("task verification durability", () => {
   it("observes the complete direct task diff from the frozen execution base", async () => {
     const root = await makeRepo();
     const taskId = "202602050900-V1F4B";
+    await addTask(root, taskId);
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed direct task base"], { cwd: root });
     const { stdout: baseShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: root,
     });
     const baseSha = baseShaOutput.trim();
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+    const task = await ctx.taskBackend.getTask(taskId);
+    if (!task) throw new Error("missing direct task fixture");
+    await ctx.taskBackend.writeTask?.({
+      ...task,
+      extensions: {
+        ...task.extensions,
+        workflow_route_baseline: {
+          start_head_sha: baseSha,
+        },
+      },
+    });
     await mkdir(path.join(root, "packages", "app"), { recursive: true });
     await writeFile(path.join(root, "packages", "app", "first.ts"), "export const first = 1;\n");
     await execFileAsync("git", ["add", "packages/app/first.ts"], { cwd: root });
@@ -341,8 +354,6 @@ describe("task verification durability", () => {
     const { stdout: evaluatedShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: root,
     });
-    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
-
     const changedPaths = await resolveObservedVerificationChangedPaths({
       ctx,
       evaluatedSha: evaluatedShaOutput.trim(),
@@ -364,5 +375,51 @@ describe("task verification durability", () => {
     });
 
     expect(changedPaths).toEqual(["packages/app/first.ts", "packages/app/second.ts"]);
+  });
+
+  it("uses the single-commit fallback when a legacy direct base was not frozen", async () => {
+    const root = await makeRepo();
+    const taskId = "202602050900-V1F5";
+    await addTask(root, taskId);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed legacy direct task"], { cwd: root });
+    await mkdir(path.join(root, "packages", "app"), { recursive: true });
+    await writeFile(path.join(root, "packages", "app", "first.ts"), "export const first = 1;\n");
+    await execFileAsync("git", ["add", "packages/app/first.ts"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: first legacy direct change"], {
+      cwd: root,
+    });
+    await writeFile(path.join(root, "packages", "app", "second.ts"), "export const second = 2;\n");
+    await execFileAsync("git", ["add", "packages/app/second.ts"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: second legacy direct change"], {
+      cwd: root,
+    });
+    const { stdout: evaluatedShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const evaluatedSha = evaluatedShaOutput.trim();
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+
+    const changedPaths = await resolveObservedVerificationChangedPaths({
+      ctx,
+      evaluatedSha,
+      taskId,
+      artifactTaskIds: [taskId],
+      execution: {
+        schema_version: 1,
+        primary_task_id: taskId,
+        task_ids: [taskId],
+        repository_mode: "direct",
+        selected_mode: "direct",
+        requested_mode: "direct",
+        route_source: "legacy_migration",
+        reason_codes: [],
+        base_ref: "main",
+        base_sha: evaluatedSha,
+        authoritative_task_source: "base_checkout",
+      },
+    });
+
+    expect(changedPaths).toEqual(["packages/app/second.ts"]);
   });
 });
