@@ -15,14 +15,8 @@ Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutatio
 
 ## Verification
 
-- State: ok
-- Note:
-
-```text
-GitLab provider-policy repair passes focused tests, typecheck, live hosted readback, and an
-independent full serial regression; supervisor-only nested state-fingerprint failures are recorded
-as a harness limitation.
-```
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1
 - Canonical workflow state lives in the task README.
 
 <details>
