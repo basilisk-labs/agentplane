@@ -526,6 +526,8 @@ export function makeRunIntegrateQueueRunNextHandler(
           await waitForHostedChecks({
             gitRoot,
             prNumber: claimedEntry.pr_number,
+            branch: claimedEntry.branch,
+            expectedHeadSha: claimedEntry.head_sha,
             stablePolls: p.stablePolls ?? 2,
             pollIntervalMs: p.hostedPollIntervalMs,
             timeoutMs: p.hostedTimeoutMs,
