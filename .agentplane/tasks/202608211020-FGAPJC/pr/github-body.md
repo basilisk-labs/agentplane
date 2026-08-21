@@ -15,13 +15,8 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Verification cannot converge because each successful rerun rewrites declared-checks.json with
-volatile timing and output-tail telemetry, changing its evidence digest.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

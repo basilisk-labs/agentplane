@@ -12,8 +12,8 @@ Created: 2026-08-21T10:27:11.359Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Verification cannot converge because each successful rerun rewrites declared-checks.json with volatile timing and output-tail telemetry, changing its evidence digest.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

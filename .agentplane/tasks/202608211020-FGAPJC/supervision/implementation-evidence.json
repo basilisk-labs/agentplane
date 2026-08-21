@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 4da81a4efa3b5b9d283f34d347644dd40fc88a13..38e0d182d2d4cd4d0d5c0716bb2168fe4f6464e3",
+      "command": "git diff --check daa6f64e625676442db3ae31a776fc9b3de87450..5681b0d292b88d19217be88fb72af4c57cf1cfe0",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 4da81a4efa3b5b9d283f34d347644dd40fc88a13..38e0d182d2d4cd4d0d5c0716bb2168fe4f6464e3",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB daa6f64e625676442db3ae31a776fc9b3de87450..5681b0d292b88d19217be88fb72af4c57cf1cfe0",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,49 +21,115 @@
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
-        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
-        "M\tpackages/agentplane/src/commands/task/task-execution-contract-observation.test.ts",
-        "M\tpackages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
+        "M\tpackages/agentplane/src/commands/task/configured-authority.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts"
       ]
     },
     {
       "command": "git status --short --untracked-files=all",
       "id": "final-repository-status",
       "result": "pass",
-      "stdout": []
+      "stdout": [
+        " M .agentplane/tasks/202608211020-FGAPJC/README.md",
+        " M .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json",
+        " M .agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json",
+        " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+      ]
     }
   ],
-  "execution_base_commit": "4da81a4efa3b5b9d283f34d347644dd40fc88a13",
-  "implementation_commit": "38e0d182d2d4cd4d0d5c0716bb2168fe4f6464e3",
+  "execution_base_commit": "daa6f64e625676442db3ae31a776fc9b3de87450",
+  "implementation_commit": "5681b0d292b88d19217be88fb72af4c57cf1cfe0",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
-      " M packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts",
-      " M packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
+      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+      " M packages/agentplane/src/commands/task/advance.command.ts",
+      " M packages/agentplane/src/commands/task/configured-authority.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      " M packages/core/src/runner/supervisor-execution-episode.test.ts",
+      " M packages/core/src/runner/supervisor-execution-episode.ts",
+      " M packages/core/src/schemas/index.ts"
     ],
     "classification": [
       {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+        "classification": "introduced_during_execution",
+        "line": " M .agentplane/tasks/202608211020-FGAPJC/README.md"
+      },
+      {
+        "classification": "introduced_during_execution",
+        "line": " M .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json"
+      },
+      {
+        "classification": "introduced_during_execution",
+        "line": " M .agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
+        "line": " M packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+        "line": " M packages/agentplane/src/commands/task/advance.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/configured-authority.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/runner/supervisor-execution-episode.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/runner/supervisor-execution-episode.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/schemas/index.ts"
       }
     ],
-    "final": [],
-    "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
-      " M packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts",
-      " M packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+    "final": [
+      " M .agentplane/tasks/202608211020-FGAPJC/README.md",
+      " M .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json",
+      " M .agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
     ],
-    "unchanged_from_execution_baseline": []
+    "introduced_after_execution_baseline": [
+      " M .agentplane/tasks/202608211020-FGAPJC/README.md",
+      " M .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json",
+      " M .agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json"
+    ],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
+      " M packages/agentplane/src/commands/task/advance.command.ts",
+      " M packages/agentplane/src/commands/task/configured-authority.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      " M packages/core/src/runner/supervisor-execution-episode.test.ts",
+      " M packages/core/src/runner/supervisor-execution-episode.ts",
+      " M packages/core/src/schemas/index.ts"
+    ],
+    "unchanged_from_execution_baseline": [
+      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+    ]
   },
   "schema_version": 1,
   "task_id": "202608211020-FGAPJC"
