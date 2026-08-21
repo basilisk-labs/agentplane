@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +28,11 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved the prepared plan in Codex on 2026-08-21."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-21T21:34:43.608Z"
-  updated_by: "EVALUATOR"
-  note: "Hosted verify-contract failed format:check for verify-record-observed-changes.ts; apply Prettier and reverify exact head."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-21T21:36:43.699Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 quality_review:
   state: "rework"
   updated_at: "2026-08-21T21:34:43.608Z"
@@ -257,7 +257,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "ed1d441185bef1507d9fe9eaf742380b2a33eb01"
+  message: "🚧 XEC2NE task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -286,6 +288,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: ed1d441185be. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -378,9 +383,23 @@ events:
     author: "EVALUATOR"
     state: "needs_rework"
     note: "Hosted verify-contract failed format:check for verify-record-observed-changes.ts; apply Prettier and reverify exact head."
+  -
+    type: "status"
+    at: "2026-08-21T21:35:56.016Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: ed1d441185be. CLI accepted one state-bound external-agent semantic result."
+    commit: "ed1d441185bef1507d9fe9eaf742380b2a33eb01"
+  -
+    type: "verify"
+    at: "2026-08-21T21:36:43.699Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T21:34:47.664Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-21T21:36:45.951Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix the packaged-candidate-flow qualification regression exposed after rebasing PR #4853 onto current main. The direct upgrade scenario must record verification evidence that covers the exact evaluated diff, including .agentplane/agents/UPGRADER.json, without weakening evaluator enforcement. Validate the focused packaged-candidate-flow and relevant tests, publish and merge the prerequisite PR, then refresh PR #4853."
 sections:
   Summary: |-
@@ -626,6 +645,72 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-21T21:36:43.699Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:420e55f562620587a5fff7e29aa97da200497386784ba9ef82e96c218d22ea21, input_digest=sha256:da661839c17d8a7e5d7cdffec60cbf3735466db84c097f466f3688819a97c783
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node scripts/release/check-local-tarball-install-smoke.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211236-XEC2NE Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: node scripts/release/check-local-tarball-install-smoke.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211236-XEC2NE Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: node scripts/release/check-local-tarball-install-smoke.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211236-XEC2NE Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: node scripts/release/check-local-tarball-install-smoke.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211236-XEC2NE Verification Contract check hosted_integration
+
+    Check: real_e2e
+    Command: node scripts/release/check-local-tarball-install-smoke.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211236-XEC2NE Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: node scripts/release/check-local-tarball-install-smoke.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211236-XEC2NE Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211236-XEC2NE-repair-packaged-candidate-verification-contract/.agentplane/tasks/202608211236-XEC2NE/blueprint/resolved-snapshot.json
+    - old_digest: a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03
+    - current_digest: a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608211236-XEC2NE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608211236-XEC2NE
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -652,8 +737,7 @@ extensions:
     status: "applied"
     transition_id: "tr_7e2472510d4cbba63c98f39fdbb588a8"
   implementation_commit:
-    hash: "30277665d28ff2675083f977113c4ecf1935400f"
-    message: "🚧 XEC2NE task: apply external agent result"
+    hash: "ed1d441185bef1507d9fe9eaf742380b2a33eb01"
   task_execution_context:
     base_ref: "main"
     base_sha: "3cc2c4424893a61cf576d3bd82622216030b8bb1"
@@ -910,6 +994,72 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T21:36:43.699Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:420e55f562620587a5fff7e29aa97da200497386784ba9ef82e96c218d22ea21, input_digest=sha256:da661839c17d8a7e5d7cdffec60cbf3735466db84c097f466f3688819a97c783
+
+Details:
+
+Check: affected_unit_integration
+Command: node scripts/release/check-local-tarball-install-smoke.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211236-XEC2NE Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: node scripts/release/check-local-tarball-install-smoke.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211236-XEC2NE Verification Contract check critical_paths
+
+Check: full_regression
+Command: node scripts/release/check-local-tarball-install-smoke.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211236-XEC2NE Verification Contract check full_regression
+
+Check: hosted_integration
+Command: node scripts/release/check-local-tarball-install-smoke.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211236-XEC2NE Verification Contract check hosted_integration
+
+Check: real_e2e
+Command: node scripts/release/check-local-tarball-install-smoke.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211236-XEC2NE Verification Contract check real_e2e
+
+Check: task_outcome
+Command: node scripts/release/check-local-tarball-install-smoke.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211236-XEC2NE/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211236-XEC2NE Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211236-XEC2NE-repair-packaged-candidate-verification-contract/.agentplane/tasks/202608211236-XEC2NE/blueprint/resolved-snapshot.json
+- old_digest: a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03
+- current_digest: a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608211236-XEC2NE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608211236-XEC2NE
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

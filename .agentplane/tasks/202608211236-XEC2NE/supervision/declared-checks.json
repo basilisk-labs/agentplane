@@ -2,11 +2,11 @@
   "checks": [
     {
       "command": "node scripts/release/check-local-tarball-install-smoke.mjs",
-      "duration_ms": 44814,
+      "duration_ms": 47320,
       "exit_code": 0,
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "installed migration matrix OK (scenarios=8)\nlocal tarball install smoke OK (202608212129-64RA72)\n"
+      "stdout_tail": "installed migration matrix OK (scenarios=8)\nlocal tarball install smoke OK (202608212136-1T9CFD)\n"
     }
   ],
   "kind": "direct_task_declared_checks",
