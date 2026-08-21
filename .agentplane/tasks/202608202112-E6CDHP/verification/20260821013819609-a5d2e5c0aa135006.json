@@ -1,0 +1,83 @@
+{
+  "details": "Check: real_e2e\nCommand: glab api --hostname gitlab.nordavind.ru projects/1269 and projects/1269/merge_requests/1/pipelines\nResult: fail\nEvidence: only_allow_merge_if_pipeline_succeeds=false, MR pipeline list=[], MR !1 state=opened and detailed_merge_status=mergeable at exact head a82637a20f86d0711bb1c9f6ac46087a1981dd86; resolveHostedChecksStatus returns unchecked for every missing pipeline\nScope: GitLab hosted-check policy dispatch",
+  "digest": "sha256:a5d2e5c0aa1350065fb38b29640b6b93f2724adaa14c842feff42d4bf6b05baf",
+  "implementation_sha": "35d04d9a2de07d4f00f5770a9d65a623ea56807c",
+  "input": {
+    "context": {
+      "digest": "sha256:c604a3866814dba57d1e8b75bf0340937981e8280dda0ec9356a7987f4282f36",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:1a97dcaa74ca73ea4ca44ad650fd7fd209b98d41d748da3f12ff92b7752a1d12",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:f50b4eac40be6bf141c1d35788ea3c6bcb944b699e295aa3e6c71d1dd6d77373",
+      "digest": "sha256:36feb306b5b314813337add68038e046e51ace504aa9a3aae8dd344befb1a88a",
+      "references": []
+    },
+    "implementation": {
+      "base_sha": "41f1b102afe74f56ec4b36d13a52476b8bcd40ee",
+      "digest": "sha256:54183b774ee2ec2589e2f2c6652b24f10d65a4ce7e2ffaa9186cb7486b2d3d3c",
+      "strategy": "branch_diff",
+      "target_sha": "35d04d9a2de07d4f00f5770a9d65a623ea56807c"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:f9299eaf8e2af9fe8a995e1378fb37de00491b64c3c0d29df888b6190d4f1dc6",
+    "verify_steps_digest": "sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c"
+  },
+  "kind": "task_verification_record",
+  "note": "Live GitLab canary has no pipeline because project policy does not require one; hosted checks must honor provider policy while failing closed for required pipelines or checks.",
+  "recorded_at": "2026-08-21T01:38:19.609Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Fix live GitLab MR transport and provider-neutral mergeability validation\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Fix live GitLab MR transport and provider-neutral mergeability validation\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c",
+  "task_id": "202608202112-E6CDHP",
+  "verification_command": "agentplane verify 202608202112-E6CDHP --rework --by TESTER",
+  "verifier": "TESTER"
+}
