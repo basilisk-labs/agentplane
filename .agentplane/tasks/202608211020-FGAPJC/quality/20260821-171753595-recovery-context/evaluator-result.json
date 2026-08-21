@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Interrupted task_verify ownership now becomes a durable failed predecessor before a replacement semantic episode is issued.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e6ce6ea85fa07870dc2b50b05956b8906343ad3f0c468af2d02ae5768759d12c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Scope-extension blockers preserve only the exact issuance baseline and still reject any later workspace or Git-history change.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e6ce6ea85fa07870dc2b50b05956b8906343ad3f0c468af2d02ae5768759d12c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Full local verification group concurrency is configurable with a backward-compatible default of two; the task wrapper selects one group and two Vitest workers.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e6ce6ea85fa07870dc2b50b05956b8906343ad3f0c468af2d02ae5768759d12c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The two focused suites pass all 24 recovery tests and the structural checks pass.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e6ce6ea85fa07870dc2b50b05956b8906343ad3f0c468af2d02ae5768759d12c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: The supervisor-owned full regression and exact-SHA hosted checks remain required before integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e6ce6ea85fa07870dc2b50b05956b8906343ad3f0c468af2d02ae5768759d12c.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

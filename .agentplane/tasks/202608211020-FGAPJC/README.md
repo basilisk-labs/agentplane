@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 90
+revision: 91
 origin:
   system: "manual"
 depends_on: []
@@ -34,34 +34,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T14:53:36.888Z"
+  updated_at: "2026-08-21T17:18:30.725Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "ae9e80223d7b9d7b1debf2f78da4e78a339c84aa"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "a84dd9e3fb0566a35efdff8222ab20b9dd994bd0"
   blueprint_digest: "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa"
   evidence_refs:
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-145233073-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-145233073-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/10a3ce210a38a3c1c8562622781cec7d47fc6acd57569a66150c10f32a73dbdc.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-145233073-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-145233073-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-145233073-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-171753595-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-171753595-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e108d973bb08b43f9a05123f4389755919a0727c6d264bf20a2a5e66b7cac4ac.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-171753595-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-171753595-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-171753595-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211020-FGAPJC/README.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/5e3c2b2d45ef8ca23b82779ff2cc468ab403ba30ca7c1c899960df3fd2105908.patch"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/3e4da6d183d385b70ea7027048ba1400e97d93ac85275daaadfb06de0415b1db.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821145205900-6cfcd119524e1bd2.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e6ce6ea85fa07870dc2b50b05956b8906343ad3f0c468af2d02ae5768759d12c.patch"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/0b7ba22fb3beb0105dcb2f8668303d1d3195ace67545d5bb0ca8c0cca186a8b2.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821171741017-d1d92eb9816e4790.json"
     - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "ExecutionGrant and OperationLease cover plan-approved lifecycle and provider effects while material plan or effect drift still returns to the user."
-    - "Task bases are frozen per task and workspace recovery rediscoveries use logical identities, allowing long-lived non-task development branches and repository relocation."
-    - "The new task.scope.extend semantic scope removes only the irrelevant provider observation mismatch; PR and integration authority remains bound to provider state."
-    - "The root check entrypoint makes the previously impossible bun run check acceptance action executable through canonical full-fast CI."
-    - "Observed verification records include bun run check with all five groups green, bun run typecheck, compatibility ratchet, focused authority tests, clean committed diff, and clean evaluated repository state."
-    - "Residual risk: Hosted checks, PR head publication, integration, and cleanup remain supervisor-owned post-review gates and are not yet evidenced in this pre-publication evaluator packet."
+    - "Interrupted task_verify ownership now becomes a durable failed predecessor before a replacement semantic episode is issued."
+    - "Scope-extension blockers preserve only the exact issuance baseline and still reject any later workspace or Git-history change."
+    - "Full local verification group concurrency is configurable with a backward-compatible default of two; the task wrapper selects one group and two Vitest workers."
+    - "The two focused suites pass all 24 recovery tests and the structural checks pass."
+    - "Residual risk: The supervisor-owned full regression and exact-SHA hosted checks remain required before integration."
 token_usage:
   agent_runs: 30
   input_tokens: null
@@ -962,7 +961,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T17:17:42.969Z"
+doc_updated_at: "2026-08-21T17:18:30.759Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:

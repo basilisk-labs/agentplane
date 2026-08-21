@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608211020-FGAPJC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-21T17:18:30.725Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "a84dd9e3fb0566a35efdff8222ab20b9dd994bd0",
+  "blueprint_digest": "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa",
+  "findings": [
+    "Interrupted task_verify ownership now becomes a durable failed predecessor before a replacement semantic episode is issued.",
+    "Scope-extension blockers preserve only the exact issuance baseline and still reject any later workspace or Git-history change.",
+    "Full local verification group concurrency is configurable with a backward-compatible default of two; the task wrapper selects one group and two Vitest workers.",
+    "The two focused suites pass all 24 recovery tests and the structural checks pass.",
+    "Residual risk: The supervisor-owned full regression and exact-SHA hosted checks remain required before integration."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e6ce6ea85fa07870dc2b50b05956b8906343ad3f0c468af2d02ae5768759d12c.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
