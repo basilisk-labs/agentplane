@@ -10,7 +10,10 @@ import type { WorkflowSupervisorOperationResult } from "../shared/workflow-super
 import type { WorkflowOperation } from "../shared/workflow-step.js";
 import { executeProductionBranchEpisode } from "./branch-task-supervisor-episodes.js";
 import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
-import { resolveConfiguredAuthority } from "./configured-authority.js";
+import {
+  resolveConfiguredAuthority,
+  type ConfiguredAuthorityResolution,
+} from "./configured-authority.js";
 import type { JournalProjection } from "./direct-task-supervisor-result.js";
 import { journalProjection } from "./direct-task-supervisor-result.js";
 
@@ -157,6 +160,23 @@ export type BranchTaskSupervisorOptions = {
     source: string;
   } | null;
 };
+
+export async function resolveBranchTaskDecisionWithAuthority(opts: {
+  decide: () => Promise<TaskRouteDecision>;
+  resolve_authority: (
+    decision: TaskRouteDecision,
+  ) => Promise<ConfiguredAuthorityResolution>;
+}): Promise<TaskRouteDecision> {
+  for (let authorityCount = 0; authorityCount < 8; authorityCount += 1) {
+    const decision = await opts.decide();
+    const resolved = await opts.resolve_authority(decision);
+    if (resolved.state !== "granted") return decision;
+  }
+  throw new CliError({
+    code: "E_RUNTIME",
+    message: "Repository authority policy exceeded its bounded approval-resolution budget.",
+  });
+}
 
 type Progress = {
   receipts: BranchWorkflowOperationReceipt[];
@@ -464,27 +484,26 @@ export async function superviseBranchTaskRun(
   input: BranchTaskSupervisorOptions,
 ): Promise<BranchTaskSupervisorResult> {
   const routeCwd = input.ctx.cwd;
-  const decide = async () => {
-    for (let authorityCount = 0; authorityCount < 8; authorityCount += 1) {
-      const routeCommand = await loadCommandContext({ cwd: routeCwd, rootOverride: null });
-      const decision = await buildTaskRouteDecision({
-        ctx: routeCommand,
-        cwd: routeCwd,
-        rootOverride: null,
-        taskId: input.task_id,
-        includeRemote: true,
-      });
-      const resolved = await resolveConfiguredAuthority({
-        command: routeCommand,
-        decision,
-      });
-      if (resolved.state !== "granted") return decision;
-    }
-    throw new CliError({
-      code: "E_RUNTIME",
-      message: "Repository authority policy exceeded its bounded approval-resolution budget.",
+  const decide = async () =>
+    await resolveBranchTaskDecisionWithAuthority({
+      decide: async () => {
+        const routeCommand = await loadCommandContext({ cwd: routeCwd, rootOverride: null });
+        return await buildTaskRouteDecision({
+          ctx: routeCommand,
+          cwd: routeCwd,
+          rootOverride: null,
+          taskId: input.task_id,
+          includeRemote: true,
+        });
+      },
+      resolve_authority: async (decision) => {
+        const routeCommand = await loadCommandContext({ cwd: routeCwd, rootOverride: null });
+        return await resolveConfiguredAuthority({
+          command: routeCommand,
+          decision,
+        });
+      },
     });
-  };
 
   return await superviseBranchTaskRunWithPorts({
     git_root: input.command.resolvedProject.gitRoot,

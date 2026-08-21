@@ -11,6 +11,32 @@ import {
 
 import type { TaskData } from "../../backends/task-backend.js";
 
+const REPOSITORY_IDENTITY_PATTERN = /^sha256:[0-9a-f]{64}$/u;
+
+async function repositoryIdentityFromAnchor(
+  gitRoot: string,
+  anchor: string,
+): Promise<string | null> {
+  const stdout = await execFileAsync("git", ["rev-list", "--max-parents=0", anchor], {
+    cwd: gitRoot,
+    env: gitEnv(),
+  })
+    .then((result) => result.stdout)
+    .catch(() => null);
+  if (stdout === null) return null;
+  const root_commits = String(stdout)
+    .split(/\r?\n/u)
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .toSorted();
+  if (root_commits.length === 0) return null;
+  return executionGrantDigest({
+    schema_version: 1,
+    kind: "agentplane.logical_repository_identity",
+    root_commits,
+  });
+}
+
 /**
  * A logical repository identity must survive checkout relocation and branch changes.
  * Root commits are Git object identities, so no absolute path or mutable remote URL
@@ -21,7 +47,6 @@ export async function resolveLogicalRepositoryIdentity(opts: {
   task: Pick<TaskData, "extensions">;
 }): Promise<string> {
   const base = taskExecutionBaseFromExtensions(opts.task.extensions);
-  if (base?.repository_identity) return base.repository_identity;
   const commonDir = await gitRevParse(opts.git_root, [
     "--path-format=absolute",
     "--git-common-dir",
@@ -32,28 +57,35 @@ export async function resolveLogicalRepositoryIdentity(opts: {
     .catch(() => null);
   if (
     typeof persisted?.repository_identity === "string" &&
-    /^sha256:[0-9a-f]{64}$/u.test(persisted.repository_identity)
+    REPOSITORY_IDENTITY_PATTERN.test(persisted.repository_identity)
   ) {
+    if (base) {
+      const baseExists = await gitRevParse(opts.git_root, [`${base.base_sha}^{commit}`]).catch(
+        () => null,
+      );
+      if (!baseExists) {
+        throw new Error("Task execution base does not belong to the current Git repository.");
+      }
+      if (base.repository_identity && base.repository_identity !== persisted.repository_identity) {
+        throw new Error(
+          "Task execution repository identity does not match the current Git repository.",
+        );
+      }
+    }
     return persisted.repository_identity;
   }
   const anchor = base?.base_sha ?? (await gitRevParse(opts.git_root, ["HEAD"]).catch(() => null));
-  const stdout = anchor
-    ? await execFileAsync("git", ["rev-list", "--max-parents=0", anchor], {
-        cwd: opts.git_root,
-        env: gitEnv(),
-      }).then((result) => result.stdout)
-    : "";
-  const root_commits = String(stdout)
-    .split(/\r?\n/u)
-    .map((value) => value.trim())
-    .filter(Boolean)
-    .toSorted();
-  if (root_commits.length > 0) {
-    return executionGrantDigest({
-      schema_version: 1,
-      kind: "agentplane.logical_repository_identity",
-      root_commits,
-    });
+  const derived = anchor ? await repositoryIdentityFromAnchor(opts.git_root, anchor) : null;
+  if (derived) {
+    if (base?.repository_identity && base.repository_identity !== derived) {
+      throw new Error(
+        "Task execution repository identity does not match the current Git repository.",
+      );
+    }
+    return derived;
+  }
+  if (base) {
+    throw new Error("Task execution base does not belong to the current Git repository.");
   }
 
   const repository_identity = executionGrantDigest({
@@ -74,7 +106,7 @@ export async function resolveLogicalRepositoryIdentity(opts: {
   };
   if (
     typeof winner.repository_identity !== "string" ||
-    !/^sha256:[0-9a-f]{64}$/u.test(winner.repository_identity)
+    !REPOSITORY_IDENTITY_PATTERN.test(winner.repository_identity)
   ) {
     throw new Error("Persisted logical repository identity is malformed.");
   }

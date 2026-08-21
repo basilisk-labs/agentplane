@@ -34,7 +34,7 @@ Created: 2026-08-21T10:27:11.359Z
  docs/user/cli-reference.generated.mdx              |   2 +
  docs/user/task-lifecycle.mdx                       |  43 +-
  .../src/cli/run-cli.core.lifecycle.plan.test.ts    |  61 ++-
- ...run-cli.core.task-create-planner-intent.test.ts | 154 ++++++-
+ ...run-cli.core.task-create-planner-intent.test.ts | 197 ++++++++-
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/commands/branch/work-start.command.ts      |   2 +
  .../agentplane/src/commands/branch/work-start.ts   |   7 +-
@@ -51,15 +51,15 @@ Created: 2026-08-21T10:27:11.359Z
  .../src/commands/task/agent-action-packet.ts       |  55 ++-
  .../task/branch-task-supervisor-episodes.ts        |  16 +-
  .../task/branch-task-supervisor-operations.ts      |   4 +-
- .../commands/task/branch-task-supervisor.test.ts   |  43 ++
- .../src/commands/task/branch-task-supervisor.ts    |   2 +-
- .../src/commands/task/configured-authority.test.ts | 103 ++++-
+ .../commands/task/branch-task-supervisor.test.ts   | 325 ++++++++++++++
+ .../src/commands/task/branch-task-supervisor.ts    |  61 ++-
+ .../src/commands/task/configured-authority.test.ts | 245 ++++++++++-
  .../src/commands/task/configured-authority.ts      | 195 +++++++-
  .../agentplane/src/commands/task/create.command.ts |  40 ++
  .../commands/task/direct-task-verification.test.ts |  41 +-
  .../src/commands/task/direct-task-verification.ts  |  76 +++-
- .../task/execution-authority-context.test.ts       |  50 +++
- .../commands/task/execution-authority-context.ts   |  82 ++++
+ .../task/execution-authority-context.test.ts       |  92 ++++
+ .../commands/task/execution-authority-context.ts   | 114 +++++
  packages/agentplane/src/commands/task/new.ts       |  32 +-
  .../src/commands/task/plan-approve.command.ts      |  70 ++-
  packages/agentplane/src/commands/task/plan.ts      |  90 +++-
@@ -78,7 +78,7 @@ Created: 2026-08-21T10:27:11.359Z
  .../baselines/v0.7-compatibility-candidate.json    |  41 +-
  .../check-compatibility-contract-baseline.mjs      |  27 ++
  website/static/llms-full.txt                       |  43 +-
- 49 files changed, 2562 insertions(+), 132 deletions(-)
+ 49 files changed, 3142 insertions(+), 152 deletions(-)
 ```
 
 </details>

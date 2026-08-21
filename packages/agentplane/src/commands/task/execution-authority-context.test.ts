@@ -5,6 +5,8 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
+import { createTaskExecutionBaseIdentity } from "@agentplaneorg/core/tasks";
+
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 
 const execFileAsync = promisify(execFile);
@@ -43,6 +45,46 @@ describe("logical repository authority identity", () => {
 
       expect(onDevelopmentBranch).toBe(first);
       expect(afterRelocation).toBe(first);
+    } finally {
+      await rm(parent, { recursive: true, force: true });
+    }
+  });
+
+  it("rejects a persisted task identity whose base is outside the current repository", async () => {
+    const parent = await mkdtemp(path.join(os.tmpdir(), "agentplane-repository-cross-use-"));
+    const first = path.join(parent, "first");
+    const second = path.join(parent, "second");
+    try {
+      for (const [root, body] of [
+        [first, "first\n"],
+        [second, "second\n"],
+      ] as const) {
+        await mkdir(root, { recursive: true });
+        await execFileAsync("git", ["init", "-b", "main"], { cwd: root });
+        await execFileAsync("git", ["config", "user.name", "AgentPlane Test"], { cwd: root });
+        await execFileAsync("git", ["config", "user.email", "test@agentplane.local"], {
+          cwd: root,
+        });
+        await writeFile(path.join(root, "README.md"), body, "utf8");
+        await execFileAsync("git", ["add", "README.md"], { cwd: root });
+        await execFileAsync("git", ["commit", "-m", "root"], { cwd: root });
+      }
+      const identity = await resolveLogicalRepositoryIdentity({ git_root: first, task: {} });
+      const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: first });
+      const copiedTask = {
+        extensions: {
+          task_execution_context: createTaskExecutionBaseIdentity({
+            base_ref: "main",
+            base_sha: stdout.trim(),
+            repository_identity: identity,
+            source: "explicit",
+          }),
+        },
+      };
+
+      await expect(
+        resolveLogicalRepositoryIdentity({ git_root: second, task: copiedTask }),
+      ).rejects.toThrow(/does not belong|does not match/u);
     } finally {
       await rm(parent, { recursive: true, force: true });
     }

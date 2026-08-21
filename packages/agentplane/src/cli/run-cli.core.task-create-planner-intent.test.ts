@@ -124,12 +124,55 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       source: "explicit",
     });
     expect(typescriptSha).not.toBe(masterSha);
-    const diff = await execFileAsync(
+    const mainTaskId = String(mainTask.task_id);
+    const typescriptTaskId = String(typescriptTask.task_id);
+    const worktreesRoot = path.join(root, ".agentplane", "worktrees");
+    const mainWorktree = path.join(worktreesRoot, `${mainTaskId}-stable`);
+    const typescriptWorktree = path.join(worktreesRoot, `${typescriptTaskId}-typescript`);
+    await mkdir(worktreesRoot, { recursive: true });
+    await execFileAsync(
       "git",
-      ["diff", "--name-only", `${typescriptSha}..typescript`],
+      ["worktree", "add", "-b", `task/${mainTaskId}/stable`, mainWorktree, masterSha],
       { cwd: root },
     );
-    expect(diff.stdout.trim()).toBe("");
+    await execFileAsync(
+      "git",
+      [
+        "worktree",
+        "add",
+        "-b",
+        `task/${typescriptTaskId}/typescript`,
+        typescriptWorktree,
+        typescriptSha,
+      ],
+      { cwd: root },
+    );
+    await writeFile(path.join(mainWorktree, "stable-change.txt"), "stable task\n");
+    await execFileAsync("git", ["add", "stable-change.txt"], { cwd: mainWorktree });
+    await execFileAsync("git", ["commit", "-m", "stable task change"], { cwd: mainWorktree });
+    await writeFile(
+      path.join(typescriptWorktree, "typescript-task-change.ts"),
+      "export const taskChange = true;\n",
+    );
+    await execFileAsync("git", ["add", "typescript-task-change.ts"], {
+      cwd: typescriptWorktree,
+    });
+    await execFileAsync("git", ["commit", "-m", "typescript task change"], {
+      cwd: typescriptWorktree,
+    });
+
+    const mainDiff = await execFileAsync("git", ["diff", "--name-only", masterSha, "HEAD"], {
+      cwd: mainWorktree,
+    });
+    const typescriptDiff = await execFileAsync(
+      "git",
+      ["diff", "--name-only", typescriptSha, "HEAD"],
+      { cwd: typescriptWorktree },
+    );
+    expect(mainDiff.stdout.trim().split("\n")).toEqual(["stable-change.txt"]);
+    expect(typescriptDiff.stdout.trim().split("\n")).toEqual(["typescript-task-change.ts"]);
+    expect(typescriptDiff.stdout).not.toContain("typescript-history.ts");
+    expect(mainDiff.stdout).not.toContain("typescript-history.ts");
   });
 
   it("preserves a reusable envelope and re-resolves the route from typed intent", async () => {
