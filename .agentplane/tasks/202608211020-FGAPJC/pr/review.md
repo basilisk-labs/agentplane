@@ -94,8 +94,8 @@ Created: 2026-08-21T10:27:11.359Z
  packages/core/src/tasks/tasks-export.ts            |   2 +
  .../baselines/v0.7-compatibility-candidate.json    |  62 +-
  .../check-compatibility-contract-baseline.mjs      |  42 +-
- website/static/llms-full.txt                       |  43 +-
- 66 files changed, 3955 insertions(+), 324 deletions(-)
+ website/static/llms-full.txt                       |  46 +-
+ 66 files changed, 3958 insertions(+), 324 deletions(-)
 ```
 
 </details>
