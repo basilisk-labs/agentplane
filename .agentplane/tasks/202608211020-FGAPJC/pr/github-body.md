@@ -15,8 +15,8 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run check
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -33,6 +33,8 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  docs/user/cli-reference.generated.mdx              |   2 +
  docs/user/task-lifecycle.mdx                       |  46 +-
  .../src/cli/run-cli.core.lifecycle.plan.test.ts    |  61 +-
+ ...n-cli.core.task-advance-effect-recovery.test.ts | 155 +++++
+ ...un-cli.core.task-advance.blocked-result.test.ts |  26 +
  .../run-cli.core.task-create-base-intent.test.ts   | 252 ++++++++
  ...run-cli.core.task-create-planner-intent.test.ts | 138 ++---
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
@@ -68,6 +70,8 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../src/commands/task/direct-task-verification.ts  |  74 ++-
  .../task/execution-authority-context.test.ts       |  92 +++
  .../commands/task/execution-authority-context.ts   | 111 ++++
+ .../external-agent-implementation-authority.ts     |  55 +-
+ .../task/external-agent-supervisor-recovery.ts     |  85 ++-
  .../commands/task/finish.close-tail.unit.test.ts   |   2 +-
  .../src/commands/task/finish.state.unit.test.ts    |   1 +
  .../commands/task/finish.validation.unit.test.ts   |   2 +-
@@ -94,8 +98,9 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  packages/core/src/tasks/tasks-export.ts            |   2 +
  .../baselines/v0.7-compatibility-candidate.json    |  62 +-
  .../check-compatibility-contract-baseline.mjs      |  42 +-
+ scripts/checks/run-local-ci.mjs                    |   9 +-
  website/static/llms-full.txt                       |  46 +-
- 68 files changed, 4051 insertions(+), 388 deletions(-)
+ 73 files changed, 4360 insertions(+), 409 deletions(-)
 ```
 
 </details>

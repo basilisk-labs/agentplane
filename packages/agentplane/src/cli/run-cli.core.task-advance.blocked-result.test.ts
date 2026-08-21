@@ -231,6 +231,32 @@ async function prepareBlockedResultTask(opts: {
 }
 
 describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
+  it("accepts a scope-extension blocker that preserves the dirty issuance baseline", async () => {
+    const { taskId, taskWorktree } = await prepareBlockedResultTask({
+      title: "Dirty baseline scope extension",
+      plan: "Preserve pre-existing work while requesting the exact missing scope.",
+      slug: "dirty-baseline-scope-extension",
+    });
+    const missingScopePath = path.join(taskWorktree, "scripts", "generated-scheduler.mjs");
+    await mkdir(path.dirname(missingScopePath), { recursive: true });
+    await writeFile(missingScopePath, "export const concurrency = 1;\n", "utf8");
+    const issued = await readAgentPacket(taskWorktree, taskId);
+    const resultPath = await writeBlockedResult(
+      issued,
+      "The preserved scheduler change needs one exact writable root.",
+      { scopeRoots: ["scripts/generated-scheduler.mjs"], repositoryEffects: ["source_code"] },
+    );
+
+    const returned = await returnAgentResult(taskWorktree, taskId, resultPath);
+    expect(returned.code, returned.stderr).toBe(0);
+    expect(JSON.parse(returned.stdout)).toMatchObject({
+      action: { kind: "approval_required" },
+    });
+    await expect(readFile(missingScopePath, "utf8")).resolves.toBe(
+      "export const concurrency = 1;\n",
+    );
+  });
+
   it("projects explicit USER approval and issues a fresh executor with the exact requested scope", async () => {
     const { taskId, taskWorktree } = await prepareBlockedResultTask({
       title: "Structured blocked scope extension",

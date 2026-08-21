@@ -257,6 +257,27 @@ export function blockingImplementationAuthorityViolations(violations: readonly s
   return violations.filter((violation) => !violation.startsWith("verification:"));
 }
 
+function assertScopeExtensionBlockerPreservedBaseline(opts: {
+  exchange: ExternalAgentExchange;
+  current_head: string | null;
+  current_status_lines: readonly string[];
+}): void {
+  if (opts.current_head !== opts.exchange.baseline.head) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Scope-extension blocker changed Git history after the episode was issued.",
+    });
+  }
+  const issued = [...opts.exchange.baseline.changed_paths].toSorted();
+  const current = [...opts.current_status_lines].toSorted();
+  if (issued.length !== current.length || issued.some((line, index) => line !== current[index])) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Scope-extension blocker changed the workspace after the episode was issued.",
+    });
+  }
+}
+
 export async function applyExternalImplementationResult(opts: {
   command: CommandContext;
   decision: TaskRouteDecision;
@@ -277,20 +298,28 @@ export async function applyExternalImplementationResult(opts: {
           readDirectTaskHead(opts.exchange.checkout),
           readDirectRepositoryStatus(opts.exchange.checkout),
         ]);
-        const changed = assertExternalImplementationReturnState({
-          exchange: opts.exchange,
-          work_order: opts.work_order,
-          current: opts.decision,
-          current_head: head,
-          current_status_lines: status?.lines ?? [],
-          require_changes: false,
-        });
-        if (changed.length > 0) {
-          throw new CliError({
-            code: "E_VALIDATION",
-            message:
-              "Blocked implementation result produced workspace changes; restore them or return a completed implementation result.",
+        if (semantic.blocker?.scope_extension_request) {
+          assertScopeExtensionBlockerPreservedBaseline({
+            exchange: opts.exchange,
+            current_head: head,
+            current_status_lines: status?.lines ?? [],
           });
+        } else {
+          const changed = assertExternalImplementationReturnState({
+            exchange: opts.exchange,
+            work_order: opts.work_order,
+            current: opts.decision,
+            current_head: head,
+            current_status_lines: status?.lines ?? [],
+            require_changes: false,
+          });
+          if (changed.length > 0) {
+            throw new CliError({
+              code: "E_VALIDATION",
+              message:
+                "Blocked implementation result produced workspace changes; restore them or return a completed implementation result.",
+            });
+          }
         }
       }
       await recordExternalBlockedResult({
