@@ -56,7 +56,7 @@ Created: 2026-08-21T10:27:11.359Z
  .../commands/shared/side-effect-authority.test.ts  | 141 ++++-
  .../src/commands/shared/side-effect-authority.ts   |  53 +-
  .../shared/supervisor-execution-episode.test.ts    |  81 +++
- .../shared/supervisor-execution-episode.ts         |  38 +-
+ .../shared/supervisor-execution-episode.ts         |  99 +++-
  .../task-worktree-foreign-artifact-repair.test.ts  |  16 +-
  .../workflow-operation-projection.registry.test.ts |   5 +-
  .../shared/workflow-operation-projection.ts        |   5 +-
@@ -110,7 +110,7 @@ Created: 2026-08-21T10:27:11.359Z
  .../check-compatibility-contract-baseline.mjs      |  42 +-
  scripts/checks/run-local-ci.mjs                    |   9 +-
  website/static/llms-full.txt                       |  46 +-
- 81 files changed, 4860 insertions(+), 419 deletions(-)
+ 81 files changed, 4921 insertions(+), 419 deletions(-)
 ```
 
 </details>
