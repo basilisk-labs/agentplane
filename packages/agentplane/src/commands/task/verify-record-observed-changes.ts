@@ -6,10 +6,7 @@ import { isRecord } from "../../shared/guards.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
-function hasFrozenDirectExecutionBase(
-  extensions: unknown,
-  executionBaseSha: string,
-): boolean {
+function hasFrozenDirectExecutionBase(extensions: unknown, executionBaseSha: string): boolean {
   if (!isRecord(extensions)) return false;
   const routeBaseline = isRecord(extensions.workflow_route_baseline)
     ? extensions.workflow_route_baseline

@@ -2,18 +2,11 @@
   "base": "main",
   "branch": "task/202608211236-XEC2NE/repair-packaged-candidate-verification-contract",
   "created_at": "2026-08-21T12:41:06.582Z",
-  "diffstat_sha256": "sha256:3f22cc37c7c77afed02a631728e38e03fd7dab0bdbcb13facf2e27f7e17704cd",
-  "last_verified_at": "2026-08-21T21:30:14.965Z",
+  "diffstat_sha256": "sha256:6945732deaaa93f07770bdcdb746909da468998960ad7646a4f59efa5df97c33",
+  "last_verified_at": "2026-08-21T21:34:43.608Z",
   "last_verified_diffstat_sha256": "sha256:3f22cc37c7c77afed02a631728e38e03fd7dab0bdbcb13facf2e27f7e17704cd",
   "pr_number": 4859,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4859",
-  "pre_merge_closure": {
-    "basis_commit": "18900e2be7ba548fabe8020848b1ebd6fa009176",
-    "branch": "task/202608211236-XEC2NE/repair-packaged-candidate-verification-contract",
-    "pr_number": 4859,
-    "recorded_at": "2026-08-21T21:31:16.295Z",
-    "state": "closed_before_merge"
-  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -27,6 +20,6 @@
   "task_id": "202608211236-XEC2NE",
   "updated_at": "2026-08-21T21:04:38.003Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }

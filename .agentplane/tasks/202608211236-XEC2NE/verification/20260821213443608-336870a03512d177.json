@@ -1,0 +1,104 @@
+{
+  "details": null,
+  "digest": "sha256:336870a03512d1771581d650f78ae2f01fc671ee93cb959289cc0e742dbb0f29",
+  "implementation_sha": "30277665d28ff2675083f977113c4ecf1935400f",
+  "input": {
+    "context": {
+      "digest": "sha256:c604a3866814dba57d1e8b75bf0340937981e8280dda0ec9356a7987f4282f36",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:66e0792e5cdf43bb6f24ccc2b748ced48f2683bf8a7fc8de879bf428f88822d0",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "3cc2c4424893a61cf576d3bd82622216030b8bb1",
+      "digest": "sha256:637d1904c9c9dd3ca7355b959c34780205cd75127518c4f7614108165acfab3d",
+      "primary_task_id": "202608211236-XEC2NE",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_external_write",
+        "effect_publish",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608211236-XEC2NE"
+      ]
+    },
+    "implementation": {
+      "base_sha": "3cc2c4424893a61cf576d3bd82622216030b8bb1",
+      "digest": "sha256:196480b0c50d2b748e0a8b31475cf7ac3f5ad21a7f455819e949f748d07a560a",
+      "strategy": "branch_diff",
+      "target_sha": "30277665d28ff2675083f977113c4ecf1935400f"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:aaa1d16d79481edb8756af3890a34c4b9576d39c55a9cf62506eadf30968514e",
+    "verify_steps_digest": "sha256:420e55f562620587a5fff7e29aa97da200497386784ba9ef82e96c218d22ea21"
+  },
+  "kind": "task_verification_record",
+  "note": "Hosted verify-contract failed format:check for verify-record-observed-changes.ts; apply Prettier and reverify exact head.",
+  "recorded_at": "2026-08-21T21:34:43.608Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Repair packaged candidate verification-contract refresh after managed upgrade\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Repair packaged candidate verification-contract refresh after managed upgrade\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:420e55f562620587a5fff7e29aa97da200497386784ba9ef82e96c218d22ea21",
+  "task_id": "202608211236-XEC2NE",
+  "verification_command": "agentplane task verify rework 202608211236-XEC2NE --rework --by EVALUATOR",
+  "verifier": "EVALUATOR"
+}
