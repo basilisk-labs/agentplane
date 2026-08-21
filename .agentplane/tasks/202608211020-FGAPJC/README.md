@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 49
+revision: 50
 origin:
   system: "manual"
 depends_on: []
@@ -34,35 +34,35 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T12:57:35.729Z"
+  updated_at: "2026-08-21T13:12:09.761Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 7 typed finding(s)."
-  evaluated_sha: "5c435a7da9e8f1a7415eb509703a3f130154335a"
+  evaluated_sha: "8298ada8c89b8f94b903fa641bdd204b9584b04d"
   blueprint_digest: "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa"
   evidence_refs:
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-125613432-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-125613432-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/5231ac7c06fbbbeb11244b38435b71536f84d4215f384e6805ac3aa61da64196.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-125613432-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-125613432-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-125613432-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-131037193-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-131037193-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e3ea5467bba8c55c828997c1e437cc53ebd786b82a538ad02806cf4dc02e534e.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-131037193-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-131037193-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-131037193-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211020-FGAPJC/README.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/fb3beb2f7268fa73cca89d34742c8f41348d1c0cd71ba98f6231f9b48b04db59.patch"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/3e2f73a412e81bd6f2ee4025900be30299d18dd2e077b4b6aff447fa2748e595.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821125508833-2557ae7bafe55442.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/6a4c02f8641d06e441ee0b84ba4e818bce50857c1c3262b2c405b2447b463bfb.patch"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a2959159ae25c86e67b1961a31cba407135f235122ce40509824d842fbadaf81.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821131018686-9a8a26d1d6c1a934.json"
     - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "ExecutionGrant remains bound to task, normalized plan, execution scope, logical repository identity, and the logical-completion contract; ordinary rework remains covered while material drift invalidates authority."
-    - "Grant-derived OperationLease validation and replay protection remain integrated into supervisor-owned effects, including stale, cross-task, and cross-state rejection."
-    - "The managed supervisor coverage still carries one host-originated decision through semantic work, bounded rework, verification, provider operations, integration, hosted closeout, cleanup, and terminal.done."
-    - "The conflict rework composes primary-checkout sibling-task ownership with task-local base_ref/base_sha capture under the task-creation transaction; it does not reintroduce global-base or caller-path authority."
-    - "Concurrent long-lived bases, copied cross-repository rejection, relocation recovery, doctor transport diagnostics, and replay-safe authority remain explicitly covered by the frozen diff."
-    - "No semantic defect or missing acceptance coverage is visible in the scoped rework."
-    - "Residual risk: Provider availability, hosted CI completion, and merge execution remain external runtime conditions; the supervisor must continue idempotently and stop only if one of those conditions genuinely blocks progress."
+    - "The rework commit changes only parentheses, indentation, and line wrapping in the ten files named by the failed hosted format check."
+    - "bun run format:check passes on the evaluated commit."
+    - "bun run typecheck passes on the evaluated commit."
+    - "AgentPlane's recorded verification normalized the unavailable declared command bun run check to bun run test:critical; all 12 critical CLI chunks passed in 60.8 seconds."
+    - "Policy routing and agentplane doctor also passed in the supervisor-owned verification record."
+    - "The evaluator exchange artifacts are the only untracked files and are AgentPlane-owned evidence for this active evaluation episode."
+    - "Residual risk: Hosted provider checks must be rerun against the new published SHA before merge truth can be established."
 token_usage:
   agent_runs: 17
   input_tokens: null
@@ -682,7 +682,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T13:10:21.379Z"
+doc_updated_at: "2026-08-21T13:12:09.792Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
