@@ -4,7 +4,7 @@ title: "Route new task creation to the primary checkout"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +26,11 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved plan X9X57M in Codex task on 2026-08-21."
 verification:
-  state: "pending"
-  updated_at: "2026-08-21T10:20:13.336Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-21T10:35:25.786Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/task/new*.test.ts"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -93,7 +93,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task/begin.command.ts"
       - "packages/agentplane/src/commands/task/new.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-3:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -108,7 +109,16 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -206,9 +216,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "5c561bc702250c816bdc0460a7b1fd5636b5fa5d"
-  message: "🚧 X9X57M task: apply external agent result"
+      - "verification_recovery:recorded-check-3"
+commit: null
 comments:
   -
     author: "CODER"
@@ -245,8 +254,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 5c561bc70225. CLI accepted one state-bound external-agent semantic result."
     commit: "5c561bc702250c816bdc0460a7b1fd5636b5fa5d"
+  -
+    type: "verify"
+    at: "2026-08-21T10:35:25.786Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/task/new*.test.ts"
 doc_version: 3
-doc_updated_at: "2026-08-21T10:28:13.913Z"
+doc_updated_at: "2026-08-21T10:35:27.896Z"
 doc_updated_by: "SUPERVISOR"
 description: "Prevent task new invoked from a branch_pr task worktree from writing the new task README into that worktree; route creation through the primary checkout and add regression coverage for isolated task ownership."
 sections:
@@ -270,6 +285,51 @@ sections:
     7. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-21T10:35:25.786Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/task/new*.test.ts
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0d7c9f8d5b8d75c4eb706fdce0fff0d88ee1f31087b53324aa917113c92545b2, input_digest=sha256:59e5655af3a8eb0332ccc5755e81f97af06538125334b03ce05597023d660c4d
+
+    Details:
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608211010-X9X57M declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608211010-X9X57M declared verification
+
+    Command: bunx vitest run packages/agentplane/src/commands/task/new*.test.ts
+    Result: fail
+    Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608211010-X9X57M declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211010-X9X57M-route-new-task-creation-to-the-primary-checkout/.agentplane/tasks/202608211010-X9X57M/blueprint/resolved-snapshot.json
+    - old_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+    - current_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608211010-X9X57M
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608211010-X9X57M
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -297,6 +357,10 @@ extensions:
     transition_id: "tr_946a86d5e9a85ee6f4200bf64c837c10"
   implementation_commit:
     hash: "5c561bc702250c816bdc0460a7b1fd5636b5fa5d"
+  task_execution_context:
+    base_ref: "main"
+    base_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
+    schema_version: 1
   workflow_route_baseline:
     start_head_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
     version: 1
@@ -332,6 +396,51 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-21T10:35:25.786Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/task/new*.test.ts
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0d7c9f8d5b8d75c4eb706fdce0fff0d88ee1f31087b53324aa917113c92545b2, input_digest=sha256:59e5655af3a8eb0332ccc5755e81f97af06538125334b03ce05597023d660c4d
+
+Details:
+
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608211010-X9X57M declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608211010-X9X57M declared verification
+
+Command: bunx vitest run packages/agentplane/src/commands/task/new*.test.ts
+Result: fail
+Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608211010-X9X57M declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211010-X9X57M-route-new-task-creation-to-the-primary-checkout/.agentplane/tasks/202608211010-X9X57M/blueprint/resolved-snapshot.json
+- old_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+- current_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608211010-X9X57M
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608211010-X9X57M
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

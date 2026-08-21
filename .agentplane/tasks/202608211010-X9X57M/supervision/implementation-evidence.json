@@ -1,0 +1,52 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 8445f6e9ac9940de9324f9516a8aea5015f9cbb2..5c561bc702250c816bdc0460a7b1fd5636b5fa5d",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8445f6e9ac9940de9324f9516a8aea5015f9cbb2..5c561bc702250c816bdc0460a7b1fd5636b5fa5d",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608211010-X9X57M/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608211010-X9X57M/pr/github-body.md",
+        "M\t.agentplane/tasks/202608211010-X9X57M/pr/meta.json",
+        "M\t.agentplane/tasks/202608211010-X9X57M/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-guided.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.tasks.create.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-backend.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-backend.ts",
+        "M\tpackages/agentplane/src/commands/task/begin.command.ts",
+        "M\tpackages/agentplane/src/commands/task/new.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "8445f6e9ac9940de9324f9516a8aea5015f9cbb2",
+  "implementation_commit": "5c561bc702250c816bdc0460a7b1fd5636b5fa5d",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608211010-X9X57M"
+}

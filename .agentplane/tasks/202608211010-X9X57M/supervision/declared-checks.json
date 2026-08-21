@@ -1,0 +1,33 @@
+{
+  "checks": [
+    {
+      "command": "bun run lint:core",
+      "duration_ms": 118333,
+      "exit_code": 0,
+      "script": "lint:core",
+      "stderr_tail": "$ eslint packages scripts eslint.config.cjs vitest.config.ts\n",
+      "stdout_tail": ""
+    },
+    {
+      "command": "bun run typecheck",
+      "duration_ms": 370,
+      "exit_code": 0,
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "command": "bunx vitest run packages/agentplane/src/commands/task/new*.test.ts",
+      "duration_ms": 566,
+      "exit_code": 1,
+      "script": null,
+      "stderr_tail": "No test files found, exiting with code 1\n\nfilter: packages/agentplane/src/commands/task/new*.test.ts\ninclude: packages/**/src/**/*.test.ts\nexclude:  **/node_modules/**, **/.git/**\n\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211010-X9X57M-route-new-task-creation-to-the-primary-checkout\n\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: bunx vitest run packages/agentplane/src/commands/task/new*.test.ts",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202608211010-X9X57M"
+}
