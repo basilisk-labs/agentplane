@@ -379,7 +379,7 @@ export function isExecutionGrantActive(opts: {
 
 function removeValidBase64UrlPadding(encoded: string): string | null {
   let paddingStart = encoded.length;
-  while (paddingStart > 0 && encoded.charCodeAt(paddingStart - 1) === 61) {
+  while (paddingStart > 0 && encoded.codePointAt(paddingStart - 1) === 61) {
     paddingStart -= 1;
   }
   if (encoded.length - paddingStart > 2) return null;
