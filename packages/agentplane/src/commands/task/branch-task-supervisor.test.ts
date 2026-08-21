@@ -1,27 +1,8 @@
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
-
 import { validateCommitSubject } from "@agentplaneorg/core/commit";
-import { gitRevParse } from "@agentplaneorg/core/git";
 import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
-import {
-  createExecutionGrant,
-  createPlanProposal,
-  createTaskExecutionBaseIdentity,
-  hostUserDecisionDigest,
-  type HostUserDecision,
-  type TaskExecutionContract,
-} from "@agentplaneorg/core/tasks";
 import { mkGitRepoRoot } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
-import {
-  workflowAuthorityStateScopeDigest,
-  workflowOperationAuthorityDigest,
-  WORKFLOW_OPERATION_AUTHORITY_POLICY,
-} from "../shared/side-effect-authority.js";
-import { loadSideEffectAuthorityState } from "../shared/side-effect-authority-store.js";
-import type { CommandContext } from "../shared/task-backend.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { projectWorkflowOperationArgv } from "../shared/workflow-operation-projection.js";
 import {
@@ -32,18 +13,14 @@ import {
   type WorkflowOperationParams,
 } from "../shared/workflow-step.js";
 import {
-  resolveBranchTaskDecisionWithAuthority,
   superviseBranchTaskRunWithPorts,
   type BranchTaskSupervisorPorts,
 } from "./branch-task-supervisor.js";
 import { branchSupervisorArtifactCommitMessage } from "./branch-task-supervisor-artifact-commit.js";
 import { agentTransitionId, buildAgentActionPacket } from "./agent-action-packet.js";
-import { resolveConfiguredAuthority } from "./configured-authority.js";
-import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 
 const taskId = "202607310001-BRANCH";
 const branch = `task/${taskId}/branch-supervisor`;
-const execFileAsync = promisify(execFile);
 
 function fingerprint(revision: number) {
   const component = {
@@ -198,55 +175,6 @@ function cliDecision<Id extends WorkflowOperationId>(
     stopReason: null,
   };
   return decision;
-}
-
-function approvalDecisionFor(decision: TaskRouteDecision): TaskRouteDecision {
-  if (decision.workflowStep.kind !== "cli_operation") {
-    throw new Error("approval fixture requires a CLI operation");
-  }
-  const operation = decision.workflowStep.operation;
-  const requirement = WORKFLOW_OPERATION_AUTHORITY_POLICY[operation.id];
-  return {
-    ...decision,
-    workflowStep: {
-      schemaVersion: 1,
-      id: `approval.${operation.id}`,
-      kind: "approval",
-      phase: "side_effect_authority_required",
-      authoritativeCheckout: decision.workflowStep.authoritativeCheckout,
-      summary: `authorize ${operation.id} from the approved execution grant`,
-      blockers: [],
-      selectedBlocker: null,
-      compatibility: {
-        code: `approval.${operation.id}`,
-        command: null,
-        summary: `authorize ${operation.id}`,
-        requiresApproval: true,
-      },
-      preconditionFingerprint: operation.preconditionFingerprint,
-      request: {
-        type: "side_effect",
-        taskId,
-        authorityRef: `route:${operation.preconditionFingerprint.digest}`,
-        operationId: operation.id,
-        operation: { id: operation.id, type: operation.type, params: operation.params },
-        operationDigest: workflowOperationAuthorityDigest(operation),
-        stateFingerprintDigest: operation.preconditionFingerprint.digest,
-        stateScopeDigest: workflowAuthorityStateScopeDigest(operation.preconditionFingerprint),
-        policyRule: requirement.policyRule,
-      },
-      execution: {
-        actionKind: "provider_action",
-        recommendedRole: "USER",
-        semanticMutationAllowed: false,
-        mustNot: [],
-        returnControlWhen: "after authority resolution",
-        verificationCandidate: null,
-        evidenceMissing: [],
-        needsVerificationRecord: false,
-      },
-    },
-  } as TaskRouteDecision;
 }
 
 function agentDecision(
@@ -682,215 +610,6 @@ describe("branch_pr task supervisor", () => {
     expect(result.operation_receipts[2]).toMatchObject({
       operation_id: "integration.run_next",
     });
-  });
-
-  it("uses one host decision through provider integration, hosted close, and cleanup", async () => {
-    const root = await mkGitRepoRoot();
-    await execFileAsync("git", ["commit", "--allow-empty", "-m", "base"], { cwd: root });
-    const baseSha = await gitRevParse(root, ["HEAD^{commit}"]);
-    const repositoryIdentity = await resolveLogicalRepositoryIdentity({ git_root: root, task: {} });
-    const plan = "Implement, verify, publish, integrate, close, and clean the task.";
-    const executionContract = {
-      selected_mode: "branch_pr",
-      declaration: {
-        repository_effects: ["repository_write", "source_code", "tests"],
-        external_effects: ["external_write"],
-      },
-      authority: {
-        writable_roots: ["packages/app"],
-        allowed_repository_effects: ["repository_write", "source_code", "tests"],
-        forbidden_repository_effects: [],
-        allowed_external_effects: ["external_write"],
-        forbidden_external_effects: [],
-      },
-      verification: { required_evidence: ["hosted_integration", "task_outcome"] },
-    } as TaskExecutionContract;
-    const proposal = createPlanProposal({
-      task_id: taskId,
-      task_revision: 2,
-      plan,
-      execution_contract: executionContract,
-      repository_identity: repositoryIdentity,
-    });
-    const hostDecision = {
-      schema_version: 1,
-      kind: "agentplane.host_user_decision",
-      origin: "user",
-      host_id: "codex",
-      conversation_id: "one-confirmation-terminal-supervisor",
-      message_id: "user-approval-1",
-      task_id: taskId,
-      plan_digest: proposal.plan_digest,
-      state_fingerprint: `sha256:${"c".repeat(64)}`,
-      decision: "approved",
-      decided_at: "2026-08-21T10:00:00.000Z",
-    } as const satisfies HostUserDecision;
-    const executionGrant = createExecutionGrant({
-      proposal,
-      execution_contract: executionContract,
-      actor: "HOST:codex:USER",
-      approval_kind: "host_user_decision",
-      approval_evidence_digest: hostUserDecisionDigest(hostDecision),
-      issued_at: hostDecision.decided_at,
-    });
-    const task = {
-      id: taskId,
-      title: "One-confirmation terminal supervisor",
-      status: "DOING",
-      owner: "CODER",
-      revision: 2,
-      sections: { Plan: plan },
-      execution_contract: executionContract,
-      extensions: {
-        "agentplane.execution_grant": executionGrant,
-        task_execution_context: createTaskExecutionBaseIdentity({
-          base_ref: "main",
-          base_sha: baseSha,
-          repository_identity: repositoryIdentity,
-          source: "explicit",
-        }),
-      },
-    } as unknown as NonNullable<Awaited<ReturnType<CommandContext["taskBackend"]["getTask"]>>>;
-    const command = {
-      resolvedProject: { gitRoot: root },
-      config: {
-        paths: { workflow_dir: ".agentplane/tasks" },
-        branch: { task_prefix: "task/" },
-        authority: {
-          mode: "manual",
-          actor: "POLICY:repository",
-          allow_operations: [],
-          deny_operations: [],
-          ttl_minutes: 15,
-        },
-      },
-      taskBackend: { getTask: () => Promise.resolve(task) },
-      backendId: "local",
-      memo: {},
-    } as unknown as CommandContext;
-    const prOpen = cliDecision(4, "pr.open", { taskId, author: "CODER", includeTaskIds: [] });
-    const preMergeClose = cliDecision(5, "task.pre_merge_close", {
-      taskId,
-      author: "CODER",
-      body: "Verified terminal supervisor fixture.",
-      result: "One confirmation reached closeout.",
-      commit: "a".repeat(40),
-      force: true,
-    });
-    const enqueue = cliDecision(6, "integration.enqueue", { taskId, branch });
-    const hostedClose = cliDecision(8, "task.hosted_close.open", { taskId });
-    const rawDecisions = [
-      agentDecision(1, "implementation"),
-      agentDecision(2, "verification"),
-      agentDecision(3, "quality_review"),
-      approvalDecisionFor(prOpen),
-      prOpen,
-      approvalDecisionFor(preMergeClose),
-      preMergeClose,
-      approvalDecisionFor(enqueue),
-      enqueue,
-      cliDecision(7, "integration.run_next", { taskId }),
-      approvalDecisionFor(hostedClose),
-      hostedClose,
-      cliDecision(9, "task.hosted_close.finalize", { taskId, base: "main" }),
-      cliDecision(10, "task.worktree.cleanup", { taskId, base: "main" }),
-      stopDecision(11, "terminal"),
-    ];
-    let rawIndex = 0;
-    const decide = async () =>
-      await resolveBranchTaskDecisionWithAuthority({
-        decide: () => Promise.resolve(rawDecisions[Math.min(rawIndex++, rawDecisions.length - 1)]!),
-        resolve_authority: async (decision) =>
-          await resolveConfiguredAuthority({ command, decision }),
-      });
-    const calls: string[] = [];
-    const result = await superviseBranchTaskRunWithPorts({
-      git_root: root,
-      task_id: taskId,
-      decide,
-      execute_operation: ({ operation }) => {
-        calls.push(operation.id);
-        return Promise.resolve({
-          status: "succeeded",
-          observed_postconditions: operation.expectedPostconditions
-            .map((postcondition) => postcondition.id)
-            .filter((id) => id !== "route_state_recomputed"),
-          detail: `executed ${operation.id}`,
-          exit_code: 0,
-        });
-      },
-      execute_episode: async ({ decision }) => {
-        calls.push(decision.workflowStep.id);
-        const purpose =
-          decision.workflowStep.kind === "agent_episode"
-            ? decision.workflowStep.episode.purpose
-            : "implementation";
-        return {
-          status: "completed",
-          decision: await decide(),
-          ...(purpose === "implementation"
-            ? {
-                executor: {
-                  run_id: "one-confirmation-executor",
-                  receipt: {
-                    path: "agentplane-run://one-confirmation/receipt.json",
-                    sha256: `sha256:${"a".repeat(64)}`,
-                    verification_state: "observed_success" as const,
-                    observed_by: "agentplane" as const,
-                  },
-                  semantic_status: "completed" as const,
-                  implementation_commit: "a".repeat(40),
-                },
-                executor_lifecycle_event_delta: 0,
-              }
-            : {}),
-          ...(purpose === "quality_review"
-            ? {
-                evaluator: {
-                  evaluator_id: "recovery-context",
-                  verdict: "pass" as const,
-                  result_path: "quality/result.json",
-                  report_path: "quality/report.json",
-                  receipt_path: "quality/evaluator-episode.json",
-                },
-              }
-            : {}),
-          journal: null,
-          provider_episodes: purpose === "verification" ? 0 : 1,
-          lifecycle_calls: 1,
-        };
-      },
-    });
-    const persisted = await loadSideEffectAuthorityState({ gitRoot: root, taskId, task });
-
-    expect(result).toMatchObject({
-      status: "finalized",
-      stop: null,
-      route: { step_id: "terminal.done" },
-    });
-    expect(calls).toEqual([
-      "agent.implementation",
-      "agent.verification",
-      "agent.quality_review",
-      "pr.open",
-      "task.pre_merge_close",
-      "integration.enqueue",
-      "integration.run_next",
-      "task.hosted_close.open",
-      "task.hosted_close.finalize",
-      "task.worktree.cleanup",
-    ]);
-    expect(result.operation_receipts.map((receipt) => receipt.operation_id)).toEqual(
-      calls.slice(3),
-    );
-    expect(persisted.state?.grants).toHaveLength(4);
-    expect(persisted.state?.audit).toHaveLength(4);
-    expect(
-      persisted.state?.grants.every(
-        (authority) => authority.operationLease?.grant_digest === executionGrant.digest,
-      ),
-    ).toBe(true);
-    expect(executionGrant.approval_kind).toBe("host_user_decision");
   });
 
   it("returns merge authority to the user without imitating a provider action", async () => {

@@ -3,14 +3,11 @@ import {
   completeSupervisorExecutionEpisode,
   startSupervisorExecutionEpisode,
   type SupervisorExecutionEpisodeJournal,
-  type SupervisorExecutionUsage,
 } from "@agentplaneorg/core/schemas";
 
-import { readCodexProviderUsageForResult } from "../../runner/adapters/codex-result-transport.js";
 import {
   projectExecutedTaskRunnerLifecycleResult,
   taskRunnerLifecycleExitCode,
-  type TaskRunnerLifecycleResult,
 } from "../../runner/usecases/task-run-lifecycle-result.js";
 import { executeTaskRunnerExecution } from "../../runner/usecases/task-run.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
@@ -43,6 +40,7 @@ import {
   branchSupervisorArtifactCommitMessage,
   commitBranchSupervisorTaskArtifacts,
 } from "./branch-task-supervisor-artifact-commit.js";
+import { branchSupervisorUsageFromLifecycle } from "./branch-task-supervisor-usage.js";
 import {
   observedExternalEffectsFromRunnerResult,
   recordObservedTaskExecutionContract,
@@ -51,24 +49,6 @@ import { resolveTaskExecutionContext } from "../../runtime/task-execution-contex
 
 function operationId(decision: TaskRouteDecision): string | null {
   return decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation.id : null;
-}
-
-function usageFromLifecycle(
-  lifecycle: TaskRunnerLifecycleResult,
-): Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">> {
-  if (lifecycle.phase !== "executed" || !lifecycle.result) return {};
-  const provider = readCodexProviderUsageForResult(lifecycle.result);
-  const duration = lifecycle.result.metrics?.duration_ms;
-  const changedFiles = lifecycle.result.evidence?.files_changed_count;
-  return {
-    ...(provider ?? {}),
-    ...(typeof duration === "number" && Number.isSafeInteger(duration) && duration >= 0
-      ? { wall_time_ms: duration }
-      : {}),
-    ...(typeof changedFiles === "number" && Number.isSafeInteger(changedFiles) && changedFiles >= 0
-      ? { changed_files: changedFiles }
-      : {}),
-  };
 }
 
 function stoppedEpisode(opts: {
@@ -236,7 +216,7 @@ async function executeBranchImplementationEpisode(opts: {
         receipt: lifecycle.result?.execution_receipt ?? null,
         semantic_status: lifecycle.result?.semantic_result?.value.status ?? null,
       },
-      usage: usageFromLifecycle(lifecycle),
+      usage: branchSupervisorUsageFromLifecycle(lifecycle),
       progress: lifecycle.lifecycle.state_fingerprint ?? {
         run_id: lifecycle.invocation.run_id,
         status: lifecycle.lifecycle.status,

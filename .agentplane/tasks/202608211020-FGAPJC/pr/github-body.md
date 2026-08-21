@@ -31,54 +31,57 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  docs/user/branching-and-pr-artifacts.mdx           |  19 +
  docs/user/cli-reference.generated.mdx              |   2 +
  docs/user/task-lifecycle.mdx                       |  43 +-
- .../src/cli/run-cli.core.lifecycle.plan.test.ts    |  61 ++-
- ...run-cli.core.task-create-planner-intent.test.ts | 197 ++++++++-
+ .../src/cli/run-cli.core.lifecycle.plan.test.ts    |  61 +-
+ .../run-cli.core.task-create-base-intent.test.ts   | 252 ++++++++
+ ...run-cli.core.task-create-planner-intent.test.ts | 138 ++---
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/commands/branch/work-start.command.ts      |   2 +
  .../agentplane/src/commands/branch/work-start.ts   |   7 +-
- .../src/commands/doctor/authority.test.ts          |  30 ++
+ .../src/commands/doctor/authority.test.ts          |  30 +
  .../agentplane/src/commands/doctor/authority.ts    |  38 ++
  packages/agentplane/src/commands/doctor/runtime.ts |   5 +-
  .../agentplane/src/commands/pr/internal/sync.ts    |  13 +-
  packages/agentplane/src/commands/pr/open.ts        |   2 +
  packages/agentplane/src/commands/pr/update.ts      |  11 +-
- .../commands/shared/side-effect-authority.test.ts  |  55 +++
+ .../commands/shared/side-effect-authority.test.ts  |  55 ++
  .../src/commands/shared/side-effect-authority.ts   |  43 +-
  .../agentplane/src/commands/shared/task-backend.ts |  24 +-
  .../src/commands/task/advance.command.ts           |  19 +-
  .../src/commands/task/agent-action-packet.test.ts  |  28 +-
- .../src/commands/task/agent-action-packet.ts       |  55 ++-
- .../task/branch-task-supervisor-episodes.ts        |  17 +-
+ .../src/commands/task/agent-action-packet.ts       |  55 +-
+ .../task/branch-task-supervisor-episodes.ts        |  41 +-
  .../task/branch-task-supervisor-operations.ts      |   4 +-
- .../commands/task/branch-task-supervisor.test.ts   | 324 ++++++++++++++
- .../src/commands/task/branch-task-supervisor.ts    |  59 ++-
- .../src/commands/task/configured-authority.test.ts | 245 ++++++++++-
- .../src/commands/task/configured-authority.ts      | 195 +++++++-
+ .../commands/task/branch-task-supervisor-usage.ts  |  22 +
+ .../task/branch-task-supervisor.autonomy.test.ts   | 637 +++++++++++++++++++++
+ .../commands/task/branch-task-supervisor.test.ts   |  43 ++
+ .../src/commands/task/branch-task-supervisor.ts    |  59 +-
+ .../src/commands/task/configured-authority.test.ts | 245 +++++++-
+ .../src/commands/task/configured-authority.ts      | 195 ++++++-
  .../agentplane/src/commands/task/create.command.ts |  40 ++
  .../commands/task/direct-task-verification.test.ts |  41 +-
- .../src/commands/task/direct-task-verification.ts  |  74 +++-
- .../task/execution-authority-context.test.ts       |  92 ++++
- .../commands/task/execution-authority-context.ts   | 111 +++++
+ .../src/commands/task/direct-task-verification.ts  |  74 ++-
+ .../task/execution-authority-context.test.ts       |  92 +++
+ .../commands/task/execution-authority-context.ts   | 111 ++++
  .../src/commands/task/new.primary-checkout.test.ts |  66 +++
  packages/agentplane/src/commands/task/new.ts       |  46 +-
  .../src/commands/task/plan-approve.command.ts      |  70 ++-
- packages/agentplane/src/commands/task/plan.ts      |  90 +++-
+ packages/agentplane/src/commands/task/plan.ts      |  90 ++-
  .../src/commands/task/verify-record-execute.ts     |   4 +-
  .../runtime/task-execution-context/resolve.test.ts |  26 +-
- .../src/runtime/task-execution-context/resolve.ts  |  88 +++-
+ .../src/runtime/task-execution-context/resolve.ts  |  88 ++-
  .../src/runtime/workspace-allocation/allocate.ts   |  12 +-
  .../workspace-allocation/rediscover.test.ts        |  48 ++
  .../src/runtime/workspace-allocation/rediscover.ts |  47 ++
  packages/core/src/tasks/index.ts                   |  32 ++
- .../core/src/tasks/plan-execution-grant.test.ts    | 299 +++++++++++++
- packages/core/src/tasks/plan-execution-grant.ts    | 488 +++++++++++++++++++++
- packages/core/src/tasks/task-execution-base.ts     |  59 +++
+ .../core/src/tasks/plan-execution-grant.test.ts    | 299 ++++++++++
+ packages/core/src/tasks/plan-execution-grant.ts    | 488 ++++++++++++++++
+ packages/core/src/tasks/task-execution-base.ts     |  59 ++
  packages/core/src/tasks/task-store.ts              |   1 +
  packages/core/src/tasks/tasks-export.ts            |   2 +
  .../baselines/v0.7-compatibility-candidate.json    |  41 +-
- .../check-compatibility-contract-baseline.mjs      |  27 ++
+ .../check-compatibility-contract-baseline.mjs      |  27 +
  website/static/llms-full.txt                       |  43 +-
- 51 files changed, 3231 insertions(+), 161 deletions(-)
+ 54 files changed, 3720 insertions(+), 267 deletions(-)
 ```
 
 </details>
