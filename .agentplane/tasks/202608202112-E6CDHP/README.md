@@ -1,10 +1,10 @@
 ---
 id: "202608202112-E6CDHP"
 title: "Fix live GitLab MR transport and provider-neutral mergeability validation"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 49
+revision: 50
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,10 @@ plan_approval:
   updated_by: "USER"
   note: "Approved explicitly by Denis in Codex on 2026-08-21 after reviewing the live GitLab findings and remediation plan."
 verification:
-  state: "blocked_external"
-  updated_at: "2026-08-21T01:38:19.609Z"
-  updated_by: "TESTER"
-  note: "Live GitLab canary has no pipeline because project policy does not require one; hosted checks must honor provider policy while failing closed for required pipelines or checks."
+  state: "pending"
+  updated_at: "2026-08-21T01:40:16.720Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 9
 execution_route:
   frozen: true
@@ -71,6 +71,8 @@ execution_contract:
       - "packages/agentplane/src/commands/integrate-queue.command.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.ts"
+      - "packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts"
+      - "packages/agentplane/src/commands/pr/hosted-checks.ts"
       - "packages/agentplane/src/commands/pr/integrate"
       - "packages/agentplane/src/commands/pr/internal"
   declaration:
@@ -86,6 +88,7 @@ execution_contract:
       - "The two defects are narrowly reproduced and can be covered by existing GitLab transport and conflict-route test seams."
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/branch,packages/agentplane/src/commands/pr/integrate; repository_effects=repository_write,source_code,tests"
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/integrate-queue.command.test.ts,packages/agentplane/src/commands/integrate-queue.command.ts; repository_effects=repository_write,source_code,tests"
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts,packages/agentplane/src/commands/pr/hosted-checks.ts; repository_effects=repository_write,source_code,tests"
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -99,11 +102,12 @@ execution_contract:
       - "packages/agentplane/src/commands/integrate-queue.command.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.ts"
+      - "packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts"
+      - "packages/agentplane/src/commands/pr/hosted-checks.ts"
       - "packages/agentplane/src/commands/pr/integrate"
       - "packages/agentplane/src/commands/pr/internal"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -127,10 +131,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -156,6 +157,8 @@ execution_contract:
           - "packages/agentplane/src/commands/integrate-queue.command.ts"
           - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
           - "packages/agentplane/src/commands/pr/conflict-rework.ts"
+          - "packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts"
+          - "packages/agentplane/src/commands/pr/hosted-checks.ts"
           - "packages/agentplane/src/commands/pr/integrate"
           - "packages/agentplane/src/commands/pr/internal"
         evidence_requirements:
@@ -179,7 +182,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:f9299eaf8e2af9fe8a995e1378fb37de00491b64c3c0d29df888b6190d4f1dc6"
+      digest: "sha256:71718c4e53937f5196442f1aefa794e25417e1d9584ffd470cf464371903f1e0"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -247,7 +250,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
@@ -325,6 +327,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Live GitLab qualification exposed a project-policy edge outside the current writable roots. Recommended action: Approve the exact scope extension, then read the GitLab project merge policy when no exact-head pipeline exists and add focused fail-open/fail-closed tests. Requested scope: roots=packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts,packages/agentplane/src/commands/pr/hosted-checks.ts; repository effects=repository_write,source_code,tests; request digest=sha256:d6cbe451d53d58166fac658189a6829ba506948ad5d35a33cdedd0fb2fc62562. Agentplane receipt: external-agent-blocker/tr_88faf6bea4c9786ed4d1061e0c56c904/sha256:df04d3ec8146c962ea9b949714a2c647276cfcd1c41f98da4417f3dca7c20de0/sha256:d6cbe451d53d58166fac658189a6829ba506948ad5d35a33cdedd0fb2fc62562."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts, packages/agentplane/src/commands/pr/hosted-checks.ts; repository effects: repository_write, source_code, tests."
 events:
   -
     type: "status"
@@ -896,6 +901,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-08-21T01:40:16.720Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:df04d3ec8146c962ea9b949714a2c647276cfcd1c41f98da4417f3dca7c20de0"
     kind: "task_scope_extension_request"
     request:
@@ -910,7 +917,7 @@ extensions:
         - "packages/agentplane/src/commands/pr/hosted-checks.ts"
     request_digest: "sha256:d6cbe451d53d58166fac658189a6829ba506948ad5d35a33cdedd0fb2fc62562"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_88faf6bea4c9786ed4d1061e0c56c904"
   implementation_commit:
     hash: "35d04d9a2de07d4f00f5770a9d65a623ea56807c"
