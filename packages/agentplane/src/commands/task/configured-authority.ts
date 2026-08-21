@@ -66,6 +66,30 @@ function isUserApprovedGrant(grant: ExecutionGrant): boolean {
   );
 }
 
+export async function activeExecutionGrantForTask(opts: {
+  command: CommandContext;
+  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+}): Promise<ExecutionGrant | null> {
+  const repositoryIdentity = await resolveLogicalRepositoryIdentity({
+    git_root: opts.command.resolvedProject.gitRoot,
+    task: opts.task,
+  });
+  const executionGrant = executionGrantForContextFromExtensions({
+    extensions: opts.task.extensions,
+    repository_identity: repositoryIdentity,
+    execution_contract: opts.task.execution_contract,
+  });
+  return isExecutionGrantActive({
+    grant: executionGrant,
+    task_id: opts.task.id,
+    plan: opts.task.sections?.Plan ?? "",
+    execution_contract: opts.task.execution_contract,
+    repository_identity: repositoryIdentity,
+  })
+    ? executionGrant
+    : null;
+}
+
 export function executionGrantOperationLeaseId(opts: {
   grant_digest: string;
   task_id: string;
@@ -128,24 +152,7 @@ export async function resolveConfiguredAuthority(opts: {
     taskId: step.request.taskId,
     preferBranchSnapshot: opts.decision.workflowMode === "branch_pr",
   });
-  const repositoryIdentity = await resolveLogicalRepositoryIdentity({
-    git_root: opts.command.resolvedProject.gitRoot,
-    task,
-  });
-  const executionGrant = executionGrantForContextFromExtensions({
-    extensions: task.extensions,
-    repository_identity: repositoryIdentity,
-    execution_contract: task.execution_contract,
-  });
-  const activeGrant = isExecutionGrantActive({
-    grant: executionGrant,
-    task_id: task.id,
-    plan: task.sections?.Plan ?? "",
-    execution_contract: task.execution_contract,
-    repository_identity: repositoryIdentity,
-  })
-    ? executionGrant
-    : null;
+  const activeGrant = await activeExecutionGrantForTask({ command: opts.command, task });
   const config = opts.command.config.authority;
   const grantOwnsOperation = Boolean(
     activeGrant &&

@@ -315,6 +315,54 @@ describe("direct task verification", () => {
     });
   });
 
+  it("keeps passed evidence stable across equivalent reruns but rewrites changed outcomes", async () => {
+    const cwd = await root();
+    mocks.runProcess
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "first timing: 10ms", stderr: "" })
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "second timing: 20ms", stderr: "" })
+      .mockResolvedValueOnce({ exitCode: 1, stdout: "", stderr: "changed failure" });
+    const task = {
+      verify: ["bun run test:critical"],
+      task_kind: "code" as const,
+      mutation_scope: "code" as const,
+    };
+
+    const first = await runDirectTaskVerification({
+      command: command(cwd),
+      task,
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+    const artifactPath = path.join(cwd, first.artifact_path);
+    const firstArtifact = await readFile(artifactPath, "utf8");
+
+    const second = await runDirectTaskVerification({
+      command: command(cwd),
+      task,
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+    expect(second.checks[0]?.stdout_tail).toBe("second timing: 20ms");
+    expect(await readFile(artifactPath, "utf8")).toBe(firstArtifact);
+
+    const failed = await runDirectTaskVerification({
+      command: command(cwd),
+      task,
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+    expect(failed.status).toBe("failed");
+    expect(await readFile(artifactPath, "utf8")).not.toBe(firstArtifact);
+    expect(JSON.parse(await readFile(artifactPath, "utf8"))).toMatchObject({
+      status: "failed",
+      reason: "Declared check failed: bun run test:critical",
+      checks: [{ exit_code: 1, stderr_tail: "changed failure" }],
+    });
+  });
+
   it("binds supervisor evidence to every selected Verification Contract check", () => {
     const task = {
       execution_contract: {

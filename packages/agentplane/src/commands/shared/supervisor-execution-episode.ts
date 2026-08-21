@@ -4,7 +4,7 @@ import path from "node:path";
 import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
-  continueSupervisorExecutionEpisodeAfterEpisodeBudget,
+  continueSupervisorExecutionEpisodeAfterRenewableBudget,
   migrateSupervisorExecutionEpisodeJournal,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   recoverSupervisorExecutionEpisodeJournal,
@@ -225,6 +225,8 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
   git_root: string;
   task_id: string;
   state_fingerprint_digest: string;
+  allow_agent_run_budget_extension?: boolean;
+  budget_only?: boolean;
 }): Promise<"prepared" | "budget_extended" | "already_prepared" | "not_failed"> {
   const journalPath = await resolveSupervisorExecutionEpisodePath({
     git_root: opts.git_root,
@@ -248,22 +250,42 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
       return "already_prepared";
     }
     const latest = journal.operations.at(-1);
-    const episodeBudgetExhausted =
+    const exhaustedDimensions = journal.stop?.exhausted_dimensions ?? [];
+    const renewableBudgetExhausted =
       journal.status === "stopped" &&
       journal.stop?.reason === "budget_exhausted" &&
-      journal.stop.exhausted_dimensions.length === 1 &&
-      journal.stop.exhausted_dimensions[0] === "episodes" &&
+      exhaustedDimensions.length > 0 &&
+      exhaustedDimensions.every(
+        (dimension) =>
+          dimension === "episodes" ||
+          (dimension === "agent_runs" && opts.allow_agent_run_budget_extension === true),
+      ) &&
       latest?.status === "completed";
-    if (episodeBudgetExhausted) {
-      const continued = continueSupervisorExecutionEpisodeAfterEpisodeBudget({
+    if (renewableBudgetExhausted) {
+      const extendEpisodes = exhaustedDimensions.includes("episodes");
+      const extendAgentRuns = exhaustedDimensions.includes("agent_runs");
+      const agentRunIncrement = DEFAULT_SUPERVISOR_EXECUTION_BUDGET.max_agent_runs ?? 0;
+      const continued = continueSupervisorExecutionEpisodeAfterRenewableBudget({
         journal,
         state_fingerprint_digest: opts.state_fingerprint_digest,
-        max_episodes:
-          journal.budget.max_episodes + DEFAULT_SUPERVISOR_EXECUTION_BUDGET.max_episodes,
+        ...(extendEpisodes ||
+        (extendAgentRuns &&
+          journal.budget.max_episodes < (journal.budget.max_agent_runs ?? 0) + agentRunIncrement)
+          ? {
+              max_episodes:
+                journal.budget.max_episodes + DEFAULT_SUPERVISOR_EXECUTION_BUDGET.max_episodes,
+            }
+          : {}),
+        ...(extendAgentRuns
+          ? {
+              max_agent_runs: (journal.budget.max_agent_runs ?? 0) + agentRunIncrement,
+            }
+          : {}),
       });
       if (await opened.store.compareAndSwap(journal.digest, continued)) return "budget_extended";
       continue;
     }
+    if (opts.budget_only) return "not_failed";
     const recoverableFailure =
       journal.status === "stopped" &&
       latest?.status === "failed" &&

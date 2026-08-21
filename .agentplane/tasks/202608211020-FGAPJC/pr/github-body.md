@@ -58,11 +58,13 @@ volatile timing and output-tail telemetry, changing its evidence digest.
  .../src/commands/shared/quality-review-target.ts   |  10 +
  .../commands/shared/side-effect-authority.test.ts  | 141 ++++-
  .../src/commands/shared/side-effect-authority.ts   |  53 +-
+ .../shared/supervisor-execution-episode.test.ts    |  81 +++
+ .../shared/supervisor-execution-episode.ts         |  38 +-
  .../task-worktree-foreign-artifact-repair.test.ts  |  16 +-
  .../workflow-operation-projection.registry.test.ts |   5 +-
  .../shared/workflow-operation-projection.ts        |   5 +-
  .../src/commands/shared/workflow-step-authority.ts |   2 +-
- .../src/commands/task/advance.command.ts           |  19 +-
+ .../src/commands/task/advance.command.ts           |  43 +-
  .../src/commands/task/agent-action-packet.test.ts  |  28 +-
  .../src/commands/task/agent-action-packet.ts       |  55 +-
  .../task/branch-task-supervisor-episodes.ts        |  41 +-
@@ -73,10 +75,10 @@ volatile timing and output-tail telemetry, changing its evidence digest.
  .../commands/task/branch-task-supervisor.test.ts   |  43 ++
  .../src/commands/task/branch-task-supervisor.ts    |  59 +-
  .../src/commands/task/configured-authority.test.ts | 245 +++++++-
- .../src/commands/task/configured-authority.ts      | 195 ++++++-
+ .../src/commands/task/configured-authority.ts      | 202 ++++++-
  .../agentplane/src/commands/task/create.command.ts |  40 ++
- .../commands/task/direct-task-verification.test.ts |  41 +-
- .../src/commands/task/direct-task-verification.ts  |  74 ++-
+ .../commands/task/direct-task-verification.test.ts |  89 ++-
+ .../src/commands/task/direct-task-verification.ts  | 122 +++-
  .../task/execution-authority-context.test.ts       |  92 +++
  .../commands/task/execution-authority-context.ts   | 111 ++++
  .../external-agent-implementation-authority.ts     |  57 +-
@@ -111,7 +113,7 @@ volatile timing and output-tail telemetry, changing its evidence digest.
  .../check-compatibility-contract-baseline.mjs      |  42 +-
  scripts/checks/run-local-ci.mjs                    |   9 +-
  website/static/llms-full.txt                       |  46 +-
- 79 files changed, 4626 insertions(+), 407 deletions(-)
+ 81 files changed, 4860 insertions(+), 419 deletions(-)
 ```
 
 </details>

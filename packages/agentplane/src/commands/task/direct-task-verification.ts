@@ -180,14 +180,58 @@ async function writeCheckArtifact(opts: {
   );
   const absolute = path.join(opts.command.resolvedProject.gitRoot, relative);
   await mkdir(path.dirname(absolute), { recursive: true });
-  await writeJsonStableIfChanged(absolute, {
+  const artifact = {
     schema_version: 1,
     kind: "direct_task_declared_checks",
     task_id: opts.task_id,
     status: opts.result.status,
     reason: opts.result.reason,
     checks: opts.result.checks,
-  });
+  };
+  if (artifact.status === "passed") {
+    const previous = await readFile(absolute, "utf8")
+      .then((value) => JSON.parse(value) as unknown)
+      .catch(() => null);
+    if (
+      previous &&
+      typeof previous === "object" &&
+      !Array.isArray(previous) &&
+      (previous as { status?: unknown }).status === "passed"
+    ) {
+      const stableChecks = (value: unknown) => {
+        if (!Array.isArray(value)) return null;
+        return value.map((entry) => {
+          if (!entry || typeof entry !== "object" || Array.isArray(entry)) return null;
+          const check = entry as Record<string, unknown>;
+          return {
+            command: check.command,
+            declared_command: check.declared_command,
+            script: check.script,
+            exit_code: check.exit_code,
+          };
+        });
+      };
+      const previousRecord = previous as Record<string, unknown>;
+      const previousIdentity = {
+        schema_version: previousRecord.schema_version,
+        kind: previousRecord.kind,
+        task_id: previousRecord.task_id,
+        status: previousRecord.status,
+        reason: previousRecord.reason,
+        checks: stableChecks(previousRecord.checks),
+      };
+      const currentIdentity = {
+        schema_version: artifact.schema_version,
+        kind: artifact.kind,
+        task_id: artifact.task_id,
+        status: artifact.status,
+        reason: artifact.reason,
+        checks: stableChecks(artifact.checks),
+      };
+      if (JSON.stringify(previousIdentity) === JSON.stringify(currentIdentity)) return relative;
+    }
+  }
+  await writeJsonStableIfChanged(absolute, artifact);
   return relative;
 }
 
