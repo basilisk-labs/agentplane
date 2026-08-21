@@ -15,14 +15,14 @@ Prevent task new invoked from a branch_pr task worktree from writing the new tas
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: needs_rework
+- Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/task/new*.test.ts
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-21T10:13:57.503Z
+- Updated: 2026-08-21T10:33:19.857Z
 - Branch: task/202608211010-X9X57M/route-new-task-creation-to-the-primary-checkout
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
