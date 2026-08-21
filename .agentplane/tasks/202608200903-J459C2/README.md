@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 78
+revision: 79
 origin:
   system: "manual"
 depends_on: []
@@ -37,34 +37,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-20T23:36:15.729Z"
+  updated_at: "2026-08-21T00:33:06.997Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "e9f620a293dadd7e252ea263883e4010d6870d58"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "57470f47081a560c21c6693e550d38ed499a63f0"
   blueprint_digest: "f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518"
   evidence_refs:
-    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-233537497-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-233537497-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/23fbcf8bc2ca34e68b40a99f492be23c20f1dc9a95dd66a98ceaa250190b5f44.md"
-    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-233537497-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-233537497-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608200903-J459C2/quality/20260820-233537497-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260821-003201146-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260821-003201146-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/1aa1d28690790fe68cbe08c7bd970a46b66b079009264f6e0c4863b7de5670c7.md"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260821-003201146-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260821-003201146-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/20260821-003201146-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608200903-J459C2/README.md"
-    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/7099d7f392eb7db0e8c4e3c32284fb801274c15623981c6133088058ebc96ae7.patch"
-    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/ffb8e1f076d1896c3cd78951bebeabb62055769c9d58b1d1afc5b4b458d4e1be.json"
-    - ".agentplane/tasks/202608200903-J459C2/verification/20260820233520106-dcbfacba0cb8ecf6.json"
+    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/c6da4eaee5a6e0368893e958f443b803693efef85548bb0dcbd4187c1eacb6f1.patch"
+    - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/65a4eb52aae08934e5a62c73e568bbda06b505c6eb94eff4344655217f138d8e.json"
+    - ".agentplane/tasks/202608200903-J459C2/verification/20260821003149147-b45cf9bafa6f1e72.json"
     - ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/a266df3b865d99cb62af6a582bb17bb986f2ecaa45fdbe0c03341b3c6bd67d02.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Implementation commit e9f620a293dadd7e252ea263883e4010d6870d58 retains the direct workspace and its lease through evidence, contract reconciliation, verification, evaluator review, finish, and golden-metrics persistence, then releases it in a guaranteed outer finally block."
-    - "The operation captures pre-run workspace head/status and task event count, so implementation evidence and lifecycle-mutation detection are measured against the isolated executor checkout rather than the base checkout."
-    - "Matching unfinished closeout journals reconcile recovery_required to their last durable phase; task_state_written and close_commit_written explicitly skip already-completed mutation groups before progressing to completion."
-    - "Regression coverage passes across 7 focused files and 47 tests, including retained workspace ownership, lease transfer/release, and both journal resume phases."
-    - "Supervisor full-fast executed all five groups with ok=true in 357698ms; typecheck, policy routing, both doctor invocations, Knip, lint, formatting, and committed-diff checks passed."
-    - "Residual risk: The updated exact head must pass hosted checks and the three GitHub review threads must be resolved against that head before integration."
+    - "Implementation commit 57470f47081a560c21c6693e550d38ed499a63f0 changes only parsePrMetaIfPresent in runtime code: absent content still returns null, valid content is parsed, and parsing failures still return null."
+    - "The simplification reduces packages/agentplane/src/commands/pr/flow-status.ts from the failing 601-line count to the enforced 600-line limit without adding an exception or changing the hotspot baseline."
+    - "Focused flow-status tests pass, and the supervisor verification record for implementation SHA 57470f47081a560c21c6693e550d38ed499a63f0 reports the complete declared local verification contract as passing."
+    - "Residual risk: The next published exact head must complete hosted checks successfully before integration."
 token_usage:
   agent_runs: 23
   input_tokens: null
@@ -1697,7 +1695,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T00:31:51.641Z"
+doc_updated_at: "2026-08-21T00:33:07.033Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue."
 sections:
