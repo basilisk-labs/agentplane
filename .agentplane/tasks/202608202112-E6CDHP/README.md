@@ -1,10 +1,10 @@
 ---
 id: "202608202112-E6CDHP"
 title: "Fix live GitLab MR transport and provider-neutral mergeability validation"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 42
+revision: 45
 origin:
   system: "manual"
 depends_on: []
@@ -110,6 +110,8 @@ execution_contract:
       - "packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts"
       - "packages/agentplane/src/commands/branch/cleanup-merged-targeted-proof.ts"
       - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
+      - "packages/agentplane/src/commands/integrate-queue.command.test.ts"
+      - "packages/agentplane/src/commands/integrate-queue.command.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.ts"
       - "packages/agentplane/src/commands/pr/integrate/cmd.ts"
@@ -173,7 +175,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:578dc8c5fa9cc3eac3b635989a31333cd914f20d729f72d578db600d3a3aa9e4"
+      digest: "sha256:f9299eaf8e2af9fe8a995e1378fb37de00491b64c3c0d29df888b6190d4f1dc6"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -190,6 +192,8 @@ execution_contract:
           - "packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts"
           - "packages/agentplane/src/commands/branch/cleanup-merged-targeted-proof.ts"
           - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
+          - "packages/agentplane/src/commands/integrate-queue.command.test.ts"
+          - "packages/agentplane/src/commands/integrate-queue.command.ts"
           - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
           - "packages/agentplane/src/commands/pr/conflict-rework.ts"
           - "packages/agentplane/src/commands/pr/integrate/cmd.ts"
@@ -239,7 +243,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "35d04d9a2de07d4f00f5770a9d65a623ea56807c"
+  message: "🚧 E6CDHP task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -304,6 +310,12 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/integrate-queue.command.test.ts, packages/agentplane/src/commands/integrate-queue.command.ts; repository effects: repository_write, source_code, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 35d04d9a2de0. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "TESTER"
+    body: "Supervisor full regression timed out after 1800006ms | details: record the timeout before running the same suite directly without the supervisor limit."
 events:
   -
     type: "status"
@@ -493,9 +505,24 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Live GitLab integration-queue qualification exposed a provider-dispatch defect outside the current writable roots. Recommended action: Approve the exact scope extension, then pass branch and expectedHeadSha into waitForHostedChecks and add focused queue regression coverage. Requested scope: roots=packages/agentplane/src/commands/integrate-queue.command.test.ts,packages/agentplane/src/commands/integrate-queue.command.ts; repository effects=repository_write,source_code,tests; request digest=sha256:5c4d87ed356b0e1fc215b2ea20b70952ca5d28ff4adcf29d6c758254b192fc20. Agentplane receipt: external-agent-blocker/tr_3b01dfcf5244c58ca954c69fc7f9abae/sha256:c42018799cc77c09eaf917e604f07696ff78607e7f90dd86ab8b55b740af2fda/sha256:5c4d87ed356b0e1fc215b2ea20b70952ca5d28ff4adcf29d6c758254b192fc20."
+  -
+    type: "status"
+    at: "2026-08-21T00:54:05.325Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 35d04d9a2de0. CLI accepted one state-bound external-agent semantic result."
+    commit: "35d04d9a2de07d4f00f5770a9d65a623ea56807c"
+  -
+    type: "status"
+    at: "2026-08-21T01:24:30.130Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Supervisor full regression timed out after 1800006ms | details: record the timeout before running the same suite directly without the supervisor limit."
 doc_version: 3
-doc_updated_at: "2026-08-21T00:51:45.791Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-21T01:24:30.130Z"
+doc_updated_by: "TESTER"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
   Summary: |-
@@ -823,7 +850,7 @@ extensions:
     status: "applied"
     transition_id: "tr_3b01dfcf5244c58ca954c69fc7f9abae"
   implementation_commit:
-    hash: "cb9e5bb7b917b7047e2ed24382100765b925625c"
+    hash: "35d04d9a2de07d4f00f5770a9d65a623ea56807c"
   workflow_route_baseline:
     start_head_sha: "60be0145753e9e2aecf31f4bbd8471895db13395"
     version: 1

@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check b933353946eea11153328b94d0ef22c406fdcd4f..cb9e5bb7b917b7047e2ed24382100765b925625c",
+      "command": "git diff --check 1ac6f47b1dc5954cdd2909a069e972b1084d6ad7..35d04d9a2de07d4f00f5770a9d65a623ea56807c",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB b933353946eea11153328b94d0ef22c406fdcd4f..cb9e5bb7b917b7047e2ed24382100765b925625c",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1ac6f47b1dc5954cdd2909a069e972b1084d6ad7..35d04d9a2de07d4f00f5770a9d65a623ea56807c",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,13 +22,8 @@
         "M\t.agentplane/tasks/202608202112-E6CDHP/pr/github-title.txt",
         "M\t.agentplane/tasks/202608202112-E6CDHP/pr/meta.json",
         "M\t.agentplane/tasks/202608202112-E6CDHP/pr/review.md",
-        "A\tpackages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts",
-        "M\tpackages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts",
-        "M\tpackages/agentplane/src/commands/branch/cleanup-merged-targeted-proof.ts",
-        "M\tpackages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts",
-        "M\tpackages/agentplane/src/commands/pr/integrate/cmd.ts",
-        "A\tpackages/agentplane/src/commands/pr/integrate/internal/route-label.test.ts",
-        "A\tpackages/agentplane/src/commands/pr/integrate/internal/route-label.ts"
+        "M\tpackages/agentplane/src/commands/integrate-queue.command.test.ts",
+        "M\tpackages/agentplane/src/commands/integrate-queue.command.ts"
       ]
     },
     {
@@ -38,8 +33,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "b933353946eea11153328b94d0ef22c406fdcd4f",
-  "implementation_commit": "cb9e5bb7b917b7047e2ed24382100765b925625c",
+  "execution_base_commit": "1ac6f47b1dc5954cdd2909a069e972b1084d6ad7",
+  "implementation_commit": "35d04d9a2de07d4f00f5770a9d65a623ea56807c",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
