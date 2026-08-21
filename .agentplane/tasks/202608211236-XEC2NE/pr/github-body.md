@@ -15,13 +15,8 @@ Fix the packaged-candidate-flow qualification regression exposed after rebasing 
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Hosted verify-contract failed format:check for verify-record-observed-changes.ts; apply Prettier and
-reverify exact head.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

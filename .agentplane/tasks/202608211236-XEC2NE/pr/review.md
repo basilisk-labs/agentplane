@@ -12,8 +12,8 @@ Created: 2026-08-21T12:41:06.582Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted verify-contract failed format:check for verify-record-observed-changes.ts; apply Prettier and reverify exact head.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
