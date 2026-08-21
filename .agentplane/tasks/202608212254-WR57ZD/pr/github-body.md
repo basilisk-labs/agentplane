@@ -16,7 +16,12 @@ Allow cleanup reconciliation to accept an exact provider receipt when the provid
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note:
+
+```text
+Verification passes for the current rework head. The hosted lint finding was resolved without
+changing reconciliation semantics.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
