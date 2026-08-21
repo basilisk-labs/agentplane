@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:57a1be536d78484d4f3024d8361c485399d7213f4e184b61e493f6420f36ceab",
   "pr_number": 4857,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4857",
+  "pre_merge_closure": {
+    "basis_commit": "dc58e8446fc14e4ba772903124c3dab5f51d88db",
+    "branch": "task/202608211010-X9X57M/route-new-task-creation-to-the-primary-checkout",
+    "pr_number": 4857,
+    "recorded_at": "2026-08-21T11:47:46.298Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
