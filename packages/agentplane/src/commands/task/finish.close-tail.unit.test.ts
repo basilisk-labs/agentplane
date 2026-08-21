@@ -59,6 +59,7 @@ vi.mock("@agentplaneorg/core/git", async () => {
     ...actual,
     gitEnv: () => ({}),
     gitRevParse: vi.fn().mockResolvedValue(".git"),
+    gitCurrentBranch: mocks.gitCurrentBranch,
     resolveBaseBranch: mocks.resolveBaseBranch,
   };
 });

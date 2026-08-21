@@ -244,8 +244,8 @@ export async function cmdTaskPlanApprove(opts: {
     await withTaskMutationStorage({
       ctx,
       local: async (store) => {
-        await store.get(opts.taskId);
-        const repositoryIdentity = await repositoryIdentityFor(await store.get(opts.taskId));
+        const task = await store.get(opts.taskId);
+        const repositoryIdentity = await repositoryIdentityFor(task);
         await store.patch(
           opts.taskId,
           (current) => {

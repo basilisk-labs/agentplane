@@ -6,6 +6,7 @@
  .../run-cli.core.task-create-base-intent.test.ts   | 252 ++++++++
  ...run-cli.core.task-create-planner-intent.test.ts | 138 ++---
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+ .../branch/cleanup-merged.targeted.test.ts         |  18 +-
  .../src/commands/branch/work-start.command.ts      |   2 +
  .../agentplane/src/commands/branch/work-start.ts   |   7 +-
  .../src/commands/doctor/authority.test.ts          |  30 +
@@ -17,6 +18,7 @@
  .../commands/shared/side-effect-authority.test.ts  |  55 ++
  .../src/commands/shared/side-effect-authority.ts   |  43 +-
  .../agentplane/src/commands/shared/task-backend.ts |  24 +-
+ .../task-worktree-foreign-artifact-repair.test.ts  |  16 +-
  .../src/commands/task/advance.command.ts           |  19 +-
  .../src/commands/task/agent-action-packet.test.ts  |  28 +-
  .../src/commands/task/agent-action-packet.ts       |  55 +-
@@ -33,10 +35,14 @@
  .../src/commands/task/direct-task-verification.ts  |  74 ++-
  .../task/execution-authority-context.test.ts       |  92 +++
  .../commands/task/execution-authority-context.ts   | 111 ++++
+ .../commands/task/finish.close-tail.unit.test.ts   |   1 +
+ .../src/commands/task/finish.state.unit.test.ts    |   1 +
+ .../commands/task/finish.validation.unit.test.ts   |   1 +
  .../src/commands/task/new.primary-checkout.test.ts |  66 +++
  packages/agentplane/src/commands/task/new.ts       |  46 +-
  .../src/commands/task/plan-approve.command.ts      |  70 ++-
- packages/agentplane/src/commands/task/plan.ts      |  90 ++-
+ packages/agentplane/src/commands/task/plan.ts      |  92 ++-
+ .../agentplane/src/commands/task/plan.unit.test.ts |   6 +
  .../src/commands/task/verify-record-execute.ts     |   4 +-
  .../runtime/task-execution-context/resolve.test.ts |  26 +-
  .../src/runtime/task-execution-context/resolve.ts  |  88 ++-
@@ -52,4 +58,4 @@
  .../baselines/v0.7-compatibility-candidate.json    |  41 +-
  .../check-compatibility-contract-baseline.mjs      |  27 +
  website/static/llms-full.txt                       |  43 +-
- 54 files changed, 3738 insertions(+), 267 deletions(-)
+ 60 files changed, 3775 insertions(+), 275 deletions(-)

@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { readTask } from "@agentplaneorg/core/tasks";
+import { parseTaskReadme, readTask, renderTaskFrontmatter } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "../../cli/run-cli.js";
 import {
@@ -333,10 +333,18 @@ async function configureFinalizationRemote(fixture: TargetedFixture): Promise<vo
 async function commitAuthorityOnlyTail(fixture: TargetedFixture): Promise<string> {
   const task = await readTask({ cwd: fixture.worktreePath, taskId: fixture.taskId });
   const readme = await readFile(task.readmePath, "utf8");
-  const updated = readme.replace(
-    /^comments:/mu,
-    "extensions:\n  agentplane.side_effect_authority:\n    schemaVersion: 1\n    grants: []\n    audit: []\ncomments:",
-  );
+  const parsed = parseTaskReadme(readme);
+  const updated = `${renderTaskFrontmatter({
+    ...parsed.frontmatter,
+    extensions: {
+      ...parsed.frontmatter.extensions,
+      "agentplane.side_effect_authority": {
+        schemaVersion: 1,
+        grants: [],
+        audit: [],
+      },
+    },
+  })}${parsed.body}`;
   expect(updated).not.toBe(readme);
   await writeFile(task.readmePath, updated, "utf8");
   await commitAll(fixture.worktreePath, `authority ${fixture.taskId} post-merge cleanup`);
