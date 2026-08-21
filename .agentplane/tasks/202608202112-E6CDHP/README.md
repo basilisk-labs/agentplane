@@ -1,10 +1,10 @@
 ---
 id: "202608202112-E6CDHP"
 title: "Fix live GitLab MR transport and provider-neutral mergeability validation"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 41
 origin:
   system: "manual"
 depends_on: []
@@ -27,10 +27,10 @@ plan_approval:
   note: "Approved explicitly by Denis in Codex on 2026-08-21 after reviewing the live GitLab findings and remediation plan."
 verification:
   state: "blocked_external"
-  updated_at: "2026-08-21T00:49:28.116Z"
+  updated_at: "2026-08-21T00:50:54.216Z"
   updated_by: "TESTER"
-  note: "Live GitLab queue canary exposed a GitHub-only hosted-check invocation: run-next omits branch and exact head, so provider dispatch falls through to gh."
-  attempts: 7
+  note: "Live GitLab canary requires integration queue to pass branch and exact head into provider-neutral hosted checks."
+  attempts: 8
 execution_route:
   frozen: true
   reason_codes:
@@ -237,9 +237,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:recorded-check-1"
-commit:
-  hash: "f701bc2defa5065fd5446981088dc7011de3cffc"
-  message: "🛠️ E6CDHP code: preserve cleanup fallback for missing fetch URLs"
+commit: null
 comments:
   -
     author: "CODER"
@@ -295,6 +293,12 @@ comments:
   -
     author: "CODER"
     body: "Resume implementation rework for provider-neutral integration queue hosted checks."
+  -
+    author: "CODER"
+    body: "Resume bounded implementation rework for the exact live GitLab queue failure."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Live GitLab integration-queue qualification exposed a provider-dispatch defect outside the current writable roots. Recommended action: Approve the exact scope extension, then pass branch and expectedHeadSha into waitForHostedChecks and add focused queue regression coverage. Requested scope: roots=packages/agentplane/src/commands/integrate-queue.command.test.ts,packages/agentplane/src/commands/integrate-queue.command.ts; repository effects=repository_write,source_code,tests; request digest=sha256:5c4d87ed356b0e1fc215b2ea20b70952ca5d28ff4adcf29d6c758254b192fc20. Agentplane receipt: external-agent-blocker/tr_3b01dfcf5244c58ca954c69fc7f9abae/sha256:c42018799cc77c09eaf917e604f07696ff78607e7f90dd86ab8b55b740af2fda/sha256:5c4d87ed356b0e1fc215b2ea20b70952ca5d28ff4adcf29d6c758254b192fc20."
 events:
   -
     type: "status"
@@ -464,9 +468,29 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Resume implementation rework for provider-neutral integration queue hosted checks."
+  -
+    type: "verify"
+    at: "2026-08-21T00:50:54.216Z"
+    author: "TESTER"
+    state: "blocked_external"
+    note: "Live GitLab canary requires integration queue to pass branch and exact head into provider-neutral hosted checks."
+  -
+    type: "status"
+    at: "2026-08-21T00:51:09.507Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume bounded implementation rework for the exact live GitLab queue failure."
+  -
+    type: "status"
+    at: "2026-08-21T00:51:45.791Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Live GitLab integration-queue qualification exposed a provider-dispatch defect outside the current writable roots. Recommended action: Approve the exact scope extension, then pass branch and expectedHeadSha into waitForHostedChecks and add focused queue regression coverage. Requested scope: roots=packages/agentplane/src/commands/integrate-queue.command.test.ts,packages/agentplane/src/commands/integrate-queue.command.ts; repository effects=repository_write,source_code,tests; request digest=sha256:5c4d87ed356b0e1fc215b2ea20b70952ca5d28ff4adcf29d6c758254b192fc20. Agentplane receipt: external-agent-blocker/tr_3b01dfcf5244c58ca954c69fc7f9abae/sha256:c42018799cc77c09eaf917e604f07696ff78607e7f90dd86ab8b55b740af2fda/sha256:5c4d87ed356b0e1fc215b2ea20b70952ca5d28ff4adcf29d6c758254b192fc20."
 doc_version: 3
-doc_updated_at: "2026-08-21T00:50:16.914Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-21T00:51:45.791Z"
+doc_updated_by: "SUPERVISOR"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
   Summary: |-
@@ -732,6 +756,42 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-21T00:50:54.216Z — VERIFY — blocked_external
+
+    By: TESTER
+
+    Note: Live GitLab canary requires integration queue to pass branch and exact head into provider-neutral hosted checks.
+    Attempts: 8
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:c59a20c32766668ef50ab05e2b3c4157e5917df77f66a6734c9b9bbe405dc923
+
+    Details:
+
+    Check: real_e2e
+    Command: agentplane integrate queue run-next --wait --hosted --quiet
+    Result: fail
+    Evidence: E_NETWORK after 600000ms because waitForHostedChecks fell through to gh without branch identity
+    Scope: GitLab integration queue hosted-check provider dispatch
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+    - old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -739,24 +799,22 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
-    applied_at: "2026-08-20T23:23:45.089Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:f62f8e0237e72867647e6931b38325f6b6d26f83ce0121ee04ad01fe2009d5ca"
+    blocker_state_fingerprint: "sha256:c42018799cc77c09eaf917e604f07696ff78607e7f90dd86ab8b55b740af2fda"
     kind: "task_scope_extension_request"
     request:
-      rationale: "The authorized live canary proved that guarded GitLab integration reaches cleanup reconciliation, which still uses GitHub-only provider lookup; these files are outside the original two-defect writable roots."
+      rationale: "The live GitLab queue canary proved that provider-neutral hosted checks are already implemented but unreachable from run-next because queued identity inputs are omitted."
       repository_effects:
         - "repository_write"
         - "source_code"
         - "tests"
       schema_version: 1
       scope_roots:
-        - "packages/agentplane/src/commands/branch"
-        - "packages/agentplane/src/commands/pr/integrate"
-    request_digest: "sha256:70b0582829d15378430386ccb57f65ba52c09d1391cbb78270812d1f50507943"
+        - "packages/agentplane/src/commands/integrate-queue.command.test.ts"
+        - "packages/agentplane/src/commands/integrate-queue.command.ts"
+    request_digest: "sha256:5c4d87ed356b0e1fc215b2ea20b70952ca5d28ff4adcf29d6c758254b192fc20"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_d8407a031f9e61846e4252a349ebf8b2"
+    status: "pending"
+    transition_id: "tr_3b01dfcf5244c58ca954c69fc7f9abae"
   implementation_commit:
     hash: "cb9e5bb7b917b7047e2ed24382100765b925625c"
   workflow_route_baseline:
@@ -1031,6 +1089,42 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T00:50:54.216Z — VERIFY — blocked_external
+
+By: TESTER
+
+Note: Live GitLab canary requires integration queue to pass branch and exact head into provider-neutral hosted checks.
+Attempts: 8
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:c59a20c32766668ef50ab05e2b3c4157e5917df77f66a6734c9b9bbe405dc923
+
+Details:
+
+Check: real_e2e
+Command: agentplane integrate queue run-next --wait --hosted --quiet
+Result: fail
+Evidence: E_NETWORK after 600000ms because waitForHostedChecks fell through to gh without branch identity
+Scope: GitLab integration queue hosted-check provider dispatch
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+- old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
