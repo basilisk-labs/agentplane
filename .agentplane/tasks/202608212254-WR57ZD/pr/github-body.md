@@ -34,9 +34,9 @@ packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../branch/cleanup-merged-provider-receipt.test.ts | 165 +++++++++++++++++++++
+ .../branch/cleanup-merged-provider-receipt.test.ts | 167 ++++++++++++++++++++-
  .../cleanup-merged-provider-reconciliation.ts      |  35 +++++
- 2 files changed, 200 insertions(+)
+ 2 files changed, 201 insertions(+), 1 deletion(-)
 ```
 
 </details>

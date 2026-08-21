@@ -316,7 +316,7 @@ async function runWithFakeGh(fakeBin: string, argv: string[]) {
   }
 }
 
-describe("cleanup merged provider receipt type guard", () => {
+describe("cleanup merged provider receipt type guard", { timeout: TEST_TIMEOUT_MS }, () => {
   it("fails closed for noncommit task-close receipt identities and preserves branch and worktree", async () => {
     const fixture = await createTaskCloseReceiptFixture();
     const cases: {
