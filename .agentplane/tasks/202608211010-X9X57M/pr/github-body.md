@@ -15,15 +15,8 @@ Prevent task new invoked from a branch_pr task worktree from writing the new tas
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-GitHub Actions Core CI verify-contract failed format:check on
-packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts and
-packages/agentplane/src/commands/task/begin.command.ts at head
-45b781db9b7b27af6b625682a110eb25d82b8075.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
