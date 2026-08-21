@@ -2,10 +2,10 @@
 id: "202608211020-FGAPJC"
 title: "Implement task-scoped autonomous execution after one user-approved plan"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 86
+revision: 87
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,10 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in Codex: implement one-confirmation autonomous execution"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-21T16:19:40.933Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run check"
+  state: "pending"
+  updated_at: "2026-08-21T17:14:45.540Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 2
 quality_review:
   state: "pass"
@@ -129,6 +129,7 @@ execution_contract:
       - "packages/core/src/tasks"
       - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
+      - "scripts/checks/run-local-ci.mjs"
       - "website/static/llms-full.txt"
   declaration:
     external_effects: []
@@ -140,6 +141,7 @@ execution_contract:
       - "USER-approved blocked-result scope extension: roots=check; repository_effects=repository_write,source_code"
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/branch,packages/agentplane/src/commands/pr,scripts/baselines/v0.7-compatibility-candidate.json,website/static/llms-full.txt; repository_effects=documentation,repository_write,source_code,tests"
       - "USER-approved blocked-result scope extension: roots=scripts/checks/check-compatibility-contract-baseline.mjs; repository_effects=repository_write,source_code,tests"
+      - "USER-approved blocked-result scope extension: roots=scripts/checks/run-local-ci.mjs; repository_effects=repository_write,source_code,tests"
       - "branch_pr remains the repository floor and provides isolated implementation and review for the security-boundary change."
     repository_effects:
       - "documentation"
@@ -171,10 +173,10 @@ execution_contract:
       - "packages/core/src/tasks"
       - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
+      - "scripts/checks/run-local-ci.mjs"
       - "website/static/llms-full.txt"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
+    authority_violations: []
     changed_components:
       - "check"
       - "docs"
@@ -257,25 +259,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "fail"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -312,6 +296,7 @@ execution_contract:
           - "packages/core/src/tasks"
           - "scripts/baselines/v0.7-compatibility-candidate.json"
           - "scripts/checks/check-compatibility-contract-baseline.mjs"
+          - "scripts/checks/run-local-ci.mjs"
           - "website/static/llms-full.txt"
         evidence_requirements:
           - "hosted_integration"
@@ -336,12 +321,13 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:29b486b34093e0335b3eda567f6a0e104e89c63a2e47cb27b10dbefb6477c6b0"
+      digest: "sha256:e9385988e38e547e3e7045ecc7cdbe527ffe3340efb623172238981e393555ef"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/config"
         - "central_component:packages/core/src/tasks"
         - "central_component:scripts/checks/check-compatibility-contract-baseline.mjs"
+        - "central_component:scripts/checks/run-local-ci.mjs"
         - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
@@ -489,7 +475,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
@@ -591,6 +576,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The verification scheduler must make full-suite group concurrency configurable so task-scoped checks cannot deadlock under constrained local resources. Recommended action: Extend the approved task scope to scripts/checks/run-local-ci.mjs and resume autonomous execution. Requested scope: roots=scripts/checks/run-local-ci.mjs; repository effects=repository_write,source_code,tests; request digest=sha256:8ecf770355ea5febf399e34e939403415bc83059b13cd3d586c7366f2785ffe9. Agentplane receipt: external-agent-blocker/tr_0dcc7e4efccb34730d1329e738c55f86/sha256:ddc3b3e867483bb185c4ad34714dc3eb2f82d3030563d3ed4c345e87280da9ff/sha256:8ecf770355ea5febf399e34e939403415bc83059b13cd3d586c7366f2785ffe9."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: scripts/checks/run-local-ci.mjs; repository effects: repository_write, source_code, tests."
 events:
   -
     type: "status"
@@ -1893,6 +1881,8 @@ extensions:
     status: "active"
     task_id: "202608211020-FGAPJC"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-21T17:14:45.540Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:ddc3b3e867483bb185c4ad34714dc3eb2f82d3030563d3ed4c345e87280da9ff"
     kind: "task_scope_extension_request"
     request:
@@ -1906,7 +1896,7 @@ extensions:
         - "scripts/checks/run-local-ci.mjs"
     request_digest: "sha256:8ecf770355ea5febf399e34e939403415bc83059b13cd3d586c7366f2785ffe9"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_0dcc7e4efccb34730d1329e738c55f86"
   implementation_commit:
     hash: "ab8bc62471c377f2d42e485fb597fabec8482e80"
