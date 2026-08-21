@@ -12,8 +12,8 @@ Created: 2026-08-21T10:27:11.359Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run check
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-21T10:27:11.359Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-21T10:27:11.359Z
+- Updated: 2026-08-21T11:11:57.023Z
 - Branch: task/202608211020-FGAPJC/implement-task-scoped-autonomous-execution-after
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

@@ -1,0 +1,118 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 3e756cba6cfd6619327433c5fc38f6a52e79131d..ca672064d7529c01a36e13991a6b6f50ef0ee962",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3e756cba6cfd6619327433c5fc38f6a52e79131d..ca672064d7529c01a36e13991a6b6f50ef0ee962",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202608211020-FGAPJC/README.md",
+        "A\t.agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202608211020-FGAPJC/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
+        "A\t.agentplane/tasks/202608211020-FGAPJC/pr/github-title.txt",
+        "A\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
+        "A\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
+        "M\tdocs/developer/task-execution-authority.mdx",
+        "M\tdocs/user/branching-and-pr-artifacts.mdx",
+        "M\tdocs/user/cli-reference.generated.mdx",
+        "M\tdocs/user/task-lifecycle.mdx",
+        "M\tpackages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts",
+        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
+        "M\tpackages/agentplane/src/commands/task/agent-action-packet.test.ts",
+        "M\tpackages/agentplane/src/commands/task/agent-action-packet.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
+        "M\tpackages/agentplane/src/commands/task/configured-authority.test.ts",
+        "M\tpackages/agentplane/src/commands/task/configured-authority.ts",
+        "M\tpackages/agentplane/src/commands/task/create.command.ts",
+        "M\tpackages/agentplane/src/commands/task/new.ts",
+        "M\tpackages/agentplane/src/commands/task/plan-approve.command.ts",
+        "M\tpackages/agentplane/src/commands/task/plan.ts",
+        "M\tpackages/agentplane/src/runtime/task-execution-context/resolve.test.ts",
+        "M\tpackages/agentplane/src/runtime/task-execution-context/resolve.ts",
+        "M\tpackages/core/src/tasks/index.ts",
+        "A\tpackages/core/src/tasks/plan-execution-grant.test.ts",
+        "A\tpackages/core/src/tasks/plan-execution-grant.ts",
+        "A\tpackages/core/src/tasks/task-execution-base.ts",
+        "M\tpackages/core/src/tasks/task-store.ts",
+        "M\tpackages/core/src/tasks/tasks-export.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "3e756cba6cfd6619327433c5fc38f6a52e79131d",
+  "implementation_commit": "ca672064d7529c01a36e13991a6b6f50ef0ee962",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202608211020-FGAPJC/README.md",
+      "?? .agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202608211020-FGAPJC/pr/diffstat.txt",
+      "?? .agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
+      "?? .agentplane/tasks/202608211020-FGAPJC/pr/github-title.txt",
+      "?? .agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
+      "?? .agentplane/tasks/202608211020-FGAPJC/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608211020-FGAPJC/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608211020-FGAPJC/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608211020-FGAPJC/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608211020-FGAPJC/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608211020-FGAPJC/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608211020-FGAPJC/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202608211020-FGAPJC/README.md",
+      "?? .agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202608211020-FGAPJC/pr/diffstat.txt",
+      "?? .agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
+      "?? .agentplane/tasks/202608211020-FGAPJC/pr/github-title.txt",
+      "?? .agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
+      "?? .agentplane/tasks/202608211020-FGAPJC/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608211020-FGAPJC"
+}

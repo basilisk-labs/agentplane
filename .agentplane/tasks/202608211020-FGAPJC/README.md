@@ -4,7 +4,7 @@ title: "Implement task-scoped autonomous execution after one user-approved plan"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +25,11 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in Codex: implement one-confirmation autonomous execution"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-21T11:12:03.715Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run check"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -112,7 +112,8 @@ execution_contract:
       - "packages/core/src/config"
       - "packages/core/src/tasks"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
     changed_components:
       - "docs"
       - "packages/agentplane"
@@ -148,7 +149,10 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -296,9 +300,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "ca672064d7529c01a36e13991a6b6f50ef0ee962"
-  message: "🚧 FGAPJC task: apply external agent result"
+      - "verification_recovery:recorded-check-1"
+commit: null
 comments:
   -
     author: "CODER"
@@ -322,8 +325,14 @@ events:
     to: "DOING"
     note: "Implementation committed: ca672064d752. CLI accepted one state-bound external-agent semantic result."
     commit: "ca672064d7529c01a36e13991a6b6f50ef0ee962"
+  -
+    type: "verify"
+    at: "2026-08-21T11:12:03.715Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run check"
 doc_version: 3
-doc_updated_at: "2026-08-21T11:10:10.410Z"
+doc_updated_at: "2026-08-21T11:12:04.714Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
@@ -363,6 +372,41 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-21T11:12:03.715Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run check
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c, input_digest=sha256:00c4cb66747856cca6131d8cb0d166f629439ebe50d9dc52566e2f2aa435e12a
+
+    Details:
+
+    Command: bun run check
+    Result: fail
+    Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608211020-FGAPJC declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211020-FGAPJC-implement-task-scoped-autonomous-execution-after/.agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json
+    - old_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+    - current_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608211020-FGAPJC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608211020-FGAPJC
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -391,6 +435,10 @@ extensions:
     task_id: "202608211020-FGAPJC"
   implementation_commit:
     hash: "ca672064d7529c01a36e13991a6b6f50ef0ee962"
+  task_execution_context:
+    base_ref: "main"
+    base_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
+    schema_version: 1
   workflow_route_baseline:
     start_head_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
     version: 1
@@ -441,6 +489,41 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-21T11:12:03.715Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run check
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c, input_digest=sha256:00c4cb66747856cca6131d8cb0d166f629439ebe50d9dc52566e2f2aa435e12a
+
+Details:
+
+Command: bun run check
+Result: fail
+Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608211020-FGAPJC declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211020-FGAPJC-implement-task-scoped-autonomous-execution-after/.agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json
+- old_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+- current_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608211020-FGAPJC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608211020-FGAPJC
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
