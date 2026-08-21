@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 61
+revision: 64
 origin:
   system: "manual"
 depends_on: []
@@ -27,42 +27,42 @@ plan_approval:
   updated_by: "USER"
   note: "Approved explicitly by Denis in Codex on 2026-08-21 after reviewing the live GitLab findings and remediation plan."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-21T10:51:53.118Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1"
-  attempts: 2
+  state: "ok"
+  updated_at: "2026-08-21T11:48:49.292Z"
+  updated_by: "TESTER"
+  note: "Accepted with operator-approved verification exception: GitLab implementation and current-head focused regression pass; unstable unrelated local full-suite failures remain recorded and accepted as residual harness risk. Exact-head hosted checks remain mandatory before merge."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T02:15:59.712Z"
+  updated_at: "2026-08-21T11:51:00.308Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "0f5c738d113d0d216faa1156edf0ac8601186531"
+  evaluated_sha: "ea947fe102c5b5d354ad1a441cd0efe578f5de47"
   blueprint_digest: "e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c"
   evidence_refs:
-    - ".agentplane/tasks/202608202112-E6CDHP/quality/20260821-021442959-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608202112-E6CDHP/quality/20260821-021442959-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608202112-E6CDHP/quality/objects/sha256/b27c95a89b362c83d6c9e0b51da12dd4a5f67a7594b63522b906608344f54136.md"
-    - ".agentplane/tasks/202608202112-E6CDHP/quality/20260821-021442959-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608202112-E6CDHP/quality/20260821-021442959-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608202112-E6CDHP/quality/20260821-021442959-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/20260821-114908761-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/20260821-114908761-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/objects/sha256/d2d28660c8e71109b137504cb1cffa64014cd247d3c821ae85136ba33ad20b30.md"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/20260821-114908761-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/20260821-114908761-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/20260821-114908761-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608202112-E6CDHP/README.md"
-    - ".agentplane/tasks/202608202112-E6CDHP/quality/objects/sha256/c96c59e5f2a6f8fcf49aa817b4df3998e2303358f73cb9089ecbfa017c43bc75.patch"
-    - ".agentplane/tasks/202608202112-E6CDHP/quality/objects/sha256/7bda90607133bdcb72b90426e0a8ffbbb7801611b8d865d25b184a0718e6a3aa.json"
-    - ".agentplane/tasks/202608202112-E6CDHP/verification/20260821021428195-181d5d4b9fccabcc.json"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/objects/sha256/761be8b357df13ca7347f362db99a683cddc373496507d8c387e74bc9909215e.patch"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/objects/sha256/f07612297a510bbc6363490d3a4ab738db1c436c418dde3f81ef5f4f79856763.json"
+    - ".agentplane/tasks/202608202112-E6CDHP/verification/20260821114849292-3b5ae4b7b7b86d11.json"
     - ".agentplane/tasks/202608202112-E6CDHP/quality/objects/sha256/a0b86a2db01843d16dd18cbf0242b6d1bc71c0307a86ab50d69951f4ca90e0cf.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Every glab API call continues through the recorded provider identity with an explicit hostname, and JSON input mutations now send Content-Type: application/json."
-    - "GitLab mergeability, conflict rework, cleanup reconciliation, integration-queue hosted dispatch, and no-pipeline project policy are covered by focused tests and live read-only provider evidence."
-    - "The independent full serial report at commit 0f5c738d1 passed 1104/1104 suites with 3816 passed and 1 skipped; two supervisor-owned invocations reproducibly failed unrelated nested cloud/state-fingerprint tests while those files passed in isolation."
-    - "Residual risk: The exact repair head must be published and receive hosted GitHub checks before integration."
-    - "Residual risk: The live GitLab guarded merge and a native post-fix MR creation must still be completed to close provider E2E evidence."
-    - "Residual risk: The supervisor verification harness exposes unrelated repository-state leakage in five cloud/state-fingerprint test files; the retained failed artifacts must not be reported as a GitLab regression."
+    - "All glab API calls remain explicitly host-bound, while JSON-body mutations add Content-Type application/json and read-only requests remain unchanged."
+    - "GitLab conflict, pending, mergeable, approval-blocked, and requested-changes states are normalized through GitLab-specific coherence; GitHub continues to use its existing coherence functions."
+    - "Hosted checks accept an absent GitLab pipeline only when project policy explicitly does not require one and no named checks are required; required-policy and named-check cases fail closed."
+    - "Recovery drift after implementation SHA ea947fe102c5b5d354ad1a441cd0efe578f5de47 is task evidence only. The current-head requested-changes regression passes 6/6 and does not change production behavior."
+    - "Residual risk: Local full-suite state isolation can still produce unrelated non-deterministic failures under the supervisor harness."
+    - "Residual risk: GitHub hosted checks must be green for the exact newly published head before merge."
 token_usage:
   agent_runs: 13
   input_tokens: null
@@ -153,8 +153,7 @@ execution_contract:
       - "packages/agentplane/src/commands/pr/integrate"
       - "packages/agentplane/src/commands/pr/internal"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -183,7 +182,7 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
       -
         id: "recorded-check-2"
         result: "pass"
@@ -319,7 +318,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
@@ -412,6 +410,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: ea947fe102c5. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "USER"
+    body: "Operator decision 2026-08-21: accept a verification exception for the unstable local full regression. Preserve the recorded supervisor failures as evidence, treat them as unrelated harness/state-isolation instability given the earlier clean full serial run and focused reruns, and proceed with publishing the current head, exact-head hosted checks, merge, and task closeout."
 events:
   -
     type: "status"
@@ -691,9 +692,20 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1"
+  -
+    type: "comment"
+    at: "2026-08-21T11:48:14.046Z"
+    author: "USER"
+    body: "Operator decision 2026-08-21: accept a verification exception for the unstable local full regression. Preserve the recorded supervisor failures as evidence, treat them as unrelated harness/state-isolation instability given the earlier clean full serial run and focused reruns, and proceed with publishing the current head, exact-head hosted checks, merge, and task closeout."
+  -
+    type: "verify"
+    at: "2026-08-21T11:48:49.292Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Accepted with operator-approved verification exception: GitLab implementation and current-head focused regression pass; unstable unrelated local full-suite failures remain recorded and accepted as residual harness risk. Exact-head hosted checks remain mandatory before merge."
 doc_version: 3
-doc_updated_at: "2026-08-21T10:51:54.355Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-21T11:51:00.372Z"
+doc_updated_by: "USER"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
   Summary: |-
@@ -1196,6 +1208,72 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-21T11:48:49.292Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Accepted with operator-approved verification exception: GitLab implementation and current-head focused regression pass; unstable unrelated local full-suite failures remain recorded and accepted as residual harness risk. Exact-head hosted checks remain mandatory before merge.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:62c7f61d39bd5399b7c86d39afd90f86a617db087fa8f768894509df64fad4f8
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: current head e5d88eb5ab001870e14e7b21eab761354e541b7d passed 1 file and 6 tests, including requested_changes non-conflict routing
+    Scope: GitLab MR normalization and routing regression
+
+    Check: critical_paths
+    Command: focused GitLab provider suites, package typecheck, formatting, and git diff --check
+    Result: pass
+    Evidence: focused provider suite and typecheck/format evidence were previously green; the only subsequent implementation delta is a regression test, which passes 6/6 on the current head; git diff --check exits zero
+    Scope: changed implementation and tests
+
+    Check: full_regression
+    Command: bun run --filter=agentplane test -- --maxWorkers=1 plus independent bunx vitest full serial runs
+    Result: pass
+    Evidence: operator-approved exception. Earlier implementation SHA passed 1104/1104 suites with 3816 passed and 1 skipped. Later current-line runs failed only unrelated supervisor cloud/state-isolation cases or one transient foreign-artifact collection assertion; that isolated file then passed 7/7. All failures remain preserved in supervision evidence.
+    Scope: complete agentplane suite with explicit residual harness-risk acceptance
+
+    Check: hosted_integration
+    Command: GitHub PR #4853 hosted checks plus mandatory exact-head recheck after publication
+    Result: pass
+    Evidence: published head 7d2b7307302c7c58d412ebef40f4de0f7c5bdf2a had 14/14 hosted checks green. Current local delta is test/evidence-only; exact new-head hosted checks are a non-waived pre-merge gate.
+    Scope: GitHub publication and hosted validation
+
+    Check: real_e2e
+    Command: live read-only GitLab MR qualification on gitlab.nordavind.ru
+    Result: pass
+    Evidence: private GitLab MR !1 resolved state=opened, detailed_merge_status=mergeable, has_conflicts=false at exact head a82637a20f86d0711bb1c9f6ac46087a1981dd86; project policy does not require a pipeline and provider-neutral hosted policy accepted it
+    Scope: live GitLab provider resolution, MR transport, and hosted policy
+
+    Check: task_outcome
+    Command: inspect implementation diff, regression tests, and provider readbacks
+    Result: pass
+    Evidence: GitLab JSON mutations set application/json with explicit hostname; GitLab mergeability states use provider-aware coherence; GitHub behavior remains covered; user accepted only the residual local full-regression instability
+    Scope: approved universal GitHub/GitLab behavior
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+    - old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1748,6 +1826,72 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T11:48:49.292Z — VERIFY — ok
+
+By: TESTER
+
+Note: Accepted with operator-approved verification exception: GitLab implementation and current-head focused regression pass; unstable unrelated local full-suite failures remain recorded and accepted as residual harness risk. Exact-head hosted checks remain mandatory before merge.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:62c7f61d39bd5399b7c86d39afd90f86a617db087fa8f768894509df64fad4f8
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts --maxWorkers=1
+Result: pass
+Evidence: current head e5d88eb5ab001870e14e7b21eab761354e541b7d passed 1 file and 6 tests, including requested_changes non-conflict routing
+Scope: GitLab MR normalization and routing regression
+
+Check: critical_paths
+Command: focused GitLab provider suites, package typecheck, formatting, and git diff --check
+Result: pass
+Evidence: focused provider suite and typecheck/format evidence were previously green; the only subsequent implementation delta is a regression test, which passes 6/6 on the current head; git diff --check exits zero
+Scope: changed implementation and tests
+
+Check: full_regression
+Command: bun run --filter=agentplane test -- --maxWorkers=1 plus independent bunx vitest full serial runs
+Result: pass
+Evidence: operator-approved exception. Earlier implementation SHA passed 1104/1104 suites with 3816 passed and 1 skipped. Later current-line runs failed only unrelated supervisor cloud/state-isolation cases or one transient foreign-artifact collection assertion; that isolated file then passed 7/7. All failures remain preserved in supervision evidence.
+Scope: complete agentplane suite with explicit residual harness-risk acceptance
+
+Check: hosted_integration
+Command: GitHub PR #4853 hosted checks plus mandatory exact-head recheck after publication
+Result: pass
+Evidence: published head 7d2b7307302c7c58d412ebef40f4de0f7c5bdf2a had 14/14 hosted checks green. Current local delta is test/evidence-only; exact new-head hosted checks are a non-waived pre-merge gate.
+Scope: GitHub publication and hosted validation
+
+Check: real_e2e
+Command: live read-only GitLab MR qualification on gitlab.nordavind.ru
+Result: pass
+Evidence: private GitLab MR !1 resolved state=opened, detailed_merge_status=mergeable, has_conflicts=false at exact head a82637a20f86d0711bb1c9f6ac46087a1981dd86; project policy does not require a pipeline and provider-neutral hosted policy accepted it
+Scope: live GitLab provider resolution, MR transport, and hosted policy
+
+Check: task_outcome
+Command: inspect implementation diff, regression tests, and provider readbacks
+Result: pass
+Evidence: GitLab JSON mutations set application/json with explicit hostname; GitLab mergeability states use provider-aware coherence; GitHub behavior remains covered; user accepted only the residual local full-regression instability
+Scope: approved universal GitHub/GitLab behavior
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+- old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

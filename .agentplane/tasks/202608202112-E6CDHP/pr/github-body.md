@@ -15,8 +15,14 @@ Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutatio
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1
+- State: ok
+- Note:
+
+```text
+Accepted with operator-approved verification exception: GitLab implementation and current-head
+focused regression pass; unstable unrelated local full-suite failures remain recorded and accepted
+as residual harness risk. Exact-head hosted checks remain mandatory before merge.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
