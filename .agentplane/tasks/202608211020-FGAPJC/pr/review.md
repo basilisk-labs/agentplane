@@ -12,8 +12,8 @@ Created: 2026-08-21T10:27:11.359Z
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run check
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

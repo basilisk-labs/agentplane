@@ -4,7 +4,7 @@ title: "Implement task-scoped autonomous execution after one user-approved plan"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +25,11 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in Codex: implement one-confirmation autonomous execution"
 verification:
-  state: "pending"
-  updated_at: "2026-08-21T11:18:57.926Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 2
+  state: "needs_rework"
+  updated_at: "2026-08-21T11:25:25.937Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run check"
+  attempts: 3
 execution_route:
   frozen: true
   reason_codes:
@@ -121,11 +121,14 @@ execution_contract:
       - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "website/static/llms-full.txt"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
     changed_components:
       - "docs"
       - "packages/agentplane"
       - "packages/core"
+      - "scripts"
+      - "website"
     changed_paths:
       - "docs/developer/task-execution-authority.mdx"
       - "docs/user/branching-and-pr-artifacts.mdx"
@@ -133,6 +136,11 @@ execution_contract:
       - "docs/user/task-lifecycle.mdx"
       - "packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.command.ts"
+      - "packages/agentplane/src/commands/branch/work-start.ts"
+      - "packages/agentplane/src/commands/pr/internal/sync.ts"
+      - "packages/agentplane/src/commands/pr/open.ts"
+      - "packages/agentplane/src/commands/pr/update.ts"
       - "packages/agentplane/src/commands/task/advance.command.ts"
       - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
       - "packages/agentplane/src/commands/task/agent-action-packet.ts"
@@ -151,13 +159,18 @@ execution_contract:
       - "packages/core/src/tasks/task-execution-base.ts"
       - "packages/core/src/tasks/task-store.ts"
       - "packages/core/src/tasks/tasks-export.ts"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "website/static/llms-full.txt"
     external_effects: []
     repository_effects:
       - "documentation"
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -216,7 +229,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:c23322b4e0d3182069e7f63adbf26d10b4317c497ec8afec2df48ffa39bcd5c9"
+      digest: "sha256:218bc8c2368dfa94c5d7bfb342a134af35dc93f21f2a9d0f54e938599315964a"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/config"
@@ -232,6 +245,7 @@ execution_contract:
         - "effect_public_api"
         - "effect_schema"
         - "effect_security_boundary"
+        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -242,6 +256,8 @@ execution_contract:
           - "docs"
           - "packages/agentplane"
           - "packages/core"
+          - "scripts"
+          - "website"
         changed_files:
           - "docs/developer/task-execution-authority.mdx"
           - "docs/user/branching-and-pr-artifacts.mdx"
@@ -249,6 +265,11 @@ execution_contract:
           - "docs/user/task-lifecycle.mdx"
           - "packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.command.ts"
+          - "packages/agentplane/src/commands/branch/work-start.ts"
+          - "packages/agentplane/src/commands/pr/internal/sync.ts"
+          - "packages/agentplane/src/commands/pr/open.ts"
+          - "packages/agentplane/src/commands/pr/update.ts"
           - "packages/agentplane/src/commands/task/advance.command.ts"
           - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
           - "packages/agentplane/src/commands/task/agent-action-packet.ts"
@@ -267,6 +288,8 @@ execution_contract:
           - "packages/core/src/tasks/task-execution-base.ts"
           - "packages/core/src/tasks/task-store.ts"
           - "packages/core/src/tasks/tasks-export.ts"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "website/static/llms-full.txt"
         external_effects: []
         repository_effects:
           - "documentation"
@@ -309,6 +332,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
@@ -326,6 +350,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/branch, packages/agentplane/src/commands/pr, scripts/baselines/v0.7-compatibility-candidate.json, website/static/llms-full.txt; repository effects: documentation, repository_write, source_code, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 9866e7885e0e. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -369,8 +396,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The remaining implementation is plan-consistent but the compiler omitted the branch and PR command roots plus checked-in generated artifacts from this WorkOrder. Recommended action: Apply the exact scope extension under the active user-approved execution grant and issue a fresh EXECUTOR packet. Requested scope: roots=packages/agentplane/src/commands/branch,packages/agentplane/src/commands/pr,scripts/baselines/v0.7-compatibility-candidate.json,website/static/llms-full.txt; repository effects=documentation,repository_write,source_code,tests; request digest=sha256:a1d003e40b525a94e63eed2406813825e1a9f228b2b6805c916903abab20264e. Agentplane receipt: external-agent-blocker/tr_bc09beddc0e77338b9dac17a44c59b32/sha256:6bb3444816cd99b065785444df86646df5cc925b2c44e4e6bb0835601c69abf4/sha256:a1d003e40b525a94e63eed2406813825e1a9f228b2b6805c916903abab20264e."
+  -
+    type: "status"
+    at: "2026-08-21T11:25:12.014Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 9866e7885e0e. CLI accepted one state-bound external-agent semantic result."
+    commit: "9866e7885e0e0757db0cc0c5188a9e14417034b2"
+  -
+    type: "verify"
+    at: "2026-08-21T11:25:25.937Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run check"
 doc_version: 3
-doc_updated_at: "2026-08-21T11:18:37.601Z"
+doc_updated_at: "2026-08-21T11:25:26.926Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
@@ -480,6 +521,41 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-21T11:25:25.937Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run check
+    Attempts: 3
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c, input_digest=sha256:9462b14bf93c1214c6a188c5594022094d5dd17090119d4e895982b44e6e460b
+
+    Details:
+
+    Command: bun run check
+    Result: fail
+    Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608211020-FGAPJC declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211020-FGAPJC-implement-task-scoped-autonomous-execution-after/.agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json
+    - old_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+    - current_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608211020-FGAPJC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608211020-FGAPJC
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -530,7 +606,7 @@ extensions:
     status: "applied"
     transition_id: "tr_bc09beddc0e77338b9dac17a44c59b32"
   implementation_commit:
-    hash: "57a6b8ca28171e5608420354f74a6612a8fbd452"
+    hash: "9866e7885e0e0757db0cc0c5188a9e14417034b2"
   task_execution_context:
     base_ref: "main"
     base_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
@@ -628,6 +704,41 @@ Note: Rework: Declared check failed: bun run check
 Attempts: 2
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c, input_digest=sha256:11a0d638fc4d485953232265e5935676381d8f682a3d73bef70c3cca7df1c85d
+
+Details:
+
+Command: bun run check
+Result: fail
+Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608211020-FGAPJC declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211020-FGAPJC-implement-task-scoped-autonomous-execution-after/.agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json
+- old_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+- current_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608211020-FGAPJC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608211020-FGAPJC
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T11:25:25.937Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run check
+Attempts: 3
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c, input_digest=sha256:9462b14bf93c1214c6a188c5594022094d5dd17090119d4e895982b44e6e460b
 
 Details:
 

@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 89f9786e71cecdbebcc6eaf22e64a21f9d0c7a61..57a6b8ca28171e5608420354f74a6612a8fbd452",
+      "command": "git diff --check a154291f5da3855e620779107c8ba5fa3ebf3842..9866e7885e0e0757db0cc0c5188a9e14417034b2",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 89f9786e71cecdbebcc6eaf22e64a21f9d0c7a61..57a6b8ca28171e5608420354f74a6612a8fbd452",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB a154291f5da3855e620779107c8ba5fa3ebf3842..9866e7885e0e0757db0cc0c5188a9e14417034b2",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,10 +21,15 @@
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
-        "M\tpackages/agentplane/src/commands/task/configured-authority.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-start.command.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-start.ts",
+        "M\tpackages/agentplane/src/commands/pr/internal/sync.ts",
+        "M\tpackages/agentplane/src/commands/pr/open.ts",
+        "M\tpackages/agentplane/src/commands/pr/update.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
         "M\tpackages/agentplane/src/commands/task/configured-authority.ts",
-        "M\tpackages/core/src/tasks/plan-execution-grant.test.ts",
-        "M\tpackages/core/src/tasks/plan-execution-grant.ts"
+        "M\tscripts/baselines/v0.7-compatibility-candidate.json",
+        "M\twebsite/static/llms-full.txt"
       ]
     },
     {
@@ -34,8 +39,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "89f9786e71cecdbebcc6eaf22e64a21f9d0c7a61",
-  "implementation_commit": "57a6b8ca28171e5608420354f74a6612a8fbd452",
+  "execution_base_commit": "a154291f5da3855e620779107c8ba5fa3ebf3842",
+  "implementation_commit": "9866e7885e0e0757db0cc0c5188a9e14417034b2",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],

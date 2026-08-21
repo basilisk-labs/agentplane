@@ -15,8 +15,8 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run check
 - Canonical workflow state lives in the task README.
 
 <details>
