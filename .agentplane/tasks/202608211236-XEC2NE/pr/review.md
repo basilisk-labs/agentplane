@@ -12,8 +12,8 @@ Created: 2026-08-21T12:41:06.582Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --fail-on-scenario-failure --scenario packaged-candidate-flow
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
