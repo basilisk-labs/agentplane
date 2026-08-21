@@ -171,9 +171,8 @@ export async function matchesMergedPreMergeClosure(opts: {
 }
 
 function parsePrMetaIfPresent(content: string | null, taskId: string): PrMeta | null {
-  if (content === null) return null;
   try {
-    return parsePrMeta(content, taskId);
+    return content === null ? null : parsePrMeta(content, taskId);
   } catch {
     return null;
   }

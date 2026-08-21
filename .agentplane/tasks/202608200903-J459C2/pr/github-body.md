@@ -16,7 +16,13 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
 ## Verification
 
 - State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:fast
+- Note:
+
+```text
+Hosted and local verification failed after provider rebase: hotspot threshold reports
+packages/agentplane/src/commands/pr/flow-status.ts at 601 lines; reduce module size without widening
+the baseline, then rerun full verification.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -52,7 +58,7 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../src/commands/integrate-queue-lane.ts           |   6 +-
  .../src/commands/integrate-queue-reservation.ts    |  16 ++
  .../src/commands/integrate-queue.command.ts        | 122 ++++----
- packages/agentplane/src/commands/pr/flow-status.ts |   6 +-
+ packages/agentplane/src/commands/pr/flow-status.ts |   9 +-
  .../src/commands/pr/integrate/queue-state-types.ts |  50 ++++
  .../src/commands/pr/integrate/queue-state.test.ts  |  41 +++
  .../src/commands/pr/integrate/queue-state.ts       |  75 ++---
@@ -144,7 +150,7 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
  .../adr/0016-serialized-direct-integration.png     | Bin 0 -> 64669 bytes
  .../docs/developer/task-execution-authority.png    | Bin 0 -> 60616 bytes
  website/static/img/social/manifest.json            |  32 +++
- 117 files changed, 4299 insertions(+), 1019 deletions(-)
+ 117 files changed, 4300 insertions(+), 1021 deletions(-)
 ```
 
 </details>
