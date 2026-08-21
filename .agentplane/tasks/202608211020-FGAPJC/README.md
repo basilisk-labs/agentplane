@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 103
+revision: 104
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +27,9 @@ plan_approval:
   note: "Approved in Codex: implement one-confirmation autonomous execution"
 verification:
   state: "ok"
-  updated_at: "2026-08-21T18:11:33.399Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  updated_at: "2026-08-21T18:12:52.462Z"
+  updated_by: "TESTER"
+  note: "The current protected-base merge preserves the approved implementation, and the newest supervisor-owned verification record passes every declared check for that implementation."
   attempts: 0
 quality_review:
   state: "pass"
@@ -1053,8 +1053,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "verify"
+    at: "2026-08-21T18:12:52.462Z"
+    author: "TESTER"
+    state: "ok"
+    note: "The current protected-base merge preserves the approved implementation, and the newest supervisor-owned verification record passes every declared check for that implementation."
 doc_version: 3
-doc_updated_at: "2026-08-21T18:11:37.743Z"
+doc_updated_at: "2026-08-21T18:12:56.792Z"
 doc_updated_by: "CODER"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
@@ -2337,6 +2343,72 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
     Scope: branch_pr task 202608211020-FGAPJC Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211020-FGAPJC-implement-task-scoped-autonomous-execution-after/.agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json
+    - old_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+    - current_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608211020-FGAPJC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-21T18:12:52.462Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: The current protected-base merge preserves the approved implementation, and the newest supervisor-owned verification record passes every declared check for that implementation.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c, input_digest=sha256:89babea8e0c6e13f865ea8928716b6df78125dc167be5396523bbea1dc6ff21f
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608211020-FGAPJC
+
+    Check: critical_paths
+    Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608211020-FGAPJC
+
+    Check: docs_contract
+    Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608211020-FGAPJC
+
+    Check: full_regression
+    Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608211020-FGAPJC
+
+    Check: hosted_integration
+    Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608211020-FGAPJC
+
+    Check: task_outcome
+    Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608211020-FGAPJC
 
     BlueprintSnapshotRef:
     - state: current
@@ -3703,6 +3775,72 @@ Command: bun run test:critical && bun run typecheck && node .agentplane/policy/c
 Result: pass
 Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
 Scope: branch_pr task 202608211020-FGAPJC Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211020-FGAPJC-implement-task-scoped-autonomous-execution-after/.agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json
+- old_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+- current_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608211020-FGAPJC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T18:12:52.462Z — VERIFY — ok
+
+By: TESTER
+
+Note: The current protected-base merge preserves the approved implementation, and the newest supervisor-owned verification record passes every declared check for that implementation.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c, input_digest=sha256:89babea8e0c6e13f865ea8928716b6df78125dc167be5396523bbea1dc6ff21f
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608211020-FGAPJC
+
+Check: critical_paths
+Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608211020-FGAPJC
+
+Check: docs_contract
+Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608211020-FGAPJC
+
+Check: full_regression
+Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608211020-FGAPJC
+
+Check: hosted_integration
+Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608211020-FGAPJC
+
+Check: task_outcome
+Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608211020-FGAPJC
 
 BlueprintSnapshotRef:
 - state: current
