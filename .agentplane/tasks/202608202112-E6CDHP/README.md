@@ -1,10 +1,10 @@
 ---
 id: "202608202112-E6CDHP"
 title: "Fix live GitLab MR transport and provider-neutral mergeability validation"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -292,6 +292,9 @@ comments:
   -
     author: "TESTER"
     body: "Live GitLab integration queue hosted-check dispatch falls through to gh because branch and exact head are omitted."
+  -
+    author: "CODER"
+    body: "Resume implementation rework for provider-neutral integration queue hosted checks."
 events:
   -
     type: "status"
@@ -454,9 +457,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Live GitLab integration queue hosted-check dispatch falls through to gh because branch and exact head are omitted."
+  -
+    type: "status"
+    at: "2026-08-21T00:50:16.914Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume implementation rework for provider-neutral integration queue hosted checks."
 doc_version: 3
-doc_updated_at: "2026-08-21T00:50:03.720Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-08-21T00:50:16.914Z"
+doc_updated_by: "CODER"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
   Summary: |-
