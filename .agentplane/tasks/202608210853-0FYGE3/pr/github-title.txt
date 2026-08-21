@@ -1,1 +1,1 @@
-🚧 0FYGE3 task: Fix local branch_pr status after merged cleanup [202608210853-0FYGE3]
+✅ 0FYGE3 task: Fix local branch_pr status after merged cleanup [202608210853-0FYGE3]
