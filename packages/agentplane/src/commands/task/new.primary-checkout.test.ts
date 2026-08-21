@@ -34,6 +34,10 @@ describe("task new primary-checkout routing", { timeout: 180_000 }, () => {
       { cwd: root },
     );
 
+    const staleWorktreeConfig = structuredClone(config);
+    staleWorktreeConfig.workflow_mode = "direct";
+    await writeConfig(taskWorktree, staleWorktreeConfig);
+
     const created = await runTaskNewParsed({
       cwd: taskWorktree,
       rootOverride: taskWorktree,
