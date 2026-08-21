@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check fb464fcfc1e76378c9d02655c02ad9f08be2b2a1..ffcf295fe6287b97896b6a7cdf4e6ae20156a63b",
+      "command": "git diff --check 55f33d64a3e2a4961dc5aae472646ca4c98e079f..f9a57ded53577626ebfab54940165bde80d35096",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,35 +13,110 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB fb464fcfc1e76378c9d02655c02ad9f08be2b2a1..ffcf295fe6287b97896b6a7cdf4e6ae20156a63b",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 55f33d64a3e2a4961dc5aae472646ca4c98e079f..f9a57ded53577626ebfab54940165bde80d35096",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
+        "M\t.agentplane/tasks/202608211020-FGAPJC/README.md",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
+        "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-title.txt",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
-        "M\tpackages/agentplane/src/commands/shared/quality-review-target.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/quality-review-target.ts"
+        "A\t.agentplane/tasks/202608211020-FGAPJC/verification/20260821182610704-7a0641afc926676f.json",
+        "M\tpackages/core/src/tasks/plan-execution-grant.test.ts"
       ]
     },
     {
       "command": "git status --short --untracked-files=all",
       "id": "final-repository-status",
       "result": "pass",
-      "stdout": []
+      "stdout": [
+        " M .agentplane/tasks/202608211020-FGAPJC/README.md",
+        " M .agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json",
+        " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        " M packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts",
+        " M packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+      ]
     }
   ],
-  "execution_base_commit": "fb464fcfc1e76378c9d02655c02ad9f08be2b2a1",
-  "implementation_commit": "ffcf295fe6287b97896b6a7cdf4e6ae20156a63b",
+  "execution_base_commit": "55f33d64a3e2a4961dc5aae472646ca4c98e079f",
+  "implementation_commit": "f9a57ded53577626ebfab54940165bde80d35096",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
-    "final": [],
-    "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
-    "unchanged_from_execution_baseline": []
+    "baseline": [
+      " M .agentplane/tasks/202608211020-FGAPJC/README.md",
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/github-title.txt",
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/review.md",
+      "?? .agentplane/tasks/202608211020-FGAPJC/verification/20260821182610704-7a0641afc926676f.json"
+    ],
+    "classification": [
+      {
+        "classification": "preexisting_before_execution",
+        "line": " M .agentplane/tasks/202608211020-FGAPJC/README.md"
+      },
+      {
+        "classification": "introduced_during_execution",
+        "line": " M .agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "introduced_during_execution",
+        "line": " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      },
+      {
+        "classification": "introduced_during_execution",
+        "line": " M packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
+      },
+      {
+        "classification": "introduced_during_execution",
+        "line": " M packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608211020-FGAPJC/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608211020-FGAPJC/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608211020-FGAPJC/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608211020-FGAPJC/pr/review.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608211020-FGAPJC/verification/20260821182610704-7a0641afc926676f.json"
+      }
+    ],
+    "final": [
+      " M .agentplane/tasks/202608211020-FGAPJC/README.md",
+      " M .agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+      " M packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts",
+      " M packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+    ],
+    "introduced_after_execution_baseline": [
+      " M .agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+      " M packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts",
+      " M packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+    ],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/github-title.txt",
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/review.md",
+      "?? .agentplane/tasks/202608211020-FGAPJC/verification/20260821182610704-7a0641afc926676f.json"
+    ],
+    "unchanged_from_execution_baseline": [
+      " M .agentplane/tasks/202608211020-FGAPJC/README.md"
+    ]
   },
   "schema_version": 1,
   "task_id": "202608211020-FGAPJC"

@@ -15,13 +15,8 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-ExecutionGrant becomes inactive after an in-grant task.scope.extend operation, reintroducing
-approval before integration.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
