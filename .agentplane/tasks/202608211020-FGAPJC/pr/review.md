@@ -13,7 +13,7 @@ Created: 2026-08-21T10:27:11.359Z
 ## Verification
 
 - State: ok
-- Note: The current protected-base merge preserves the approved implementation, and the newest supervisor-owned verification record passes every declared check for that implementation.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
