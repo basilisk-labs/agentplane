@@ -12,7 +12,12 @@ import {
 } from "../../runtime/task-intake/index.js";
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import { CliError } from "../../shared/errors.js";
-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import {
+  backendUsesLocalTaskStore,
+  loadCommandContext,
+  resolvePrimaryCheckoutCommandContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 import { writeTaskMutation, type TaskMutationResult } from "../shared/task-mutation.js";
 import type { TaskData } from "../../backends/task-backend/shared/types.js";
 import {
@@ -179,9 +184,13 @@ export async function runTaskNewParsed(opts: {
 }): Promise<TaskCreationResult> {
   const p = sanitizeTaskNewParsed(opts.parsed);
   try {
-    const ctx =
+    const currentCtx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const ctx =
+      currentCtx.config.workflow_mode === "branch_pr" && backendUsesLocalTaskStore(currentCtx)
+        ? await resolvePrimaryCheckoutCommandContext(currentCtx)
+        : currentCtx;
     const creationLockPath = path.join(
       ctx.resolvedProject.gitRoot,
       ctx.config.paths.workflow_dir,

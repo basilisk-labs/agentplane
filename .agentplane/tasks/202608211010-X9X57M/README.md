@@ -4,7 +4,7 @@ title: "Route new task creation to the primary checkout"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -94,10 +94,20 @@ execution_contract:
       - "packages/agentplane/src/commands/task/new.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
+      - "packages/agentplane/src/commands/shared/task-backend.test.ts"
+      - "packages/agentplane/src/commands/shared/task-backend.ts"
+      - "packages/agentplane/src/commands/task/begin.command.ts"
+      - "packages/agentplane/src/commands/task/new.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -135,22 +145,36 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:330f7edde21047043a5a453016acb81b064dc47f5ba28796fe1d57817d066f58"
+      digest: "sha256:c683e85cf35063dfb6e82e881f840d03f1fb53224f62eb8c5cc8a1e6b494f383"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-backend.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-backend.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
+          - "packages/agentplane/src/commands/shared/task-backend.test.ts"
+          - "packages/agentplane/src/commands/shared/task-backend.ts"
+          - "packages/agentplane/src/commands/task/begin.command.ts"
+          - "packages/agentplane/src/commands/task/new.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -182,7 +206,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "5c561bc702250c816bdc0460a7b1fd5636b5fa5d"
+  message: "🚧 X9X57M task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -193,6 +219,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/cli/run-cli.core.task-guided.test.ts, packages/agentplane/src/commands/task/begin.command.ts; repository effects: repository_write, source_code, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 5c561bc70225. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -208,8 +237,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Implemented primary-checkout routing for branch_pr task creation through the local task store and added focused helper plus CLI regression coverage. Focused tests pass. Compatibility review found that task begin --plan performs a second task mutation through the invoking worktree context after creation; completing the fix without regressing that command requires two additional files outside the approved writable roots. Recommended action: Approve the narrow scope extension, route task begin's post-creation plan mutation through resolveTaskOwnerCommandContext, add a linked-worktree task begin --plan regression, then rerun all required checks. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.task-guided.test.ts,packages/agentplane/src/commands/task/begin.command.ts; repository effects=repository_write,source_code,tests; request digest=sha256:9d47a50e24052a56b1d604d9eac48d520e46a571de409571a0a6fd32ec3a6ad5. Agentplane receipt: external-agent-blocker/tr_946a86d5e9a85ee6f4200bf64c837c10/sha256:ae330482b009f8baafbdf0f97f24c30658d14bc7b2272a96c33e621036a11130/sha256:9d47a50e24052a56b1d604d9eac48d520e46a571de409571a0a6fd32ec3a6ad5."
+  -
+    type: "status"
+    at: "2026-08-21T10:28:13.913Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 5c561bc70225. CLI accepted one state-bound external-agent semantic result."
+    commit: "5c561bc702250c816bdc0460a7b1fd5636b5fa5d"
 doc_version: 3
-doc_updated_at: "2026-08-21T10:19:20.045Z"
+doc_updated_at: "2026-08-21T10:28:13.913Z"
 doc_updated_by: "SUPERVISOR"
 description: "Prevent task new invoked from a branch_pr task worktree from writing the new task README into that worktree; route creation through the primary checkout and add regression coverage for isolated task ownership."
 sections:
@@ -258,6 +295,8 @@ extensions:
     schema_version: 1
     status: "applied"
     transition_id: "tr_946a86d5e9a85ee6f4200bf64c837c10"
+  implementation_commit:
+    hash: "5c561bc702250c816bdc0460a7b1fd5636b5fa5d"
   workflow_route_baseline:
     start_head_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
     version: 1

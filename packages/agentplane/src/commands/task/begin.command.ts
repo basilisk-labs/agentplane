@@ -1,7 +1,10 @@
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { createCliEmitter } from "../../cli/output.js";
-import type { CommandContext } from "../shared/task-backend.js";
+import {
+  resolveTaskOwnerCommandContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 
 import { runTaskNewParsed, type TaskNewParsed } from "./new.js";
 import { setTaskPlan } from "./plan.js";
@@ -173,10 +176,10 @@ export function makeRunTaskBeginHandler(
     });
     const taskId = created.task_id;
     if (p.plan?.trim()) {
+      const taskCommand = await resolveTaskOwnerCommandContext({ ctx: command, taskId });
       await setTaskPlan({
-        ctx: command,
-        cwd: ctx.cwd,
-        rootOverride: ctx.rootOverride,
+        ctx: taskCommand,
+        cwd: taskCommand.resolvedProject.gitRoot,
         taskId,
         text: p.plan,
         updatedBy: "USER",

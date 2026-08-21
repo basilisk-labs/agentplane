@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { execFile } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { chmod, mkdir, mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
 import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
@@ -81,6 +83,55 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     expect(readme).toContain("## Scope");
     expect(readme).toContain("## Findings");
     expect(readme).not.toContain("## Risks");
+  });
+
+  it("task new invoked from a linked worktree writes the new task only in the primary checkout", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await commitAll(root, "seed primary checkout");
+
+    const taskWorktree = path.join(root, ".agentplane", "worktrees", "existing-task");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync(
+      "git",
+      ["worktree", "add", "-b", "task/202608211010-EXIST1/work", taskWorktree],
+      { cwd: root },
+    );
+
+    const io = captureStdIO();
+    let id = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Primary checkout task",
+        "--description",
+        "Keep new task ownership out of the invoking task worktree.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        taskWorktree,
+      ]);
+      expect(code).toBe(0);
+      id = io.stdout.trim();
+    } finally {
+      io.restore();
+    }
+
+    expect(id).toMatch(/^\d{12}-[A-Z0-9]{6}$/u);
+    expect(await pathExists(path.join(root, ".agentplane", "tasks", id, "README.md"))).toBe(true);
+    expect(
+      await pathExists(path.join(taskWorktree, ".agentplane", "tasks", id, "README.md")),
+    ).toBe(false);
   });
 
   it("task new runs backend mutation readiness before emitting verify-step warnings", async () => {

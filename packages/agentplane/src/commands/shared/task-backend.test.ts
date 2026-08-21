@@ -21,6 +21,7 @@ import {
   listTaskSummariesMemo,
   loadCommandContext,
   loadTaskFromContext,
+  resolvePrimaryCheckoutCommandContext,
   resolveTaskBranchFromContext,
   resolveTaskOwnerCommandContext,
 } from "./task-backend.js";
@@ -141,6 +142,36 @@ describe(
       await expect(ownerCtx.taskBackend.getTask(created.id)).resolves.toMatchObject({
         id: created.id,
       });
+    });
+
+    it("routes repository-level task mutations from a linked worktree to the primary checkout", async () => {
+      const repo = await tempRepo({ branch: "main" });
+      const root = repo.root;
+      await configureGitUser(root);
+      await repo.writeConfig(
+        mockConfig((draft) => {
+          draft.workflow_mode = "branch_pr";
+        }),
+      );
+      await writeLocalBackendConfig(root);
+      const execFileAsync = promisify(execFile);
+      await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+      await execFileAsync("git", ["add", "."], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed linked worktree"], { cwd: root });
+
+      const taskWorktree = path.join(root, ".agentplane", "worktrees", "task-owner");
+      await execFileAsync("git", ["worktree", "add", "-b", "task/T-OWNER/work", taskWorktree], {
+        cwd: root,
+      });
+
+      const worktreeCtx = await loadCommandContext({
+        cwd: taskWorktree,
+        rootOverride: taskWorktree,
+      });
+      const primaryCtx = await resolvePrimaryCheckoutCommandContext(worktreeCtx);
+
+      expect(await realpath(primaryCtx.resolvedProject.gitRoot)).toBe(await realpath(root));
+      await expect(resolvePrimaryCheckoutCommandContext(primaryCtx)).resolves.toBe(primaryCtx);
     });
 
     it("does not retain a stale worktree merely because another worktree owns the task branch", async () => {
