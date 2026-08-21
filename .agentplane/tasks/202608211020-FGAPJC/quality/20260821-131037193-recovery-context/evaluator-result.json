@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The rework commit changes only parentheses, indentation, and line wrapping in the ten files named by the failed hosted format check.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/6a4c02f8641d06e441ee0b84ba4e818bce50857c1c3262b2c405b2447b463bfb.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "bun run format:check passes on the evaluated commit.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/6a4c02f8641d06e441ee0b84ba4e818bce50857c1c3262b2c405b2447b463bfb.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "bun run typecheck passes on the evaluated commit.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/6a4c02f8641d06e441ee0b84ba4e818bce50857c1c3262b2c405b2447b463bfb.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "AgentPlane's recorded verification normalized the unavailable declared command bun run check to bun run test:critical; all 12 critical CLI chunks passed in 60.8 seconds.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/6a4c02f8641d06e441ee0b84ba4e818bce50857c1c3262b2c405b2447b463bfb.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Policy routing and agentplane doctor also passed in the supervisor-owned verification record.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/6a4c02f8641d06e441ee0b84ba4e818bce50857c1c3262b2c405b2447b463bfb.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "The evaluator exchange artifacts are the only untracked files and are AgentPlane-owned evidence for this active evaluation episode.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/6a4c02f8641d06e441ee0b84ba4e818bce50857c1c3262b2c405b2447b463bfb.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted provider checks must be rerun against the new published SHA before merge truth can be established.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/6a4c02f8641d06e441ee0b84ba4e818bce50857c1c3262b2c405b2447b463bfb.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The declared bun run check criterion is interpreted through the repository's implemented verification fallback because package.json does not expose a check script."
+  ]
+}

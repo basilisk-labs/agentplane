@@ -1,0 +1,48 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check d3a791a7fc6fbb28e7c6196d66e9787fb0bd8655..137b60c7e7f734c0bef3142e7178465a45513a30",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d3a791a7fc6fbb28e7c6196d66e9787fb0bd8655..137b60c7e7f734c0bef3142e7178465a45513a30",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608211020-FGAPJC/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
+        "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
+        "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
+        "A\tpackages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts",
+        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "d3a791a7fc6fbb28e7c6196d66e9787fb0bd8655",
+  "implementation_commit": "137b60c7e7f734c0bef3142e7178465a45513a30",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608211020-FGAPJC"
+}

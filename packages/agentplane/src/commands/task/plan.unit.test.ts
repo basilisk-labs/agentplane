@@ -17,6 +17,7 @@ const mockLoadCommandContext =
   vi.fn<(opts: { cwd: string; rootOverride?: string | null }) => Promise<CommandContext>>();
 const mockBackendIsLocalFileBackend = vi.fn<(ctx: CommandContext) => boolean>();
 const mockGetTaskStore = vi.fn();
+const mockResolveLogicalRepositoryIdentity = vi.fn();
 
 vi.mock("../shared/task-backend.js", () => ({
   backendUsesLocalTaskStore: mockBackendIsLocalFileBackend,
@@ -35,6 +36,9 @@ vi.mock("../shared/task-store.js", async (importOriginal) => {
     getTaskStore: mockGetTaskStore,
   };
 });
+vi.mock("./execution-authority-context.js", () => ({
+  resolveLogicalRepositoryIdentity: mockResolveLogicalRepositoryIdentity,
+}));
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
   return makeTaskFixture({ owner: "me", ...overrides });
@@ -81,7 +85,9 @@ describe("task plan commands (unit)", () => {
     mockLoadCommandContext.mockReset();
     mockBackendIsLocalFileBackend.mockReset();
     mockGetTaskStore.mockReset();
+    mockResolveLogicalRepositoryIdentity.mockReset();
     mockBackendIsLocalFileBackend.mockReturnValue(false);
+    mockResolveLogicalRepositoryIdentity.mockResolvedValue(`sha256:${"f".repeat(64)}`);
   });
 
   it("cmdTaskPlanApprove rejects empty --by", async () => {

@@ -11,6 +11,7 @@ import { cmdCommit } from "../guard/impl/commit.js";
 import { commitRefreshedTaskArtifacts } from "../guard/impl/commit-refresh.js";
 import { refreshBranchPrArtifactsAfterTaskCommit } from "../shared/post-commit-pr-artifacts.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import { workflowAuthorityStateScopeDigest } from "../shared/side-effect-authority.js";
 import {
   applyApprovedTaskScopeExtension,
   normalizeTaskScopeRoot,
@@ -139,7 +140,8 @@ export async function cmdTaskScopeExtend(opts: {
   scopeRoots: string[];
   repositoryEffects: TaskRepositoryEffect[];
   requestDigest: string;
-  stateFingerprint: string;
+  stateFingerprint?: string;
+  stateScopeDigest?: string;
   by: string;
   quiet?: boolean;
 }): Promise<number> {
@@ -152,11 +154,18 @@ export async function cmdTaskScopeExtend(opts: {
       rootOverride: null,
       taskId: opts.taskId,
     });
-    if (decision.workflowStep.preconditionFingerprint.digest !== opts.stateFingerprint) {
+    const currentStateScopeDigest = workflowAuthorityStateScopeDigest(
+      decision.workflowStep.preconditionFingerprint,
+      "task.scope.extend",
+    );
+    const stale = opts.stateScopeDigest
+      ? currentStateScopeDigest !== opts.stateScopeDigest
+      : decision.workflowStep.preconditionFingerprint.digest !== opts.stateFingerprint;
+    if (stale) {
       throw new CliError({
         code: "E_VALIDATION",
         message:
-          "Task execution scope extension is stale; recompute task next-action and use its exact state fingerprint.",
+          "Task execution scope extension is stale; recompute task next-action and use its exact state scope.",
       });
     }
     const checkout = decision.oracle.authoritativeCheckoutPath;
@@ -249,7 +258,7 @@ export async function cmdTaskScopeExtend(opts: {
         kind: "success",
         action: "task execution scope extended",
         target: opts.taskId,
-        details: `roots=${opts.scopeRoots.join(",")} state_fingerprint=${opts.stateFingerprint}`,
+        details: `roots=${opts.scopeRoots.join(",")} state_scope=${opts.stateScopeDigest ?? opts.stateFingerprint}`,
       });
     }
     return 0;

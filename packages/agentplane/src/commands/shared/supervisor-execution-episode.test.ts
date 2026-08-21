@@ -4,6 +4,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
+  advanceSupervisorExecutionEpisodeState,
   buildStateFingerprint,
   completeSupervisorExecutionEpisode,
   createSupervisorExecutionEpisodeJournal,
@@ -212,6 +213,86 @@ describe("persisted supervisor execution episodes", () => {
       budget: { max_episodes: 51 },
       usage: { episodes: 1 },
       cursor: { episode: 1, phase: "ready", operation_key: null },
+    });
+  });
+
+  it("extends an agent-run budget only when an active grant authorizes autonomy", async () => {
+    const root = await mkGitRepoRoot();
+    const decision = fixtureDecision(root, 1);
+    let current = createSupervisorExecutionEpisodeJournal({
+      task_id: taskId,
+      task_revision: 1,
+      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      budget: {
+        max_episodes: 3,
+        max_agent_runs: 1,
+        max_input_tokens: null,
+        max_output_tokens: null,
+        max_total_tokens: null,
+        max_wall_time_ms: null,
+        max_changed_files: null,
+        max_diff_lines: null,
+        max_no_progress_episodes: 3,
+      },
+    });
+    const started = startSupervisorExecutionEpisode({
+      journal: current,
+      role: "EXECUTOR",
+      kind: "agent_episode",
+      operation_identity: { id: "implementation" },
+      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      authority_ref: "authority",
+      authority_digest: decision.workflowStep.preconditionFingerprint.digest,
+    });
+    if (started.status !== "started") throw new Error("expected started fixture episode");
+    current = completeSupervisorExecutionEpisode({
+      journal: started.journal,
+      operation_key: started.operation_key,
+      result: { status: "success" },
+    });
+    current = advanceSupervisorExecutionEpisodeState({
+      journal: current,
+      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+    });
+    const exhausted = startSupervisorExecutionEpisode({
+      journal: current,
+      role: "EXECUTOR",
+      kind: "agent_episode",
+      operation_identity: { id: "rework" },
+      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      authority_ref: "authority",
+      authority_digest: decision.workflowStep.preconditionFingerprint.digest,
+    });
+    if (exhausted.status !== "stopped") throw new Error("expected stopped fixture episode");
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    await createSupervisorEpisodeStore(journalPath).write(exhausted.journal);
+
+    await expect(
+      preparePersistedSupervisorReplacementAfterFailure({
+        git_root: root,
+        task_id: taskId,
+        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+        budget_only: true,
+      }),
+    ).resolves.toBe("not_failed");
+    await expect(
+      preparePersistedSupervisorReplacementAfterFailure({
+        git_root: root,
+        task_id: taskId,
+        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+        allow_agent_run_budget_extension: true,
+        budget_only: true,
+      }),
+    ).resolves.toBe("budget_extended");
+    expect(await createSupervisorEpisodeStore(journalPath).read()).toMatchObject({
+      status: "running",
+      stop: null,
+      budget: { max_episodes: 53, max_agent_runs: 51 },
+      usage: { episodes: 1, agent_runs: 1 },
+      cursor: { phase: "ready", operation_key: null },
     });
   });
   it("does not steal an old lease from a live long-running supervisor", async () => {

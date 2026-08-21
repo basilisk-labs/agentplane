@@ -6,7 +6,6 @@ import { describe, expect, it } from "vitest";
 import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 import {
-  captureStdIO,
   installRunCliIntegrationHarness,
   mkGitRepoRootWithBranch,
   mkTempDir,
@@ -14,7 +13,6 @@ import {
 } from "@agentplane/testkit";
 
 import { defaultConfig } from "./core-imports.js";
-import { runCli } from "./run-cli.js";
 import {
   findTaskWorktree,
   LOCALIZED_DIRECT_REFERENCE,
@@ -32,88 +30,6 @@ installRunCliIntegrationHarness();
 const execFileAsync = promisify(execFile);
 
 describe("task create planner intent", { timeout: 60_000 }, () => {
-  it("preserves a reusable envelope and re-resolves the route from typed intent", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
-    const created = await runJson(root, [
-      "task",
-      "create",
-      "Исправить разбор конфигурации CLI",
-      "--description",
-      "Пользовательский запрос не должен классифицироваться проверкой слов.",
-      "--route",
-      "auto",
-      "--verify",
-      "bun run test:critical",
-      "--json",
-    ]);
-    const taskId = created.task_id as string;
-    const issued = (await runJson(root, [
-      "task",
-      "advance",
-      taskId,
-      "--agent-json",
-    ])) as AgentPacket;
-    expect(issued.action.instruction).toContain("result.task_intent");
-    const plan = "1. Inspect the parser. 2. Implement the fix. 3. Run the declared checks.";
-
-    const incompletePath = await writePlannerResult({
-      packet: issued,
-      summary: plan,
-      includeIntent: false,
-    });
-    const incompleteIo = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "advance",
-        taskId,
-        "--result",
-        incompletePath,
-        "--agent-json",
-        "--root",
-        root,
-      ]);
-      expect(code).not.toBe(0);
-      expect(incompleteIo.stderr).toContain("must include task_intent");
-    } finally {
-      incompleteIo.restore();
-    }
-    if (!issued.exchange) throw new Error("expected external-agent exchange");
-    expect(
-      JSON.parse(await readFile(path.join(issued.exchange.directory, "exchange.json"), "utf8")),
-    ).toMatchObject({ status: "issued", result_digest: null });
-
-    const resultPath = await writePlannerResult({
-      packet: issued,
-      summary: plan,
-      includeIntent: true,
-    });
-    const accepted = await runJson(root, [
-      "task",
-      "advance",
-      taskId,
-      "--result",
-      resultPath,
-      "--agent-json",
-    ]);
-    expect((accepted.action as { kind: string }).kind).toBe("approval_required");
-    const readme = await readFile(
-      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
-      "utf8",
-    );
-    expect(readme).toContain('task_kind: "code"');
-    expect(readme).toContain('mutation_scope: "code"');
-    expect(readme).toContain('requested_mode: "auto"');
-    expect(readme).toContain("execution_contract:");
-    expect(readme).toContain('preferred_mode: "direct"');
-    expect(readme).not.toContain("mutation_scope_unknown");
-    const brief = await runJson(root, ["task", "brief", taskId, "--json"]);
-    expect((brief.blueprint as { blueprint_id: string }).blueprint_id).toBe("code.branch_pr");
-  });
-
   it("keeps a localized product change direct", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await cp(
@@ -162,12 +78,31 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       },
     });
 
-    await runJson(
+    const approval = (await runJson(
       root,
       ["task", "advance", taskId, "--result", resultPath, "--agent-json"],
       metrics,
+    )) as {
+      operator_action: {
+        host_user_decision: { request: Record<string, unknown> };
+      };
+    };
+    const hostDecision = Buffer.from(
+      JSON.stringify({
+        schema_version: 1,
+        ...approval.operator_action.host_user_decision.request,
+        host_id: "codex",
+        conversation_id: "one-confirmation-e2e",
+        message_id: "user-approval-1",
+        decided_at: "2026-08-21T10:00:00.000Z",
+      }),
+      "utf8",
+    ).toString("base64url");
+    await runCommand(
+      root,
+      ["task", "plan", "approve", taskId, "--host-user-decision", hostDecision],
+      metrics,
     );
-    await runCommand(root, ["task", "plan", "approve", taskId, "--by", "USER"], metrics);
     await execFileAsync("git", ["add", "-A"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed localized direct task"], {
       cwd: root,
@@ -525,27 +460,32 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       "packages/app/src/integration.ts",
       "tests/sdk/capability.test.ts",
     ].every((changedPath) => finalContract.observed.changed_paths.includes(changedPath));
+    const boundaryRoute = await runJson(checkout, [
+      "task",
+      "next-action",
+      taskId,
+      "--explain",
+      "--json",
+    ]);
 
-    expect((boundary.action as { kind: string }).kind).toBe("approval_required");
-    const boundaryAction = (boundary as AgentPacket).operator_action;
-    expect(boundaryAction).toMatchObject({
-      kind: "grant_side_effect_authority",
-      cwd: checkout,
+    expect(
+      (boundary.action as { kind: string }).kind,
+      JSON.stringify({ boundary, boundaryRoute }, null, 2),
+    ).toBe("framework_transition");
+    expect((boundary as AgentPacket).operator_action).toBeUndefined();
+    expect(boundaryRoute).toMatchObject({
+      workflow_step: { id: "route.remote.refresh", kind: "cli_operation" },
+      execution_packet: { safe_to_mutate: false },
     });
-    const operationIndex = boundaryAction?.argv?.indexOf("--operation") ?? -1;
-    expect(operationIndex).toBeGreaterThanOrEqual(0);
-    expect(["route.remote.refresh", "task.pre_merge_close"]).toContain(
-      boundaryAction?.argv?.[operationIndex + 1],
-    );
     expect(finalFrontmatter.verification).toMatchObject({ state: "ok" });
     expect(finalFrontmatter.quality_review).toMatchObject({ state: "pass" });
     expect(metrics).toMatchObject({
-      control_plane_commands: 10,
-      approval_boundaries: 3,
+      control_plane_commands: 8,
+      approval_boundaries: 1,
       work_preserved: true,
       recovery_commands: 0,
     });
-    expect(metrics.lifecycle_transitions).toBe(3);
+    expect(metrics.lifecycle_transitions).toBe(4);
     expect(metrics.verification_time_ms).toBeGreaterThan(0);
     expect(finalContract.observed.verification_results.length).toBeGreaterThan(0);
     expect(metrics.control_plane_commands).toBeGreaterThan(

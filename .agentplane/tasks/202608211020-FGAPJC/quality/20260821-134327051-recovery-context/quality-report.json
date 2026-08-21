@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608211020-FGAPJC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-21T13:44:00.500Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 4 typed finding(s).",
+  "evaluated_sha": "5a68dd0ebe6f6a3377efd4e22ab93fb49258a973",
+  "blueprint_digest": "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa",
+  "findings": [
+    "codePointAt performs the same ASCII '=' comparison required by the padding scan.",
+    "No regex, suppression, allowlist, or behavioral scope expansion was introduced.",
+    "lint:core, the focused 8-test suite, typecheck, and all 12 supervisor critical chunks pass.",
+    "Residual risk: Provider checks must pass on the newly published SHA before integration."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/903c9732f3258a64c50155384c0bded4ec54fc2ba0710795bccf66bf445d96e4.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

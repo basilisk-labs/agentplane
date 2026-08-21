@@ -12,6 +12,7 @@ import { resolvePrFlowStatus } from "../pr/flow-status.js";
 import { cmdPrOpen } from "../pr/open.js";
 import { cmdPrUpdate } from "../pr/update.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+import { workflowAuthorityStateScopeDigest } from "../shared/side-effect-authority.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
 import type { WorkflowOperation } from "../shared/workflow-step.js";
@@ -20,6 +21,7 @@ import { cmdFinish } from "./finish-command.js";
 import { makeRunTaskHostedClosePrHandler } from "./hosted-close-pr.command.js";
 import { cmdTaskStartReady } from "./start-ready.js";
 import { cmdTaskScopeExtend } from "./scope-extend.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 
 function observedPostconditions(operation: WorkflowOperation): string[] {
   return operation.expectedPostconditions
@@ -70,6 +72,10 @@ export async function executeBranchWorkflowOperation(opts: {
 }): Promise<WorkflowSupervisorOperationResult> {
   const cwd = checkoutFor(opts.decision);
   const command = await loadCommandContext({ cwd, rootOverride: null });
+  const taskCommand = await loadTaskCommandContext({
+    ctx: command,
+    taskIds: [opts.operation.params.taskId],
+  });
   const cliContext: CommandCtx = { cwd };
   const { operation } = opts;
   let exitCode: number;
@@ -83,6 +89,9 @@ export async function executeBranchWorkflowOperation(opts: {
         agent: operation.params.agent,
         slug: operation.params.slug,
         worktree: true,
+        base: taskCommand.execution.base_ref,
+        baseSha: taskCommand.execution.base_sha,
+        workflowMode: opts.decision.workflowMode === "branch_pr" ? "branch_pr" : "direct",
         quiet: true,
       });
       return succeeded(
@@ -113,7 +122,10 @@ export async function executeBranchWorkflowOperation(opts: {
         scopeRoots: [...operation.params.scopeRoots],
         repositoryEffects: [...operation.params.repositoryEffects],
         requestDigest: operation.params.requestDigest,
-        stateFingerprint: operation.preconditionFingerprint.digest,
+        stateScopeDigest: workflowAuthorityStateScopeDigest(
+          operation.preconditionFingerprint,
+          operation.id,
+        ),
         by: "USER",
         quiet: true,
       });
@@ -214,7 +226,7 @@ export async function executeBranchWorkflowOperation(opts: {
       exitCode = await handler(cliContext, {
         taskId: operation.params.taskId,
         branch: operation.params.branch,
-        base: null,
+        base: taskCommand.execution.base_ref,
         priority: 0,
         quiet: true,
       });

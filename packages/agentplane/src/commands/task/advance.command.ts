@@ -1,4 +1,5 @@
 import type { CommandCtx } from "../../cli/spec/spec.js";
+import { computePlanDigest } from "@agentplaneorg/core/tasks";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import {
   prepareAgentWorkOrder,
@@ -12,7 +13,11 @@ import {
   supervisePersistedWorkflowEpisode,
 } from "../shared/supervisor-execution-episode.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { loadCommandContext, resolveTaskOwnerCommandContext } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  loadTaskFromContext,
+  resolveTaskOwnerCommandContext,
+} from "../shared/task-backend.js";
 
 import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
 import {
@@ -27,7 +32,7 @@ import {
 } from "./external-agent-supervisor.js";
 import { recoverPendingExternalAgentResult } from "./external-agent-supervisor-recovery.js";
 import { executeExternalAgentVerification } from "./external-agent-verification.js";
-import { resolveConfiguredAuthority } from "./configured-authority.js";
+import { activeExecutionGrantForTask, resolveConfiguredAuthority } from "./configured-authority.js";
 import type { TaskAdvanceParsed } from "./advance.spec.js";
 
 export function makeRunTaskAdvanceHandler(deps: {
@@ -96,18 +101,38 @@ export function makeRunTaskAdvanceHandler(deps: {
             }),
         })) ?? routed;
     }
+    const authorityTask = await loadTaskFromContext({
+      ctx: command,
+      taskId: parsed.taskId,
+      preferBranchSnapshot: current.workflowMode === "branch_pr",
+    });
+    const activeExecutionGrant = await activeExecutionGrantForTask({
+      command,
+      task: authorityTask,
+    });
+    if (!parsed.replacement && activeExecutionGrant) {
+      const continuation = await preparePersistedSupervisorReplacementAfterFailure({
+        git_root: command.resolvedProject.gitRoot,
+        task_id: parsed.taskId,
+        state_fingerprint_digest: current.workflowStep.preconditionFingerprint.digest,
+        allow_agent_run_budget_extension: true,
+        budget_only: true,
+      });
+      if (continuation === "budget_extended") current = await decide(true);
+    }
     let replacementPrepared = false;
     if (parsed.replacement) {
       const replacement = await preparePersistedSupervisorReplacementAfterFailure({
         git_root: command.resolvedProject.gitRoot,
         task_id: parsed.taskId,
         state_fingerprint_digest: current.workflowStep.preconditionFingerprint.digest,
+        allow_agent_run_budget_extension: activeExecutionGrant !== null,
       });
       if (replacement === "not_failed") {
         throw new CliError({
           code: "E_USAGE",
           message:
-            "task advance --replacement requires a terminal failed operation or an episode-count-only budget stop.",
+            "task advance --replacement requires a terminal failed operation or a renewable budget stop authorized by the active execution grant.",
         });
       }
       replacementPrepared = true;
@@ -129,7 +154,7 @@ export function makeRunTaskAdvanceHandler(deps: {
           command: authorityCommand,
           decision: current,
         });
-        if (resolved.state === "resolved") {
+        if (resolved.state === "granted") {
           current = await decide(true);
           continue;
         }
@@ -304,6 +329,11 @@ export function makeRunTaskAdvanceHandler(deps: {
           ...(parsed.remote ? ["--remote"] : []),
         ]
       : null;
+    const packetTask = await loadTaskFromContext({
+      ctx: preparationCommand,
+      taskId: parsed.taskId,
+      preferBranchSnapshot: prepared.route_decision.workflowMode === "branch_pr",
+    });
     const packet = buildAgentActionPacket({
       decision: prepared.route_decision,
       work_order: exchange?.work_order ?? prepared.work_order,
@@ -325,6 +355,11 @@ export function makeRunTaskAdvanceHandler(deps: {
         : {}),
       ...(recovery ? { recovery } : {}),
       remote: parsed.remote,
+      plan_approval_transport:
+        preparationCommand.config.authority.approval_receipts.trusted_issuers.length > 0
+          ? "signed_user_receipt"
+          : "host_user_decision",
+      plan_digest: computePlanDigest(packetTask.sections?.Plan ?? ""),
     });
     assertAgentActionPacketHasNoChoreography(packet);
 

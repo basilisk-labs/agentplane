@@ -2,6 +2,11 @@ import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spe
 import { usageError } from "../../cli/spec/errors.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { makeExecutionContext } from "../../runtime/execution-context.js";
+import { gitRevParse } from "@agentplaneorg/core/git";
+import {
+  createTaskExecutionBaseIdentity,
+  TASK_EXECUTION_CONTEXT_EXTENSION_KEY,
+} from "@agentplaneorg/core/tasks";
 import {
   resolveTaskExecutionContract,
   resolveTaskExecutionRoute,
@@ -10,6 +15,7 @@ import { throwIfPolicyDecisionDenied } from "../shared/policy-deny.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { runTaskNewParsed, type TaskNewParsed } from "./new.js";
+import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 
 const output = createCliEmitter();
 
@@ -27,6 +33,7 @@ export type TaskCreateParsed = {
   riskFlags: NonNullable<TaskNewParsed["riskFlags"]>;
   blueprintRequest?: TaskNewParsed["blueprintRequest"];
   verify: string[];
+  base?: string;
   allowDuplicate: boolean;
   json: boolean;
 };
@@ -172,6 +179,13 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
       description: "Repeatable. Seed an explicit verification command.",
     },
     {
+      kind: "string",
+      name: "base",
+      valueHint: "<branch-or-ref>",
+      description:
+        "Freeze this task on an explicit development base. Defaults to the current checkout.",
+    },
+    {
       kind: "boolean",
       name: "allow-duplicate",
       default: false,
@@ -197,6 +211,9 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     const owner = typeof raw.opts.owner === "string" ? raw.opts.owner.trim() : "CODER";
     if (!owner) {
       throw usageError({ spec: taskCreateSpec, message: "Invalid value for --owner: empty." });
+    }
+    if (typeof raw.opts.base === "string" && !raw.opts.base.trim()) {
+      throw usageError({ spec: taskCreateSpec, message: "Invalid value for --base: empty." });
     }
     const hasAnyStructuredIntent = [
       raw.opts["task-kind"],
@@ -240,6 +257,7 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
         ? (raw.opts["blueprint-request"] as TaskNewParsed["blueprintRequest"])
         : undefined,
     verify: Array.isArray(raw.opts.verify) ? (raw.opts.verify as string[]) : [],
+    base: typeof raw.opts.base === "string" ? raw.opts.base.trim() : undefined,
     allowDuplicate: raw.opts["allow-duplicate"] === true,
     json: raw.opts.json === true,
   }),
@@ -285,6 +303,21 @@ export function makeRunTaskCreateHandler(
         blueprint_request: intent.blueprintRequest,
       },
     });
+    const explicitBaseRef = parsed.base?.trim();
+    const repositoryIdentity = await resolveLogicalRepositoryIdentity({
+      git_root: execution.command.resolvedProject.gitRoot,
+      task: {},
+    });
+    const explicitBase = explicitBaseRef
+      ? createTaskExecutionBaseIdentity({
+          base_ref: explicitBaseRef,
+          base_sha: await gitRevParse(execution.command.resolvedProject.gitRoot, [
+            `${explicitBaseRef}^{commit}`,
+          ]),
+          source: "explicit",
+          repository_identity: repositoryIdentity,
+        })
+      : null;
     const created = await runTaskNewParsed({
       ctx: execution.command,
       cwd: ctx.cwd,
@@ -301,6 +334,13 @@ export function makeRunTaskCreateHandler(
         riskFlags: intent.riskFlags,
         blueprintRequest: intent.blueprintRequest,
         route: parsed.route,
+        ...(explicitBase
+          ? {
+              extensions: {
+                [TASK_EXECUTION_CONTEXT_EXTENSION_KEY]: explicitBase,
+              },
+            }
+          : {}),
         dependsOn: [],
         verify: parsed.verify,
         showBlueprint: false,

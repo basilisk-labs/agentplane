@@ -2,6 +2,8 @@ import { access } from "node:fs/promises";
 import path from "node:path";
 
 import {
+  completeSupervisorExecutionEpisode,
+  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   retireSupervisorExecutionEpisodeIntentAfterStateDrift,
   validateSupervisorExecutionEpisodeJournal,
   type AgentWorkOrderV2,
@@ -289,6 +291,37 @@ export async function recoverPendingExternalAgentResult(opts: {
   const journal = validateSupervisorExecutionEpisodeJournal(rawJournal);
   const operation = journal.operations.at(-1);
   if (
+    operation?.status === "intent" &&
+    operation.work_order_ref === null &&
+    operation.effect_ref === "task_verify" &&
+    journal.cursor.phase === "intent_recorded" &&
+    journal.cursor.operation_key === operation.operation_key
+  ) {
+    const currentFingerprint = opts.current_decision.workflowStep.preconditionFingerprint.digest;
+    const failed = completeSupervisorExecutionEpisode({
+      journal,
+      operation_key: operation.operation_key,
+      result: {
+        direct_task_operation: "task_verify",
+        error: "interrupted_verification_owner",
+        recovery: "task_advance",
+      },
+      failed: true,
+    });
+    const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+      journal: failed,
+      state_fingerprint_digest: currentFingerprint,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    if (!(await store.compareAndSwap(journal.digest, replacement))) {
+      throw new CliError({
+        code: "E_RUNTIME",
+        message: "External-agent supervisor changed while recovering interrupted verification.",
+      });
+    }
+    return null;
+  }
+  if (
     !operation?.work_order_ref ||
     (operation.status !== "intent" && operation.status !== "completed")
   ) {
@@ -296,12 +329,52 @@ export async function recoverPendingExternalAgentResult(opts: {
   }
   const paths = exchangePathsFromWorkOrderRef(operation.work_order_ref);
   const exchange = await readExternalAgentExchange(paths.exchange);
-  if (
-    exchange?.task_id !== opts.task_id ||
-    exchange.status === "consumed" ||
-    exchange.status === "retired"
-  )
-    return null;
+  if (exchange?.task_id !== opts.task_id || exchange.status === "consumed") return null;
+  if (exchange.status === "retired") {
+    if (operation.status !== "intent") return null;
+    const currentFingerprint = opts.current_decision.workflowStep.preconditionFingerprint.digest;
+    if (operation.precondition_fingerprint_digest === currentFingerprint) {
+      throw new CliError({
+        code: "E_RUNTIME",
+        message: "A retired external-agent exchange still owns the current task state.",
+        context: { task_id: opts.task_id, transition_id: exchange.transition_id },
+      });
+    }
+    const retiredJournal = retireSupervisorExecutionEpisodeIntentAfterStateDrift({
+      journal,
+      state_fingerprint_digest: currentFingerprint,
+      result: {
+        classification: "retired_exchange_state_fingerprint_drift",
+        transition_id: exchange.transition_id,
+        previous_state_fingerprint: operation.precondition_fingerprint_digest,
+        current_state_fingerprint: currentFingerprint,
+      },
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    if (!(await store.compareAndSwap(journal.digest, retiredJournal))) {
+      throw new CliError({
+        code: "E_RUNTIME",
+        message: "External-agent supervisor changed while reconciling a retired exchange.",
+      });
+    }
+    throw new CliError({
+      code: "E_RUNTIME",
+      message:
+        "AgentPlane reconciled a retired external-agent exchange with its unresolved journal " +
+        `intent; run: agentplane task advance ${opts.task_id} --replacement --agent-json`,
+      context: {
+        task_id: opts.task_id,
+        exact_argv: [
+          "agentplane",
+          "task",
+          "advance",
+          opts.task_id,
+          "--replacement",
+          "--agent-json",
+        ],
+      },
+    });
+  }
 
   const workOrder = await readExternalAgentWorkOrder(paths.work_order);
   const planningRecoveryRequired = requiresPlanningRecoveryReplacement({

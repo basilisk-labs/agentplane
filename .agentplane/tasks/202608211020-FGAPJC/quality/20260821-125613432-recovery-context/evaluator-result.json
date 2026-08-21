@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "ExecutionGrant remains bound to task, normalized plan, execution scope, logical repository identity, and the logical-completion contract; ordinary rework remains covered while material drift invalidates authority.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/fb3beb2f7268fa73cca89d34742c8f41348d1c0cd71ba98f6231f9b48b04db59.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Grant-derived OperationLease validation and replay protection remain integrated into supervisor-owned effects, including stale, cross-task, and cross-state rejection.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/fb3beb2f7268fa73cca89d34742c8f41348d1c0cd71ba98f6231f9b48b04db59.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The managed supervisor coverage still carries one host-originated decision through semantic work, bounded rework, verification, provider operations, integration, hosted closeout, cleanup, and terminal.done.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/fb3beb2f7268fa73cca89d34742c8f41348d1c0cd71ba98f6231f9b48b04db59.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The conflict rework composes primary-checkout sibling-task ownership with task-local base_ref/base_sha capture under the task-creation transaction; it does not reintroduce global-base or caller-path authority.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/fb3beb2f7268fa73cca89d34742c8f41348d1c0cd71ba98f6231f9b48b04db59.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Concurrent long-lived bases, copied cross-repository rejection, relocation recovery, doctor transport diagnostics, and replay-safe authority remain explicitly covered by the frozen diff.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/fb3beb2f7268fa73cca89d34742c8f41348d1c0cd71ba98f6231f9b48b04db59.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "No semantic defect or missing acceptance coverage is visible in the scoped rework.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/fb3beb2f7268fa73cca89d34742c8f41348d1c0cd71ba98f6231f9b48b04db59.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Provider availability, hosted CI completion, and merge execution remain external runtime conditions; the supervisor must continue idempotently and stop only if one of those conditions genuinely blocks progress.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/fb3beb2f7268fa73cca89d34742c8f41348d1c0cd71ba98f6231f9b48b04db59.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Codex is treated as the trusted host boundary for origin=user events, as explicitly directed by the user."
+  ]
+}

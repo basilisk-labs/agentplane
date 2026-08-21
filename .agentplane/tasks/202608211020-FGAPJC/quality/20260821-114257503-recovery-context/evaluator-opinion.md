@@ -1,0 +1,34 @@
+# Semantic quality review: rework
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned rework with 7 typed finding(s).
+
+## Findings
+- ExecutionGrant is not bound to repository identity or an approved logical-completion contract. Its active-state validation checks only task id, plan digest, and execution-scope digest, so the grant cannot prove that it applies to the same logical repository and completion boundary required by plan item 1.
+- OperationLease is only a core constructor and test fixture. No runtime consumer creates or validates it; configured authority still emits the legacy SideEffectAuthorityRecord. Therefore short-lived grant-derived leases, stale/cross-task rejection, and supervisor ownership of effect execution required by plan item 5 are not implemented.
+- The managed supervisor and doctor paths were not changed. The diff does not establish that task run consumes ExecutionGrant through rework, verification, provider effects, closeout, and cleanup, nor that doctor diagnoses unavailable host approval transport before an impossible action, as required by plan items 2, 4, and 7.
+- Task-scoped base_ref/base_sha selection is implemented, but logical repository identity and relocation recovery are absent. Workspace allocation still persists absolute repository_root/workspace_root values and rediscovery relies on existing Git worktree registrations; the approved repository-rename recovery invariant is not covered.
+- The observed checks pass, but the new tests do not prove the required end-to-end cases: a single host decision reaching logical closeout, material drift versus ordinary rework, concurrent master/typescript tasks with isolated diffs, repository rename recovery, or crash replay without duplicate provider/repository effects.
+- Residual risk: Passing unit and critical checks can mask a control-plane gap where plan approval still cannot autonomously carry the task through provider and closeout boundaries.
+- Residual risk: An unsigned host-user-decision CLI payload remains safe only under the explicit assumption that the invoking Codex host is the trusted origin boundary.
+
+## Evidence
+- .agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/1cc1b91a0422eaa0ccf7a170a34108ec45e50322cd724552af772ec33405c442.patch
+
+## Missing Tests
+- End-to-end task run test where one HostUserDecision drives implementation, bounded rework, verification, integration, closeout, and cleanup with no second user boundary.
+- Material-drift matrix proving only goal, deliverable, logical repository/system scope, irreversible effect, risk envelope, or verification-strength drift revokes the grant; ordinary rework remains covered.
+- Concurrent tasks frozen from master and typescript proving prior cumulative commits do not enter either task diff.
+- Repository relocation test that renames/moves the checkout and recovers task/worktree state without stored absolute-path authority.
+- Crash-replay test proving a persisted operation identity/lease prevents duplicate repository or provider effects.
+- Doctor/action-packet test proving no unavailable approval transport is emitted and recovery guidance is typed.
+
+## Hidden Assumptions
+- A task id plus plan and scope digests are assumed to identify the logical repository and completion contract.
+- The legacy side-effect authority record is assumed to be equivalent to the new OperationLease contract.
+- Existing task-run behavior is assumed to become grant-aware without an explicit integration change.
+- Git worktree registrations are assumed to remain valid after the repository directory is renamed.
+
+## Residual Risks
+- Keep the accepted branch/base and plan-consistent scope-extension work. Complete the architecture in the same approved task: bind ExecutionGrant to stable logical repository identity and a canonical logical-completion digest; integrate persisted, expiring OperationLease issuance/validation into supervisor-owned side effects; make task run consume the grant continuously through rework, verification, integration, closeout, and cleanup; add typed doctor/action recovery for unavailable host transport and ambiguous legacy tasks; replace absolute-path authority with rediscovery from logical identity after relocation; and add the six missing end-to-end/concurrency/replay tests. This is rework within the approved plan and must not request another user confirmation.

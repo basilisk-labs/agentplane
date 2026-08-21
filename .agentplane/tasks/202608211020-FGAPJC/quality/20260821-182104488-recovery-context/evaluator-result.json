@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The frozen diff implements the eight approved architectural changes and includes unit, integration, recovery, negative, concurrency, and end-to-end coverage.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/d16514ee9ed1d406a4b62dc44a77806def9f473d8fe08612367fc50a2a562ea4.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The protected-base fix preserves a prior review only when its SHA is an ancestor of the task-side merge parent, then continues first-parent inspection so a later semantic commit still invalidates the review.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/d16514ee9ed1d406a4b62dc44a77806def9f473d8fe08612367fc50a2a562ea4.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Supervisor evidence records the critical test suite, type checking, policy routing, doctor diagnostics, full regression, documentation contract, and task outcome as passing for implementation ffcf295fe6287b97896b6a7cdf4e6ae20156a63b.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/d16514ee9ed1d406a4b62dc44a77806def9f473d8fe08612367fc50a2a562ea4.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: GitHub branch protection and hosted checks must still accept the exact final PR head before integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/d16514ee9ed1d406a4b62dc44a77806def9f473d8fe08612367fc50a2a562ea4.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608211020-FGAPJC-9dc1d3364ffbc6a77be0e070",
+  "prepared_at": "2026-08-21T17:17:53.595Z",
+  "task": {
+    "id": "202608211020-FGAPJC",
+    "revision": 90,
+    "objective": "Implement task-scoped autonomous execution after one user-approved plan\n\nIntroduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift.",
+    "acceptance_criteria": [
+      "bun run check",
+      "bun run typecheck",
+      "- In scope: Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift.\n- Out of scope: unrelated refactors not required for \"Implement task-scoped autonomous execution after one user-approved plan\".",
+      "Implement one-confirmation task autonomy as eight atomic, independently verifiable changes.\n\n1. Add versioned core contracts and schemas for PlanProposal, HostUserDecision, ExecutionGrant, and OperationLease. Bind every grant to task_id, plan_revision, plan_digest, scope_digest, repository identity, and the approved logical completion contract. Preserve legacy plan_approval data as compatibility evidence.\n\n2. Add an authority resolver that runs before workflow reduction and returns granted, policy_transition, user_required, external_blocked, or denied. It must never project an approval transport that is unavailable. Treat a Codex-originated user decision as trusted only when the host supplies an unforgeable origin=user event bound to the current plan digest; retain signed receipts as an optional remote transport.\n\n3. Replace the unconditional plan approval step with PlanProposal -> HostUserDecision -> ExecutionGrant compilation. One user confirmation authorizes all plan-declared repository and provider effects. Internal plan acceptance, start, rework, verification, commit, PR maintenance, integration, closeout, and cleanup must not create new user boundaries. Require a Plan Amendment only when the goal, deliverables, repository/system scope, irreversible effects, risk envelope, or verification strength materially changes.\n\n4. Extend the managed supervisor so task run continuously selects ready semantic episodes, allocates their authority, applies typed results, performs deterministic lifecycle effects, evaluates failures, retries bounded rework, verifies the approved outcome, and advances until logical completion or a genuine external/material-drift boundary. Persist replay-safe transition and operation identities so crash recovery is idempotent.\n\n5. Issue short-lived OperationLease records derived from the active ExecutionGrant for repository and provider effects. The supervisor, not the semantic agent, owns signing, effect execution, receipts, and formal transitions. Prevent stale leases, cross-task reuse, and self-expansion of the authority policy.\n\n6. Make workspace routing task-scoped and independent of the caller checkout. Freeze base_ref and base_sha per task, create worktrees directly from base_sha, permit simultaneous long-lived bases such as master and typescript, and treat cumulative development branches as bases rather than single-task branches. Persist logical repository/workspace identities and rediscover absolute paths after repository relocation.\n\n7. Add compatibility migration and doctor diagnostics. Existing tasks retain historical evidence; unstarted tasks receive the new route deterministically; ambiguous started tasks fail with typed recovery guidance. Diagnose missing host approval transport before returning an impossible action. Keep legacy manual and signed-receipt flows available as explicit compatibility modes.\n\n8. Add unit, integration, and end-to-end coverage plus user/developer documentation. Prove: one user confirmation drives a code task to logical completion; no trusted issuer is needed for a host-originated local Codex decision; material drift produces one plan amendment; ordinary rework does not; master and typescript tasks run concurrently; prior commits do not enter a new task diff; repository rename recovery succeeds; crash replay does not duplicate effects; and final verification, integration, and cleanup evidence are complete.\n\nCompletion requires bun run typecheck and bun run check to pass, targeted authority/workflow/runner/workspace tests to pass, generated schemas and CLI documentation to be current, an end-to-end one-confirmation scenario to pass, and final Git/task state to contain no unintended artifacts. Stop and request a revised plan only if implementation needs credentials, an additional repository or host product change not representable by the AgentPlane host-event protocol, destructive history rewriting, a new external effect, or weaker verification than this plan.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run check`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "a84dd9e3fb0566a35efdff8222ab20b9dd994bd0",
+  "diff_base_sha": "3e756cba6cfd6619327433c5fc38f6a52e79131d",
+  "blueprint_digest": "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-171753595-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:8a181cd55674c71797fc052903ebe09f37ff9b878bf9a0533e0565636abe94f3",
+    "prompt_path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e108d973bb08b43f9a05123f4389755919a0727c6d264bf20a2a5e66b7cac4ac.md",
+    "result_schema_path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608211020-FGAPJC/README.md",
+      "sha256": "sha256:c4bd339af115e8b036fd60e05dcdbc0b5681fdbc93b86ba079b6f31a0dc18a53",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e6ce6ea85fa07870dc2b50b05956b8906343ad3f0c468af2d02ae5768759d12c.patch",
+      "sha256": "sha256:e6ce6ea85fa07870dc2b50b05956b8906343ad3f0c468af2d02ae5768759d12c",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/0b7ba22fb3beb0105dcb2f8668303d1d3195ace67545d5bb0ca8c0cca186a8b2.json",
+      "sha256": "sha256:0b7ba22fb3beb0105dcb2f8668303d1d3195ace67545d5bb0ca8c0cca186a8b2",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608211020-FGAPJC/verification/20260821171741017-d1d92eb9816e4790.json",
+      "sha256": "sha256:85bfa6b22d5815b15564575fdbdcbcfa9ea764fc17751f8e20a490e1a6a6a72c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9.json",
+      "sha256": "sha256:8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

@@ -13,7 +13,7 @@ export async function recordObservedTaskExecutionContract(opts: {
   observed_external_effects?: readonly TaskExternalEffect[];
   verification_results?: readonly TaskVerificationObservation[];
   preserved_commit?: string;
-}): Promise<{ task: TaskData; escalated: boolean }> {
+}): Promise<{ task: TaskData; escalated: boolean; episodeAuthorityViolations: string[] }> {
   if (!opts.execution.task_ids.includes(opts.task.id)) {
     throw new Error(`Execution context does not authorize task ${opts.task.id}.`);
   }
@@ -25,6 +25,29 @@ export async function recordObservedTaskExecutionContract(opts: {
   const productChangedPaths = opts.changed_paths.filter(
     (changedPath) => !changedPath.replaceAll("\\", "/").startsWith(taskArtifactPrefix),
   );
+
+  const episodeReconciliation = current
+    ? reconcileTaskExecutionContract({
+        contract: {
+          ...current,
+          observed: {
+            repository_effects: [],
+            external_effects: [],
+            changed_paths: [],
+            changed_components: [],
+            verification_results: [],
+            authority_violations: [],
+          },
+        },
+        changed_paths: productChangedPaths,
+        ...(opts.observed_external_effects
+          ? { observed_external_effects: opts.observed_external_effects }
+          : {}),
+        ...(opts.verification_results ? { verification_results: opts.verification_results } : {}),
+      })
+    : null;
+  const episodeAuthorityViolations =
+    episodeReconciliation?.contract.observed.authority_violations ?? [];
 
   const reconciled = current
     ? reconcileTaskExecutionContract({
@@ -50,7 +73,11 @@ export async function recordObservedTaskExecutionContract(opts: {
   const contractChanged =
     reconciled !== null && JSON.stringify(reconciled.contract) !== JSON.stringify(current);
   if (!contractChanged && !implementationCommitChanged) {
-    return { task: opts.task, escalated: reconciled?.escalated ?? false };
+    return {
+      task: opts.task,
+      escalated: reconciled?.escalated ?? false,
+      episodeAuthorityViolations,
+    };
   }
   const blueprintRequest =
     reconciled?.escalated && opts.task.blueprint_request === "code.direct"
@@ -84,6 +111,7 @@ export async function recordObservedTaskExecutionContract(opts: {
   return {
     task: await loadTaskFromContext({ ctx: opts.command, taskId: opts.task.id }),
     escalated: reconciled?.escalated ?? false,
+    episodeAuthorityViolations,
   };
 }
 

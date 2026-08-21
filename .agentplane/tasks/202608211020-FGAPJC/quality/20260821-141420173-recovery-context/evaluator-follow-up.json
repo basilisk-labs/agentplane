@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608211020-FGAPJC-df81d32aef5edc89774342e9",
+  "task_id": "202608211020-FGAPJC",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Make the approved verification command executable without weakening its coverage. Prefer a canonical aggregate check script or deterministic planner selection from existing project scripts, update tests for missing-command prevention, run the exact declared check, and then re-evaluate.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "Required acceptance criteria 4 and 6 and the approved plan explicitly require bun run check to pass.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a66768b4c7553aa79524e3fbceba8db58e93f77f062d8e2e97c9364e1c7b4396.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "Running bun run check at evaluated SHA 6fa8370712de20b54872fd42883fef535aab0ccc exits with Script not found check.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a66768b4c7553aa79524e3fbceba8db58e93f77f062d8e2e97c9364e1c7b4396.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "The repository exposes typecheck, lint:core, format:check, test:fast:ci, checks:run, and other granular checks, but no aggregate check script.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a66768b4c7553aa79524e3fbceba8db58e93f77f062d8e2e97c9364e1c7b4396.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "Because the task explicitly targets impossible AgentPlane actions, silently treating substitute commands as equivalent would violate the approved verification-strength boundary.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a66768b4c7553aa79524e3fbceba8db58e93f77f062d8e2e97c9364e1c7b4396.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "summary": "Residual risk: Leaving the impossible command in the plan would make autonomous supervision loop through rework until its episode budget is exhausted.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a66768b4c7553aa79524e3fbceba8db58e93f77f062d8e2e97c9364e1c7b4396.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-141420173-recovery-context/evaluator-result.json"
+}

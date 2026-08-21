@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202608211020-FGAPJC/implement-task-scoped-autonomous-execution-after",
+  "created_at": "2026-08-21T10:27:11.359Z",
+  "diffstat_sha256": "sha256:ac27ce2293248f75f82d4252e59a8cb2f2b85d8f9e773f560a29af436c91c423",
+  "last_verified_at": "2026-08-21T19:32:03.965Z",
+  "last_verified_diffstat_sha256": "sha256:ac27ce2293248f75f82d4252e59a8cb2f2b85d8f9e773f560a29af436c91c423",
+  "pr_number": 4858,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4858",
+  "pre_merge_closure": {
+    "basis_commit": "bb3193d6d2eb5b4bca14a5f8eef9c3ef645c4056",
+    "branch": "task/202608211020-FGAPJC/implement-task-scoped-autonomous-execution-after",
+    "pr_number": 4858,
+    "recorded_at": "2026-08-21T19:33:27.501Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608211020-FGAPJC",
+  "updated_at": "2026-08-21T11:11:57.023Z",
+  "verify": {
+    "status": "pass"
+  }
+}

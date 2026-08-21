@@ -53,6 +53,10 @@ const LOCAL_VITEST_SUITE_TIMEOUT_MS = parsePositiveIntegerEnv(
 );
 const LOCAL_FAST_VITEST_MAX_WORKERS =
   String(baseEnv.AGENTPLANE_FAST_VITEST_MAX_WORKERS ?? "").trim() || "4";
+const LOCAL_CI_GROUP_CONCURRENCY = parsePositiveIntegerEnv(
+  baseEnv.AGENTPLANE_LOCAL_CI_GROUP_CONCURRENCY,
+  2,
+);
 function parsePositiveIntegerEnv(rawValue, fallback) {
   const value = Number.parseInt(String(rawValue ?? "").trim(), 10);
   return Number.isInteger(value) && value > 0 ? value : fallback;
@@ -473,8 +477,9 @@ async function runFullFastPath() {
     env: groupEnv,
     timeoutMs: LOCAL_VITEST_SUITE_TIMEOUT_MS,
   }));
+  const groupConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, groups.length);
   const result = await runVerificationGroups(groups, {
-    concurrency: Math.min(2, groups.length),
+    concurrency: groupConcurrency,
     cwd: process.cwd(),
     env: baseEnv,
   });
@@ -487,7 +492,7 @@ async function runFullFastPath() {
       wall_clock_ms: Math.round(performance.now() - startedAt),
       selected_groups: groups.length + 1,
       executed_groups: result.results.length + buildResult.results.length,
-      parallel_group_concurrency: 2,
+      parallel_group_concurrency: groupConcurrency,
       build_invocations: 1,
       ok: result.ok,
     })}\n`,

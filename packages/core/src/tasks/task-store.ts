@@ -442,6 +442,7 @@ export type TaskFrontmatter = {
   commit?: { hash: string; message: string } | null;
   dirty?: boolean;
   id_source?: string;
+  extensions?: Record<string, unknown>;
 };
 
 export type TaskRecord = {

@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Required acceptance criteria 4 and 6 and the approved plan explicitly require bun run check to pass.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a66768b4c7553aa79524e3fbceba8db58e93f77f062d8e2e97c9364e1c7b4396.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Running bun run check at evaluated SHA 6fa8370712de20b54872fd42883fef535aab0ccc exits with Script not found check.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a66768b4c7553aa79524e3fbceba8db58e93f77f062d8e2e97c9364e1c7b4396.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The repository exposes typecheck, lint:core, format:check, test:fast:ci, checks:run, and other granular checks, but no aggregate check script.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a66768b4c7553aa79524e3fbceba8db58e93f77f062d8e2e97c9364e1c7b4396.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Because the task explicitly targets impossible AgentPlane actions, silently treating substitute commands as equivalent would violate the approved verification-strength boundary.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a66768b4c7553aa79524e3fbceba8db58e93f77f062d8e2e97c9364e1c7b4396.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Leaving the impossible command in the plan would make autonomous supervision loop through rework until its episode budget is exhausted.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a66768b4c7553aa79524e3fbceba8db58e93f77f062d8e2e97c9364e1c7b4396.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A real repository-supported aggregate verification command satisfying the approved bun run check contract."
+  ],
+  "hidden_assumptions": [
+    "The fallback planner assumed every Bun repository defines a check script without inspecting package.json."
+  ],
+  "recovery_context": "Make the approved verification command executable without weakening its coverage. Prefer a canonical aggregate check script or deterministic planner selection from existing project scripts, update tests for missing-command prevention, run the exact declared check, and then re-evaluate."
+}

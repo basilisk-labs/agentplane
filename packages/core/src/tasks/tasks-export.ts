@@ -490,6 +490,7 @@ export type TasksExportTask = {
   execution_route?: TaskExecutionRoute;
   execution_contract?: TaskExecutionContract;
   sync?: TaskSyncEnvelope;
+  extensions?: Record<string, unknown>;
   depends_on: string[];
   tags: string[];
   verify: string[];
@@ -646,6 +647,7 @@ export async function buildTasksExportSnapshot(opts: {
       execution_route: t.frontmatter.execution_route,
       execution_contract: t.frontmatter.execution_contract,
       sync: normalizeTaskSyncEnvelope(fm.sync),
+      extensions: isRecord(fm.extensions) ? fm.extensions : undefined,
       depends_on: dependsOn,
       tags,
       verify,

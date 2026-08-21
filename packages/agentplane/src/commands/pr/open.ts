@@ -89,6 +89,7 @@ export async function cmdPrOpen(opts: {
       includeTaskIds: opts.includeTaskIds,
       remoteMode: "sync-only",
       workflowMode,
+      base: taskCommand.execution.base_ref,
     });
     if (initialSync.meta.branch) {
       await maybeAutoCommitTaskPrArtifacts({
@@ -132,6 +133,7 @@ export async function cmdPrOpen(opts: {
           includeTaskIds: opts.includeTaskIds,
           remoteMode: "auto",
           workflowMode,
+          base: taskCommand.execution.base_ref,
         });
 
     if (!opts.quiet) {

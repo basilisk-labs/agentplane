@@ -56,6 +56,7 @@ function taskReadme(opts: {
   status: "TODO" | "DOING" | "DONE";
   revision: number;
   title?: string;
+  startHeadSha?: string;
 }): string {
   const started = opts.status !== "TODO";
   const completed = opts.status === "DONE";
@@ -136,7 +137,12 @@ function taskReadme(opts: {
       doc_updated_by: started ? "CODER" : "ORCHESTRATOR",
       description: "Exercise guarded removal of a stale foreign lifecycle replica.",
       extensions: started
-        ? { workflow_route_baseline: { version: 1, start_head_sha: "abcdef123456" } }
+        ? {
+            workflow_route_baseline: {
+              version: 1,
+              start_head_sha: opts.startHeadSha ?? "abcdef123456",
+            },
+          }
         : undefined,
       id_source: "generated",
     },
@@ -195,6 +201,7 @@ async function createFixture(mode: ReplicaMode): Promise<{
   await runCliSilent(["branch", "base", "set", "main", "--root", baseRoot]);
   await git(baseRoot, ["add", ".agentplane"]);
   await git(baseRoot, ["commit", "--no-verify", "-m", "test: configure guarded repair fixture"]);
+  const startHeadSha = await gitOutput(baseRoot, ["rev-parse", "main"]);
 
   const worktreeRoot = path.join(baseRoot, ".agentplane", "worktrees");
   const targetWorktree = path.join(worktreeRoot, "target");
@@ -227,7 +234,12 @@ async function createFixture(mode: ReplicaMode): Promise<{
   await mkdir(path.dirname(activeReadmePath), { recursive: true });
   await writeFile(
     activeReadmePath,
-    taskReadme({ taskId: ACTIVE_TASK_ID, status: "DOING", revision: 7 }),
+    taskReadme({
+      taskId: ACTIVE_TASK_ID,
+      status: "DOING",
+      revision: 7,
+      startHeadSha,
+    }),
     "utf8",
   );
   await git(targetWorktree, ["add", path.relative(targetWorktree, activeReadmePath)]);

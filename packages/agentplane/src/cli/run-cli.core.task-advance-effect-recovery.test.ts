@@ -4,8 +4,10 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import {
+  advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
   recoverSupervisorExecutionEpisodeJournal,
+  startSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,
   type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
@@ -334,6 +336,159 @@ describe("task advance effect recovery", () => {
       expect(lateResult.stderr).toContain("exchange was retired after state drift");
     } finally {
       lateResult.restore();
+    }
+  });
+
+  it("recovers an interrupted formal verification before issuing the next agent episode", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root);
+    const issued = await readAgentPacket(root, taskId);
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    let journal = validateSupervisorExecutionEpisodeJournal(await store.read());
+    const issuedOperation = journal.operations.at(-1);
+    expect(issuedOperation?.status).toBe("intent");
+    journal = completeSupervisorExecutionEpisode({
+      journal,
+      operation_key: issuedOperation!.operation_key,
+      result: { test_setup: "planning_episode_completed" },
+    });
+    journal = advanceSupervisorExecutionEpisodeState({
+      journal,
+      state_fingerprint_digest: issued.state_fingerprint,
+      route_observation: { test_setup: "ready_for_formal_operation" },
+    });
+    const formal = startSupervisorExecutionEpisode({
+      journal,
+      role: "EXECUTOR",
+      kind: "cli_operation",
+      operation_identity: { direct_task_operation: "task_verify" },
+      precondition_fingerprint_digest: issued.state_fingerprint,
+      authority_ref: "direct-task-supervisor:task_verify",
+      authority_digest: issued.state_fingerprint,
+      effect_ref: "task_verify",
+    });
+    expect(formal.status).toBe("started");
+    if (formal.status !== "started") throw new Error("formal verification setup failed");
+    await store.write(formal.journal);
+
+    await runCliSilent([
+      "task",
+      "comment",
+      taskId,
+      "--author",
+      "TESTER",
+      "--body",
+      "State changed while verification was interrupted.",
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    try {
+      expect(
+        await runCli(["task", "advance", taskId, "--agent-json", "--root", root]),
+        io.stderr,
+      ).toBe(0);
+      expect(JSON.parse(io.stdout)).toMatchObject({ action: { kind: "agent_episode" } });
+    } finally {
+      io.restore();
+    }
+    const recovered = validateSupervisorExecutionEpisodeJournal(await store.read());
+    expect(recovered).toMatchObject({
+      status: "running",
+      cursor: { phase: "intent_recorded" },
+      operations: [
+        { status: "completed" },
+        { status: "failed", effect_ref: "task_verify" },
+        {
+          status: "intent",
+          replacement_of_operation_key: formal.operation_key,
+        },
+      ],
+    });
+  });
+
+  it("reconciles a retired exchange whose journal intent survived interruption", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root);
+    const issued = await readAgentPacket(root, taskId);
+    if (!issued.exchange) throw new Error("expected an external-agent exchange");
+
+    await runCliSilent([
+      "task",
+      "comment",
+      taskId,
+      "--author",
+      "TESTER",
+      "--body",
+      "Drift after the exchange was issued.",
+      "--root",
+      root,
+    ]);
+    const fingerprint = await readRouteFingerprint(root, taskId);
+    expect(fingerprint).not.toBe(issued.state_fingerprint);
+
+    const exchangePath = path.join(issued.exchange.directory, "exchange.json");
+    const exchange = JSON.parse(await readFile(exchangePath, "utf8")) as ExternalAgentExchange;
+    await writeFile(
+      exchangePath,
+      `${JSON.stringify(
+        {
+          ...exchange,
+          status: "retired",
+          postcondition_fingerprint: fingerprint,
+          updated_at: new Date().toISOString(),
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    const interrupted = captureStdIO();
+    try {
+      expect(await runCli(["task", "advance", taskId, "--agent-json", "--root", root])).not.toBe(0);
+      expect(interrupted.stderr).toContain(
+        "reconciled a retired external-agent exchange with its unresolved journal intent",
+      );
+      expect(interrupted.stderr).toContain("--replacement");
+    } finally {
+      interrupted.restore();
+    }
+
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    const retiredJournal = validateSupervisorExecutionEpisodeJournal(await store.read());
+    expect(retiredJournal).toMatchObject({
+      status: "stopped",
+      stop: { reason: "operation_failed" },
+      operations: [expect.objectContaining({ status: "failed" })],
+    });
+
+    const replacement = captureStdIO();
+    try {
+      expect(
+        await runCli(["task", "advance", taskId, "--replacement", "--agent-json", "--root", root]),
+        replacement.stderr,
+      ).toBe(0);
+      expect(JSON.parse(replacement.stdout)).toMatchObject({
+        action: { kind: "agent_episode" },
+      });
+    } finally {
+      replacement.restore();
     }
   });
 

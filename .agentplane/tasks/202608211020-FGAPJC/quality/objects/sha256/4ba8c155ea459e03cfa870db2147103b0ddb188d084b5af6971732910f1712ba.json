@@ -1,0 +1,253 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run check",
+    "bun run typecheck"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "documentation",
+        "public_api",
+        "repository_write",
+        "schema",
+        "security_boundary",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "docs/developer",
+        "docs/recipes",
+        "docs/user",
+        "packages/agentplane/assets",
+        "packages/agentplane/src/cli",
+        "packages/agentplane/src/commands/branch",
+        "packages/agentplane/src/commands/doctor",
+        "packages/agentplane/src/commands/pr",
+        "packages/agentplane/src/commands/shared",
+        "packages/agentplane/src/commands/task",
+        "packages/agentplane/src/runner",
+        "packages/agentplane/src/runtime",
+        "packages/core/schemas",
+        "packages/core/src/config",
+        "packages/core/src/tasks",
+        "scripts/baselines/v0.7-compatibility-candidate.json",
+        "scripts/checks/check-compatibility-contract-baseline.mjs",
+        "website/static/llms-full.txt"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:documentation",
+        "repository_effect:public_api",
+        "repository_effect:repository_write",
+        "repository_effect:schema",
+        "repository_effect:security_boundary",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "docs",
+        "packages/agentplane",
+        "packages/core",
+        "scripts",
+        "website"
+      ],
+      "changed_files": [
+        "docs/developer/task-execution-authority.mdx",
+        "docs/user/branching-and-pr-artifacts.mdx",
+        "docs/user/cli-reference.generated.mdx",
+        "docs/user/task-lifecycle.mdx",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "packages/agentplane/src/commands/branch/work-start.command.ts",
+        "packages/agentplane/src/commands/branch/work-start.ts",
+        "packages/agentplane/src/commands/doctor/authority.test.ts",
+        "packages/agentplane/src/commands/doctor/authority.ts",
+        "packages/agentplane/src/commands/doctor/runtime.ts",
+        "packages/agentplane/src/commands/pr/internal/sync.ts",
+        "packages/agentplane/src/commands/pr/open.ts",
+        "packages/agentplane/src/commands/pr/update.ts",
+        "packages/agentplane/src/commands/shared/side-effect-authority.test.ts",
+        "packages/agentplane/src/commands/shared/side-effect-authority.ts",
+        "packages/agentplane/src/commands/shared/task-backend.ts",
+        "packages/agentplane/src/commands/task/advance.command.ts",
+        "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
+        "packages/agentplane/src/commands/task/agent-action-packet.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-usage.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor.autonomy.test.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor.ts",
+        "packages/agentplane/src/commands/task/configured-authority.test.ts",
+        "packages/agentplane/src/commands/task/configured-authority.ts",
+        "packages/agentplane/src/commands/task/create.command.ts",
+        "packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        "packages/agentplane/src/commands/task/direct-task-verification.ts",
+        "packages/agentplane/src/commands/task/execution-authority-context.test.ts",
+        "packages/agentplane/src/commands/task/execution-authority-context.ts",
+        "packages/agentplane/src/commands/task/new.primary-checkout.test.ts",
+        "packages/agentplane/src/commands/task/new.ts",
+        "packages/agentplane/src/commands/task/plan-approve.command.ts",
+        "packages/agentplane/src/commands/task/plan.ts",
+        "packages/agentplane/src/commands/task/verify-record-execute.ts",
+        "packages/agentplane/src/runtime/task-execution-context/resolve.test.ts",
+        "packages/agentplane/src/runtime/task-execution-context/resolve.ts",
+        "packages/agentplane/src/runtime/workspace-allocation/allocate.ts",
+        "packages/agentplane/src/runtime/workspace-allocation/rediscover.test.ts",
+        "packages/agentplane/src/runtime/workspace-allocation/rediscover.ts",
+        "packages/core/src/tasks/index.ts",
+        "packages/core/src/tasks/plan-execution-grant.test.ts",
+        "packages/core/src/tasks/plan-execution-grant.ts",
+        "packages/core/src/tasks/task-execution-base.ts",
+        "packages/core/src/tasks/task-store.ts",
+        "packages/core/src/tasks/tasks-export.ts",
+        "scripts/baselines/v0.7-compatibility-candidate.json",
+        "scripts/checks/check-compatibility-contract-baseline.mjs",
+        "website/static/llms-full.txt"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/core/schemas",
+      "central_component:packages/core/src/config",
+      "central_component:packages/core/src/tasks",
+      "central_component:scripts/checks/check-compatibility-contract-baseline.mjs",
+      "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/side-effect-authority.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/side-effect-authority.ts",
+      "central_path:packages/agentplane/src/commands/shared/task-backend.ts",
+      "central_path:packages/core/src/tasks/index.ts",
+      "central_path:packages/core/src/tasks/plan-execution-grant.test.ts",
+      "central_path:packages/core/src/tasks/plan-execution-grant.ts",
+      "central_path:packages/core/src/tasks/task-execution-base.ts",
+      "central_path:packages/core/src/tasks/task-store.ts",
+      "central_path:packages/core/src/tasks/tasks-export.ts",
+      "central_path:scripts/checks/check-compatibility-contract-baseline.mjs",
+      "effect_public_api",
+      "effect_schema",
+      "effect_security_boundary",
+      "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:e8f1746ad420aa17215badfc63a51faf4dc666ad9aa3c15a3f85156d3e1abe25"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-21T13:43:07.664Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608211020-FGAPJC/verification/20260821134307664-6303fafd2510b88e.json",
+      "sha256": "sha256:a443c7a4c25d5d6d95b77b8f8f48a1b20cc582a19143787b310ee3c9e72fda1a"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 05926076a6ec9d15fdbb3aee20c9be0ae5b964a6..5a68dd0ebe6f6a3377efd4e22ab93fb49258a973",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 05926076a6ec9d15fdbb3aee20c9be0ae5b964a6..5a68dd0ebe6f6a3377efd4e22ab93fb49258a973",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\tpackages/core/src/tasks/plan-execution-grant.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "05926076a6ec9d15fdbb3aee20c9be0ae5b964a6",
+    "implementation_commit": "5a68dd0ebe6f6a3377efd4e22ab93fb49258a973",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608211020-FGAPJC",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

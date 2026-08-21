@@ -59,6 +59,7 @@ vi.mock("@agentplaneorg/core/git", async () => {
     ...actual,
     gitEnv: () => ({}),
     gitRevParse: vi.fn().mockResolvedValue(".git"),
+    gitCurrentBranch: mocks.gitCurrentBranch,
     resolveBaseBranch: mocks.resolveBaseBranch,
   };
 });
@@ -116,7 +117,6 @@ function mkTask(overrides: Partial<TaskData>): TaskData {
 
 function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
   const config = defaultConfig();
-  // Match the repo's current config defaults: verification is not required at runtime unless enabled.
   config.agents = {
     approvals: { require_plan: false, require_network: true, require_verify: false },
   };

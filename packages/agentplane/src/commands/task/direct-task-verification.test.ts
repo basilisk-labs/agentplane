@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -94,6 +94,45 @@ afterEach(async () => {
 });
 
 describe("direct task verification", () => {
+  it("replaces a missing package script only for a planner fallback scaffold", async () => {
+    const repo = await root();
+    await writeFile(
+      path.join(repo, "package.json"),
+      JSON.stringify({
+        scripts: {
+          "test:critical": "vitest run critical",
+          "test:fast": "vitest run",
+          typecheck: "tsc --noEmit",
+        },
+      }),
+      "utf8",
+    );
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "1 pass", stderr: "" });
+
+    const result = await runDirectTaskVerification({
+      command: command(repo),
+      task: {
+        verify: ["bun run check", "bun run typecheck"],
+        task_kind: "code",
+        mutation_scope: "code",
+        sections: { "Verify Steps": "PLANNER fallback scaffold. Replace this." },
+      },
+      task_id: TASK_ID,
+      cwd: repo,
+      run_process: mocks.runProcess,
+    });
+
+    expect(result.status).toBe("passed");
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ command: "bun", args: ["run", "test:critical"] }),
+    );
+    expect(result.checks[0]).toMatchObject({
+      command: "bun run test:critical",
+      declared_command: "bun run check",
+    });
+  });
+
   it("accepts project-native repository-bound argv without shell syntax", () => {
     expect(parseDirectTaskCheck(" bun run test:critical ")).toEqual({
       executable: "bun",
@@ -273,6 +312,54 @@ describe("direct task verification", () => {
         { command: "bun run test:critical", exit_code: 0 },
         { command: "bun run lifecycle:invariants", exit_code: 0 },
       ],
+    });
+  });
+
+  it("keeps passed evidence stable across equivalent reruns but rewrites changed outcomes", async () => {
+    const cwd = await root();
+    mocks.runProcess
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "first timing: 10ms", stderr: "" })
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "second timing: 20ms", stderr: "" })
+      .mockResolvedValueOnce({ exitCode: 1, stdout: "", stderr: "changed failure" });
+    const task = {
+      verify: ["bun run test:critical"],
+      task_kind: "code" as const,
+      mutation_scope: "code" as const,
+    };
+
+    const first = await runDirectTaskVerification({
+      command: command(cwd),
+      task,
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+    const artifactPath = path.join(cwd, first.artifact_path);
+    const firstArtifact = await readFile(artifactPath, "utf8");
+
+    const second = await runDirectTaskVerification({
+      command: command(cwd),
+      task,
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+    expect(second.checks[0]?.stdout_tail).toBe("second timing: 20ms");
+    expect(await readFile(artifactPath, "utf8")).toBe(firstArtifact);
+
+    const failed = await runDirectTaskVerification({
+      command: command(cwd),
+      task,
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+    expect(failed.status).toBe("failed");
+    expect(await readFile(artifactPath, "utf8")).not.toBe(firstArtifact);
+    expect(JSON.parse(await readFile(artifactPath, "utf8"))).toMatchObject({
+      status: "failed",
+      reason: "Declared check failed: bun run test:critical",
+      checks: [{ exit_code: 1, stderr_tail: "changed failure" }],
     });
   });
 

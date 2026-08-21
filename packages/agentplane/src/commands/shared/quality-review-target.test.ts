@@ -499,6 +499,98 @@ describe("quality review target resolver", () => {
     await expect(resolveTarget({ root, taskId, baseRef: baseBranch })).resolves.toBeNull();
   });
 
+  it("preserves a previous review across a base-sync merge and later managed artifacts", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-REVIEWED-BASE-SYNC";
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      taskReadme({ taskId, revision: 1 }),
+      "docs: establish task state",
+    );
+    const { stdout: baseBranchOutput } = await execFileAsync("git", ["branch", "--show-current"], {
+      cwd: root,
+    });
+    const baseBranch = baseBranchOutput.trim();
+    await execFileAsync("git", ["checkout", "-b", "task/reviewed-base-sync"], { cwd: root });
+    const reviewedSha = await commitPath(
+      root,
+      "src/reviewed-base-sync.ts",
+      "export const reviewed = true;\n",
+      "feat: implement reviewed task",
+    );
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/quality/prior/quality-report.json`,
+      "{}\n",
+      "test: record managed evaluator artifact",
+    );
+    await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
+    await commitPath(
+      root,
+      ".agentplane/tasks/202607240736-OTHER/README.md",
+      "unrelated base task state\n",
+      "docs: advance unrelated base task",
+    );
+    await execFileAsync("git", ["checkout", "task/reviewed-base-sync"], { cwd: root });
+    await execFileAsync("git", ["merge", "--no-ff", baseBranch, "-m", "merge: sync base"], {
+      cwd: root,
+    });
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/verification/latest.json`,
+      "{}\n",
+      "test: record managed verification artifact",
+    );
+
+    await expect(
+      resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha, baseRef: baseBranch }),
+    ).resolves.toBe(reviewedSha);
+  });
+
+  it("detects task implementation added after a previous review and before a base-sync merge", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-CHANGED-BASE-SYNC";
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      taskReadme({ taskId, revision: 1 }),
+      "docs: establish task state",
+    );
+    const { stdout: baseBranchOutput } = await execFileAsync("git", ["branch", "--show-current"], {
+      cwd: root,
+    });
+    const baseBranch = baseBranchOutput.trim();
+    await execFileAsync("git", ["checkout", "-b", "task/changed-base-sync"], { cwd: root });
+    const reviewedSha = await commitPath(
+      root,
+      "src/changed-base-sync.ts",
+      "export const value = 1;\n",
+      "feat: add reviewed implementation",
+    );
+    const changedSha = await commitPath(
+      root,
+      "src/changed-base-sync.ts",
+      "export const value = 2;\n",
+      "fix: change implementation after review",
+    );
+    await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
+    await commitPath(
+      root,
+      ".agentplane/tasks/202607240736-OTHER/README.md",
+      "unrelated base task state\n",
+      "docs: advance unrelated base task",
+    );
+    await execFileAsync("git", ["checkout", "task/changed-base-sync"], { cwd: root });
+    await execFileAsync("git", ["merge", "--no-ff", baseBranch, "-m", "merge: sync base"], {
+      cwd: root,
+    });
+
+    await expect(
+      resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha, baseRef: baseBranch }),
+    ).resolves.toBe(changedSha);
+  });
+
   it("does not treat a non-base merge as a base-sync work unit", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202607240736-NON-BASE-MERGE";

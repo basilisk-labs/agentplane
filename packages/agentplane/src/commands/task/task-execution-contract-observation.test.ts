@@ -245,4 +245,79 @@ describe("task execution contract observation", () => {
     expect(result.task).toBe(task);
     expect(writeTask).not.toHaveBeenCalled();
   });
+
+  it("evaluates episode authority without re-blocking on inherited base observations", async () => {
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    const executionContract = resolveTaskExecutionContract({
+      config,
+      task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
+      requestedMode: "branch_pr",
+      declaration: {
+        schema_version: 1,
+        preferred_mode: "branch_pr",
+        scope_roots: ["packages/core"],
+        repository_effects: ["repository_write", "source_code", "tests"],
+        external_effects: [],
+        uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["bounded core change"],
+      },
+    });
+    executionContract.observed.changed_paths = [".agentplane/tasks/OTHER/README.md"];
+    executionContract.observed.authority_violations = [
+      "writable_scope:.agentplane/tasks/OTHER/README.md",
+    ];
+    const task = {
+      id: "202608210000-BASESYNC",
+      title: "Base sync observation fixture",
+      description: "Do not attribute inherited base artifacts to the current episode.",
+      status: "DOING",
+      priority: "med",
+      owner: "CODER",
+      revision: 6,
+      depends_on: [],
+      tags: [],
+      verify: [],
+      task_kind: "code",
+      mutation_scope: "code",
+      execution_contract: executionContract,
+    } satisfies TaskData;
+    let persistedTask: TaskData | null = null;
+    const command = {
+      config,
+      backendId: "local",
+      resolvedProject: { gitRoot: "/repo" },
+      taskBackend: {
+        writeTask: (nextTask: TaskData) => {
+          persistedTask = nextTask;
+          return Promise.resolve();
+        },
+        getTask: () => Promise.resolve(persistedTask),
+      },
+    } as unknown as CommandContext;
+
+    const allowed = await recordObservedTaskExecutionContract({
+      command,
+      execution: executionFor(task),
+      task,
+      changed_paths: ["packages/core/src/tasks/plan-execution-grant.test.ts"],
+      preserved_commit: "allowed-sha",
+    });
+    expect(allowed.episodeAuthorityViolations).toEqual([]);
+    expect(allowed.task.execution_contract?.observed.authority_violations).toContain(
+      "writable_scope:.agentplane/tasks/OTHER/README.md",
+    );
+
+    const forbidden = await recordObservedTaskExecutionContract({
+      command,
+      execution: executionFor(allowed.task),
+      task: allowed.task,
+      changed_paths: ["packages/outside/new.ts"],
+      preserved_commit: "forbidden-sha",
+    });
+    expect(forbidden.episodeAuthorityViolations).toContain(
+      "writable_scope:packages/outside/new.ts",
+    );
+  });
 });

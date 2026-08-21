@@ -1,6 +1,13 @@
 import path from "node:path";
-import { setMarkdownSection, withTaskReadmeTransaction } from "@agentplaneorg/core/tasks";
+import {
+  createTaskExecutionBaseIdentity,
+  setMarkdownSection,
+  TASK_EXECUTION_CONTEXT_EXTENSION_KEY,
+  taskExecutionBaseFromExtensions,
+  withTaskReadmeTransaction,
+} from "@agentplaneorg/core/tasks";
 import type { TaskExecutionRouteRequest } from "@agentplaneorg/core/tasks";
+import { gitCurrentBranch, gitRevParse } from "@agentplaneorg/core/git";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, warnMessage } from "../../cli/output.js";
@@ -33,6 +40,7 @@ import {
   resolvePrimaryTag,
   warnIfUnknownOwner,
 } from "./shared.js";
+import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 import {
   buildDefaultVerifyStepsSection,
   defaultTaskDocV3,
@@ -200,6 +208,29 @@ export async function runTaskNewParsed(opts: {
     );
     return await withTaskReadmeTransaction(creationLockPath, async () => {
       await ctx.taskBackend.assertLocalMutationReady?.();
+      const creationHead = await gitRevParse(ctx.resolvedProject.gitRoot, ["HEAD^{commit}"]).catch(
+        () => null,
+      );
+      const creationBranch = creationHead
+        ? await gitCurrentBranch(ctx.resolvedProject.gitRoot).catch(() => null)
+        : null;
+      const repositoryIdentity = await resolveLogicalRepositoryIdentity({
+        git_root: ctx.resolvedProject.gitRoot,
+        task: {},
+      });
+      const extensions = taskExecutionBaseFromExtensions(p.extensions)
+        ? p.extensions
+        : creationHead && creationBranch
+          ? {
+              ...(p.extensions ?? {}),
+              [TASK_EXECUTION_CONTEXT_EXTENSION_KEY]: createTaskExecutionBaseIdentity({
+                base_ref: creationBranch,
+                base_sha: creationHead,
+                source: "creation_checkout",
+                repository_identity: repositoryIdentity,
+              }),
+            }
+          : p.extensions;
       const duplicateTasks = listOpenTaskDuplicates(await ctx.taskBackend.listTasks(), p.title);
       const exactDuplicateTasks = duplicateTasks.filter((match) => match.severity === "exact");
       if (exactDuplicateTasks.length > 0 && !p.allowDuplicate) {
@@ -330,7 +361,7 @@ export async function runTaskNewParsed(opts: {
               task: routeTask,
             }),
             execution_contract: executionContract,
-            ...(p.extensions ? { extensions: p.extensions } : {}),
+            ...(extensions ? { extensions } : {}),
             depends_on: p.dependsOn,
             verify: p.verify,
             doc: taskDoc,

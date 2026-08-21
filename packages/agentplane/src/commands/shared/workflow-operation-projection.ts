@@ -1,4 +1,5 @@
 import { WORKFLOW_OPERATION_ARGV_PREFIX } from "./workflow-operation-prefix.js";
+import { workflowAuthorityStateScopeDigest } from "./side-effect-authority.js";
 import type { WorkflowOperation } from "./workflow-step.js";
 
 const SHELL_SINGLE_QUOTE_ESCAPE = `'"'"'`;
@@ -153,8 +154,8 @@ function operationArgv(operation: WorkflowOperation): string[] {
         ...operation.params.repositoryEffects.flatMap((effect) => ["--repository-effect", effect]),
         "--request-digest",
         operation.params.requestDigest,
-        "--state-fingerprint",
-        operation.preconditionFingerprint.digest,
+        "--state-scope-digest",
+        workflowAuthorityStateScopeDigest(operation.preconditionFingerprint, operation.id),
         "--by",
         "USER",
       ];

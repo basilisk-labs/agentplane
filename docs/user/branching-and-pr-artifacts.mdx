@@ -25,6 +25,25 @@ Configured in `.agentplane/WORKFLOW.md`.
 - Local `agentplane pr ...` commands manage tracked review artifacts and, unless `--sync-only` is
   used, publish or update the corresponding GitHub PR or GitLab MR.
 
+## Long-lived development branches
+
+A task base is task-local. `agentplane task create` freezes the current branch name and exact commit
+as that task's execution base. The branch does not need to be `main`, `master`, or an AgentPlane task
+branch. A long-lived branch such as `typescript` can therefore contain earlier work while each new
+task receives its own isolated branch/worktree based on the selected `typescript` commit.
+
+Use `--base <branch-or-ref>` during `task create` to select a different base explicitly. AgentPlane
+stores both the ref and resolved commit. Worktree creation, diff ownership, PR target, and integration
+use that frozen identity instead of the repository-wide default branch. Moving or renaming the
+repository directory does not change the identity; absolute workspace paths remain runtime-only.
+If Git still contains a linked-worktree registration under the old repository path, AgentPlane
+reconstructs the candidate from its `.agentplane/worktrees` or `.agentplane/workspaces` tail and
+uses `git worktree repair` before resuming the task.
+
+If the base branch advances after task creation, the task remains reproducible from its frozen
+commit. Rebase or conflict recovery must be an explicit lifecycle action; AgentPlane does not
+silently reinterpret the approved plan against a different base.
+
 ## Task Branches and Worktrees
 
 - Task branch naming: `<task-prefix>/<task-id>/<slug>`; default `task/<task-id>/<slug>`

@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
-import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+import { canonicalizeJson, taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, infoMessage, successMessage } from "../../cli/output.js";
@@ -376,6 +376,8 @@ async function recordVerificationResult(opts: {
                 schema_version: 1,
                 base_ref: verificationExecutionContext.base_ref,
                 base_sha: verificationExecutionContext.base_sha,
+                repository_identity:
+                  taskExecutionBaseFromExtensions(current.extensions)?.repository_identity ?? null,
               },
             },
           }),

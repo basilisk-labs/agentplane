@@ -1,0 +1,112 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks\nScope: branch_pr task 202608211020-FGAPJC Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks\nScope: branch_pr task 202608211020-FGAPJC Verification Contract check critical_paths\n\nCheck: docs_contract\nCommand: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks\nScope: branch_pr task 202608211020-FGAPJC Verification Contract check docs_contract\n\nCheck: full_regression\nCommand: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks\nScope: branch_pr task 202608211020-FGAPJC Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks\nScope: branch_pr task 202608211020-FGAPJC Verification Contract check hosted_integration\n\nCheck: task_outcome\nCommand: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks\nScope: branch_pr task 202608211020-FGAPJC Verification Contract check task_outcome",
+  "digest": "sha256:b90640d358358fd9c55a6c010e917f9b80eed0a6bc1091d4dc874846bf401639",
+  "implementation_sha": "0a339f786ae5602d7c378c9844e8e36ddafa3931",
+  "input": {
+    "context": {
+      "digest": "sha256:c604a3866814dba57d1e8b75bf0340937981e8280dda0ec9356a7987f4282f36",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:945dd9634e5f03f94a5198f2148d1a5c84450b541ff7f1aeb350eb7f9b3c52a8",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:236fc7e2e9bc8669dfdf272c452c3af783211d52b22a24543105386e0c358605",
+      "digest": "sha256:26ed44b2883651461382ef3f1846a717e5cc19a8a4146aa52b3b7cb678e04805",
+      "references": [
+        {
+          "digest": "sha256:facd804eebd88d8213a9750ca9345370e2445709b960e41abc8e8dcc8bfd122b",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "3e756cba6cfd6619327433c5fc38f6a52e79131d",
+      "digest": "sha256:9c979c0eeacedc72d3e13168d4ba9579a4bae72a8f786e0975a803fe2ed243e2",
+      "primary_task_id": "202608211020-FGAPJC",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_public_api",
+        "effect_schema",
+        "effect_security_boundary",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608211020-FGAPJC"
+      ]
+    },
+    "implementation": {
+      "base_sha": "3e756cba6cfd6619327433c5fc38f6a52e79131d",
+      "digest": "sha256:4e24410496b92332baed6ec5f37a6015e8d45e310d4037ba9e9ef8eeb2c4e670",
+      "strategy": "branch_diff",
+      "target_sha": "0a339f786ae5602d7c378c9844e8e36ddafa3931"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:e8f1746ad420aa17215badfc63a51faf4dc666ad9aa3c15a3f85156d3e1abe25",
+    "verify_steps_digest": "sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-21T13:34:47.125Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run check`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c",
+  "task_id": "202608211020-FGAPJC",
+  "verification_command": "agentplane verify 202608211020-FGAPJC --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

@@ -61,6 +61,38 @@ export {
 export { generateTaskId, TASK_ID_ALPHABET, timestampIdPrefix } from "./task-id.js";
 
 export {
+  EXECUTION_GRANT_EXTENSION_KEY,
+  computeExecutionScopeDigest,
+  computeLogicalCompletionContractDigest,
+  computePlanDigest,
+  createExecutionGrant,
+  createOperationLease,
+  createPlanProposal,
+  executionGrantDigest,
+  executionGrantFromExtensions,
+  executionGrantForContextFromExtensions,
+  hostUserDecisionDigest,
+  isExecutionGrantActive,
+  normalizePlanText,
+  parseExecutionGrant,
+  parseHostUserDecision,
+  parseOperationLease,
+  parsePlanProposal,
+  type ExecutionGrant,
+  type ExecutionGrantCapability,
+  type HostUserDecision,
+  type OperationLease,
+  type PlanApprovalEvidenceKind,
+  type PlanProposal,
+} from "./plan-execution-grant.js";
+export {
+  TASK_EXECUTION_CONTEXT_EXTENSION_KEY,
+  createTaskExecutionBaseIdentity,
+  taskExecutionBaseFromExtensions,
+  type TaskExecutionBaseIdentity,
+} from "./task-execution-base.js";
+
+export {
   componentForVerificationPath,
   computeVerificationContractKernel,
   computeLegacyVerificationContractKernel,

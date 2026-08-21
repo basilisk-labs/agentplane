@@ -1,0 +1,104 @@
+{
+  "details": "Provider evidence: PR #4858 threads discussion_r3829740473 and discussion_r3829740480. Scope is repository-fixable and remains within the approved execution contract.",
+  "digest": "sha256:b581a6b9e360bc32b07c853ab16ab7b1fd2506223d6a0aa2e147cfe5a379ef93",
+  "implementation_sha": "a84dd9e3fb0566a35efdff8222ab20b9dd994bd0",
+  "input": {
+    "context": {
+      "digest": "sha256:c604a3866814dba57d1e8b75bf0340937981e8280dda0ec9356a7987f4282f36",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:1e8d3d7e3beca05d38c58283b46922070d7cdd67ef291c01d930dbc7a54a9c30",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:f276d4e46340faac4ac2d98a3993e75036b81156ef422a2de3a95f20063ba7ab",
+      "digest": "sha256:c0502a77359b64b392e415e575f7d7865d75e00af2c214b599be9a174b87b6f2",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "3e756cba6cfd6619327433c5fc38f6a52e79131d",
+      "digest": "sha256:9c979c0eeacedc72d3e13168d4ba9579a4bae72a8f786e0975a803fe2ed243e2",
+      "primary_task_id": "202608211020-FGAPJC",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_public_api",
+        "effect_schema",
+        "effect_security_boundary",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608211020-FGAPJC"
+      ]
+    },
+    "implementation": {
+      "base_sha": "3e756cba6cfd6619327433c5fc38f6a52e79131d",
+      "digest": "sha256:9146b036c0cf0c0e79b6a7468e3935caf00dcbc7b203845f00405e0d76b68777",
+      "strategy": "branch_diff",
+      "target_sha": "a84dd9e3fb0566a35efdff8222ab20b9dd994bd0"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:65aeb12bc67555a459b18479156fc62a36437d7f004657645eba1c84c000a449",
+    "verify_steps_digest": "sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: address unresolved PR review threads for frozen task base routing and detached-HEAD task creation.",
+  "recorded_at": "2026-08-21T17:45:57.634Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run check`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c",
+  "task_id": "202608211020-FGAPJC",
+  "verification_command": "agentplane task verify rework 202608211020-FGAPJC --rework --by TESTER",
+  "verifier": "TESTER"
+}

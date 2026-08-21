@@ -2,13 +2,18 @@ import path from "node:path";
 import { realpath } from "node:fs/promises";
 
 import {
-  findWorktreeForBranch,
+  gitEnv,
   gitBranchExists,
   gitCurrentBranch,
   gitRevParse,
   resolveBaseBranch,
 } from "@agentplaneorg/core/git";
-import type { TaskExecutionRouteMode, TaskExecutionRouteRequest } from "@agentplaneorg/core/tasks";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import {
+  taskExecutionBaseFromExtensions,
+  type TaskExecutionRouteMode,
+  type TaskExecutionRouteRequest,
+} from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import {
@@ -25,6 +30,7 @@ import type {
   TaskExecutionRequestedMode,
   TaskExecutionRouteSource,
 } from "./types.js";
+import { findRelocatableWorktreeForBranch } from "../workspace-allocation/rediscover.js";
 
 type FrozenBaseIdentity = Readonly<{ base_ref: string; base_sha: string }>;
 
@@ -103,15 +109,61 @@ function nonEmptyString(value: unknown): string | null {
 }
 
 function frozenBaseFromTask(task: TaskData): FrozenBaseIdentity | { base_sha: string } | null {
+  const executionBase = taskExecutionBaseFromExtensions(task.extensions);
+  if (executionBase) {
+    return { base_ref: executionBase.base_ref, base_sha: executionBase.base_sha };
+  }
   const extensions = record(task.extensions);
-  const stored = record(extensions?.task_execution_context);
-  const storedRef = nonEmptyString(stored?.base_ref);
-  const storedSha = nonEmptyString(stored?.base_sha);
-  if (storedRef && storedSha) return { base_ref: storedRef, base_sha: storedSha };
-
   const baseline = record(extensions?.workflow_route_baseline);
   const startSha = nonEmptyString(baseline?.start_head_sha);
   return startSha ? { base_sha: startSha } : null;
+}
+
+export function selectLegacyBaseRef(opts: {
+  candidates: readonly string[];
+  exact_candidates: readonly string[];
+  current_branch: string;
+  configured_base: string | null;
+  task_prefix: string;
+}): string {
+  const taskPrefix = opts.task_prefix.trim();
+  const eligible = (value: string) =>
+    value.trim().length > 0 &&
+    !(taskPrefix && value.startsWith(taskPrefix)) &&
+    !value.startsWith("agentplane/workspace/");
+  const candidates = [...new Set(opts.candidates.filter((value) => eligible(value)))].toSorted();
+  const exact = [...new Set(opts.exact_candidates.filter((value) => eligible(value)))].toSorted();
+  if (exact.length === 1) return exact[0]!;
+  if (eligible(opts.current_branch) && candidates.includes(opts.current_branch)) {
+    return opts.current_branch;
+  }
+  if (opts.configured_base && candidates.includes(opts.configured_base)) {
+    return opts.configured_base;
+  }
+  if (candidates.length === 1) return candidates[0]!;
+  throw new Error(
+    candidates.length === 0
+      ? "Legacy task base commit is not contained in an eligible local development branch."
+      : `Legacy task base is ambiguous across local branches: ${candidates.join(", ")}.`,
+  );
+}
+
+async function branchesContaining(
+  gitRoot: string,
+  sha: string,
+  pointsAt = false,
+): Promise<string[]> {
+  const args = [
+    "branch",
+    "--format=%(refname:short)",
+    pointsAt ? "--points-at" : "--contains",
+    sha,
+  ];
+  const { stdout } = await execFileAsync("git", args, { cwd: gitRoot, env: gitEnv() });
+  return String(stdout)
+    .split(/\r?\n/u)
+    .map((value) => value.trim())
+    .filter(Boolean);
 }
 
 async function resolveFrozenBaseIdentity(opts: {
@@ -131,9 +183,20 @@ async function resolveFrozenBaseIdentity(opts: {
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const stored = frozenBaseFromTask(opts.task);
   if (stored && "base_ref" in stored) return stored;
-  const base_ref =
-    (await resolveBaseBranch({ cwd: gitRoot, mode: opts.selectedMode })) ??
-    (await gitCurrentBranch(gitRoot));
+  const configuredBase = await resolveBaseBranch({ cwd: gitRoot, mode: opts.selectedMode });
+  const currentBranch = await gitCurrentBranch(gitRoot);
+  const base_ref = stored?.base_sha
+    ? selectLegacyBaseRef({
+        candidates: await branchesContaining(gitRoot, stored.base_sha),
+        exact_candidates: await branchesContaining(gitRoot, stored.base_sha, true),
+        current_branch: currentBranch,
+        configured_base: configuredBase,
+        task_prefix: opts.ctx.config.branch.task_prefix,
+      })
+    : currentBranch.startsWith(opts.ctx.config.branch.task_prefix) ||
+        currentBranch.startsWith("agentplane/workspace/")
+      ? (configuredBase ?? currentBranch)
+      : currentBranch;
   return {
     base_ref,
     base_sha:
@@ -228,7 +291,10 @@ export async function loadTaskCommandContext(opts: {
           ? directBranch
           : null;
   const primaryWorkspace = primaryWorkspaceBranch
-    ? await findWorktreeForBranch(opts.ctx.resolvedProject.gitRoot, primaryWorkspaceBranch)
+    ? await findRelocatableWorktreeForBranch(
+        opts.ctx.resolvedProject.gitRoot,
+        primaryWorkspaceBranch,
+      )
     : null;
   const primaryIsCurrent = primaryWorkspace
     ? (await realpath(primaryWorkspace).catch(() => path.resolve(primaryWorkspace))) ===

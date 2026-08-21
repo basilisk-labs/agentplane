@@ -1,0 +1,271 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run check",
+    "bun run typecheck"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "documentation",
+        "public_api",
+        "repository_write",
+        "schema",
+        "security_boundary",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "docs/developer",
+        "docs/recipes",
+        "docs/user",
+        "packages/agentplane/assets",
+        "packages/agentplane/src/cli",
+        "packages/agentplane/src/commands/branch",
+        "packages/agentplane/src/commands/doctor",
+        "packages/agentplane/src/commands/pr",
+        "packages/agentplane/src/commands/shared",
+        "packages/agentplane/src/commands/task",
+        "packages/agentplane/src/runner",
+        "packages/agentplane/src/runtime",
+        "packages/core/schemas",
+        "packages/core/src/config",
+        "packages/core/src/tasks",
+        "scripts/baselines/v0.7-compatibility-candidate.json",
+        "scripts/checks/check-compatibility-contract-baseline.mjs",
+        "website/static/llms-full.txt"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:documentation",
+        "repository_effect:public_api",
+        "repository_effect:repository_write",
+        "repository_effect:schema",
+        "repository_effect:security_boundary",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "docs",
+        "packages/agentplane",
+        "packages/core",
+        "scripts",
+        "website"
+      ],
+      "changed_files": [
+        "docs/developer/task-execution-authority.mdx",
+        "docs/user/branching-and-pr-artifacts.mdx",
+        "docs/user/cli-reference.generated.mdx",
+        "docs/user/task-lifecycle.mdx",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "packages/agentplane/src/commands/branch/work-start.command.ts",
+        "packages/agentplane/src/commands/branch/work-start.ts",
+        "packages/agentplane/src/commands/pr/internal/sync.ts",
+        "packages/agentplane/src/commands/pr/open.ts",
+        "packages/agentplane/src/commands/pr/update.ts",
+        "packages/agentplane/src/commands/task/advance.command.ts",
+        "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
+        "packages/agentplane/src/commands/task/agent-action-packet.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
+        "packages/agentplane/src/commands/task/configured-authority.test.ts",
+        "packages/agentplane/src/commands/task/configured-authority.ts",
+        "packages/agentplane/src/commands/task/create.command.ts",
+        "packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        "packages/agentplane/src/commands/task/direct-task-verification.ts",
+        "packages/agentplane/src/commands/task/new.ts",
+        "packages/agentplane/src/commands/task/plan-approve.command.ts",
+        "packages/agentplane/src/commands/task/plan.ts",
+        "packages/agentplane/src/runtime/task-execution-context/resolve.test.ts",
+        "packages/agentplane/src/runtime/task-execution-context/resolve.ts",
+        "packages/core/src/tasks/index.ts",
+        "packages/core/src/tasks/plan-execution-grant.test.ts",
+        "packages/core/src/tasks/plan-execution-grant.ts",
+        "packages/core/src/tasks/task-execution-base.ts",
+        "packages/core/src/tasks/task-store.ts",
+        "packages/core/src/tasks/tasks-export.ts",
+        "scripts/baselines/v0.7-compatibility-candidate.json",
+        "scripts/checks/check-compatibility-contract-baseline.mjs",
+        "website/static/llms-full.txt"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/core/schemas",
+      "central_component:packages/core/src/config",
+      "central_component:packages/core/src/tasks",
+      "central_component:scripts/checks/check-compatibility-contract-baseline.mjs",
+      "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+      "central_path:packages/core/src/tasks/index.ts",
+      "central_path:packages/core/src/tasks/plan-execution-grant.test.ts",
+      "central_path:packages/core/src/tasks/plan-execution-grant.ts",
+      "central_path:packages/core/src/tasks/task-execution-base.ts",
+      "central_path:packages/core/src/tasks/task-store.ts",
+      "central_path:packages/core/src/tasks/tasks-export.ts",
+      "central_path:scripts/checks/check-compatibility-contract-baseline.mjs",
+      "effect_public_api",
+      "effect_schema",
+      "effect_security_boundary",
+      "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:134918d2a3cdf56ee7d122dc55a825fc9db7f27894c8b038726a8663b6c96346"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-21T11:42:47.305Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608211020-FGAPJC/verification/20260821114247305-d720714021583e12.json",
+      "sha256": "sha256:093d833a3992d182d1cf7923b9c5d22f8605ff7bd630f50f76f0ba4ed4d5a6fd"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 83cfaa5925093a58bdaac6911fd08c0241a2f061..0fc5512142ef4ad95f66fc6054833edada9349ae",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 83cfaa5925093a58bdaac6911fd08c0241a2f061..0fc5512142ef4ad95f66fc6054833edada9349ae",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608211020-FGAPJC/README.md",
+          "M\t.agentplane/tasks/202608211020-FGAPJC/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
+          "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
+          "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
+          "M\t.agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json",
+          "M\t.agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json",
+          "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
+          "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "83cfaa5925093a58bdaac6911fd08c0241a2f061",
+    "implementation_commit": "0fc5512142ef4ad95f66fc6054833edada9349ae",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M .agentplane/tasks/202608211020-FGAPJC/README.md",
+        " M .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json",
+        " M .agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json",
+        " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        " M packages/agentplane/src/commands/task/direct-task-verification.ts"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608211020-FGAPJC/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/direct-task-verification.ts"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M .agentplane/tasks/202608211020-FGAPJC/README.md",
+        " M .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json",
+        " M .agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json",
+        " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        " M packages/agentplane/src/commands/task/direct-task-verification.ts"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608211020-FGAPJC",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

@@ -348,6 +348,7 @@ function validateReviewedCandidate({
     "202608171853-X3FD5M",
     "202608181404-CR1F9W",
     "202608200903-J459C2",
+    "202608211020-FGAPJC",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -388,6 +389,7 @@ function validateReviewedCandidate({
     "202608171853-X3FD5M",
     "202608181404-CR1F9W",
     "202608200903-J459C2",
+    "202608211020-FGAPJC",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -1506,6 +1508,7 @@ function validateReviewedCandidate({
         },
         { name: "tag", kind: "string", valueHint: "<tag>", repeatable: true },
         { name: "verify", kind: "string", valueHint: "<command>", repeatable: true },
+        { name: "base", kind: "string", valueHint: "<branch-or-ref>" },
         { name: "allow-duplicate", kind: "boolean", valueHint: null, default: false },
         { name: "json", kind: "boolean", valueHint: null, default: false },
       ],
@@ -1567,8 +1570,8 @@ function validateReviewedCandidate({
           name: "state-fingerprint",
           kind: "string",
           valueHint: "<sha256:...>",
-          required: true,
         },
+        { name: "state-scope-digest", kind: "string", valueHint: "<sha256:...>" },
         { name: "by", kind: "string", valueHint: "<role>", required: true },
       ],
     },
@@ -1911,6 +1914,12 @@ function validateReviewedCandidate({
     },
     {
       command: "task create",
+      name: "base",
+      kind: "string",
+      valueHint: "<branch-or-ref>",
+    },
+    {
+      command: "task create",
       name: "blueprint-request",
       kind: "string",
       valueHint: "<id>",
@@ -2013,6 +2022,12 @@ function validateReviewedCandidate({
       valueHint: "<base64url>",
     },
     {
+      command: "task plan approve",
+      name: "host-user-decision",
+      kind: "string",
+      valueHint: "<base64url>",
+    },
+    {
       command: "task run",
       name: "allow-danger-full-access",
       kind: "boolean",
@@ -2086,7 +2101,12 @@ function validateReviewedCandidate({
       name: "state-fingerprint",
       kind: "string",
       valueHint: "<sha256:...>",
-      required: true,
+    },
+    {
+      command: "task scope extend",
+      name: "state-scope-digest",
+      kind: "string",
+      valueHint: "<sha256:...>",
     },
     {
       command: "workflow migrate",
@@ -2449,6 +2469,12 @@ function validateReviewedCandidate({
     },
     {
       kind: "option",
+      command: "task plan approve",
+      name: "host-user-decision",
+      source_task: "202608211020-FGAPJC",
+    },
+    {
+      kind: "option",
       command: "task complete",
       name: "accept-unobserved",
       source_task: "202608021534-YN84E1",
@@ -2458,6 +2484,12 @@ function validateReviewedCandidate({
       command: "task create",
       name: "allow-duplicate",
       source_task: "202608061646-30TKV4",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "base",
+      source_task: "202608211020-FGAPJC",
     },
     {
       kind: "option",
@@ -2564,6 +2596,12 @@ function validateReviewedCandidate({
         source_task: "202608181404-CR1F9W",
       }),
     ),
+    {
+      kind: "option",
+      command: "task scope extend",
+      name: "state-scope-digest",
+      source_task: "202608211020-FGAPJC",
+    },
     {
       kind: "option",
       command: "workflow migrate",

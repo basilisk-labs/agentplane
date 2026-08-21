@@ -2,6 +2,7 @@ import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { resolveBaseBranch } from "@agentplaneorg/core/git";
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+import { taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../../cli/error-map.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
@@ -112,6 +113,7 @@ export async function ensurePrArtifactsSynced(opts: {
   taskId: string;
   author?: string;
   branch?: string;
+  base?: string;
   workflowMode?: "direct" | "branch_pr";
 }): Promise<{
   branch: string;
@@ -140,10 +142,12 @@ export async function ensurePrArtifactsSynced(opts: {
     return null;
   }
 
+  const primaryTask = await ctx.taskBackend.getTask(opts.taskId);
+  const taskBase = taskExecutionBaseFromExtensions(primaryTask?.extensions)?.base_ref;
   const baseBranch = await resolveBaseBranch({
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
-    cliBaseOpt: null,
+    cliBaseOpt: opts.base ?? taskBase ?? null,
     mode: workflowMode,
   });
   if (resolvedBranch.source === "current" && baseBranch && branch === baseBranch) {
@@ -153,7 +157,6 @@ export async function ensurePrArtifactsSynced(opts: {
   const existingMeta = (await fileExists(metaPath))
     ? parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId)
     : null;
-  const primaryTask = await ctx.taskBackend.getTask(opts.taskId);
   const preservedIncludedTaskIds = normalizeRelatedTaskIds(
     [
       ...(existingMeta?.batch?.included_task_ids ?? []),
@@ -173,6 +176,7 @@ export async function ensurePrArtifactsSynced(opts: {
       branch,
       includeTaskIds: preservedIncludedTaskIds,
       remoteMode: "sync-only",
+      base: opts.base ?? taskBase,
     });
   }
   const result = await syncPrArtifacts({
@@ -181,6 +185,7 @@ export async function ensurePrArtifactsSynced(opts: {
     mode: "update",
     branch,
     includeTaskIds: preservedIncludedTaskIds,
+    base: opts.base ?? taskBase,
   });
   return { ...result, branch };
 }
@@ -196,6 +201,7 @@ export async function syncPrArtifacts(opts: {
   includeTaskIds?: string[];
   remoteMode?: PrRemoteMode;
   workflowMode?: "direct" | "branch_pr";
+  base?: string;
 }): Promise<{
   meta: PrMeta;
   prDir: string;
@@ -276,10 +282,11 @@ export async function syncPrArtifacts(opts: {
         metaExists && (await fileExists(metaPath))
           ? parsePrMeta(await readFile(metaPath, "utf8"), task.id)
           : null;
+      const taskBase = taskExecutionBaseFromExtensions(task.extensions)?.base_ref;
       const baseBranch = await resolveBaseBranch({
         cwd: opts.cwd,
         rootOverride: opts.rootOverride ?? null,
-        cliBaseOpt: null,
+        cliBaseOpt: opts.base ?? taskBase ?? null,
         mode: workflowMode,
       });
       const validatedIncludedTaskIds = await validateBranchPrBatchIncludedTasks({
