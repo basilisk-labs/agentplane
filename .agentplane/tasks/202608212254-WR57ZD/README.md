@@ -4,7 +4,7 @@ title: "Accept exact tree identity for GitHub rebase cleanup"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -27,15 +27,19 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-21T23:19:05.406Z"
+  state: "ok"
+  updated_at: "2026-08-21T23:28:03.536Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts"
-  attempts: 1
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_publish"
+    - "effect_release_metadata"
     - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
   repository_mode: "branch_pr"
   requested_mode: "branch_pr"
   schema_version: 1
@@ -82,7 +86,6 @@ execution_contract:
   observed:
     authority_violations:
       - "repository_effect:tests"
-      - "verification:recorded-check-1:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -96,7 +99,22 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_publish"
@@ -192,8 +210,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-commit: null
+commit:
+  hash: "a7486f56f75d4c4ae7eee42745b25a08ccb2a733"
+  message: "🚧 WR57ZD task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -201,6 +220,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: accept exact tree identity only for single-parent GitHub rebase merge receipts; focused cleanup reconciliation tests pass."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a7486f56f75d. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -223,9 +245,23 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts"
+  -
+    type: "status"
+    at: "2026-08-21T23:21:45.099Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a7486f56f75d. CLI accepted one state-bound external-agent semantic result."
+    commit: "a7486f56f75d4c4ae7eee42745b25a08ccb2a733"
+  -
+    type: "verify"
+    at: "2026-08-21T23:28:03.536Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-21T23:19:08.913Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-21T23:28:07.090Z"
+doc_updated_by: "SUPERVISOR"
 description: "Allow cleanup reconciliation to accept an exact provider receipt when the provider head tree equals the single-parent GitHub rebase merge commit tree; preserve existing identity, object, receipt, and negative guards. Add focused regression tests, publish a PR, merge after hosted checks, then retry cleanup for E6CDHP and XEC2NE."
 sections:
   Summary: |-
@@ -283,6 +319,72 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-21T23:28:03.536Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6adfa243d96b84d2717ef10120008e32a4ba9da884c709e3af04bc572f92ec31, input_digest=sha256:57d41ed28bb1007d3d6915d9941e7f9caaf42cb4d71b13ee1c2d351e8f7d1790
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608212254-WR57ZD Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608212254-WR57ZD Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608212254-WR57ZD Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608212254-WR57ZD Verification Contract check hosted_integration
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608212254-WR57ZD Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608212254-WR57ZD Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212254-WR57ZD-accept-exact-tree-identity-for-github-rebase-cle/.agentplane/tasks/202608212254-WR57ZD/blueprint/resolved-snapshot.json
+    - old_digest: f5e933c531525da8a83036a4f85f7fec8d7fb2f4dfb39e9455f48bafbb0cb09d
+    - current_digest: f5e933c531525da8a83036a4f85f7fec8d7fb2f4dfb39e9455f48bafbb0cb09d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608212254-WR57ZD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608212254-WR57ZD
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -313,6 +415,8 @@ extensions:
     scope_digest: "sha256:9d184cc08e42b27e663e0671350973301ae7755764cebbae4c11086e6175ebcf"
     status: "active"
     task_id: "202608212254-WR57ZD"
+  implementation_commit:
+    hash: "a7486f56f75d4c4ae7eee42745b25a08ccb2a733"
   task_execution_context:
     base_ref: "main"
     base_sha: "134c95fd629d5ebcf0e17196ccb4b44f60c993fd"
@@ -367,6 +471,72 @@ Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-
 Result: fail
 Evidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#check-1
 Scope: branch_pr task 202608212254-WR57ZD declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212254-WR57ZD-accept-exact-tree-identity-for-github-rebase-cle/.agentplane/tasks/202608212254-WR57ZD/blueprint/resolved-snapshot.json
+- old_digest: f5e933c531525da8a83036a4f85f7fec8d7fb2f4dfb39e9455f48bafbb0cb09d
+- current_digest: f5e933c531525da8a83036a4f85f7fec8d7fb2f4dfb39e9455f48bafbb0cb09d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608212254-WR57ZD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608212254-WR57ZD
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T23:28:03.536Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6adfa243d96b84d2717ef10120008e32a4ba9da884c709e3af04bc572f92ec31, input_digest=sha256:57d41ed28bb1007d3d6915d9941e7f9caaf42cb4d71b13ee1c2d351e8f7d1790
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608212254-WR57ZD Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608212254-WR57ZD Verification Contract check critical_paths
+
+Check: full_regression
+Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608212254-WR57ZD Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608212254-WR57ZD Verification Contract check hosted_integration
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608212254-WR57ZD Verification Contract check real_e2e
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608212254-WR57ZD Verification Contract check task_outcome
 
 BlueprintSnapshotRef:
 - state: current
