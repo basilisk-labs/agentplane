@@ -200,26 +200,6 @@ export async function runTaskNewParsed(opts: {
       primaryCtx.config.workflow_mode === "branch_pr" && backendUsesLocalTaskStore(primaryCtx)
         ? primaryCtx
         : currentCtx;
-    const creationHead = await gitRevParse(ctx.resolvedProject.gitRoot, ["HEAD^{commit}"]).catch(
-      () => null,
-    );
-    const repositoryIdentity = await resolveLogicalRepositoryIdentity({
-      git_root: ctx.resolvedProject.gitRoot,
-      task: {},
-    });
-    const extensions = taskExecutionBaseFromExtensions(p.extensions)
-      ? p.extensions
-      : creationHead
-        ? {
-            ...(p.extensions ?? {}),
-            [TASK_EXECUTION_CONTEXT_EXTENSION_KEY]: createTaskExecutionBaseIdentity({
-              base_ref: await gitCurrentBranch(ctx.resolvedProject.gitRoot),
-              base_sha: creationHead,
-              source: "creation_checkout",
-              repository_identity: repositoryIdentity,
-            }),
-          }
-        : p.extensions;
     const creationLockPath = path.join(
       ctx.resolvedProject.gitRoot,
       ctx.config.paths.workflow_dir,
@@ -228,6 +208,26 @@ export async function runTaskNewParsed(opts: {
     );
     return await withTaskReadmeTransaction(creationLockPath, async () => {
       await ctx.taskBackend.assertLocalMutationReady?.();
+      const creationHead = await gitRevParse(ctx.resolvedProject.gitRoot, ["HEAD^{commit}"]).catch(
+        () => null,
+      );
+      const repositoryIdentity = await resolveLogicalRepositoryIdentity({
+        git_root: ctx.resolvedProject.gitRoot,
+        task: {},
+      });
+      const extensions = taskExecutionBaseFromExtensions(p.extensions)
+        ? p.extensions
+        : creationHead
+          ? {
+              ...(p.extensions ?? {}),
+              [TASK_EXECUTION_CONTEXT_EXTENSION_KEY]: createTaskExecutionBaseIdentity({
+                base_ref: await gitCurrentBranch(ctx.resolvedProject.gitRoot),
+                base_sha: creationHead,
+                source: "creation_checkout",
+                repository_identity: repositoryIdentity,
+              }),
+            }
+          : p.extensions;
       const duplicateTasks = listOpenTaskDuplicates(await ctx.taskBackend.listTasks(), p.title);
       const exactDuplicateTasks = duplicateTasks.filter((match) => match.severity === "exact");
       if (exactDuplicateTasks.length > 0 && !p.allowDuplicate) {
