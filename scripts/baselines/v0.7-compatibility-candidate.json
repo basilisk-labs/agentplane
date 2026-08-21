@@ -1791,6 +1791,12 @@
             "source_task": "202608171853-X3FD5M"
           },
           {
+            "command": "task plan approve",
+            "kind": "option",
+            "name": "host-user-decision",
+            "source_task": "202608211020-FGAPJC"
+          },
+          {
             "command": "task complete",
             "kind": "option",
             "name": "accept-unobserved",
@@ -1801,6 +1807,12 @@
             "kind": "option",
             "name": "allow-duplicate",
             "source_task": "202608061646-30TKV4"
+          },
+          {
+            "command": "task create",
+            "kind": "option",
+            "name": "base",
+            "source_task": "202608211020-FGAPJC"
           },
           {
             "command": "task create",
@@ -2272,7 +2284,8 @@
         "202608112213-NWJCBW",
         "202608171853-X3FD5M",
         "202608181404-CR1F9W",
-        "202608200903-J459C2"
+        "202608200903-J459C2",
+        "202608211020-FGAPJC"
       ],
       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route.",
       "to_sha256": "3ef7b8bcb708d6e88c5c506ca56081acb662a03972fb3683ebd0423a80617df8"
@@ -2529,6 +2542,7 @@
     "202608112259-T3ZDDM",
     "202608171853-X3FD5M",
     "202608181404-CR1F9W",
-    "202608200903-J459C2"
+    "202608200903-J459C2",
+    "202608211020-FGAPJC"
   ]
 }

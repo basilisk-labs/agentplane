@@ -12,8 +12,8 @@ Created: 2026-08-21T10:27:11.359Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run check
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -35,6 +35,7 @@ Created: 2026-08-21T10:27:11.359Z
  docs/user/task-lifecycle.mdx                       |  35 ++-
  .../src/cli/run-cli.core.lifecycle.plan.test.ts    |  61 +++-
  ...run-cli.core.task-create-planner-intent.test.ts |  68 ++++-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/commands/branch/work-start.command.ts      |   2 +
  .../agentplane/src/commands/branch/work-start.ts   |   7 +-
  .../agentplane/src/commands/pr/internal/sync.ts    |  13 +-
@@ -58,9 +59,10 @@ Created: 2026-08-21T10:27:11.359Z
  packages/core/src/tasks/task-execution-base.ts     |  43 +++
  packages/core/src/tasks/task-store.ts              |   1 +
  packages/core/src/tasks/tasks-export.ts            |   2 +
- .../baselines/v0.7-compatibility-candidate.json    |  23 +-
+ .../baselines/v0.7-compatibility-candidate.json    |  41 ++-
+ .../check-compatibility-contract-baseline.mjs      |  27 ++
  website/static/llms-full.txt                       |  35 ++-
- 31 files changed, 1468 insertions(+), 94 deletions(-)
+ 33 files changed, 1515 insertions(+), 99 deletions(-)
 ```
 
 </details>
