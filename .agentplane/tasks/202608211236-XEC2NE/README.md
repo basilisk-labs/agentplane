@@ -2,10 +2,10 @@
 id: "202608211236-XEC2NE"
 title: "Repair packaged candidate verification-contract refresh after managed upgrade"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -64,9 +64,9 @@ quality_review:
     - "The packaged eight-scenario migration flow remains green."
     - "Residual risk: The updated PR head must receive fresh hosted checks and the addressed P1 thread must be resolved before integration."
 token_usage:
-  agent_runs: 5
+  agent_runs: 7
   input_tokens: null
-  journal_digest: "sha256:7c3eb538276d00d2c001b9e6d3bc580dfcfb8a036f138f344a016a02a5db93ee"
+  journal_digest: "sha256:df10f9c99dda52513a49c3ccd1455a8530c7f1271292805802d8f17f6e4eccda"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -76,7 +76,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-21T21:10:01.115Z"
+  updated_at: "2026-08-21T21:31:16.220Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -277,8 +277,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "30277665d28ff2675083f977113c4ecf1935400f"
-  message: "🚧 XEC2NE task: apply external agent result"
+  hash: "18900e2be7ba548fabe8020848b1ebd6fa009176"
+  message: "🚧 XEC2NE task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -304,6 +304,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 30277665d28f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -382,9 +385,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-21T21:31:16.220Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "18900e2be7ba548fabe8020848b1ebd6fa009176"
 doc_version: 3
-doc_updated_at: "2026-08-21T21:30:54.212Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-21T21:31:16.249Z"
+doc_updated_by: "CODER"
 description: "Fix the packaged-candidate-flow qualification regression exposed after rebasing PR #4853 onto current main. The direct upgrade scenario must record verification evidence that covers the exact evaluated diff, including .agentplane/agents/UPGRADER.json, without weakening evaluator enforcement. Validate the focused packaged-candidate-flow and relevant tests, publish and merge the prerequisite PR, then refresh PR #4853."
 sections:
   Summary: |-
@@ -627,6 +638,7 @@ extensions:
     transition_id: "tr_7e2472510d4cbba63c98f39fdbb588a8"
   implementation_commit:
     hash: "30277665d28ff2675083f977113c4ecf1935400f"
+    message: "🚧 XEC2NE task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3cc2c4424893a61cf576d3bd82622216030b8bb1"
@@ -871,12 +883,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/5` agent runs
+- Completeness: `0/7` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:7c3eb538276d00d2c001b9e6d3bc580dfcfb8a036f138f344a016a02a5db93ee`
+- Journal digest: `sha256:df10f9c99dda52513a49c3ccd1455a8530c7f1271292805802d8f17f6e4eccda`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-21T21:10:01.115Z`
+- Updated at: `2026-08-21T21:31:16.220Z`
