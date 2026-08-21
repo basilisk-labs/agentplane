@@ -79,6 +79,8 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../src/commands/task/scope-extend.command.ts      |  45 +-
  .../agentplane/src/commands/task/scope-extend.ts   |  17 +-
  .../src/commands/task/verify-record-execute.ts     |   4 +-
+ .../task-run-active-claim-concurrency.test.ts      |  64 ---
+ ...task-run-lifecycle-replay-pre-execution.test.ts |  88 +++
  .../runtime/task-execution-context/resolve.test.ts |  26 +-
  .../src/runtime/task-execution-context/resolve.ts  |  88 ++-
  .../src/runtime/workspace-allocation/allocate.ts   |  12 +-
@@ -93,7 +95,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../baselines/v0.7-compatibility-candidate.json    |  62 +-
  .../check-compatibility-contract-baseline.mjs      |  42 +-
  website/static/llms-full.txt                       |  46 +-
- 66 files changed, 3958 insertions(+), 324 deletions(-)
+ 68 files changed, 4046 insertions(+), 388 deletions(-)
 ```
 
 </details>
