@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:191dd62a4c15a6c7a7d1e56cce2e4dc89f87b87a49d15fbecfe78d1c1f6cae36",
   "pr_number": 4856,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4856",
+  "pre_merge_closure": {
+    "basis_commit": "4af06d61f67ac86562222e89d43bdb67736f0ed8",
+    "branch": "task/202608210853-0FYGE3/fix-local-branch-pr-status-after-merged-cleanup",
+    "pr_number": 4856,
+    "recorded_at": "2026-08-21T09:17:16.066Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
