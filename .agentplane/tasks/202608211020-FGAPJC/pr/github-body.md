@@ -53,8 +53,9 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../src/commands/shared/quality-review-target.ts   |   7 +
  .../commands/shared/side-effect-authority.test.ts  | 141 ++++-
  .../src/commands/shared/side-effect-authority.ts   |  53 +-
+ .../shared/supervisor-execution-budget-renewal.ts  |  65 +++
  .../shared/supervisor-execution-episode.test.ts    |  81 +++
- .../shared/supervisor-execution-episode.ts         |  99 +++-
+ .../shared/supervisor-execution-episode.ts         |  38 +-
  .../task-worktree-foreign-artifact-repair.test.ts  |  16 +-
  .../workflow-operation-projection.registry.test.ts |   5 +-
  .../shared/workflow-operation-projection.ts        |   5 +-
@@ -108,7 +109,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../check-compatibility-contract-baseline.mjs      |  42 +-
  scripts/checks/run-local-ci.mjs                    |   9 +-
  website/static/llms-full.txt                       |  46 +-
- 81 files changed, 4916 insertions(+), 419 deletions(-)
+ 82 files changed, 4920 insertions(+), 419 deletions(-)
 ```
 
 </details>
