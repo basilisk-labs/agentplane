@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608200903-J459C2",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-21T00:33:06.997Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 4 typed finding(s).",
+  "evaluated_sha": "57470f47081a560c21c6693e550d38ed499a63f0",
+  "blueprint_digest": "f25f42de93f6569db33d68ebc2964a5d415604675bcc5c9d35583cd4f7a5a518",
+  "findings": [
+    "Implementation commit 57470f47081a560c21c6693e550d38ed499a63f0 changes only parsePrMetaIfPresent in runtime code: absent content still returns null, valid content is parsed, and parsing failures still return null.",
+    "The simplification reduces packages/agentplane/src/commands/pr/flow-status.ts from the failing 601-line count to the enforced 600-line limit without adding an exception or changing the hotspot baseline.",
+    "Focused flow-status tests pass, and the supervisor verification record for implementation SHA 57470f47081a560c21c6693e550d38ed499a63f0 reports the complete declared local verification contract as passing.",
+    "Residual risk: The next published exact head must complete hosted checks successfully before integration."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608200903-J459C2/quality/objects/sha256/c6da4eaee5a6e0368893e958f443b803693efef85548bb0dcbd4187c1eacb6f1.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
