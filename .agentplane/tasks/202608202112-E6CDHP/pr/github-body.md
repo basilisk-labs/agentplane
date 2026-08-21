@@ -15,8 +15,13 @@ Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutatio
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: blocked_external
+- Note:
+
+```text
+Live GitLab canary has no pipeline because project policy does not require one; hosted checks must
+honor provider policy while failing closed for required pipelines or checks.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

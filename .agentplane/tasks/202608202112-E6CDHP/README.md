@@ -4,7 +4,7 @@ title: "Fix live GitLab MR transport and provider-neutral mergeability validatio
 status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 45
+revision: 49
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +26,11 @@ plan_approval:
   updated_by: "USER"
   note: "Approved explicitly by Denis in Codex on 2026-08-21 after reviewing the live GitLab findings and remediation plan."
 verification:
-  state: "pending"
-  updated_at: "2026-08-21T00:52:24.578Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 8
+  state: "blocked_external"
+  updated_at: "2026-08-21T01:38:19.609Z"
+  updated_by: "TESTER"
+  note: "Live GitLab canary has no pipeline because project policy does not require one; hosted checks must honor provider policy while failing closed for required pipelines or checks."
+  attempts: 9
 execution_route:
   frozen: true
   reason_codes:
@@ -102,7 +102,8 @@ execution_contract:
       - "packages/agentplane/src/commands/pr/integrate"
       - "packages/agentplane/src/commands/pr/internal"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -126,7 +127,10 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -243,9 +247,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "35d04d9a2de07d4f00f5770a9d65a623ea56807c"
-  message: "🚧 E6CDHP task: apply external agent result"
+      - "verification_recovery:recorded-check-1"
+commit: null
 comments:
   -
     author: "CODER"
@@ -316,6 +319,12 @@ comments:
   -
     author: "TESTER"
     body: "Supervisor full regression timed out after 1800006ms | details: record the timeout before running the same suite directly without the supervisor limit."
+  -
+    author: "USER"
+    body: "Resume approved implementation to handle GitLab projects where merge pipelines are not required, preserving fail-closed behavior for required pipelines and configured checks."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Live GitLab qualification exposed a project-policy edge outside the current writable roots. Recommended action: Approve the exact scope extension, then read the GitLab project merge policy when no exact-head pipeline exists and add focused fail-open/fail-closed tests. Requested scope: roots=packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts,packages/agentplane/src/commands/pr/hosted-checks.ts; repository effects=repository_write,source_code,tests; request digest=sha256:d6cbe451d53d58166fac658189a6829ba506948ad5d35a33cdedd0fb2fc62562. Agentplane receipt: external-agent-blocker/tr_88faf6bea4c9786ed4d1061e0c56c904/sha256:df04d3ec8146c962ea9b949714a2c647276cfcd1c41f98da4417f3dca7c20de0/sha256:d6cbe451d53d58166fac658189a6829ba506948ad5d35a33cdedd0fb2fc62562."
 events:
   -
     type: "status"
@@ -520,9 +529,29 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Supervisor full regression timed out after 1800006ms | details: record the timeout before running the same suite directly without the supervisor limit."
+  -
+    type: "verify"
+    at: "2026-08-21T01:38:19.609Z"
+    author: "TESTER"
+    state: "blocked_external"
+    note: "Live GitLab canary has no pipeline because project policy does not require one; hosted checks must honor provider policy while failing closed for required pipelines or checks."
+  -
+    type: "status"
+    at: "2026-08-21T01:38:25.688Z"
+    author: "USER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume approved implementation to handle GitLab projects where merge pipelines are not required, preserving fail-closed behavior for required pipelines and configured checks."
+  -
+    type: "status"
+    at: "2026-08-21T01:39:46.259Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Live GitLab qualification exposed a project-policy edge outside the current writable roots. Recommended action: Approve the exact scope extension, then read the GitLab project merge policy when no exact-head pipeline exists and add focused fail-open/fail-closed tests. Requested scope: roots=packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts,packages/agentplane/src/commands/pr/hosted-checks.ts; repository effects=repository_write,source_code,tests; request digest=sha256:d6cbe451d53d58166fac658189a6829ba506948ad5d35a33cdedd0fb2fc62562. Agentplane receipt: external-agent-blocker/tr_88faf6bea4c9786ed4d1061e0c56c904/sha256:df04d3ec8146c962ea9b949714a2c647276cfcd1c41f98da4417f3dca7c20de0/sha256:d6cbe451d53d58166fac658189a6829ba506948ad5d35a33cdedd0fb2fc62562."
 doc_version: 3
-doc_updated_at: "2026-08-21T01:24:30.130Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-08-21T01:39:46.259Z"
+doc_updated_by: "SUPERVISOR"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
   Summary: |-
@@ -824,6 +853,42 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-21T01:38:19.609Z — VERIFY — blocked_external
+
+    By: TESTER
+
+    Note: Live GitLab canary has no pipeline because project policy does not require one; hosted checks must honor provider policy while failing closed for required pipelines or checks.
+    Attempts: 9
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:1a97dcaa74ca73ea4ca44ad650fd7fd209b98d41d748da3f12ff92b7752a1d12
+
+    Details:
+
+    Check: real_e2e
+    Command: glab api --hostname gitlab.nordavind.ru projects/1269 and projects/1269/merge_requests/1/pipelines
+    Result: fail
+    Evidence: only_allow_merge_if_pipeline_succeeds=false, MR pipeline list=[], MR !1 state=opened and detailed_merge_status=mergeable at exact head a82637a20f86d0711bb1c9f6ac46087a1981dd86; resolveHostedChecksStatus returns unchecked for every missing pipeline
+    Scope: GitLab hosted-check policy dispatch
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+    - old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -831,24 +896,22 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
-    applied_at: "2026-08-21T00:52:24.578Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:c42018799cc77c09eaf917e604f07696ff78607e7f90dd86ab8b55b740af2fda"
+    blocker_state_fingerprint: "sha256:df04d3ec8146c962ea9b949714a2c647276cfcd1c41f98da4417f3dca7c20de0"
     kind: "task_scope_extension_request"
     request:
-      rationale: "The live GitLab queue canary proved that provider-neutral hosted checks are already implemented but unreachable from run-next because queued identity inputs are omitted."
+      rationale: "The live GitLab canary proves that absence of a pipeline can be intentional and mergeable under provider policy; AgentPlane must distinguish that case from a missing required pipeline."
       repository_effects:
         - "repository_write"
         - "source_code"
         - "tests"
       schema_version: 1
       scope_roots:
-        - "packages/agentplane/src/commands/integrate-queue.command.test.ts"
-        - "packages/agentplane/src/commands/integrate-queue.command.ts"
-    request_digest: "sha256:5c4d87ed356b0e1fc215b2ea20b70952ca5d28ff4adcf29d6c758254b192fc20"
+        - "packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts"
+        - "packages/agentplane/src/commands/pr/hosted-checks.ts"
+    request_digest: "sha256:d6cbe451d53d58166fac658189a6829ba506948ad5d35a33cdedd0fb2fc62562"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_3b01dfcf5244c58ca954c69fc7f9abae"
+    status: "pending"
+    transition_id: "tr_88faf6bea4c9786ed4d1061e0c56c904"
   implementation_commit:
     hash: "35d04d9a2de07d4f00f5770a9d65a623ea56807c"
   workflow_route_baseline:
@@ -1159,6 +1222,42 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T01:38:19.609Z — VERIFY — blocked_external
+
+By: TESTER
+
+Note: Live GitLab canary has no pipeline because project policy does not require one; hosted checks must honor provider policy while failing closed for required pipelines or checks.
+Attempts: 9
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:1a97dcaa74ca73ea4ca44ad650fd7fd209b98d41d748da3f12ff92b7752a1d12
+
+Details:
+
+Check: real_e2e
+Command: glab api --hostname gitlab.nordavind.ru projects/1269 and projects/1269/merge_requests/1/pipelines
+Result: fail
+Evidence: only_allow_merge_if_pipeline_succeeds=false, MR pipeline list=[], MR !1 state=opened and detailed_merge_status=mergeable at exact head a82637a20f86d0711bb1c9f6ac46087a1981dd86; resolveHostedChecksStatus returns unchecked for every missing pipeline
+Scope: GitLab hosted-check policy dispatch
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+- old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
