@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 118
+revision: 119
 origin:
   system: "manual"
 depends_on: []
@@ -32,17 +32,35 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
-  updated_at: "2026-08-21T18:26:10.704Z"
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-21T18:37:14.857Z"
   updated_by: "EVALUATOR"
-  note: "ExecutionGrant becomes inactive after an in-grant task.scope.extend operation, reintroducing approval before integration."
-  evaluated_sha: "ffcf295fe6287b97896b6a7cdf4e6ae20156a63b"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "38e0d182d2d4cd4d0d5c0716bb2168fe4f6464e3"
   blueprint_digest: "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa"
   evidence_refs:
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-183639135-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-183639135-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/431e14a59ae7f4cca42ade4a8bd7522281d79b2d9671ac1ce5d0902df1e37573.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-183639135-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-183639135-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-183639135-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211020-FGAPJC/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211020-FGAPJC-implement-task-scoped-autonomous-execution-after/.agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/fc97742dc6e97333234df23a032f7498c7b9c9d1a02c5f9a2d475e8932126668.patch"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/af820cdea6ed5ea697bebcb97970b8ff64fba66da7cf123ac2ff0936b64c8eeb.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821183621812-8104d00fb9585fb7.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Check: task_outcome\nCommand: node packages/agentplane/bin/agentplane.js task next-action 202608211020-FGAPJC --remote --explain --json\nResult: fail\nEvidence: route returned approval.integration.enqueue because the persisted execution grant scope_digest predates the autonomously approved scope extensions\nScope: one-confirmation autonomous execution through integration"
+    - "The current episode is reconciled against the same frozen execution authority with an empty observation projection, so inherited base-sync artifacts cannot create false new violations."
+    - "The cumulative execution contract still retains inherited and task-owned observations for audit, verification selection, and diagnostics."
+    - "A regression covers both sides of the boundary: an allowed current path passes despite inherited foreign-task history, and a new path outside writable roots remains a violation."
+    - "Supervisor verification passed the declared critical tests, type checking, routing policy, doctor diagnostics, full regression, documentation contract, and task outcome for implementation 38e0d182d2d4cd4d0d5c0716bb2168fe4f6464e3."
+    - "Residual risk: Hosted branch protection and exact-SHA checks remain required before merge."
 token_usage:
   agent_runs: 45
   input_tokens: null
@@ -1434,7 +1452,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T18:36:24.807Z"
+doc_updated_at: "2026-08-21T18:37:14.896Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
