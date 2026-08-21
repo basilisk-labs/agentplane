@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608210853-0FYGE3-4cbfd41e6eaabcb136e5086f",
+  "prepared_at": "2026-08-21T09:14:00.705Z",
+  "task": {
+    "id": "202608210853-0FYGE3",
+    "revision": 7,
+    "objective": "Fix local branch_pr status after merged cleanup\n\nMake local route diagnostics recognize canonical task closure on the base branch before trusting stale OPEN/CLOSED PR metadata, so a DONE task with a deleted merged branch does not emit false provider_pr_unavailable or verification_invalid_record blockers. Add regression coverage for merged cleanup without remote lookup.",
+    "acceptance_criteria": [
+      "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts",
+      "- In scope: Make local route diagnostics recognize canonical task closure on the base branch before trusting stale OPEN/CLOSED PR metadata, so a DONE task with a deleted merged branch does not emit false provider_pr_unavailable or verification_invalid_record blockers. Add regression coverage for merged cleanup without remote lookup.\n- Out of scope: unrelated refactors not required for \"Fix local branch_pr status after merged cleanup\".",
+      "Plan: make local branch_pr route diagnostics recognize canonical task-close evidence on the base branch before stale OPEN/CLOSED PR metadata; preserve ordinary open-PR behavior when that evidence is absent; add regression coverage for merged cleanup with a deleted task branch; run the focused route-decision test suite.",
+      "PLANNER fallback scaffold for \"Fix local branch_pr status after merged cleanup\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Fix local branch_pr status after merged cleanup\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "e7aeff72c3bdf8180385a8a64f84907b1de022a5",
+  "diff_base_sha": "41f1b102afe74f56ec4b36d13a52476b8bcd40ee",
+  "blueprint_digest": "600da6f8ec8fe51ae9833f2bdbf15fa9feecd96fb9adb94f88fbfc3e095a6232",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608210853-0FYGE3/quality/20260821-091400705-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:d00520f51097479724ae94ab99b5bc28aba77495c5d86220dcefc7a7b29ed3f6",
+    "prompt_path": ".agentplane/tasks/202608210853-0FYGE3/quality/objects/sha256/49303f69d3a2ecdda930566bef911cabfaf7af1fab61d9e7812a68bceb31f593.md",
+    "result_schema_path": ".agentplane/tasks/202608210853-0FYGE3/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608210853-0FYGE3/README.md",
+      "sha256": "sha256:eae2bdee8424f98bb01f9aed77e999056656764379962cdfea7c535d0e266eb2",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608210853-0FYGE3/quality/objects/sha256/82a18e7a0a4b8254469a4b7d27b7adfeee3899e69d940eb331faec7ce64c4b6e.patch",
+      "sha256": "sha256:82a18e7a0a4b8254469a4b7d27b7adfeee3899e69d940eb331faec7ce64c4b6e",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608210853-0FYGE3/quality/objects/sha256/78fdb83e88413926d08b42b066c5e9294df83445dbcdcd9ab1143eeb1f5a0051.json",
+      "sha256": "sha256:78fdb83e88413926d08b42b066c5e9294df83445dbcdcd9ab1143eeb1f5a0051",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608210853-0FYGE3/verification/20260821091046964-a90a98f3a3d21758.json",
+      "sha256": "sha256:ecd632c3729fcc20281bae53e9d5aa9a9c7e99ef26203bc5f24cd202c13b952f",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608210853-0FYGE3/quality/objects/sha256/e61a15bf29ef498074e8c63e37195a3f349e733bef9010978b41b99fef79b2b7.json",
+      "sha256": "sha256:e61a15bf29ef498074e8c63e37195a3f349e733bef9010978b41b99fef79b2b7",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
