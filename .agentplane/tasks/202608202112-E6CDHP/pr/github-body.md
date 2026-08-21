@@ -15,13 +15,8 @@ Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutatio
 
 ## Verification
 
-- State: blocked_external
-- Note:
-
-```text
-Live GitLab canary requires integration queue to pass branch and exact head into provider-neutral
-hosted checks.
-```
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -36,6 +31,8 @@ hosted checks.
  .../cleanup-merged-provider-reconciliation.ts      |  37 +++++++-
  .../branch/cleanup-merged-targeted-proof.ts        |   7 +-
  .../branch/cleanup-merged.targeted.test.ts         |  13 ++-
+ .../src/commands/integrate-queue.command.test.ts   |   8 ++
+ .../src/commands/integrate-queue.command.ts        |   2 +
  .../src/commands/pr/conflict-rework.test.ts        |  25 +++++
  .../agentplane/src/commands/pr/conflict-rework.ts  |  27 +++++-
  .../agentplane/src/commands/pr/integrate/cmd.ts    |   3 +-
@@ -45,7 +42,7 @@ hosted checks.
  .../src/commands/pr/internal/glab-api.ts           |   4 +-
  .../src/commands/pr/internal/sync-gitlab.test.ts   |  33 +++++++
  .../src/commands/pr/internal/sync-gitlab.ts        |  29 ++++++
- 13 files changed, 317 insertions(+), 14 deletions(-)
+ 15 files changed, 327 insertions(+), 14 deletions(-)
 ```
 
 </details>

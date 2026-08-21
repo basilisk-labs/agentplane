@@ -6,14 +6,14 @@ Created: 2026-08-20T21:18:16.979Z
 
 - Task: `202608202112-E6CDHP`
 - Title: Fix live GitLab MR transport and provider-neutral mergeability validation
-- Status: BLOCKED
+- Status: DOING
 - Branch: `task/202608202112-E6CDHP/fix-live-gitlab-mr-transport-and-provider-neutra`
 - Canonical task record: `.agentplane/tasks/202608202112-E6CDHP/README.md`
 
 ## Verification
 
-- State: blocked_external
-- Note: Live GitLab canary requires integration queue to pass branch and exact head into provider-neutral hosted checks.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -33,6 +33,8 @@ Created: 2026-08-20T21:18:16.979Z
  .../cleanup-merged-provider-reconciliation.ts      |  37 +++++++-
  .../branch/cleanup-merged-targeted-proof.ts        |   7 +-
  .../branch/cleanup-merged.targeted.test.ts         |  13 ++-
+ .../src/commands/integrate-queue.command.test.ts   |   8 ++
+ .../src/commands/integrate-queue.command.ts        |   2 +
  .../src/commands/pr/conflict-rework.test.ts        |  25 +++++
  .../agentplane/src/commands/pr/conflict-rework.ts  |  27 +++++-
  .../agentplane/src/commands/pr/integrate/cmd.ts    |   3 +-
@@ -42,7 +44,7 @@ Created: 2026-08-20T21:18:16.979Z
  .../src/commands/pr/internal/glab-api.ts           |   4 +-
  .../src/commands/pr/internal/sync-gitlab.test.ts   |  33 +++++++
  .../src/commands/pr/internal/sync-gitlab.ts        |  29 ++++++
- 13 files changed, 317 insertions(+), 14 deletions(-)
+ 15 files changed, 327 insertions(+), 14 deletions(-)
 ```
 
 </details>

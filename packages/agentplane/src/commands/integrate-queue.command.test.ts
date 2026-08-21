@@ -638,6 +638,14 @@ describe("integrate queue claim publication guard", () => {
     ).rejects.toMatchObject({ code: "E_HANDOFF" });
 
     expect(mocks.waitForHostedChecks).toHaveBeenCalledOnce();
+    expect(mocks.waitForHostedChecks).toHaveBeenCalledWith(
+      expect.objectContaining({
+        gitRoot: "/repo",
+        prNumber: entry.pr_number,
+        branch: entry.branch,
+        expectedHeadSha: entry.head_sha,
+      }),
+    );
     expect(mocks.cmdIntegrate).not.toHaveBeenCalled();
     expect(mocks.markQueueEntry).not.toHaveBeenCalled();
   });
