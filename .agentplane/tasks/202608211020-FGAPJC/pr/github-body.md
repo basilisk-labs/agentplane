@@ -44,6 +44,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  packages/agentplane/src/commands/pr/update.ts      |  11 +-
  .../commands/shared/side-effect-authority.test.ts  |  55 +++
  .../src/commands/shared/side-effect-authority.ts   |  41 +-
+ .../agentplane/src/commands/shared/task-backend.ts |  24 +-
  .../src/commands/task/advance.command.ts           |  19 +-
  .../src/commands/task/agent-action-packet.test.ts  |  28 +-
  .../src/commands/task/agent-action-packet.ts       |  55 ++-
@@ -58,7 +59,8 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../src/commands/task/direct-task-verification.ts  |  76 +++-
  .../task/execution-authority-context.test.ts       |  92 ++++
  .../commands/task/execution-authority-context.ts   | 114 +++++
- packages/agentplane/src/commands/task/new.ts       |  32 +-
+ .../src/commands/task/new.primary-checkout.test.ts |  66 +++
+ packages/agentplane/src/commands/task/new.ts       |  46 +-
  .../src/commands/task/plan-approve.command.ts      |  70 ++-
  packages/agentplane/src/commands/task/plan.ts      |  90 +++-
  .../src/commands/task/verify-record-execute.ts     |   4 +-
@@ -76,7 +78,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../baselines/v0.7-compatibility-candidate.json    |  41 +-
  .../check-compatibility-contract-baseline.mjs      |  27 ++
  website/static/llms-full.txt                       |  43 +-
- 49 files changed, 3142 insertions(+), 152 deletions(-)
+ 51 files changed, 3238 insertions(+), 160 deletions(-)
 ```
 
 </details>

@@ -208,6 +208,22 @@ export async function loadCommandContext(opts: {
 }
 
 /**
+ * Route repository-level task mutations to the primary checkout. Linked task
+ * worktrees own their existing task, but they must not become the storage root
+ * for a newly created sibling task.
+ */
+export async function resolvePrimaryCheckoutCommandContext(
+  ctx: CommandContext,
+): Promise<CommandContext> {
+  const worktrees = await listWorktrees(ctx.resolvedProject.gitRoot);
+  const primary = worktrees[0]?.path;
+  if (!primary || path.resolve(primary) === path.resolve(ctx.resolvedProject.gitRoot)) {
+    return ctx;
+  }
+  return await loadCommandContext({ cwd: primary, rootOverride: null });
+}
+
+/**
  * Route task commands back to the primary checkout when invoked from an old
  * linked worktree that predates the requested task. A task worktree remains
  * authoritative when it already contains the task or owns its task branch.
@@ -236,12 +252,8 @@ export async function resolveTaskOwnerCommandContext(opts: {
     }
   }
 
-  const worktrees = await listWorktrees(opts.ctx.resolvedProject.gitRoot);
-  const primary = worktrees[0]?.path;
-  if (!primary || path.resolve(primary) === path.resolve(opts.ctx.resolvedProject.gitRoot)) {
-    return opts.ctx;
-  }
-  const primaryCtx = await loadCommandContext({ cwd: primary, rootOverride: null });
+  const primaryCtx = await resolvePrimaryCheckoutCommandContext(opts.ctx);
+  if (primaryCtx === opts.ctx) return opts.ctx;
   return (await primaryCtx.taskBackend.getTask(opts.taskId)) ? primaryCtx : opts.ctx;
 }
 
