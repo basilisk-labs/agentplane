@@ -1,0 +1,3 @@
+ .../task/verify-record-observed-changes.ts         |  3 +-
+ .../task/verify-record.durability.unit.test.ts     | 45 ++++++++++++++++++++++
+ 2 files changed, 46 insertions(+), 2 deletions(-)

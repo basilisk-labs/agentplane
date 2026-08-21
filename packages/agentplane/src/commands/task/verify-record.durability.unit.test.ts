@@ -9,6 +9,7 @@ import { loadCommandContext } from "../shared/task-backend.js";
 import * as taskMutation from "../shared/task-mutation.js";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import { cmdVerifyParsed } from "./verify-record.js";
+import { resolveObservedVerificationChangedPaths } from "./verify-record-observed-changes.js";
 import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
@@ -319,5 +320,49 @@ describe("task verification durability", () => {
       input?: { verification_contract_digest?: string };
     };
     expect(record.input?.verification_contract_digest).toBe(contract?.digest);
+  });
+
+  it("observes the complete direct task diff from the frozen execution base", async () => {
+    const root = await makeRepo();
+    const taskId = "202602050900-V1F4B";
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed direct task base"], { cwd: root });
+    const { stdout: baseShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const baseSha = baseShaOutput.trim();
+    await mkdir(path.join(root, "packages", "app"), { recursive: true });
+    await writeFile(path.join(root, "packages", "app", "first.ts"), "export const first = 1;\n");
+    await execFileAsync("git", ["add", "packages/app/first.ts"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: first direct task change"], { cwd: root });
+    await writeFile(path.join(root, "packages", "app", "second.ts"), "export const second = 2;\n");
+    await execFileAsync("git", ["add", "packages/app/second.ts"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: second direct task change"], { cwd: root });
+    const { stdout: evaluatedShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+
+    const changedPaths = await resolveObservedVerificationChangedPaths({
+      ctx,
+      evaluatedSha: evaluatedShaOutput.trim(),
+      taskId,
+      artifactTaskIds: [taskId],
+      execution: {
+        schema_version: 1,
+        primary_task_id: taskId,
+        task_ids: [taskId],
+        repository_mode: "direct",
+        selected_mode: "direct",
+        requested_mode: "direct",
+        route_source: "execution_contract",
+        reason_codes: [],
+        base_ref: "main",
+        base_sha: baseSha,
+        authoritative_task_source: "base_checkout",
+      },
+    });
+
+    expect(changedPaths).toEqual(["packages/app/first.ts", "packages/app/second.ts"]);
   });
 });

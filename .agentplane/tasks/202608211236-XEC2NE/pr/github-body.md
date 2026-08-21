@@ -16,7 +16,7 @@ Fix the packaged-candidate-flow qualification regression exposed after rebasing 
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +27,9 @@ Fix the packaged-candidate-flow qualification regression exposed after rebasing 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../task/verify-record-observed-changes.ts         |  3 +-
+ .../task/verify-record.durability.unit.test.ts     | 45 ++++++++++++++++++++++
+ 2 files changed, 46 insertions(+), 2 deletions(-)
 ```
 
 </details>
