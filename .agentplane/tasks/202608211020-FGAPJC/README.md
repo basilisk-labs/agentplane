@@ -4,7 +4,7 @@ title: "Implement task-scoped autonomous execution after one user-approved plan"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -30,6 +30,39 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-21T11:46:50.989Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 7 typed finding(s)."
+  evaluated_sha: "0fc5512142ef4ad95f66fc6054833edada9349ae"
+  blueprint_digest: "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa"
+  evidence_refs:
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-114257503-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-114257503-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/92bd7f70a565a0a9b3ca681d6486ac92021750b08d71d09c96f419c4b8991ea7.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-114257503-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-114257503-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-114257503-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-114257503-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/README.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/1cc1b91a0422eaa0ccf7a170a34108ec45e50322cd724552af772ec33405c442.patch"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/14ac1cec183b34d510d6fd7e1ee89bb95014339d05045f348e0b2ec67960dea2.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821114247305-d720714021583e12.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "ExecutionGrant is not bound to repository identity or an approved logical-completion contract. Its active-state validation checks only task id, plan digest, and execution-scope digest, so the grant cannot prove that it applies to the same logical repository and completion boundary required by plan item 1."
+    - "OperationLease is only a core constructor and test fixture. No runtime consumer creates or validates it; configured authority still emits the legacy SideEffectAuthorityRecord. Therefore short-lived grant-derived leases, stale/cross-task rejection, and supervisor ownership of effect execution required by plan item 5 are not implemented."
+    - "The managed supervisor and doctor paths were not changed. The diff does not establish that task run consumes ExecutionGrant through rework, verification, provider effects, closeout, and cleanup, nor that doctor diagnoses unavailable host approval transport before an impossible action, as required by plan items 2, 4, and 7."
+    - "Task-scoped base_ref/base_sha selection is implemented, but logical repository identity and relocation recovery are absent. Workspace allocation still persists absolute repository_root/workspace_root values and rediscovery relies on existing Git worktree registrations; the approved repository-rename recovery invariant is not covered."
+    - "The observed checks pass, but the new tests do not prove the required end-to-end cases: a single host decision reaching logical closeout, material drift versus ordinary rework, concurrent master/typescript tasks with isolated diffs, repository rename recovery, or crash replay without duplicate provider/repository effects."
+    - "Residual risk: Passing unit and critical checks can mask a control-plane gap where plan approval still cannot autonomously carry the task through provider and closeout boundaries."
+    - "Residual risk: An unsigned host-user-decision CLI payload remains safe only under the explicit assumption that the invoking Codex host is the trusted origin boundary."
 execution_route:
   frozen: true
   reason_codes:
