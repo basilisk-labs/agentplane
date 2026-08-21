@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 010ece25687acf4c25e6a7c6888aab596ab9f968..0a339f786ae5602d7c378c9844e8e36ddafa3931",
+      "command": "git diff --check 05926076a6ec9d15fdbb3aee20c9be0ae5b964a6..5a68dd0ebe6f6a3377efd4e22ab93fb49258a973",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,15 +13,10 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 010ece25687acf4c25e6a7c6888aab596ab9f968..0a339f786ae5602d7c378c9844e8e36ddafa3931",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 05926076a6ec9d15fdbb3aee20c9be0ae5b964a6..5a68dd0ebe6f6a3377efd4e22ab93fb49258a973",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202608211020-FGAPJC/pr/diffstat.txt",
-        "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
-        "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
-        "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
-        "M\tpackages/core/src/tasks/plan-execution-grant.test.ts",
         "M\tpackages/core/src/tasks/plan-execution-grant.ts"
       ]
     },
@@ -32,8 +27,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "010ece25687acf4c25e6a7c6888aab596ab9f968",
-  "implementation_commit": "0a339f786ae5602d7c378c9844e8e36ddafa3931",
+  "execution_base_commit": "05926076a6ec9d15fdbb3aee20c9be0ae5b964a6",
+  "implementation_commit": "5a68dd0ebe6f6a3377efd4e22ab93fb49258a973",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
