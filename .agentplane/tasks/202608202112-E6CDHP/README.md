@@ -2,10 +2,10 @@
 id: "202608202112-E6CDHP"
 title: "Fix live GitLab MR transport and provider-neutral mergeability validation"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 64
+revision: 65
 origin:
   system: "manual"
 depends_on: []
@@ -64,9 +64,9 @@ quality_review:
     - "Residual risk: Local full-suite state isolation can still produce unrelated non-deterministic failures under the supervisor harness."
     - "Residual risk: GitHub hosted checks must be green for the exact newly published head before merge."
 token_usage:
-  agent_runs: 13
+  agent_runs: 15
   input_tokens: null
-  journal_digest: "sha256:97aff2ff512b8363c188143c87b1a63d79456339ae848966fcf8f099cfcbe471"
+  journal_digest: "sha256:516c0d9fb2bfa861b5fff078d9e23b34eda49a4932fd704355c22e12f1a05270"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -76,7 +76,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-21T02:16:48.072Z"
+  updated_at: "2026-08-21T11:51:39.056Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -318,7 +318,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "87b13c778358236a40426224165a6d30fd660cb3"
+  message: "🚧 E6CDHP task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -413,6 +415,9 @@ comments:
   -
     author: "USER"
     body: "Operator decision 2026-08-21: accept a verification exception for the unstable local full regression. Preserve the recorded supervisor failures as evidence, treat them as unrelated harness/state-isolation instability given the earlier clean full serial run and focused reruns, and proceed with publishing the current head, exact-head hosted checks, merge, and task closeout."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -703,9 +708,17 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Accepted with operator-approved verification exception: GitLab implementation and current-head focused regression pass; unstable unrelated local full-suite failures remain recorded and accepted as residual harness risk. Exact-head hosted checks remain mandatory before merge."
+  -
+    type: "status"
+    at: "2026-08-21T11:51:39.056Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "87b13c778358236a40426224165a6d30fd660cb3"
 doc_version: 3
-doc_updated_at: "2026-08-21T11:51:00.372Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-08-21T11:51:39.086Z"
+doc_updated_by: "CODER"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
   Summary: |-
@@ -1307,6 +1320,7 @@ extensions:
     transition_id: "tr_88faf6bea4c9786ed4d1061e0c56c904"
   implementation_commit:
     hash: "ea947fe102c5b5d354ad1a441cd0efe578f5de47"
+    message: "🚧 E6CDHP task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "60be0145753e9e2aecf31f4bbd8471895db13395"
@@ -1910,12 +1924,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/13` agent runs
+- Completeness: `0/15` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:97aff2ff512b8363c188143c87b1a63d79456339ae848966fcf8f099cfcbe471`
+- Journal digest: `sha256:516c0d9fb2bfa861b5fff078d9e23b34eda49a4932fd704355c22e12f1a05270`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-21T02:16:48.072Z`
+- Updated at: `2026-08-21T11:51:39.056Z`
