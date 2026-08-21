@@ -29,7 +29,7 @@ Created: 2026-08-21T10:27:11.359Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- check                                              |  16 +
+ check                                              |  17 +
  docs/developer/task-execution-authority.mdx        |  40 ++
  docs/user/branching-and-pr-artifacts.mdx           |  19 +
  docs/user/cli-reference.generated.mdx              |   2 +
@@ -97,7 +97,7 @@ Created: 2026-08-21T10:27:11.359Z
  .../baselines/v0.7-compatibility-candidate.json    |  62 +-
  .../check-compatibility-contract-baseline.mjs      |  42 +-
  website/static/llms-full.txt                       |  46 +-
- 68 files changed, 4050 insertions(+), 388 deletions(-)
+ 68 files changed, 4051 insertions(+), 388 deletions(-)
 ```
 
 </details>
