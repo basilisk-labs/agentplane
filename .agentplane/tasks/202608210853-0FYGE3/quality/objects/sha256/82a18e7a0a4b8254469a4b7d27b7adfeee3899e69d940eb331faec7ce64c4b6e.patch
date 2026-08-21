@@ -1,0 +1,244 @@
+diff --git a/packages/agentplane/src/commands/shared/route-decision-next-action.test.ts b/packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+index cf57e91f4..a7c8c79c6 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+@@ -1,10 +1,27 @@
+-import { describe, expect, it } from "vitest";
++import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+ import type { PrFlowStatusReport } from "../pr/flow-status.js";
+ import type { TaskResumeContext } from "../task/handoff.shared.js";
++import { resolveLocalRecordedCloseFlow } from "./route-decision.js";
+ import { deriveNextAction } from "./route-decision-next-action.js";
+ import type { RouteCleanupProbe } from "./route-decision-types.js";
++import type { CommandContext } from "./task-backend.js";
++
++const localCloseMocks = vi.hoisted(() => ({
++  readTaskPrMetaArtifact: vi.fn(),
++  taskCloseAlreadyRecordedOnBase: vi.fn(),
++}));
++
++vi.mock("../pr/internal/pr-paths.js", async (importOriginal) => ({
++  ...(await importOriginal<Record<string, unknown>>()),
++  readTaskPrMetaArtifact: localCloseMocks.readTaskPrMetaArtifact,
++}));
++
++vi.mock("../task/close-tail-state.js", async (importOriginal) => ({
++  ...(await importOriginal<Record<string, unknown>>()),
++  taskCloseAlreadyRecordedOnBase: localCloseMocks.taskCloseAlreadyRecordedOnBase,
++}));
+ 
+ const task = {
+   id: "T-1",
+@@ -83,6 +100,83 @@ function nextAction(prFlow: PrFlowStatusReport, cleanupProbe: RouteCleanupProbe)
+   });
+ }
+ 
++describe("local recorded close fallback", () => {
++  const ctx = {
++    resolvedProject: { gitRoot: process.cwd() },
++    config: { paths: { workflow_dir: ".agentplane/tasks" } },
++  } as CommandContext;
++  const staleOpenMeta = JSON.stringify({
++    schema_version: 1,
++    task_id: "T-1",
++    status: "OPEN",
++    branch: "task/T-1/work",
++    base: "main",
++    head_sha: "1111111111111111111111111111111111111111",
++    pr_number: 101,
++    pr_url: "https://github.com/example/repo/pull/101",
++    created_at: "2026-01-01T00:00:00.000Z",
++    updated_at: "2026-01-01T00:00:00.000Z",
++    verify: { status: "pass" },
++    pre_merge_closure: {
++      state: "closed_before_merge",
++      branch: "task/T-1/work",
++      pr_number: 101,
++      basis_commit: "1111111111111111111111111111111111111111",
++      recorded_at: "2026-01-01T00:00:00.000Z",
++    },
++  });
++
++  beforeEach(() => {
++    localCloseMocks.readTaskPrMetaArtifact.mockReset();
++    localCloseMocks.taskCloseAlreadyRecordedOnBase.mockReset();
++    localCloseMocks.readTaskPrMetaArtifact.mockResolvedValue({ content: staleOpenMeta });
++  });
++
++  it("prefers canonical base closure over stale OPEN metadata for a DONE task", async () => {
++    localCloseMocks.taskCloseAlreadyRecordedOnBase
++      .mockResolvedValueOnce(false)
++      .mockResolvedValueOnce(true);
++
++    const result = await resolveLocalRecordedCloseFlow({
++      ctx,
++      task: { ...task, verification: { state: "ok" } },
++      workflowMode: "branch_pr",
++    });
++
++    expect(localCloseMocks.taskCloseAlreadyRecordedOnBase).toHaveBeenNthCalledWith(
++      1,
++      expect.objectContaining({ taskId: "T-1", baseBranch: "origin/main" }),
++    );
++    expect(localCloseMocks.taskCloseAlreadyRecordedOnBase).toHaveBeenNthCalledWith(
++      2,
++      expect.objectContaining({ taskId: "T-1", baseBranch: "main" }),
++    );
++    expect(result).toMatchObject({
++      task: { id: "T-1", status: "DONE", verification: "ok" },
++      branch: { name: "task/T-1/work", headSha: null },
++      pr: { state: "MERGED", source: "metadata", mergeCommit: null },
++      closeTail: { state: "recorded_on_base", base: "main" },
++      hostedChecks: { checked: false, reason: "remote lookup skipped" },
++      reviewThreads: { checked: false, reason: "remote lookup skipped" },
++    });
++  });
++
++  it("keeps ordinary OPEN metadata when the task is not finalized", async () => {
++    const result = await resolveLocalRecordedCloseFlow({
++      ctx,
++      task: { ...task, status: "DOING" },
++      workflowMode: "branch_pr",
++    });
++
++    expect(localCloseMocks.taskCloseAlreadyRecordedOnBase).not.toHaveBeenCalled();
++    expect(result).toMatchObject({
++      task: { id: "T-1", status: "DOING" },
++      pr: { state: "OPEN", source: "metadata", mergeCommit: null },
++      closeTail: { state: "not_applicable" },
++    });
++  });
++});
++
+ describe("DONE branch_pr route cleanup boundary", () => {
+   it("blocks a dirty DONE task worktree before enqueueing an open PR", () => {
+     const openPr = {
+diff --git a/packages/agentplane/src/commands/shared/route-decision.ts b/packages/agentplane/src/commands/shared/route-decision.ts
+index 352daef14..85469d615 100644
+--- a/packages/agentplane/src/commands/shared/route-decision.ts
++++ b/packages/agentplane/src/commands/shared/route-decision.ts
+@@ -107,7 +107,28 @@ function hasRemoteProviderEvidence(prFlow: PrFlowStatusReport | null): boolean {
+   );
+ }
+ 
+-async function resolveLocalRecordedCloseFlow(opts: {
++async function resolveRecordedCloseBase(opts: {
++  ctx: CommandContext;
++  taskId: string;
++  base: string;
++}): Promise<string | null> {
++  const remoteRecorded = await taskCloseAlreadyRecordedOnBase({
++    gitRoot: opts.ctx.resolvedProject.gitRoot,
++    workflowDir: opts.ctx.config.paths.workflow_dir,
++    taskId: opts.taskId,
++    baseBranch: `origin/${opts.base}`,
++  }).catch(() => false);
++  if (remoteRecorded) return opts.base;
++  const localRecorded = await taskCloseAlreadyRecordedOnBase({
++    gitRoot: opts.ctx.resolvedProject.gitRoot,
++    workflowDir: opts.ctx.config.paths.workflow_dir,
++    taskId: opts.taskId,
++    baseBranch: opts.base,
++  }).catch(() => false);
++  return localRecorded ? opts.base : null;
++}
++
++export async function resolveLocalRecordedCloseFlow(opts: {
+   ctx: CommandContext;
+   task: Awaited<ReturnType<typeof loadBackendTask>>["task"];
+   workflowMode: "direct" | "branch_pr";
+@@ -123,6 +144,40 @@ async function resolveLocalRecordedCloseFlow(opts: {
+     const meta = parsePrMeta(content, opts.task.id);
+     const trimmedBase = meta.base?.trim();
+     const base = trimmedBase && trimmedBase.length > 0 ? trimmedBase : "main";
++    const recordedBase =
++      opts.task.status === "DONE" || meta.status === "MERGED"
++        ? await resolveRecordedCloseBase({ ctx: opts.ctx, taskId: opts.task.id, base })
++        : null;
++    if (recordedBase) {
++      return {
++        task: {
++          id: opts.task.id,
++          status: opts.task.status,
++          verification: opts.task.verification?.state ?? null,
++        },
++        branch: {
++          name: meta.branch ?? null,
++          headSha: null,
++          metaHeadSha: meta.head_sha ?? null,
++        },
++        pr: {
++          provider: "github",
++          state: "MERGED",
++          source: "metadata",
++          prNumber: typeof meta.pr_number === "number" ? meta.pr_number : null,
++          prUrl: meta.pr_url ?? null,
++          base,
++          headSha: meta.head_sha ?? null,
++          mergeCommit: meta.merge_commit ?? null,
++        },
++        closeTail: { state: "recorded_on_base", base: recordedBase },
++        hostedChecks: { checked: false, reason: "remote lookup skipped" },
++        reviewThreads: { checked: false, reason: "remote lookup skipped" },
++        queue: { present: false },
++        handoff: { present: false },
++        nextAction: "pull main; task close evidence is already recorded upstream",
++      };
++    }
+     const branchHeadSha = meta.branch
+       ? await gitRevParse(opts.ctx.resolvedProject.gitRoot, [meta.branch]).catch(() => null)
+       : null;
+@@ -198,50 +253,7 @@ async function resolveLocalRecordedCloseFlow(opts: {
+         nextAction: `agentplane pr open ${opts.task.id} --author <ROLE>`,
+       };
+     }
+-    const remoteRecorded = await taskCloseAlreadyRecordedOnBase({
+-      gitRoot: opts.ctx.resolvedProject.gitRoot,
+-      workflowDir: opts.ctx.config.paths.workflow_dir,
+-      taskId: opts.task.id,
+-      baseBranch: `origin/${base}`,
+-    }).catch(() => false);
+-    const recorded = remoteRecorded
+-      ? true
+-      : await taskCloseAlreadyRecordedOnBase({
+-          gitRoot: opts.ctx.resolvedProject.gitRoot,
+-          workflowDir: opts.ctx.config.paths.workflow_dir,
+-          taskId: opts.task.id,
+-          baseBranch: base,
+-        }).catch(() => false);
+-    if (!recorded) return null;
+-    return {
+-      task: {
+-        id: opts.task.id,
+-        status: opts.task.status,
+-        verification: opts.task.verification?.state ?? null,
+-      },
+-      branch: {
+-        name: meta.branch ?? null,
+-        headSha: null,
+-        metaHeadSha: meta.head_sha ?? null,
+-      },
+-      pr: {
+-        provider: "github",
+-        state: "MERGED",
+-        source: "metadata",
+-        prNumber: typeof meta.pr_number === "number" ? meta.pr_number : null,
+-        prUrl: meta.pr_url ?? null,
+-        base,
+-        headSha: meta.head_sha ?? null,
+-        mergeCommit: meta.merge_commit,
+-      },
+-      publication,
+-      closeTail: { state: "recorded_on_base", base },
+-      hostedChecks: { checked: false, reason: "remote lookup skipped" },
+-      reviewThreads: { checked: false, reason: "remote lookup skipped" },
+-      queue: { present: false },
+-      handoff: { present: false },
+-      nextAction: "pull main; task close evidence is already recorded upstream",
+-    };
++    return null;
+   } catch (err) {
+     const message = err instanceof Error ? err.message : String(err);
+     opts.onDiagnostic?.(`local PR metadata fallback failed: ${message}`);

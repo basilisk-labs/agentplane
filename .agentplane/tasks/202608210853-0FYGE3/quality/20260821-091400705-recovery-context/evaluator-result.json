@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The evaluated diff satisfies the approved precedence invariant: canonical close evidence produces a terminal local route before stale PR metadata, while a non-finalized OPEN task retains the existing behavior.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608210853-0FYGE3/quality/objects/sha256/82a18e7a0a4b8254469a4b7d27b7adfeee3899e69d940eb331faec7ce64c4b6e.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A route-level assertion for the stale CLOSED variant would strengthen coverage; the current positive stale OPEN test exercises the same shared precedence branch."
+  ],
+  "hidden_assumptions": [
+    "A canonical task-close commit present on the configured base branch is authoritative local lifecycle evidence even when stale metadata cannot supply the provider merge commit SHA."
+  ]
+}

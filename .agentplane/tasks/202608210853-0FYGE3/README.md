@@ -4,7 +4,7 @@ title: "Fix local branch_pr status after merged cleanup"
 status: "DOING"
 priority: "normal"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -27,6 +27,32 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-21T09:16:02.407Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "e7aeff72c3bdf8180385a8a64f84907b1de022a5"
+  blueprint_digest: "600da6f8ec8fe51ae9833f2bdbf15fa9feecd96fb9adb94f88fbfc3e095a6232"
+  evidence_refs:
+    - ".agentplane/tasks/202608210853-0FYGE3/quality/20260821-091400705-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608210853-0FYGE3/quality/20260821-091400705-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608210853-0FYGE3/quality/objects/sha256/49303f69d3a2ecdda930566bef911cabfaf7af1fab61d9e7812a68bceb31f593.md"
+    - ".agentplane/tasks/202608210853-0FYGE3/quality/20260821-091400705-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608210853-0FYGE3/quality/20260821-091400705-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608210853-0FYGE3/quality/20260821-091400705-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608210853-0FYGE3/README.md"
+    - ".agentplane/tasks/202608210853-0FYGE3/quality/objects/sha256/82a18e7a0a4b8254469a4b7d27b7adfeee3899e69d940eb331faec7ce64c4b6e.patch"
+    - ".agentplane/tasks/202608210853-0FYGE3/quality/objects/sha256/78fdb83e88413926d08b42b066c5e9294df83445dbcdcd9ab1143eeb1f5a0051.json"
+    - ".agentplane/tasks/202608210853-0FYGE3/verification/20260821091046964-a90a98f3a3d21758.json"
+    - ".agentplane/tasks/202608210853-0FYGE3/quality/objects/sha256/e61a15bf29ef498074e8c63e37195a3f349e733bef9010978b41b99fef79b2b7.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The evaluated diff satisfies the approved precedence invariant: canonical close evidence produces a terminal local route before stale PR metadata, while a non-finalized OPEN task retains the existing behavior."
 execution_route:
   frozen: true
   reason_codes:
