@@ -15,13 +15,8 @@ Fix the packaged-candidate-flow qualification regression exposed after rebasing 
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Hosted P1 review requires preserving the single-commit fallback when a direct task has no genuinely
-frozen pre-execution base (discussion_r3833736708).
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
