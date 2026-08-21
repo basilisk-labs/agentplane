@@ -2,10 +2,10 @@
 id: "202608211020-FGAPJC"
 title: "Implement task-scoped autonomous execution after one user-approved plan"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 84
+revision: 86
 origin:
   system: "manual"
 depends_on: []
@@ -588,6 +588,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: ab8bc62471c3. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The verification scheduler must make full-suite group concurrency configurable so task-scoped checks cannot deadlock under constrained local resources. Recommended action: Extend the approved task scope to scripts/checks/run-local-ci.mjs and resume autonomous execution. Requested scope: roots=scripts/checks/run-local-ci.mjs; repository effects=repository_write,source_code,tests; request digest=sha256:8ecf770355ea5febf399e34e939403415bc83059b13cd3d586c7366f2785ffe9. Agentplane receipt: external-agent-blocker/tr_0dcc7e4efccb34730d1329e738c55f86/sha256:ddc3b3e867483bb185c4ad34714dc3eb2f82d3030563d3ed4c345e87280da9ff/sha256:8ecf770355ea5febf399e34e939403415bc83059b13cd3d586c7366f2785ffe9."
 events:
   -
     type: "status"
@@ -913,8 +916,15 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run check"
+  -
+    type: "status"
+    at: "2026-08-21T17:12:14.445Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The verification scheduler must make full-suite group concurrency configurable so task-scoped checks cannot deadlock under constrained local resources. Recommended action: Extend the approved task scope to scripts/checks/run-local-ci.mjs and resume autonomous execution. Requested scope: roots=scripts/checks/run-local-ci.mjs; repository effects=repository_write,source_code,tests; request digest=sha256:8ecf770355ea5febf399e34e939403415bc83059b13cd3d586c7366f2785ffe9. Agentplane receipt: external-agent-blocker/tr_0dcc7e4efccb34730d1329e738c55f86/sha256:ddc3b3e867483bb185c4ad34714dc3eb2f82d3030563d3ed4c345e87280da9ff/sha256:8ecf770355ea5febf399e34e939403415bc83059b13cd3d586c7366f2785ffe9."
 doc_version: 3
-doc_updated_at: "2026-08-21T16:19:44.443Z"
+doc_updated_at: "2026-08-21T17:12:14.498Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
@@ -1883,22 +1893,21 @@ extensions:
     status: "active"
     task_id: "202608211020-FGAPJC"
   agentplane.scope_extension_request:
-    applied_at: "2026-08-21T14:30:47.878Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:afac9307c1d9a279db8a99150187dc585adfde9f81d5dd17c24e10c883603c2d"
+    blocker_state_fingerprint: "sha256:ddc3b3e867483bb185c4ad34714dc3eb2f82d3030563d3ed4c345e87280da9ff"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Implement the already-approved bun run check verification contract without modifying dependency metadata or weakening verification."
+      rationale: "The full local verification scheduler owns group-level concurrency; the task wrapper cannot enforce serialized groups without this bounded scheduler change."
       repository_effects:
         - "repository_write"
         - "source_code"
+        - "tests"
       schema_version: 1
       scope_roots:
-        - "check"
-    request_digest: "sha256:659d9c2e08b46ea5a63dcaedc9e6aeacf306ead90f6a8505b7be1a661b53c20c"
+        - "scripts/checks/run-local-ci.mjs"
+    request_digest: "sha256:8ecf770355ea5febf399e34e939403415bc83059b13cd3d586c7366f2785ffe9"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_fd65df0f51ebfcf4e8670f3f1ebd6e98"
+    status: "pending"
+    transition_id: "tr_0dcc7e4efccb34730d1329e738c55f86"
   implementation_commit:
     hash: "ab8bc62471c377f2d42e485fb597fabec8482e80"
   task_execution_context:
