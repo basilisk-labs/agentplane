@@ -1,1 +1,1 @@
-🚧 XEC2NE task: Repair packaged candidate verification-contract refresh after managed upgrade [202608211236-XEC2NE]
+✅ XEC2NE task: Repair packaged candidate verification-contract refresh after managed upgrade [202608211236-XEC2NE]
