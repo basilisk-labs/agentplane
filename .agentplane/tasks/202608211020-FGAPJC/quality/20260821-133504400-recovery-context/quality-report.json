@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608211020-FGAPJC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-21T13:35:39.546Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "0a339f786ae5602d7c378c9844e8e36ddafa3931",
+  "blueprint_digest": "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa",
+  "findings": [
+    "The exact CodeQL-reported /=+$/ expression is no longer present in parseHostUserDecision.",
+    "The replacement scans trailing padding once, rejects more than two padding characters, and performs a single slice.",
+    "The 100,000-character padding regression passes and exercises the hostile-input shape cited by CodeQL.",
+    "Supervisor-owned critical verification passed all 12 chunks; typecheck, policy routing, and doctor also pass.",
+    "Residual risk: Hosted CodeQL and the remaining exact-SHA CI matrix must pass before merge."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e9fcc4a5eff3fadf528e849e6abb36f0836566b571bc8bf912688f8c472baf23.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

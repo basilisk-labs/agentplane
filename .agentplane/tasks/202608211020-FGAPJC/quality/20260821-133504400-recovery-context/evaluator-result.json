@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The exact CodeQL-reported /=+$/ expression is no longer present in parseHostUserDecision.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e9fcc4a5eff3fadf528e849e6abb36f0836566b571bc8bf912688f8c472baf23.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The replacement scans trailing padding once, rejects more than two padding characters, and performs a single slice.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e9fcc4a5eff3fadf528e849e6abb36f0836566b571bc8bf912688f8c472baf23.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The 100,000-character padding regression passes and exercises the hostile-input shape cited by CodeQL.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e9fcc4a5eff3fadf528e849e6abb36f0836566b571bc8bf912688f8c472baf23.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Supervisor-owned critical verification passed all 12 chunks; typecheck, policy routing, and doctor also pass.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e9fcc4a5eff3fadf528e849e6abb36f0836566b571bc8bf912688f8c472baf23.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted CodeQL and the remaining exact-SHA CI matrix must pass before merge.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e9fcc4a5eff3fadf528e849e6abb36f0836566b571bc8bf912688f8c472baf23.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
