@@ -1,10 +1,10 @@
 ---
 id: "202608211010-X9X57M"
 title: "Route new task creation to the primary checkout"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,10 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved plan X9X57M in Codex task on 2026-08-21."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-21T10:35:25.786Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/task/new*.test.ts"
+  state: "pending"
+  updated_at: "2026-08-21T10:46:58.222Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 1
 execution_route:
   frozen: true
@@ -68,6 +68,7 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/task-backend.test.ts"
       - "packages/agentplane/src/commands/shared/task-backend.ts"
       - "packages/agentplane/src/commands/task/begin.command.ts"
+      - "packages/agentplane/src/commands/task/new.primary-checkout.test.ts"
       - "packages/agentplane/src/commands/task/new.ts"
   declaration:
     external_effects: []
@@ -78,6 +79,7 @@ execution_contract:
       - "Repository branch_pr policy requires task artifacts to remain isolated by authoritative checkout."
       - "The defect spans command-context selection and task-creation integration behavior, so source changes and focused regression tests are required."
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/cli/run-cli.core.task-guided.test.ts,packages/agentplane/src/commands/task/begin.command.ts; repository_effects=repository_write,source_code,tests"
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/task/new.primary-checkout.test.ts; repository_effects=repository_write,tests"
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -91,10 +93,10 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/task-backend.test.ts"
       - "packages/agentplane/src/commands/shared/task-backend.ts"
       - "packages/agentplane/src/commands/task/begin.command.ts"
+      - "packages/agentplane/src/commands/task/new.primary-checkout.test.ts"
       - "packages/agentplane/src/commands/task/new.ts"
   observed:
-    authority_violations:
-      - "verification:recorded-check-3:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -109,16 +111,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -139,6 +132,7 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/task-backend.test.ts"
           - "packages/agentplane/src/commands/shared/task-backend.ts"
           - "packages/agentplane/src/commands/task/begin.command.ts"
+          - "packages/agentplane/src/commands/task/new.primary-checkout.test.ts"
           - "packages/agentplane/src/commands/task/new.ts"
         evidence_requirements:
           - "hosted_integration"
@@ -155,7 +149,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:c683e85cf35063dfb6e82e881f840d03f1fb53224f62eb8c5cc8a1e6b494f383"
+      digest: "sha256:80b204cbd03e8ef3ca1df609e59c5e4acfc640245db3f122093c5241f7c07cca"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
@@ -216,7 +210,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-3"
 commit: null
 comments:
   -
@@ -234,6 +227,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Implementation rework is blocked by the declared verification command: its new*.test.ts glob matches no file, the task document is protected during this semantic episode, and the current writable roots do not permit adding a matching regression test file. Recommended action: Approve the minimal scope extension, add packages/agentplane/src/commands/task/new.primary-checkout.test.ts, run the declared check and required repository checks, then resume the task lifecycle. Requested scope: roots=packages/agentplane/src/commands/task/new.primary-checkout.test.ts; repository effects=repository_write,tests; request digest=sha256:6dc06d68d86fd0130d9ca48472d8114a08ce5d5653ffd35efe46984811feef88. Agentplane receipt: external-agent-blocker/tr_62e7ce4306c819c883ddeee581756eb3/sha256:4eef279c29fde74c7b784480d0411af5a32c3f255ac2d984ab72f3825fa77767/sha256:6dc06d68d86fd0130d9ca48472d8114a08ce5d5653ffd35efe46984811feef88."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/task/new.primary-checkout.test.ts; repository effects: repository_write, tests."
 events:
   -
     type: "status"
@@ -347,6 +343,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-08-21T10:46:58.222Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:4eef279c29fde74c7b784480d0411af5a32c3f255ac2d984ab72f3825fa77767"
     kind: "task_scope_extension_request"
     request:
@@ -359,7 +357,7 @@ extensions:
         - "packages/agentplane/src/commands/task/new.primary-checkout.test.ts"
     request_digest: "sha256:6dc06d68d86fd0130d9ca48472d8114a08ce5d5653ffd35efe46984811feef88"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_62e7ce4306c819c883ddeee581756eb3"
   implementation_commit:
     hash: "5c561bc702250c816bdc0460a7b1fd5636b5fa5d"
