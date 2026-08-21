@@ -12,8 +12,8 @@ Created: 2026-08-21T22:56:08.380Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-21T22:56:08.380Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-21T22:56:08.380Z
+- Updated: 2026-08-21T23:12:20.018Z
 - Branch: task/202608212254-WR57ZD/accept-exact-tree-identity-for-github-rebase-cle
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

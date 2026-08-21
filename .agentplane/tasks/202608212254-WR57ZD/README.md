@@ -4,7 +4,7 @@ title: "Accept exact tree identity for GitHub rebase cleanup"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +27,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-21T23:19:05.406Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -80,12 +80,23 @@ execution_contract:
     schema_version: 2
     scope_roots: []
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "repository_effect:tests"
+      - "verification:recorded-check-1:fail"
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts"
+      - "packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_publish"
@@ -112,6 +123,7 @@ execution_contract:
           - "repository_effect:release_metadata"
           - "repository_effect:repository_write"
           - "repository_effect:source_code"
+          - "repository_effect:tests"
           - "task_outcome"
         external_effects:
           - "network_read"
@@ -124,7 +136,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:898fd0140354628320c3c9df71c2bbb224ffa7ee9ed7f1f382def29db1bb77c4"
+      digest: "sha256:db0c48eb9c6825d069cbf57f0afd2ad4f7a4b9835023690e20b2f1efc738ea64"
       escalation_reasons:
         - "effect_release_metadata"
         - "external_effect_requires_real_e2e"
@@ -135,10 +147,16 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts"
+          - "packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -172,10 +190,10 @@ execution_contract:
       - "repository_effect:release_metadata"
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
+      - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "4a1e3b5de0c042bbb3519d9cad836cad4629f453"
-  message: "🚧 WR57ZD task: apply external agent result"
+      - "verification_recovery:recorded-check-1"
+commit: null
 comments:
   -
     author: "CODER"
@@ -199,8 +217,14 @@ events:
     to: "DOING"
     note: "Implementation committed: accept exact tree identity only for single-parent GitHub rebase merge receipts; focused cleanup reconciliation tests pass."
     commit: "4a1e3b5de0c042bbb3519d9cad836cad4629f453"
+  -
+    type: "verify"
+    at: "2026-08-21T23:19:05.406Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts"
 doc_version: 3
-doc_updated_at: "2026-08-21T23:11:16.706Z"
+doc_updated_at: "2026-08-21T23:19:08.913Z"
 doc_updated_by: "CODER"
 description: "Allow cleanup reconciliation to accept an exact provider receipt when the provider head tree equals the single-parent GitHub rebase merge commit tree; preserve existing identity, object, receipt, and negative guards. Add focused regression tests, publish a PR, merge after hosted checks, then retry cleanup for E6CDHP and XEC2NE."
 sections:
@@ -224,6 +248,41 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-21T23:19:05.406Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6adfa243d96b84d2717ef10120008e32a4ba9da884c709e3af04bc572f92ec31, input_digest=sha256:f0b769547ca264fb65928aec21ea87e0d96530be3de77495afad0e3536d3122e
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+    Result: fail
+    Evidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608212254-WR57ZD declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212254-WR57ZD-accept-exact-tree-identity-for-github-rebase-cle/.agentplane/tasks/202608212254-WR57ZD/blueprint/resolved-snapshot.json
+    - old_digest: f5e933c531525da8a83036a4f85f7fec8d7fb2f4dfb39e9455f48bafbb0cb09d
+    - current_digest: f5e933c531525da8a83036a4f85f7fec8d7fb2f4dfb39e9455f48bafbb0cb09d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608212254-WR57ZD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608212254-WR57ZD
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -259,7 +318,6 @@ extensions:
     base_sha: "134c95fd629d5ebcf0e17196ccb4b44f60c993fd"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "134c95fd629d5ebcf0e17196ccb4b44f60c993fd"
     version: 1
@@ -294,6 +352,41 @@ PLANNER fallback scaffold for "Accept exact tree identity for GitHub rebase clea
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-21T23:19:05.406Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6adfa243d96b84d2717ef10120008e32a4ba9da884c709e3af04bc572f92ec31, input_digest=sha256:f0b769547ca264fb65928aec21ea87e0d96530be3de77495afad0e3536d3122e
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
+Result: fail
+Evidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608212254-WR57ZD declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212254-WR57ZD-accept-exact-tree-identity-for-github-rebase-cle/.agentplane/tasks/202608212254-WR57ZD/blueprint/resolved-snapshot.json
+- old_digest: f5e933c531525da8a83036a4f85f7fec8d7fb2f4dfb39e9455f48bafbb0cb09d
+- current_digest: f5e933c531525da8a83036a4f85f7fec8d7fb2f4dfb39e9455f48bafbb0cb09d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608212254-WR57ZD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608212254-WR57ZD
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
