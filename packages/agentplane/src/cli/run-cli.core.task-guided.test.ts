@@ -230,6 +230,55 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
     expect(readme).toContain("Implement the explicit branch change");
   });
 
+  it("task begin with a plan routes creation and the plan update out of a linked worktree", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["checkout", "-b", "main"], { cwd: root });
+    await commitAll(root, "seed primary checkout");
+
+    const taskWorktree = path.join(root, ".agentplane", "worktrees", "existing-task");
+    await execFileAsync(
+      "git",
+      ["worktree", "add", "-b", "task/202608211010-EXIST2/work", taskWorktree],
+      { cwd: root },
+    );
+
+    const io = captureStdIO();
+    let payload: { task_id: string; status: string };
+    try {
+      const code = await runCli([
+        "task",
+        "begin",
+        "Route planned task creation",
+        "--tag",
+        "code",
+        "--plan",
+        "1. Keep task artifacts in the primary checkout.\n2. Verify worktree isolation.",
+        "--json",
+        "--root",
+        taskWorktree,
+      ]);
+      expect(code).toBe(0);
+      payload = JSON.parse(io.stdout.trim()) as typeof payload;
+    } finally {
+      io.restore();
+    }
+
+    expect(payload!.status).toBe("approval_required");
+    const primaryReadme = await readFile(
+      path.join(root, ".agentplane", "tasks", payload!.task_id, "README.md"),
+      "utf8",
+    );
+    expect(primaryReadme).toContain("Keep task artifacts in the primary checkout");
+    await expect(
+      readFile(path.join(taskWorktree, ".agentplane", "tasks", payload!.task_id, "README.md")),
+    ).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
   it("task complete records verification and finishes a direct task", async () => {
     const root = await mkGitRepoRoot();
     const config = defaultConfig();
