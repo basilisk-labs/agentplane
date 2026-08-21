@@ -2,10 +2,10 @@
 id: "202608211020-FGAPJC"
 title: "Implement task-scoped autonomous execution after one user-approved plan"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 70
+revision: 72
 origin:
   system: "manual"
 depends_on: []
@@ -544,6 +544,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 6fa8370712de. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved bun run check contract requires one additional root-level Bun entrypoint. The current episode cannot write that path, so an exact bounded scope extension is required before implementing the evaluator rework. Recommended action: Extend the task scope to the root-level check file under the existing repository_write and source_code effects, then issue a fresh EXECUTOR packet. Requested scope: roots=check; repository effects=repository_write,source_code; request digest=sha256:659d9c2e08b46ea5a63dcaedc9e6aeacf306ead90f6a8505b7be1a661b53c20c. Agentplane receipt: external-agent-blocker/tr_fd65df0f51ebfcf4e8670f3f1ebd6e98/sha256:afac9307c1d9a279db8a99150187dc585adfde9f81d5dd17c24e10c883603c2d/sha256:659d9c2e08b46ea5a63dcaedc9e6aeacf306ead90f6a8505b7be1a661b53c20c."
 events:
   -
     type: "status"
@@ -812,8 +815,15 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-21T14:18:31.254Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved bun run check contract requires one additional root-level Bun entrypoint. The current episode cannot write that path, so an exact bounded scope extension is required before implementing the evaluator rework. Recommended action: Extend the task scope to the root-level check file under the existing repository_write and source_code effects, then issue a fresh EXECUTOR packet. Requested scope: roots=check; repository effects=repository_write,source_code; request digest=sha256:659d9c2e08b46ea5a63dcaedc9e6aeacf306ead90f6a8505b7be1a661b53c20c. Agentplane receipt: external-agent-blocker/tr_fd65df0f51ebfcf4e8670f3f1ebd6e98/sha256:afac9307c1d9a279db8a99150187dc585adfde9f81d5dd17c24e10c883603c2d/sha256:659d9c2e08b46ea5a63dcaedc9e6aeacf306ead90f6a8505b7be1a661b53c20c."
 doc_version: 3
-doc_updated_at: "2026-08-21T14:15:40.201Z"
+doc_updated_at: "2026-08-21T14:18:31.292Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
@@ -1646,23 +1656,20 @@ extensions:
     status: "active"
     task_id: "202608211020-FGAPJC"
   agentplane.scope_extension_request:
-    applied_at: "2026-08-21T11:26:13.906Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:bddc6eb34fa4c52de2a37bedda49bcf11851c592ed89b54ba4ca750606e374b2"
+    blocker_state_fingerprint: "sha256:afac9307c1d9a279db8a99150187dc585adfde9f81d5dd17c24e10c883603c2d"
     kind: "task_scope_extension_request"
     request:
-      rationale: "The approved CLI changes require their exact reviewed compatibility delta to be recorded so the critical suite can validate them."
+      rationale: "Implement the already-approved bun run check verification contract without modifying dependency metadata or weakening verification."
       repository_effects:
         - "repository_write"
         - "source_code"
-        - "tests"
       schema_version: 1
       scope_roots:
-        - "scripts/checks/check-compatibility-contract-baseline.mjs"
-    request_digest: "sha256:b79843b692f2410caf8a1533b25a940caad78355294ab5a06bb3b5eb5dd1e821"
+        - "check"
+    request_digest: "sha256:659d9c2e08b46ea5a63dcaedc9e6aeacf306ead90f6a8505b7be1a661b53c20c"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_8fee182cfa92d1c99442c7940db91c75"
+    status: "pending"
+    transition_id: "tr_fd65df0f51ebfcf4e8670f3f1ebd6e98"
   implementation_commit:
     hash: "6fa8370712de20b54872fd42883fef535aab0ccc"
   task_execution_context:
