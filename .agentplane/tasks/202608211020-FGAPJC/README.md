@@ -4,7 +4,7 @@ title: "Implement task-scoped autonomous execution after one user-approved plan"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,10 @@ plan_approval:
   note: "Approved in Codex: implement one-confirmation autonomous execution"
 verification:
   state: "needs_rework"
-  updated_at: "2026-08-21T11:12:03.715Z"
+  updated_at: "2026-08-21T11:17:30.277Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run check"
-  attempts: 1
+  attempts: 2
 execution_route:
   frozen: true
   reason_codes:
@@ -309,6 +309,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: ca672064d752. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 57a6b8ca2817. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -331,8 +334,22 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run check"
+  -
+    type: "status"
+    at: "2026-08-21T11:17:10.551Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 57a6b8ca2817. CLI accepted one state-bound external-agent semantic result."
+    commit: "57a6b8ca28171e5608420354f74a6612a8fbd452"
+  -
+    type: "verify"
+    at: "2026-08-21T11:17:30.277Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run check"
 doc_version: 3
-doc_updated_at: "2026-08-21T11:12:04.714Z"
+doc_updated_at: "2026-08-21T11:17:31.210Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
@@ -407,6 +424,41 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-21T11:17:30.277Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run check
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c, input_digest=sha256:11a0d638fc4d485953232265e5935676381d8f682a3d73bef70c3cca7df1c85d
+
+    Details:
+
+    Command: bun run check
+    Result: fail
+    Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608211020-FGAPJC declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211020-FGAPJC-implement-task-scoped-autonomous-execution-after/.agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json
+    - old_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+    - current_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608211020-FGAPJC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608211020-FGAPJC
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -434,7 +486,7 @@ extensions:
     status: "active"
     task_id: "202608211020-FGAPJC"
   implementation_commit:
-    hash: "ca672064d7529c01a36e13991a6b6f50ef0ee962"
+    hash: "57a6b8ca28171e5608420354f74a6612a8fbd452"
   task_execution_context:
     base_ref: "main"
     base_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
@@ -497,6 +549,41 @@ Note: Rework: Declared check failed: bun run check
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c, input_digest=sha256:00c4cb66747856cca6131d8cb0d166f629439ebe50d9dc52566e2f2aa435e12a
+
+Details:
+
+Command: bun run check
+Result: fail
+Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608211020-FGAPJC declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211020-FGAPJC-implement-task-scoped-autonomous-execution-after/.agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json
+- old_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+- current_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608211020-FGAPJC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608211020-FGAPJC
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T11:17:30.277Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run check
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c, input_digest=sha256:11a0d638fc4d485953232265e5935676381d8f682a3d73bef70c3cca7df1c85d
 
 Details:
 

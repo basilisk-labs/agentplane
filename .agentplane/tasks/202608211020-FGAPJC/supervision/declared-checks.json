@@ -2,7 +2,7 @@
   "checks": [
     {
       "command": "bun run check",
-      "duration_ms": 6,
+      "duration_ms": 5,
       "exit_code": 1,
       "script": "check",
       "stderr_tail": "error: Script not found \"check\"\n",
