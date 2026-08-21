@@ -8,10 +8,10 @@
   "pr_number": 4858,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4858",
   "pre_merge_closure": {
-    "basis_commit": "e29cd7eab9a0473e3474856756dc88a8bcb5bf3a",
+    "basis_commit": "af1d7b8c20d052cfd1158dd1fa79958c3e075cd1",
     "branch": "task/202608211020-FGAPJC/implement-task-scoped-autonomous-execution-after",
     "pr_number": 4858,
-    "recorded_at": "2026-08-21T13:25:35.938Z",
+    "recorded_at": "2026-08-21T13:35:54.409Z",
     "state": "closed_before_merge"
   },
   "provider": {

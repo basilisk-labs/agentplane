@@ -2,10 +2,10 @@
 id: "202608211020-FGAPJC"
 title: "Implement task-scoped autonomous execution after one user-approved plan"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 60
+revision: 61
 origin:
   system: "manual"
 depends_on: []
@@ -62,9 +62,9 @@ quality_review:
     - "Supervisor-owned critical verification passed all 12 chunks; typecheck, policy routing, and doctor also pass."
     - "Residual risk: Hosted CodeQL and the remaining exact-SHA CI matrix must pass before merge."
 token_usage:
-  agent_runs: 21
+  agent_runs: 23
   input_tokens: null
-  journal_digest: "sha256:ee1379d54ee114eff6d9bb7fb5f532cb203fb4c2536d9e9f8e83430f0385bea1"
+  journal_digest: "sha256:aefd1e5b6557da2647114359653f00e2ab1723257d2c0dc49b70a4c85e12d5f8"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -74,7 +74,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-21T13:25:35.863Z"
+  updated_at: "2026-08-21T13:35:54.329Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -449,8 +449,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "0a339f786ae5602d7c378c9844e8e36ddafa3931"
-  message: "🚧 FGAPJC task: apply external agent result"
+  hash: "af1d7b8c20d052cfd1158dd1fa79958c3e075cd1"
+  message: "🚧 FGAPJC task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -518,6 +518,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 0a339f786ae5. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -742,9 +745,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-21T13:35:54.329Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "af1d7b8c20d052cfd1158dd1fa79958c3e075cd1"
 doc_version: 3
-doc_updated_at: "2026-08-21T13:35:39.581Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-21T13:35:54.360Z"
+doc_updated_by: "CODER"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
   Summary: |-
@@ -1463,6 +1474,7 @@ extensions:
     transition_id: "tr_8fee182cfa92d1c99442c7940db91c75"
   implementation_commit:
     hash: "0a339f786ae5602d7c378c9844e8e36ddafa3931"
+    message: "🚧 FGAPJC task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
@@ -2163,12 +2175,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/21` agent runs
+- Completeness: `0/23` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:ee1379d54ee114eff6d9bb7fb5f532cb203fb4c2536d9e9f8e83430f0385bea1`
+- Journal digest: `sha256:aefd1e5b6557da2647114359653f00e2ab1723257d2c0dc49b70a4c85e12d5f8`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-21T13:25:35.863Z`
+- Updated at: `2026-08-21T13:35:54.329Z`
