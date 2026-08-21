@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 5f5dbdc83d25b4470165c97903e3e48ed24d67b8..8298ada8c89b8f94b903fa641bdd204b9584b04d",
+      "command": "git diff --check f69556d28db73d477900ed947cdaeeb203c1c632..13931bc825e83d9a5eaf57e779400976fba9ebcc",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5f5dbdc83d25b4470165c97903e3e48ed24d67b8..8298ada8c89b8f94b903fa641bdd204b9584b04d",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB f69556d28db73d477900ed947cdaeeb203c1c632..13931bc825e83d9a5eaf57e779400976fba9ebcc",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,16 +21,12 @@
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
+        "A\tpackages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts",
         "M\tpackages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts",
-        "M\tpackages/agentplane/src/commands/doctor/authority.test.ts",
-        "M\tpackages/agentplane/src/commands/doctor/authority.ts",
-        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.ts",
         "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.ts",
-        "M\tpackages/agentplane/src/commands/task/configured-authority.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
-        "M\tpackages/agentplane/src/commands/task/execution-authority-context.ts"
+        "A\tpackages/agentplane/src/commands/task/branch-task-supervisor-usage.ts",
+        "A\tpackages/agentplane/src/commands/task/branch-task-supervisor.autonomy.test.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.test.ts"
       ]
     },
     {
@@ -40,8 +36,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "5f5dbdc83d25b4470165c97903e3e48ed24d67b8",
-  "implementation_commit": "8298ada8c89b8f94b903fa641bdd204b9584b04d",
+  "execution_base_commit": "f69556d28db73d477900ed947cdaeeb203c1c632",
+  "implementation_commit": "13931bc825e83d9a5eaf57e779400976fba9ebcc",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],

@@ -1,1 +1,1 @@
-✅ FGAPJC task: Implement task-scoped autonomous execution after one user-approved plan [202608211020-FGAPJC]
+🚧 FGAPJC task: Implement task-scoped autonomous execution after one user-approved plan [202608211020-FGAPJC]
