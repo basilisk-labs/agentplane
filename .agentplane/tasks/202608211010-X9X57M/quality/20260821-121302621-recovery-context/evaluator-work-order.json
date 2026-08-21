@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608211010-X9X57M-44f87b09e7127ddf7421b0f4",
+  "prepared_at": "2026-08-21T12:13:02.621Z",
+  "task": {
+    "id": "202608211010-X9X57M",
+    "revision": 26,
+    "objective": "Route new task creation to the primary checkout\n\nPrevent task new invoked from a branch_pr task worktree from writing the new task README into that worktree; route creation through the primary checkout and add regression coverage for isolated task ownership.",
+    "acceptance_criteria": [
+      "bun run lint:core",
+      "bun run typecheck",
+      "bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts",
+      "git diff --check",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Prevent task new invoked from a branch_pr task worktree from writing the new task README into that worktree; route creation through the primary checkout and add regression coverage for isolated task ownership.\n- Out of scope: unrelated refactors not required for \"Route new task creation to the primary checkout\".",
+      "Implement primary-checkout routing for task creation. Resolve the primary linked worktree before the creation lock and backend write, preserve behavior when already in the primary checkout or a standalone repository, and add an integration regression proving that task new invoked from task A's branch_pr worktree writes task B only under the primary checkout without dirtying task A. Verify focused task-creation and context-routing tests, typecheck, core lint, policy routing, and diff cleanliness.",
+      "1. Run `bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts`. Expected: the primary-checkout routing regression passes.\n2. Run `bun run typecheck`. Expected: TypeScript validation succeeds.\n3. Run `bun run lint:core`. Expected: core lint succeeds.\n4. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing validation succeeds.\n5. Run `git diff --check`. Expected: no whitespace errors are reported."
+    ]
+  },
+  "evaluated_sha": "57fccb717fea31fa31489f9e28cc7f9233be5baf",
+  "diff_base_sha": "3e756cba6cfd6619327433c5fc38f6a52e79131d",
+  "blueprint_digest": "4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608211010-X9X57M/quality/20260821-121302621-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:e347d434b5c3d83e7f7880b4521b67ab95c3c9b0fe91cd78b3fa9e8bbd014927",
+    "prompt_path": ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/15e9382471c1cc0a82431fae9a05da2f3d258212860c1ed81d1502bd216dad35.md",
+    "result_schema_path": ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608211010-X9X57M/README.md",
+      "sha256": "sha256:5968b2b6af90077bf0673d0b2b85902d8a4a2646d93922d36ff587c4ecbb7802",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/7851cb67bcf42134701142f5da9898fdfbc96b7d14f7c19fca2dc0f75e63ec4a.patch",
+      "sha256": "sha256:7851cb67bcf42134701142f5da9898fdfbc96b7d14f7c19fca2dc0f75e63ec4a",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/d47fe16e8fbac76ace1798238344059fb86916176e1f3516fefc75ede577f9e4.json",
+      "sha256": "sha256:d47fe16e8fbac76ace1798238344059fb86916176e1f3516fefc75ede577f9e4",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608211010-X9X57M/verification/20260821115725488-925c1dea6b4c82c2.json",
+      "sha256": "sha256:d36be99fc58c50ad691d9ef4bc520939c558adeccdad3da093cc13a90e109e95",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/b75dd320230b9b3ba9fee56b7a965dbbe0cc5b8a2cef042e9525c7af8a6c0669.json",
+      "sha256": "sha256:b75dd320230b9b3ba9fee56b7a965dbbe0cc5b8a2cef042e9525c7af8a6c0669",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,355 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts b/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts
+index 61f9162a9..a43d4d1ff 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts
+@@ -230,6 +230,55 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
+     expect(readme).toContain("Implement the explicit branch change");
+   });
+ 
++  it("task begin with a plan routes creation and the plan update out of a linked worktree", async () => {
++    const root = await mkGitRepoRoot();
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    await configureGitUser(root);
++    const execFileAsync = promisify(execFile);
++    await execFileAsync("git", ["checkout", "-b", "main"], { cwd: root });
++    await commitAll(root, "seed primary checkout");
++
++    const taskWorktree = path.join(root, ".agentplane", "worktrees", "existing-task");
++    await execFileAsync(
++      "git",
++      ["worktree", "add", "-b", "task/202608211010-EXIST2/work", taskWorktree],
++      { cwd: root },
++    );
++
++    const io = captureStdIO();
++    let payload: { task_id: string; status: string };
++    try {
++      const code = await runCli([
++        "task",
++        "begin",
++        "Route planned task creation",
++        "--tag",
++        "code",
++        "--plan",
++        "1. Keep task artifacts in the primary checkout.\n2. Verify worktree isolation.",
++        "--json",
++        "--root",
++        taskWorktree,
++      ]);
++      expect(code).toBe(0);
++      payload = JSON.parse(io.stdout.trim()) as typeof payload;
++    } finally {
++      io.restore();
++    }
++
++    expect(payload!.status).toBe("approval_required");
++    const primaryReadme = await readFile(
++      path.join(root, ".agentplane", "tasks", payload!.task_id, "README.md"),
++      "utf8",
++    );
++    expect(primaryReadme).toContain("Keep task artifacts in the primary checkout");
++    await expect(
++      readFile(path.join(taskWorktree, ".agentplane", "tasks", payload!.task_id, "README.md")),
++    ).rejects.toMatchObject({ code: "ENOENT" });
++  });
++
+   it("task complete records verification and finishes a direct task", async () => {
+     const root = await mkGitRepoRoot();
+     const config = defaultConfig();
+diff --git a/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts b/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts
+index 96b8134f3..26e9b91c8 100644
+--- a/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts
+@@ -1,8 +1,10 @@
+ /* eslint-disable @typescript-eslint/no-unused-vars */
++import { execFile } from "node:child_process";
+ import { readFileSync } from "node:fs";
+ import { chmod, mkdir, mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
++import { promisify } from "node:util";
+ import { describe, expect, it, vi } from "vitest";
+ import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
+ import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
+@@ -83,6 +85,55 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
+     expect(readme).not.toContain("## Risks");
+   });
+ 
++  it("task new invoked from a linked worktree writes the new task only in the primary checkout", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    await configureGitUser(root);
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
++    await commitAll(root, "seed primary checkout");
++
++    const taskWorktree = path.join(root, ".agentplane", "worktrees", "existing-task");
++    const execFileAsync = promisify(execFile);
++    await execFileAsync(
++      "git",
++      ["worktree", "add", "-b", "task/202608211010-EXIST1/work", taskWorktree],
++      { cwd: root },
++    );
++
++    const io = captureStdIO();
++    let id = "";
++    try {
++      const code = await runCli([
++        "task",
++        "new",
++        "--title",
++        "Primary checkout task",
++        "--description",
++        "Keep new task ownership out of the invoking task worktree.",
++        "--priority",
++        "med",
++        "--owner",
++        "CODER",
++        "--tag",
++        "workflow",
++        "--root",
++        taskWorktree,
++      ]);
++      expect(code).toBe(0);
++      id = io.stdout.trim();
++    } finally {
++      io.restore();
++    }
++
++    expect(id).toMatch(/^\d{12}-[A-Z0-9]{6}$/u);
++    expect(await pathExists(path.join(root, ".agentplane", "tasks", id, "README.md"))).toBe(true);
++    expect(await pathExists(path.join(taskWorktree, ".agentplane", "tasks", id, "README.md"))).toBe(
++      false,
++    );
++  });
++
+   it("task new runs backend mutation readiness before emitting verify-step warnings", async () => {
+     const root = await mkGitRepoRoot();
+     await writeDefaultConfig(root);
+diff --git a/packages/agentplane/src/commands/shared/task-backend.test.ts b/packages/agentplane/src/commands/shared/task-backend.test.ts
+index d965ac355..586af1087 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.test.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.test.ts
+@@ -21,6 +21,7 @@ import {
+   listTaskSummariesMemo,
+   loadCommandContext,
+   loadTaskFromContext,
++  resolvePrimaryCheckoutCommandContext,
+   resolveTaskBranchFromContext,
+   resolveTaskOwnerCommandContext,
+ } from "./task-backend.js";
+@@ -143,6 +144,36 @@ describe(
+       });
+     });
+ 
++    it("routes repository-level task mutations from a linked worktree to the primary checkout", async () => {
++      const repo = await tempRepo({ branch: "main" });
++      const root = repo.root;
++      await configureGitUser(root);
++      await repo.writeConfig(
++        mockConfig((draft) => {
++          draft.workflow_mode = "branch_pr";
++        }),
++      );
++      await writeLocalBackendConfig(root);
++      const execFileAsync = promisify(execFile);
++      await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
++      await execFileAsync("git", ["add", "."], { cwd: root });
++      await execFileAsync("git", ["commit", "-m", "seed linked worktree"], { cwd: root });
++
++      const taskWorktree = path.join(root, ".agentplane", "worktrees", "task-owner");
++      await execFileAsync("git", ["worktree", "add", "-b", "task/T-OWNER/work", taskWorktree], {
++        cwd: root,
++      });
++
++      const worktreeCtx = await loadCommandContext({
++        cwd: taskWorktree,
++        rootOverride: taskWorktree,
++      });
++      const primaryCtx = await resolvePrimaryCheckoutCommandContext(worktreeCtx);
++
++      expect(await realpath(primaryCtx.resolvedProject.gitRoot)).toBe(await realpath(root));
++      await expect(resolvePrimaryCheckoutCommandContext(primaryCtx)).resolves.toBe(primaryCtx);
++    });
++
+     it("does not retain a stale worktree merely because another worktree owns the task branch", async () => {
+       const repo = await tempRepo({ branch: "main" });
+       const root = repo.root;
+diff --git a/packages/agentplane/src/commands/shared/task-backend.ts b/packages/agentplane/src/commands/shared/task-backend.ts
+index dec9d5cd0..fdc9e3d25 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.ts
+@@ -207,6 +207,22 @@ export async function loadCommandContext(opts: {
+   };
+ }
+ 
++/**
++ * Route repository-level task mutations to the primary checkout. Linked task
++ * worktrees own their existing task, but they must not become the storage root
++ * for a newly created sibling task.
++ */
++export async function resolvePrimaryCheckoutCommandContext(
++  ctx: CommandContext,
++): Promise<CommandContext> {
++  const worktrees = await listWorktrees(ctx.resolvedProject.gitRoot);
++  const primary = worktrees[0]?.path;
++  if (!primary || path.resolve(primary) === path.resolve(ctx.resolvedProject.gitRoot)) {
++    return ctx;
++  }
++  return await loadCommandContext({ cwd: primary, rootOverride: null });
++}
++
+ /**
+  * Route task commands back to the primary checkout when invoked from an old
+  * linked worktree that predates the requested task. A task worktree remains
+@@ -236,12 +252,8 @@ export async function resolveTaskOwnerCommandContext(opts: {
+     }
+   }
+ 
+-  const worktrees = await listWorktrees(opts.ctx.resolvedProject.gitRoot);
+-  const primary = worktrees[0]?.path;
+-  if (!primary || path.resolve(primary) === path.resolve(opts.ctx.resolvedProject.gitRoot)) {
+-    return opts.ctx;
+-  }
+-  const primaryCtx = await loadCommandContext({ cwd: primary, rootOverride: null });
++  const primaryCtx = await resolvePrimaryCheckoutCommandContext(opts.ctx);
++  if (primaryCtx === opts.ctx) return opts.ctx;
+   return (await primaryCtx.taskBackend.getTask(opts.taskId)) ? primaryCtx : opts.ctx;
+ }
+ 
+diff --git a/packages/agentplane/src/commands/task/begin.command.ts b/packages/agentplane/src/commands/task/begin.command.ts
+index 7954ec474..8ed5dc93e 100644
+--- a/packages/agentplane/src/commands/task/begin.command.ts
++++ b/packages/agentplane/src/commands/task/begin.command.ts
+@@ -1,7 +1,7 @@
+ import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
+ import { usageError } from "../../cli/spec/errors.js";
+ import { createCliEmitter } from "../../cli/output.js";
+-import type { CommandContext } from "../shared/task-backend.js";
++import { resolveTaskOwnerCommandContext, type CommandContext } from "../shared/task-backend.js";
+ 
+ import { runTaskNewParsed, type TaskNewParsed } from "./new.js";
+ import { setTaskPlan } from "./plan.js";
+@@ -173,10 +173,10 @@ export function makeRunTaskBeginHandler(
+     });
+     const taskId = created.task_id;
+     if (p.plan?.trim()) {
++      const taskCommand = await resolveTaskOwnerCommandContext({ ctx: command, taskId });
+       await setTaskPlan({
+-        ctx: command,
+-        cwd: ctx.cwd,
+-        rootOverride: ctx.rootOverride,
++        ctx: taskCommand,
++        cwd: taskCommand.resolvedProject.gitRoot,
+         taskId,
+         text: p.plan,
+         updatedBy: "USER",
+diff --git a/packages/agentplane/src/commands/task/new.primary-checkout.test.ts b/packages/agentplane/src/commands/task/new.primary-checkout.test.ts
+new file mode 100644
+index 000000000..713e2c04d
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/new.primary-checkout.test.ts
+@@ -0,0 +1,66 @@
++import { execFile } from "node:child_process";
++import { writeFile } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++import { describe, expect, it } from "vitest";
++
++import { defaultConfig } from "../../cli/core-imports.js";
++import {
++  commitAll,
++  configureGitUser,
++  installRunCliIntegrationHarness,
++  mkGitRepoRootWithBranch,
++  pathExists,
++  writeConfig,
++} from "@agentplane/testkit";
++import { runTaskNewParsed } from "./new.js";
++
++installRunCliIntegrationHarness();
++
++describe("task new primary-checkout routing", { timeout: 180_000 }, () => {
++  it("stores a sibling task in the primary checkout when invoked from a task worktree", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    await configureGitUser(root);
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
++    await commitAll(root, "seed primary checkout");
++
++    const taskWorktree = path.join(root, ".agentplane", "worktrees", "existing-task");
++    await promisify(execFile)(
++      "git",
++      ["worktree", "add", "-b", "task/202608211010-EXIST3/work", taskWorktree],
++      { cwd: root },
++    );
++
++    const staleWorktreeConfig = structuredClone(config);
++    staleWorktreeConfig.workflow_mode = "direct";
++    await writeConfig(taskWorktree, staleWorktreeConfig);
++
++    const created = await runTaskNewParsed({
++      cwd: taskWorktree,
++      rootOverride: taskWorktree,
++      parsed: {
++        title: "Primary checkout sibling",
++        description: "Keep sibling task ownership out of the invoking task worktree.",
++        owner: "CODER",
++        priority: "med",
++        tags: ["workflow"],
++        dependsOn: [],
++        verify: [],
++        showBlueprint: false,
++        allowDuplicate: false,
++      },
++    });
++
++    expect(
++      await pathExists(path.join(root, ".agentplane", "tasks", created.task_id, "README.md")),
++    ).toBe(true);
++    expect(
++      await pathExists(
++        path.join(taskWorktree, ".agentplane", "tasks", created.task_id, "README.md"),
++      ),
++    ).toBe(false);
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/new.ts b/packages/agentplane/src/commands/task/new.ts
+index b34648e4a..ec3714d32 100644
+--- a/packages/agentplane/src/commands/task/new.ts
++++ b/packages/agentplane/src/commands/task/new.ts
+@@ -12,7 +12,12 @@ import {
+ } from "../../runtime/task-intake/index.js";
+ import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
+ import { CliError } from "../../shared/errors.js";
+-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
++import {
++  backendUsesLocalTaskStore,
++  loadCommandContext,
++  resolvePrimaryCheckoutCommandContext,
++  type CommandContext,
++} from "../shared/task-backend.js";
+ import { writeTaskMutation, type TaskMutationResult } from "../shared/task-mutation.js";
+ import type { TaskData } from "../../backends/task-backend/shared/types.js";
+ import {
+@@ -179,9 +184,14 @@ export async function runTaskNewParsed(opts: {
+ }): Promise<TaskCreationResult> {
+   const p = sanitizeTaskNewParsed(opts.parsed);
+   try {
+-    const ctx =
++    const currentCtx =
+       opts.ctx ??
+       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
++    const primaryCtx = await resolvePrimaryCheckoutCommandContext(currentCtx);
++    const ctx =
++      primaryCtx.config.workflow_mode === "branch_pr" && backendUsesLocalTaskStore(primaryCtx)
++        ? primaryCtx
++        : currentCtx;
+     const creationLockPath = path.join(
+       ctx.resolvedProject.gitRoot,
+       ctx.config.paths.workflow_dir,

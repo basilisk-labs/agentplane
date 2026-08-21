@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608211010-X9X57M",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-21T12:21:12.108Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 4 typed finding(s).",
+  "evaluated_sha": "900058312378fead1b30143ef55486e982909865",
+  "blueprint_digest": "4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71",
+  "findings": [
+    "The implementation now evaluates workflow_mode and local-store capability on primaryCtx, directly addressing the unresolved review finding.",
+    "The context switches only when the primary checkout is branch_pr with a local task store; otherwise creation continues with currentCtx, preserving direct-mode and remote-backend write behavior.",
+    "The regression changes the linked worktree to stale direct mode while leaving the primary checkout branch_pr, then proves the sibling README exists only in the primary checkout.",
+    "The complete task diff remains within the approved seven source and test paths, and the latest implementation commit adds only the two scoped rework changes plus AgentPlane-owned PR projections."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/e08fed879921c747006ec6e6e35f236dfa06e5d11928191ffadcc9e1b3559edf.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
