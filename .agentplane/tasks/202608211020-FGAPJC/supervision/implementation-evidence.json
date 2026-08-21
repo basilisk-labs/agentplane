@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check c8634863b74e1cc44985fb728bf7d83ae6669d64..057f1ad2ed6178b3bf6c9552567808a029629e86",
+      "command": "git diff --check ba2396ef0d456f217f0f1932134b5691f4750c67..34507b19ab33c1d79ee08e5c5092374d4f4b7bd3",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB c8634863b74e1cc44985fb728bf7d83ae6669d64..057f1ad2ed6178b3bf6c9552567808a029629e86",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB ba2396ef0d456f217f0f1932134b5691f4750c67..34507b19ab33c1d79ee08e5c5092374d4f4b7bd3",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,8 @@
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
-        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+        "M\tpackages/agentplane/src/commands/shared/quality-review-target.ts",
+        "M\tpackages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
       ]
     },
     {
@@ -31,24 +32,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "c8634863b74e1cc44985fb728bf7d83ae6669d64",
-  "implementation_commit": "057f1ad2ed6178b3bf6c9552567808a029629e86",
+  "execution_base_commit": "ba2396ef0d456f217f0f1932134b5691f4750c67",
+  "implementation_commit": "34507b19ab33c1d79ee08e5c5092374d4f4b7bd3",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
