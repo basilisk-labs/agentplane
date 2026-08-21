@@ -2,10 +2,10 @@
 id: "202608200903-J459C2"
 title: "Make task execution authority local and direct execution workspace-safe"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 79
+revision: 80
 origin:
   system: "manual"
 depends_on: []
@@ -64,9 +64,9 @@ quality_review:
     - "Focused flow-status tests pass, and the supervisor verification record for implementation SHA 57470f47081a560c21c6693e550d38ed499a63f0 reports the complete declared local verification contract as passing."
     - "Residual risk: The next published exact head must complete hosted checks successfully before integration."
 token_usage:
-  agent_runs: 23
+  agent_runs: 25
   input_tokens: null
-  journal_digest: "sha256:481aa661ed60bbd377f062284c37de68b278aa7319af8dc89a6d2f547f5387ef"
+  journal_digest: "sha256:a250d29f6daca6abbe1170dbf2f6beb74fcda1cc59b1c940e7f511c38b5727c5"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -76,7 +76,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-20T23:37:09.009Z"
+  updated_at: "2026-08-21T00:34:18.036Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1256,8 +1256,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "57470f47081a560c21c6693e550d38ed499a63f0"
-  message: "🚧 J459C2 task: apply external agent result"
+  hash: "c312d399d3f9e2705d7a1cd504bb0dab02250189"
+  message: "🚧 J459C2 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -1349,6 +1349,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 57470f47081a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -1694,9 +1697,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-21T00:34:18.036Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "c312d399d3f9e2705d7a1cd504bb0dab02250189"
 doc_version: 3
-doc_updated_at: "2026-08-21T00:33:07.033Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-21T00:34:18.068Z"
+doc_updated_by: "CODER"
 description: "Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlane-managed working branch. Introduce TaskExecutionContext and TaskCommandContext as lifecycle authority; separate WorkspaceAllocationContext and private leases from route selection; make auto the default route and retire user-facing repository route; load authoritative task state in two phases; bind verification identity v4 and finish to the frozen task base identity; extend the existing serialized integration queue for direct isolated workspaces; enforce managed-runner side-effect capabilities and deterministic direct-to-branch_pr escalation; remove legacy runtime semantics; add architecture guards, migration, ADRs, and all ten acceptance scenarios. Preserve the reconciled NMAHN5 commit already present on the local base. Use base_ref plus base_sha, reject mixed batch contexts, keep absolute paths out of semantic digests, use idempotent closeout journaling rather than pretending Git and filesystem writes are atomic, and do not create a second competing integration queue."
 sections:
   Summary: |-
@@ -2753,6 +2764,7 @@ extensions:
     transition_id: "tr_dac0473f16b6ada2a5ee7894f215b1ed"
   implementation_commit:
     hash: "57470f47081a560c21c6693e550d38ed499a63f0"
+    message: "🚧 J459C2 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "292b232b3160b22c47c6cc206fade625e9377fed"
@@ -3813,12 +3825,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/23` agent runs
+- Completeness: `0/25` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:481aa661ed60bbd377f062284c37de68b278aa7319af8dc89a6d2f547f5387ef`
+- Journal digest: `sha256:a250d29f6daca6abbe1170dbf2f6beb74fcda1cc59b1c940e7f511c38b5727c5`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-20T23:37:09.009Z`
+- Updated at: `2026-08-21T00:34:18.036Z`
