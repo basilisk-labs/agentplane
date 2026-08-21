@@ -15,14 +15,8 @@ Implement the complete approved AP-0001 through AP-1004 roadmap in one AgentPlan
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Hosted and local verification failed after provider rebase: hotspot threshold reports
-packages/agentplane/src/commands/pr/flow-status.ts at 601 lines; reduce module size without widening
-the baseline, then rerun full verification.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
