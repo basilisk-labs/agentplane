@@ -15,8 +15,8 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework: address unresolved PR review threads for frozen task base routing and detached-HEAD task creation.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -35,12 +35,12 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../src/cli/run-cli.core.lifecycle.plan.test.ts    |  61 +-
  ...n-cli.core.task-advance-effect-recovery.test.ts | 155 +++++
  ...un-cli.core.task-advance.blocked-result.test.ts |  26 +
- .../run-cli.core.task-create-base-intent.test.ts   | 252 ++++++++
+ .../run-cli.core.task-create-base-intent.test.ts   | 286 +++++++++
  ...run-cli.core.task-create-planner-intent.test.ts | 138 ++---
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../branch/cleanup-merged.targeted.test.ts         |  18 +-
- .../src/commands/branch/work-start.command.ts      |   2 +
- .../agentplane/src/commands/branch/work-start.ts   |   7 +-
+ .../src/commands/branch/work-start.command.ts      |   3 +
+ .../agentplane/src/commands/branch/work-start.ts   |  10 +-
  .../src/commands/doctor/authority.test.ts          |  30 +
  .../agentplane/src/commands/doctor/authority.ts    |  38 ++
  packages/agentplane/src/commands/doctor/runtime.ts |   5 +-
@@ -58,7 +58,8 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../src/commands/task/agent-action-packet.test.ts  |  28 +-
  .../src/commands/task/agent-action-packet.ts       |  55 +-
  .../task/branch-task-supervisor-episodes.ts        |  41 +-
- .../task/branch-task-supervisor-operations.ts      |  10 +-
+ .../task/branch-task-supervisor-operations.test.ts |  78 ++-
+ .../task/branch-task-supervisor-operations.ts      |  16 +-
  .../commands/task/branch-task-supervisor-usage.ts  |  22 +
  .../task/branch-task-supervisor.autonomy.test.ts   | 637 +++++++++++++++++++++
  .../commands/task/branch-task-supervisor.test.ts   |  43 ++
@@ -75,8 +76,9 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../commands/task/finish.close-tail.unit.test.ts   |   2 +-
  .../src/commands/task/finish.state.unit.test.ts    |   1 +
  .../commands/task/finish.validation.unit.test.ts   |   2 +-
+ .../agentplane/src/commands/task/handoff.shared.ts |   4 +-
  .../src/commands/task/new.primary-checkout.test.ts |  66 +++
- packages/agentplane/src/commands/task/new.ts       |  46 +-
+ packages/agentplane/src/commands/task/new.ts       |  49 +-
  .../src/commands/task/plan-approve.command.ts      |  70 ++-
  packages/agentplane/src/commands/task/plan.ts      |  92 ++-
  .../agentplane/src/commands/task/plan.unit.test.ts |   6 +
@@ -100,7 +102,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../check-compatibility-contract-baseline.mjs      |  42 +-
  scripts/checks/run-local-ci.mjs                    |   9 +-
  website/static/llms-full.txt                       |  46 +-
- 73 files changed, 4360 insertions(+), 409 deletions(-)
+ 75 files changed, 4486 insertions(+), 412 deletions(-)
 ```
 
 </details>

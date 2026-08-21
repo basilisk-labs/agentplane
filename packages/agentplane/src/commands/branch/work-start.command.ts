@@ -100,6 +100,7 @@ export function makeRunWorkStartHandler(
       slug: p.slug,
       worktree: p.worktree,
       base: taskCommand.execution.base_ref,
+      baseSha: taskCommand.execution.base_sha,
       workflowMode: mode,
     });
   };

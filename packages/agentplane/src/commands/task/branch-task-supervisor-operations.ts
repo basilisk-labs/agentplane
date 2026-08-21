@@ -21,6 +21,7 @@ import { cmdFinish } from "./finish-command.js";
 import { makeRunTaskHostedClosePrHandler } from "./hosted-close-pr.command.js";
 import { cmdTaskStartReady } from "./start-ready.js";
 import { cmdTaskScopeExtend } from "./scope-extend.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 
 function observedPostconditions(operation: WorkflowOperation): string[] {
   return operation.expectedPostconditions
@@ -71,6 +72,10 @@ export async function executeBranchWorkflowOperation(opts: {
 }): Promise<WorkflowSupervisorOperationResult> {
   const cwd = checkoutFor(opts.decision);
   const command = await loadCommandContext({ cwd, rootOverride: null });
+  const taskCommand = await loadTaskCommandContext({
+    ctx: command,
+    taskIds: [opts.operation.params.taskId],
+  });
   const cliContext: CommandCtx = { cwd };
   const { operation } = opts;
   let exitCode: number;
@@ -84,7 +89,8 @@ export async function executeBranchWorkflowOperation(opts: {
         agent: operation.params.agent,
         slug: operation.params.slug,
         worktree: true,
-        base: opts.decision.workspace.baseBranch ?? undefined,
+        base: taskCommand.execution.base_ref,
+        baseSha: taskCommand.execution.base_sha,
         workflowMode: opts.decision.workflowMode === "branch_pr" ? "branch_pr" : "direct",
         quiet: true,
       });
@@ -220,7 +226,7 @@ export async function executeBranchWorkflowOperation(opts: {
       exitCode = await handler(cliContext, {
         taskId: operation.params.taskId,
         branch: operation.params.branch,
-        base: opts.decision.workspace.baseBranch,
+        base: taskCommand.execution.base_ref,
         priority: 0,
         quiet: true,
       });

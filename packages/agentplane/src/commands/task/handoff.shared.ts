@@ -1,5 +1,5 @@
 import { gitRevParse, resolveBaseBranch } from "@agentplaneorg/core/git";
-import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+import { normalizeTaskStatus, taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import {
@@ -84,7 +84,9 @@ export async function buildTaskResumeContext(opts: {
   const head_sha = await (
     opts.fresh_head ? gitRevParse(ctx.resolvedProject.gitRoot, ["HEAD"]) : ctx.git.headCommit()
   ).catch(() => null);
+  const frozenBase = taskExecutionBaseFromExtensions(task.extensions);
   const base_branch =
+    frozenBase?.base_ref ??
     prMeta.base ??
     (await resolveBaseBranch({
       cwd: ctx.resolvedProject.gitRoot,

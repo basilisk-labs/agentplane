@@ -77,6 +77,7 @@ export async function cmdWorkStart(opts: {
   slug: string;
   worktree: boolean;
   base?: string;
+  baseSha?: string;
   workflowMode?: "direct" | "branch_pr";
   quiet?: boolean;
 }): Promise<number> {
@@ -182,7 +183,7 @@ export async function cmdWorkStart(opts: {
         mismatchMessage: `work start must be run on base branch ${baseBranch} (current: ${currentBranch})`,
       });
       await ensureCurrentBaseBranch(resolved.gitRoot, baseBranch);
-      baseRef = baseBranch;
+      baseRef = opts.baseSha ?? baseBranch;
     }
 
     const prefix = config.branch.task_prefix;

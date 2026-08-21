@@ -211,17 +211,20 @@ export async function runTaskNewParsed(opts: {
       const creationHead = await gitRevParse(ctx.resolvedProject.gitRoot, ["HEAD^{commit}"]).catch(
         () => null,
       );
+      const creationBranch = creationHead
+        ? await gitCurrentBranch(ctx.resolvedProject.gitRoot).catch(() => null)
+        : null;
       const repositoryIdentity = await resolveLogicalRepositoryIdentity({
         git_root: ctx.resolvedProject.gitRoot,
         task: {},
       });
       const extensions = taskExecutionBaseFromExtensions(p.extensions)
         ? p.extensions
-        : creationHead
+        : creationHead && creationBranch
           ? {
               ...(p.extensions ?? {}),
               [TASK_EXECUTION_CONTEXT_EXTENSION_KEY]: createTaskExecutionBaseIdentity({
-                base_ref: await gitCurrentBranch(ctx.resolvedProject.gitRoot),
+                base_ref: creationBranch,
                 base_sha: creationHead,
                 source: "creation_checkout",
                 repository_identity: repositoryIdentity,

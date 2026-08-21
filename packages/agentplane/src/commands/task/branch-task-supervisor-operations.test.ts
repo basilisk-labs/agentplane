@@ -11,12 +11,23 @@ const mocks = vi.hoisted(() => ({
   runNext: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext: vi.fn(),
+  loadTaskCommandContext: vi.fn(),
+  cmdWorkStart: vi.fn(),
+  enqueue: vi.fn(),
   cmdCleanupMerged: vi.fn(),
 }));
 
 vi.mock("../shared/task-backend.js", () => ({
   loadCommandContext: mocks.loadCommandContext,
   loadTaskFromContext: mocks.loadTaskFromContext,
+}));
+
+vi.mock("../../runtime/task-execution-context/index.js", () => ({
+  loadTaskCommandContext: mocks.loadTaskCommandContext,
+}));
+
+vi.mock("../branch/work-start.js", () => ({
+  cmdWorkStart: mocks.cmdWorkStart,
 }));
 
 vi.mock("./finish-command.js", () => ({
@@ -29,7 +40,7 @@ vi.mock("../branch/cleanup-merged.js", () => ({
 
 vi.mock("../integrate-queue.command.js", () => ({
   makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler: vi.fn(),
-  makeRunIntegrateQueueEnqueueHandler: vi.fn(),
+  makeRunIntegrateQueueEnqueueHandler: () => mocks.enqueue,
   makeRunIntegrateQueueRunNextHandler: () => mocks.runNext,
 }));
 
@@ -67,8 +78,43 @@ function routeDecision(operation: WorkflowOperation): TaskRouteDecision {
   return {
     executionPacket: { mustRunFrom: "/repo/task" },
     task: { id: "202607221852-71SCSW" },
+    workflowMode: "branch_pr",
+    workspace: { baseBranch: "main" },
     workflowStep: { id: operation.id, kind: "cli_operation", operation },
   } as unknown as TaskRouteDecision;
+}
+
+function worktreePrepareOperation(): Extract<WorkflowOperation, { id: "worktree.prepare" }> {
+  return {
+    id: "worktree.prepare",
+    type: "worktree_prepare",
+    params: {
+      taskId: "202607221852-71SCSW",
+      agent: "CODER",
+      slug: "frozen-base",
+    },
+    preconditionFingerprint: preMergeCloseOperation().preconditionFingerprint,
+    authorityRef: "route:test",
+    idempotencyKey: "worktree.prepare:test",
+    expectedPostconditions: [],
+    triggersGitHooks: false,
+  };
+}
+
+function enqueueOperation(): Extract<WorkflowOperation, { id: "integration.enqueue" }> {
+  return {
+    id: "integration.enqueue",
+    type: "integration_enqueue",
+    params: {
+      taskId: "202607221852-71SCSW",
+      branch: "task/202607221852-71SCSW/frozen-base",
+    },
+    preconditionFingerprint: preMergeCloseOperation().preconditionFingerprint,
+    authorityRef: "route:test",
+    idempotencyKey: "integration.enqueue:test",
+    expectedPostconditions: [],
+    triggersGitHooks: false,
+  };
 }
 
 function runNextOperation(): Extract<WorkflowOperation, { id: "integration.run_next" }> {
@@ -94,9 +140,39 @@ describe("branch task supervisor operations", () => {
     mocks.loadTaskFromContext.mockResolvedValue({
       execution_route: { selected_mode: "branch_pr" },
     });
+    mocks.loadTaskCommandContext.mockResolvedValue({
+      command: { resolvedProject: { gitRoot: "/repo" } },
+      execution: {
+        selected_mode: "branch_pr",
+        base_ref: "typescript",
+        base_sha: "a".repeat(40),
+      },
+    });
+    mocks.cmdWorkStart.mockResolvedValue(0);
+    mocks.enqueue.mockResolvedValue(0);
     mocks.cmdFinish.mockResolvedValue(0);
     mocks.runNext.mockResolvedValue(0);
     mocks.cmdCleanupMerged.mockResolvedValue(0);
+  });
+
+  it("routes worktree creation and integration through the frozen task base", async () => {
+    const worktree = worktreePrepareOperation();
+    const enqueue = enqueueOperation();
+
+    await expect(
+      executeBranchWorkflowOperation({ decision: routeDecision(worktree), operation: worktree }),
+    ).resolves.toMatchObject({ status: "succeeded" });
+    expect(mocks.cmdWorkStart).toHaveBeenCalledWith(
+      expect.objectContaining({ base: "typescript", baseSha: "a".repeat(40) }),
+    );
+
+    await expect(
+      executeBranchWorkflowOperation({ decision: routeDecision(enqueue), operation: enqueue }),
+    ).resolves.toMatchObject({ status: "succeeded" });
+    expect(mocks.enqueue).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ base: "typescript" }),
+    );
   });
 
   it("lets finish resolve the reviewed implementation behind a task-artifact head", async () => {

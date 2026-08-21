@@ -8,6 +8,7 @@ import {
   captureStdIO,
   installRunCliIntegrationHarness,
   mkGitRepoRootWithBranch,
+  runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
@@ -60,6 +61,39 @@ describe("task creation intent and long-lived bases", { timeout: 60_000 }, () =>
       base_sha: stdout.trim(),
       source: "creation_checkout",
     });
+
+    await execFileAsync("git", ["branch", "main", "HEAD"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const route = await runJson(root, ["task", "status", taskId, "--route", "--json"]);
+    expect((route.workspace as { baseBranch: string }).baseBranch).toBe("typescript");
+  });
+
+  it("creates a task from detached HEAD without inventing a branch identity", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "pinned revision"], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["switch", "--detach", "HEAD"], { cwd: root });
+
+    const created = await runJson(root, [
+      "task",
+      "create",
+      "Inspect a pinned revision",
+      "--task-kind",
+      "analysis",
+      "--mutation-scope",
+      "none",
+      "--json",
+    ]);
+    const taskId = String(created.task_id);
+    const taskDoc = parseTaskReadme(
+      await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
+    );
+
+    expect(taskDoc.frontmatter.extensions?.task_execution_context).toBeUndefined();
   });
 
   it("freezes concurrent tasks from independent long-lived bases without importing prior commits", async () => {
