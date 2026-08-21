@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 54
+revision: 55
 origin:
   system: "manual"
 depends_on: []
@@ -34,35 +34,35 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T13:12:09.761Z"
+  updated_at: "2026-08-21T13:25:20.704Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 7 typed finding(s)."
-  evaluated_sha: "8298ada8c89b8f94b903fa641bdd204b9584b04d"
+  evaluated_sha: "13931bc825e83d9a5eaf57e779400976fba9ebcc"
   blueprint_digest: "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa"
   evidence_refs:
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-131037193-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-131037193-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e3ea5467bba8c55c828997c1e437cc53ebd786b82a538ad02806cf4dc02e534e.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-131037193-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-131037193-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-131037193-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-132428445-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-132428445-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/3cb0a177c75a8aefedb6ebe2f5b3a2675df41bb21fd745e4cde15644eaab833b.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-132428445-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-132428445-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-132428445-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211020-FGAPJC/README.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/6a4c02f8641d06e441ee0b84ba4e818bce50857c1c3262b2c405b2447b463bfb.patch"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a2959159ae25c86e67b1961a31cba407135f235122ce40509824d842fbadaf81.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821131018686-9a8a26d1d6c1a934.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/723c4c2752711c3576e340d815d0b0779f4dd101fd4d822607df5b9516c822a4.patch"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/2e3bf9ab9c6f97599e778856c748bf345140606748e6e54a990aacb8561573af.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821132359133-d396c44755dcb36a.json"
     - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The rework commit changes only parentheses, indentation, and line wrapping in the ten files named by the failed hosted format check."
-    - "bun run format:check passes on the evaluated commit."
-    - "bun run typecheck passes on the evaluated commit."
-    - "AgentPlane's recorded verification normalized the unavailable declared command bun run check to bun run test:critical; all 12 critical CLI chunks passed in 60.8 seconds."
-    - "Policy routing and agentplane doctor also passed in the supervisor-owned verification record."
-    - "The evaluator exchange artifacts are the only untracked files and are AgentPlane-owned evidence for this active evaluation episode."
-    - "Residual risk: Hosted provider checks must be rerun against the new published SHA before merge truth can be established."
+    - "The oversized runtime orchestration file is now 585 lines because lifecycle usage projection was extracted into a focused 22-line module."
+    - "The two test suites introduced by this task are now 938 and 819 lines after behavior-based splits; their new companion suites are independently discoverable by Vitest."
+    - "The oversized-test baseline remains unchanged at 10 entries and passes."
+    - "All 27 affected tests pass across the original and split suites."
+    - "Supervisor-owned critical verification passed all 12 chunks, and typecheck, policy routing, and doctor also pass."
+    - "The evaluator exchange artifacts are the only untracked paths and are AgentPlane-owned evidence for this episode."
+    - "Residual risk: Hosted checks must pass against the newly published exact SHA before integration can complete."
 token_usage:
   agent_runs: 19
   input_tokens: null
@@ -717,7 +717,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T13:24:01.747Z"
+doc_updated_at: "2026-08-21T13:25:20.741Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:

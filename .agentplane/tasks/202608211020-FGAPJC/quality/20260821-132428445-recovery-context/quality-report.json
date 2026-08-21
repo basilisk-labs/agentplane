@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202608211020-FGAPJC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-21T13:25:20.704Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 7 typed finding(s).",
+  "evaluated_sha": "13931bc825e83d9a5eaf57e779400976fba9ebcc",
+  "blueprint_digest": "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa",
+  "findings": [
+    "The oversized runtime orchestration file is now 585 lines because lifecycle usage projection was extracted into a focused 22-line module.",
+    "The two test suites introduced by this task are now 938 and 819 lines after behavior-based splits; their new companion suites are independently discoverable by Vitest.",
+    "The oversized-test baseline remains unchanged at 10 entries and passes.",
+    "All 27 affected tests pass across the original and split suites.",
+    "Supervisor-owned critical verification passed all 12 chunks, and typecheck, policy routing, and doctor also pass.",
+    "The evaluator exchange artifacts are the only untracked paths and are AgentPlane-owned evidence for this episode.",
+    "Residual risk: Hosted checks must pass against the newly published exact SHA before integration can complete."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/723c4c2752711c3576e340d815d0b0779f4dd101fd4d822607df5b9516c822a4.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
