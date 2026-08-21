@@ -15,8 +15,8 @@ Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutatio
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: blocked_external
+- Note: Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1
 - Canonical workflow state lives in the task README.
 
 <details>
