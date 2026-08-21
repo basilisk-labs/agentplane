@@ -15,13 +15,8 @@ Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutatio
 
 ## Verification
 
-- State: blocked_external
-- Note:
-
-```text
-Live GitLab canary has no pipeline because project policy does not require one; hosted checks must
-honor provider policy while failing closed for required pipelines or checks.
-```
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -40,6 +35,8 @@ honor provider policy while failing closed for required pipelines or checks.
  .../src/commands/integrate-queue.command.ts        |   2 +
  .../src/commands/pr/conflict-rework.test.ts        |  25 +++++
  .../agentplane/src/commands/pr/conflict-rework.ts  |  27 +++++-
+ .../src/commands/pr/hosted-checks.gitlab.test.ts   |  55 ++++++++++-
+ .../agentplane/src/commands/pr/hosted-checks.ts    |  19 ++++
  .../agentplane/src/commands/pr/integrate/cmd.ts    |   3 +-
  .../pr/integrate/internal/route-label.test.ts      |  17 ++++
  .../commands/pr/integrate/internal/route-label.ts  |   7 ++
@@ -47,7 +44,7 @@ honor provider policy while failing closed for required pipelines or checks.
  .../src/commands/pr/internal/glab-api.ts           |   4 +-
  .../src/commands/pr/internal/sync-gitlab.test.ts   |  33 +++++++
  .../src/commands/pr/internal/sync-gitlab.ts        |  29 ++++++
- 15 files changed, 327 insertions(+), 14 deletions(-)
+ 17 files changed, 397 insertions(+), 18 deletions(-)
 ```
 
 </details>

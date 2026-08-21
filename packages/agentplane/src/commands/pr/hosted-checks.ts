@@ -21,6 +21,10 @@ type GitLabPipeline = {
 
 type GitLabJob = { name?: string | null; status?: string | null };
 
+type GitLabProject = {
+  only_allow_merge_if_pipeline_succeeds?: boolean | null;
+};
+
 export type HostedChecksSummary =
   | {
       checked: true;
@@ -126,6 +130,21 @@ export async function resolveHostedChecksStatus(opts: {
           (candidate) => !expectedHeadSha || candidate.sha?.trim() === expectedHeadSha,
         );
         if (!pipeline || !Number.isInteger(pipeline.id) || Number(pipeline.id) <= 0) {
+          const hasRequiredChecks = (opts.requiredChecks ?? []).some(
+            (name) => name.trim().length > 0,
+          );
+          if (!hasRequiredChecks) {
+            const projectPolicy = await runGlabApiJson<GitLabProject>({
+              cwd: opts.gitRoot,
+              hostname: identity.hostname,
+              endpoint: `projects/${project}`,
+            });
+            if (projectPolicy.only_allow_merge_if_pipeline_succeeds === false) {
+              return summarizeHostedChecks([
+                { name: "GitLab pipeline not required", state: "SKIPPED" },
+              ]);
+            }
+          }
           return {
             checked: false,
             reason: expectedHeadSha

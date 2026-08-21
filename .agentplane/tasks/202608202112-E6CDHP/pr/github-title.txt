@@ -1,1 +1,1 @@
-⛔ E6CDHP task: Fix live GitLab MR transport and provider-neutral mergeability validation [202608202112-E6CDHP]
+🚧 E6CDHP task: Fix live GitLab MR transport and provider-neutral mergeability validation [202608202112-E6CDHP]

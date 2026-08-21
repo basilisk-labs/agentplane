@@ -57,10 +57,39 @@ describe("GitLab hosted checks", () => {
     );
   });
 
-  it("fails closed when no GitLab pipeline belongs to the exact head", async () => {
-    mocks.runGlabApiJson.mockResolvedValueOnce([
-      { id: 10, project_id: 7, sha: "old-head", status: "success" },
-    ]);
+  it("accepts an absent pipeline only when GitLab policy does not require one", async () => {
+    mocks.runGlabApiJson
+      .mockResolvedValueOnce([{ id: 10, project_id: 7, sha: "old-head", status: "success" }])
+      .mockResolvedValueOnce({ only_allow_merge_if_pipeline_succeeds: false });
+
+    await expect(
+      resolveHostedChecksStatus({
+        gitRoot: "/repo",
+        prNumber: 42,
+        branch: "task/T-1/work",
+        expectedHeadSha: "exact-head",
+      }),
+    ).resolves.toEqual({
+      checked: true,
+      total: 1,
+      pending: 0,
+      failing: 0,
+      passing: 1,
+      missingRequired: [],
+      rows: [{ name: "GitLab pipeline not required", state: "SKIPPED" }],
+    });
+    expect(mocks.runGlabApiJson).toHaveBeenNthCalledWith(2, {
+      cwd: "/repo",
+      hostname: "gitlab.example.test",
+      endpoint: "projects/group%2Fproject",
+    });
+  });
+
+  it("fails closed when GitLab policy requires a pipeline", async () => {
+    mocks.runGlabApiJson
+      .mockResolvedValueOnce([{ id: 10, project_id: 7, sha: "old-head", status: "success" }])
+      .mockResolvedValueOnce({ only_allow_merge_if_pipeline_succeeds: true });
+
     await expect(
       resolveHostedChecksStatus({
         gitRoot: "/repo",
@@ -72,5 +101,23 @@ describe("GitLab hosted checks", () => {
       checked: false,
       reason: "GitLab has no MR pipeline for exact head exact-head",
     });
+  });
+
+  it("fails closed without consulting project policy when named checks are required", async () => {
+    mocks.runGlabApiJson.mockResolvedValueOnce([]);
+
+    await expect(
+      resolveHostedChecksStatus({
+        gitRoot: "/repo",
+        prNumber: 42,
+        branch: "task/T-1/work",
+        expectedHeadSha: "exact-head",
+        requiredChecks: ["test"],
+      }),
+    ).resolves.toEqual({
+      checked: false,
+      reason: "GitLab has no MR pipeline for exact head exact-head",
+    });
+    expect(mocks.runGlabApiJson).toHaveBeenCalledTimes(1);
   });
 });
