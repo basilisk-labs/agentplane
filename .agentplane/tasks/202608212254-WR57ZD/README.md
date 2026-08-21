@@ -1,10 +1,11 @@
 ---
 id: "202608212254-WR57ZD"
 title: "Accept exact tree identity for GitHub rebase cleanup"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -60,6 +61,20 @@ quality_review:
     - "Canonical commit, local object, task lineage, closure lineage, provider receipt, and post-proof receipt revalidation remain upstream of cleanup."
     - "The exact declared verification command passed all 29 focused tests after the suite-level timeout was aligned with the adjacent integration suite."
     - "The existing provider-only patch regression remains effective for ordinary two-parent merge topology."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:88ea9ec4f907afb7fc9f377dadb40df444438ba7cd7c90e9d515de67bf27d856"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-21T23:29:55.153Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -239,8 +254,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "a7486f56f75d4c4ae7eee42745b25a08ccb2a733"
-  message: "🚧 WR57ZD task: apply external agent result"
+  hash: "76de62783d21696f41f8b7282c79baa389c0158a"
+  message: "🚧 WR57ZD task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -251,6 +266,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: a7486f56f75d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -287,9 +305,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-21T23:29:55.153Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "76de62783d21696f41f8b7282c79baa389c0158a"
 doc_version: 3
-doc_updated_at: "2026-08-21T23:28:07.090Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-21T23:29:55.233Z"
+doc_updated_by: "CODER"
 description: "Allow cleanup reconciliation to accept an exact provider receipt when the provider head tree equals the single-parent GitHub rebase merge commit tree; preserve existing identity, object, receipt, and negative guards. Add focused regression tests, publish a PR, merge after hosted checks, then retry cleanup for E6CDHP and XEC2NE."
 sections:
   Summary: |-
@@ -445,6 +471,7 @@ extensions:
     task_id: "202608212254-WR57ZD"
   implementation_commit:
     hash: "a7486f56f75d4c4ae7eee42745b25a08ccb2a733"
+    message: "🚧 WR57ZD task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "134c95fd629d5ebcf0e17196ccb4b44f60c993fd"
@@ -593,3 +620,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:88ea9ec4f907afb7fc9f377dadb40df444438ba7cd7c90e9d515de67bf27d856`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-21T23:29:55.153Z`
