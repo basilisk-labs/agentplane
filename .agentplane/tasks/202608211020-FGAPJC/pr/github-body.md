@@ -15,13 +15,8 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Verification cannot converge because a protected-base sync merge is treated as new task
-implementation even when the previously evaluated task commit remains unchanged.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
