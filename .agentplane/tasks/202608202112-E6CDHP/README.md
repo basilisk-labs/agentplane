@@ -4,7 +4,7 @@ title: "Fix live GitLab MR transport and provider-neutral mergeability validatio
 status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -27,10 +27,10 @@ plan_approval:
   note: "Approved explicitly by Denis in Codex on 2026-08-21 after reviewing the live GitLab findings and remediation plan."
 verification:
   state: "blocked_external"
-  updated_at: "2026-08-21T00:24:17.162Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1"
-  attempts: 6
+  updated_at: "2026-08-21T00:49:28.116Z"
+  updated_by: "TESTER"
+  note: "Live GitLab queue canary exposed a GitHub-only hosted-check invocation: run-next omits branch and exact head, so provider dispatch falls through to gh."
+  attempts: 7
 execution_route:
   frozen: true
   reason_codes:
@@ -237,7 +237,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:recorded-check-1"
-commit: null
+commit:
+  hash: "f701bc2defa5065fd5446981088dc7011de3cffc"
+  message: "🛠️ E6CDHP code: preserve cleanup fallback for missing fetch URLs"
 comments:
   -
     author: "CODER"
@@ -284,6 +286,12 @@ comments:
   -
     author: "CODER"
     body: "Implementation repair committed at f701bc2defa5065fd5446981088dc7011de3cffc; focused checks passed and verification should be repeated."
+  -
+    author: "CODER"
+    body: "Resume implementation rework for the live GitLab integration-queue hosted-check dispatch defect."
+  -
+    author: "TESTER"
+    body: "Live GitLab integration queue hosted-check dispatch falls through to gh because branch and exact head are omitted."
 events:
   -
     type: "status"
@@ -425,9 +433,30 @@ events:
     author: "SUPERVISOR"
     state: "blocked_external"
     note: "Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1"
+  -
+    type: "verify"
+    at: "2026-08-21T00:49:28.116Z"
+    author: "TESTER"
+    state: "blocked_external"
+    note: "Live GitLab queue canary exposed a GitHub-only hosted-check invocation: run-next omits branch and exact head, so provider dispatch falls through to gh."
+  -
+    type: "status"
+    at: "2026-08-21T00:49:43.632Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume implementation rework for the live GitLab integration-queue hosted-check dispatch defect."
+    commit: "f701bc2defa5065fd5446981088dc7011de3cffc"
+  -
+    type: "status"
+    at: "2026-08-21T00:50:03.720Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Live GitLab integration queue hosted-check dispatch falls through to gh because branch and exact head are omitted."
 doc_version: 3
-doc_updated_at: "2026-08-21T00:24:18.340Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-21T00:50:03.720Z"
+doc_updated_by: "TESTER"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
   Summary: |-
@@ -651,6 +680,42 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-21T00:49:28.116Z — VERIFY — blocked_external
+
+    By: TESTER
+
+    Note: Live GitLab queue canary exposed a GitHub-only hosted-check invocation: run-next omits branch and exact head, so provider dispatch falls through to gh.
+    Attempts: 7
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:bd8e7c0f79c1336de5d934b7de34eacab12d79382c0b657bdb3fdf7a9901fabc
+
+    Details:
+
+    Check: real_e2e
+    Command: agentplane integrate queue run-next --wait --hosted --quiet
+    Result: fail
+    Evidence: E_NETWORK after 600000ms: none of the git remotes configured for this repository point to a known GitHub host
+    Scope: GitLab integration queue hosted-check provider dispatch
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+    - old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -920,6 +985,42 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T00:49:28.116Z — VERIFY — blocked_external
+
+By: TESTER
+
+Note: Live GitLab queue canary exposed a GitHub-only hosted-check invocation: run-next omits branch and exact head, so provider dispatch falls through to gh.
+Attempts: 7
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:bd8e7c0f79c1336de5d934b7de34eacab12d79382c0b657bdb3fdf7a9901fabc
+
+Details:
+
+Check: real_e2e
+Command: agentplane integrate queue run-next --wait --hosted --quiet
+Result: fail
+Evidence: E_NETWORK after 600000ms: none of the git remotes configured for this repository point to a known GitHub host
+Scope: GitLab integration queue hosted-check provider dispatch
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+- old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
