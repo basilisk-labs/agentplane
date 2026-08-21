@@ -432,6 +432,16 @@ export async function resolveQualityReviewTargetSha(opts: {
     const isBaseSyncMerge = Boolean(
       mergeParent && baseHeadSha && (await gitIsAncestor(opts.gitRoot, mergeParent, baseHeadSha)),
     );
+    if (mergeParent && isBaseSyncMerge && previousEvaluatedSha) {
+      const taskParent = await gitRevParse(opts.gitRoot, [`${current}^1`]).catch(() => null);
+      if (
+        taskParent &&
+        (await gitIsAncestor(opts.gitRoot, previousEvaluatedSha, taskParent))
+      ) {
+        current = taskParent;
+        continue;
+      }
+    }
     if (mergeParent && isBaseSyncMerge) {
       const changedAgainstMergeParent = await gitDiffNames(opts.gitRoot, mergeParent, current);
       if (

@@ -18,6 +18,8 @@
  .../agentplane/src/commands/pr/internal/sync.ts    |  13 +-
  packages/agentplane/src/commands/pr/open.ts        |   2 +
  packages/agentplane/src/commands/pr/update.ts      |  11 +-
+ .../commands/shared/quality-review-target.test.ts  |  92 +++
+ .../src/commands/shared/quality-review-target.ts   |  10 +
  .../commands/shared/side-effect-authority.test.ts  | 141 ++++-
  .../src/commands/shared/side-effect-authority.ts   |  53 +-
  .../task-worktree-foreign-artifact-repair.test.ts  |  16 +-
@@ -71,4 +73,4 @@
  .../check-compatibility-contract-baseline.mjs      |  42 +-
  scripts/checks/run-local-ci.mjs                    |   9 +-
  website/static/llms-full.txt                       |  46 +-
- 73 files changed, 4390 insertions(+), 404 deletions(-)
+ 75 files changed, 4492 insertions(+), 404 deletions(-)
