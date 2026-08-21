@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 83cfaa5925093a58bdaac6911fd08c0241a2f061..0fc5512142ef4ad95f66fc6054833edada9349ae",
+      "command": "git diff --check f2d52609ad963bf26bd2247d7e30ed69829b14b4..9c8ba752071a9d66685c84ab97ee652d6cb3b608",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,19 +13,44 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 83cfaa5925093a58bdaac6911fd08c0241a2f061..0fc5512142ef4ad95f66fc6054833edada9349ae",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB f2d52609ad963bf26bd2247d7e30ed69829b14b4..9c8ba752071a9d66685c84ab97ee652d6cb3b608",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202608211020-FGAPJC/README.md",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
-        "M\t.agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json",
-        "M\t.agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts"
+        "M\tdocs/developer/task-execution-authority.mdx",
+        "M\tdocs/user/branching-and-pr-artifacts.mdx",
+        "M\tdocs/user/task-lifecycle.mdx",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts",
+        "A\tpackages/agentplane/src/commands/doctor/authority.test.ts",
+        "A\tpackages/agentplane/src/commands/doctor/authority.ts",
+        "M\tpackages/agentplane/src/commands/doctor/runtime.ts",
+        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.ts",
+        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.ts",
+        "M\tpackages/agentplane/src/commands/task/configured-authority.test.ts",
+        "M\tpackages/agentplane/src/commands/task/configured-authority.ts",
+        "M\tpackages/agentplane/src/commands/task/create.command.ts",
+        "A\tpackages/agentplane/src/commands/task/execution-authority-context.test.ts",
+        "A\tpackages/agentplane/src/commands/task/execution-authority-context.ts",
+        "M\tpackages/agentplane/src/commands/task/new.ts",
+        "M\tpackages/agentplane/src/commands/task/plan.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record-execute.ts",
+        "M\tpackages/agentplane/src/runtime/task-execution-context/resolve.ts",
+        "M\tpackages/agentplane/src/runtime/workspace-allocation/allocate.ts",
+        "A\tpackages/agentplane/src/runtime/workspace-allocation/rediscover.test.ts",
+        "A\tpackages/agentplane/src/runtime/workspace-allocation/rediscover.ts",
+        "M\tpackages/core/src/tasks/index.ts",
+        "M\tpackages/core/src/tasks/plan-execution-grant.test.ts",
+        "M\tpackages/core/src/tasks/plan-execution-grant.ts",
+        "M\tpackages/core/src/tasks/task-execution-base.ts",
+        "M\twebsite/static/llms-full.txt"
       ]
     },
     {
@@ -35,48 +60,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "83cfaa5925093a58bdaac6911fd08c0241a2f061",
-  "implementation_commit": "0fc5512142ef4ad95f66fc6054833edada9349ae",
+  "execution_base_commit": "f2d52609ad963bf26bd2247d7e30ed69829b14b4",
+  "implementation_commit": "9c8ba752071a9d66685c84ab97ee652d6cb3b608",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M .agentplane/tasks/202608211020-FGAPJC/README.md",
-      " M .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json",
-      " M .agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json",
-      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
-      " M packages/agentplane/src/commands/task/direct-task-verification.ts"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608211020-FGAPJC/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/direct-task-verification.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/direct-task-verification.ts"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202608211020-FGAPJC/README.md",
-      " M .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json",
-      " M .agentplane/tasks/202608211020-FGAPJC/supervision/implementation-evidence.json",
-      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
-      " M packages/agentplane/src/commands/task/direct-task-verification.ts"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
