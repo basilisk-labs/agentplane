@@ -1,10 +1,10 @@
 ---
 id: "202608211020-FGAPJC"
 title: "Implement task-scoped autonomous execution after one user-approved plan"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -21,14 +21,14 @@ verify:
   - "bun run typecheck"
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-21T11:11:43.312Z"
+  updated_at: "2026-08-21T11:18:51.118Z"
   updated_by: "USER"
   note: "Approved in Codex: implement one-confirmation autonomous execution"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-21T11:17:30.277Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run check"
+  state: "pending"
+  updated_at: "2026-08-21T11:18:57.926Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 2
 execution_route:
   frozen: true
@@ -70,7 +70,9 @@ execution_contract:
       - "docs/user"
       - "packages/agentplane/assets"
       - "packages/agentplane/src/cli"
+      - "packages/agentplane/src/commands/branch"
       - "packages/agentplane/src/commands/doctor"
+      - "packages/agentplane/src/commands/pr"
       - "packages/agentplane/src/commands/shared"
       - "packages/agentplane/src/commands/task"
       - "packages/agentplane/src/runner"
@@ -78,6 +80,8 @@ execution_contract:
       - "packages/core/schemas"
       - "packages/core/src/config"
       - "packages/core/src/tasks"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "website/static/llms-full.txt"
   declaration:
     external_effects: []
     implementation_uncertainty: "bounded"
@@ -85,6 +89,7 @@ execution_contract:
     rationale:
       - "One approved plan must compile into durable task-scoped authority instead of repeated approval boundaries."
       - "The authority resolver, workflow reducer, supervisor, effect leases, workspace allocation, compatibility migration, and documentation form one coherent execution contract."
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/branch,packages/agentplane/src/commands/pr,scripts/baselines/v0.7-compatibility-candidate.json,website/static/llms-full.txt; repository_effects=documentation,repository_write,source_code,tests"
       - "branch_pr remains the repository floor and provides isolated implementation and review for the security-boundary change."
     repository_effects:
       - "documentation"
@@ -103,7 +108,9 @@ execution_contract:
       - "docs/user"
       - "packages/agentplane/assets"
       - "packages/agentplane/src/cli"
+      - "packages/agentplane/src/commands/branch"
       - "packages/agentplane/src/commands/doctor"
+      - "packages/agentplane/src/commands/pr"
       - "packages/agentplane/src/commands/shared"
       - "packages/agentplane/src/commands/task"
       - "packages/agentplane/src/runner"
@@ -111,9 +118,10 @@ execution_contract:
       - "packages/core/schemas"
       - "packages/core/src/config"
       - "packages/core/src/tasks"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "website/static/llms-full.txt"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
+    authority_violations: []
     changed_components:
       - "docs"
       - "packages/agentplane"
@@ -149,10 +157,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -176,7 +181,9 @@ execution_contract:
           - "docs/user"
           - "packages/agentplane/assets"
           - "packages/agentplane/src/cli"
+          - "packages/agentplane/src/commands/branch"
           - "packages/agentplane/src/commands/doctor"
+          - "packages/agentplane/src/commands/pr"
           - "packages/agentplane/src/commands/shared"
           - "packages/agentplane/src/commands/task"
           - "packages/agentplane/src/runner"
@@ -184,6 +191,8 @@ execution_contract:
           - "packages/core/schemas"
           - "packages/core/src/config"
           - "packages/core/src/tasks"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "website/static/llms-full.txt"
         evidence_requirements:
           - "hosted_integration"
           - "repository_effect:documentation"
@@ -207,7 +216,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:0f1dfb8a708c5f9be29d81fec548df028fc11f0519f4463ee1aa8b812a24ce96"
+      digest: "sha256:c23322b4e0d3182069e7f63adbf26d10b4317c497ec8afec2df48ffa39bcd5c9"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/config"
@@ -300,7 +309,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
@@ -315,6 +323,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The remaining implementation is plan-consistent but the compiler omitted the branch and PR command roots plus checked-in generated artifacts from this WorkOrder. Recommended action: Apply the exact scope extension under the active user-approved execution grant and issue a fresh EXECUTOR packet. Requested scope: roots=packages/agentplane/src/commands/branch,packages/agentplane/src/commands/pr,scripts/baselines/v0.7-compatibility-candidate.json,website/static/llms-full.txt; repository effects=documentation,repository_write,source_code,tests; request digest=sha256:a1d003e40b525a94e63eed2406813825e1a9f228b2b6805c916903abab20264e. Agentplane receipt: external-agent-blocker/tr_bc09beddc0e77338b9dac17a44c59b32/sha256:6bb3444816cd99b065785444df86646df5cc925b2c44e4e6bb0835601c69abf4/sha256:a1d003e40b525a94e63eed2406813825e1a9f228b2b6805c916903abab20264e."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/branch, packages/agentplane/src/commands/pr, scripts/baselines/v0.7-compatibility-candidate.json, website/static/llms-full.txt; repository effects: documentation, repository_write, source_code, tests."
 events:
   -
     type: "status"
@@ -485,17 +496,20 @@ extensions:
       - "repository.integrate"
       - "repository.write"
       - "task.lifecycle"
-    digest: "sha256:ec84a4e5b23b78dc8f0866600bd3039d4008140595b544cba4a9904fc33b7fb5"
-    grant_id: "1cccb18b-f789-4a42-b940-56da931e4b0a"
-    issued_at: "2026-08-21T11:11:43.312Z"
+      - "task.scope.extend"
+    digest: "sha256:c6b906eeba417806435151f0d9b16dd4402675b98955c3eddca82b55c9b6e0de"
+    grant_id: "6d1320d0-9f65-4f1c-97c8-7b8805fe2104"
+    issued_at: "2026-08-21T11:18:51.118Z"
     kind: "agentplane.execution_grant"
     plan_digest: "sha256:9f962e2f12b6b3d277456b77faaa1ca1416ff27ce6a48e9e91599347b8f3045c"
-    plan_revision: 6
+    plan_revision: 13
     schema_version: 1
-    scope_digest: "sha256:df7b071ada977f3768cad6168c80f60ac30b6683159adab7645545486acc7df8"
+    scope_digest: "sha256:e258ddeedc305dcd7b5973bb80268af1359486e241b54d90daf4722c0b34d586"
     status: "active"
     task_id: "202608211020-FGAPJC"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-21T11:18:57.926Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:6bb3444816cd99b065785444df86646df5cc925b2c44e4e6bb0835601c69abf4"
     kind: "task_scope_extension_request"
     request:
@@ -513,7 +527,7 @@ extensions:
         - "website/static/llms-full.txt"
     request_digest: "sha256:a1d003e40b525a94e63eed2406813825e1a9f228b2b6805c916903abab20264e"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_bc09beddc0e77338b9dac17a44c59b32"
   implementation_commit:
     hash: "57a6b8ca28171e5608420354f74a6612a8fbd452"
