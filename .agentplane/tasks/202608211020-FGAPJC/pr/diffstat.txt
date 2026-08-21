@@ -64,7 +64,7 @@
  .../workspace-allocation/rediscover.test.ts        |  48 ++
  .../src/runtime/workspace-allocation/rediscover.ts |  47 ++
  packages/core/src/tasks/index.ts                   |  32 ++
- .../core/src/tasks/plan-execution-grant.test.ts    | 306 ++++++++++
+ .../core/src/tasks/plan-execution-grant.test.ts    | 330 +++++++++++
  packages/core/src/tasks/plan-execution-grant.ts    | 499 ++++++++++++++++
  packages/core/src/tasks/task-execution-base.ts     |  59 ++
  packages/core/src/tasks/task-store.ts              |   1 +
@@ -73,4 +73,4 @@
  .../check-compatibility-contract-baseline.mjs      |  42 +-
  scripts/checks/run-local-ci.mjs                    |   9 +-
  website/static/llms-full.txt                       |  46 +-
- 75 files changed, 4492 insertions(+), 404 deletions(-)
+ 75 files changed, 4516 insertions(+), 404 deletions(-)

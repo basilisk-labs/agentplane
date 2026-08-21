@@ -2,10 +2,10 @@
 id: "202608211020-FGAPJC"
 title: "Implement task-scoped autonomous execution after one user-approved plan"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 111
+revision: 112
 origin:
   system: "manual"
 depends_on: []
@@ -26,40 +26,23 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in Codex: implement one-confirmation autonomous execution"
 verification:
-  state: "ok"
-  updated_at: "2026-08-21T18:20:37.245Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
-quality_review:
-  state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T18:22:06.626Z"
+  state: "needs_rework"
+  updated_at: "2026-08-21T18:26:10.704Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  note: "ExecutionGrant becomes inactive after an in-grant task.scope.extend operation, reintroducing approval before integration."
+  attempts: 1
+quality_review:
+  state: "rework"
+  updated_at: "2026-08-21T18:26:10.704Z"
+  updated_by: "EVALUATOR"
+  note: "ExecutionGrant becomes inactive after an in-grant task.scope.extend operation, reintroducing approval before integration."
   evaluated_sha: "ffcf295fe6287b97896b6a7cdf4e6ae20156a63b"
   blueprint_digest: "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa"
   evidence_refs:
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-182104488-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-182104488-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/b3ebdf2600a8e19968927832c5b1648d05096e1e64ddc796cd437e55fc1b6f9d.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-182104488-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-182104488-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-182104488-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211020-FGAPJC/README.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/d16514ee9ed1d406a4b62dc44a77806def9f473d8fe08612367fc50a2a562ea4.patch"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/4088732e9d56a2660e29e04372367b202142e01e9ae9a1424ab202e4402045f8.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821182037245-a0c845c072b7fff7.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9.json"
-    - ".agentplane/policy/dod.code.md"
-    - ".agentplane/policy/dod.core.md"
-    - ".agentplane/policy/security.must.md"
-    - ".agentplane/policy/workflow.branch_pr.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211020-FGAPJC-implement-task-scoped-autonomous-execution-after/.agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json"
   findings:
-    - "The frozen diff implements the eight approved architectural changes and includes unit, integration, recovery, negative, concurrency, and end-to-end coverage."
-    - "The protected-base fix preserves a prior review only when its SHA is an ancestor of the task-side merge parent, then continues first-parent inspection so a later semantic commit still invalidates the review."
-    - "Supervisor evidence records the critical test suite, type checking, policy routing, doctor diagnostics, full regression, documentation contract, and task outcome as passing for implementation ffcf295fe6287b97896b6a7cdf4e6ae20156a63b."
-    - "Residual risk: GitHub branch protection and hosted checks must still accept the exact final PR head before integration."
+    - "Check: task_outcome\nCommand: node packages/agentplane/bin/agentplane.js task next-action 202608211020-FGAPJC --remote --explain --json\nResult: fail\nEvidence: route returned approval.integration.enqueue because the persisted execution grant scope_digest predates the autonomously approved scope extensions\nScope: one-confirmation autonomous execution through integration"
 token_usage:
   agent_runs: 45
   input_tokens: null
@@ -175,6 +158,7 @@ execution_contract:
       - "website/static/llms-full.txt"
   observed:
     authority_violations:
+      - "verification:recorded-check-1:fail"
       - "verification:verification-record:fail"
       - "writable_scope:.agentplane/tasks/202608211010-X9X57M/README.md"
       - "writable_scope:.agentplane/tasks/202608211010-X9X57M/blueprint/resolved-snapshot.json"
@@ -375,7 +359,7 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
+        result: "fail"
       -
         id: "recorded-check-2"
         result: "pass"
@@ -770,10 +754,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-1"
       - "verification_recovery:verification-record"
-commit:
-  hash: "17907aff23feb7a3ba4a3b327eb74a88a2f79b49"
-  message: "🚧 FGAPJC task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1356,8 +1339,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "17907aff23feb7a3ba4a3b327eb74a88a2f79b49"
+  -
+    type: "verify"
+    at: "2026-08-21T18:26:10.704Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "ExecutionGrant becomes inactive after an in-grant task.scope.extend operation, reintroducing approval before integration."
 doc_version: 3
-doc_updated_at: "2026-08-21T18:22:32.184Z"
+doc_updated_at: "2026-08-21T18:26:14.687Z"
 doc_updated_by: "CODER"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
@@ -2888,11 +2877,55 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-21T18:26:10.704Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: ExecutionGrant becomes inactive after an in-grant task.scope.extend operation, reintroducing approval before integration.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c, input_digest=sha256:76154c6b045b63a9a59038b0e310d40ee58a6531a44084d6f85da346290843f1
+
+    Details:
+
+    Check: task_outcome
+    Command: node packages/agentplane/bin/agentplane.js task next-action 202608211020-FGAPJC --remote --explain --json
+    Result: fail
+    Evidence: route returned approval.integration.enqueue because the persisted execution grant scope_digest predates the autonomously approved scope extensions
+    Scope: one-confirmation autonomous execution through integration
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211020-FGAPJC-implement-task-scoped-autonomous-execution-after/.agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json
+    - old_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+    - current_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608211020-FGAPJC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: A grant-authorized scope extension changes execution_contract.scope_digest without deriving a matching active ExecutionGrant.
+      Impact: The supervisor asks for a second USER authority grant at integration, violating the one-confirmation contract.
+      Resolution: Derive and persist a scope-rebased grant after an in-grant non-material scope extension, retaining approval provenance and rejecting material completion-contract drift.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
+      IncidentScope: task autonomy
+      IncidentTags: execution-grant
+      IncidentMatch: task.scope.extend, integration.enqueue
 extensions:
   agentplane.execution_grant:
     actor: "USER"
@@ -4482,6 +4515,42 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-21T18:26:10.704Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: ExecutionGrant becomes inactive after an in-grant task.scope.extend operation, reintroducing approval before integration.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c, input_digest=sha256:76154c6b045b63a9a59038b0e310d40ee58a6531a44084d6f85da346290843f1
+
+Details:
+
+Check: task_outcome
+Command: node packages/agentplane/bin/agentplane.js task next-action 202608211020-FGAPJC --remote --explain --json
+Result: fail
+Evidence: route returned approval.integration.enqueue because the persisted execution grant scope_digest predates the autonomously approved scope extensions
+Scope: one-confirmation autonomous execution through integration
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211020-FGAPJC-implement-task-scoped-autonomous-execution-after/.agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json
+- old_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+- current_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608211020-FGAPJC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -4490,6 +4559,15 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: A grant-authorized scope extension changes execution_contract.scope_digest without deriving a matching active ExecutionGrant.
+  Impact: The supervisor asks for a second USER authority grant at integration, violating the one-confirmation contract.
+  Resolution: Derive and persist a scope-rebased grant after an in-grant non-material scope extension, retaining approval provenance and rejecting material completion-contract drift.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
+  IncidentScope: task autonomy
+  IncidentTags: execution-grant
+  IncidentMatch: task.scope.extend, integration.enqueue
 
 ## Token Usage
 

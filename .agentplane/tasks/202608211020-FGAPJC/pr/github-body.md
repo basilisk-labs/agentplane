@@ -15,8 +15,13 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note:
+
+```text
+ExecutionGrant becomes inactive after an in-grant task.scope.extend operation, reintroducing
+approval before integration.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -93,7 +98,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../workspace-allocation/rediscover.test.ts        |  48 ++
  .../src/runtime/workspace-allocation/rediscover.ts |  47 ++
  packages/core/src/tasks/index.ts                   |  32 ++
- .../core/src/tasks/plan-execution-grant.test.ts    | 306 ++++++++++
+ .../core/src/tasks/plan-execution-grant.test.ts    | 330 +++++++++++
  packages/core/src/tasks/plan-execution-grant.ts    | 499 ++++++++++++++++
  packages/core/src/tasks/task-execution-base.ts     |  59 ++
  packages/core/src/tasks/task-store.ts              |   1 +
@@ -102,7 +107,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../check-compatibility-contract-baseline.mjs      |  42 +-
  scripts/checks/run-local-ci.mjs                    |   9 +-
  website/static/llms-full.txt                       |  46 +-
- 75 files changed, 4492 insertions(+), 404 deletions(-)
+ 75 files changed, 4516 insertions(+), 404 deletions(-)
 ```
 
 </details>

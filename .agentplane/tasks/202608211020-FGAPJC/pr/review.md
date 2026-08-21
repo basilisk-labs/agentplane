@@ -6,14 +6,14 @@ Created: 2026-08-21T10:27:11.359Z
 
 - Task: `202608211020-FGAPJC`
 - Title: Implement task-scoped autonomous execution after one user-approved plan
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608211020-FGAPJC/implement-task-scoped-autonomous-execution-after`
 - Canonical task record: `.agentplane/tasks/202608211020-FGAPJC/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: ExecutionGrant becomes inactive after an in-grant task.scope.extend operation, reintroducing approval before integration.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -95,7 +95,7 @@ Created: 2026-08-21T10:27:11.359Z
  .../workspace-allocation/rediscover.test.ts        |  48 ++
  .../src/runtime/workspace-allocation/rediscover.ts |  47 ++
  packages/core/src/tasks/index.ts                   |  32 ++
- .../core/src/tasks/plan-execution-grant.test.ts    | 306 ++++++++++
+ .../core/src/tasks/plan-execution-grant.test.ts    | 330 +++++++++++
  packages/core/src/tasks/plan-execution-grant.ts    | 499 ++++++++++++++++
  packages/core/src/tasks/task-execution-base.ts     |  59 ++
  packages/core/src/tasks/task-store.ts              |   1 +
@@ -104,7 +104,7 @@ Created: 2026-08-21T10:27:11.359Z
  .../check-compatibility-contract-baseline.mjs      |  42 +-
  scripts/checks/run-local-ci.mjs                    |   9 +-
  website/static/llms-full.txt                       |  46 +-
- 75 files changed, 4492 insertions(+), 404 deletions(-)
+ 75 files changed, 4516 insertions(+), 404 deletions(-)
 ```
 
 </details>

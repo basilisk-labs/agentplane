@@ -152,7 +152,7 @@ describe("task-scoped execution grants", () => {
     ).toBe(false);
   });
 
-  it("keeps authority active when only compiled writable roots expand", () => {
+  it("keeps authority active for path-only scope extension and rejects new effects", () => {
     const initial = contract();
     const grant = createExecutionGrant({
       proposal: createPlanProposal({
@@ -188,6 +188,30 @@ describe("task-scoped execution grants", () => {
         repository_identity: REPOSITORY_IDENTITY,
       }),
     ).toBe(true);
+
+    const materiallyExpanded = {
+      ...expanded,
+      declaration: {
+        ...expanded.declaration,
+        repository_effects: [...expanded.declaration.repository_effects, "documentation"],
+      },
+      authority: {
+        ...expanded.authority,
+        allowed_repository_effects: [
+          ...expanded.authority.allowed_repository_effects,
+          "documentation",
+        ],
+      },
+    } satisfies TaskExecutionContract;
+    expect(
+      isExecutionGrantActive({
+        grant,
+        task_id: "task-1",
+        plan: "Implement the approved repository change",
+        execution_contract: materiallyExpanded,
+        repository_identity: REPOSITORY_IDENTITY,
+      }),
+    ).toBe(false);
   });
 
   it("deterministically upgrades a valid legacy grant without changing historical evidence", () => {
