@@ -69,6 +69,69 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
     });
   });
 
+  it("freezes concurrent tasks from independent long-lived bases without importing prior commits", async () => {
+    const root = await mkGitRepoRootWithBranch("typescript");
+    await writeFile(path.join(root, "base.txt"), "shared base\n");
+    await execFileAsync("git", ["add", "base.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "shared base"], { cwd: root });
+    await writeFile(path.join(root, "typescript-history.ts"), "export const migrated = true;\n");
+    await execFileAsync("git", ["add", "typescript-history.ts"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "typescript cumulative history"], { cwd: root });
+    await execFileAsync("git", ["branch", "-f", "master", "typescript^"], { cwd: root });
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const masterResult = await execFileAsync("git", ["rev-parse", "master"], { cwd: root });
+    const typescriptResult = await execFileAsync("git", ["rev-parse", "typescript"], {
+      cwd: root,
+    });
+    const masterSha = masterResult.stdout.trim();
+    const typescriptSha = typescriptResult.stdout.trim();
+
+    const mainTask = await runJson(root, [
+      "task",
+      "create",
+      "Patch the stable line",
+      "--base",
+      "master",
+      "--json",
+    ]);
+    const typescriptTask = await runJson(root, [
+      "task",
+      "create",
+      "Continue the TypeScript line",
+      "--base",
+      "typescript",
+      "--json",
+    ]);
+    const readBase = async (taskId: string) => {
+      const raw = await readFile(
+        path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+        "utf8",
+      );
+      const value: unknown = parseTaskReadme(raw).frontmatter.extensions?.task_execution_context;
+      return value;
+    };
+
+    expect(await readBase(String(mainTask.task_id))).toMatchObject({
+      base_ref: "master",
+      base_sha: masterSha,
+      source: "explicit",
+    });
+    expect(await readBase(String(typescriptTask.task_id))).toMatchObject({
+      base_ref: "typescript",
+      base_sha: typescriptSha,
+      source: "explicit",
+    });
+    expect(typescriptSha).not.toBe(masterSha);
+    const diff = await execFileAsync(
+      "git",
+      ["diff", "--name-only", `${typescriptSha}..typescript`],
+      { cwd: root },
+    );
+    expect(diff.stdout.trim()).toBe("");
+  });
+
   it("preserves a reusable envelope and re-resolves the route from typed intent", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
@@ -199,12 +262,31 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       },
     });
 
-    await runJson(
+    const approval = await runJson(
       root,
       ["task", "advance", taskId, "--result", resultPath, "--agent-json"],
       metrics,
+    ) as {
+      operator_action: {
+        host_user_decision: { request: Record<string, unknown> };
+      };
+    };
+    const hostDecision = Buffer.from(
+      JSON.stringify({
+        schema_version: 1,
+        ...approval.operator_action.host_user_decision.request,
+        host_id: "codex",
+        conversation_id: "one-confirmation-e2e",
+        message_id: "user-approval-1",
+        decided_at: "2026-08-21T10:00:00.000Z",
+      }),
+      "utf8",
+    ).toString("base64url");
+    await runCommand(
+      root,
+      ["task", "plan", "approve", taskId, "--host-user-decision", hostDecision],
+      metrics,
     );
-    await runCommand(root, ["task", "plan", "approve", taskId, "--by", "USER"], metrics);
     await execFileAsync("git", ["add", "-A"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed localized direct task"], {
       cwd: root,

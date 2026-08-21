@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { cp, mkdir } from "node:fs/promises";
 import path from "node:path";
 
-import { findWorktreeForBranch, gitBranchExists, gitRevParse } from "@agentplaneorg/core/git";
+import { gitBranchExists, gitRevParse } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 
@@ -18,6 +18,7 @@ import {
   releaseWorkspaceLease,
 } from "./lease.js";
 import type { WorkspaceAllocationContext } from "./types.js";
+import { findRelocatableWorktreeForBranch } from "./rediscover.js";
 
 function sha256(value: string): `sha256:${string}` {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
@@ -65,7 +66,7 @@ async function ensureDirectWorkspace(opts: {
     throw new Error("An isolated workspace requires a committed task base.");
   }
   await gitRevParse(gitRoot, [`${opts.execution.base_sha}^{commit}`]);
-  const existingWorktree = await findWorktreeForBranch(gitRoot, opts.branch);
+  const existingWorktree = await findRelocatableWorktreeForBranch(gitRoot, opts.branch);
   if (existingWorktree) {
     if (path.resolve(existingWorktree) !== path.resolve(opts.workspaceRoot)) {
       throw new Error(
@@ -123,7 +124,10 @@ export async function allocateTaskWorkspace(opts: {
     if (!taskBranch) {
       throw new Error(`branch_pr task ${taskId} has no prepared task branch.`);
     }
-    const taskWorktree = await findWorktreeForBranch(opts.ctx.resolvedProject.gitRoot, taskBranch);
+    const taskWorktree = await findRelocatableWorktreeForBranch(
+      opts.ctx.resolvedProject.gitRoot,
+      taskBranch,
+    );
     if (!taskWorktree) {
       throw new Error(`branch_pr task ${taskId} has no prepared task worktree.`);
     }
@@ -134,7 +138,7 @@ export async function allocateTaskWorkspace(opts: {
     allocationKind = "direct_workspace";
     branch = directWorkspaceBranch(taskId);
     workspaceRoot =
-      (await findWorktreeForBranch(opts.ctx.resolvedProject.gitRoot, branch)) ??
+      (await findRelocatableWorktreeForBranch(opts.ctx.resolvedProject.gitRoot, branch)) ??
       path.join(
         await primaryWorktreeRoot(opts.ctx.resolvedProject.gitRoot),
         ".agentplane",

@@ -31,6 +31,7 @@ import {
   loadPlanBackend,
 } from "./plan-shared.js";
 import { decodeEscapedTaskTextNewlines, nowIso } from "./shared.js";
+import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 
 export type TaskPlanSetResult = {
   taskId: string;
@@ -235,10 +236,16 @@ export async function cmdTaskPlanApprove(opts: {
     const note = typeof opts.note === "string" ? opts.note.trim() : "";
 
     const approvedAt = nowIso();
+    const repositoryIdentityFor = async (task: Pick<TaskData, "extensions">) =>
+      await resolveLogicalRepositoryIdentity({
+        git_root: ctx.resolvedProject.gitRoot,
+        task,
+      });
     await withTaskMutationStorage({
       ctx,
       local: async (store) => {
         await store.get(opts.taskId);
+        const repositoryIdentity = await repositoryIdentityFor(await store.get(opts.taskId));
         await store.patch(
           opts.taskId,
           (current) => {
@@ -260,6 +267,7 @@ export async function cmdTaskPlanApprove(opts: {
               task_revision: current.revision ?? 1,
               plan,
               execution_contract: current.execution_contract,
+              repository_identity: repositoryIdentity,
             });
             const grant = createExecutionGrant({
               proposal,
@@ -307,6 +315,7 @@ export async function cmdTaskPlanApprove(opts: {
           task_revision: task.revision ?? 1,
           plan: taskDocToSectionMap(baseDoc).Plan ?? "",
           execution_contract: task.execution_contract,
+          repository_identity: await repositoryIdentityFor(task),
         });
         const grant = createExecutionGrant({
           proposal,

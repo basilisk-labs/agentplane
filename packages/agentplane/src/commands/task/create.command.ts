@@ -15,6 +15,7 @@ import { throwIfPolicyDecisionDenied } from "../shared/policy-deny.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { runTaskNewParsed, type TaskNewParsed } from "./new.js";
+import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 
 const output = createCliEmitter();
 
@@ -303,6 +304,10 @@ export function makeRunTaskCreateHandler(
       },
     });
     const explicitBaseRef = parsed.base?.trim();
+    const repositoryIdentity = await resolveLogicalRepositoryIdentity({
+      git_root: execution.command.resolvedProject.gitRoot,
+      task: {},
+    });
     const explicitBase = explicitBaseRef
       ? createTaskExecutionBaseIdentity({
           base_ref: explicitBaseRef,
@@ -310,6 +315,7 @@ export function makeRunTaskCreateHandler(
             `${explicitBaseRef}^{commit}`,
           ]),
           source: "explicit",
+          repository_identity: repositoryIdentity,
         })
       : null;
     const created = await runTaskNewParsed({

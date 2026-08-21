@@ -675,6 +675,49 @@ describe("branch_pr task supervisor", () => {
     expect(calls).toEqual(["agent.implementation_rework"]);
   });
 
+  it("continues bounded evaluator rework without creating another approval boundary", async () => {
+    const root = await mkGitRepoRoot();
+    const calls: string[] = [];
+    const decisions = [
+      agentDecision(1, "quality_review"),
+      agentDecision(2, "implementation_rework"),
+      agentDecision(3, "verification"),
+      agentDecision(4, "quality_review"),
+      stopDecision(5, "terminal"),
+    ];
+    const ports = sequencePorts(root, decisions, calls);
+    const executeEpisode = ports.execute_episode;
+    let evaluatorCount = 0;
+    ports.execute_episode = async (input) => {
+      const outcome = await executeEpisode(input);
+      if (
+        input.decision.workflowStep.kind === "agent_episode" &&
+        input.decision.workflowStep.episode.purpose === "quality_review"
+      ) {
+        evaluatorCount += 1;
+        if (evaluatorCount === 1 && outcome.status === "completed" && outcome.evaluator) {
+          return {
+            ...outcome,
+            evaluator: { ...outcome.evaluator, verdict: "rework" as const },
+          };
+        }
+      }
+      return outcome;
+    };
+
+    const result = await superviseBranchTaskRunWithPorts(ports);
+
+    expect(result.status).toBe("finalized");
+    expect(result.stop).toBeNull();
+    expect(calls).toEqual([
+      "agent.quality_review",
+      "agent.implementation_rework",
+      "agent.verification",
+      "agent.quality_review",
+    ]);
+    expect(calls).not.toContain("approval.integration.enqueue");
+  });
+
   it("returns deleted provider branch truth as terminal attention", async () => {
     const root = await mkGitRepoRoot();
     const calls: string[] = [];

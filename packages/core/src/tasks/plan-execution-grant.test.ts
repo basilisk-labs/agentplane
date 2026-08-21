@@ -6,11 +6,17 @@ import {
   createExecutionGrant,
   createOperationLease,
   createPlanProposal,
+  executionGrantDigest,
+  executionGrantForContextFromExtensions,
   executionGrantFromExtensions,
   hostUserDecisionDigest,
   isExecutionGrantActive,
   parseHostUserDecision,
+  parseOperationLease,
+  parsePlanProposal,
 } from "./plan-execution-grant.js";
+
+const REPOSITORY_IDENTITY = `sha256:${"f".repeat(64)}`;
 
 function contract(external_effects: TaskExecutionContract["declaration"]["external_effects"] = []) {
   return {
@@ -66,7 +72,10 @@ describe("task-scoped execution grants", () => {
       task_revision: 3,
       plan: "Implement and merge",
       execution_contract: executionContract,
+      repository_identity: REPOSITORY_IDENTITY,
     });
+    expect(parsePlanProposal(proposal)).toEqual(proposal);
+    expect(parsePlanProposal({ ...proposal, repository_identity: "moved-path" })).toBeNull();
     const grant = createExecutionGrant({
       proposal,
       execution_contract: executionContract,
@@ -90,6 +99,7 @@ describe("task-scoped execution grants", () => {
         task_id: "task-1",
         plan: "Implement and merge",
         execution_contract: executionContract,
+        repository_identity: REPOSITORY_IDENTITY,
       }),
     ).toBe(true);
     expect(executionGrantFromExtensions({ "agentplane.execution_grant": grant })?.digest).toBe(
@@ -105,6 +115,7 @@ describe("task-scoped execution grants", () => {
         task_revision: 1,
         plan: "Original",
         execution_contract: executionContract,
+        repository_identity: REPOSITORY_IDENTITY,
       }),
       execution_contract: executionContract,
       actor: "USER",
@@ -118,6 +129,16 @@ describe("task-scoped execution grants", () => {
         task_id: "task-1",
         plan: "Changed",
         execution_contract: executionContract,
+        repository_identity: REPOSITORY_IDENTITY,
+      }),
+    ).toBe(false);
+    expect(
+      isExecutionGrantActive({
+        grant,
+        task_id: "task-1",
+        plan: "Original",
+        execution_contract: executionContract,
+        repository_identity: `sha256:${"e".repeat(64)}`,
       }),
     ).toBe(false);
     expect(
@@ -126,6 +147,7 @@ describe("task-scoped execution grants", () => {
         task_id: "task-1",
         plan: "Original",
         execution_contract: contract(["external_write"]),
+        repository_identity: REPOSITORY_IDENTITY,
       }),
     ).toBe(false);
   });
@@ -138,6 +160,7 @@ describe("task-scoped execution grants", () => {
         task_revision: 1,
         plan: "Implement the approved repository change",
         execution_contract: initial,
+        repository_identity: REPOSITORY_IDENTITY,
       }),
       execution_contract: initial,
       actor: "USER",
@@ -162,8 +185,55 @@ describe("task-scoped execution grants", () => {
         task_id: "task-1",
         plan: "Implement the approved repository change",
         execution_contract: expanded,
+        repository_identity: REPOSITORY_IDENTITY,
       }),
     ).toBe(true);
+  });
+
+  it("deterministically upgrades a valid legacy grant without changing historical evidence", () => {
+    const executionContract = contract();
+    const current = createExecutionGrant({
+      proposal: createPlanProposal({
+        task_id: "task-legacy",
+        task_revision: 4,
+        plan: "Legacy approved plan",
+        execution_contract: executionContract,
+        repository_identity: REPOSITORY_IDENTITY,
+      }),
+      execution_contract: executionContract,
+      actor: "USER",
+      approval_kind: "manual_operator",
+      issued_at: "2026-08-20T10:00:00.000Z",
+    });
+    const {
+      repository_identity: _repositoryIdentity,
+      completion_contract_digest: _completionDigest,
+      digest: _currentDigest,
+      ...legacyUnsigned
+    } = current;
+    const legacy = { ...legacyUnsigned, digest: executionGrantDigest(legacyUnsigned) };
+
+    const migrated = executionGrantForContextFromExtensions({
+      extensions: { "agentplane.execution_grant": legacy },
+      repository_identity: REPOSITORY_IDENTITY,
+      execution_contract: executionContract,
+    });
+
+    expect(migrated).toMatchObject({
+      task_id: "task-legacy",
+      repository_identity: REPOSITORY_IDENTITY,
+      approval_kind: "manual_operator",
+    });
+    expect(legacy).not.toHaveProperty("repository_identity");
+    expect(
+      executionGrantForContextFromExtensions({
+        extensions: {
+          "agentplane.execution_grant": { ...legacy, actor: "AGENT" },
+        },
+        repository_identity: REPOSITORY_IDENTITY,
+        execution_contract: executionContract,
+      }),
+    ).toBeNull();
   });
 
   it("accepts a canonical host-originated user decision and binds operation leases", () => {
@@ -192,6 +262,7 @@ describe("task-scoped execution grants", () => {
         task_revision: 1,
         plan: "Plan",
         execution_contract: executionContract,
+        repository_identity: REPOSITORY_IDENTITY,
       }),
       execution_contract: executionContract,
       actor: "HOST:codex:USER",
@@ -210,6 +281,8 @@ describe("task-scoped execution grants", () => {
     });
     expect(lease.grant_digest).toBe(grant.digest);
     expect(lease.digest).toMatch(/^sha256:[0-9a-f]{64}$/u);
+    expect(parseOperationLease(lease)).toEqual(lease);
+    expect(parseOperationLease({ ...lease, task_id: "task-2" })).toBeNull();
   });
 
   it("rejects an agent-asserted or malformed host decision", () => {

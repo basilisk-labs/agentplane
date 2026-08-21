@@ -14,8 +14,11 @@ import {
   isOperationAuthorizedByPolicy,
   isOperationAuthorizedByExecutionGrant,
   isScopeExtensionCoveredByExecutionGrant,
+  executionGrantOperationLeaseId,
   resolveConfiguredAuthority,
 } from "./configured-authority.js";
+
+const REPOSITORY_IDENTITY = `sha256:${"f".repeat(64)}`;
 
 function authority(overrides: Partial<SideEffectAuthorityConfig>): SideEffectAuthorityConfig {
   return {
@@ -29,6 +32,24 @@ function authority(overrides: Partial<SideEffectAuthorityConfig>): SideEffectAut
 }
 
 describe("configured repository authority", () => {
+  it("uses a replay-stable lease id and changes it on material operation scope drift", () => {
+    const input = {
+      grant_digest: `sha256:${"a".repeat(64)}`,
+      task_id: "TASK-1",
+      operation_id: "pr.open",
+      operation_digest: `sha256:${"b".repeat(64)}`,
+      state_scope_digest: `sha256:${"c".repeat(64)}`,
+    };
+
+    expect(executionGrantOperationLeaseId(input)).toBe(executionGrantOperationLeaseId(input));
+    expect(
+      executionGrantOperationLeaseId({
+        ...input,
+        state_scope_digest: `sha256:${"d".repeat(64)}`,
+      }),
+    ).not.toBe(executionGrantOperationLeaseId(input));
+  });
+
   it("compiles plan authority into provider operations and bounded scope expansion", () => {
     const contract = {
       selected_mode: "branch_pr",
@@ -44,6 +65,7 @@ describe("configured repository authority", () => {
         task_revision: 2,
         plan: "Implement and verify.",
         execution_contract: contract,
+        repository_identity: REPOSITORY_IDENTITY,
       }),
       execution_contract: contract,
       actor: "HOST:codex:USER",
@@ -74,6 +96,7 @@ describe("configured repository authority", () => {
         task_revision: 2,
         plan: "Implement and verify.",
         execution_contract: executionContract,
+        repository_identity: REPOSITORY_IDENTITY,
       }),
       execution_contract: executionContract,
       actor: "USER",
@@ -111,7 +134,7 @@ describe("configured repository authority", () => {
     });
 
     expect(result).toEqual({
-      state: "not_applicable",
+      state: "user_required",
       reason: "semantic approvals remain operator-owned",
     });
   });

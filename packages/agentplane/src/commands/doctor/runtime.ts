@@ -8,6 +8,7 @@ import {
   describeRuntimeMode,
   resolveRuntimeSourceInfo,
 } from "../../runtime/shared/runtime-source.js";
+import { checkPlanApprovalTransport } from "./authority.js";
 
 function renderCliVersionFacts(expectation: RepoCliVersionExpectation): string[] {
   if (!expectation.expectedVersion) return [];
@@ -28,8 +29,9 @@ export function checkRuntimeSourceFacts(cwd: string, config?: AgentplaneConfig):
   const cliVersionFacts = config
     ? renderCliVersionFacts(evaluateRepoCliVersionExpectation(config, report))
     : [];
+  const approvalTransportFacts = config ? checkPlanApprovalTransport(config) : [];
   if (!report.framework.inFrameworkCheckout) {
-    return cliVersionFacts;
+    return [...cliVersionFacts, ...approvalTransportFacts];
   }
 
   const warning =
@@ -43,6 +45,7 @@ export function checkRuntimeSourceFacts(cwd: string, config?: AgentplaneConfig):
   return [
     ...(warning ? [warning] : []),
     ...cliVersionFacts,
+    ...approvalTransportFacts,
     `[INFO] Runtime mode: ${report.mode} (${describeRuntimeMode(report.mode)})`,
     `[INFO] Active binary: ${report.activeBinaryPath ?? "unresolved"}`,
     ...(report.handoffFromBinaryPath

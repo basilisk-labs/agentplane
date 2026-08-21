@@ -35,6 +35,7 @@ import {
   resolvePrimaryTag,
   warnIfUnknownOwner,
 } from "./shared.js";
+import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 import {
   buildDefaultVerifyStepsSection,
   defaultTaskDocV3,
@@ -192,6 +193,10 @@ export async function runTaskNewParsed(opts: {
     const creationHead = await gitRevParse(ctx.resolvedProject.gitRoot, ["HEAD^{commit}"]).catch(
       () => null,
     );
+    const repositoryIdentity = await resolveLogicalRepositoryIdentity({
+      git_root: ctx.resolvedProject.gitRoot,
+      task: {},
+    });
     const extensions = taskExecutionBaseFromExtensions(p.extensions)
       ? p.extensions
       : creationHead
@@ -201,6 +206,7 @@ export async function runTaskNewParsed(opts: {
               base_ref: await gitCurrentBranch(ctx.resolvedProject.gitRoot),
               base_sha: creationHead,
               source: "creation_checkout",
+              repository_identity: repositoryIdentity,
             }),
           }
         : p.extensions;

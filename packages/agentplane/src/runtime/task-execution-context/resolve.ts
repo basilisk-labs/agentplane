@@ -2,7 +2,6 @@ import path from "node:path";
 import { realpath } from "node:fs/promises";
 
 import {
-  findWorktreeForBranch,
   gitEnv,
   gitBranchExists,
   gitCurrentBranch,
@@ -31,6 +30,7 @@ import type {
   TaskExecutionRequestedMode,
   TaskExecutionRouteSource,
 } from "./types.js";
+import { findRelocatableWorktreeForBranch } from "../workspace-allocation/rediscover.js";
 
 type FrozenBaseIdentity = Readonly<{ base_ref: string; base_sha: string }>;
 
@@ -291,7 +291,10 @@ export async function loadTaskCommandContext(opts: {
           ? directBranch
           : null;
   const primaryWorkspace = primaryWorkspaceBranch
-    ? await findWorktreeForBranch(opts.ctx.resolvedProject.gitRoot, primaryWorkspaceBranch)
+    ? await findRelocatableWorktreeForBranch(
+        opts.ctx.resolvedProject.gitRoot,
+        primaryWorkspaceBranch,
+      )
     : null;
   const primaryIsCurrent = primaryWorkspace
     ? (await realpath(primaryWorkspace).catch(() => path.resolve(primaryWorkspace))) ===

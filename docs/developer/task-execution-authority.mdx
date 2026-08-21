@@ -25,7 +25,8 @@ Use these rules in CLI, runtime, runner, evaluator, verification, finish, PR, an
 12. Resolve side-effect authority from the active grant before consulting repository fallback
     policy. A user-derived grant may authorize `task.scope.extend` only when every requested
     repository effect is already allowed by the approved execution contract.
-13. Bind each provider mutation to the existing expiring, state-scoped authority record.
+13. Derive a short-lived `OperationLease` from the active grant for each provider mutation and
+    embed it in the existing expiring, state-scoped authority journal.
 14. Invalidate the grant when the normalized plan digest or material execution-scope digest
     changes. Compiler-derived writable-root changes do not invalidate an otherwise identical
     semantic scope.
@@ -55,14 +56,18 @@ must not be persisted as semantic identity.
 
 Both transports bind the decision to the current task, normalized plan digest, and route state
 fingerprint. Approval persists an `agentplane.execution_grant` extension containing the plan and
-scope digests, evidence provenance, actor, and compiled capabilities. Manual `--by` remains an
-operator compatibility/bootstrap surface.
+scope digests, stable logical repository identity, logical-completion contract digest, evidence
+provenance, actor, and compiled capabilities. Repository identity is derived from immutable Git
+root objects and therefore survives branch changes and directory relocation. Manual `--by` remains
+an operator compatibility/bootstrap surface.
 
 The supervisor may resolve lifecycle and provider approval steps from an active grant. It may also
 apply an exact writable-root extension when the request remains inside the approved repository
 effects. A new effect, changed plan/material scope digest, human question, external wait,
 effect-in-doubt recovery, or terminal attention still stops execution. Existing state-bound
-side-effect records serve as short-lived operation leases; they do not widen the durable grant.
+side-effect records carry the exact grant-derived `OperationLease`; parsing and execution reject a
+tampered, expired, cross-task, cross-operation, or state-scope-mismatched lease. Stable lease ids
+make a crash replay reuse the existing authority record instead of issuing duplicate authority.
 
 ## Route and capability changes
 

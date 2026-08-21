@@ -134,7 +134,7 @@ export function makeRunTaskAdvanceHandler(deps: {
           command: authorityCommand,
           decision: current,
         });
-        if (resolved.state === "resolved") {
+        if (resolved.state === "granted") {
           current = await decide(true);
           continue;
         }

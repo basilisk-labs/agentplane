@@ -1,6 +1,8 @@
 import type { SideEffectAuthorityConfig } from "@agentplaneorg/core/config";
 import {
-  executionGrantFromExtensions,
+  executionGrantForContextFromExtensions,
+  createOperationLease,
+  executionGrantDigest,
   isExecutionGrantActive,
   repositoryEffectsForPath,
   type ExecutionGrant,
@@ -18,11 +20,15 @@ import {
 } from "../shared/side-effect-authority-store.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { parseTaskScopeExtensionRequestState } from "../shared/task-scope-extension-request.js";
+import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 
 export type ConfiguredAuthorityResolution =
-  | { state: "not_applicable"; reason: string }
+  | { state: "policy_transition"; reason: string }
+  | { state: "user_required"; reason: string }
+  | { state: "external_blocked"; reason: string }
+  | { state: "denied"; reason: string }
   | {
-      state: "resolved";
+      state: "granted";
       actor: string;
       boundary: "side_effect";
       source: "repository_policy" | "execution_grant";
@@ -58,6 +64,16 @@ function isUserApprovedGrant(grant: ExecutionGrant): boolean {
     grant.approval_kind === "host_user_decision" ||
     grant.approval_kind === "signed_user_receipt"
   );
+}
+
+export function executionGrantOperationLeaseId(opts: {
+  grant_digest: string;
+  task_id: string;
+  operation_id: string;
+  operation_digest: string;
+  state_scope_digest: string;
+}): string {
+  return `lease-${executionGrantDigest(opts).slice("sha256:".length)}`;
 }
 
 export function isScopeExtensionCoveredByExecutionGrant(opts: {
@@ -101,23 +117,32 @@ export async function resolveConfiguredAuthority(opts: {
 }): Promise<ConfiguredAuthorityResolution> {
   const step = opts.decision.workflowStep;
   if (step.kind !== "approval") {
-    return { state: "not_applicable", reason: "current route is not an approval boundary" };
+    return { state: "policy_transition", reason: "current route is not an approval boundary" };
   }
 
   if (step.request.type !== "side_effect") {
-    return { state: "not_applicable", reason: "semantic approvals remain operator-owned" };
+    return { state: "user_required", reason: "semantic approvals remain operator-owned" };
   }
   const task = await loadTaskFromContext({
     ctx: opts.command,
     taskId: step.request.taskId,
     preferBranchSnapshot: opts.decision.workflowMode === "branch_pr",
   });
-  const executionGrant = executionGrantFromExtensions(task.extensions);
+  const repositoryIdentity = await resolveLogicalRepositoryIdentity({
+    git_root: opts.command.resolvedProject.gitRoot,
+    task,
+  });
+  const executionGrant = executionGrantForContextFromExtensions({
+    extensions: task.extensions,
+    repository_identity: repositoryIdentity,
+    execution_contract: task.execution_contract,
+  });
   const activeGrant = isExecutionGrantActive({
     grant: executionGrant,
     task_id: task.id,
     plan: task.sections?.Plan ?? "",
     execution_contract: task.execution_contract,
+    repository_identity: repositoryIdentity,
   })
     ? executionGrant
     : null;
@@ -130,7 +155,7 @@ export async function resolveConfiguredAuthority(opts: {
   );
   if (!grantOwnsOperation && !isOperationAuthorizedByPolicy(config, step.request.operationId)) {
     return {
-      state: "not_applicable",
+      state: "user_required",
       reason: `operation ${step.request.operationId} is outside the approved execution grant and repository policy`,
     };
   }
@@ -141,7 +166,7 @@ export async function resolveConfiguredAuthority(opts: {
   });
   if (!loaded.state) {
     return {
-      state: "not_applicable",
+      state: "denied",
       reason: "persisted side-effect authority state is malformed",
     };
   }
@@ -149,12 +174,32 @@ export async function resolveConfiguredAuthority(opts: {
   const issuedAt = new Date().toISOString();
   const expiresAt = new Date(Date.parse(issuedAt) + config.ttl_minutes * 60_000).toISOString();
   const actor = activeGrant && grantOwnsOperation ? activeGrant.actor : config.actor;
+  const operationLease =
+    activeGrant && grantOwnsOperation
+      ? createOperationLease({
+          grant: activeGrant,
+          operation_id: step.request.operationId,
+          operation_digest: step.request.operationDigest,
+          state_fingerprint: step.request.stateFingerprintDigest,
+          state_scope_digest: step.request.stateScopeDigest,
+          issued_at: issuedAt,
+          expires_at: expiresAt,
+          lease_id: executionGrantOperationLeaseId({
+            grant_digest: activeGrant.digest,
+            task_id: step.request.taskId,
+            operation_id: step.request.operationId,
+            operation_digest: step.request.operationDigest,
+            state_scope_digest: step.request.stateScopeDigest,
+          }),
+        })
+      : undefined;
   const authorityGrant = createSideEffectAuthorityRecord({
     actor,
     operation: step.request.operation,
     fingerprint: step.preconditionFingerprint,
     issuedAt,
     expiresAt,
+    ...(operationLease ? { operationLease, id: `authority-${operationLease.lease_id}` } : {}),
   });
   if (
     authorityGrant.operationDigest !== step.request.operationDigest ||
@@ -162,8 +207,25 @@ export async function resolveConfiguredAuthority(opts: {
     authorityGrant.stateScopeDigest !== step.request.stateScopeDigest
   ) {
     return {
-      state: "not_applicable",
+      state: "external_blocked",
       reason: "reconstructed policy authority no longer matches the current route",
+    };
+  }
+
+  const alreadyIssued = loaded.state.grants.some(
+    (grant) =>
+      grant.operationId === authorityGrant.operationId &&
+      grant.operationDigest === authorityGrant.operationDigest &&
+      grant.stateScopeDigest === authorityGrant.stateScopeDigest &&
+      grant.operationLease?.lease_id === authorityGrant.operationLease?.lease_id &&
+      Date.parse(grant.expiresAt) > Date.now(),
+  );
+  if (alreadyIssued) {
+    return {
+      state: "granted",
+      actor,
+      boundary: "side_effect",
+      source: activeGrant && grantOwnsOperation ? "execution_grant" : "repository_policy",
     };
   }
 
@@ -186,7 +248,7 @@ export async function resolveConfiguredAuthority(opts: {
     state: audited,
   });
   return {
-    state: "resolved",
+    state: "granted",
     actor,
     boundary: "side_effect",
     source: activeGrant && grantOwnsOperation ? "execution_grant" : "repository_policy",

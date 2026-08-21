@@ -4,6 +4,7 @@ export type TaskExecutionBaseIdentity = Readonly<{
   schema_version: 1;
   base_ref: string;
   base_sha: string;
+  repository_identity: string | null;
   source: "creation_checkout" | "explicit" | "legacy";
 }>;
 
@@ -17,6 +18,7 @@ export function createTaskExecutionBaseIdentity(opts: {
   base_ref: string;
   base_sha: string;
   source: TaskExecutionBaseIdentity["source"];
+  repository_identity: string;
 }): TaskExecutionBaseIdentity {
   const base_ref = opts.base_ref.trim();
   const base_sha = opts.base_sha.trim();
@@ -24,7 +26,16 @@ export function createTaskExecutionBaseIdentity(opts: {
   if (!/^[0-9a-f]{40}$/iu.test(base_sha)) {
     throw new Error("Task execution base_sha must be a full Git commit id.");
   }
-  return Object.freeze({ schema_version: 1, base_ref, base_sha, source: opts.source });
+  if (!/^sha256:[0-9a-f]{64}$/u.test(opts.repository_identity)) {
+    throw new Error("Task execution repository identity must be a sha256 digest.");
+  }
+  return Object.freeze({
+    schema_version: 1,
+    base_ref,
+    base_sha,
+    repository_identity: opts.repository_identity,
+    source: opts.source,
+  });
 }
 
 export function taskExecutionBaseFromExtensions(
@@ -39,5 +50,10 @@ export function taskExecutionBaseFromExtensions(
     stored.source === "creation_checkout" || stored.source === "explicit"
       ? stored.source
       : "legacy";
-  return Object.freeze({ schema_version: 1, base_ref, base_sha, source });
+  const repository_identity =
+    typeof stored.repository_identity === "string" &&
+    /^sha256:[0-9a-f]{64}$/u.test(stored.repository_identity)
+      ? stored.repository_identity
+      : null;
+  return Object.freeze({ schema_version: 1, base_ref, base_sha, repository_identity, source });
 }

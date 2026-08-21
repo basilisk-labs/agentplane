@@ -16,6 +16,8 @@ export type PlanProposal = Readonly<{
   task_revision: number;
   plan_digest: string;
   scope_digest: string;
+  repository_identity: string;
+  completion_contract_digest: string;
 }>;
 
 export type HostUserDecision = Readonly<{
@@ -50,6 +52,8 @@ export type ExecutionGrant = Readonly<{
   plan_revision: number;
   plan_digest: string;
   scope_digest: string;
+  repository_identity: string;
+  completion_contract_digest: string;
   actor: string;
   approval_kind: PlanApprovalEvidenceKind;
   approval_evidence_digest: string | null;
@@ -126,12 +130,37 @@ export function computeExecutionScopeDigest(contract: TaskExecutionContract | un
   });
 }
 
+export function computeLogicalCompletionContractDigest(
+  contract: TaskExecutionContract | undefined,
+): string {
+  return executionGrantDigest({
+    schema_version: 1,
+    selected_mode: contract?.selected_mode ?? null,
+    required_evidence: [...(contract?.verification?.required_evidence ?? [])].toSorted(),
+    approved_external_effects: [
+      ...(contract?.authority?.allowed_external_effects ?? []),
+    ].toSorted(),
+    logical_phases: [
+      "implementation",
+      "bounded_rework",
+      "verification",
+      "integration",
+      "closeout",
+      "cleanup",
+    ],
+  });
+}
+
 export function createPlanProposal(opts: {
   task_id: string;
   task_revision: number;
   plan: string;
   execution_contract?: TaskExecutionContract;
+  repository_identity: string;
 }): PlanProposal {
+  if (!DIGEST_PATTERN.test(opts.repository_identity)) {
+    throw new Error("Plan proposal repository identity must be a sha256 digest.");
+  }
   return Object.freeze({
     schema_version: 1,
     kind: "agentplane.plan_proposal",
@@ -139,7 +168,33 @@ export function createPlanProposal(opts: {
     task_revision: opts.task_revision,
     plan_digest: computePlanDigest(opts.plan),
     scope_digest: computeExecutionScopeDigest(opts.execution_contract),
+    repository_identity: opts.repository_identity,
+    completion_contract_digest: computeLogicalCompletionContractDigest(opts.execution_contract),
   });
+}
+
+export function parsePlanProposal(value: unknown): PlanProposal | null {
+  const item = record(value);
+  if (!item) return null;
+  if (
+    item.schema_version !== 1 ||
+    item.kind !== "agentplane.plan_proposal" ||
+    typeof item.task_id !== "string" ||
+    !item.task_id.trim() ||
+    !Number.isInteger(item.task_revision) ||
+    Number(item.task_revision) < 1 ||
+    typeof item.plan_digest !== "string" ||
+    !DIGEST_PATTERN.test(item.plan_digest) ||
+    typeof item.scope_digest !== "string" ||
+    !DIGEST_PATTERN.test(item.scope_digest) ||
+    typeof item.repository_identity !== "string" ||
+    !DIGEST_PATTERN.test(item.repository_identity) ||
+    typeof item.completion_contract_digest !== "string" ||
+    !DIGEST_PATTERN.test(item.completion_contract_digest)
+  ) {
+    return null;
+  }
+  return Object.freeze(item as unknown as PlanProposal);
 }
 
 function capabilitiesFor(contract: TaskExecutionContract | undefined): ExecutionGrantCapability[] {
@@ -179,6 +234,8 @@ export function createExecutionGrant(opts: {
     plan_revision: opts.proposal.task_revision,
     plan_digest: opts.proposal.plan_digest,
     scope_digest: opts.proposal.scope_digest,
+    repository_identity: opts.proposal.repository_identity,
+    completion_contract_digest: opts.proposal.completion_contract_digest,
     actor: opts.actor.trim(),
     approval_kind: opts.approval_kind,
     approval_evidence_digest: opts.approval_evidence_digest ?? null,
@@ -215,6 +272,10 @@ export function parseExecutionGrant(value: unknown): ExecutionGrant | null {
     !DIGEST_PATTERN.test(item.plan_digest) ||
     typeof item.scope_digest !== "string" ||
     !DIGEST_PATTERN.test(item.scope_digest) ||
+    typeof item.repository_identity !== "string" ||
+    !DIGEST_PATTERN.test(item.repository_identity) ||
+    typeof item.completion_contract_digest !== "string" ||
+    !DIGEST_PATTERN.test(item.completion_contract_digest) ||
     typeof item.actor !== "string" ||
     !item.actor.trim() ||
     !["manual_operator", "signed_user_receipt", "host_user_decision"].includes(
@@ -254,21 +315,65 @@ export function executionGrantFromExtensions(
   return parseExecutionGrant(extensions?.[EXECUTION_GRANT_EXTENSION_KEY]);
 }
 
+/**
+ * Compatibility reader for grants issued before repository/completion binding
+ * existed. The legacy digest is verified first, then the missing context is
+ * deterministically compiled into the in-memory grant. The historical task
+ * artifact remains unchanged as approval evidence.
+ */
+export function executionGrantForContextFromExtensions(opts: {
+  extensions: Record<string, unknown> | undefined;
+  repository_identity: string;
+  execution_contract?: TaskExecutionContract;
+}): ExecutionGrant | null {
+  const raw = opts.extensions?.[EXECUTION_GRANT_EXTENSION_KEY];
+  const current = parseExecutionGrant(raw);
+  if (current) return current;
+  const item = record(raw);
+  if (!item) return null;
+  if (
+    item.schema_version !== 1 ||
+    item.kind !== "agentplane.execution_grant" ||
+    item.repository_identity !== undefined ||
+    item.completion_contract_digest !== undefined ||
+    typeof item.digest !== "string" ||
+    !DIGEST_PATTERN.test(item.digest)
+  ) {
+    return null;
+  }
+  const { digest: legacyDigest, ...legacyUnsigned } = item;
+  if (executionGrantDigest(legacyUnsigned) !== legacyDigest) return null;
+  const migratedUnsigned = {
+    ...legacyUnsigned,
+    repository_identity: opts.repository_identity,
+    completion_contract_digest: computeLogicalCompletionContractDigest(opts.execution_contract),
+  };
+  return parseExecutionGrant({
+    ...migratedUnsigned,
+    digest: executionGrantDigest(migratedUnsigned),
+  });
+}
+
 export function isExecutionGrantActive(opts: {
   grant: ExecutionGrant | null;
   task_id: string;
   plan: string;
   execution_contract?: TaskExecutionContract;
+  repository_identity: string;
 }): opts is {
   grant: ExecutionGrant;
   task_id: string;
   plan: string;
   execution_contract?: TaskExecutionContract;
+  repository_identity: string;
 } {
   return Boolean(
     opts.grant?.task_id === opts.task_id &&
     opts.grant.plan_digest === computePlanDigest(opts.plan) &&
-    opts.grant.scope_digest === computeExecutionScopeDigest(opts.execution_contract),
+    opts.grant.scope_digest === computeExecutionScopeDigest(opts.execution_contract) &&
+    opts.grant.repository_identity === opts.repository_identity &&
+    opts.grant.completion_contract_digest ===
+      computeLogicalCompletionContractDigest(opts.execution_contract),
   );
 }
 
@@ -322,11 +427,21 @@ export function createOperationLease(opts: {
   state_scope_digest: string;
   issued_at: string;
   expires_at: string;
+  lease_id?: string;
 }): OperationLease {
+  if (!isIsoDate(opts.issued_at) || !isIsoDate(opts.expires_at)) {
+    throw new Error("Operation lease timestamps must be valid ISO dates.");
+  }
+  if (Date.parse(opts.expires_at) <= Date.parse(opts.issued_at)) {
+    throw new Error("Operation lease expiry must be after issuance.");
+  }
+  if (opts.lease_id !== undefined && !opts.lease_id.trim()) {
+    throw new Error("Operation lease id must be non-empty when supplied.");
+  }
   const unsigned = {
     schema_version: 1 as const,
     kind: "agentplane.operation_lease" as const,
-    lease_id: randomUUID(),
+    lease_id: opts.lease_id?.trim() ?? randomUUID(),
     grant_digest: opts.grant.digest,
     task_id: opts.grant.task_id,
     operation_id: opts.operation_id,
@@ -337,4 +452,37 @@ export function createOperationLease(opts: {
     expires_at: opts.expires_at,
   };
   return Object.freeze({ ...unsigned, digest: executionGrantDigest(unsigned) });
+}
+
+export function parseOperationLease(value: unknown): OperationLease | null {
+  const item = record(value);
+  if (!item) return null;
+  if (
+    item.schema_version !== 1 ||
+    item.kind !== "agentplane.operation_lease" ||
+    typeof item.lease_id !== "string" ||
+    !item.lease_id.trim() ||
+    typeof item.grant_digest !== "string" ||
+    !DIGEST_PATTERN.test(item.grant_digest) ||
+    typeof item.task_id !== "string" ||
+    !item.task_id.trim() ||
+    typeof item.operation_id !== "string" ||
+    !item.operation_id.trim() ||
+    typeof item.operation_digest !== "string" ||
+    !DIGEST_PATTERN.test(item.operation_digest) ||
+    typeof item.state_fingerprint !== "string" ||
+    !DIGEST_PATTERN.test(item.state_fingerprint) ||
+    typeof item.state_scope_digest !== "string" ||
+    !DIGEST_PATTERN.test(item.state_scope_digest) ||
+    !isIsoDate(item.issued_at) ||
+    !isIsoDate(item.expires_at) ||
+    Date.parse(item.expires_at) <= Date.parse(item.issued_at) ||
+    typeof item.digest !== "string" ||
+    !DIGEST_PATTERN.test(item.digest)
+  ) {
+    return null;
+  }
+  const lease = item as unknown as OperationLease;
+  const { digest: _digest, ...unsigned } = lease;
+  return executionGrantDigest(unsigned) === lease.digest ? Object.freeze(lease) : null;
 }

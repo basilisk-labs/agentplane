@@ -1,6 +1,10 @@
 import { createHash, randomUUID } from "node:crypto";
 
-import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+import {
+  canonicalizeJson,
+  parseOperationLease,
+  type OperationLease,
+} from "@agentplaneorg/core/tasks";
 import type { StateFingerprint } from "@agentplaneorg/core/schemas";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -112,6 +116,7 @@ export type SideEffectAuthorityRecord = {
   issuedAt: string;
   expiresAt: string;
   evidenceDigest?: string;
+  operationLease?: OperationLease;
   digest: string;
 };
 
@@ -237,10 +242,13 @@ function parseGrant(value: unknown): SideEffectAuthorityRecord | null {
     !isIsoDate(value.issuedAt) ||
     !isIsoDate(value.expiresAt) ||
     (value.evidenceDigest !== undefined && !isDigest(value.evidenceDigest)) ||
+    (value.operationLease !== undefined && parseOperationLease(value.operationLease) === null) ||
     !isDigest(value.digest)
   ) {
     return null;
   }
+  const operationLease =
+    value.operationLease === undefined ? undefined : parseOperationLease(value.operationLease)!;
   const record: SideEffectAuthorityRecord = {
     schemaVersion: 1,
     kind: "side_effect_authority",
@@ -254,6 +262,7 @@ function parseGrant(value: unknown): SideEffectAuthorityRecord | null {
     issuedAt: value.issuedAt,
     expiresAt: value.expiresAt,
     ...(typeof value.evidenceDigest === "string" ? { evidenceDigest: value.evidenceDigest } : {}),
+    ...(operationLease ? { operationLease } : {}),
     digest: value.digest,
   };
   const { digest: _digest, ...unsigned } = record;
@@ -387,6 +396,7 @@ export function createSideEffectAuthorityRecord(opts: {
   issuedAt: string;
   expiresAt: string;
   evidenceDigest?: string;
+  operationLease?: OperationLease;
   id?: string;
 }): SideEffectAuthorityRecord {
   const requirement = workflowOperationAuthorityRequirement(opts.operation.id);
@@ -399,6 +409,20 @@ export function createSideEffectAuthorityRecord(opts: {
   if (Date.parse(opts.expiresAt) <= Date.parse(opts.issuedAt)) {
     throw new Error("Authority expiry must be after issuance.");
   }
+  const operationDigest = workflowOperationAuthorityDigest(opts.operation);
+  const stateScopeDigest = workflowAuthorityStateScopeDigest(opts.fingerprint);
+  if (
+    opts.operationLease &&
+    (opts.operationLease.task_id !== opts.fingerprint.task_id ||
+      opts.operationLease.operation_id !== opts.operation.id ||
+      opts.operationLease.operation_digest !== operationDigest ||
+      opts.operationLease.state_fingerprint !== opts.fingerprint.digest ||
+      opts.operationLease.state_scope_digest !== stateScopeDigest ||
+      opts.operationLease.issued_at !== opts.issuedAt ||
+      opts.operationLease.expires_at !== opts.expiresAt)
+  ) {
+    throw new Error("Operation lease does not match the exact task, operation, state, or lifetime.");
+  }
   const record = {
     schemaVersion: 1 as const,
     kind: "side_effect_authority" as const,
@@ -406,12 +430,13 @@ export function createSideEffectAuthorityRecord(opts: {
     actor: opts.actor.trim(),
     policyRule: requirement.policyRule,
     operationId: opts.operation.id,
-    operationDigest: workflowOperationAuthorityDigest(opts.operation),
+    operationDigest,
     stateFingerprintDigest: opts.fingerprint.digest,
-    stateScopeDigest: workflowAuthorityStateScopeDigest(opts.fingerprint),
+    stateScopeDigest,
     issuedAt: opts.issuedAt,
     expiresAt: opts.expiresAt,
     ...(opts.evidenceDigest ? { evidenceDigest: opts.evidenceDigest } : {}),
+    ...(opts.operationLease ? { operationLease: opts.operationLease } : {}),
   };
   if (!record.actor) throw new Error("Authority actor must be non-empty.");
   return { ...record, digest: grantDigest(record) };
@@ -498,7 +523,15 @@ export function evaluateWorkflowOperationAuthority(opts: {
       grant.operationDigest === operationDigest &&
       grant.stateScopeDigest === scopeDigest &&
       Date.parse(grant.issuedAt) <= now &&
-      Date.parse(grant.expiresAt) > now,
+      Date.parse(grant.expiresAt) > now &&
+      (!grant.operationLease ||
+        (grant.operationLease.task_id === opts.fingerprint.task_id &&
+          grant.operationLease.operation_id === opts.operation.id &&
+          grant.operationLease.operation_digest === operationDigest &&
+          grant.operationLease.state_scope_digest === scopeDigest &&
+          grant.operationLease.digest === parseOperationLease(grant.operationLease)?.digest &&
+          Date.parse(grant.operationLease.issued_at) <= now &&
+          Date.parse(grant.operationLease.expires_at) > now)),
   );
   if (!matching) {
     return {

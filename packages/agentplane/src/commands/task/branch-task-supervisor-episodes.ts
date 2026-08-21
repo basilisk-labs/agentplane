@@ -527,15 +527,21 @@ async function executeBranchEvaluatorEpisode(opts: {
   }
   const evaluator = episode.result;
   const journalRef = journalProjection(journal, episode.execution.store.path);
+  if (evaluator.verdict === "rework") {
+    return {
+      status: "completed",
+      decision: refreshed,
+      evaluator,
+      journal: journalRef,
+      provider_episodes: 1,
+      lifecycle_calls: 1,
+    };
+  }
   if (evaluator.verdict !== "pass") {
     return stoppedEpisode({
       decision: refreshed,
       code:
-        evaluator.verdict === "rework"
-          ? "evaluator_rework"
-          : evaluator.verdict === "human_review"
-            ? "evaluator_human_review"
-            : "evaluator_blocked",
+        evaluator.verdict === "human_review" ? "evaluator_human_review" : "evaluator_blocked",
       reason: `EVALUATOR returned ${evaluator.verdict}; no PR side effect was attempted.`,
       evaluator,
       journal: journalRef,

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { buildStateFingerprint, type StateFingerprint } from "@agentplaneorg/core/schemas";
+import { createOperationLease, type ExecutionGrant } from "@agentplaneorg/core/tasks";
 
 import {
   assessWorkflowOperationCapability,
@@ -326,6 +327,60 @@ describe("side-effect authority", () => {
     expect(state && hasConsumedSideEffectAuthorityEvidence(state, `sha256:${"f".repeat(64)}`)).toBe(
       false,
     );
+  });
+
+  it("binds a grant-derived operation lease to one task, operation, state, and lifetime", () => {
+    const prepared = fingerprint();
+    const issuedAt = "2026-07-26T12:00:00.000Z";
+    const expiresAt = "2026-07-26T12:15:00.000Z";
+    const executionGrant = {
+      task_id: taskId,
+      digest: `sha256:${"9".repeat(64)}`,
+    } as ExecutionGrant;
+    const lease = createOperationLease({
+      grant: executionGrant,
+      operation_id: operation.id,
+      operation_digest: workflowOperationAuthorityDigest(operation),
+      state_fingerprint: prepared.digest,
+      state_scope_digest: workflowAuthorityStateScopeDigest(prepared),
+      issued_at: issuedAt,
+      expires_at: expiresAt,
+      lease_id: "lease-replay-stable",
+    });
+    const authority = createSideEffectAuthorityRecord({
+      id: `authority-${lease.lease_id}`,
+      actor: "HOST:codex:USER",
+      operation,
+      fingerprint: prepared,
+      issuedAt,
+      expiresAt,
+      operationLease: lease,
+    });
+    const task = {
+      extensions: withSideEffectAuthorityState(
+        { extensions: {} },
+        { schemaVersion: 1, grants: [authority], audit: [] },
+      ),
+    };
+
+    expect(
+      evaluateWorkflowOperationAuthority({
+        task,
+        operation,
+        fingerprint: prepared,
+        now: new Date("2026-07-26T12:01:00.000Z"),
+      }),
+    ).toMatchObject({ state: "allowed", authorityRef: "authority:authority-lease-replay-stable" });
+    expect(() =>
+      createSideEffectAuthorityRecord({
+        actor: "HOST:codex:USER",
+        operation,
+        fingerprint: fingerprint("b".repeat(40)),
+        issuedAt,
+        expiresAt,
+        operationLease: lease,
+      }),
+    ).toThrow(/does not match/u);
   });
 
   it("keeps pre-merge authority valid after its own branch-head advance only", () => {

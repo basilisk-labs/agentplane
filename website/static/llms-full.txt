@@ -784,6 +784,11 @@ scope into a task-local execution grant. The supervisor then continues determini
 workspace, PR, verification, integration, and closure operations without requesting approval for
 each step covered by that grant.
 
+An evaluator `rework` verdict is not a new user boundary. In `branch_pr` mode the bounded supervisor
+selects the resulting implementation-rework episode, verifies it again, and repeats review inside
+the same grant. Human review, blocked evidence, material drift, an external wait, or the bounded
+step budget still stops the loop.
+
 The supervisor stops again only when the plan or declared scope changes, a new user decision is
 required, an external wait cannot be resolved yet, an effect is in doubt, or the task reaches a
 terminal boundary. No manual lifecycle choreography is required from the agent or user.
@@ -840,8 +845,11 @@ artifacts, waits for hosted checks, serializes integration, records hosted close
 cleanup. The external caller does not change cwd or derive branch names.
 
 The approved execution grant may cover reversible provider operations, integration, publication,
-or deployment only when those capabilities are present in the frozen execution contract. Scope
-expansion is never implied by the grant and always returns to the user.
+or deployment only when those capabilities are present in the frozen execution contract. A
+compiler-discovered writable-root extension can proceed without another confirmation only when
+every inferred repository effect is already allowed by the approved contract. A new effect,
+repository identity, logical completion requirement, or risk envelope is material drift and returns
+to the user.
 
 ## Evidence and trust boundary
 

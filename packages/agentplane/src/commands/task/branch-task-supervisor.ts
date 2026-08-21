@@ -478,7 +478,7 @@ export async function superviseBranchTaskRun(
         command: routeCommand,
         decision,
       });
-      if (resolved.state !== "resolved") return decision;
+      if (resolved.state !== "granted") return decision;
     }
     throw new CliError({
       code: "E_RUNTIME",
