@@ -1,10 +1,10 @@
 ---
 id: "202608211020-FGAPJC"
 title: "Implement task-scoped autonomous execution after one user-approved plan"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -312,6 +312,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 57a6b8ca2817. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The remaining implementation is plan-consistent but the compiler omitted the branch and PR command roots plus checked-in generated artifacts from this WorkOrder. Recommended action: Apply the exact scope extension under the active user-approved execution grant and issue a fresh EXECUTOR packet. Requested scope: roots=packages/agentplane/src/commands/branch,packages/agentplane/src/commands/pr,scripts/baselines/v0.7-compatibility-candidate.json,website/static/llms-full.txt; repository effects=documentation,repository_write,source_code,tests; request digest=sha256:a1d003e40b525a94e63eed2406813825e1a9f228b2b6805c916903abab20264e. Agentplane receipt: external-agent-blocker/tr_bc09beddc0e77338b9dac17a44c59b32/sha256:6bb3444816cd99b065785444df86646df5cc925b2c44e4e6bb0835601c69abf4/sha256:a1d003e40b525a94e63eed2406813825e1a9f228b2b6805c916903abab20264e."
 events:
   -
     type: "status"
@@ -348,8 +351,15 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run check"
+  -
+    type: "status"
+    at: "2026-08-21T11:18:37.601Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The remaining implementation is plan-consistent but the compiler omitted the branch and PR command roots plus checked-in generated artifacts from this WorkOrder. Recommended action: Apply the exact scope extension under the active user-approved execution grant and issue a fresh EXECUTOR packet. Requested scope: roots=packages/agentplane/src/commands/branch,packages/agentplane/src/commands/pr,scripts/baselines/v0.7-compatibility-candidate.json,website/static/llms-full.txt; repository effects=documentation,repository_write,source_code,tests; request digest=sha256:a1d003e40b525a94e63eed2406813825e1a9f228b2b6805c916903abab20264e. Agentplane receipt: external-agent-blocker/tr_bc09beddc0e77338b9dac17a44c59b32/sha256:6bb3444816cd99b065785444df86646df5cc925b2c44e4e6bb0835601c69abf4/sha256:a1d003e40b525a94e63eed2406813825e1a9f228b2b6805c916903abab20264e."
 doc_version: 3
-doc_updated_at: "2026-08-21T11:17:31.210Z"
+doc_updated_at: "2026-08-21T11:18:37.601Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
@@ -485,6 +495,26 @@ extensions:
     scope_digest: "sha256:df7b071ada977f3768cad6168c80f60ac30b6683159adab7645545486acc7df8"
     status: "active"
     task_id: "202608211020-FGAPJC"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:6bb3444816cd99b065785444df86646df5cc925b2c44e4e6bb0835601c69abf4"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "These files implement and verify the already approved task-scoped workflow/base routing; their repository effects are a subset of the active grant."
+      repository_effects:
+        - "documentation"
+        - "repository_write"
+        - "source_code"
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/commands/branch"
+        - "packages/agentplane/src/commands/pr"
+        - "scripts/baselines/v0.7-compatibility-candidate.json"
+        - "website/static/llms-full.txt"
+    request_digest: "sha256:a1d003e40b525a94e63eed2406813825e1a9f228b2b6805c916903abab20264e"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_bc09beddc0e77338b9dac17a44c59b32"
   implementation_commit:
     hash: "57a6b8ca28171e5608420354f74a6612a8fbd452"
   task_execution_context:
