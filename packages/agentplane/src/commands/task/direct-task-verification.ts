@@ -156,7 +156,14 @@ function resolvePlannerFallbackCommand(opts: {
   const alreadyDeclared = new Set(
     opts.declared_commands.map((command) => parseDirectTaskCheck(command)?.script).filter(Boolean),
   );
-  const replacement = ["check", "test:fast", "test", "typecheck", "ci:local:fast"].find(
+  const replacement = [
+    "check",
+    "test:critical",
+    "test:fast",
+    "test",
+    "typecheck",
+    "ci:local:fast",
+  ].find(
     (script) => opts.package_scripts?.has(script) && !alreadyDeclared.has(script),
   );
   return replacement ? `bun run ${replacement}` : opts.command;

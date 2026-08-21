@@ -98,7 +98,13 @@ describe("direct task verification", () => {
     const repo = await root();
     await writeFile(
       path.join(repo, "package.json"),
-      JSON.stringify({ scripts: { "test:fast": "vitest run", typecheck: "tsc --noEmit" } }),
+      JSON.stringify({
+        scripts: {
+          "test:critical": "vitest run critical",
+          "test:fast": "vitest run",
+          typecheck: "tsc --noEmit",
+        },
+      }),
       "utf8",
     );
     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "1 pass", stderr: "" });
@@ -119,10 +125,10 @@ describe("direct task verification", () => {
     expect(result.status).toBe("passed");
     expect(mocks.runProcess).toHaveBeenNthCalledWith(
       1,
-      expect.objectContaining({ command: "bun", args: ["run", "test:fast"] }),
+      expect.objectContaining({ command: "bun", args: ["run", "test:critical"] }),
     );
     expect(result.checks[0]).toMatchObject({
-      command: "bun run test:fast",
+      command: "bun run test:critical",
       declared_command: "bun run check",
     });
   });

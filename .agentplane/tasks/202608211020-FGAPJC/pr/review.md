@@ -48,8 +48,8 @@ Created: 2026-08-21T10:27:11.359Z
  .../src/commands/task/configured-authority.test.ts |  78 +++++
  .../src/commands/task/configured-authority.ts      | 121 ++++++--
  .../agentplane/src/commands/task/create.command.ts |  34 +++
- .../commands/task/direct-task-verification.test.ts |  35 ++-
- .../src/commands/task/direct-task-verification.ts  |  69 ++++-
+ .../commands/task/direct-task-verification.test.ts |  41 ++-
+ .../src/commands/task/direct-task-verification.ts  |  76 ++++-
  packages/agentplane/src/commands/task/new.ts       |  26 +-
  .../src/commands/task/plan-approve.command.ts      |  70 ++++-
  packages/agentplane/src/commands/task/plan.ts      |  81 ++++-
@@ -64,7 +64,7 @@ Created: 2026-08-21T10:27:11.359Z
  .../baselines/v0.7-compatibility-candidate.json    |  41 ++-
  .../check-compatibility-contract-baseline.mjs      |  27 ++
  website/static/llms-full.txt                       |  35 ++-
- 35 files changed, 1623 insertions(+), 104 deletions(-)
+ 35 files changed, 1636 insertions(+), 104 deletions(-)
 ```
 
 </details>

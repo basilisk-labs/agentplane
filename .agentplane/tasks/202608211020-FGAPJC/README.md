@@ -4,7 +4,7 @@ title: "Implement task-scoped autonomous execution after one user-approved plan"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -151,6 +151,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task/configured-authority.test.ts"
       - "packages/agentplane/src/commands/task/configured-authority.ts"
       - "packages/agentplane/src/commands/task/create.command.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.ts"
       - "packages/agentplane/src/commands/task/new.ts"
       - "packages/agentplane/src/commands/task/plan-approve.command.ts"
       - "packages/agentplane/src/commands/task/plan.ts"
@@ -231,7 +233,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:daf5a562c87fbaf0e066e1df69aa7955097cb07052480a25153fd3472cb6c71f"
+      digest: "sha256:134918d2a3cdf56ee7d122dc55a825fc9db7f27894c8b038726a8663b6c96346"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/config"
@@ -283,6 +285,8 @@ execution_contract:
           - "packages/agentplane/src/commands/task/configured-authority.test.ts"
           - "packages/agentplane/src/commands/task/configured-authority.ts"
           - "packages/agentplane/src/commands/task/create.command.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.ts"
           - "packages/agentplane/src/commands/task/new.ts"
           - "packages/agentplane/src/commands/task/plan-approve.command.ts"
           - "packages/agentplane/src/commands/task/plan.ts"
@@ -340,7 +344,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "c27b7393ff1f96b01c0c7ec2ad74561b446f0824"
+  hash: "83cfaa5925093a58bdaac6911fd08c0241a2f061"
   message: "🚧 FGAPJC task: apply external agent result"
 comments:
   -
@@ -370,6 +374,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: c27b7393ff1f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 83cfaa592509. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -442,8 +449,16 @@ events:
     to: "DOING"
     note: "Implementation committed: c27b7393ff1f. CLI accepted one state-bound external-agent semantic result."
     commit: "c27b7393ff1f96b01c0c7ec2ad74561b446f0824"
+  -
+    type: "status"
+    at: "2026-08-21T11:36:15.692Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 83cfaa592509. CLI accepted one state-bound external-agent semantic result."
+    commit: "83cfaa5925093a58bdaac6911fd08c0241a2f061"
 doc_version: 3
-doc_updated_at: "2026-08-21T11:32:12.398Z"
+doc_updated_at: "2026-08-21T11:36:15.692Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
@@ -634,7 +649,7 @@ extensions:
     status: "applied"
     transition_id: "tr_8fee182cfa92d1c99442c7940db91c75"
   implementation_commit:
-    hash: "c27b7393ff1f96b01c0c7ec2ad74561b446f0824"
+    hash: "83cfaa5925093a58bdaac6911fd08c0241a2f061"
   task_execution_context:
     base_ref: "main"
     base_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
