@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 135
+revision: 136
 origin:
   system: "manual"
 depends_on: []
@@ -34,34 +34,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T18:59:52.309Z"
+  updated_at: "2026-08-21T19:08:31.594Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "057f1ad2ed6178b3bf6c9552567808a029629e86"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "34507b19ab33c1d79ee08e5c5092374d4f4b7bd3"
   blueprint_digest: "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa"
   evidence_refs:
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-185905632-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-185905632-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/c0263df9d20dee28bade5a66fc64a1071d8081f52fb0752840671888b4770c2b.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-185905632-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-185905632-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-185905632-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-190755835-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-190755835-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/24d4d1420e6e36529529152ee496792b327dc78e9d06132a99d523270e435aff.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-190755835-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-190755835-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-190755835-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211020-FGAPJC/README.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/38e1114911115222060df76c943bc7432dd523e092f20fcc0d1b014f10155417.patch"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e8288764e3ef059ddf6d2c29e8b9878b89ebb350785f14dd9d24008e2fcf56e7.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821185838375-3c6b92272e073b5f.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8ed000e1f7618f01518123dd82534dde4860786e8497678a8db5e7dbd96906ba.patch"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/61f005614731fbdd9f5337ed0f5ffa6265a421155a371a2ea42ecbd4ee88d389.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821190738088-a47b930e26cc2483.json"
     - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Equivalent passed verification evidence is stable by semantic check identity while current telemetry is still returned to the caller; failed outcomes always refresh durable diagnostics."
-    - "Only episode and agent-run orchestration counters are renewable, and normal automatic renewal requires a currently active user-approved ExecutionGrant."
-    - "Caps increase monotonically, accumulated usage and operation history remain intact, and all resource, token, time, change-size, and no-progress stops remain terminal."
-    - "The live FGAPJC journal resumed from max_agent_runs=50 to 100 through ordinary task advance without --replacement."
-    - "Supervisor-owned evidence records passing test:critical, typecheck, routing-policy, doctor, and committed-diff checks."
-    - "Residual risk: Hosted checks must pass against the newly published exact SHA before integration."
+    - "The previous verify-contract failure occurred in Format (check) and named exactly quality-review-target.ts and task-execution-contract-observation.test.ts in local reproduction."
+    - "The rework changes no behavior: five line wraps were normalized across the two files."
+    - "Full format:check passes, 29 related tests pass, typecheck passes, and supervisor-owned test:critical, routing, and doctor checks pass."
+    - "Residual risk: The replacement hosted run must pass against the newly published exact SHA."
 token_usage:
   agent_runs: 53
   input_tokens: null
@@ -1563,7 +1561,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T19:07:41.259Z"
+doc_updated_at: "2026-08-21T19:08:31.638Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
