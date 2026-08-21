@@ -188,12 +188,11 @@ async function createSingleParentRebaseReceiptFixture(opts: {
     "utf8",
   );
   await commitAll(fixture.root, "chore local single-parent cleanup proof");
-  const localHead = (
-    await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: fixture.root,
-      env: cleanGitEnv(),
-    })
-  ).stdout.trim();
+  const localHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+  const localHead = localHeadResult.stdout.trim();
 
   await execFileAsync("git", ["checkout", "main"], {
     cwd: fixture.root,
@@ -205,12 +204,11 @@ async function createSingleParentRebaseReceiptFixture(opts: {
     "utf8",
   );
   await commitAll(fixture.root, "chore advance single-parent provider base");
-  const providerBase = (
-    await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: fixture.root,
-      env: cleanGitEnv(),
-    })
-  ).stdout.trim();
+  const providerBaseResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+  const providerBase = providerBaseResult.stdout.trim();
 
   await execFileAsync("git", ["checkout", "-b", providerBranch], {
     cwd: fixture.root,
@@ -220,32 +218,30 @@ async function createSingleParentRebaseReceiptFixture(opts: {
     cwd: fixture.root,
     env: cleanGitEnv(),
   });
-  const providerHead = (
-    await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: fixture.root,
-      env: cleanGitEnv(),
-    })
-  ).stdout.trim();
+  const providerHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+  const providerHead = providerHeadResult.stdout.trim();
   await execFileAsync("git", ["checkout", "main"], {
     cwd: fixture.root,
     env: cleanGitEnv(),
   });
 
   const mergeTreeCommit = opts.mergeTree === "provider" ? providerHead : providerBase;
-  const singleParentMergeCommit = (
-    await execFileAsync(
-      "git",
-      [
-        "commit-tree",
-        `${mergeTreeCommit}^{tree}`,
-        "-p",
-        providerBase,
-        "-m",
-        "GitHub rebase merge receipt",
-      ],
-      { cwd: fixture.root, env: cleanGitEnv() },
-    )
-  ).stdout.trim();
+  const singleParentMergeCommitResult = await execFileAsync(
+    "git",
+    [
+      "commit-tree",
+      `${mergeTreeCommit}^{tree}`,
+      "-p",
+      providerBase,
+      "-m",
+      "GitHub rebase merge receipt",
+    ],
+    { cwd: fixture.root, env: cleanGitEnv() },
+  );
+  const singleParentMergeCommit = singleParentMergeCommitResult.stdout.trim();
   await execFileAsync("git", ["update-ref", "refs/heads/main", singleParentMergeCommit], {
     cwd: fixture.root,
     env: cleanGitEnv(),
@@ -603,15 +599,12 @@ describe("cleanup merged provider receipt type guard", { timeout: TEST_TIMEOUT_M
 
   it("accepts a single-parent GitHub rebase merge when its tree exactly matches the provider head", async () => {
     const fixture = await createSingleParentRebaseReceiptFixture({ mergeTree: "provider" });
-    const parents = (
-      await execFileAsync(
-        "git",
-        ["rev-list", "--parents", "-n", "1", fixture.singleParentMergeCommit],
-        { cwd: fixture.root, env: cleanGitEnv() },
-      )
-    ).stdout
-      .trim()
-      .split(/\s+/u);
+    const parentsResult = await execFileAsync(
+      "git",
+      ["rev-list", "--parents", "-n", "1", fixture.singleParentMergeCommit],
+      { cwd: fixture.root, env: cleanGitEnv() },
+    );
+    const parents = parentsResult.stdout.trim().split(/\s+/u);
     expect(parents).toHaveLength(2);
     await expect(
       execFileAsync(
