@@ -22,7 +22,7 @@ Make local route diagnostics recognize canonical task closure on the base branch
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-21T09:00:42.185Z
+- Updated: 2026-08-21T09:13:52.047Z
 - Branch: task/202608210853-0FYGE3/fix-local-branch-pr-status-after-merged-cleanup
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
