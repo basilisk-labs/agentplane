@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Canonical commit, local object, task lineage, closure lineage, provider receipt, and post-proof receipt revalidation remain upstream of cleanup.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212254-WR57ZD/quality/objects/sha256/ecc87977e7885904d0babac8a5d53287bfb5ccec07b25f09f879cbc67b8f502b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The exact declared verification command passed all 29 focused tests after the suite-level timeout was aligned with the adjacent integration suite.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212254-WR57ZD/quality/objects/sha256/ecc87977e7885904d0babac8a5d53287bfb5ccec07b25f09f879cbc67b8f502b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The existing provider-only patch regression remains effective for ordinary two-parent merge topology.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212254-WR57ZD/quality/objects/sha256/ecc87977e7885904d0babac8a5d53287bfb5ccec07b25f09f879cbc67b8f502b.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

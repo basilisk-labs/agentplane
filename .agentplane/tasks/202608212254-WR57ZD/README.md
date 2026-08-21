@@ -4,7 +4,7 @@ title: "Accept exact tree identity for GitHub rebase cleanup"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -32,6 +32,34 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-21T23:29:08.649Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "a7486f56f75d4c4ae7eee42745b25a08ccb2a733"
+  blueprint_digest: "f5e933c531525da8a83036a4f85f7fec8d7fb2f4dfb39e9455f48bafbb0cb09d"
+  evidence_refs:
+    - ".agentplane/tasks/202608212254-WR57ZD/quality/20260821-232822503-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608212254-WR57ZD/quality/20260821-232822503-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608212254-WR57ZD/quality/objects/sha256/1b7a703e022379116f704e85cd3a0bf7dbcc7ec5f604875f4e048b6d02667b1a.md"
+    - ".agentplane/tasks/202608212254-WR57ZD/quality/20260821-232822503-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608212254-WR57ZD/quality/20260821-232822503-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608212254-WR57ZD/quality/20260821-232822503-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608212254-WR57ZD/README.md"
+    - ".agentplane/tasks/202608212254-WR57ZD/quality/objects/sha256/ecc87977e7885904d0babac8a5d53287bfb5ccec07b25f09f879cbc67b8f502b.patch"
+    - ".agentplane/tasks/202608212254-WR57ZD/quality/objects/sha256/2ea805664373667058a045140ecab32dccae0f1302a469ee941d478856d97cc2.json"
+    - ".agentplane/tasks/202608212254-WR57ZD/verification/20260821232803536-31440a977b88d461.json"
+    - ".agentplane/tasks/202608212254-WR57ZD/quality/objects/sha256/b6a5e0e1f607d12b9ccb1734fb25ee4d9da7942018d9ba62a4927b4b0a2870d3.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Canonical commit, local object, task lineage, closure lineage, provider receipt, and post-proof receipt revalidation remain upstream of cleanup."
+    - "The exact declared verification command passed all 29 focused tests after the suite-level timeout was aligned with the adjacent integration suite."
+    - "The existing provider-only patch regression remains effective for ordinary two-parent merge topology."
 execution_route:
   frozen: true
   reason_codes:
