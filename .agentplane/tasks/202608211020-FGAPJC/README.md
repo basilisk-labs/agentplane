@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 73
+revision: 76
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,10 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in Codex: implement one-confirmation autonomous execution"
 verification:
-  state: "pending"
-  updated_at: "2026-08-21T14:30:47.878Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
+  state: "ok"
+  updated_at: "2026-08-21T14:52:05.900Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
   state: "rework"
@@ -175,12 +175,14 @@ execution_contract:
   observed:
     authority_violations: []
     changed_components:
+      - "check"
       - "docs"
       - "packages/agentplane"
       - "packages/core"
       - "scripts"
       - "website"
     changed_paths:
+      - "check"
       - "docs/developer/task-execution-authority.mdx"
       - "docs/user/branching-and-pr-artifacts.mdx"
       - "docs/user/cli-reference.generated.mdx"
@@ -202,6 +204,9 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
       - "packages/agentplane/src/commands/shared/task-backend.ts"
       - "packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-authority.ts"
       - "packages/agentplane/src/commands/task/advance.command.ts"
       - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
       - "packages/agentplane/src/commands/task/agent-action-packet.ts"
@@ -226,6 +231,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task/plan-approve.command.ts"
       - "packages/agentplane/src/commands/task/plan.ts"
       - "packages/agentplane/src/commands/task/plan.unit.test.ts"
+      - "packages/agentplane/src/commands/task/scope-extend.command.ts"
+      - "packages/agentplane/src/commands/task/scope-extend.ts"
       - "packages/agentplane/src/commands/task/verify-record-execute.ts"
       - "packages/agentplane/src/runtime/task-execution-context/resolve.test.ts"
       - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
@@ -247,7 +254,25 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -308,7 +333,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:ad30f92e95bfb0e68fd8a3d2559283473fa938b999f104f7b069633bc71ce36f"
+      digest: "sha256:f0ea4b2114f35abdf67ebfac27d6f1d45e00e8b514676632889daee8623d0dfe"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/config"
@@ -322,6 +347,9 @@ execution_contract:
         - "central_path:packages/agentplane/src/commands/shared/side-effect-authority.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-backend.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-authority.ts"
         - "central_path:packages/core/src/tasks/index.ts"
         - "central_path:packages/core/src/tasks/plan-execution-grant.test.ts"
         - "central_path:packages/core/src/tasks/plan-execution-grant.ts"
@@ -332,6 +360,7 @@ execution_contract:
         - "effect_public_api"
         - "effect_schema"
         - "effect_security_boundary"
+        - "unknown_path:check"
         - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
@@ -340,12 +369,14 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
+          - "check"
           - "docs"
           - "packages/agentplane"
           - "packages/core"
           - "scripts"
           - "website"
         changed_files:
+          - "check"
           - "docs/developer/task-execution-authority.mdx"
           - "docs/user/branching-and-pr-artifacts.mdx"
           - "docs/user/cli-reference.generated.mdx"
@@ -367,6 +398,9 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
           - "packages/agentplane/src/commands/shared/task-backend.ts"
           - "packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-authority.ts"
           - "packages/agentplane/src/commands/task/advance.command.ts"
           - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
           - "packages/agentplane/src/commands/task/agent-action-packet.ts"
@@ -391,6 +425,8 @@ execution_contract:
           - "packages/agentplane/src/commands/task/plan-approve.command.ts"
           - "packages/agentplane/src/commands/task/plan.ts"
           - "packages/agentplane/src/commands/task/plan.unit.test.ts"
+          - "packages/agentplane/src/commands/task/scope-extend.command.ts"
+          - "packages/agentplane/src/commands/task/scope-extend.ts"
           - "packages/agentplane/src/commands/task/verify-record-execute.ts"
           - "packages/agentplane/src/runtime/task-execution-context/resolve.test.ts"
           - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
@@ -448,7 +484,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "ae9e80223d7b9d7b1debf2f78da4e78a339c84aa"
+  message: "🚧 FGAPJC task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -534,6 +572,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: check; repository effects: repository_write, source_code."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: ae9e80223d7b. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -809,8 +850,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved bun run check contract requires one additional root-level Bun entrypoint. The current episode cannot write that path, so an exact bounded scope extension is required before implementing the evaluator rework. Recommended action: Extend the task scope to the root-level check file under the existing repository_write and source_code effects, then issue a fresh EXECUTOR packet. Requested scope: roots=check; repository effects=repository_write,source_code; request digest=sha256:659d9c2e08b46ea5a63dcaedc9e6aeacf306ead90f6a8505b7be1a661b53c20c. Agentplane receipt: external-agent-blocker/tr_fd65df0f51ebfcf4e8670f3f1ebd6e98/sha256:afac9307c1d9a279db8a99150187dc585adfde9f81d5dd17c24e10c883603c2d/sha256:659d9c2e08b46ea5a63dcaedc9e6aeacf306ead90f6a8505b7be1a661b53c20c."
+  -
+    type: "status"
+    at: "2026-08-21T14:50:58.912Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: ae9e80223d7b. CLI accepted one state-bound external-agent semantic result."
+    commit: "ae9e80223d7b9d7b1debf2f78da4e78a339c84aa"
+  -
+    type: "verify"
+    at: "2026-08-21T14:52:05.900Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T14:18:31.292Z"
+doc_updated_at: "2026-08-21T14:52:07.840Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
@@ -1615,6 +1670,72 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-21T14:52:05.900Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c, input_digest=sha256:370a474b539e6ca163f279dd595d9e0166c6b5b2854102c1b6062848e95bcba2
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211020-FGAPJC Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211020-FGAPJC Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211020-FGAPJC Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211020-FGAPJC Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211020-FGAPJC Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211020-FGAPJC Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211020-FGAPJC-implement-task-scoped-autonomous-execution-after/.agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json
+    - old_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+    - current_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608211020-FGAPJC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608211020-FGAPJC
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1660,7 +1781,7 @@ extensions:
     status: "applied"
     transition_id: "tr_fd65df0f51ebfcf4e8670f3f1ebd6e98"
   implementation_commit:
-    hash: "6fa8370712de20b54872fd42883fef535aab0ccc"
+    hash: "ae9e80223d7b9d7b1debf2f78da4e78a339c84aa"
   task_execution_context:
     base_ref: "main"
     base_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
@@ -2423,6 +2544,72 @@ Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c, input_digest=sha256:6e68297f3511beb91b73e496f417fd6aeb9b4cc9a4711608b2e09589790bbd3a
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211020-FGAPJC Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211020-FGAPJC Verification Contract check critical_paths
+
+Check: docs_contract
+Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211020-FGAPJC Verification Contract check docs_contract
+
+Check: full_regression
+Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211020-FGAPJC Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211020-FGAPJC Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: bun run test:critical && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608211020-FGAPJC/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211020-FGAPJC Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211020-FGAPJC-implement-task-scoped-autonomous-execution-after/.agentplane/tasks/202608211020-FGAPJC/blueprint/resolved-snapshot.json
+- old_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+- current_digest: 15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608211020-FGAPJC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608211020-FGAPJC
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T14:52:05.900Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c574107470b67e55775fd32a15c3c8ba96f795405e397aadd51eedb93985a01c, input_digest=sha256:370a474b539e6ca163f279dd595d9e0166c6b5b2854102c1b6062848e95bcba2
 
 Details:
 
