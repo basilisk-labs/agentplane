@@ -1,10 +1,10 @@
 ---
 id: "202608211020-FGAPJC"
 title: "Implement task-scoped autonomous execution after one user-approved plan"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -25,10 +25,10 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in Codex: implement one-confirmation autonomous execution"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-21T11:25:25.937Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run check"
+  state: "pending"
+  updated_at: "2026-08-21T11:26:13.906Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 3
 execution_route:
   frozen: true
@@ -81,6 +81,7 @@ execution_contract:
       - "packages/core/src/config"
       - "packages/core/src/tasks"
       - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/checks/check-compatibility-contract-baseline.mjs"
       - "website/static/llms-full.txt"
   declaration:
     external_effects: []
@@ -90,6 +91,7 @@ execution_contract:
       - "One approved plan must compile into durable task-scoped authority instead of repeated approval boundaries."
       - "The authority resolver, workflow reducer, supervisor, effect leases, workspace allocation, compatibility migration, and documentation form one coherent execution contract."
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/branch,packages/agentplane/src/commands/pr,scripts/baselines/v0.7-compatibility-candidate.json,website/static/llms-full.txt; repository_effects=documentation,repository_write,source_code,tests"
+      - "USER-approved blocked-result scope extension: roots=scripts/checks/check-compatibility-contract-baseline.mjs; repository_effects=repository_write,source_code,tests"
       - "branch_pr remains the repository floor and provides isolated implementation and review for the security-boundary change."
     repository_effects:
       - "documentation"
@@ -119,10 +121,10 @@ execution_contract:
       - "packages/core/src/config"
       - "packages/core/src/tasks"
       - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/checks/check-compatibility-contract-baseline.mjs"
       - "website/static/llms-full.txt"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
+    authority_violations: []
     changed_components:
       - "docs"
       - "packages/agentplane"
@@ -167,10 +169,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -205,6 +204,7 @@ execution_contract:
           - "packages/core/src/config"
           - "packages/core/src/tasks"
           - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "scripts/checks/check-compatibility-contract-baseline.mjs"
           - "website/static/llms-full.txt"
         evidence_requirements:
           - "hosted_integration"
@@ -229,11 +229,12 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:218bc8c2368dfa94c5d7bfb342a134af35dc93f21f2a9d0f54e938599315964a"
+      digest: "sha256:a11bdae4e90616527ccc75850c6d0fc5ada847bbbc23ccf2ec82cd7cbd8f0f5b"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/config"
         - "central_component:packages/core/src/tasks"
+        - "central_component:scripts/checks/check-compatibility-contract-baseline.mjs"
         - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
         - "central_path:packages/core/src/tasks/index.ts"
@@ -332,7 +333,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
@@ -356,6 +356,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation reaches the reviewed compatibility ratchet, whose expected CLI delta source is outside the current writable roots. Recommended action: Extend the exact source root under the active execution grant and issue a fresh packet. Requested scope: roots=scripts/checks/check-compatibility-contract-baseline.mjs; repository effects=repository_write,source_code,tests; request digest=sha256:b79843b692f2410caf8a1533b25a940caad78355294ab5a06bb3b5eb5dd1e821. Agentplane receipt: external-agent-blocker/tr_8fee182cfa92d1c99442c7940db91c75/sha256:bddc6eb34fa4c52de2a37bedda49bcf11851c592ed89b54ba4ca750606e374b2/sha256:b79843b692f2410caf8a1533b25a940caad78355294ab5a06bb3b5eb5dd1e821."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: scripts/checks/check-compatibility-contract-baseline.mjs; repository effects: repository_write, source_code, tests."
 events:
   -
     type: "status"
@@ -594,6 +597,8 @@ extensions:
     status: "active"
     task_id: "202608211020-FGAPJC"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-21T11:26:13.906Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:bddc6eb34fa4c52de2a37bedda49bcf11851c592ed89b54ba4ca750606e374b2"
     kind: "task_scope_extension_request"
     request:
@@ -607,7 +612,7 @@ extensions:
         - "scripts/checks/check-compatibility-contract-baseline.mjs"
     request_digest: "sha256:b79843b692f2410caf8a1533b25a940caad78355294ab5a06bb3b5eb5dd1e821"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_8fee182cfa92d1c99442c7940db91c75"
   implementation_commit:
     hash: "9866e7885e0e0757db0cc0c5188a9e14417034b2"
