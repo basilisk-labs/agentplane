@@ -149,9 +149,9 @@ export async function resolveConfiguredAuthority(opts: {
   const config = opts.command.config.authority;
   const grantOwnsOperation = Boolean(
     activeGrant &&
-      (step.request.operationId === "task.scope.extend"
-        ? isScopeExtensionCoveredByExecutionGrant({ grant: activeGrant, task })
-        : isOperationAuthorizedByExecutionGrant(activeGrant, step.request.operationId)),
+    (step.request.operationId === "task.scope.extend"
+      ? isScopeExtensionCoveredByExecutionGrant({ grant: activeGrant, task })
+      : isOperationAuthorizedByExecutionGrant(activeGrant, step.request.operationId)),
   );
   if (!grantOwnsOperation && !isOperationAuthorizedByPolicy(config, step.request.operationId)) {
     return {

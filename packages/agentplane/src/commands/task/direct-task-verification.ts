@@ -163,9 +163,7 @@ function resolvePlannerFallbackCommand(opts: {
     "test",
     "typecheck",
     "ci:local:fast",
-  ].find(
-    (script) => opts.package_scripts?.has(script) && !alreadyDeclared.has(script),
-  );
+  ].find((script) => opts.package_scripts?.has(script) && !alreadyDeclared.has(script));
   return replacement ? `bun run ${replacement}` : opts.command;
 }
 

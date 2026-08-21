@@ -4,10 +4,7 @@ import path from "node:path";
 
 import { gitEnv, gitRevParse } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
-import {
-  executionGrantDigest,
-  taskExecutionBaseFromExtensions,
-} from "@agentplaneorg/core/tasks";
+import { executionGrantDigest, taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 

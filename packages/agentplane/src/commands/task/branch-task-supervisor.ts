@@ -163,9 +163,7 @@ export type BranchTaskSupervisorOptions = {
 
 export async function resolveBranchTaskDecisionWithAuthority(opts: {
   decide: () => Promise<TaskRouteDecision>;
-  resolve_authority: (
-    decision: TaskRouteDecision,
-  ) => Promise<ConfiguredAuthorityResolution>;
+  resolve_authority: (decision: TaskRouteDecision) => Promise<ConfiguredAuthorityResolution>;
 }): Promise<TaskRouteDecision> {
   for (let authorityCount = 0; authorityCount < 8; authorityCount += 1) {
     const decision = await opts.decide();

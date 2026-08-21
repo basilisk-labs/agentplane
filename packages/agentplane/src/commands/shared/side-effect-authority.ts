@@ -421,7 +421,9 @@ export function createSideEffectAuthorityRecord(opts: {
       opts.operationLease.issued_at !== opts.issuedAt ||
       opts.operationLease.expires_at !== opts.expiresAt)
   ) {
-    throw new Error("Operation lease does not match the exact task, operation, state, or lifetime.");
+    throw new Error(
+      "Operation lease does not match the exact task, operation, state, or lifetime.",
+    );
   }
   const record = {
     schemaVersion: 1 as const,

@@ -540,8 +540,7 @@ async function executeBranchEvaluatorEpisode(opts: {
   if (evaluator.verdict !== "pass") {
     return stoppedEpisode({
       decision: refreshed,
-      code:
-        evaluator.verdict === "human_review" ? "evaluator_human_review" : "evaluator_blocked",
+      code: evaluator.verdict === "human_review" ? "evaluator_human_review" : "evaluator_blocked",
       reason: `EVALUATOR returned ${evaluator.verdict}; no PR side effect was attempted.`,
       evaluator,
       journal: journalRef,

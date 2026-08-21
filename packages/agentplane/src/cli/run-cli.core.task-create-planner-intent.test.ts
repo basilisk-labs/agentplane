@@ -305,11 +305,11 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       },
     });
 
-    const approval = await runJson(
+    const approval = (await runJson(
       root,
       ["task", "advance", taskId, "--result", resultPath, "--agent-json"],
       metrics,
-    ) as {
+    )) as {
       operator_action: {
         host_user_decision: { request: Record<string, unknown> };
       };

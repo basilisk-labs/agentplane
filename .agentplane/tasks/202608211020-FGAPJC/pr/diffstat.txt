@@ -7,29 +7,29 @@
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/commands/branch/work-start.command.ts      |   2 +
  .../agentplane/src/commands/branch/work-start.ts   |   7 +-
- .../src/commands/doctor/authority.test.ts          |  32 ++
- .../agentplane/src/commands/doctor/authority.ts    |  37 ++
+ .../src/commands/doctor/authority.test.ts          |  30 ++
+ .../agentplane/src/commands/doctor/authority.ts    |  38 ++
  packages/agentplane/src/commands/doctor/runtime.ts |   5 +-
  .../agentplane/src/commands/pr/internal/sync.ts    |  13 +-
  packages/agentplane/src/commands/pr/open.ts        |   2 +
  packages/agentplane/src/commands/pr/update.ts      |  11 +-
  .../commands/shared/side-effect-authority.test.ts  |  55 +++
- .../src/commands/shared/side-effect-authority.ts   |  41 +-
+ .../src/commands/shared/side-effect-authority.ts   |  43 +-
  .../agentplane/src/commands/shared/task-backend.ts |  24 +-
  .../src/commands/task/advance.command.ts           |  19 +-
  .../src/commands/task/agent-action-packet.test.ts  |  28 +-
  .../src/commands/task/agent-action-packet.ts       |  55 ++-
- .../task/branch-task-supervisor-episodes.ts        |  16 +-
+ .../task/branch-task-supervisor-episodes.ts        |  17 +-
  .../task/branch-task-supervisor-operations.ts      |   4 +-
- .../commands/task/branch-task-supervisor.test.ts   | 325 ++++++++++++++
- .../src/commands/task/branch-task-supervisor.ts    |  61 ++-
+ .../commands/task/branch-task-supervisor.test.ts   | 324 ++++++++++++++
+ .../src/commands/task/branch-task-supervisor.ts    |  59 ++-
  .../src/commands/task/configured-authority.test.ts | 245 ++++++++++-
  .../src/commands/task/configured-authority.ts      | 195 +++++++-
  .../agentplane/src/commands/task/create.command.ts |  40 ++
  .../commands/task/direct-task-verification.test.ts |  41 +-
- .../src/commands/task/direct-task-verification.ts  |  76 +++-
+ .../src/commands/task/direct-task-verification.ts  |  74 +++-
  .../task/execution-authority-context.test.ts       |  92 ++++
- .../commands/task/execution-authority-context.ts   | 114 +++++
+ .../commands/task/execution-authority-context.ts   | 111 +++++
  .../src/commands/task/new.primary-checkout.test.ts |  66 +++
  packages/agentplane/src/commands/task/new.ts       |  46 +-
  .../src/commands/task/plan-approve.command.ts      |  70 ++-
@@ -49,4 +49,4 @@
  .../baselines/v0.7-compatibility-candidate.json    |  41 +-
  .../check-compatibility-contract-baseline.mjs      |  27 ++
  website/static/llms-full.txt                       |  43 +-
- 51 files changed, 3238 insertions(+), 160 deletions(-)
+ 51 files changed, 3231 insertions(+), 161 deletions(-)

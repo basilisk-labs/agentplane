@@ -799,8 +799,7 @@ describe("branch_pr task supervisor", () => {
     let rawIndex = 0;
     const decide = async () =>
       await resolveBranchTaskDecisionWithAuthority({
-        decide: () =>
-          Promise.resolve(rawDecisions[Math.min(rawIndex++, rawDecisions.length - 1)]!),
+        decide: () => Promise.resolve(rawDecisions[Math.min(rawIndex++, rawDecisions.length - 1)]!),
         resolve_authority: async (decision) =>
           await resolveConfiguredAuthority({ command, decision }),
       });

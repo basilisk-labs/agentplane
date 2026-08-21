@@ -8,7 +8,8 @@ export function checkPlanApprovalTransport(config: AgentplaneConfig): string[] {
     return [
       renderDiagnosticFinding({
         severity: "INFO",
-        state: "plan approval transport is available through host_user_decision and signed_user_receipt",
+        state:
+          "plan approval transport is available through host_user_decision and signed_user_receipt",
         likelyCause: `${issuers.length} trusted signed-receipt issuer(s) are configured`,
         details: [
           "Codex may use the host-originated decision packet; remote bridges may use a signed receipt.",

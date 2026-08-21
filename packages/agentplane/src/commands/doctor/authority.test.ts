@@ -8,9 +8,7 @@ describe("doctor plan approval transport", () => {
     const config = defaultConfig();
     config.authority.approval_receipts.trusted_issuers = [];
 
-    expect(checkPlanApprovalTransport(config).join("\n")).toContain(
-      "host_user_decision_required",
-    );
+    expect(checkPlanApprovalTransport(config).join("\n")).toContain("host_user_decision_required");
     expect(checkPlanApprovalTransport(config).join("\n")).toContain(
       "will not emit an unavailable signed_user_receipt transport",
     );
