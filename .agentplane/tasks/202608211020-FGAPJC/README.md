@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 44
+revision: 45
 origin:
   system: "manual"
 depends_on: []
@@ -34,35 +34,35 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T12:36:35.432Z"
+  updated_at: "2026-08-21T12:57:35.729Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 7 typed finding(s)."
-  evaluated_sha: "5ebb45c0efe6b659654defc99c94fbe245e120e9"
+  evaluated_sha: "5c435a7da9e8f1a7415eb509703a3f130154335a"
   blueprint_digest: "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa"
   evidence_refs:
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-123543025-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-123543025-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/1b28de83c618a22e08603e8aed8a410c32c92a0d1aba6283bc4b32c89ffb6888.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-123543025-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-123543025-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-123543025-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-125613432-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-125613432-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/5231ac7c06fbbbeb11244b38435b71536f84d4215f384e6805ac3aa61da64196.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-125613432-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-125613432-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-125613432-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211020-FGAPJC/README.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/334b80e8ecb8f6c361ad5c95367374100d56b47a0f9e47a66db8cfe430fb4b5a.patch"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/f10044fa9e6c34b6fc5568444a1220a0fb82cfca0fbcee7ea6e99fa5468ad444.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821123524509-df07ec259c9b26e5.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/fb3beb2f7268fa73cca89d34742c8f41348d1c0cd71ba98f6231f9b48b04db59.patch"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/3e2f73a412e81bd6f2ee4025900be30299d18dd2e077b4b6aff447fa2748e595.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821125508833-2557ae7bafe55442.json"
     - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "ExecutionGrant is bound to task, normalized plan, execution scope, current logical repository identity, and the canonical logical-completion contract; plan or material contract drift invalidates it."
-    - "Grant-derived OperationLease records are issued and validated by the control plane, reject stale/cross-task/cross-state reuse, and replay the same authority transition without duplicate durable grant or audit entries."
-    - "The managed branch supervisor consumes one host-originated grant across semantic execution, bounded rework, verification, PR publication, pre-merge closure, integration, hosted closeout, and cleanup until terminal.done."
-    - "Task bases are frozen per task, actual concurrent master/typescript worktrees produce isolated task-local diffs, repository relocation is repaired, and copied cross-repository authority fails closed."
-    - "Doctor and action routing expose host_user_decision when signed transport is unavailable and do not let the managed runner synthesize a user decision."
-    - "Supervisor-owned verification evidence reports passing critical, type, routing, doctor, and clean-repository checks for the final implementation commit."
-    - "Residual risk: Actual provider availability and hosted merge truth remain runtime external conditions; the supervisor now stops only on those genuine external boundaries and resumes idempotently under the same grant."
+    - "ExecutionGrant remains bound to task, normalized plan, execution scope, logical repository identity, and the logical-completion contract; ordinary rework remains covered while material drift invalidates authority."
+    - "Grant-derived OperationLease validation and replay protection remain integrated into supervisor-owned effects, including stale, cross-task, and cross-state rejection."
+    - "The managed supervisor coverage still carries one host-originated decision through semantic work, bounded rework, verification, provider operations, integration, hosted closeout, cleanup, and terminal.done."
+    - "The conflict rework composes primary-checkout sibling-task ownership with task-local base_ref/base_sha capture under the task-creation transaction; it does not reintroduce global-base or caller-path authority."
+    - "Concurrent long-lived bases, copied cross-repository rejection, relocation recovery, doctor transport diagnostics, and replay-safe authority remain explicitly covered by the frozen diff."
+    - "No semantic defect or missing acceptance coverage is visible in the scoped rework."
+    - "Residual risk: Provider availability, hosted CI completion, and merge execution remain external runtime conditions; the supervisor must continue idempotently and stop only if one of those conditions genuinely blocks progress."
 token_usage:
   agent_runs: 14
   input_tokens: null
@@ -654,7 +654,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T12:55:11.384Z"
+doc_updated_at: "2026-08-21T12:57:35.758Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
