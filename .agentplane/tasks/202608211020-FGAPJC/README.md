@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 109
+revision: 110
 origin:
   system: "manual"
 depends_on: []
@@ -34,33 +34,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T17:52:22.052Z"
+  updated_at: "2026-08-21T18:22:06.626Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "68ad03811814fd7c8144525c028f0c9ec6542e82"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "ffcf295fe6287b97896b6a7cdf4e6ae20156a63b"
   blueprint_digest: "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa"
   evidence_refs:
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-175131413-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-175131413-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/4b680c748725d6dfe498436fba2475c8bdac964d6421c9843811bd155a503447.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-175131413-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-175131413-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-175131413-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-182104488-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-182104488-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/b3ebdf2600a8e19968927832c5b1648d05096e1e64ddc796cd437e55fc1b6f9d.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-182104488-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-182104488-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-182104488-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211020-FGAPJC/README.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/f2b2baf6292725f9a4405ef274ebab3bfe8ff837414944b4c081af1db2f66932.patch"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e85ad0d06a10147545e03c0da9d9d615664aa4d6160d1686932b3bc1f5546cd0.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821175113575-3cea90da3ce2e0d8.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/d16514ee9ed1d406a4b62dc44a77806def9f473d8fe08612367fc50a2a562ea4.patch"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/4088732e9d56a2660e29e04372367b202142e01e9ae9a1424ab202e4402045f8.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821182037245-a0c845c072b7fff7.json"
     - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Route resume, worktree creation, PR synchronization, and integration now share the persisted task base identity instead of independently falling back to repository defaults."
-    - "New task branches are anchored to the persisted base_sha while integration continues targeting the latest head of the persisted base_ref."
-    - "Detached creation degrades to an absent execution-base extension without changing legacy task creation behavior."
-    - "Focused lifecycle tests prove frozen-base routing even after repository base configuration changes, exact worktree/integration arguments, and detached-HEAD creation."
-    - "Residual risk: The new PR head must complete a fresh exact-SHA hosted check cycle after review threads are resolved."
+    - "The frozen diff implements the eight approved architectural changes and includes unit, integration, recovery, negative, concurrency, and end-to-end coverage."
+    - "The protected-base fix preserves a prior review only when its SHA is an ancestor of the task-side merge parent, then continues first-parent inspection so a later semantic commit still invalidates the review."
+    - "Supervisor evidence records the critical test suite, type checking, policy routing, doctor diagnostics, full regression, documentation contract, and task outcome as passing for implementation ffcf295fe6287b97896b6a7cdf4e6ae20156a63b."
+    - "Residual risk: GitHub branch protection and hosted checks must still accept the exact final PR head before integration."
 token_usage:
   agent_runs: 40
   input_tokens: null
@@ -1347,7 +1346,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T18:20:39.379Z"
+doc_updated_at: "2026-08-21T18:22:06.660Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
