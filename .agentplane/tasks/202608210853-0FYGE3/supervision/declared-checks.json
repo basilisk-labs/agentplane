@@ -1,0 +1,17 @@
+{
+  "checks": [
+    {
+      "command": "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts",
+      "duration_ms": 4797,
+      "exit_code": 0,
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608210853-0FYGE3-fix-local-branch-pr-status-after-merged-cleanup\n\n\n Test Files  1 passed (1)\n      Tests  12 passed (12)\n   Start at  12:10:42\n   Duration  3.67s (transform 1.61s, setup 0ms, import 2.14s, tests 1.43s, environment 0ms)\n\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202608210853-0FYGE3"
+}

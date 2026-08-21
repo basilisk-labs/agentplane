@@ -4,7 +4,7 @@ title: "Fix local branch_pr status after merged cleanup"
 status: "DOING"
 priority: "normal"
 owner: "CODER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "USER"
   note: "User approved the prepared plan in the Codex task."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-21T09:10:46.964Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -81,11 +81,32 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/route-decision.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/shared/route-decision-next-action.test.ts"
+      - "packages/agentplane/src/commands/shared/route-decision.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -118,20 +139,28 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:7af81b840d9c7e5502fedf6b6f167be06b98c07757eaf1cef0df53009ed0fc21"
+      digest: "sha256:c3bf9a30bd6fee9cf6361310a6dd771dbafb9edace423b64e0a31518453f04bf"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/route-decision-next-action.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/route-decision.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-next-action.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/shared/route-decision-next-action.test.ts"
+          - "packages/agentplane/src/commands/shared/route-decision.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -163,11 +192,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "e7aeff72c3bdf8180385a8a64f84907b1de022a5"
+  message: "🚧 0FYGE3 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: e7aeff72c3bd. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -176,9 +210,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-21T09:10:41.650Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: e7aeff72c3bd. CLI accepted one state-bound external-agent semantic result."
+    commit: "e7aeff72c3bdf8180385a8a64f84907b1de022a5"
+  -
+    type: "verify"
+    at: "2026-08-21T09:10:46.964Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T09:00:40.045Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-21T09:10:50.420Z"
+doc_updated_by: "SUPERVISOR"
 description: "Make local route diagnostics recognize canonical task closure on the base branch before trusting stale OPEN/CLOSED PR metadata, so a DONE task with a deleted merged branch does not emit false provider_pr_unavailable or verification_invalid_record blockers. Add regression coverage for merged cleanup without remote lookup."
 sections:
   Summary: |-
@@ -197,12 +245,78 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-21T09:10:46.964Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24511da0b898acb4dbba18e534c09f08923f307305347666ce4ac35b093e3911, input_digest=sha256:0c8e319708613e64dbf010609d25492ba5c181e68ac1882ee710906a7adcfb99
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608210853-0FYGE3 Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608210853-0FYGE3 Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608210853-0FYGE3 Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608210853-0FYGE3 Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608210853-0FYGE3 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608210853-0FYGE3-fix-local-branch-pr-status-after-merged-cleanup/.agentplane/tasks/202608210853-0FYGE3/blueprint/resolved-snapshot.json
+    - old_digest: 600da6f8ec8fe51ae9833f2bdbf15fa9feecd96fb9adb94f88fbfc3e095a6232
+    - current_digest: 600da6f8ec8fe51ae9833f2bdbf15fa9feecd96fb9adb94f88fbfc3e095a6232
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608210853-0FYGE3
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "e7aeff72c3bdf8180385a8a64f84907b1de022a5"
+  task_execution_context:
+    base_ref: "main"
+    base_sha: "41f1b102afe74f56ec4b36d13a52476b8bcd40ee"
+    schema_version: 1
   workflow_route_baseline:
     start_head_sha: "41f1b102afe74f56ec4b36d13a52476b8bcd40ee"
     version: 1
@@ -234,6 +348,66 @@ PLANNER fallback scaffold for "Fix local branch_pr status after merged cleanup".
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-21T09:10:46.964Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24511da0b898acb4dbba18e534c09f08923f307305347666ce4ac35b093e3911, input_digest=sha256:0c8e319708613e64dbf010609d25492ba5c181e68ac1882ee710906a7adcfb99
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608210853-0FYGE3 Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608210853-0FYGE3 Verification Contract check critical_paths
+
+Check: full_regression
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608210853-0FYGE3 Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608210853-0FYGE3 Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608210853-0FYGE3 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608210853-0FYGE3-fix-local-branch-pr-status-after-merged-cleanup/.agentplane/tasks/202608210853-0FYGE3/blueprint/resolved-snapshot.json
+- old_digest: 600da6f8ec8fe51ae9833f2bdbf15fa9feecd96fb9adb94f88fbfc3e095a6232
+- current_digest: 600da6f8ec8fe51ae9833f2bdbf15fa9feecd96fb9adb94f88fbfc3e095a6232
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608210853-0FYGE3
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
