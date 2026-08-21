@@ -6,7 +6,7 @@ Created: 2026-08-20T21:18:16.979Z
 
 - Task: `202608202112-E6CDHP`
 - Title: Fix live GitLab MR transport and provider-neutral mergeability validation
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608202112-E6CDHP/fix-live-gitlab-mr-transport-and-provider-neutra`
 - Canonical task record: `.agentplane/tasks/202608202112-E6CDHP/README.md`
 
