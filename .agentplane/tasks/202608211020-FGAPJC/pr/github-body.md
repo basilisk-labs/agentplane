@@ -72,7 +72,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../src/commands/task/direct-task-verification.ts  |  74 ++-
  .../task/execution-authority-context.test.ts       |  92 +++
  .../commands/task/execution-authority-context.ts   | 111 ++++
- .../external-agent-implementation-authority.ts     |  55 +-
+ .../external-agent-implementation-authority.ts     |  57 +-
  .../task/external-agent-supervisor-recovery.ts     |  85 ++-
  .../commands/task/finish.close-tail.unit.test.ts   |   2 +-
  .../src/commands/task/finish.state.unit.test.ts    |   1 +
@@ -84,6 +84,8 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../agentplane/src/commands/task/plan.unit.test.ts |   6 +
  .../src/commands/task/scope-extend.command.ts      |  45 +-
  .../agentplane/src/commands/task/scope-extend.ts   |  17 +-
+ .../task-execution-contract-observation.test.ts    |  77 +++
+ .../task/task-execution-contract-observation.ts    |  32 +-
  .../src/commands/task/verify-record-execute.ts     |   4 +-
  .../task-run-active-claim-concurrency.test.ts      |  64 ---
  ...task-run-lifecycle-replay-pre-execution.test.ts |  88 +++
@@ -102,7 +104,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../check-compatibility-contract-baseline.mjs      |  42 +-
  scripts/checks/run-local-ci.mjs                    |   9 +-
  website/static/llms-full.txt                       |  46 +-
- 75 files changed, 4516 insertions(+), 404 deletions(-)
+ 77 files changed, 4624 insertions(+), 407 deletions(-)
 ```
 
 </details>

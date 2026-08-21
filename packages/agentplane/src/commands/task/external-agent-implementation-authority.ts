@@ -456,7 +456,7 @@ export async function applyExternalImplementationResult(opts: {
     preserved_commit: implementation.evidence.implementation_commit,
   });
   const authorityViolations = blockingImplementationAuthorityViolations(
-    reconciliation.task.execution_contract?.observed.authority_violations ?? [],
+    reconciliation.episodeAuthorityViolations,
   );
   if (authorityViolations.length > 0 && !reconciliation.escalated) {
     throw new CliError({
