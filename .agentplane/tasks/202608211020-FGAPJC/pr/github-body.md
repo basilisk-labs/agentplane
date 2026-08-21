@@ -27,7 +27,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- check                                              |  12 +
+ check                                              |  16 +
  docs/developer/task-execution-authority.mdx        |  40 ++
  docs/user/branching-and-pr-artifacts.mdx           |  19 +
  docs/user/cli-reference.generated.mdx              |   2 +
@@ -95,7 +95,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../baselines/v0.7-compatibility-candidate.json    |  62 +-
  .../check-compatibility-contract-baseline.mjs      |  42 +-
  website/static/llms-full.txt                       |  46 +-
- 68 files changed, 4046 insertions(+), 388 deletions(-)
+ 68 files changed, 4050 insertions(+), 388 deletions(-)
 ```
 
 </details>
