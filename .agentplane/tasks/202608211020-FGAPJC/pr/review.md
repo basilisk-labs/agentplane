@@ -6,14 +6,14 @@ Created: 2026-08-21T10:27:11.359Z
 
 - Task: `202608211020-FGAPJC`
 - Title: Implement task-scoped autonomous execution after one user-approved plan
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608211020-FGAPJC/implement-task-scoped-autonomous-execution-after`
 - Canonical task record: `.agentplane/tasks/202608211020-FGAPJC/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run check
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

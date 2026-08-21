@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 51c554cab4f5b728107a8cc7438f1dc4338f53c5..ae9e80223d7b9d7b1debf2f78da4e78a339c84aa",
+      "command": "git diff --check 6b84dcd9c9adedbdfde894e56aaaf3c30402ed28..dac4dfb80f96c79b5e67464375d5c17ad7e97ce3",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 51c554cab4f5b728107a8cc7438f1dc4338f53c5..ae9e80223d7b9d7b1debf2f78da4e78a339c84aa",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 6b84dcd9c9adedbdfde894e56aaaf3c30402ed28..dac4dfb80f96c79b5e67464375d5c17ad7e97ce3",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,21 +21,7 @@
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
-        "A\tcheck",
-        "M\tdocs/user/task-lifecycle.mdx",
-        "M\tpackages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-operation-projection.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step-authority.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
-        "M\tpackages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
-        "M\tpackages/agentplane/src/commands/task/finish.validation.unit.test.ts",
-        "M\tpackages/agentplane/src/commands/task/scope-extend.command.ts",
-        "M\tpackages/agentplane/src/commands/task/scope-extend.ts",
-        "M\tscripts/baselines/v0.7-compatibility-candidate.json",
-        "M\tscripts/checks/check-compatibility-contract-baseline.mjs"
+        "M\twebsite/static/llms-full.txt"
       ]
     },
     {
@@ -45,66 +31,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "51c554cab4f5b728107a8cc7438f1dc4338f53c5",
-  "implementation_commit": "ae9e80223d7b9d7b1debf2f78da4e78a339c84aa",
+  "execution_base_commit": "6b84dcd9c9adedbdfde894e56aaaf3c30402ed28",
+  "implementation_commit": "dac4dfb80f96c79b5e67464375d5c17ad7e97ce3",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M packages/agentplane/src/commands/shared/side-effect-authority.test.ts",
-      " M packages/agentplane/src/commands/shared/side-effect-authority.ts",
-      " M packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
-      " M packages/agentplane/src/commands/shared/workflow-operation-projection.ts",
-      " M packages/agentplane/src/commands/shared/workflow-step-authority.ts",
-      " M packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
-      " M packages/agentplane/src/commands/task/scope-extend.command.ts",
-      " M packages/agentplane/src/commands/task/scope-extend.ts"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/side-effect-authority.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/workflow-step-authority.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/scope-extend.command.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/scope-extend.ts"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M packages/agentplane/src/commands/shared/side-effect-authority.test.ts",
-      " M packages/agentplane/src/commands/shared/side-effect-authority.ts",
-      " M packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
-      " M packages/agentplane/src/commands/shared/workflow-operation-projection.ts",
-      " M packages/agentplane/src/commands/shared/workflow-step-authority.ts",
-      " M packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
-      " M packages/agentplane/src/commands/task/scope-extend.command.ts",
-      " M packages/agentplane/src/commands/task/scope-extend.ts"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
