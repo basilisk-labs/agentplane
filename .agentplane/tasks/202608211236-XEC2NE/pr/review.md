@@ -6,7 +6,7 @@ Created: 2026-08-21T12:41:06.582Z
 
 - Task: `202608211236-XEC2NE`
 - Title: Repair packaged candidate verification-contract refresh after managed upgrade
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608211236-XEC2NE/repair-packaged-candidate-verification-contract`
 - Canonical task record: `.agentplane/tasks/202608211236-XEC2NE/README.md`
 
