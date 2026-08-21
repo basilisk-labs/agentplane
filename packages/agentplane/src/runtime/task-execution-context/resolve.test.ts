@@ -4,7 +4,7 @@ import { defaultConfig } from "@agentplane/testkit/cli-core-pr-flow";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
-import { resolveTaskExecutionContext } from "./resolve.js";
+import { resolveTaskExecutionContext, selectLegacyBaseRef } from "./resolve.js";
 
 function commandContext(mode: "direct" | "branch_pr"): CommandContext {
   const config = defaultConfig();
@@ -38,6 +38,30 @@ function task(
 }
 
 describe("TaskExecutionContext", () => {
+  it("recovers a legacy task base from the long-lived development branch", () => {
+    expect(
+      selectLegacyBaseRef({
+        candidates: ["main", "typescript", "task/TASK-1/work"],
+        exact_candidates: ["typescript"],
+        current_branch: "task/TASK-1/work",
+        configured_base: "main",
+        task_prefix: "task/",
+      }),
+    ).toBe("typescript");
+  });
+
+  it("fails closed when a legacy base commit belongs to multiple non-current branches", () => {
+    expect(() =>
+      selectLegacyBaseRef({
+        candidates: ["release/a", "release/b"],
+        exact_candidates: [],
+        current_branch: "task/TASK-1/work",
+        configured_base: null,
+        task_prefix: "task/",
+      }),
+    ).toThrow(/ambiguous/u);
+  });
+
   it("normalizes historical repository requests without mutating repository config", async () => {
     const ctx = commandContext("direct");
     const context = await resolveTaskExecutionContext({

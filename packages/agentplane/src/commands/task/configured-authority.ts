@@ -1,4 +1,10 @@
 import type { SideEffectAuthorityConfig } from "@agentplaneorg/core/config";
+import {
+  executionGrantFromExtensions,
+  isExecutionGrantActive,
+  type ExecutionGrant,
+  type ExecutionGrantCapability,
+} from "@agentplaneorg/core/tasks";
 
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
@@ -13,7 +19,35 @@ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend
 
 export type ConfiguredAuthorityResolution =
   | { state: "not_applicable"; reason: string }
-  | { state: "resolved"; actor: string; boundary: "side_effect" };
+  | {
+      state: "resolved";
+      actor: string;
+      boundary: "side_effect";
+      source: "repository_policy" | "execution_grant";
+    };
+
+function operationCapability(operationId: string): ExecutionGrantCapability {
+  if (operationId.startsWith("integration.")) return "repository.integrate";
+  if (operationId.startsWith("task.hosted_close.")) {
+    return "provider.merge";
+  }
+  if (
+    operationId.startsWith("pr.") ||
+    operationId.startsWith("provider.pr.") ||
+    operationId === "route.remote.refresh"
+  ) {
+    return "provider.pr";
+  }
+  return "task.lifecycle";
+}
+
+export function isOperationAuthorizedByExecutionGrant(
+  grant: ExecutionGrant,
+  operationId: string,
+): boolean {
+  if (operationId === "task.scope.extend") return false;
+  return grant.capabilities.includes(operationCapability(operationId));
+}
 
 export function isOperationAuthorizedByPolicy(
   config: SideEffectAuthorityConfig,
@@ -42,19 +76,30 @@ export async function resolveConfiguredAuthority(opts: {
   if (step.request.type !== "side_effect") {
     return { state: "not_applicable", reason: "semantic approvals remain operator-owned" };
   }
-  const config = opts.command.config.authority;
-  if (!isOperationAuthorizedByPolicy(config, step.request.operationId)) {
-    return {
-      state: "not_applicable",
-      reason: `operation ${step.request.operationId} is not authorized by repository policy`,
-    };
-  }
-
   const task = await loadTaskFromContext({
     ctx: opts.command,
     taskId: step.request.taskId,
-    preferBranchSnapshot: opts.command.config.workflow_mode === "branch_pr",
+    preferBranchSnapshot: opts.decision.workflowMode === "branch_pr",
   });
+  const executionGrant = executionGrantFromExtensions(task.extensions);
+  const activeGrant = isExecutionGrantActive({
+    grant: executionGrant,
+    task_id: task.id,
+    plan: task.sections?.Plan ?? "",
+    execution_contract: task.execution_contract,
+  })
+    ? executionGrant
+    : null;
+  const config = opts.command.config.authority;
+  const grantOwnsOperation = Boolean(
+    activeGrant && isOperationAuthorizedByExecutionGrant(activeGrant, step.request.operationId),
+  );
+  if (!grantOwnsOperation && !isOperationAuthorizedByPolicy(config, step.request.operationId)) {
+    return {
+      state: "not_applicable",
+      reason: `operation ${step.request.operationId} is outside the approved execution grant and repository policy`,
+    };
+  }
   const loaded = await loadSideEffectAuthorityState({
     gitRoot: opts.command.resolvedProject.gitRoot,
     taskId: step.request.taskId,
@@ -69,17 +114,18 @@ export async function resolveConfiguredAuthority(opts: {
 
   const issuedAt = new Date().toISOString();
   const expiresAt = new Date(Date.parse(issuedAt) + config.ttl_minutes * 60_000).toISOString();
-  const grant = createSideEffectAuthorityRecord({
-    actor: config.actor,
+  const actor = activeGrant && grantOwnsOperation ? activeGrant.actor : config.actor;
+  const authorityGrant = createSideEffectAuthorityRecord({
+    actor,
     operation: step.request.operation,
     fingerprint: step.preconditionFingerprint,
     issuedAt,
     expiresAt,
   });
   if (
-    grant.operationDigest !== step.request.operationDigest ||
-    grant.stateFingerprintDigest !== step.request.stateFingerprintDigest ||
-    grant.stateScopeDigest !== step.request.stateScopeDigest
+    authorityGrant.operationDigest !== step.request.operationDigest ||
+    authorityGrant.stateFingerprintDigest !== step.request.stateFingerprintDigest ||
+    authorityGrant.stateScopeDigest !== step.request.stateScopeDigest
   ) {
     return {
       state: "not_applicable",
@@ -90,14 +136,14 @@ export async function resolveConfiguredAuthority(opts: {
   const audited = appendSideEffectAuthorityAudit({
     state: {
       schemaVersion: 1,
-      grants: [...loaded.state.grants, grant],
+      grants: [...loaded.state.grants, authorityGrant],
       audit: loaded.state.audit,
     },
     at: issuedAt,
-    actor: config.actor,
+    actor,
     operation: step.request.operation,
     fingerprint: step.preconditionFingerprint,
-    authority: grant,
+    authority: authorityGrant,
     outcome: "approved",
   });
   await persistSideEffectAuthorityState({
@@ -105,5 +151,10 @@ export async function resolveConfiguredAuthority(opts: {
     taskId: step.request.taskId,
     state: audited,
   });
-  return { state: "resolved", actor: config.actor, boundary: "side_effect" };
+  return {
+    state: "resolved",
+    actor,
+    boundary: "side_effect",
+    source: activeGrant && grantOwnsOperation ? "execution_grant" : "repository_policy",
+  };
 }

@@ -1,6 +1,13 @@
 import path from "node:path";
-import { setMarkdownSection, withTaskReadmeTransaction } from "@agentplaneorg/core/tasks";
+import {
+  createTaskExecutionBaseIdentity,
+  setMarkdownSection,
+  TASK_EXECUTION_CONTEXT_EXTENSION_KEY,
+  taskExecutionBaseFromExtensions,
+  withTaskReadmeTransaction,
+} from "@agentplaneorg/core/tasks";
 import type { TaskExecutionRouteRequest } from "@agentplaneorg/core/tasks";
+import { gitCurrentBranch, gitRevParse } from "@agentplaneorg/core/git";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, warnMessage } from "../../cli/output.js";
@@ -182,6 +189,21 @@ export async function runTaskNewParsed(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const creationHead = await gitRevParse(ctx.resolvedProject.gitRoot, ["HEAD^{commit}"]).catch(
+      () => null,
+    );
+    const extensions = taskExecutionBaseFromExtensions(p.extensions)
+      ? p.extensions
+      : creationHead
+        ? {
+            ...(p.extensions ?? {}),
+            [TASK_EXECUTION_CONTEXT_EXTENSION_KEY]: createTaskExecutionBaseIdentity({
+              base_ref: await gitCurrentBranch(ctx.resolvedProject.gitRoot),
+              base_sha: creationHead,
+              source: "creation_checkout",
+            }),
+          }
+        : p.extensions;
     const creationLockPath = path.join(
       ctx.resolvedProject.gitRoot,
       ctx.config.paths.workflow_dir,
@@ -320,7 +342,7 @@ export async function runTaskNewParsed(opts: {
               task: routeTask,
             }),
             execution_contract: executionContract,
-            ...(p.extensions ? { extensions: p.extensions } : {}),
+            ...(extensions ? { extensions } : {}),
             depends_on: p.dependsOn,
             verify: p.verify,
             doc: taskDoc,

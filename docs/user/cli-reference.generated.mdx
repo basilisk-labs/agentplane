@@ -628,6 +628,7 @@ Options:
 - `--blueprint-request <id>`: Explicit blueprint request supplied by the semantic caller. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|context.maximum_assimilation|post_run.improvement_review|release.strict|ops.approval)
 - `--tag <tag>`: Repeatable semantic tag supplied by the caller. (repeatable)
 - `--verify <command>`: Repeatable. Seed an explicit verification command. (repeatable)
+- `--base <branch-or-ref>`: Freeze this task on an explicit development base. Defaults to the current checkout.
 - `--allow-duplicate`: Allow an exact duplicate of an open task. (default=false)
 - `--json`: Emit JSON. (default=false)
 
@@ -800,6 +801,7 @@ Options:
 
 - `--by <id>`: Approver id.
 - `--approval-receipt <base64url>`: Signed user approval receipt from a configured trusted bridge.
+- `--host-user-decision <base64url>`: Host-originated user decision bound to the current plan and route fingerprint.
 - `--note <text>`: Optional note (stored in plan_approval.note).
 
 Examples:

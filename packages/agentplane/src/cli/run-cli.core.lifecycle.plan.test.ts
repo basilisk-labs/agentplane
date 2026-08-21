@@ -17,7 +17,12 @@ import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 
 import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
-import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
+import {
+  executionGrantFromExtensions,
+  parseTaskReadme,
+  readTask,
+  renderTaskReadme,
+} from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -207,13 +212,35 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
     ]);
     expect(codeSet).toBe(0);
 
+    const ioAdvance = captureStdIO();
+    let hostRequest: Record<string, unknown>;
+    try {
+      expect(await runCli(["task", "advance", taskId, "--agent-json", "--root", root])).toBe(0);
+      const packet = JSON.parse(ioAdvance.stdout) as {
+        operator_action: { host_user_decision: { request: Record<string, unknown> } };
+      };
+      hostRequest = packet.operator_action.host_user_decision.request;
+    } finally {
+      ioAdvance.restore();
+    }
+    const hostDecision = Buffer.from(
+      JSON.stringify({
+        schema_version: 1,
+        ...hostRequest,
+        host_id: "codex",
+        conversation_id: "conversation-1",
+        message_id: "message-1",
+        decided_at: "2026-08-21T10:00:00.000Z",
+      }),
+      "utf8",
+    ).toString("base64url");
     const codeApprove = await runCli([
       "task",
       "plan",
       "approve",
       taskId,
-      "--by",
-      "USER",
+      "--host-user-decision",
+      hostDecision,
       "--note",
       "OK",
       "--root",
@@ -227,6 +254,34 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
     );
     expect(readme).toContain("Review the changed artifact or behavior for the `code` task.");
     expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
+    expect(
+      executionGrantFromExtensions(parseTaskReadme(readme).frontmatter.extensions),
+    ).toMatchObject({
+      task_id: taskId,
+      actor: "HOST:codex:USER",
+      approval_kind: "host_user_decision",
+      status: "active",
+    });
+
+    expect(
+      await runCli([
+        "task",
+        "plan",
+        "set",
+        taskId,
+        "--text",
+        "1) Implement the revised change\n2) Verify the revised change",
+        "--updated-by",
+        "ORCHESTRATOR",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    const replanned = parseTaskReadme(
+      await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
+    ).frontmatter;
+    expect(replanned.plan_approval?.state).toBe("pending");
+    expect(executionGrantFromExtensions(replanned.extensions)).toBeNull();
   });
 
   it("start blocks verify-required tasks when plan approval is disabled and Verify Steps is missing", async () => {

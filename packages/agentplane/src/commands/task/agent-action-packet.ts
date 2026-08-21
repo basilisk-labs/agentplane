@@ -46,7 +46,8 @@ export type AgentActionPacket = {
     cwd: string | null;
     argv: string[] | null;
     authority_reference: string;
-    approval_receipt: {
+    transport: "host_user_decision" | "signed_user_receipt";
+    approval_receipt?: {
       schema_version: 1;
       format: "base64url-json+ed25519";
       request: {
@@ -57,6 +58,18 @@ export type AgentActionPacket = {
         operation_id: string | null;
         operation_digest: string | null;
         state_scope_digest: string | null;
+      };
+    };
+    host_user_decision?: {
+      schema_version: 1;
+      format: "base64url-json";
+      request: {
+        kind: "agentplane.host_user_decision";
+        origin: "user";
+        task_id: string;
+        plan_digest: string;
+        state_fingerprint: string;
+        decision: "approved";
       };
     };
   };
@@ -125,6 +138,8 @@ function semanticInstruction(
 function operatorActionFor(opts: {
   decision: TaskRouteDecision;
   remote: boolean;
+  planApprovalTransport: "host_user_decision" | "signed_user_receipt";
+  planDigest?: string;
 }): AgentActionPacket["operator_action"] {
   const step = opts.decision.workflowStep;
   if (step.kind !== "approval") return undefined;
@@ -144,6 +159,37 @@ function operatorActionFor(opts: {
     },
   });
   if (step.request.type === "plan_approval") {
+    if (opts.planApprovalTransport === "host_user_decision") {
+      const planDigest = opts.planDigest ?? `sha256:${"0".repeat(64)}`;
+      return {
+        kind: "approve_plan",
+        required_role: "USER",
+        cwd,
+        argv: [
+          "agentplane",
+          "task",
+          "plan",
+          "approve",
+          step.request.taskId,
+          "--host-user-decision",
+          "<base64url-host-user-decision>",
+        ],
+        authority_reference: step.request.authorityRef,
+        transport: "host_user_decision",
+        host_user_decision: {
+          schema_version: 1,
+          format: "base64url-json",
+          request: {
+            kind: "agentplane.host_user_decision",
+            origin: "user",
+            task_id: step.request.taskId,
+            plan_digest: planDigest,
+            state_fingerprint: step.preconditionFingerprint.digest,
+            decision: "approved",
+          },
+        },
+      };
+    }
     const argv = [
       "agentplane",
       "task",
@@ -159,6 +205,7 @@ function operatorActionFor(opts: {
       cwd,
       argv,
       authority_reference: step.request.authorityRef,
+      transport: "signed_user_receipt",
       approval_receipt: approvalReceipt(),
     };
   }
@@ -187,6 +234,7 @@ function operatorActionFor(opts: {
       cwd,
       argv,
       authority_reference: step.request.authorityRef,
+      transport: "signed_user_receipt",
       approval_receipt: approvalReceipt(),
     };
   }
@@ -196,6 +244,7 @@ function operatorActionFor(opts: {
     cwd,
     argv: null,
     authority_reference: step.request.authorityRef,
+    transport: "signed_user_receipt",
     approval_receipt: approvalReceipt(),
   };
 }
@@ -323,6 +372,8 @@ export function buildAgentActionPacket(opts: {
   transition_id?: string;
   recovery?: AgentActionPacket["recovery"];
   remote?: boolean;
+  plan_approval_transport?: "host_user_decision" | "signed_user_receipt";
+  plan_digest?: string;
 }): AgentActionPacket {
   const projected = opts.recovery
     ? {
@@ -340,6 +391,8 @@ export function buildAgentActionPacket(opts: {
   const operatorAction = operatorActionFor({
     decision: opts.decision,
     remote: opts.remote === true,
+    planApprovalTransport: opts.plan_approval_transport ?? "host_user_decision",
+    planDigest: opts.plan_digest,
   });
   const packet: AgentActionPacket = {
     schema_version: 1,

@@ -80,11 +80,16 @@ reads `exchange.work_order_ref`, performs only the PLANNER objective, writes a t
 agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
 ```
 
-Agentplane persists the semantic plan and emits the exact operator action if human approval is
-required. Execute that operator action, then request the next packet with `task advance` or use
-`task run` for an eligible configured managed-runner episode. Repeat only the returned action until
-Agentplane reports a human, hosted/external, recovery, or terminal boundary. No manual lifecycle
-choreography is required from the agent.
+Agentplane persists the semantic plan and emits a typed approval request if human approval is
+required. A host such as Codex may return a `host_user_decision` event that is bound to the task,
+plan digest, and route fingerprint. Agentplane compiles the approved plan and declared execution
+scope into a task-local execution grant. The supervisor then continues deterministic lifecycle,
+workspace, PR, verification, integration, and closure operations without requesting approval for
+each step covered by that grant.
+
+The supervisor stops again only when the plan or declared scope changes, a new user decision is
+required, an external wait cannot be resolved yet, an effect is in doubt, or the task reaches a
+terminal boundary. No manual lifecycle choreography is required from the agent or user.
 
 ## Planning and approval
 
@@ -93,8 +98,19 @@ A newly created task contains a non-approvable placeholder, not synthetic semant
 `semantic_input_required` until that result has been supplied through the external protocol.
 Agentplane persists the returned plan and then stops for human approval when policy requires it.
 
-Only a human/operator may satisfy an approval boundary. An agent must not approve its own plan or
-infer approval from earlier prose.
+Only a user-originated host event, a valid signed user receipt, or an explicit operator command may
+satisfy an approval boundary. An agent must not manufacture the event, approve its own plan, or
+infer approval from unrelated prose. Editing the plan or execution scope invalidates the execution
+grant and returns the task to approval.
+
+### Host approval event
+
+When no signed-receipt issuer is configured, the action packet uses the host transport and includes
+the exact `task_id`, `plan_digest`, and `state_fingerprint` to bind. The host adds its identity,
+conversation/message identity, decision time, and `origin: user`, encodes the event as canonical
+base64url JSON, and invokes the exact returned `--host-user-decision` action. AgentPlane treats the
+host boundary as the source of user provenance; the repository process does not claim to
+cryptographically identify the person behind the host.
 
 ## Semantic WorkOrder
 
@@ -126,8 +142,9 @@ Agentplane creates or resumes the task worktree, binds the WorkOrder to that che
 artifacts, waits for hosted checks, serializes integration, records hosted close, and performs safe
 cleanup. The external caller does not change cwd or derive branch names.
 
-The human still controls review and publication policy. User-authenticated GitHub actions remain
-user-attributed external effects and require the matching operator authority.
+The approved execution grant may cover reversible provider operations, integration, publication,
+or deployment only when those capabilities are present in the frozen execution contract. Scope
+expansion is never implied by the grant and always returns to the user.
 
 ## Evidence and trust boundary
 

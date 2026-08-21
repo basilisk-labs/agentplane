@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608211020-FGAPJC/implement-task-scoped-autonomous-execution-after",
+  "created_at": "2026-08-21T10:27:11.359Z",
+  "diffstat_sha256": "sha256:fc977364149e4164798620fb52381d87714ad754a451ae46b924221b38b53e6b",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608211020-FGAPJC",
+  "updated_at": "2026-08-21T10:27:11.359Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

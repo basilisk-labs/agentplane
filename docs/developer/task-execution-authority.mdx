@@ -21,6 +21,11 @@ Use these rules in CLI, runtime, runner, evaluator, verification, finish, PR, an
 9. Block undeclared external capabilities before runner invocation; retain post-run observation as
    defense in depth.
 10. Integrate direct candidates through the serialized queue, never by concurrent base writes.
+11. Compile one approved plan and execution scope into one task-local `ExecutionGrant`.
+12. Resolve side-effect authority from the active grant before consulting repository fallback
+    policy; never authorize `task.scope.extend` from a grant.
+13. Bind each provider mutation to the existing expiring, state-scoped authority record.
+14. Invalidate the grant when the normalized plan digest or execution-scope digest changes.
 
 ## Loading sequence
 
@@ -33,6 +38,27 @@ Task commands use a two-phase load:
 5. build the final immutable `TaskExecutionContext`.
 
 Do not emulate this by cloning or mutating repository config.
+
+Task creation freezes `task_execution_context.base_ref` and `base_sha` from the creation checkout,
+or from an explicit `task create --base` ref. Runtime checkout paths are discovered dynamically and
+must not be persisted as semantic identity.
+
+## Plan approval transport and grants
+
+`task advance --agent-json` chooses one approval transport:
+
+- `host_user_decision` when the embedding host is the user-provenance boundary;
+- `signed_user_receipt` when trusted receipt issuers are configured.
+
+Both transports bind the decision to the current task, normalized plan digest, and route state
+fingerprint. Approval persists an `agentplane.execution_grant` extension containing the plan and
+scope digests, evidence provenance, actor, and compiled capabilities. Manual `--by` remains an
+operator compatibility/bootstrap surface.
+
+The supervisor may resolve lifecycle and provider approval steps from an active grant. It must
+still stop for scope expansion, a changed plan/scope digest, human questions, external waits,
+effect-in-doubt recovery, or terminal attention. Existing state-bound side-effect records serve as
+short-lived operation leases; they do not widen the durable grant.
 
 ## Route and capability changes
 

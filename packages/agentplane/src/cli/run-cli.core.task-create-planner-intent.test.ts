@@ -32,6 +32,43 @@ installRunCliIntegrationHarness();
 const execFileAsync = promisify(execFile);
 
 describe("task create planner intent", { timeout: 60_000 }, () => {
+  it("freezes the current long-lived development branch as the task base", async () => {
+    const root = await mkGitRepoRootWithBranch("typescript");
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "typescript base"], {
+      cwd: root,
+    });
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+
+    const created = await runJson(root, [
+      "task",
+      "create",
+      "Continue the TypeScript migration",
+      "--task-kind",
+      "code",
+      "--mutation-scope",
+      "code",
+      "--blueprint-request",
+      "code.branch_pr",
+      "--tag",
+      "code",
+      "--json",
+    ]);
+    const taskId = created.task_id as string;
+    const taskDoc = parseTaskReadme(
+      await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
+    );
+
+    expect(taskDoc.frontmatter.extensions?.task_execution_context).toMatchObject({
+      schema_version: 1,
+      base_ref: "typescript",
+      base_sha: stdout.trim(),
+      source: "creation_checkout",
+    });
+  });
+
   it("preserves a reusable envelope and re-resolves the route from typed intent", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
@@ -525,27 +562,32 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       "packages/app/src/integration.ts",
       "tests/sdk/capability.test.ts",
     ].every((changedPath) => finalContract.observed.changed_paths.includes(changedPath));
+    const boundaryRoute = await runJson(checkout, [
+      "task",
+      "next-action",
+      taskId,
+      "--explain",
+      "--json",
+    ]);
 
-    expect((boundary.action as { kind: string }).kind).toBe("approval_required");
-    const boundaryAction = (boundary as AgentPacket).operator_action;
-    expect(boundaryAction).toMatchObject({
-      kind: "grant_side_effect_authority",
-      cwd: checkout,
+    expect(
+      (boundary.action as { kind: string }).kind,
+      JSON.stringify({ boundary, boundaryRoute }, null, 2),
+    ).toBe("framework_transition");
+    expect((boundary as AgentPacket).operator_action).toBeUndefined();
+    expect(boundaryRoute).toMatchObject({
+      workflow_step: { id: "route.remote.refresh", kind: "cli_operation" },
+      execution_packet: { safe_to_mutate: false },
     });
-    const operationIndex = boundaryAction?.argv?.indexOf("--operation") ?? -1;
-    expect(operationIndex).toBeGreaterThanOrEqual(0);
-    expect(["route.remote.refresh", "task.pre_merge_close"]).toContain(
-      boundaryAction?.argv?.[operationIndex + 1],
-    );
     expect(finalFrontmatter.verification).toMatchObject({ state: "ok" });
     expect(finalFrontmatter.quality_review).toMatchObject({ state: "pass" });
     expect(metrics).toMatchObject({
-      control_plane_commands: 10,
-      approval_boundaries: 3,
+      control_plane_commands: 8,
+      approval_boundaries: 1,
       work_preserved: true,
       recovery_commands: 0,
     });
-    expect(metrics.lifecycle_transitions).toBe(3);
+    expect(metrics.lifecycle_transitions).toBe(4);
     expect(metrics.verification_time_ms).toBeGreaterThan(0);
     expect(finalContract.observed.verification_results.length).toBeGreaterThan(0);
     expect(metrics.control_plane_commands).toBeGreaterThan(

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import { computePlanDigest } from "@agentplaneorg/core/tasks";
+
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import type { WorkflowStep } from "../shared/workflow-step.js";
 
@@ -82,7 +84,11 @@ function workOrder() {
 }
 
 function packetFor(workflowStep: WorkflowStep) {
-  return buildAgentActionPacket({ decision: decision(workflowStep), work_order: workOrder() });
+  return buildAgentActionPacket({
+    decision: decision(workflowStep),
+    work_order: workOrder(),
+    plan_digest: computePlanDigest("Approved plan"),
+  });
 }
 
 describe("compact agent action packet", () => {
@@ -177,6 +183,7 @@ describe("compact agent action packet", () => {
       expect(packet.operator_action).toEqual({
         kind: "approve_plan",
         required_role: "USER",
+        transport: "host_user_decision",
         cwd: null,
         argv: [
           "agentplane",
@@ -184,21 +191,20 @@ describe("compact agent action packet", () => {
           "plan",
           "approve",
           TASK_ID,
-          "--approval-receipt",
-          "<base64url-receipt>",
+          "--host-user-decision",
+          "<base64url-host-user-decision>",
         ],
         authority_reference: "plan",
-        approval_receipt: {
+        host_user_decision: {
           schema_version: 1,
-          format: "base64url-json+ed25519",
+          format: "base64url-json",
           request: {
-            approval_type: "plan_approval",
+            kind: "agentplane.host_user_decision",
+            origin: "user",
             task_id: TASK_ID,
-            authority_reference: "plan",
+            plan_digest: computePlanDigest("Approved plan"),
             state_fingerprint: FINGERPRINT,
-            operation_id: null,
-            operation_digest: null,
-            state_scope_digest: null,
+            decision: "approved",
           },
         },
       });
@@ -251,6 +257,7 @@ describe("compact agent action packet", () => {
     expect(packet.operator_action).toEqual({
       kind: "grant_side_effect_authority",
       required_role: "USER",
+      transport: "signed_user_receipt",
       cwd: null,
       argv: [
         "agentplane",
@@ -305,6 +312,7 @@ describe("compact agent action packet", () => {
     expect(packet.operator_action).toEqual({
       kind: "approve_provider_merge",
       required_role: "USER",
+      transport: "signed_user_receipt",
       cwd: null,
       argv: null,
       authority_reference: "provider:merge",

@@ -1,6 +1,13 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { ensureDocSections } from "@agentplaneorg/core/tasks";
+import {
+  EXECUTION_GRANT_EXTENSION_KEY,
+  createExecutionGrant,
+  createPlanProposal,
+  ensureDocSections,
+  taskDocToSectionMap,
+  type PlanApprovalEvidenceKind,
+} from "@agentplaneorg/core/tasks";
 
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import type { PlanApprovalState, TaskData } from "../../backends/task-backend.js";
@@ -127,10 +134,22 @@ export async function setTaskPlan(opts: {
           requiredSections: config.tasks.doc.required_sections,
         });
         const taskFieldsChanged = planningTaskFieldsChanged(current, opts.taskFields);
+        const executionScopeChanged =
+          opts.taskFields?.execution_contract !== undefined &&
+          JSON.stringify(current.execution_contract) !==
+            JSON.stringify(opts.taskFields.execution_contract);
+        const approvalInvalidated = planChanged || executionScopeChanged;
         if (!planChanged && !docChanged && !updatedBy && !taskFieldsChanged) return null;
+        const extensions = approvalInvalidated
+          ? (() => {
+              const next = { ...(current.extensions ?? {}) };
+              delete next[EXECUTION_GRANT_EXTENSION_KEY];
+              return next;
+            })()
+          : undefined;
         const taskFields = {
           ...(opts.taskFields ?? {}),
-          ...(planChanged
+          ...(approvalInvalidated
             ? {
                 plan_approval: {
                   state: "pending" as const,
@@ -138,13 +157,16 @@ export async function setTaskPlan(opts: {
                   updated_by: null,
                   note: null,
                 },
+                extensions,
               }
             : {}),
         };
         if (!docChanged) {
           return {
             intents: [
-              ...(planChanged || taskFieldsChanged ? [setTaskFieldsIntent(taskFields)] : []),
+              ...(approvalInvalidated || taskFieldsChanged
+                ? [setTaskFieldsIntent(taskFields)]
+                : []),
               ...(updatedBy ? [touchTaskDocMetaIntent({ updatedBy })] : []),
             ],
           };
@@ -157,7 +179,7 @@ export async function setTaskPlan(opts: {
               requiredSections: config.tasks.doc.required_sections,
               expectedCurrentText: currentPlan,
             }),
-            ...(planChanged || taskFieldsChanged ? [setTaskFieldsIntent(taskFields)] : []),
+            ...(approvalInvalidated || taskFieldsChanged ? [setTaskFieldsIntent(taskFields)] : []),
             ...(updatedBy ? [touchTaskDocMetaIntent({ updatedBy })] : []),
           ],
           writeOptions: {
@@ -189,6 +211,10 @@ export async function cmdTaskPlanApprove(opts: {
   by: string;
   note?: string;
   expectedTaskRevision?: number;
+  approvalEvidence?: {
+    kind: PlanApprovalEvidenceKind;
+    digest?: string | null;
+  };
 }): Promise<number> {
   try {
     const { ctx, backend } = await loadPlanBackend({
@@ -228,6 +254,21 @@ export async function cmdTaskPlanApprove(opts: {
               config.tasks.doc.required_sections,
             );
             assertPlanCanBeApproved({ task: current, config, doc: currentDoc });
+            const plan = taskDocToSectionMap(currentDoc).Plan ?? "";
+            const proposal = createPlanProposal({
+              task_id: current.id,
+              task_revision: current.revision ?? 1,
+              plan,
+              execution_contract: current.execution_contract,
+            });
+            const grant = createExecutionGrant({
+              proposal,
+              execution_contract: current.execution_contract,
+              actor: by,
+              approval_kind: opts.approvalEvidence?.kind ?? "manual_operator",
+              approval_evidence_digest: opts.approvalEvidence?.digest ?? null,
+              issued_at: approvedAt,
+            });
             return {
               task: {
                 plan_approval: {
@@ -235,6 +276,10 @@ export async function cmdTaskPlanApprove(opts: {
                   updated_at: approvedAt,
                   updated_by: by,
                   note: note || null,
+                },
+                extensions: {
+                  ...(current.extensions ?? {}),
+                  [EXECUTION_GRANT_EXTENSION_KEY]: grant,
                 },
               },
             };
@@ -257,6 +302,20 @@ export async function cmdTaskPlanApprove(opts: {
           (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
         const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
         assertPlanCanBeApproved({ task, config, doc: baseDoc });
+        const proposal = createPlanProposal({
+          task_id: task.id,
+          task_revision: task.revision ?? 1,
+          plan: taskDocToSectionMap(baseDoc).Plan ?? "",
+          execution_contract: task.execution_contract,
+        });
+        const grant = createExecutionGrant({
+          proposal,
+          execution_contract: task.execution_contract,
+          actor: by,
+          approval_kind: opts.approvalEvidence?.kind ?? "manual_operator",
+          approval_evidence_digest: opts.approvalEvidence?.digest ?? null,
+          issued_at: approvedAt,
+        });
         await backend.writeTask(
           {
             ...task,
@@ -265,6 +324,10 @@ export async function cmdTaskPlanApprove(opts: {
               updated_at: approvedAt,
               updated_by: by,
               note: note || null,
+            },
+            extensions: {
+              ...(task.extensions ?? {}),
+              [EXECUTION_GRANT_EXTENSION_KEY]: grant,
             },
           },
           opts.expectedTaskRevision === undefined
@@ -339,6 +402,11 @@ export async function cmdTaskPlanReject(opts: {
                 updated_by: by,
                 note: note || null,
               },
+              extensions: (() => {
+                const next = { ...(current.extensions ?? {}) };
+                delete next[EXECUTION_GRANT_EXTENSION_KEY];
+                return next;
+              })(),
             },
           };
         });
@@ -364,6 +432,11 @@ export async function cmdTaskPlanReject(opts: {
             updated_by: by,
             note: note || null,
           },
+          extensions: (() => {
+            const next = { ...(task.extensions ?? {}) };
+            delete next[EXECUTION_GRANT_EXTENSION_KEY];
+            return next;
+          })(),
         });
       },
     });

@@ -214,7 +214,7 @@ export async function executeBranchWorkflowOperation(opts: {
       exitCode = await handler(cliContext, {
         taskId: operation.params.taskId,
         branch: operation.params.branch,
-        base: null,
+        base: opts.decision.workspace.baseBranch,
         priority: 0,
         quiet: true,
       });
