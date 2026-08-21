@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 138
+revision: 139
 origin:
   system: "manual"
 depends_on: []
@@ -995,6 +995,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The dirty worktree is intentional implementation rework for the exact hosted Hotspot Threshold failure, but this recovery packet is read-only because the task was still projected as DONE."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The task worktree is clean after preserving the intentional hosted-check rework in a recoverable task-scoped stash; this read-only episode cannot apply or commit it."
 events:
   -
     type: "status"
@@ -1579,8 +1582,13 @@ events:
     at: "2026-08-21T19:14:37.859Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The dirty worktree is intentional implementation rework for the exact hosted Hotspot Threshold failure, but this recovery packet is read-only because the task was still projected as DONE."
+  -
+    type: "comment"
+    at: "2026-08-21T19:18:40.713Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The task worktree is clean after preserving the intentional hosted-check rework in a recoverable task-scoped stash; this read-only episode cannot apply or commit it."
 doc_version: 3
-doc_updated_at: "2026-08-21T19:14:37.901Z"
+doc_updated_at: "2026-08-21T19:18:40.750Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
