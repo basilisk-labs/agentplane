@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608210853-0FYGE3/fix-local-branch-pr-status-after-merged-cleanup",
+  "created_at": "2026-08-21T09:00:42.185Z",
+  "diffstat_sha256": "sha256:191dd62a4c15a6c7a7d1e56cce2e4dc89f87b87a49d15fbecfe78d1c1f6cae36",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608210853-0FYGE3",
+  "updated_at": "2026-08-21T09:00:42.185Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
