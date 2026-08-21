@@ -264,9 +264,7 @@ describe("task execution contract observation", () => {
         rationale: ["bounded core change"],
       },
     });
-    executionContract.observed.changed_paths = [
-      ".agentplane/tasks/OTHER/README.md",
-    ];
+    executionContract.observed.changed_paths = [".agentplane/tasks/OTHER/README.md"];
     executionContract.observed.authority_violations = [
       "writable_scope:.agentplane/tasks/OTHER/README.md",
     ];

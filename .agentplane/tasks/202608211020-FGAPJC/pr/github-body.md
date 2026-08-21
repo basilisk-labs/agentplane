@@ -50,7 +50,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  packages/agentplane/src/commands/pr/open.ts        |   2 +
  packages/agentplane/src/commands/pr/update.ts      |  11 +-
  .../commands/shared/quality-review-target.test.ts  |  92 +++
- .../src/commands/shared/quality-review-target.ts   |  10 +
+ .../src/commands/shared/quality-review-target.ts   |   7 +
  .../commands/shared/side-effect-authority.test.ts  | 141 ++++-
  .../src/commands/shared/side-effect-authority.ts   |  53 +-
  .../shared/supervisor-execution-episode.test.ts    |  81 +++
@@ -88,7 +88,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../agentplane/src/commands/task/plan.unit.test.ts |   6 +
  .../src/commands/task/scope-extend.command.ts      |  45 +-
  .../agentplane/src/commands/task/scope-extend.ts   |  17 +-
- .../task-execution-contract-observation.test.ts    |  77 +++
+ .../task-execution-contract-observation.test.ts    |  75 +++
  .../task/task-execution-contract-observation.ts    |  32 +-
  .../src/commands/task/verify-record-execute.ts     |   4 +-
  .../task-run-active-claim-concurrency.test.ts      |  64 ---
@@ -108,7 +108,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../check-compatibility-contract-baseline.mjs      |  42 +-
  scripts/checks/run-local-ci.mjs                    |   9 +-
  website/static/llms-full.txt                       |  46 +-
- 81 files changed, 4921 insertions(+), 419 deletions(-)
+ 81 files changed, 4916 insertions(+), 419 deletions(-)
 ```
 
 </details>

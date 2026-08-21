@@ -434,10 +434,7 @@ export async function resolveQualityReviewTargetSha(opts: {
     );
     if (mergeParent && isBaseSyncMerge && previousEvaluatedSha) {
       const taskParent = await gitRevParse(opts.gitRoot, [`${current}^1`]).catch(() => null);
-      if (
-        taskParent &&
-        (await gitIsAncestor(opts.gitRoot, previousEvaluatedSha, taskParent))
-      ) {
+      if (taskParent && (await gitIsAncestor(opts.gitRoot, previousEvaluatedSha, taskParent))) {
         current = taskParent;
         continue;
       }
