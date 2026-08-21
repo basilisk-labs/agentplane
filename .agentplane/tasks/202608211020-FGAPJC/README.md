@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 92
+revision: 94
 origin:
   system: "manual"
 depends_on: []
@@ -64,7 +64,7 @@ quality_review:
 token_usage:
   agent_runs: 38
   input_tokens: null
-  journal_digest: "sha256:a45978c254c90f786ec2be9705d42a04416672708a30d04753855e3346ad1271"
+  journal_digest: "sha256:f7c2c608d01179c760addca1719f363c4ffe05cc5c4528f60f8ecc023441a6b1"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -74,7 +74,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-21T17:18:38.025Z"
+  updated_at: "2026-08-21T17:44:35.750Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -506,8 +506,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "c8a9e01c0f364a2dc88403e6118f7cb7ea2187c9"
-  message: "🚧 FGAPJC task: record external evaluator result"
+  hash: "4b925712e7be50c79da46537f31ff784452a34f0"
+  message: "🧩 FGAPJC task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -614,6 +614,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: a84dd9e3fb05. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: address two unresolved PR review threads before integration."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -971,8 +977,23 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "c8a9e01c0f364a2dc88403e6118f7cb7ea2187c9"
+  -
+    type: "status"
+    at: "2026-08-21T17:44:21.872Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Rework: address two unresolved PR review threads before integration."
+  -
+    type: "status"
+    at: "2026-08-21T17:44:35.750Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "4b925712e7be50c79da46537f31ff784452a34f0"
 doc_version: 3
-doc_updated_at: "2026-08-21T17:18:38.056Z"
+doc_updated_at: "2026-08-21T17:44:35.780Z"
 doc_updated_by: "CODER"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
@@ -3067,6 +3088,6 @@ DecisionContextRef:
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:a45978c254c90f786ec2be9705d42a04416672708a30d04753855e3346ad1271`
+- Journal digest: `sha256:f7c2c608d01179c760addca1719f363c4ffe05cc5c4528f60f8ecc023441a6b1`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-21T17:18:38.025Z`
+- Updated at: `2026-08-21T17:44:35.750Z`
