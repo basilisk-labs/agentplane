@@ -1,0 +1,17 @@
+{
+  "checks": [
+    {
+      "command": "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --fail-on-scenario-failure --scenario packaged-candidate-flow",
+      "duration_ms": 258,
+      "exit_code": 1,
+      "script": null,
+      "stderr_tail": "error: qualification candidate repository must be clean before packaging or execution\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --fail-on-scenario-failure --scenario packaged-candidate-flow",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202608211236-XEC2NE"
+}
