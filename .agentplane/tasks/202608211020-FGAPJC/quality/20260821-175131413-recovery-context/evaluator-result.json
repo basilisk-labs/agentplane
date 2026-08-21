@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Route resume, worktree creation, PR synchronization, and integration now share the persisted task base identity instead of independently falling back to repository defaults.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/f2b2baf6292725f9a4405ef274ebab3bfe8ff837414944b4c081af1db2f66932.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "New task branches are anchored to the persisted base_sha while integration continues targeting the latest head of the persisted base_ref.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/f2b2baf6292725f9a4405ef274ebab3bfe8ff837414944b4c081af1db2f66932.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Detached creation degrades to an absent execution-base extension without changing legacy task creation behavior.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/f2b2baf6292725f9a4405ef274ebab3bfe8ff837414944b4c081af1db2f66932.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Focused lifecycle tests prove frozen-base routing even after repository base configuration changes, exact worktree/integration arguments, and detached-HEAD creation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/f2b2baf6292725f9a4405ef274ebab3bfe8ff837414944b4c081af1db2f66932.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: The new PR head must complete a fresh exact-SHA hosted check cycle after review threads are resolved.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/f2b2baf6292725f9a4405ef274ebab3bfe8ff837414944b4c081af1db2f66932.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
