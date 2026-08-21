@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check f2d52609ad963bf26bd2247d7e30ed69829b14b4..9c8ba752071a9d66685c84ab97ee652d6cb3b608",
+      "command": "git diff --check c6020c2167da1faa95bf944a072f70ae36f88868..5ebb45c0efe6b659654defc99c94fbe245e120e9",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB f2d52609ad963bf26bd2247d7e30ed69829b14b4..9c8ba752071a9d66685c84ab97ee652d6cb3b608",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB c6020c2167da1faa95bf944a072f70ae36f88868..5ebb45c0efe6b659654defc99c94fbe245e120e9",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,36 +21,12 @@
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
-        "M\tdocs/developer/task-execution-authority.mdx",
-        "M\tdocs/user/branching-and-pr-artifacts.mdx",
-        "M\tdocs/user/task-lifecycle.mdx",
         "M\tpackages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts",
-        "A\tpackages/agentplane/src/commands/doctor/authority.test.ts",
-        "A\tpackages/agentplane/src/commands/doctor/authority.ts",
-        "M\tpackages/agentplane/src/commands/doctor/runtime.ts",
-        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.ts",
-        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
         "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
         "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.ts",
         "M\tpackages/agentplane/src/commands/task/configured-authority.test.ts",
-        "M\tpackages/agentplane/src/commands/task/configured-authority.ts",
-        "M\tpackages/agentplane/src/commands/task/create.command.ts",
-        "A\tpackages/agentplane/src/commands/task/execution-authority-context.test.ts",
-        "A\tpackages/agentplane/src/commands/task/execution-authority-context.ts",
-        "M\tpackages/agentplane/src/commands/task/new.ts",
-        "M\tpackages/agentplane/src/commands/task/plan.ts",
-        "M\tpackages/agentplane/src/commands/task/verify-record-execute.ts",
-        "M\tpackages/agentplane/src/runtime/task-execution-context/resolve.ts",
-        "M\tpackages/agentplane/src/runtime/workspace-allocation/allocate.ts",
-        "A\tpackages/agentplane/src/runtime/workspace-allocation/rediscover.test.ts",
-        "A\tpackages/agentplane/src/runtime/workspace-allocation/rediscover.ts",
-        "M\tpackages/core/src/tasks/index.ts",
-        "M\tpackages/core/src/tasks/plan-execution-grant.test.ts",
-        "M\tpackages/core/src/tasks/plan-execution-grant.ts",
-        "M\tpackages/core/src/tasks/task-execution-base.ts",
-        "M\twebsite/static/llms-full.txt"
+        "M\tpackages/agentplane/src/commands/task/execution-authority-context.test.ts",
+        "M\tpackages/agentplane/src/commands/task/execution-authority-context.ts"
       ]
     },
     {
@@ -60,8 +36,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "f2d52609ad963bf26bd2247d7e30ed69829b14b4",
-  "implementation_commit": "9c8ba752071a9d66685c84ab97ee652d6cb3b608",
+  "execution_base_commit": "c6020c2167da1faa95bf944a072f70ae36f88868",
+  "implementation_commit": "5ebb45c0efe6b659654defc99c94fbe245e120e9",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],

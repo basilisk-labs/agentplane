@@ -3,8 +3,8 @@
   "branch": "task/202608211020-FGAPJC/implement-task-scoped-autonomous-execution-after",
   "created_at": "2026-08-21T10:27:11.359Z",
   "diffstat_sha256": "sha256:7289b88d27bfab75feb61b5925613085d259b7d4cc9ca99647cc68a407174d13",
-  "last_verified_at": "2026-08-21T12:16:01.825Z",
-  "last_verified_diffstat_sha256": "sha256:e47a77270e62eee721dffd46d0baeb2cb1451d23fe10105985fd9dcf973fc45c",
+  "last_verified_at": "2026-08-21T12:35:24.509Z",
+  "last_verified_diffstat_sha256": "sha256:7289b88d27bfab75feb61b5925613085d259b7d4cc9ca99647cc68a407174d13",
   "pr_number": 4858,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4858",
   "provider": {
