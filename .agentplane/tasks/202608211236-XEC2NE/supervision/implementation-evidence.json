@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 6a166ed203d98aa63db67ecd1ac513bb9964f871..d4aeed48de00940ecb669c7d0094923c378e744d",
+      "command": "git diff --check 3fb760cbb72c4dcf54faa8acb2b2abe90a74a610..30277665d28ff2675083f977113c4ecf1935400f",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,16 +13,19 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 6a166ed203d98aa63db67ecd1ac513bb9964f871..d4aeed48de00940ecb669c7d0094923c378e744d",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3fb760cbb72c4dcf54faa8acb2b2abe90a74a610..30277665d28ff2675083f977113c4ecf1935400f",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
         "M\t.agentplane/tasks/202608211236-XEC2NE/README.md",
         "M\t.agentplane/tasks/202608211236-XEC2NE/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608211236-XEC2NE/pr/github-body.md",
+        "M\t.agentplane/tasks/202608211236-XEC2NE/pr/github-title.txt",
         "M\t.agentplane/tasks/202608211236-XEC2NE/pr/meta.json",
         "M\t.agentplane/tasks/202608211236-XEC2NE/pr/review.md",
-        "M\tpackages/agentplane/src/commands/task/verify-record-observed-changes.ts"
+        "A\t.agentplane/tasks/202608211236-XEC2NE/verification/20260821212541965-77ff021bf4098aa5.json",
+        "M\tpackages/agentplane/src/commands/task/verify-record-observed-changes.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
       ]
     },
     {
@@ -32,23 +35,53 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "6a166ed203d98aa63db67ecd1ac513bb9964f871",
-  "implementation_commit": "d4aeed48de00940ecb669c7d0094923c378e744d",
+  "execution_base_commit": "3fb760cbb72c4dcf54faa8acb2b2abe90a74a610",
+  "implementation_commit": "30277665d28ff2675083f977113c4ecf1935400f",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M .agentplane/tasks/202608211236-XEC2NE/README.md"
+      " M .agentplane/tasks/202608211236-XEC2NE/README.md",
+      " M .agentplane/tasks/202608211236-XEC2NE/pr/github-body.md",
+      " M .agentplane/tasks/202608211236-XEC2NE/pr/github-title.txt",
+      " M .agentplane/tasks/202608211236-XEC2NE/pr/meta.json",
+      " M .agentplane/tasks/202608211236-XEC2NE/pr/review.md",
+      "?? .agentplane/tasks/202608211236-XEC2NE/verification/20260821212541965-77ff021bf4098aa5.json"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202608211236-XEC2NE/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608211236-XEC2NE/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608211236-XEC2NE/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608211236-XEC2NE/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608211236-XEC2NE/pr/review.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608211236-XEC2NE/verification/20260821212541965-77ff021bf4098aa5.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202608211236-XEC2NE/README.md"
+      " M .agentplane/tasks/202608211236-XEC2NE/README.md",
+      " M .agentplane/tasks/202608211236-XEC2NE/pr/github-body.md",
+      " M .agentplane/tasks/202608211236-XEC2NE/pr/github-title.txt",
+      " M .agentplane/tasks/202608211236-XEC2NE/pr/meta.json",
+      " M .agentplane/tasks/202608211236-XEC2NE/pr/review.md",
+      "?? .agentplane/tasks/202608211236-XEC2NE/verification/20260821212541965-77ff021bf4098aa5.json"
     ],
     "unchanged_from_execution_baseline": []
   },

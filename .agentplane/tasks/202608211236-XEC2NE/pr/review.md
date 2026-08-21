@@ -12,8 +12,8 @@ Created: 2026-08-21T12:41:06.582Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted P1 review requires preserving the single-commit fallback when a direct task has no genuinely frozen pre-execution base (discussion_r3833736708).
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
