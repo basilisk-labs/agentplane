@@ -1,0 +1,112 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks\nScope: branch_pr task 202608212254-WR57ZD Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks\nScope: branch_pr task 202608212254-WR57ZD Verification Contract check critical_paths\n\nCheck: full_regression\nCommand: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks\nScope: branch_pr task 202608212254-WR57ZD Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks\nScope: branch_pr task 202608212254-WR57ZD Verification Contract check hosted_integration\n\nCheck: real_e2e\nCommand: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks\nScope: branch_pr task 202608212254-WR57ZD Verification Contract check real_e2e\n\nCheck: task_outcome\nCommand: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks\nScope: branch_pr task 202608212254-WR57ZD Verification Contract check task_outcome",
+  "digest": "sha256:d7b90f73bc69a83cb26e199b502e91b24d2b263220fe842cac3957430a8b5578",
+  "implementation_sha": "a7486f56f75d4c4ae7eee42745b25a08ccb2a733",
+  "input": {
+    "context": {
+      "digest": "sha256:c604a3866814dba57d1e8b75bf0340937981e8280dda0ec9356a7987f4282f36",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:57d41ed28bb1007d3d6915d9941e7f9caaf42cb4d71b13ee1c2d351e8f7d1790",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:1579e6075f6f87c03a95bbfe2b2e614f4a9bc224a06f3f583cc4ffeb7ec7d2d9",
+      "digest": "sha256:6e722821b879515deacaccf038c0aa181dbd79ac0302e7fd2bc16d3e0866deb4",
+      "references": [
+        {
+          "digest": "sha256:3d17d0469f8ae07cece24c8c4ac5e0b93df3f5dbb599d87230ffdd5850e8cec6",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608212254-WR57ZD/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "134c95fd629d5ebcf0e17196ccb4b44f60c993fd",
+      "digest": "sha256:e55bc057b8e884e8f01087fd1f41861cf60fbb61b7b3cccd50369bf78f1f495a",
+      "primary_task_id": "202608212254-WR57ZD",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_publish",
+        "effect_release_metadata",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608212254-WR57ZD"
+      ]
+    },
+    "implementation": {
+      "base_sha": "134c95fd629d5ebcf0e17196ccb4b44f60c993fd",
+      "digest": "sha256:647d323c3bcc020ad5c27653f1534beb3e520447196b349f765e26226ee879ed",
+      "strategy": "branch_diff",
+      "target_sha": "a7486f56f75d4c4ae7eee42745b25a08ccb2a733"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:db0c48eb9c6825d069cbf57f0afd2ad4f7a4b9835023690e20b2f1efc738ea64",
+    "verify_steps_digest": "sha256:6adfa243d96b84d2717ef10120008e32a4ba9da884c709e3af04bc572f92ec31"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-08-21T23:50:41.542Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Accept exact tree identity for GitHub rebase cleanup\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Accept exact tree identity for GitHub rebase cleanup\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:6adfa243d96b84d2717ef10120008e32a4ba9da884c709e3af04bc572f92ec31",
+  "task_id": "202608212254-WR57ZD",
+  "verification_command": "agentplane verify 202608212254-WR57ZD --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
