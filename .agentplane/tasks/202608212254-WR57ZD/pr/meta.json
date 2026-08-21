@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:85daf0c3db7fef7c4b93eaf09a1d840ffeffc1531bbc0eed838a2f5098f402ce",
   "pr_number": 4860,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4860",
+  "pre_merge_closure": {
+    "basis_commit": "76de62783d21696f41f8b7282c79baa389c0158a",
+    "branch": "task/202608212254-WR57ZD/accept-exact-tree-identity-for-github-rebase-cle",
+    "pr_number": 4860,
+    "recorded_at": "2026-08-21T23:29:55.448Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
