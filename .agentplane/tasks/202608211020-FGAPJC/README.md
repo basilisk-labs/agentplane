@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 130
+revision: 131
 origin:
   system: "manual"
 depends_on: []
@@ -34,33 +34,34 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T18:37:14.857Z"
+  updated_at: "2026-08-21T18:59:52.309Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "38e0d182d2d4cd4d0d5c0716bb2168fe4f6464e3"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "057f1ad2ed6178b3bf6c9552567808a029629e86"
   blueprint_digest: "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa"
   evidence_refs:
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-183639135-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-183639135-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/431e14a59ae7f4cca42ade4a8bd7522281d79b2d9671ac1ce5d0902df1e37573.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-183639135-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-183639135-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-183639135-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-185905632-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-185905632-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/c0263df9d20dee28bade5a66fc64a1071d8081f52fb0752840671888b4770c2b.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-185905632-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-185905632-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-185905632-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211020-FGAPJC/README.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/fc97742dc6e97333234df23a032f7498c7b9c9d1a02c5f9a2d475e8932126668.patch"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/af820cdea6ed5ea697bebcb97970b8ff64fba66da7cf123ac2ff0936b64c8eeb.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821183621812-8104d00fb9585fb7.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/38e1114911115222060df76c943bc7432dd523e092f20fcc0d1b014f10155417.patch"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e8288764e3ef059ddf6d2c29e8b9878b89ebb350785f14dd9d24008e2fcf56e7.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821185838375-3c6b92272e073b5f.json"
     - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The current episode is reconciled against the same frozen execution authority with an empty observation projection, so inherited base-sync artifacts cannot create false new violations."
-    - "The cumulative execution contract still retains inherited and task-owned observations for audit, verification selection, and diagnostics."
-    - "A regression covers both sides of the boundary: an allowed current path passes despite inherited foreign-task history, and a new path outside writable roots remains a violation."
-    - "Supervisor verification passed the declared critical tests, type checking, routing policy, doctor diagnostics, full regression, documentation contract, and task outcome for implementation 38e0d182d2d4cd4d0d5c0716bb2168fe4f6464e3."
-    - "Residual risk: Hosted branch protection and exact-SHA checks remain required before merge."
+    - "Equivalent passed verification evidence is stable by semantic check identity while current telemetry is still returned to the caller; failed outcomes always refresh durable diagnostics."
+    - "Only episode and agent-run orchestration counters are renewable, and normal automatic renewal requires a currently active user-approved ExecutionGrant."
+    - "Caps increase monotonically, accumulated usage and operation history remain intact, and all resource, token, time, change-size, and no-progress stops remain terminal."
+    - "The live FGAPJC journal resumed from max_agent_runs=50 to 100 through ordinary task advance without --replacement."
+    - "Supervisor-owned evidence records passing test:critical, typecheck, routing-policy, doctor, and committed-diff checks."
+    - "Residual risk: Hosted checks must pass against the newly published exact SHA before integration."
 token_usage:
   agent_runs: 48
   input_tokens: null
@@ -1534,7 +1535,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T18:58:41.204Z"
+doc_updated_at: "2026-08-21T18:59:52.345Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
