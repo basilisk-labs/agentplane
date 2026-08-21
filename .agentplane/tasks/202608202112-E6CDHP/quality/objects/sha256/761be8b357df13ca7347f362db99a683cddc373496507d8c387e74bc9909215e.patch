@@ -1,0 +1,722 @@
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts b/packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts
+new file mode 100644
+index 000000000..2827d6478
+--- /dev/null
++++ b/packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts
+@@ -0,0 +1,103 @@
++import { beforeEach, describe, expect, it, vi } from "vitest";
++
++const mocks = vi.hoisted(() => ({
++  observeByBranch: vi.fn(),
++  observeByNumber: vi.fn(),
++  observeGithubByBranch: vi.fn(),
++  observeGithubByNumber: vi.fn(),
++}));
++
++vi.mock("../pr/internal/change-request-provider.js", () => ({
++  observeExistingChangeRequestByBranch: mocks.observeByBranch,
++  observeExistingChangeRequestByNumber: mocks.observeByNumber,
++}));
++
++vi.mock("../pr/internal/sync-github.js", () => ({
++  observeExistingGithubPrByBranch: mocks.observeGithubByBranch,
++  observeExistingGithubPrByNumber: mocks.observeGithubByNumber,
++}));
++
++import { observeProviderPr } from "./cleanup-merged-provider-reconciliation.js";
++
++const recorded = {
++  schema_version: 1 as const,
++  kind: "gitlab" as const,
++  hostname: "gitlab.example.test",
++  remote: "origin",
++  source_project: "group/project",
++  target_project: "group/project",
++};
++
++describe("observeProviderPr", () => {
++  beforeEach(() => vi.clearAllMocks());
++
++  it("uses the provider-neutral numbered lookup with recorded GitLab identity", async () => {
++    mocks.observeByNumber.mockResolvedValue({ state: "not_found" });
++
++    await expect(
++      observeProviderPr({
++        gitRoot: "/repo",
++        branch: "task/T-1/work",
++        baseBranch: "main",
++        prNumber: 42,
++        recorded,
++      }),
++    ).resolves.toEqual({ state: "not_found" });
++
++    expect(mocks.observeByNumber).toHaveBeenCalledWith({
++      gitRoot: "/repo",
++      branch: "task/T-1/work",
++      baseBranch: "main",
++      prNumber: 42,
++      recorded,
++    });
++    expect(mocks.observeByBranch).not.toHaveBeenCalled();
++  });
++
++  it("uses the provider-neutral exact branch lookup when no number is recorded", async () => {
++    mocks.observeByBranch.mockResolvedValue({ state: "not_found" });
++
++    await observeProviderPr({
++      gitRoot: "/repo",
++      branch: "task/T-1/work",
++      baseBranch: "main",
++      prNumber: null,
++      recorded,
++    });
++
++    expect(mocks.observeByBranch).toHaveBeenCalledWith({
++      gitRoot: "/repo",
++      branch: "task/T-1/work",
++      baseBranch: "main",
++      requireUnique: true,
++      recorded,
++    });
++  });
++
++  it.each(["fetch", "push"])(
++    "preserves the legacy GitHub fallback when the publication remote has no %s URL",
++    async (direction) => {
++      mocks.observeByNumber.mockResolvedValue({
++        state: "unavailable",
++        reason: `Cannot resolve one ${direction} URL for publication remote origin; found 0 candidates`,
++      });
++      mocks.observeGithubByNumber.mockResolvedValue({ state: "not_found" });
++
++      await expect(
++        observeProviderPr({
++          gitRoot: "/repo",
++          branch: "task/T-1/work",
++          baseBranch: "main",
++          prNumber: 42,
++        }),
++      ).resolves.toEqual({ state: "not_found" });
++
++      expect(mocks.observeGithubByNumber).toHaveBeenCalledWith({
++        gitRoot: "/repo",
++        branch: "task/T-1/work",
++        baseBranch: "main",
++        prNumber: 42,
++      });
++    },
++  );
++});
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts b/packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts
+index 28f7c5ac1..bfb36827f 100644
+--- a/packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts
++++ b/packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts
+@@ -6,12 +6,20 @@ import {
+   gitProofIsAncestor,
+   isCanonicalFullCommitOid,
+ } from "../shared/git-ops.js";
++import {
++  observeExistingChangeRequestByBranch,
++  observeExistingChangeRequestByNumber,
++} from "../pr/internal/change-request-provider.js";
++import type { ChangeRequestLookupResult } from "../pr/internal/change-request-model.js";
++import type { RecordedGitHostIdentity } from "../pr/internal/git-host-identity.js";
+ import {
+   observeExistingGithubPrByBranch,
+   observeExistingGithubPrByNumber,
+   type GithubPrLookupResult,
+ } from "../pr/internal/sync-github.js";
+ 
++export type ProviderPrLookupResult = ChangeRequestLookupResult | GithubPrLookupResult;
++
+ export type ProviderReconciliationProof = {
+   kind: "exact_head" | "provider_rebase_equivalent";
+   taskId: string;
+@@ -150,7 +158,32 @@ export async function observeProviderPr(opts: {
+   branch: string;
+   baseBranch: string;
+   prNumber: number | null;
+-}): Promise<GithubPrLookupResult> {
++  recorded?: RecordedGitHostIdentity | null;
++}): Promise<ProviderPrLookupResult> {
++  const observed = opts.prNumber
++    ? await observeExistingChangeRequestByNumber({
++        gitRoot: opts.gitRoot,
++        branch: opts.branch,
++        baseBranch: opts.baseBranch,
++        prNumber: opts.prNumber,
++        recorded: opts.recorded,
++      })
++    : await observeExistingChangeRequestByBranch({
++        gitRoot: opts.gitRoot,
++        branch: opts.branch,
++        baseBranch: opts.baseBranch,
++        requireUnique: true,
++        recorded: opts.recorded,
++      });
++  const unavailableReason = observed.state === "unavailable" ? observed.reason.toLowerCase() : "";
++  const legacyLocalRepository =
++    unavailableReason.includes("publication remote") &&
++    (unavailableReason.includes("must have parseable fetch/push urls") ||
++      unavailableReason.includes("cannot resolve one fetch url") ||
++      unavailableReason.includes("cannot resolve one push url"));
++  if (observed.state !== "unavailable" || !legacyLocalRepository) {
++    return observed;
++  }
+   return opts.prNumber
+     ? await observeExistingGithubPrByNumber({
+         gitRoot: opts.gitRoot,
+@@ -171,7 +204,7 @@ export async function validateMergedProviderReceipt(opts: {
+   baseBranch: string;
+   expectedPrNumber: number | null;
+   expectedReconciliation?: ProviderReconciliationProof;
+-  result: GithubPrLookupResult;
++  result: ProviderPrLookupResult;
+ }): Promise<{ receipt: ProviderMergeReceipt | null; reason: string | null }> {
+   if (opts.result.state === "not_found") {
+     return { receipt: null, reason: "provider PR was not found for the exact branch and base" };
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged-targeted-proof.ts b/packages/agentplane/src/commands/branch/cleanup-merged-targeted-proof.ts
+index 7a68aa5ef..6222431f0 100644
+--- a/packages/agentplane/src/commands/branch/cleanup-merged-targeted-proof.ts
++++ b/packages/agentplane/src/commands/branch/cleanup-merged-targeted-proof.ts
+@@ -4,7 +4,6 @@ import path from "node:path";
+ import { gitProofEnv } from "@agentplaneorg/core/git";
+ import { execFileAsync } from "@agentplaneorg/core/process";
+ 
+-import type { GithubPrLookupResult } from "../pr/internal/sync-github.js";
+ import {
+   gitCommitObjectExists,
+   gitProofIsAncestor,
+@@ -25,6 +24,7 @@ import {
+   observeProviderPr,
+   resolveProviderReconciliation,
+   validateMergedProviderReceipt as validateStrictMergedProviderReceipt,
++  type ProviderPrLookupResult,
+   type ProviderReconciliationProof,
+ } from "./cleanup-merged-provider-reconciliation.js";
+ import type { CleanupCandidate } from "./cleanup-merged-proof.js";
+@@ -96,7 +96,7 @@ function blockedCleanupProof(reason: string) {
+   };
+ }
+ 
+-function providerUnavailableBecauseRepositoryIsLocal(result: GithubPrLookupResult): boolean {
++function providerUnavailableBecauseRepositoryIsLocal(result: ProviderPrLookupResult): boolean {
+   return (
+     result.state === "unavailable" &&
+     result.reason === "origin is unavailable or is not a GitHub repository"
+@@ -107,7 +107,7 @@ async function validateExactMergedProviderReceipt(opts: {
+   gitRoot: string;
+   baseBranch: string;
+   branchHead: string;
+-  result: GithubPrLookupResult;
++  result: ProviderPrLookupResult;
+ }): Promise<{ prNumber: number | null; reason: string | null; observedHeadSha: string | null }> {
+   if (opts.result.state === "not_found") {
+     return {
+@@ -256,6 +256,7 @@ export async function targetedCleanupProof(opts: {
+     branch: opts.branch,
+     baseBranch: opts.baseBranch,
+     prNumber: recordedPrNumber,
++    recorded: meta?.provider ?? null,
+   });
+   if (opts.kind === "task") {
+     const strictProviderReceipt = await validateStrictMergedProviderReceipt({
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts b/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts
+index 12864f81d..59f991fc9 100644
+--- a/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts
++++ b/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts
+@@ -966,9 +966,16 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
+ 
+     const io = captureStdIO();
+     try {
+-      expect(
+-        await runCli(["cleanup", "merged", "--task-id", taskId, "--yes", "--root", root]),
+-      ).toBe(0);
++      const result = await runCli([
++        "cleanup",
++        "merged",
++        "--task-id",
++        taskId,
++        "--yes",
++        "--root",
++        root,
++      ]);
++      expect(result, io.stderr).toBe(0);
+       expect(io.stdout).toContain("proof=patch_equivalent");
+     } finally {
+       io.restore();
+diff --git a/packages/agentplane/src/commands/integrate-queue.command.test.ts b/packages/agentplane/src/commands/integrate-queue.command.test.ts
+index b79369fac..09363e21d 100644
+--- a/packages/agentplane/src/commands/integrate-queue.command.test.ts
++++ b/packages/agentplane/src/commands/integrate-queue.command.test.ts
+@@ -638,6 +638,14 @@ describe("integrate queue claim publication guard", () => {
+     ).rejects.toMatchObject({ code: "E_HANDOFF" });
+ 
+     expect(mocks.waitForHostedChecks).toHaveBeenCalledOnce();
++    expect(mocks.waitForHostedChecks).toHaveBeenCalledWith(
++      expect.objectContaining({
++        gitRoot: "/repo",
++        prNumber: entry.pr_number,
++        branch: entry.branch,
++        expectedHeadSha: entry.head_sha,
++      }),
++    );
+     expect(mocks.cmdIntegrate).not.toHaveBeenCalled();
+     expect(mocks.markQueueEntry).not.toHaveBeenCalled();
+   });
+diff --git a/packages/agentplane/src/commands/integrate-queue.command.ts b/packages/agentplane/src/commands/integrate-queue.command.ts
+index b42ce2b53..ba5589ed1 100644
+--- a/packages/agentplane/src/commands/integrate-queue.command.ts
++++ b/packages/agentplane/src/commands/integrate-queue.command.ts
+@@ -516,6 +516,8 @@ export function makeRunIntegrateQueueRunNextHandler(
+           await waitForHostedChecks({
+             gitRoot,
+             prNumber: claimedEntry.pr_number,
++            branch: claimedEntry.branch,
++            expectedHeadSha: claimedEntry.head_sha,
+             stablePolls: p.stablePolls ?? 2,
+             pollIntervalMs: p.hostedPollIntervalMs,
+             timeoutMs: p.hostedTimeoutMs,
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework.test.ts b/packages/agentplane/src/commands/pr/conflict-rework.test.ts
+index 81e208d36..e8c516997 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework.test.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework.test.ts
+@@ -427,6 +427,31 @@ describe("provider conflict rework packet", () => {
+     },
+   );
+ 
++  it.each(["mergeable", "ci_still_running", "not_approved", "draft_status"] as const)(
++    "keeps coherent GitLab %s truth on the ordinary route",
++    async (providerState) => {
++      const git = primeGit();
++      const nonConflicting = report();
++      nonConflicting.pr.provider = "gitlab";
++      if (nonConflicting.providerObservation?.state !== "found") {
++        throw new Error("fixture error");
++      }
++      nonConflicting.providerObservation.pr.mergeability = {
++        state: "not_conflicting",
++        mergeable: true,
++        providerState,
++      };
++
++      expect(hasProviderReportedMergeConflict(nonConflicting)).toBe(false);
++      expect(needsProviderConflictReworkPreparation(nonConflicting)).toBe(false);
++      await expect(prepare({ git, report: nonConflicting })).resolves.toMatchObject({
++        state: "not_conflicting",
++      });
++      expect(git.calls.mergeBase).toEqual([]);
++      expect(git.calls.diffNames).toBe(0);
++    },
++  );
++
+   it.each([
+     ["absent mergeability", undefined],
+     [
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework.ts b/packages/agentplane/src/commands/pr/conflict-rework.ts
+index f14ae529b..275aa04d3 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework.ts
+@@ -28,6 +28,10 @@ import {
+   hasCoherentGithubPrMergeability,
+   isSettledGithubPrConflict,
+ } from "./internal/sync-github.js";
++import {
++  hasCoherentGitLabMrMergeability,
++  isSettledGitLabMrConflict,
++} from "./internal/sync-gitlab.js";
+ import {
+   resolveGithubBasePullRequestProtection,
+   type GithubBasePullRequestProtection,
+@@ -165,12 +169,28 @@ function tokenFor(value: unknown): string {
+   return `sha256:${createHash("sha256").update(JSON.stringify(value), "utf8").digest("hex")}`;
+ }
+ 
++function isSettledProviderConflict(report: PrFlowStatusReport): boolean {
++  if (report.providerObservation?.state !== "found") return false;
++  const mergeability = report.providerObservation.pr.mergeability;
++  return report.pr.provider === "gitlab"
++    ? isSettledGitLabMrConflict(mergeability)
++    : isSettledGithubPrConflict(mergeability);
++}
++
++function hasCoherentProviderMergeability(report: PrFlowStatusReport): boolean {
++  if (report.providerObservation?.state !== "found") return false;
++  const mergeability = report.providerObservation.pr.mergeability;
++  return report.pr.provider === "gitlab"
++    ? hasCoherentGitLabMrMergeability(mergeability)
++    : hasCoherentGithubPrMergeability(mergeability);
++}
++
+ function providerConflict(report: PrFlowStatusReport): boolean {
+   return (
+     report.pr.state === "OPEN" &&
+     report.providerObservation?.state === "found" &&
+     report.providerObservation.pr.status === "OPEN" &&
+-    isSettledGithubPrConflict(report.providerObservation.pr.mergeability)
++    isSettledProviderConflict(report)
+   );
+ }
+ 
+@@ -186,8 +206,7 @@ export function needsProviderConflictReworkPreparation(report: PrFlowStatusRepor
+   ) {
+     return false;
+   }
+-  const mergeability = report.providerObservation.pr.mergeability;
+-  return !hasCoherentGithubPrMergeability(mergeability) || isSettledGithubPrConflict(mergeability);
++  return !hasCoherentProviderMergeability(report) || isSettledProviderConflict(report);
+ }
+ 
+ async function resolveLocalRef(opts: {
+@@ -241,7 +260,7 @@ export async function prepareConflictReworkPacket(opts: {
+     opts.report.providerObservation.pr.status === "OPEN"
+   ) {
+     const mergeability = opts.report.providerObservation.pr.mergeability;
+-    if (!hasCoherentGithubPrMergeability(mergeability)) {
++    if (!hasCoherentProviderMergeability(opts.report)) {
+       return invalid(
+         "provider_mergeability_unknown",
+         `Provider mergeability is not settled: state=${mergeability?.state ?? "missing"} provider_state=${mergeability?.providerState ?? "missing"}`,
+diff --git a/packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts b/packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts
+index f8f67f009..828368079 100644
+--- a/packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts
++++ b/packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts
+@@ -57,20 +57,67 @@ describe("GitLab hosted checks", () => {
+     );
+   });
+ 
+-  it("fails closed when no GitLab pipeline belongs to the exact head", async () => {
+-    mocks.runGlabApiJson.mockResolvedValueOnce([
+-      { id: 10, project_id: 7, sha: "old-head", status: "success" },
+-    ]);
++  it("accepts an absent pipeline only when GitLab policy does not require one", async () => {
++    mocks.runGlabApiJson
++      .mockResolvedValueOnce([{ id: 10, project_id: 7, sha: "old-head", status: "success" }])
++      .mockResolvedValueOnce({ only_allow_merge_if_pipeline_succeeds: false });
++
++    await expect(
++      resolveHostedChecksStatus({
++        gitRoot: "/repo",
++        prNumber: 42,
++        branch: "task/T-1/work",
++        expectedHeadSha: "exact-head",
++      }),
++    ).resolves.toEqual({
++      checked: true,
++      total: 1,
++      pending: 0,
++      failing: 0,
++      passing: 1,
++      missingRequired: [],
++      rows: [{ name: "GitLab pipeline not required", state: "SKIPPED" }],
++    });
++    expect(mocks.runGlabApiJson).toHaveBeenNthCalledWith(2, {
++      cwd: "/repo",
++      hostname: "gitlab.example.test",
++      endpoint: "projects/group%2Fproject",
++    });
++  });
++
++  it("fails closed when GitLab policy requires a pipeline", async () => {
++    mocks.runGlabApiJson
++      .mockResolvedValueOnce([{ id: 10, project_id: 7, sha: "old-head", status: "success" }])
++      .mockResolvedValueOnce({ only_allow_merge_if_pipeline_succeeds: true });
++
++    await expect(
++      resolveHostedChecksStatus({
++        gitRoot: "/repo",
++        prNumber: 42,
++        branch: "task/T-1/work",
++        expectedHeadSha: "exact-head",
++      }),
++    ).resolves.toEqual({
++      checked: false,
++      reason: "GitLab has no MR pipeline for exact head exact-head",
++    });
++  });
++
++  it("fails closed without consulting project policy when named checks are required", async () => {
++    mocks.runGlabApiJson.mockResolvedValueOnce([]);
++
+     await expect(
+       resolveHostedChecksStatus({
+         gitRoot: "/repo",
+         prNumber: 42,
+         branch: "task/T-1/work",
+         expectedHeadSha: "exact-head",
++        requiredChecks: ["test"],
+       }),
+     ).resolves.toEqual({
+       checked: false,
+       reason: "GitLab has no MR pipeline for exact head exact-head",
+     });
++    expect(mocks.runGlabApiJson).toHaveBeenCalledTimes(1);
+   });
+ });
+diff --git a/packages/agentplane/src/commands/pr/hosted-checks.ts b/packages/agentplane/src/commands/pr/hosted-checks.ts
+index a126d20aa..e2e1010af 100644
+--- a/packages/agentplane/src/commands/pr/hosted-checks.ts
++++ b/packages/agentplane/src/commands/pr/hosted-checks.ts
+@@ -21,6 +21,10 @@ type GitLabPipeline = {
+ 
+ type GitLabJob = { name?: string | null; status?: string | null };
+ 
++type GitLabProject = {
++  only_allow_merge_if_pipeline_succeeds?: boolean | null;
++};
++
+ export type HostedChecksSummary =
+   | {
+       checked: true;
+@@ -126,6 +130,21 @@ export async function resolveHostedChecksStatus(opts: {
+           (candidate) => !expectedHeadSha || candidate.sha?.trim() === expectedHeadSha,
+         );
+         if (!pipeline || !Number.isInteger(pipeline.id) || Number(pipeline.id) <= 0) {
++          const hasRequiredChecks = (opts.requiredChecks ?? []).some(
++            (name) => name.trim().length > 0,
++          );
++          if (!hasRequiredChecks) {
++            const projectPolicy = await runGlabApiJson<GitLabProject>({
++              cwd: opts.gitRoot,
++              hostname: identity.hostname,
++              endpoint: `projects/${project}`,
++            });
++            if (projectPolicy.only_allow_merge_if_pipeline_succeeds === false) {
++              return summarizeHostedChecks([
++                { name: "GitLab pipeline not required", state: "SKIPPED" },
++              ]);
++            }
++          }
+           return {
+             checked: false,
+             reason: expectedHeadSha
+diff --git a/packages/agentplane/src/commands/pr/integrate/cmd.ts b/packages/agentplane/src/commands/pr/integrate/cmd.ts
+index 8509c3f61..4186219bb 100644
+--- a/packages/agentplane/src/commands/pr/integrate/cmd.ts
++++ b/packages/agentplane/src/commands/pr/integrate/cmd.ts
+@@ -25,6 +25,7 @@ import { maybeRunPreIntegrateBootstrap } from "./internal/pre-integrate-bootstra
+ import { maybeRunPostIntegrateBootstrap } from "./internal/post-integrate-bootstrap.js";
+ import { prepareIntegrate } from "./internal/prepare.js";
+ import { handleProtectedBaseIntegrate } from "./internal/protected-base-handoff.js";
++import { formatIntegrateRoute } from "./internal/route-label.js";
+ import { resolveWorktreeForIntegrate } from "./internal/worktree.js";
+ import { runVerifyCommands } from "./verify.js";
+ 
+@@ -106,7 +107,7 @@ export async function cmdIntegrate(opts: {
+         output.success(
+           "integrate dry-run",
+           task.id,
+-          `base=${base} branch=${branch} verify=${shouldRunVerify ? "yes" : "no"} route=${protectedBaseRequiresPrMerge ? "github-pr" : "local"}`,
++          `base=${base} branch=${branch} verify=${shouldRunVerify ? "yes" : "no"} route=${formatIntegrateRoute({ protectedBaseRequiresPrMerge, provider: metaSource.provider?.kind ?? null })}`,
+         );
+       }
+       return 0;
+diff --git a/packages/agentplane/src/commands/pr/integrate/internal/route-label.test.ts b/packages/agentplane/src/commands/pr/integrate/internal/route-label.test.ts
+new file mode 100644
+index 000000000..fb0767fa5
+--- /dev/null
++++ b/packages/agentplane/src/commands/pr/integrate/internal/route-label.test.ts
+@@ -0,0 +1,17 @@
++import { describe, expect, it } from "vitest";
++
++import { formatIntegrateRoute } from "./route-label.js";
++
++describe("formatIntegrateRoute", () => {
++  it.each([
++    [false, "gitlab", "local"],
++    [true, "github", "github-pr"],
++    [true, "gitlab", "gitlab-mr"],
++    [true, null, "github-pr"],
++  ] as const)(
++    "formats protected=%s provider=%s as %s",
++    (protectedBaseRequiresPrMerge, provider, expected) => {
++      expect(formatIntegrateRoute({ protectedBaseRequiresPrMerge, provider })).toBe(expected);
++    },
++  );
++});
+diff --git a/packages/agentplane/src/commands/pr/integrate/internal/route-label.ts b/packages/agentplane/src/commands/pr/integrate/internal/route-label.ts
+new file mode 100644
+index 000000000..a29fe10a3
+--- /dev/null
++++ b/packages/agentplane/src/commands/pr/integrate/internal/route-label.ts
+@@ -0,0 +1,7 @@
++export function formatIntegrateRoute(opts: {
++  protectedBaseRequiresPrMerge: boolean;
++  provider: "github" | "gitlab" | null;
++}): "local" | "github-pr" | "gitlab-mr" {
++  if (!opts.protectedBaseRequiresPrMerge) return "local";
++  return opts.provider === "gitlab" ? "gitlab-mr" : "github-pr";
++}
+diff --git a/packages/agentplane/src/commands/pr/internal/glab-api.test.ts b/packages/agentplane/src/commands/pr/internal/glab-api.test.ts
+index afd88ccf9..2420a7a79 100644
+--- a/packages/agentplane/src/commands/pr/internal/glab-api.test.ts
++++ b/packages/agentplane/src/commands/pr/internal/glab-api.test.ts
+@@ -33,6 +33,8 @@ describe("glab-api", () => {
+         "projects/group%2Frepo/merge_requests/42",
+         "--method",
+         "PUT",
++        "--header",
++        "Content-Type: application/json",
+         "--input",
+         "/tmp/payload.json",
+       ],
+@@ -40,4 +42,28 @@ describe("glab-api", () => {
+       expect.any(Function),
+     );
+   });
++
++  it("keeps read-only requests host-bound without adding a JSON body header", async () => {
++    mocks.execFile.mockImplementation(
++      (
++        _command: string,
++        _args: string[],
++        _options: Record<string, unknown>,
++        callback: (error: Error | null, stdout: string, stderr: string) => void,
++      ) => callback(null, '{"iid":42}', ""),
++    );
++
++    await runGlabApiJson({
++      cwd: "/repo",
++      hostname: "gitlab.example.test",
++      endpoint: "projects/group%2Frepo/merge_requests/42",
++    });
++
++    expect(mocks.execFile).toHaveBeenLastCalledWith(
++      "glab",
++      ["api", "--hostname", "gitlab.example.test", "projects/group%2Frepo/merge_requests/42"],
++      expect.objectContaining({ cwd: "/repo", encoding: "utf8" }),
++      expect.any(Function),
++    );
++  });
+ });
+diff --git a/packages/agentplane/src/commands/pr/internal/glab-api.ts b/packages/agentplane/src/commands/pr/internal/glab-api.ts
+index 042c2b0b1..933703656 100644
+--- a/packages/agentplane/src/commands/pr/internal/glab-api.ts
++++ b/packages/agentplane/src/commands/pr/internal/glab-api.ts
+@@ -66,7 +66,9 @@ export async function runGlabApiJson<T>(opts: {
+ }): Promise<T> {
+   const args = ["api", "--hostname", opts.hostname, opts.endpoint];
+   if (opts.method && opts.method !== "GET") args.push("--method", opts.method);
+-  if (opts.inputPath) args.push("--input", opts.inputPath);
++  if (opts.inputPath) {
++    args.push("--header", "Content-Type: application/json", "--input", opts.inputPath);
++  }
+   const result = await runGlabCommand({
+     args,
+     cwd: opts.cwd,
+diff --git a/packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts b/packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts
+index 762aa5723..04bb89a40 100644
+--- a/packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts
++++ b/packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts
+@@ -7,6 +7,8 @@ vi.mock("./glab-api.js", async (importOriginal) => ({
+ }));
+ 
+ import {
++  hasCoherentGitLabMrMergeability,
++  isSettledGitLabMrConflict,
+   observeExistingGitLabMrByBranch,
+   observeExistingGitLabMrByNumber,
+   tryCreateGitLabMr,
+@@ -72,6 +74,62 @@ describe("sync-gitlab", () => {
+     expect(lookupCall?.endpoint).toContain("projects/group%2Fsub%2Fproject/merge_requests?");
+   });
+ 
++  it("classifies native GitLab conflict and non-conflict states coherently", () => {
++    expect(
++      hasCoherentGitLabMrMergeability({
++        state: "not_conflicting",
++        mergeable: true,
++        providerState: "mergeable",
++      }),
++    ).toBe(true);
++    expect(
++      isSettledGitLabMrConflict({
++        state: "conflicting",
++        mergeable: false,
++        providerState: "conflict",
++      }),
++    ).toBe(true);
++    expect(
++      hasCoherentGitLabMrMergeability({
++        state: "not_conflicting",
++        mergeable: true,
++        providerState: "unknown",
++      }),
++    ).toBe(false);
++    expect(
++      hasCoherentGitLabMrMergeability({
++        state: "pending",
++        mergeable: null,
++        providerState: "preparing",
++      }),
++    ).toBe(false);
++  });
++
++  it("keeps requested-changes GitLab mergeability on the non-conflict route", async () => {
++    mocks.runGlabApiJson
++      .mockResolvedValueOnce({ id: 7 })
++      .mockResolvedValueOnce(mr({ detailed_merge_status: "requested_changes" }));
++
++    await expect(
++      observeExistingGitLabMrByNumber({
++        gitRoot: "/repo",
++        identity,
++        prNumber: 42,
++        branch: "task/T-1/work",
++        baseBranch: "main",
++      }),
++    ).resolves.toMatchObject({
++      state: "found",
++      pr: {
++        mergeability: {
++          state: "not_conflicting",
++          mergeable: true,
++          providerState: "requested_changes",
++        },
++      },
++    });
++  });
++
+   it("recovers an uncertain create by re-observing instead of creating a duplicate MR", async () => {
+     mocks.runGlabApiJson
+       .mockResolvedValueOnce({ id: 7 })
+diff --git a/packages/agentplane/src/commands/pr/internal/sync-gitlab.ts b/packages/agentplane/src/commands/pr/internal/sync-gitlab.ts
+index 461dece67..34ad4d2b8 100644
+--- a/packages/agentplane/src/commands/pr/internal/sync-gitlab.ts
++++ b/packages/agentplane/src/commands/pr/internal/sync-gitlab.ts
+@@ -92,6 +92,35 @@ function normalizeGitLabMergeability(record: GitLabMergeRequestRecord): ChangeRe
+   };
+ }
+ 
++export function isSettledGitLabMrConflict(
++  mergeability: ChangeRequestMergeability | undefined,
++): boolean {
++  const providerState = trimmed(mergeability?.providerState)?.toLowerCase() ?? null;
++  return (
++    mergeability?.state === "conflicting" &&
++    mergeability.mergeable === false &&
++    providerState === "conflict"
++  );
++}
++
++function isCoherentGitLabMrNonConflict(
++  mergeability: ChangeRequestMergeability | undefined,
++): boolean {
++  const providerState = trimmed(mergeability?.providerState)?.toLowerCase() ?? null;
++  return (
++    mergeability?.state === "not_conflicting" &&
++    mergeability.mergeable === true &&
++    providerState !== null &&
++    GITLAB_NON_CONFLICT_STATES.has(providerState)
++  );
++}
++
++export function hasCoherentGitLabMrMergeability(
++  mergeability: ChangeRequestMergeability | undefined,
++): boolean {
++  return isSettledGitLabMrConflict(mergeability) || isCoherentGitLabMrNonConflict(mergeability);
++}
++
+ function normalizeObservedGitLabMergeRequest(
+   identity: GitHostIdentity,
+   record: GitLabMergeRequestRecord,

@@ -12,8 +12,8 @@ Created: 2026-08-20T21:18:16.979Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1
+- State: ok
+- Note: Accepted with operator-approved verification exception: GitLab implementation and current-head focused regression pass; unstable unrelated local full-suite failures remain recorded and accepted as residual harness risk. Exact-head hosted checks remain mandatory before merge.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
