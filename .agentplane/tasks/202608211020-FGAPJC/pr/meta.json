@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608211020-FGAPJC/implement-task-scoped-autonomous-execution-after",
   "created_at": "2026-08-21T10:27:11.359Z",
-  "diffstat_sha256": "sha256:fc977364149e4164798620fb52381d87714ad754a451ae46b924221b38b53e6b",
+  "diffstat_sha256": "sha256:81e7a73203183ac138f75c9f6e1a76b03940080921439f0eb01b1be9c9783392",
   "last_verified_at": "2026-08-21T11:12:03.715Z",
   "last_verified_diffstat_sha256": "sha256:fc977364149e4164798620fb52381d87714ad754a451ae46b924221b38b53e6b",
   "pr_number": 4858,

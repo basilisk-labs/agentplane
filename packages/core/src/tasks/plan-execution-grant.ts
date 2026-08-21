@@ -34,6 +34,7 @@ export type HostUserDecision = Readonly<{
 
 export type ExecutionGrantCapability =
   | "task.lifecycle"
+  | "task.scope.extend"
   | "repository.write"
   | "repository.integrate"
   | "provider.pr"
@@ -104,8 +105,23 @@ export function computePlanDigest(plan: string): string {
 
 export function computeExecutionScopeDigest(contract: TaskExecutionContract | undefined): string {
   return executionGrantDigest({
-    declaration: contract?.declaration ?? null,
-    authority: contract?.authority ?? null,
+    declaration: contract
+      ? {
+          repository_effects: contract.declaration.repository_effects,
+          external_effects: contract.declaration.external_effects,
+          requirements_uncertainty: contract.declaration.requirements_uncertainty,
+          implementation_uncertainty: contract.declaration.implementation_uncertainty,
+          reversibility: contract.declaration.reversibility,
+        }
+      : null,
+    authority: contract
+      ? {
+          allowed_repository_effects: contract.authority.allowed_repository_effects,
+          forbidden_repository_effects: contract.authority.forbidden_repository_effects,
+          allowed_external_effects: contract.authority.allowed_external_effects,
+          forbidden_external_effects: contract.authority.forbidden_external_effects,
+        }
+      : null,
     selected_mode: contract?.selected_mode ?? null,
   });
 }
@@ -129,6 +145,7 @@ export function createPlanProposal(opts: {
 function capabilitiesFor(contract: TaskExecutionContract | undefined): ExecutionGrantCapability[] {
   const capabilities = new Set<ExecutionGrantCapability>(["task.lifecycle"]);
   if ((contract?.declaration.repository_effects.length ?? 0) > 0) {
+    capabilities.add("task.scope.extend");
     capabilities.add("repository.write");
     capabilities.add("repository.integrate");
   }
@@ -210,6 +227,7 @@ export function parseExecutionGrant(value: unknown): ExecutionGrant | null {
     !item.capabilities.every((capability) =>
       [
         "task.lifecycle",
+        "task.scope.extend",
         "repository.write",
         "repository.integrate",
         "provider.pr",

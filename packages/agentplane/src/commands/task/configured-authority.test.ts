@@ -9,9 +9,11 @@ import {
 
 import type { CommandContext } from "../shared/task-backend.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+import { createTaskScopeExtensionRequestState } from "../shared/task-scope-extension-request.js";
 import {
   isOperationAuthorizedByPolicy,
   isOperationAuthorizedByExecutionGrant,
+  isScopeExtensionCoveredByExecutionGrant,
   resolveConfiguredAuthority,
 } from "./configured-authority.js";
 
@@ -27,7 +29,7 @@ function authority(overrides: Partial<SideEffectAuthorityConfig>): SideEffectAut
 }
 
 describe("configured repository authority", () => {
-  it("compiles plan authority into provider operations without granting scope expansion", () => {
+  it("compiles plan authority into provider operations and bounded scope expansion", () => {
     const contract = {
       selected_mode: "branch_pr",
       declaration: {
@@ -51,7 +53,50 @@ describe("configured repository authority", () => {
 
     expect(isOperationAuthorizedByExecutionGrant(grant, "pr.open")).toBe(true);
     expect(isOperationAuthorizedByExecutionGrant(grant, "integration.enqueue")).toBe(true);
-    expect(isOperationAuthorizedByExecutionGrant(grant, "task.scope.extend")).toBe(false);
+    expect(isOperationAuthorizedByExecutionGrant(grant, "task.scope.extend")).toBe(true);
+  });
+
+  it("covers only user-approved scope extensions whose effects stay inside the grant", () => {
+    const executionContract = {
+      selected_mode: "branch_pr",
+      declaration: {
+        repository_effects: ["repository_write", "source_code"],
+        external_effects: [],
+      },
+      authority: {
+        writable_roots: ["packages/app"],
+        allowed_repository_effects: ["repository_write", "source_code"],
+      },
+    } as TaskExecutionContract;
+    const grant = createExecutionGrant({
+      proposal: createPlanProposal({
+        task_id: "TASK-1",
+        task_revision: 2,
+        plan: "Implement and verify.",
+        execution_contract: executionContract,
+      }),
+      execution_contract: executionContract,
+      actor: "USER",
+      approval_kind: "manual_operator",
+      issued_at: "2026-08-21T10:00:00.000Z",
+    });
+    const task = {
+      execution_contract: executionContract,
+      extensions: {
+        "agentplane.scope_extension_request": createTaskScopeExtensionRequestState({
+          transition_id: `tr_${"a".repeat(32)}`,
+          state_fingerprint: `sha256:${"b".repeat(64)}`,
+          request: {
+            schema_version: 1,
+            scope_roots: ["packages/agentplane/src/commands/pr"],
+            repository_effects: ["repository_write", "source_code"],
+            rationale: "The approved implementation reaches the PR command boundary.",
+          },
+        }),
+      },
+    } as unknown as Awaited<ReturnType<CommandContext["taskBackend"]["getTask"]>>;
+
+    expect(isScopeExtensionCoveredByExecutionGrant({ grant, task })).toBe(true);
   });
 
   it("never resolves primary plan approval from repository policy", async () => {

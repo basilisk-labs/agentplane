@@ -37,21 +37,21 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../src/commands/task/agent-action-packet.test.ts  |  28 +-
  .../src/commands/task/agent-action-packet.ts       |  55 +++-
  .../task/branch-task-supervisor-operations.ts      |   2 +-
- .../src/commands/task/configured-authority.test.ts |  33 +++
- .../src/commands/task/configured-authority.ts      |  87 ++++--
+ .../src/commands/task/configured-authority.test.ts |  78 +++++
+ .../src/commands/task/configured-authority.ts      | 121 ++++++--
  .../agentplane/src/commands/task/create.command.ts |  34 +++
  packages/agentplane/src/commands/task/new.ts       |  26 +-
  .../src/commands/task/plan-approve.command.ts      |  70 ++++-
- packages/agentplane/src/commands/task/plan.ts      |  81 +++++-
+ packages/agentplane/src/commands/task/plan.ts      |  81 ++++-
  .../runtime/task-execution-context/resolve.test.ts |  26 +-
- .../src/runtime/task-execution-context/resolve.ts  |  81 +++++-
+ .../src/runtime/task-execution-context/resolve.ts  |  81 ++++-
  packages/core/src/tasks/index.ts                   |  28 ++
- .../core/src/tasks/plan-execution-grant.test.ts    | 189 ++++++++++++
- packages/core/src/tasks/plan-execution-grant.ts    | 322 +++++++++++++++++++++
+ .../core/src/tasks/plan-execution-grant.test.ts    | 226 ++++++++++++++
+ packages/core/src/tasks/plan-execution-grant.ts    | 340 +++++++++++++++++++++
  packages/core/src/tasks/task-execution-base.ts     |  43 +++
  packages/core/src/tasks/task-store.ts              |   1 +
  packages/core/src/tasks/tasks-export.ts            |   2 +
- 24 files changed, 1259 insertions(+), 74 deletions(-)
+ 24 files changed, 1393 insertions(+), 74 deletions(-)
 ```
 
 </details>

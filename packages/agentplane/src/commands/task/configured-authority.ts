@@ -2,6 +2,7 @@ import type { SideEffectAuthorityConfig } from "@agentplaneorg/core/config";
 import {
   executionGrantFromExtensions,
   isExecutionGrantActive,
+  repositoryEffectsForPath,
   type ExecutionGrant,
   type ExecutionGrantCapability,
 } from "@agentplaneorg/core/tasks";
@@ -16,6 +17,7 @@ import {
   persistSideEffectAuthorityState,
 } from "../shared/side-effect-authority-store.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+import { parseTaskScopeExtensionRequestState } from "../shared/task-scope-extension-request.js";
 
 export type ConfiguredAuthorityResolution =
   | { state: "not_applicable"; reason: string }
@@ -27,6 +29,7 @@ export type ConfiguredAuthorityResolution =
     };
 
 function operationCapability(operationId: string): ExecutionGrantCapability {
+  if (operationId === "task.scope.extend") return "task.scope.extend";
   if (operationId.startsWith("integration.")) return "repository.integrate";
   if (operationId.startsWith("task.hosted_close.")) {
     return "provider.merge";
@@ -45,8 +48,36 @@ export function isOperationAuthorizedByExecutionGrant(
   grant: ExecutionGrant,
   operationId: string,
 ): boolean {
-  if (operationId === "task.scope.extend") return false;
   return grant.capabilities.includes(operationCapability(operationId));
+}
+
+function isUserApprovedGrant(grant: ExecutionGrant): boolean {
+  return (
+    grant.actor === "USER" ||
+    grant.actor.endsWith(":USER") ||
+    grant.approval_kind === "host_user_decision" ||
+    grant.approval_kind === "signed_user_receipt"
+  );
+}
+
+export function isScopeExtensionCoveredByExecutionGrant(opts: {
+  grant: ExecutionGrant;
+  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+}): boolean {
+  if (
+    !isUserApprovedGrant(opts.grant) ||
+    !isOperationAuthorizedByExecutionGrant(opts.grant, "task.scope.extend")
+  ) {
+    return false;
+  }
+  const pending = parseTaskScopeExtensionRequestState(opts.task);
+  const allowed = new Set(opts.task.execution_contract?.authority.allowed_repository_effects ?? []);
+  if (pending?.status !== "pending" || allowed.size === 0) return false;
+  const requestedEffects = new Set([
+    ...pending.request.repository_effects,
+    ...pending.request.scope_roots.flatMap((root) => repositoryEffectsForPath(root)),
+  ]);
+  return [...requestedEffects].every((effect) => allowed.has(effect));
 }
 
 export function isOperationAuthorizedByPolicy(
@@ -92,7 +123,10 @@ export async function resolveConfiguredAuthority(opts: {
     : null;
   const config = opts.command.config.authority;
   const grantOwnsOperation = Boolean(
-    activeGrant && isOperationAuthorizedByExecutionGrant(activeGrant, step.request.operationId),
+    activeGrant &&
+      (step.request.operationId === "task.scope.extend"
+        ? isScopeExtensionCoveredByExecutionGrant({ grant: activeGrant, task })
+        : isOperationAuthorizedByExecutionGrant(activeGrant, step.request.operationId)),
   );
   if (!grantOwnsOperation && !isOperationAuthorizedByPolicy(config, step.request.operationId)) {
     return {

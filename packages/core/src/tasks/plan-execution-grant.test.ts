@@ -82,6 +82,7 @@ describe("task-scoped execution grants", () => {
       "repository.integrate",
       "repository.write",
       "task.lifecycle",
+      "task.scope.extend",
     ]);
     expect(
       isExecutionGrantActive({
@@ -127,6 +128,42 @@ describe("task-scoped execution grants", () => {
         execution_contract: contract(["external_write"]),
       }),
     ).toBe(false);
+  });
+
+  it("keeps authority active when only compiled writable roots expand", () => {
+    const initial = contract();
+    const grant = createExecutionGrant({
+      proposal: createPlanProposal({
+        task_id: "task-1",
+        task_revision: 1,
+        plan: "Implement the approved repository change",
+        execution_contract: initial,
+      }),
+      execution_contract: initial,
+      actor: "USER",
+      approval_kind: "manual_operator",
+      issued_at: "2026-08-21T10:00:00.000Z",
+    });
+    const expanded = {
+      ...initial,
+      declaration: {
+        ...initial.declaration,
+        scope_roots: [...initial.declaration.scope_roots, "packages/agentplane"],
+      },
+      authority: {
+        ...initial.authority,
+        writable_roots: [...initial.authority.writable_roots, "packages/agentplane"],
+      },
+    } satisfies TaskExecutionContract;
+
+    expect(
+      isExecutionGrantActive({
+        grant,
+        task_id: "task-1",
+        plan: "Implement the approved repository change",
+        execution_contract: expanded,
+      }),
+    ).toBe(true);
   });
 
   it("accepts a canonical host-originated user decision and binds operation leases", () => {
