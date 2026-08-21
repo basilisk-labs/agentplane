@@ -13,7 +13,7 @@ Created: 2026-08-21T10:27:11.359Z
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note: The strict-base update preserves the reviewed implementation, and the supervisor-owned verification record covers the implementation after merging the current protected base.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
