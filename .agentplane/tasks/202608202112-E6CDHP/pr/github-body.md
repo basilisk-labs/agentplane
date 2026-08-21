@@ -19,8 +19,8 @@ Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutatio
 - Note:
 
 ```text
-Live GitLab queue canary exposed a GitHub-only hosted-check invocation: run-next omits branch and
-exact head, so provider dispatch falls through to gh.
+Live GitLab canary requires integration queue to pass branch and exact head into provider-neutral
+hosted checks.
 ```
 - Canonical workflow state lives in the task README.
 
