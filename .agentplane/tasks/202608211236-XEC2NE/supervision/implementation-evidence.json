@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check e3ea761f947d966e61a119d79d1bdcba1b172904..a2db162a53c1405c06a4c72cdcb0a406da174cc4",
+      "command": "git diff --check 6a166ed203d98aa63db67ecd1ac513bb9964f871..d4aeed48de00940ecb669c7d0094923c378e744d",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,16 +13,16 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB e3ea761f947d966e61a119d79d1bdcba1b172904..a2db162a53c1405c06a4c72cdcb0a406da174cc4",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 6a166ed203d98aa63db67ecd1ac513bb9964f871..d4aeed48de00940ecb669c7d0094923c378e744d",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
+        "M\t.agentplane/tasks/202608211236-XEC2NE/README.md",
         "M\t.agentplane/tasks/202608211236-XEC2NE/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608211236-XEC2NE/pr/github-body.md",
         "M\t.agentplane/tasks/202608211236-XEC2NE/pr/meta.json",
         "M\t.agentplane/tasks/202608211236-XEC2NE/pr/review.md",
-        "M\tpackages/agentplane/src/commands/task/verify-record-observed-changes.ts",
-        "M\tpackages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+        "M\tpackages/agentplane/src/commands/task/verify-record-observed-changes.ts"
       ]
     },
     {
@@ -32,15 +32,24 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "e3ea761f947d966e61a119d79d1bdcba1b172904",
-  "implementation_commit": "a2db162a53c1405c06a4c72cdcb0a406da174cc4",
+  "execution_base_commit": "6a166ed203d98aa63db67ecd1ac513bb9964f871",
+  "implementation_commit": "d4aeed48de00940ecb669c7d0094923c378e744d",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M .agentplane/tasks/202608211236-XEC2NE/README.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608211236-XEC2NE/README.md"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202608211236-XEC2NE/README.md"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
