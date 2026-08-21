@@ -6,14 +6,14 @@ Created: 2026-08-21T12:41:06.582Z
 
 - Task: `202608211236-XEC2NE`
 - Title: Repair packaged candidate verification-contract refresh after managed upgrade
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608211236-XEC2NE/repair-packaged-candidate-verification-contract`
 - Canonical task record: `.agentplane/tasks/202608211236-XEC2NE/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Hosted P1 review requires preserving the single-commit fallback when a direct task has no genuinely frozen pre-execution base (discussion_r3833736708).
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,9 @@ Created: 2026-08-21T12:41:06.582Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../task/verify-record-observed-changes.ts         |  4 +-
- .../task/verify-record.durability.unit.test.ts     | 45 ++++++++++++++++++++++
- 2 files changed, 47 insertions(+), 2 deletions(-)
+ .../task/verify-record-observed-changes.ts         |  26 +++++-
+ .../task/verify-record.durability.unit.test.ts     | 102 +++++++++++++++++++++
+ 2 files changed, 127 insertions(+), 1 deletion(-)
 ```
 
 </details>
