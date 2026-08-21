@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The source change directly addresses the reported mutual-block condition: a sibling task README is no longer created inside the invoking task worktree.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/3d3e4e7fae896d1b15c38d4c9ba904a8b3c6f4916af312fa788e12a81df2f2c3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Regression coverage exercises the context resolver, task new CLI behavior, task begin --plan compatibility behavior, and the supervisor-compatible explicit test path.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/3d3e4e7fae896d1b15c38d4c9ba904a8b3c6f4916af312fa788e12a81df2f2c3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Supervisor-managed declared checks all passed after replacing the non-portable wildcard with the explicit regression test path.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/3d3e4e7fae896d1b15c38d4c9ba904a8b3c6f4916af312fa788e12a81df2f2c3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The combined focused suite passed 43 tests across four files during independent evaluator execution.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/3d3e4e7fae896d1b15c38d4c9ba904a8b3c6f4916af312fa788e12a81df2f2c3.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
