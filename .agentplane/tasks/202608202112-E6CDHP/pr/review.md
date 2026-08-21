@@ -6,14 +6,14 @@ Created: 2026-08-20T21:18:16.979Z
 
 - Task: `202608202112-E6CDHP`
 - Title: Fix live GitLab MR transport and provider-neutral mergeability validation
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608202112-E6CDHP/fix-live-gitlab-mr-transport-and-provider-neutra`
 - Canonical task record: `.agentplane/tasks/202608202112-E6CDHP/README.md`
 
 ## Verification
 
-- State: ok
-- Note: GitLab provider-policy repair passes focused tests, typecheck, live hosted readback, and an independent full serial regression; supervisor-only nested state-fingerprint failures are recorded as a harness limitation.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
