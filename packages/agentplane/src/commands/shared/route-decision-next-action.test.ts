@@ -1,10 +1,27 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
+import { resolveLocalRecordedCloseFlow } from "./route-decision.js";
 import { deriveNextAction } from "./route-decision-next-action.js";
 import type { RouteCleanupProbe } from "./route-decision-types.js";
+import type { CommandContext } from "./task-backend.js";
+
+const localCloseMocks = vi.hoisted(() => ({
+  readTaskPrMetaArtifact: vi.fn(),
+  taskCloseAlreadyRecordedOnBase: vi.fn(),
+}));
+
+vi.mock("../pr/internal/pr-paths.js", async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  readTaskPrMetaArtifact: localCloseMocks.readTaskPrMetaArtifact,
+}));
+
+vi.mock("../task/close-tail-state.js", async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  taskCloseAlreadyRecordedOnBase: localCloseMocks.taskCloseAlreadyRecordedOnBase,
+}));
 
 const task = {
   id: "T-1",
@@ -82,6 +99,83 @@ function nextAction(prFlow: PrFlowStatusReport, cleanupProbe: RouteCleanupProbe)
     batchOwnership: { role: "none" },
   });
 }
+
+describe("local recorded close fallback", () => {
+  const ctx = {
+    resolvedProject: { gitRoot: process.cwd() },
+    config: { paths: { workflow_dir: ".agentplane/tasks" } },
+  } as CommandContext;
+  const staleOpenMeta = JSON.stringify({
+    schema_version: 1,
+    task_id: "T-1",
+    status: "OPEN",
+    branch: "task/T-1/work",
+    base: "main",
+    head_sha: "1111111111111111111111111111111111111111",
+    pr_number: 101,
+    pr_url: "https://github.com/example/repo/pull/101",
+    created_at: "2026-01-01T00:00:00.000Z",
+    updated_at: "2026-01-01T00:00:00.000Z",
+    verify: { status: "pass" },
+    pre_merge_closure: {
+      state: "closed_before_merge",
+      branch: "task/T-1/work",
+      pr_number: 101,
+      basis_commit: "1111111111111111111111111111111111111111",
+      recorded_at: "2026-01-01T00:00:00.000Z",
+    },
+  });
+
+  beforeEach(() => {
+    localCloseMocks.readTaskPrMetaArtifact.mockReset();
+    localCloseMocks.taskCloseAlreadyRecordedOnBase.mockReset();
+    localCloseMocks.readTaskPrMetaArtifact.mockResolvedValue({ content: staleOpenMeta });
+  });
+
+  it("prefers canonical base closure over stale OPEN metadata for a DONE task", async () => {
+    localCloseMocks.taskCloseAlreadyRecordedOnBase
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true);
+
+    const result = await resolveLocalRecordedCloseFlow({
+      ctx,
+      task: { ...task, verification: { state: "ok" } },
+      workflowMode: "branch_pr",
+    });
+
+    expect(localCloseMocks.taskCloseAlreadyRecordedOnBase).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ taskId: "T-1", baseBranch: "origin/main" }),
+    );
+    expect(localCloseMocks.taskCloseAlreadyRecordedOnBase).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ taskId: "T-1", baseBranch: "main" }),
+    );
+    expect(result).toMatchObject({
+      task: { id: "T-1", status: "DONE", verification: "ok" },
+      branch: { name: "task/T-1/work", headSha: null },
+      pr: { state: "MERGED", source: "metadata", mergeCommit: null },
+      closeTail: { state: "recorded_on_base", base: "main" },
+      hostedChecks: { checked: false, reason: "remote lookup skipped" },
+      reviewThreads: { checked: false, reason: "remote lookup skipped" },
+    });
+  });
+
+  it("keeps ordinary OPEN metadata when the task is not finalized", async () => {
+    const result = await resolveLocalRecordedCloseFlow({
+      ctx,
+      task: { ...task, status: "DOING" },
+      workflowMode: "branch_pr",
+    });
+
+    expect(localCloseMocks.taskCloseAlreadyRecordedOnBase).not.toHaveBeenCalled();
+    expect(result).toMatchObject({
+      task: { id: "T-1", status: "DOING" },
+      pr: { state: "OPEN", source: "metadata", mergeCommit: null },
+      closeTail: { state: "not_applicable" },
+    });
+  });
+});
 
 describe("DONE branch_pr route cleanup boundary", () => {
   it("blocks a dirty DONE task worktree before enqueueing an open PR", () => {

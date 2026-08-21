@@ -107,7 +107,28 @@ function hasRemoteProviderEvidence(prFlow: PrFlowStatusReport | null): boolean {
   );
 }
 
-async function resolveLocalRecordedCloseFlow(opts: {
+async function resolveRecordedCloseBase(opts: {
+  ctx: CommandContext;
+  taskId: string;
+  base: string;
+}): Promise<string | null> {
+  const remoteRecorded = await taskCloseAlreadyRecordedOnBase({
+    gitRoot: opts.ctx.resolvedProject.gitRoot,
+    workflowDir: opts.ctx.config.paths.workflow_dir,
+    taskId: opts.taskId,
+    baseBranch: `origin/${opts.base}`,
+  }).catch(() => false);
+  if (remoteRecorded) return opts.base;
+  const localRecorded = await taskCloseAlreadyRecordedOnBase({
+    gitRoot: opts.ctx.resolvedProject.gitRoot,
+    workflowDir: opts.ctx.config.paths.workflow_dir,
+    taskId: opts.taskId,
+    baseBranch: opts.base,
+  }).catch(() => false);
+  return localRecorded ? opts.base : null;
+}
+
+export async function resolveLocalRecordedCloseFlow(opts: {
   ctx: CommandContext;
   task: Awaited<ReturnType<typeof loadBackendTask>>["task"];
   workflowMode: "direct" | "branch_pr";
@@ -123,6 +144,40 @@ async function resolveLocalRecordedCloseFlow(opts: {
     const meta = parsePrMeta(content, opts.task.id);
     const trimmedBase = meta.base?.trim();
     const base = trimmedBase && trimmedBase.length > 0 ? trimmedBase : "main";
+    const recordedBase =
+      opts.task.status === "DONE" || meta.status === "MERGED"
+        ? await resolveRecordedCloseBase({ ctx: opts.ctx, taskId: opts.task.id, base })
+        : null;
+    if (recordedBase) {
+      return {
+        task: {
+          id: opts.task.id,
+          status: opts.task.status,
+          verification: opts.task.verification?.state ?? null,
+        },
+        branch: {
+          name: meta.branch ?? null,
+          headSha: null,
+          metaHeadSha: meta.head_sha ?? null,
+        },
+        pr: {
+          provider: "github",
+          state: "MERGED",
+          source: "metadata",
+          prNumber: typeof meta.pr_number === "number" ? meta.pr_number : null,
+          prUrl: meta.pr_url ?? null,
+          base,
+          headSha: meta.head_sha ?? null,
+          mergeCommit: meta.merge_commit ?? null,
+        },
+        closeTail: { state: "recorded_on_base", base: recordedBase },
+        hostedChecks: { checked: false, reason: "remote lookup skipped" },
+        reviewThreads: { checked: false, reason: "remote lookup skipped" },
+        queue: { present: false },
+        handoff: { present: false },
+        nextAction: "pull main; task close evidence is already recorded upstream",
+      };
+    }
     const branchHeadSha = meta.branch
       ? await gitRevParse(opts.ctx.resolvedProject.gitRoot, [meta.branch]).catch(() => null)
       : null;
@@ -198,50 +253,7 @@ async function resolveLocalRecordedCloseFlow(opts: {
         nextAction: `agentplane pr open ${opts.task.id} --author <ROLE>`,
       };
     }
-    const remoteRecorded = await taskCloseAlreadyRecordedOnBase({
-      gitRoot: opts.ctx.resolvedProject.gitRoot,
-      workflowDir: opts.ctx.config.paths.workflow_dir,
-      taskId: opts.task.id,
-      baseBranch: `origin/${base}`,
-    }).catch(() => false);
-    const recorded = remoteRecorded
-      ? true
-      : await taskCloseAlreadyRecordedOnBase({
-          gitRoot: opts.ctx.resolvedProject.gitRoot,
-          workflowDir: opts.ctx.config.paths.workflow_dir,
-          taskId: opts.task.id,
-          baseBranch: base,
-        }).catch(() => false);
-    if (!recorded) return null;
-    return {
-      task: {
-        id: opts.task.id,
-        status: opts.task.status,
-        verification: opts.task.verification?.state ?? null,
-      },
-      branch: {
-        name: meta.branch ?? null,
-        headSha: null,
-        metaHeadSha: meta.head_sha ?? null,
-      },
-      pr: {
-        provider: "github",
-        state: "MERGED",
-        source: "metadata",
-        prNumber: typeof meta.pr_number === "number" ? meta.pr_number : null,
-        prUrl: meta.pr_url ?? null,
-        base,
-        headSha: meta.head_sha ?? null,
-        mergeCommit: meta.merge_commit,
-      },
-      publication,
-      closeTail: { state: "recorded_on_base", base },
-      hostedChecks: { checked: false, reason: "remote lookup skipped" },
-      reviewThreads: { checked: false, reason: "remote lookup skipped" },
-      queue: { present: false },
-      handoff: { present: false },
-      nextAction: "pull main; task close evidence is already recorded upstream",
-    };
+    return null;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     opts.onDiagnostic?.(`local PR metadata fallback failed: ${message}`);
