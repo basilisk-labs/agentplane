@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608211236-XEC2NE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-21T21:09:38.243Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "d4aeed48de00940ecb669c7d0094923c378e744d",
+  "blueprint_digest": "a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03",
+  "findings": [
+    "The production change is minimal and uses the already-resolved execution.base_sha instead of a direct-mode parent fallback.",
+    "The test fails under the former behavior by omitting the first direct-task commit and passes with the fix.",
+    "The observed packaged install evidence covers all eight migration scenarios, including the previously failing managed-upgrade evaluator path.",
+    "No unrelated implementation paths were changed.",
+    "Residual risk: Hosted exact-head qualification and integration evidence must still pass after PR publication."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/1d6eb9d6f04a708a1ff90067a145eef7b7a60512d3594f16052e662a386a7b90.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
