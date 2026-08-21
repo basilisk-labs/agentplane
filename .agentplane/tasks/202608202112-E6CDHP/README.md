@@ -1,10 +1,10 @@
 ---
 id: "202608202112-E6CDHP"
 title: "Fix live GitLab MR transport and provider-neutral mergeability validation"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -27,10 +27,10 @@ plan_approval:
   note: "Approved explicitly by Denis in Codex on 2026-08-21 after reviewing the live GitLab findings and remediation plan."
 verification:
   state: "blocked_external"
-  updated_at: "2026-08-20T23:44:49.101Z"
-  updated_by: "TESTER"
-  note: "Full supervisor check exposed a provider-less cleanup compatibility edge: identity fallback recognizes missing push URL but not missing fetch URL. Add the symmetric fetch fallback and rerun focused cleanup tests."
-  attempts: 5
+  updated_at: "2026-08-21T00:24:17.162Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1"
+  attempts: 6
 execution_route:
   frozen: true
   reason_codes:
@@ -281,6 +281,9 @@ comments:
   -
     author: "CODER"
     body: "Resume: implementation repair is committed | details: repeat verification from the clean task worktree"
+  -
+    author: "CODER"
+    body: "Implementation repair committed at f701bc2defa5065fd5446981088dc7011de3cffc; focused checks passed and verification should be repeated."
 events:
   -
     type: "status"
@@ -408,8 +411,22 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Resume: implementation repair is committed | details: repeat verification from the clean task worktree"
+  -
+    type: "status"
+    at: "2026-08-20T23:54:04.422Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation repair committed at f701bc2defa5065fd5446981088dc7011de3cffc; focused checks passed and verification should be repeated."
+    commit: "f701bc2defa5065fd5446981088dc7011de3cffc"
+  -
+    type: "verify"
+    at: "2026-08-21T00:24:17.162Z"
+    author: "SUPERVISOR"
+    state: "blocked_external"
+    note: "Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1"
 doc_version: 3
-doc_updated_at: "2026-08-20T23:53:34.666Z"
+doc_updated_at: "2026-08-21T00:24:18.340Z"
 doc_updated_by: "CODER"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
@@ -585,6 +602,41 @@ sections:
     Result: fail
     Evidence: cleanup-merged.targeted.test.ts provider-less task-close fixture failed when publication remote had zero fetch URLs
     Scope: cleanup provider fallback compatibility
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+    - old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-21T00:24:17.162Z — VERIFY — blocked_external
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1
+    Attempts: 6
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:0e29219354d821ae50b773d3fcf32d3b1d0cc23a4c63f0fcffda6746df8caa45
+
+    Details:
+
+    Command: bun run --filter=agentplane test -- --maxWorkers=1
+    Result: fail
+    Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608202112-E6CDHP declared verification
 
     BlueprintSnapshotRef:
     - state: current
@@ -819,6 +871,41 @@ Command: bun run --filter=agentplane test -- --maxWorkers=1
 Result: fail
 Evidence: cleanup-merged.targeted.test.ts provider-less task-close fixture failed when publication remote had zero fetch URLs
 Scope: cleanup provider fallback compatibility
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+- old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T00:24:17.162Z — VERIFY — blocked_external
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1
+Attempts: 6
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:0e29219354d821ae50b773d3fcf32d3b1d0cc23a4c63f0fcffda6746df8caa45
+
+Details:
+
+Command: bun run --filter=agentplane test -- --maxWorkers=1
+Result: fail
+Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608202112-E6CDHP declared verification
 
 BlueprintSnapshotRef:
 - state: current
