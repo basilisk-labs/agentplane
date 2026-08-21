@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check f69556d28db73d477900ed947cdaeeb203c1c632..13931bc825e83d9a5eaf57e779400976fba9ebcc",
+      "command": "git diff --check 010ece25687acf4c25e6a7c6888aab596ab9f968..0a339f786ae5602d7c378c9844e8e36ddafa3931",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB f69556d28db73d477900ed947cdaeeb203c1c632..13931bc825e83d9a5eaf57e779400976fba9ebcc",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 010ece25687acf4c25e6a7c6888aab596ab9f968..0a339f786ae5602d7c378c9844e8e36ddafa3931",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,12 +21,8 @@
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
-        "A\tpackages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
-        "A\tpackages/agentplane/src/commands/task/branch-task-supervisor-usage.ts",
-        "A\tpackages/agentplane/src/commands/task/branch-task-supervisor.autonomy.test.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.test.ts"
+        "M\tpackages/core/src/tasks/plan-execution-grant.test.ts",
+        "M\tpackages/core/src/tasks/plan-execution-grant.ts"
       ]
     },
     {
@@ -36,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "f69556d28db73d477900ed947cdaeeb203c1c632",
-  "implementation_commit": "13931bc825e83d9a5eaf57e779400976fba9ebcc",
+  "execution_base_commit": "010ece25687acf4c25e6a7c6888aab596ab9f968",
+  "implementation_commit": "0a339f786ae5602d7c378c9844e8e36ddafa3931",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
