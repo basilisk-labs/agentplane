@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The implementation now evaluates workflow_mode and local-store capability on primaryCtx, directly addressing the unresolved review finding.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/e08fed879921c747006ec6e6e35f236dfa06e5d11928191ffadcc9e1b3559edf.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The context switches only when the primary checkout is branch_pr with a local task store; otherwise creation continues with currentCtx, preserving direct-mode and remote-backend write behavior.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/e08fed879921c747006ec6e6e35f236dfa06e5d11928191ffadcc9e1b3559edf.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The regression changes the linked worktree to stale direct mode while leaving the primary checkout branch_pr, then proves the sibling README exists only in the primary checkout.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/e08fed879921c747006ec6e6e35f236dfa06e5d11928191ffadcc9e1b3559edf.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The complete task diff remains within the approved seven source and test paths, and the latest implementation commit adds only the two scoped rework changes plus AgentPlane-owned PR projections.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/e08fed879921c747006ec6e6e35f236dfa06e5d11928191ffadcc9e1b3559edf.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
