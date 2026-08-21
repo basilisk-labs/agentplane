@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:3f22cc37c7c77afed02a631728e38e03fd7dab0bdbcb13facf2e27f7e17704cd",
   "pr_number": 4859,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4859",
+  "pre_merge_closure": {
+    "basis_commit": "18900e2be7ba548fabe8020848b1ebd6fa009176",
+    "branch": "task/202608211236-XEC2NE/repair-packaged-candidate-verification-contract",
+    "pr_number": 4859,
+    "recorded_at": "2026-08-21T21:31:16.295Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
