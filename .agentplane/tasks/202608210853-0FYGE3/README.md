@@ -1,10 +1,11 @@
 ---
 id: "202608210853-0FYGE3"
 title: "Fix local branch_pr status after merged cleanup"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "normal"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -53,6 +54,20 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The evaluated diff satisfies the approved precedence invariant: canonical close evidence produces a terminal local route before stale PR metadata, while a non-finalized OPEN task retains the existing behavior."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:fa5a997bd8bffb700c8afefcecaff5ead33652c097aff552485bf67ce0e3ef63"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-21T09:17:15.920Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -219,8 +234,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "e7aeff72c3bdf8180385a8a64f84907b1de022a5"
-  message: "🚧 0FYGE3 task: apply external agent result"
+  hash: "4af06d61f67ac86562222e89d43bdb67736f0ed8"
+  message: "🚧 0FYGE3 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -228,6 +243,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: e7aeff72c3bd. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -250,9 +268,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-21T09:17:15.920Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "4af06d61f67ac86562222e89d43bdb67736f0ed8"
 doc_version: 3
-doc_updated_at: "2026-08-21T09:10:50.420Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-21T09:17:15.949Z"
+doc_updated_by: "CODER"
 description: "Make local route diagnostics recognize canonical task closure on the base branch before trusting stale OPEN/CLOSED PR metadata, so a DONE task with a deleted merged branch does not emit false provider_pr_unavailable or verification_invalid_record blockers. Add regression coverage for merged cleanup without remote lookup."
 sections:
   Summary: |-
@@ -339,6 +365,7 @@ sections:
 extensions:
   implementation_commit:
     hash: "e7aeff72c3bdf8180385a8a64f84907b1de022a5"
+    message: "🚧 0FYGE3 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "41f1b102afe74f56ec4b36d13a52476b8bcd40ee"
@@ -442,3 +469,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:fa5a997bd8bffb700c8afefcecaff5ead33652c097aff552485bf67ce0e3ef63`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-21T09:17:15.920Z`
