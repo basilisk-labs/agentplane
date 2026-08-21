@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The implementation no longer treats task_execution_context alone as proof that a direct base was frozen before execution.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/c2a8cc6feec01e0b3e533a4fa4fc3d35d332eac1322ac33f842695110520e797.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The frozen-base regression covers both commits after the baseline.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/c2a8cc6feec01e0b3e533a4fa4fc3d35d332eac1322ac33f842695110520e797.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The legacy regression proves that a synthesized evaluated SHA does not collapse changed-path observation to an empty range.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/c2a8cc6feec01e0b3e533a4fa4fc3d35d332eac1322ac33f842695110520e797.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The packaged eight-scenario migration flow remains green.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/c2a8cc6feec01e0b3e533a4fa4fc3d35d332eac1322ac33f842695110520e797.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: The updated PR head must receive fresh hosted checks and the addressed P1 thread must be resolved before integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/c2a8cc6feec01e0b3e533a4fa4fc3d35d332eac1322ac33f842695110520e797.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

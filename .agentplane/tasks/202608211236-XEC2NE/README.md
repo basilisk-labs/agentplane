@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -34,16 +34,35 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
-  updated_at: "2026-08-21T21:25:41.965Z"
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-21T21:30:54.181Z"
   updated_by: "EVALUATOR"
-  note: "Hosted P1 review requires preserving the single-commit fallback when a direct task has no genuinely frozen pre-execution base (discussion_r3833736708)."
-  evaluated_sha: "d4aeed48de00940ecb669c7d0094923c378e744d"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "30277665d28ff2675083f977113c4ecf1935400f"
   blueprint_digest: "a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03"
   evidence_refs:
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213026169-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213026169-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/ced8a02a6c917b67ea6e189a0c943179ed37efc36f4d429f31bae22e85dc8387.md"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213026169-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213026169-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213026169-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211236-XEC2NE/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211236-XEC2NE-repair-packaged-candidate-verification-contract/.agentplane/tasks/202608211236-XEC2NE/blueprint/resolved-snapshot.json"
-  findings: []
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/c2a8cc6feec01e0b3e533a4fa4fc3d35d332eac1322ac33f842695110520e797.patch"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/247cbf3cee6d1b0865f48010cd65790878242eae45c937b62cad4a236e0d1714.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/verification/20260821213014965-be6521b70880264c.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/73f1a9cd33c6e6e962312f58f47c8f76b5db9208bca7643cb72dee0a8e4ce8a1.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The implementation no longer treats task_execution_context alone as proof that a direct base was frozen before execution."
+    - "The frozen-base regression covers both commits after the baseline."
+    - "The legacy regression proves that a synthesized evaluated SHA does not collapse changed-path observation to an empty range."
+    - "The packaged eight-scenario migration flow remains green."
+    - "Residual risk: The updated PR head must receive fresh hosted checks and the addressed P1 thread must be resolved before integration."
 token_usage:
   agent_runs: 5
   input_tokens: null
@@ -364,7 +383,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T21:30:17.026Z"
+doc_updated_at: "2026-08-21T21:30:54.212Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the packaged-candidate-flow qualification regression exposed after rebasing PR #4853 onto current main. The direct upgrade scenario must record verification evidence that covers the exact evaluated diff, including .agentplane/agents/UPGRADER.json, without weakening evaluator enforcement. Validate the focused packaged-candidate-flow and relevant tests, publish and merge the prerequisite PR, then refresh PR #4853."
 sections:
