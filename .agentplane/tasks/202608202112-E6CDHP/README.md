@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 66
+revision: 67
 origin:
   system: "manual"
 depends_on: []
@@ -66,7 +66,7 @@ quality_review:
 token_usage:
   agent_runs: 15
   input_tokens: null
-  journal_digest: "sha256:516c0d9fb2bfa861b5fff078d9e23b34eda49a4932fd704355c22e12f1a05270"
+  journal_digest: "sha256:838aafe1ecd3ef40bcb91848725baaac2a16e4949875625b8c0d7526b20dfb12"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -76,7 +76,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-21T11:51:39.056Z"
+  updated_at: "2026-08-21T22:15:02.975Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -319,8 +319,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "87b13c778358236a40426224165a6d30fd660cb3"
-  message: "🚧 E6CDHP task: record external evaluator result"
+  hash: "161571986343019d108b49086e462f5bc743654d"
+  message: "✅ E6CDHP task: record branch verification"
 comments:
   -
     author: "CODER"
@@ -418,6 +418,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -722,8 +725,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-21T22:15:02.975Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "161571986343019d108b49086e462f5bc743654d"
 doc_version: 3
-doc_updated_at: "2026-08-21T22:11:10.147Z"
+doc_updated_at: "2026-08-21T22:15:03.025Z"
 doc_updated_by: "CODER"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
@@ -2069,6 +2080,6 @@ DecisionContextRef:
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:516c0d9fb2bfa861b5fff078d9e23b34eda49a4932fd704355c22e12f1a05270`
+- Journal digest: `sha256:838aafe1ecd3ef40bcb91848725baaac2a16e4949875625b8c0d7526b20dfb12`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-21T11:51:39.056Z`
+- Updated at: `2026-08-21T22:15:02.975Z`
