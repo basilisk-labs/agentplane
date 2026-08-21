@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 69
+revision: 70
 origin:
   system: "manual"
 depends_on: []
@@ -32,34 +32,36 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T13:44:00.500Z"
+  updated_at: "2026-08-21T14:15:40.168Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 4 typed finding(s)."
-  evaluated_sha: "5a68dd0ebe6f6a3377efd4e22ab93fb49258a973"
+  note: "EVALUATOR returned rework with 5 typed finding(s)."
+  evaluated_sha: "6fa8370712de20b54872fd42883fef535aab0ccc"
   blueprint_digest: "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa"
   evidence_refs:
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-134327051-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-134327051-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/9a80e179d76bd70fc8e4e4f419da97eb96e90e04265d02671e61d2cc198053ad.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-134327051-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-134327051-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-134327051-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-141420173-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-141420173-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a2e9c5989fc44c6ecb22b334ae76b2d00f7bccae8ded226d26a959c7c4169d5c.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-141420173-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-141420173-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-141420173-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-141420173-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211020-FGAPJC/README.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/903c9732f3258a64c50155384c0bded4ec54fc2ba0710795bccf66bf445d96e4.patch"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/4ba8c155ea459e03cfa870db2147103b0ddb188d084b5af6971732910f1712ba.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821134307664-6303fafd2510b88e.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a66768b4c7553aa79524e3fbceba8db58e93f77f062d8e2e97c9364e1c7b4396.patch"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/d443c89d72cb917ce1a7f50a0e82640b8a24e2cb355142b1e4656ee1d04df78a.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821141402137-b49332b75890fdfd.json"
     - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "codePointAt performs the same ASCII '=' comparison required by the padding scan."
-    - "No regex, suppression, allowlist, or behavioral scope expansion was introduced."
-    - "lint:core, the focused 8-test suite, typecheck, and all 12 supervisor critical chunks pass."
-    - "Residual risk: Provider checks must pass on the newly published SHA before integration."
+    - "Required acceptance criteria 4 and 6 and the approved plan explicitly require bun run check to pass."
+    - "Running bun run check at evaluated SHA 6fa8370712de20b54872fd42883fef535aab0ccc exits with Script not found check."
+    - "The repository exposes typecheck, lint:core, format:check, test:fast:ci, checks:run, and other granular checks, but no aggregate check script."
+    - "Because the task explicitly targets impossible AgentPlane actions, silently treating substitute commands as equivalent would violate the approved verification-strength boundary."
+    - "Residual risk: Leaving the impossible command in the plan would make autonomous supervision loop through rework until its episode budget is exhausted."
 token_usage:
   agent_runs: 25
   input_tokens: null
@@ -811,7 +813,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T14:14:04.707Z"
+doc_updated_at: "2026-08-21T14:15:40.201Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
