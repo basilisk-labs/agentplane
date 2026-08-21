@@ -23,9 +23,12 @@ Use these rules in CLI, runtime, runner, evaluator, verification, finish, PR, an
 10. Integrate direct candidates through the serialized queue, never by concurrent base writes.
 11. Compile one approved plan and execution scope into one task-local `ExecutionGrant`.
 12. Resolve side-effect authority from the active grant before consulting repository fallback
-    policy; never authorize `task.scope.extend` from a grant.
+    policy. A user-derived grant may authorize `task.scope.extend` only when every requested
+    repository effect is already allowed by the approved execution contract.
 13. Bind each provider mutation to the existing expiring, state-scoped authority record.
-14. Invalidate the grant when the normalized plan digest or execution-scope digest changes.
+14. Invalidate the grant when the normalized plan digest or material execution-scope digest
+    changes. Compiler-derived writable-root changes do not invalidate an otherwise identical
+    semantic scope.
 
 ## Loading sequence
 
@@ -55,10 +58,11 @@ fingerprint. Approval persists an `agentplane.execution_grant` extension contain
 scope digests, evidence provenance, actor, and compiled capabilities. Manual `--by` remains an
 operator compatibility/bootstrap surface.
 
-The supervisor may resolve lifecycle and provider approval steps from an active grant. It must
-still stop for scope expansion, a changed plan/scope digest, human questions, external waits,
-effect-in-doubt recovery, or terminal attention. Existing state-bound side-effect records serve as
-short-lived operation leases; they do not widen the durable grant.
+The supervisor may resolve lifecycle and provider approval steps from an active grant. It may also
+apply an exact writable-root extension when the request remains inside the approved repository
+effects. A new effect, changed plan/material scope digest, human question, external wait,
+effect-in-doubt recovery, or terminal attention still stops execution. Existing state-bound
+side-effect records serve as short-lived operation leases; they do not widen the durable grant.
 
 ## Route and capability changes
 
@@ -72,6 +76,11 @@ adapter creation with `side_effect_requires_isolation`. Re-resolve the route and
 implementation only after branch authority is established.
 
 ## Verification and finish
+
+Generated `PLANNER fallback scaffold` checks receive one deterministic compatibility recovery: if
+a declared `bun run <script>` target does not exist, verification selects an existing project-native
+test script and records both the declared and executed commands. This recovery never applies to
+explicit non-fallback Verify Steps.
 
 New lifecycle qualification requires verification input v4. Older records are audit-only. Consume
 the assessment object rather than a boolean so the CLI can report the exact invalidation reason and

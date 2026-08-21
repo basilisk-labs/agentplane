@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -94,6 +94,39 @@ afterEach(async () => {
 });
 
 describe("direct task verification", () => {
+  it("replaces a missing package script only for a planner fallback scaffold", async () => {
+    const repo = await root();
+    await writeFile(
+      path.join(repo, "package.json"),
+      JSON.stringify({ scripts: { "test:fast": "vitest run", typecheck: "tsc --noEmit" } }),
+      "utf8",
+    );
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "1 pass", stderr: "" });
+
+    const result = await runDirectTaskVerification({
+      command: command(repo),
+      task: {
+        verify: ["bun run check", "bun run typecheck"],
+        task_kind: "code",
+        mutation_scope: "code",
+        sections: { "Verify Steps": "PLANNER fallback scaffold. Replace this." },
+      },
+      task_id: TASK_ID,
+      cwd: repo,
+      run_process: mocks.runProcess,
+    });
+
+    expect(result.status).toBe("passed");
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ command: "bun", args: ["run", "test:fast"] }),
+    );
+    expect(result.checks[0]).toMatchObject({
+      command: "bun run test:fast",
+      declared_command: "bun run check",
+    });
+  });
+
   it("accepts project-native repository-bound argv without shell syntax", () => {
     expect(parseDirectTaskCheck(" bun run test:critical ")).toEqual({
       executable: "bun",

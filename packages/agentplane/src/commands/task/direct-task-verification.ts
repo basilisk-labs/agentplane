@@ -1,5 +1,5 @@
 import { runProcess } from "@agentplaneorg/core/process";
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -21,6 +21,7 @@ const BUN_ZERO_TEST_PATTERNS = [
 
 type DirectTaskCheck = {
   command: string;
+  declared_command?: string;
   script: string | null;
   exit_code: number | null;
   duration_ms: number;
@@ -103,7 +104,10 @@ function bunTestReportedZeroTests(opts: {
 }
 
 function directTaskVerificationCommands(
-  task: Pick<TaskData, "verify" | "task_kind" | "mutation_scope" | "execution_contract">,
+  task: Pick<
+    TaskData,
+    "verify" | "task_kind" | "mutation_scope" | "execution_contract" | "sections"
+  >,
 ): string[] {
   const commands = [...(task.verify ?? [])];
   const declaresDocs = task.execution_contract
@@ -114,6 +118,48 @@ function directTaskVerificationCommands(
     if (!commands.includes(required)) commands.push(required);
   }
   return commands;
+}
+
+function hasPlannerFallbackVerifySteps(task: Pick<TaskData, "sections">): boolean {
+  return task.sections?.["Verify Steps"]?.includes("PLANNER fallback scaffold") === true;
+}
+
+async function readRootPackageScripts(gitRoot: string): Promise<Set<string> | null> {
+  try {
+    const parsed = JSON.parse(await readFile(path.join(gitRoot, "package.json"), "utf8")) as {
+      scripts?: unknown;
+    };
+    if (!parsed.scripts || typeof parsed.scripts !== "object" || Array.isArray(parsed.scripts)) {
+      return null;
+    }
+    return new Set(Object.keys(parsed.scripts));
+  } catch {
+    return null;
+  }
+}
+
+function resolvePlannerFallbackCommand(opts: {
+  command: string;
+  declared_commands: readonly string[];
+  package_scripts: Set<string> | null;
+}): string {
+  const parsed = parseDirectTaskCheck(opts.command);
+  if (
+    !opts.package_scripts ||
+    parsed?.executable !== "bun" ||
+    parsed.args[0] !== "run" ||
+    !parsed.script ||
+    opts.package_scripts.has(parsed.script)
+  ) {
+    return opts.command;
+  }
+  const alreadyDeclared = new Set(
+    opts.declared_commands.map((command) => parseDirectTaskCheck(command)?.script).filter(Boolean),
+  );
+  const replacement = ["check", "test:fast", "test", "typecheck", "ci:local:fast"].find(
+    (script) => opts.package_scripts?.has(script) && !alreadyDeclared.has(script),
+  );
+  return replacement ? `bun run ${replacement}` : opts.command;
 }
 
 async function writeCheckArtifact(opts: {
@@ -147,13 +193,19 @@ async function writeCheckArtifact(opts: {
  */
 export async function runDirectTaskVerification(opts: {
   command: CommandContext;
-  task: Pick<TaskData, "verify" | "task_kind" | "mutation_scope" | "execution_contract">;
+  task: Pick<
+    TaskData,
+    "verify" | "task_kind" | "mutation_scope" | "execution_contract" | "sections"
+  >;
   task_id: string;
   cwd: string;
   run_process?: typeof runProcess;
 }): Promise<DirectTaskVerificationResult> {
   const checks: DirectTaskCheck[] = [];
   const commands = directTaskVerificationCommands(opts.task);
+  const packageScripts = hasPlannerFallbackVerifySteps(opts.task)
+    ? await readRootPackageScripts(opts.command.resolvedProject.gitRoot)
+    : null;
   if (commands.length === 0) {
     const result = {
       status: "unsupported" as const,
@@ -162,7 +214,14 @@ export async function runDirectTaskVerification(opts: {
     };
     return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
   }
-  for (const command of commands) {
+  for (const declaredCommand of commands) {
+    const command = hasPlannerFallbackVerifySteps(opts.task)
+      ? resolvePlannerFallbackCommand({
+          command: declaredCommand,
+          declared_commands: commands,
+          package_scripts: packageScripts,
+        })
+      : declaredCommand;
     const parsed = parseDirectTaskCheck(command);
     if (!parsed) {
       const result = {
@@ -185,6 +244,7 @@ export async function runDirectTaskVerification(opts: {
       });
       checks.push({
         command,
+        ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
         script: parsed.script,
         exit_code: executed.exitCode,
         duration_ms: Math.max(0, Date.now() - started),
@@ -210,6 +270,7 @@ export async function runDirectTaskVerification(opts: {
     } catch (error) {
       checks.push({
         command,
+        ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
         script: parsed.script,
         exit_code: null,
         duration_ms: Math.max(0, Date.now() - started),

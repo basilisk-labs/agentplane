@@ -27,7 +27,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/task-execution-authority.mdx        |  26 ++
+ docs/developer/task-execution-authority.mdx        |  35 +++
  docs/user/branching-and-pr-artifacts.mdx           |  16 +
  docs/user/cli-reference.generated.mdx              |   2 +
  docs/user/task-lifecycle.mdx                       |  35 ++-
@@ -46,6 +46,8 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../src/commands/task/configured-authority.test.ts |  78 +++++
  .../src/commands/task/configured-authority.ts      | 121 ++++++--
  .../agentplane/src/commands/task/create.command.ts |  34 +++
+ .../commands/task/direct-task-verification.test.ts |  35 ++-
+ .../src/commands/task/direct-task-verification.ts  |  69 ++++-
  packages/agentplane/src/commands/task/new.ts       |  26 +-
  .../src/commands/task/plan-approve.command.ts      |  70 ++++-
  packages/agentplane/src/commands/task/plan.ts      |  81 ++++-
@@ -60,7 +62,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../baselines/v0.7-compatibility-candidate.json    |  41 ++-
  .../check-compatibility-contract-baseline.mjs      |  27 ++
  website/static/llms-full.txt                       |  35 ++-
- 33 files changed, 1515 insertions(+), 99 deletions(-)
+ 35 files changed, 1623 insertions(+), 104 deletions(-)
 ```
 
 </details>

@@ -4,7 +4,7 @@ title: "Implement task-scoped autonomous execution after one user-approved plan"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -138,6 +138,7 @@ execution_contract:
       - "docs/user/task-lifecycle.mdx"
       - "packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+      - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
       - "packages/agentplane/src/commands/branch/work-start.command.ts"
       - "packages/agentplane/src/commands/branch/work-start.ts"
       - "packages/agentplane/src/commands/pr/internal/sync.ts"
@@ -162,6 +163,7 @@ execution_contract:
       - "packages/core/src/tasks/task-store.ts"
       - "packages/core/src/tasks/tasks-export.ts"
       - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/checks/check-compatibility-contract-baseline.mjs"
       - "website/static/llms-full.txt"
     external_effects: []
     repository_effects:
@@ -229,7 +231,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:a11bdae4e90616527ccc75850c6d0fc5ada847bbbc23ccf2ec82cd7cbd8f0f5b"
+      digest: "sha256:daf5a562c87fbaf0e066e1df69aa7955097cb07052480a25153fd3472cb6c71f"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/config"
@@ -237,12 +239,14 @@ execution_contract:
         - "central_component:scripts/checks/check-compatibility-contract-baseline.mjs"
         - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
         - "central_path:packages/core/src/tasks/index.ts"
         - "central_path:packages/core/src/tasks/plan-execution-grant.test.ts"
         - "central_path:packages/core/src/tasks/plan-execution-grant.ts"
         - "central_path:packages/core/src/tasks/task-execution-base.ts"
         - "central_path:packages/core/src/tasks/task-store.ts"
         - "central_path:packages/core/src/tasks/tasks-export.ts"
+        - "central_path:scripts/checks/check-compatibility-contract-baseline.mjs"
         - "effect_public_api"
         - "effect_schema"
         - "effect_security_boundary"
@@ -266,6 +270,7 @@ execution_contract:
           - "docs/user/task-lifecycle.mdx"
           - "packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+          - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
           - "packages/agentplane/src/commands/branch/work-start.command.ts"
           - "packages/agentplane/src/commands/branch/work-start.ts"
           - "packages/agentplane/src/commands/pr/internal/sync.ts"
@@ -290,6 +295,7 @@ execution_contract:
           - "packages/core/src/tasks/task-store.ts"
           - "packages/core/src/tasks/tasks-export.ts"
           - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "scripts/checks/check-compatibility-contract-baseline.mjs"
           - "website/static/llms-full.txt"
         external_effects: []
         repository_effects:
@@ -333,7 +339,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "c27b7393ff1f96b01c0c7ec2ad74561b446f0824"
+  message: "🚧 FGAPJC task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -359,6 +367,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: scripts/checks/check-compatibility-contract-baseline.mjs; repository effects: repository_write, source_code, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: c27b7393ff1f. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -423,8 +434,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation reaches the reviewed compatibility ratchet, whose expected CLI delta source is outside the current writable roots. Recommended action: Extend the exact source root under the active execution grant and issue a fresh packet. Requested scope: roots=scripts/checks/check-compatibility-contract-baseline.mjs; repository effects=repository_write,source_code,tests; request digest=sha256:b79843b692f2410caf8a1533b25a940caad78355294ab5a06bb3b5eb5dd1e821. Agentplane receipt: external-agent-blocker/tr_8fee182cfa92d1c99442c7940db91c75/sha256:bddc6eb34fa4c52de2a37bedda49bcf11851c592ed89b54ba4ca750606e374b2/sha256:b79843b692f2410caf8a1533b25a940caad78355294ab5a06bb3b5eb5dd1e821."
+  -
+    type: "status"
+    at: "2026-08-21T11:32:12.398Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: c27b7393ff1f. CLI accepted one state-bound external-agent semantic result."
+    commit: "c27b7393ff1f96b01c0c7ec2ad74561b446f0824"
 doc_version: 3
-doc_updated_at: "2026-08-21T11:26:06.293Z"
+doc_updated_at: "2026-08-21T11:32:12.398Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
@@ -615,7 +634,7 @@ extensions:
     status: "applied"
     transition_id: "tr_8fee182cfa92d1c99442c7940db91c75"
   implementation_commit:
-    hash: "9866e7885e0e0757db0cc0c5188a9e14417034b2"
+    hash: "c27b7393ff1f96b01c0c7ec2ad74561b446f0824"
   task_execution_context:
     base_ref: "main"
     base_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
