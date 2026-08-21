@@ -2,10 +2,10 @@
 id: "202608211020-FGAPJC"
 title: "Implement task-scoped autonomous execution after one user-approved plan"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 72
+revision: 73
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,10 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in Codex: implement one-confirmation autonomous execution"
 verification:
-  state: "ok"
-  updated_at: "2026-08-21T14:14:02.137Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  state: "pending"
+  updated_at: "2026-08-21T14:30:47.878Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 quality_review:
   state: "rework"
@@ -111,6 +111,7 @@ execution_contract:
       - "ci"
       - "release_metadata"
     writable_roots:
+      - "check"
       - "docs/developer"
       - "docs/recipes"
       - "docs/user"
@@ -136,6 +137,7 @@ execution_contract:
     rationale:
       - "One approved plan must compile into durable task-scoped authority instead of repeated approval boundaries."
       - "The authority resolver, workflow reducer, supervisor, effect leases, workspace allocation, compatibility migration, and documentation form one coherent execution contract."
+      - "USER-approved blocked-result scope extension: roots=check; repository_effects=repository_write,source_code"
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/branch,packages/agentplane/src/commands/pr,scripts/baselines/v0.7-compatibility-candidate.json,website/static/llms-full.txt; repository_effects=documentation,repository_write,source_code,tests"
       - "USER-approved blocked-result scope extension: roots=scripts/checks/check-compatibility-contract-baseline.mjs; repository_effects=repository_write,source_code,tests"
       - "branch_pr remains the repository floor and provides isolated implementation and review for the security-boundary change."
@@ -151,6 +153,7 @@ execution_contract:
     reversibility: "reversible"
     schema_version: 2
     scope_roots:
+      - "check"
       - "docs/developer"
       - "docs/recipes"
       - "docs/user"
@@ -244,25 +247,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -281,6 +266,7 @@ execution_contract:
     contract:
       declared:
         components:
+          - "check"
           - "docs/developer"
           - "docs/recipes"
           - "docs/user"
@@ -322,7 +308,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:2bd082e718451a1668498d5ea0b5bae6c73abaca2f9b5f45561daa38d273ee86"
+      digest: "sha256:ad30f92e95bfb0e68fd8a3d2559283473fa938b999f104f7b069633bc71ce36f"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/config"
@@ -462,9 +448,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "6fa8370712de20b54872fd42883fef535aab0ccc"
-  message: "🚧 FGAPJC task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -547,6 +531,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved bun run check contract requires one additional root-level Bun entrypoint. The current episode cannot write that path, so an exact bounded scope extension is required before implementing the evaluator rework. Recommended action: Extend the task scope to the root-level check file under the existing repository_write and source_code effects, then issue a fresh EXECUTOR packet. Requested scope: roots=check; repository effects=repository_write,source_code; request digest=sha256:659d9c2e08b46ea5a63dcaedc9e6aeacf306ead90f6a8505b7be1a661b53c20c. Agentplane receipt: external-agent-blocker/tr_fd65df0f51ebfcf4e8670f3f1ebd6e98/sha256:afac9307c1d9a279db8a99150187dc585adfde9f81d5dd17c24e10c883603c2d/sha256:659d9c2e08b46ea5a63dcaedc9e6aeacf306ead90f6a8505b7be1a661b53c20c."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: check; repository effects: repository_write, source_code."
 events:
   -
     type: "status"
@@ -1656,6 +1643,8 @@ extensions:
     status: "active"
     task_id: "202608211020-FGAPJC"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-21T14:30:47.878Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:afac9307c1d9a279db8a99150187dc585adfde9f81d5dd17c24e10c883603c2d"
     kind: "task_scope_extension_request"
     request:
@@ -1668,7 +1657,7 @@ extensions:
         - "check"
     request_digest: "sha256:659d9c2e08b46ea5a63dcaedc9e6aeacf306ead90f6a8505b7be1a661b53c20c"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_fd65df0f51ebfcf4e8670f3f1ebd6e98"
   implementation_commit:
     hash: "6fa8370712de20b54872fd42883fef535aab0ccc"
