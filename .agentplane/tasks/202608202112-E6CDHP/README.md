@@ -1,10 +1,11 @@
 ---
 id: "202608202112-E6CDHP"
 title: "Fix live GitLab MR transport and provider-neutral mergeability validation"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 56
+revision: 57
 origin:
   system: "manual"
 depends_on: []
@@ -62,6 +63,20 @@ quality_review:
     - "Residual risk: The exact repair head must be published and receive hosted GitHub checks before integration."
     - "Residual risk: The live GitLab guarded merge and a native post-fix MR creation must still be completed to close provider E2E evidence."
     - "Residual risk: The supervisor verification harness exposes unrelated repository-state leakage in five cloud/state-fingerprint test files; the retained failed artifacts must not be reported as a GitLab regression."
+token_usage:
+  agent_runs: 13
+  input_tokens: null
+  journal_digest: "sha256:97aff2ff512b8363c188143c87b1a63d79456339ae848966fcf8f099cfcbe471"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-21T02:16:48.072Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -303,7 +318,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "4aa84f5941b8f33ea8ce1d46de98437f0360273b"
+  message: "🚧 E6CDHP task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -389,6 +406,9 @@ comments:
   -
     author: "USER"
     body: "Resume recovery after supervisor-only full-suite state-fingerprint failures; identical direct full suite passed at the same code commit and focused GitLab checks passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -640,9 +660,17 @@ events:
     author: "TESTER"
     state: "ok"
     note: "GitLab provider-policy repair passes focused tests, typecheck, live hosted readback, and an independent full serial regression; supervisor-only nested state-fingerprint failures are recorded as a harness limitation."
+  -
+    type: "status"
+    at: "2026-08-21T02:16:48.072Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "4aa84f5941b8f33ea8ce1d46de98437f0360273b"
 doc_version: 3
-doc_updated_at: "2026-08-21T02:14:29.178Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-08-21T02:16:48.082Z"
+doc_updated_by: "CODER"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
   Summary: |-
@@ -1108,6 +1136,7 @@ extensions:
     transition_id: "tr_88faf6bea4c9786ed4d1061e0c56c904"
   implementation_commit:
     hash: "0f5c738d113d0d216faa1156edf0ac8601186531"
+    message: "🚧 E6CDHP task: apply external agent result"
   workflow_route_baseline:
     start_head_sha: "60be0145753e9e2aecf31f4bbd8471895db13395"
     version: 1
@@ -1567,3 +1596,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/13` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:97aff2ff512b8363c188143c87b1a63d79456339ae848966fcf8f099cfcbe471`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-21T02:16:48.072Z`
