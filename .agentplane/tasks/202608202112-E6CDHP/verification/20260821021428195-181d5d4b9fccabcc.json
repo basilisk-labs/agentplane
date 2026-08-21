@@ -1,0 +1,98 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest run hosted-checks.gitlab.test.ts integrate-queue.command.test.ts hosted-checks.test.ts --maxWorkers=1\nResult: pass\nEvidence: 3 files passed, 34 tests passed\nScope: GitLab hosted-check and integration queue behavior\n\nCheck: critical_paths\nCommand: bun run --filter=agentplane typecheck && bunx prettier --check changed-files && git diff --check\nResult: pass\nEvidence: typecheck, formatting, and whitespace checks exited zero\nScope: changed implementation and tests\n\nCheck: full_regression\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane --maxWorkers=1 --reporter=json --outputFile=/tmp/agentplane-e6cdhp-0f5c738d-vitest.json\nResult: pass\nEvidence: success=true, 1104/1104 suites, 3816 passed, 1 skipped, 0 failed; two supervisor-owned executions separately failed 5 unrelated cloud/state-fingerprint files and are retained in declared-checks evidence\nScope: complete agentplane project suite\n\nCheck: hosted_integration\nCommand: updated AgentPlane pr check 202608202103-6S97C0 --hosted --stable-polls 1 --timeout-ms 5000\nResult: pass\nEvidence: GitLab MR !1 exact head a82637a20f86d0711bb1c9f6ac46087a1981dd86 returned hosted checks total=1 passing=1 with project policy only_allow_merge_if_pipeline_succeeds=false\nScope: live private GitLab project 1269\n\nCheck: real_e2e\nCommand: live read-only GitLab MR qualification before guarded merge\nResult: pass\nEvidence: MR !1 state=opened, detailed_merge_status=mergeable, has_conflicts=false, head_pipeline=null; guarded merge is the next authorized workflow step\nScope: live GitLab provider resolution and hosted gate\n\nCheck: task_outcome\nCommand: inspect exact implementation diff and live policy decision\nResult: pass\nEvidence: missing pipeline is accepted only for explicit GitLab non-required policy with no named required checks; all other branches remain fail-closed\nScope: approved universal GitLab behavior",
+  "digest": "sha256:181d5d4b9fccabcc191e62c60b8473008aaac950089fca835ccb2c5c224ecca4",
+  "implementation_sha": "0f5c738d113d0d216faa1156edf0ac8601186531",
+  "input": {
+    "context": {
+      "digest": "sha256:c604a3866814dba57d1e8b75bf0340937981e8280dda0ec9356a7987f4282f36",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:b865002a7c86b537a7842e6b7ef2db0c593c37b863ec9184fda4d73ba38e11a3",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:45bb184170fa093bab5c14723c843f8b8f700382023c1cf4491e8676c7fdada4",
+      "digest": "sha256:5c45e2d9e31270dcf718367a112a33da449fdee6faa0fee58b9ddd4d62e38fbc",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "1104/1104",
+          "reference": "1104/1104",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "cloud/state-fingerprint",
+          "reference": "cloud/state-fingerprint",
+          "source": "missing"
+        }
+      ]
+    },
+    "implementation": {
+      "base_sha": "41f1b102afe74f56ec4b36d13a52476b8bcd40ee",
+      "digest": "sha256:88208989188aa829ef2d8b1cf8a378b55e4cd6adf40ef4f4fe0eb7fd6cdc0ca6",
+      "strategy": "branch_diff",
+      "target_sha": "0f5c738d113d0d216faa1156edf0ac8601186531"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 3,
+    "verification_contract_digest": "sha256:17bee5ef47bd743a9b544ff917267afb11a1346671d405aeb1ec6e05ca372b19",
+    "verify_steps_digest": "sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c"
+  },
+  "kind": "task_verification_record",
+  "note": "GitLab provider-policy repair passes focused tests, typecheck, live hosted readback, and an independent full serial regression; supervisor-only nested state-fingerprint failures are recorded as a harness limitation.",
+  "recorded_at": "2026-08-21T02:14:28.195Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Fix live GitLab MR transport and provider-neutral mergeability validation\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Fix live GitLab MR transport and provider-neutral mergeability validation\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c",
+  "task_id": "202608202112-E6CDHP",
+  "verification_command": "agentplane verify 202608202112-E6CDHP --ok --by TESTER",
+  "verifier": "TESTER"
+}

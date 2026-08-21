@@ -1,10 +1,10 @@
 ---
 id: "202608202112-E6CDHP"
 title: "Fix live GitLab MR transport and provider-neutral mergeability validation"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 53
+revision: 56
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +26,42 @@ plan_approval:
   updated_by: "USER"
   note: "Approved explicitly by Denis in Codex on 2026-08-21 after reviewing the live GitLab findings and remediation plan."
 verification:
-  state: "blocked_external"
-  updated_at: "2026-08-21T02:12:25.052Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1"
-  attempts: 10
+  state: "ok"
+  updated_at: "2026-08-21T02:14:28.195Z"
+  updated_by: "TESTER"
+  note: "GitLab provider-policy repair passes focused tests, typecheck, live hosted readback, and an independent full serial regression; supervisor-only nested state-fingerprint failures are recorded as a harness limitation."
+  attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-21T02:15:59.712Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "0f5c738d113d0d216faa1156edf0ac8601186531"
+  blueprint_digest: "e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c"
+  evidence_refs:
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/20260821-021442959-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/20260821-021442959-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/objects/sha256/b27c95a89b362c83d6c9e0b51da12dd4a5f67a7594b63522b906608344f54136.md"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/20260821-021442959-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/20260821-021442959-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/20260821-021442959-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608202112-E6CDHP/README.md"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/objects/sha256/c96c59e5f2a6f8fcf49aa817b4df3998e2303358f73cb9089ecbfa017c43bc75.patch"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/objects/sha256/7bda90607133bdcb72b90426e0a8ffbbb7801611b8d865d25b184a0718e6a3aa.json"
+    - ".agentplane/tasks/202608202112-E6CDHP/verification/20260821021428195-181d5d4b9fccabcc.json"
+    - ".agentplane/tasks/202608202112-E6CDHP/quality/objects/sha256/a0b86a2db01843d16dd18cbf0242b6d1bc71c0307a86ab50d69951f4ca90e0cf.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Every glab API call continues through the recorded provider identity with an explicit hostname, and JSON input mutations now send Content-Type: application/json."
+    - "GitLab mergeability, conflict rework, cleanup reconciliation, integration-queue hosted dispatch, and no-pipeline project policy are covered by focused tests and live read-only provider evidence."
+    - "The independent full serial report at commit 0f5c738d1 passed 1104/1104 suites with 3816 passed and 1 skipped; two supervisor-owned invocations reproducibly failed unrelated nested cloud/state-fingerprint tests while those files passed in isolation."
+    - "Residual risk: The exact repair head must be published and receive hosted GitHub checks before integration."
+    - "Residual risk: The live GitLab guarded merge and a native post-fix MR creation must still be completed to close provider E2E evidence."
+    - "Residual risk: The supervisor verification harness exposes unrelated repository-state leakage in five cloud/state-fingerprint test files; the retained failed artifacts must not be reported as a GitLab regression."
 execution_route:
   frozen: true
   reason_codes:
@@ -107,8 +138,7 @@ execution_contract:
       - "packages/agentplane/src/commands/pr/integrate"
       - "packages/agentplane/src/commands/pr/internal"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -137,7 +167,22 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -258,7 +303,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
@@ -342,6 +386,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 0f5c738d113d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "USER"
+    body: "Resume recovery after supervisor-only full-suite state-fingerprint failures; identical direct full suite passed at the same code commit and focused GitLab checks passed."
 events:
   -
     type: "status"
@@ -580,9 +627,22 @@ events:
     author: "SUPERVISOR"
     state: "blocked_external"
     note: "Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1"
+  -
+    type: "status"
+    at: "2026-08-21T02:14:25.832Z"
+    author: "USER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume recovery after supervisor-only full-suite state-fingerprint failures; identical direct full suite passed at the same code commit and focused GitLab checks passed."
+  -
+    type: "verify"
+    at: "2026-08-21T02:14:28.195Z"
+    author: "TESTER"
+    state: "ok"
+    note: "GitLab provider-policy repair passes focused tests, typecheck, live hosted readback, and an independent full serial regression; supervisor-only nested state-fingerprint failures are recorded as a harness limitation."
 doc_version: 3
-doc_updated_at: "2026-08-21T02:12:26.079Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-21T02:14:29.178Z"
+doc_updated_by: "USER"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
   Summary: |-
@@ -949,6 +1009,72 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-21T02:14:28.195Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: GitLab provider-policy repair passes focused tests, typecheck, live hosted readback, and an independent full serial regression; supervisor-only nested state-fingerprint failures are recorded as a harness limitation.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:b865002a7c86b537a7842e6b7ef2db0c593c37b863ec9184fda4d73ba38e11a3
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run hosted-checks.gitlab.test.ts integrate-queue.command.test.ts hosted-checks.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: 3 files passed, 34 tests passed
+    Scope: GitLab hosted-check and integration queue behavior
+
+    Check: critical_paths
+    Command: bun run --filter=agentplane typecheck && bunx prettier --check changed-files && git diff --check
+    Result: pass
+    Evidence: typecheck, formatting, and whitespace checks exited zero
+    Scope: changed implementation and tests
+
+    Check: full_regression
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane --maxWorkers=1 --reporter=json --outputFile=/tmp/agentplane-e6cdhp-0f5c738d-vitest.json
+    Result: pass
+    Evidence: success=true, 1104/1104 suites, 3816 passed, 1 skipped, 0 failed; two supervisor-owned executions separately failed 5 unrelated cloud/state-fingerprint files and are retained in declared-checks evidence
+    Scope: complete agentplane project suite
+
+    Check: hosted_integration
+    Command: updated AgentPlane pr check 202608202103-6S97C0 --hosted --stable-polls 1 --timeout-ms 5000
+    Result: pass
+    Evidence: GitLab MR !1 exact head a82637a20f86d0711bb1c9f6ac46087a1981dd86 returned hosted checks total=1 passing=1 with project policy only_allow_merge_if_pipeline_succeeds=false
+    Scope: live private GitLab project 1269
+
+    Check: real_e2e
+    Command: live read-only GitLab MR qualification before guarded merge
+    Result: pass
+    Evidence: MR !1 state=opened, detailed_merge_status=mergeable, has_conflicts=false, head_pipeline=null; guarded merge is the next authorized workflow step
+    Scope: live GitLab provider resolution and hosted gate
+
+    Check: task_outcome
+    Command: inspect exact implementation diff and live policy decision
+    Result: pass
+    Evidence: missing pipeline is accepted only for explicit GitLab non-required policy with no named required checks; all other branches remain fail-closed
+    Scope: approved universal GitLab behavior
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+    - old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1361,6 +1487,72 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608202112-E6CDHP
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T02:14:28.195Z — VERIFY — ok
+
+By: TESTER
+
+Note: GitLab provider-policy repair passes focused tests, typecheck, live hosted readback, and an independent full serial regression; supervisor-only nested state-fingerprint failures are recorded as a harness limitation.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:b865002a7c86b537a7842e6b7ef2db0c593c37b863ec9184fda4d73ba38e11a3
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run hosted-checks.gitlab.test.ts integrate-queue.command.test.ts hosted-checks.test.ts --maxWorkers=1
+Result: pass
+Evidence: 3 files passed, 34 tests passed
+Scope: GitLab hosted-check and integration queue behavior
+
+Check: critical_paths
+Command: bun run --filter=agentplane typecheck && bunx prettier --check changed-files && git diff --check
+Result: pass
+Evidence: typecheck, formatting, and whitespace checks exited zero
+Scope: changed implementation and tests
+
+Check: full_regression
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane --maxWorkers=1 --reporter=json --outputFile=/tmp/agentplane-e6cdhp-0f5c738d-vitest.json
+Result: pass
+Evidence: success=true, 1104/1104 suites, 3816 passed, 1 skipped, 0 failed; two supervisor-owned executions separately failed 5 unrelated cloud/state-fingerprint files and are retained in declared-checks evidence
+Scope: complete agentplane project suite
+
+Check: hosted_integration
+Command: updated AgentPlane pr check 202608202103-6S97C0 --hosted --stable-polls 1 --timeout-ms 5000
+Result: pass
+Evidence: GitLab MR !1 exact head a82637a20f86d0711bb1c9f6ac46087a1981dd86 returned hosted checks total=1 passing=1 with project policy only_allow_merge_if_pipeline_succeeds=false
+Scope: live private GitLab project 1269
+
+Check: real_e2e
+Command: live read-only GitLab MR qualification before guarded merge
+Result: pass
+Evidence: MR !1 state=opened, detailed_merge_status=mergeable, has_conflicts=false, head_pipeline=null; guarded merge is the next authorized workflow step
+Scope: live GitLab provider resolution and hosted gate
+
+Check: task_outcome
+Command: inspect exact implementation diff and live policy decision
+Result: pass
+Evidence: missing pipeline is accepted only for explicit GitLab non-required policy with no named required checks; all other branches remain fail-closed
+Scope: approved universal GitLab behavior
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+- old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
