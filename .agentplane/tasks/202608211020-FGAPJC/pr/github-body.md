@@ -15,8 +15,13 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note:
+
+```text
+Verification cannot converge because each successful rerun rewrites declared-checks.json with
+volatile timing and output-tail telemetry, changing its evidence digest.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
