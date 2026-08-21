@@ -1,10 +1,10 @@
 ---
 id: "202608211010-X9X57M"
 title: "Route new task creation to the primary checkout"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -231,6 +231,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 5c561bc70225. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Implementation rework is blocked by the declared verification command: its new*.test.ts glob matches no file, the task document is protected during this semantic episode, and the current writable roots do not permit adding a matching regression test file. Recommended action: Approve the minimal scope extension, add packages/agentplane/src/commands/task/new.primary-checkout.test.ts, run the declared check and required repository checks, then resume the task lifecycle. Requested scope: roots=packages/agentplane/src/commands/task/new.primary-checkout.test.ts; repository effects=repository_write,tests; request digest=sha256:6dc06d68d86fd0130d9ca48472d8114a08ce5d5653ffd35efe46984811feef88. Agentplane receipt: external-agent-blocker/tr_62e7ce4306c819c883ddeee581756eb3/sha256:4eef279c29fde74c7b784480d0411af5a32c3f255ac2d984ab72f3825fa77767/sha256:6dc06d68d86fd0130d9ca48472d8114a08ce5d5653ffd35efe46984811feef88."
 events:
   -
     type: "status"
@@ -260,8 +263,15 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/task/new*.test.ts"
+  -
+    type: "status"
+    at: "2026-08-21T10:37:51.498Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Implementation rework is blocked by the declared verification command: its new*.test.ts glob matches no file, the task document is protected during this semantic episode, and the current writable roots do not permit adding a matching regression test file. Recommended action: Approve the minimal scope extension, add packages/agentplane/src/commands/task/new.primary-checkout.test.ts, run the declared check and required repository checks, then resume the task lifecycle. Requested scope: roots=packages/agentplane/src/commands/task/new.primary-checkout.test.ts; repository effects=repository_write,tests; request digest=sha256:6dc06d68d86fd0130d9ca48472d8114a08ce5d5653ffd35efe46984811feef88. Agentplane receipt: external-agent-blocker/tr_62e7ce4306c819c883ddeee581756eb3/sha256:4eef279c29fde74c7b784480d0411af5a32c3f255ac2d984ab72f3825fa77767/sha256:6dc06d68d86fd0130d9ca48472d8114a08ce5d5653ffd35efe46984811feef88."
 doc_version: 3
-doc_updated_at: "2026-08-21T10:35:27.896Z"
+doc_updated_at: "2026-08-21T10:37:51.498Z"
 doc_updated_by: "SUPERVISOR"
 description: "Prevent task new invoked from a branch_pr task worktree from writing the new task README into that worktree; route creation through the primary checkout and add regression coverage for isolated task ownership."
 sections:
@@ -337,24 +347,20 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
-    applied_at: "2026-08-21T10:20:13.336Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:ae330482b009f8baafbdf0f97f24c30658d14bc7b2272a96c33e621036a11130"
+    blocker_state_fingerprint: "sha256:4eef279c29fde74c7b784480d0411af5a32c3f255ac2d984ab72f3825fa77767"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Primary-checkout creation changes the storage context observed by task begin --plan. The command must resolve the newly created task's owner context before its immediate plan mutation, and an integration regression must prove that both README creation and plan update remain in the primary checkout without contaminating the invoking worktree."
+      rationale: "Add one focused regression test file whose path is selected by the already-approved declared verification command. The task README is protected and must not be edited manually."
       repository_effects:
         - "repository_write"
-        - "source_code"
         - "tests"
       schema_version: 1
       scope_roots:
-        - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
-        - "packages/agentplane/src/commands/task/begin.command.ts"
-    request_digest: "sha256:9d47a50e24052a56b1d604d9eac48d520e46a571de409571a0a6fd32ec3a6ad5"
+        - "packages/agentplane/src/commands/task/new.primary-checkout.test.ts"
+    request_digest: "sha256:6dc06d68d86fd0130d9ca48472d8114a08ce5d5653ffd35efe46984811feef88"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_946a86d5e9a85ee6f4200bf64c837c10"
+    status: "pending"
+    transition_id: "tr_62e7ce4306c819c883ddeee581756eb3"
   implementation_commit:
     hash: "5c561bc702250c816bdc0460a7b1fd5636b5fa5d"
   task_execution_context:
