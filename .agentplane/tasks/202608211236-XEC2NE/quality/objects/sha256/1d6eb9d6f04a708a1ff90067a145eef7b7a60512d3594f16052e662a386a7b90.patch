@@ -1,0 +1,79 @@
+diff --git a/packages/agentplane/src/commands/task/verify-record-observed-changes.ts b/packages/agentplane/src/commands/task/verify-record-observed-changes.ts
+index 938bc8616..e248d8e1a 100644
+--- a/packages/agentplane/src/commands/task/verify-record-observed-changes.ts
++++ b/packages/agentplane/src/commands/task/verify-record-observed-changes.ts
+@@ -14,11 +14,11 @@ export async function resolveObservedVerificationChangedPaths(opts: {
+ }): Promise<string[]> {
+   if (!opts.evaluatedSha) return [];
+   const { config, resolvedProject } = opts.ctx;
+-  const baseRef = opts.execution.selected_mode === "branch_pr" ? opts.execution.base_sha : null;
++  // Verification and evaluator preparation must compare the same execution-bounded diff.
+   const diffBaseSha = await resolveEvaluatorDiffBase({
+     gitRoot: resolvedProject.gitRoot,
+     evaluatedSha: opts.evaluatedSha,
+-    baseRef,
++    baseRef: opts.execution.base_sha,
+     allowSingleCommitFallback: true,
+   });
+   const taskArtifactPrefixes = opts.artifactTaskIds.map(
+diff --git a/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts b/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
+index 7bdde5ae9..592e989c6 100644
+--- a/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
++++ b/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
+@@ -9,6 +9,7 @@ import { loadCommandContext } from "../shared/task-backend.js";
+ import * as taskMutation from "../shared/task-mutation.js";
+ import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
+ import { cmdVerifyParsed } from "./verify-record.js";
++import { resolveObservedVerificationChangedPaths } from "./verify-record-observed-changes.js";
+ import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
+ import { execFileAsync } from "@agentplaneorg/core/process";
+ 
+@@ -320,4 +321,48 @@ describe("task verification durability", () => {
+     };
+     expect(record.input?.verification_contract_digest).toBe(contract?.digest);
+   });
++
++  it("observes the complete direct task diff from the frozen execution base", async () => {
++    const root = await makeRepo();
++    const taskId = "202602050900-V1F4B";
++    await execFileAsync("git", ["add", "."], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: seed direct task base"], { cwd: root });
++    const { stdout: baseShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    const baseSha = baseShaOutput.trim();
++    await mkdir(path.join(root, "packages", "app"), { recursive: true });
++    await writeFile(path.join(root, "packages", "app", "first.ts"), "export const first = 1;\n");
++    await execFileAsync("git", ["add", "packages/app/first.ts"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: first direct task change"], { cwd: root });
++    await writeFile(path.join(root, "packages", "app", "second.ts"), "export const second = 2;\n");
++    await execFileAsync("git", ["add", "packages/app/second.ts"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: second direct task change"], { cwd: root });
++    const { stdout: evaluatedShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
++
++    const changedPaths = await resolveObservedVerificationChangedPaths({
++      ctx,
++      evaluatedSha: evaluatedShaOutput.trim(),
++      taskId,
++      artifactTaskIds: [taskId],
++      execution: {
++        schema_version: 1,
++        primary_task_id: taskId,
++        task_ids: [taskId],
++        repository_mode: "direct",
++        selected_mode: "direct",
++        requested_mode: "direct",
++        route_source: "execution_contract",
++        reason_codes: [],
++        base_ref: "main",
++        base_sha: baseSha,
++        authoritative_task_source: "base_checkout",
++      },
++    });
++
++    expect(changedPaths).toEqual(["packages/app/first.ts", "packages/app/second.ts"]);
++  });
+ });

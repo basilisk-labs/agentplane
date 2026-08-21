@@ -4,7 +4,7 @@ title: "Repair packaged candidate verification-contract refresh after managed up
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -32,6 +32,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-21T21:09:38.243Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "d4aeed48de00940ecb669c7d0094923c378e744d"
+  blueprint_digest: "a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03"
+  evidence_refs:
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-210900862-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-210900862-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/4fe66b3472063a7afff7f9bc4fc6c2884548ea470c48cda0c2427135e27402b3.md"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-210900862-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-210900862-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-210900862-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/README.md"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/1d6eb9d6f04a708a1ff90067a145eef7b7a60512d3594f16052e662a386a7b90.patch"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/782223f90fc09c66e0d1319b7c564785c57c6e09b49b503313d6c98229aa3b5e.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/verification/20260821210850378-b491d287629e2a9a.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/73f1a9cd33c6e6e962312f58f47c8f76b5db9208bca7643cb72dee0a8e4ce8a1.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The production change is minimal and uses the already-resolved execution.base_sha instead of a direct-mode parent fallback."
+    - "The test fails under the former behavior by omitting the first direct-task commit and passes with the fix."
+    - "The observed packaged install evidence covers all eight migration scenarios, including the previously failing managed-upgrade evaluator path."
+    - "No unrelated implementation paths were changed."
+    - "Residual risk: Hosted exact-head qualification and integration evidence must still pass after PR publication."
 execution_route:
   frozen: true
   reason_codes:
