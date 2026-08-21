@@ -1,0 +1,109 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks\nScope: branch_pr task 202608210853-0FYGE3 Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks\nScope: branch_pr task 202608210853-0FYGE3 Verification Contract check critical_paths\n\nCheck: full_regression\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks\nScope: branch_pr task 202608210853-0FYGE3 Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks\nScope: branch_pr task 202608210853-0FYGE3 Verification Contract check hosted_integration\n\nCheck: task_outcome\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-decision-next-action.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks\nScope: branch_pr task 202608210853-0FYGE3 Verification Contract check task_outcome",
+  "digest": "sha256:a90a98f3a3d217580bef045095fd0317cdfc1deef5df7eb8baa5bb8adc03c7d6",
+  "implementation_sha": "e7aeff72c3bdf8180385a8a64f84907b1de022a5",
+  "input": {
+    "context": {
+      "digest": "sha256:c604a3866814dba57d1e8b75bf0340937981e8280dda0ec9356a7987f4282f36",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:0c8e319708613e64dbf010609d25492ba5c181e68ac1882ee710906a7adcfb99",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:a70661a98f63caf821f79f6a1212c87fc5926480d2216756acdeef179904a363",
+      "digest": "sha256:30cd516a52f28c5b50e4920b6874935300d131c2dbb53b672db003ce0f4efdb8",
+      "references": [
+        {
+          "digest": "sha256:d9b454d55a1ba81ee58f2bef9bcd134c591b4007a9d67a3f0826bcbe5a2a0a34",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608210853-0FYGE3/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "41f1b102afe74f56ec4b36d13a52476b8bcd40ee",
+      "digest": "sha256:2ea6229d648585c26e002b82edba4d1d712a71642eae1982a496752158e07f6c",
+      "primary_task_id": "202608210853-0FYGE3",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608210853-0FYGE3"
+      ]
+    },
+    "implementation": {
+      "base_sha": "41f1b102afe74f56ec4b36d13a52476b8bcd40ee",
+      "digest": "sha256:94fb0b3baf65741f27a012727622a406703e57d3dcb4f334f62e2827ad32bda6",
+      "strategy": "branch_diff",
+      "target_sha": "e7aeff72c3bdf8180385a8a64f84907b1de022a5"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:c3bf9a30bd6fee9cf6361310a6dd771dbafb9edace423b64e0a31518453f04bf",
+    "verify_steps_digest": "sha256:24511da0b898acb4dbba18e534c09f08923f307305347666ce4ac35b093e3911"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-21T09:10:46.964Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Fix local branch_pr status after merged cleanup\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Fix local branch_pr status after merged cleanup\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:24511da0b898acb4dbba18e534c09f08923f307305347666ce4ac35b093e3911",
+  "task_id": "202608210853-0FYGE3",
+  "verification_command": "agentplane verify 202608210853-0FYGE3 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
