@@ -15,8 +15,8 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,10 +27,11 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ check                                              |  12 +
  docs/developer/task-execution-authority.mdx        |  40 ++
  docs/user/branching-and-pr-artifacts.mdx           |  19 +
  docs/user/cli-reference.generated.mdx              |   2 +
- docs/user/task-lifecycle.mdx                       |  43 +-
+ docs/user/task-lifecycle.mdx                       |  46 +-
  .../src/cli/run-cli.core.lifecycle.plan.test.ts    |  61 +-
  .../run-cli.core.task-create-base-intent.test.ts   | 252 ++++++++
  ...run-cli.core.task-create-planner-intent.test.ts | 138 ++---
@@ -44,15 +45,18 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../agentplane/src/commands/pr/internal/sync.ts    |  13 +-
  packages/agentplane/src/commands/pr/open.ts        |   2 +
  packages/agentplane/src/commands/pr/update.ts      |  11 +-
- .../commands/shared/side-effect-authority.test.ts  |  55 ++
- .../src/commands/shared/side-effect-authority.ts   |  43 +-
+ .../commands/shared/side-effect-authority.test.ts  | 141 ++++-
+ .../src/commands/shared/side-effect-authority.ts   |  53 +-
  .../agentplane/src/commands/shared/task-backend.ts |  24 +-
  .../task-worktree-foreign-artifact-repair.test.ts  |  16 +-
+ .../workflow-operation-projection.registry.test.ts |   5 +-
+ .../shared/workflow-operation-projection.ts        |   5 +-
+ .../src/commands/shared/workflow-step-authority.ts |   2 +-
  .../src/commands/task/advance.command.ts           |  19 +-
  .../src/commands/task/agent-action-packet.test.ts  |  28 +-
  .../src/commands/task/agent-action-packet.ts       |  55 +-
  .../task/branch-task-supervisor-episodes.ts        |  41 +-
- .../task/branch-task-supervisor-operations.ts      |   4 +-
+ .../task/branch-task-supervisor-operations.ts      |  10 +-
  .../commands/task/branch-task-supervisor-usage.ts  |  22 +
  .../task/branch-task-supervisor.autonomy.test.ts   | 637 +++++++++++++++++++++
  .../commands/task/branch-task-supervisor.test.ts   |  43 ++
@@ -64,14 +68,16 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../src/commands/task/direct-task-verification.ts  |  74 ++-
  .../task/execution-authority-context.test.ts       |  92 +++
  .../commands/task/execution-authority-context.ts   | 111 ++++
- .../commands/task/finish.close-tail.unit.test.ts   |   1 +
+ .../commands/task/finish.close-tail.unit.test.ts   |   2 +-
  .../src/commands/task/finish.state.unit.test.ts    |   1 +
- .../commands/task/finish.validation.unit.test.ts   |   1 +
+ .../commands/task/finish.validation.unit.test.ts   |   2 +-
  .../src/commands/task/new.primary-checkout.test.ts |  66 +++
  packages/agentplane/src/commands/task/new.ts       |  46 +-
  .../src/commands/task/plan-approve.command.ts      |  70 ++-
  packages/agentplane/src/commands/task/plan.ts      |  92 ++-
  .../agentplane/src/commands/task/plan.unit.test.ts |   6 +
+ .../src/commands/task/scope-extend.command.ts      |  45 +-
+ .../agentplane/src/commands/task/scope-extend.ts   |  17 +-
  .../src/commands/task/verify-record-execute.ts     |   4 +-
  .../runtime/task-execution-context/resolve.test.ts |  26 +-
  .../src/runtime/task-execution-context/resolve.ts  |  88 ++-
@@ -84,10 +90,10 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  packages/core/src/tasks/task-execution-base.ts     |  59 ++
  packages/core/src/tasks/task-store.ts              |   1 +
  packages/core/src/tasks/tasks-export.ts            |   2 +
- .../baselines/v0.7-compatibility-candidate.json    |  41 +-
- .../check-compatibility-contract-baseline.mjs      |  27 +
+ .../baselines/v0.7-compatibility-candidate.json    |  62 +-
+ .../check-compatibility-contract-baseline.mjs      |  42 +-
  website/static/llms-full.txt                       |  43 +-
- 60 files changed, 3775 insertions(+), 275 deletions(-)
+ 66 files changed, 3955 insertions(+), 324 deletions(-)
 ```
 
 </details>

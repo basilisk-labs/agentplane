@@ -12,6 +12,7 @@ import { resolvePrFlowStatus } from "../pr/flow-status.js";
 import { cmdPrOpen } from "../pr/open.js";
 import { cmdPrUpdate } from "../pr/update.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+import { workflowAuthorityStateScopeDigest } from "../shared/side-effect-authority.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
 import type { WorkflowOperation } from "../shared/workflow-step.js";
@@ -115,7 +116,10 @@ export async function executeBranchWorkflowOperation(opts: {
         scopeRoots: [...operation.params.scopeRoots],
         repositoryEffects: [...operation.params.repositoryEffects],
         requestDigest: operation.params.requestDigest,
-        stateFingerprint: operation.preconditionFingerprint.digest,
+        stateScopeDigest: workflowAuthorityStateScopeDigest(
+          operation.preconditionFingerprint,
+          operation.id,
+        ),
         by: "USER",
         quiet: true,
       });

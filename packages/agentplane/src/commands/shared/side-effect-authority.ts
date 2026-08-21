@@ -370,7 +370,11 @@ export function workflowOperationAuthorityDigest(
  * provider, and worktree facts remain bound and therefore still fail closed after
  * material drift.
  */
-export function workflowAuthorityStateScopeDigest(fingerprint: StateFingerprint): string {
+export function workflowAuthorityStateScopeDigest(
+  fingerprint: StateFingerprint,
+  operationId?: WorkflowOperationId,
+): string {
+  const includeProvider = operationId !== "task.scope.extend";
   return sha256({
     schemaVersion: fingerprint.schema_version,
     kind: fingerprint.kind,
@@ -384,7 +388,7 @@ export function workflowAuthorityStateScopeDigest(fingerprint: StateFingerprint)
       policy: fingerprint.components.policy,
       blueprint: fingerprint.components.blueprint,
       knowledge: fingerprint.components.knowledge,
-      provider: fingerprint.components.provider,
+      ...(includeProvider ? { provider: fingerprint.components.provider } : {}),
     },
   });
 }
@@ -410,7 +414,7 @@ export function createSideEffectAuthorityRecord(opts: {
     throw new Error("Authority expiry must be after issuance.");
   }
   const operationDigest = workflowOperationAuthorityDigest(opts.operation);
-  const stateScopeDigest = workflowAuthorityStateScopeDigest(opts.fingerprint);
+  const stateScopeDigest = workflowAuthorityStateScopeDigest(opts.fingerprint, opts.operation.id);
   if (
     opts.operationLease &&
     (opts.operationLease.task_id !== opts.fingerprint.task_id ||
@@ -516,7 +520,7 @@ export function evaluateWorkflowOperationAuthority(opts: {
     };
   }
   const operationDigest = workflowOperationAuthorityDigest(opts.operation);
-  const scopeDigest = workflowAuthorityStateScopeDigest(opts.fingerprint);
+  const scopeDigest = workflowAuthorityStateScopeDigest(opts.fingerprint, opts.operation.id);
   const now = (opts.now ?? new Date()).getTime();
   const matching = state.grants.find(
     (grant) =>

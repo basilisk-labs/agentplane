@@ -52,6 +52,7 @@ function fingerprint(gitHead = "a".repeat(40), trackedContent = gitHead): StateF
 function workflowProviderFingerprint(opts: {
   gitHead?: string;
   trackedContent?: string;
+  providerObserved?: boolean;
 }): StateFingerprint {
   return buildStateFingerprint({
     task_id: taskId,
@@ -69,23 +70,30 @@ function workflowProviderFingerprint(opts: {
       policy: { state: "present", source: "fixture", value: { rule: "workflow" } },
       blueprint: { state: "present", source: "fixture", value: { digest: "blueprint" } },
       knowledge: { state: "present", source: "fixture", value: { digest: "knowledge" } },
-      provider: {
-        state: "present",
-        source: "workflow_route_provider",
-        value: {
-          observationState: "present",
-          pr: {
-            provider: "github",
-            state: "OPEN",
-            prNumber: 4633,
-            prUrl: "https://example.test/pull/4633",
-            base: "main",
-          },
-          branch: { name: "task/authority" },
-          closeTail: { state: "not_applicable" },
-          queue: { present: false },
-        },
-      },
+      provider:
+        opts.providerObserved === false
+          ? {
+              state: "unavailable",
+              source: "workflow_route_provider",
+              reason_code: "provider_not_observed",
+            }
+          : {
+              state: "present",
+              source: "workflow_route_provider",
+              value: {
+                observationState: "present",
+                pr: {
+                  provider: "github",
+                  state: "OPEN",
+                  prNumber: 4633,
+                  prUrl: "https://example.test/pull/4633",
+                  base: "main",
+                },
+                branch: { name: "task/authority" },
+                closeTail: { state: "not_applicable" },
+                queue: { present: false },
+              },
+            },
       authority: { state: "present", source: "fixture", value: { route: "integration.enqueue" } },
     },
   });
@@ -255,6 +263,50 @@ describe("side-effect authority", () => {
         now: new Date("2026-07-26T12:01:00.000Z"),
       }),
     ).toMatchObject({ state: "approval_required" });
+  });
+
+  it("keeps local scope-extension authority stable across remote provider observation", () => {
+    const scopeExtension = {
+      id: "task.scope.extend",
+      type: "task_scope_extend",
+      params: {
+        taskId,
+        requestDigest: `sha256:${"d".repeat(64)}`,
+        scopeRoots: ["check"],
+        repositoryEffects: ["repository_write", "source_code"],
+      },
+    } as Pick<WorkflowOperation, "id" | "type" | "params">;
+    const remote = workflowProviderFingerprint({});
+    const local = workflowProviderFingerprint({ providerObserved: false });
+    const grant = createSideEffectAuthorityRecord({
+      id: "authority-scope-extension",
+      actor: "USER",
+      operation: scopeExtension,
+      fingerprint: remote,
+      issuedAt: "2026-07-26T12:00:00.000Z",
+      expiresAt: "2026-07-26T12:15:00.000Z",
+    });
+    const task = {
+      extensions: withSideEffectAuthorityState(
+        { extensions: {} },
+        { schemaVersion: 1, grants: [grant], audit: [] },
+      ),
+    };
+
+    expect(workflowAuthorityStateScopeDigest(remote, scopeExtension.id)).toBe(
+      workflowAuthorityStateScopeDigest(local, scopeExtension.id),
+    );
+    expect(workflowAuthorityStateScopeDigest(remote, "pr.open")).not.toBe(
+      workflowAuthorityStateScopeDigest(local, "pr.open"),
+    );
+    expect(
+      evaluateWorkflowOperationAuthority({
+        task,
+        operation: scopeExtension,
+        fingerprint: local,
+        now: new Date("2026-07-26T12:01:00.000Z"),
+      }),
+    ).toMatchObject({ state: "allowed" });
   });
 
   it("keeps integration authority valid across its persisted PR-head update", () => {

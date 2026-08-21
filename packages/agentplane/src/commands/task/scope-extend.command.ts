@@ -20,12 +20,17 @@ const REPOSITORY_EFFECTS = [
   "security_boundary",
 ] as const satisfies readonly TaskRepositoryEffect[];
 
+function optionalStringOption(value: unknown): string | undefined {
+  return toStringList(value).at(-1);
+}
+
 export type TaskScopeExtendParsed = {
   taskId: string;
   scopeRoots: string[];
   repositoryEffects: TaskRepositoryEffect[];
   requestDigest: string;
-  stateFingerprint: string;
+  stateFingerprint?: string;
+  stateScopeDigest?: string;
   by: string;
 };
 
@@ -60,9 +65,14 @@ export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
     {
       kind: "string",
       name: "state-fingerprint",
-      required: true,
       valueHint: "<sha256:...>",
-      description: "Exact task next-action fingerprint that binds this approval.",
+      description: "Legacy exact task next-action fingerprint that binds this approval.",
+    },
+    {
+      kind: "string",
+      name: "state-scope-digest",
+      valueHint: "<sha256:...>",
+      description: "Operation-scoped semantic state digest that binds this approval.",
     },
     {
       kind: "string",
@@ -74,7 +84,7 @@ export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
   ],
   examples: [
     {
-      cmd: "agentplane task scope extend T-1 --scope-root website --repository-effect documentation --request-digest sha256:... --state-fingerprint sha256:... --by USER",
+      cmd: "agentplane task scope extend T-1 --scope-root website --repository-effect documentation --request-digest sha256:... --state-scope-digest sha256:... --by USER",
       why: "Approve a monotonic repository-scope extension after a typed blocker.",
     },
   ],
@@ -88,11 +98,24 @@ export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
         message: "At least one --scope-root or --repository-effect is required.",
       });
     }
-    if (!/^sha256:[0-9a-f]{64}$/u.test(String(raw.opts["state-fingerprint"]))) {
+    const stateFingerprint = optionalStringOption(raw.opts["state-fingerprint"]);
+    const stateScopeDigest = optionalStringOption(raw.opts["state-scope-digest"]);
+    if (stateFingerprint === undefined && stateScopeDigest === undefined) {
       throw usageError({
         spec: taskScopeExtendSpec,
-        message: "--state-fingerprint must be an exact sha256:<64 lowercase hex> digest.",
+        message: "One of --state-scope-digest or --state-fingerprint is required.",
       });
+    }
+    for (const [name, value] of [
+      ["--state-fingerprint", stateFingerprint],
+      ["--state-scope-digest", stateScopeDigest],
+    ] as const) {
+      if (value !== undefined && !/^sha256:[0-9a-f]{64}$/u.test(value)) {
+        throw usageError({
+          spec: taskScopeExtendSpec,
+          message: `${name} must be an exact sha256:<64 lowercase hex> digest.`,
+        });
+      }
     }
     if (!/^sha256:[0-9a-f]{64}$/u.test(String(raw.opts["request-digest"]))) {
       throw usageError({
@@ -106,7 +129,12 @@ export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
     scopeRoots: toStringList(raw.opts["scope-root"]),
     repositoryEffects: toStringList(raw.opts["repository-effect"]) as TaskRepositoryEffect[],
     requestDigest: String(raw.opts["request-digest"]),
-    stateFingerprint: String(raw.opts["state-fingerprint"]),
+    ...(optionalStringOption(raw.opts["state-fingerprint"])
+      ? { stateFingerprint: optionalStringOption(raw.opts["state-fingerprint"]) }
+      : {}),
+    ...(optionalStringOption(raw.opts["state-scope-digest"])
+      ? { stateScopeDigest: optionalStringOption(raw.opts["state-scope-digest"]) }
+      : {}),
     by: String(raw.opts.by),
   }),
 };
@@ -120,7 +148,8 @@ export function makeRunTaskScopeExtendHandler(getCtx: (cmd: string) => Promise<C
       scopeRoots: parsed.scopeRoots,
       repositoryEffects: parsed.repositoryEffects,
       requestDigest: parsed.requestDigest,
-      stateFingerprint: parsed.stateFingerprint,
+      ...(parsed.stateFingerprint ? { stateFingerprint: parsed.stateFingerprint } : {}),
+      ...(parsed.stateScopeDigest ? { stateScopeDigest: parsed.stateScopeDigest } : {}),
       by: parsed.by,
     });
 }

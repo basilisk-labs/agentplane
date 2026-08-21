@@ -1,0 +1,12 @@
+#!/usr/bin/env bun
+
+import { spawnSync } from "node:child_process";
+
+const result = spawnSync("bun", ["run", "ci:local:fast"], {
+  cwd: import.meta.dir,
+  env: process.env,
+  stdio: "inherit",
+});
+
+if (result.error) throw result.error;
+process.exitCode = result.status ?? 1;

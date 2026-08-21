@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { projectWorkflowOperationArgv, renderCliArgv } from "./workflow-operation-projection.js";
+import { workflowAuthorityStateScopeDigest } from "./side-effect-authority.js";
 import { cliOperationStep } from "./workflow-step-factory.js";
 import {
   WORKFLOW_OPERATION_REGISTRY,
@@ -208,8 +209,8 @@ describe("Workflow operation projection registry", () => {
           "documentation",
           "--request-digest",
           adoptionToken,
-          "--state-fingerprint",
-          state.preconditionFingerprint.digest,
+          "--state-scope-digest",
+          workflowAuthorityStateScopeDigest(state.preconditionFingerprint, "task.scope.extend"),
           "--by",
           "USER",
         ],

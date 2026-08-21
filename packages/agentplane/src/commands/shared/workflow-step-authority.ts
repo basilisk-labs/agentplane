@@ -114,7 +114,7 @@ function sideEffectApprovalStep(opts: {
 }): WorkflowStep {
   const fingerprint = opts.operation.preconditionFingerprint;
   const operationDigest = workflowOperationAuthorityDigest(opts.operation);
-  const stateScopeDigest = workflowAuthorityStateScopeDigest(fingerprint);
+  const stateScopeDigest = workflowAuthorityStateScopeDigest(fingerprint, opts.operation.id);
   const command = [
     "agentplane",
     "task",

@@ -1570,8 +1570,8 @@ function validateReviewedCandidate({
           name: "state-fingerprint",
           kind: "string",
           valueHint: "<sha256:...>",
-          required: true,
         },
+        { name: "state-scope-digest", kind: "string", valueHint: "<sha256:...>" },
         { name: "by", kind: "string", valueHint: "<role>", required: true },
       ],
     },
@@ -2101,7 +2101,12 @@ function validateReviewedCandidate({
       name: "state-fingerprint",
       kind: "string",
       valueHint: "<sha256:...>",
-      required: true,
+    },
+    {
+      command: "task scope extend",
+      name: "state-scope-digest",
+      kind: "string",
+      valueHint: "<sha256:...>",
     },
     {
       command: "workflow migrate",
@@ -2591,6 +2596,12 @@ function validateReviewedCandidate({
         source_task: "202608181404-CR1F9W",
       }),
     ),
+    {
+      kind: "option",
+      command: "task scope extend",
+      name: "state-scope-digest",
+      source_task: "202608211020-FGAPJC",
+    },
     {
       kind: "option",
       command: "workflow migrate",
