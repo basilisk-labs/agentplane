@@ -2,10 +2,10 @@
 id: "202608211020-FGAPJC"
 title: "Implement task-scoped autonomous execution after one user-approved plan"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 77
+revision: 78
 origin:
   system: "manual"
 depends_on: []
@@ -63,9 +63,9 @@ quality_review:
     - "Observed verification records include bun run check with all five groups green, bun run typecheck, compatibility ratchet, focused authority tests, clean committed diff, and clean evaluated repository state."
     - "Residual risk: Hosted checks, PR head publication, integration, and cleanup remain supervisor-owned post-review gates and are not yet evidenced in this pre-publication evaluator packet."
 token_usage:
-  agent_runs: 25
+  agent_runs: 30
   input_tokens: null
-  journal_digest: "sha256:c6cd5b8f079ea9a03c10ebe502bfc166b0eebb42152d013a742b8dc545a05293"
+  journal_digest: "sha256:718090129fe6ea8b807bf6a7b685f00dac7ca233b2f544033fc3c79d2900ab73"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -75,7 +75,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-21T13:44:16.360Z"
+  updated_at: "2026-08-21T14:53:52.401Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -485,8 +485,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "ae9e80223d7b9d7b1debf2f78da4e78a339c84aa"
-  message: "🚧 FGAPJC task: apply external agent result"
+  hash: "c6c170deccfb8e2d83f995190e7ba3e5928ec64f"
+  message: "🚧 FGAPJC task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -575,6 +575,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: ae9e80223d7b. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -864,9 +867,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-21T14:53:52.401Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "c6c170deccfb8e2d83f995190e7ba3e5928ec64f"
 doc_version: 3
-doc_updated_at: "2026-08-21T14:53:36.921Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-21T14:53:52.432Z"
+doc_updated_by: "CODER"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
   Summary: |-
@@ -1782,6 +1793,7 @@ extensions:
     transition_id: "tr_fd65df0f51ebfcf4e8670f3f1ebd6e98"
   implementation_commit:
     hash: "ae9e80223d7b9d7b1debf2f78da4e78a339c84aa"
+    message: "🚧 FGAPJC task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
@@ -2680,12 +2692,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/25` agent runs
+- Completeness: `0/30` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:c6cd5b8f079ea9a03c10ebe502bfc166b0eebb42152d013a742b8dc545a05293`
+- Journal digest: `sha256:718090129fe6ea8b807bf6a7b685f00dac7ca233b2f544033fc3c79d2900ab73`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-21T13:44:16.360Z`
+- Updated at: `2026-08-21T14:53:52.401Z`
