@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 76
+revision: 77
 origin:
   system: "manual"
 depends_on: []
@@ -32,36 +32,36 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T14:15:40.168Z"
+  updated_at: "2026-08-21T14:53:36.888Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 5 typed finding(s)."
-  evaluated_sha: "6fa8370712de20b54872fd42883fef535aab0ccc"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "ae9e80223d7b9d7b1debf2f78da4e78a339c84aa"
   blueprint_digest: "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa"
   evidence_refs:
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-141420173-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-141420173-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a2e9c5989fc44c6ecb22b334ae76b2d00f7bccae8ded226d26a959c7c4169d5c.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-141420173-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-141420173-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-141420173-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-141420173-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-145233073-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-145233073-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/10a3ce210a38a3c1c8562622781cec7d47fc6acd57569a66150c10f32a73dbdc.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-145233073-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-145233073-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-145233073-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211020-FGAPJC/README.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/a66768b4c7553aa79524e3fbceba8db58e93f77f062d8e2e97c9364e1c7b4396.patch"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/d443c89d72cb917ce1a7f50a0e82640b8a24e2cb355142b1e4656ee1d04df78a.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821141402137-b49332b75890fdfd.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/5e3c2b2d45ef8ca23b82779ff2cc468ab403ba30ca7c1c899960df3fd2105908.patch"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/3e4da6d183d385b70ea7027048ba1400e97d93ac85275daaadfb06de0415b1db.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821145205900-6cfcd119524e1bd2.json"
     - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Required acceptance criteria 4 and 6 and the approved plan explicitly require bun run check to pass."
-    - "Running bun run check at evaluated SHA 6fa8370712de20b54872fd42883fef535aab0ccc exits with Script not found check."
-    - "The repository exposes typecheck, lint:core, format:check, test:fast:ci, checks:run, and other granular checks, but no aggregate check script."
-    - "Because the task explicitly targets impossible AgentPlane actions, silently treating substitute commands as equivalent would violate the approved verification-strength boundary."
-    - "Residual risk: Leaving the impossible command in the plan would make autonomous supervision loop through rework until its episode budget is exhausted."
+    - "ExecutionGrant and OperationLease cover plan-approved lifecycle and provider effects while material plan or effect drift still returns to the user."
+    - "Task bases are frozen per task and workspace recovery rediscoveries use logical identities, allowing long-lived non-task development branches and repository relocation."
+    - "The new task.scope.extend semantic scope removes only the irrelevant provider observation mismatch; PR and integration authority remains bound to provider state."
+    - "The root check entrypoint makes the previously impossible bun run check acceptance action executable through canonical full-fast CI."
+    - "Observed verification records include bun run check with all five groups green, bun run typecheck, compatibility ratchet, focused authority tests, clean committed diff, and clean evaluated repository state."
+    - "Residual risk: Hosted checks, PR head publication, integration, and cleanup remain supervisor-owned post-review gates and are not yet evidenced in this pre-publication evaluator packet."
 token_usage:
   agent_runs: 25
   input_tokens: null
@@ -865,7 +865,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T14:52:07.840Z"
+doc_updated_at: "2026-08-21T14:53:36.921Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
