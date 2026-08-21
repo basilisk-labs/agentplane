@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 142
+revision: 143
 origin:
   system: "manual"
 depends_on: []
@@ -34,32 +34,34 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T19:08:31.594Z"
+  updated_at: "2026-08-21T19:33:12.585Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 4 typed finding(s)."
-  evaluated_sha: "34507b19ab33c1d79ee08e5c5092374d4f4b7bd3"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "137b60c7e7f734c0bef3142e7178465a45513a30"
   blueprint_digest: "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa"
   evidence_refs:
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-190755835-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-190755835-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/24d4d1420e6e36529529152ee496792b327dc78e9d06132a99d523270e435aff.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-190755835-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-190755835-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-190755835-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-193221418-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-193221418-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e1fbf100b85f571921d27dacea3be01fd26d869cab19769d3319ebc88cf14ded.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-193221418-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-193221418-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-193221418-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211020-FGAPJC/README.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8ed000e1f7618f01518123dd82534dde4860786e8497678a8db5e7dbd96906ba.patch"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/61f005614731fbdd9f5337ed0f5ffa6265a421155a371a2ea42ecbd4ee88d389.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821190738088-a47b930e26cc2483.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/016812b13baac541390e302834945732ba38c2d3641bd091bcbbac6e0ff29f0f.patch"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/6eac38ab319a4864ff68a0edf3dac67620163e2a58d4758a23a15c2e2fd96147.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821193203965-c394180c30b33a61.json"
     - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The previous verify-contract failure occurred in Format (check) and named exactly quality-review-target.ts and task-execution-contract-observation.test.ts in local reproduction."
-    - "The rework changes no behavior: five line wraps were normalized across the two files."
-    - "Full format:check passes, 29 related tests pass, typecheck passes, and supervisor-owned test:critical, routing, and doctor checks pass."
-    - "Residual risk: The replacement hosted run must pass against the newly published exact SHA."
+    - "The only implementation change is a cohesive extraction from supervisor-execution-episode.ts into supervisor-execution-budget-renewal.ts."
+    - "The runtime module is 569 lines, below the unchanged 600-line limit, and the oversized-test baseline is unchanged."
+    - "Journal validation, digest chaining, renewable-dimension restrictions, and monotonic cap checks remain byte-for-byte equivalent in the extracted function."
+    - "All 39 focused tests and the hotspot contract pass; the implementation episode also recorded successful formatting, typecheck, and diff validation."
+    - "The untracked quality objects are AgentPlane-owned evidence for this evaluator episode."
+    - "Residual risk: Provider verification remains required for the replacement exact SHA."
 token_usage:
   agent_runs: 55
   input_tokens: null
@@ -1608,7 +1610,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T19:32:06.899Z"
+doc_updated_at: "2026-08-21T19:33:12.623Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:

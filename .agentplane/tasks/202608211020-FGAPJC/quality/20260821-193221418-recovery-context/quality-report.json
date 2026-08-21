@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608211020-FGAPJC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-21T19:33:12.585Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 6 typed finding(s).",
+  "evaluated_sha": "137b60c7e7f734c0bef3142e7178465a45513a30",
+  "blueprint_digest": "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa",
+  "findings": [
+    "The only implementation change is a cohesive extraction from supervisor-execution-episode.ts into supervisor-execution-budget-renewal.ts.",
+    "The runtime module is 569 lines, below the unchanged 600-line limit, and the oversized-test baseline is unchanged.",
+    "Journal validation, digest chaining, renewable-dimension restrictions, and monotonic cap checks remain byte-for-byte equivalent in the extracted function.",
+    "All 39 focused tests and the hotspot contract pass; the implementation episode also recorded successful formatting, typecheck, and diff validation.",
+    "The untracked quality objects are AgentPlane-owned evidence for this evaluator episode.",
+    "Residual risk: Provider verification remains required for the replacement exact SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/016812b13baac541390e302834945732ba38c2d3641bd091bcbbac6e0ff29f0f.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
