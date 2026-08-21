@@ -14,11 +14,10 @@ export async function resolveObservedVerificationChangedPaths(opts: {
 }): Promise<string[]> {
   if (!opts.evaluatedSha) return [];
   const { config, resolvedProject } = opts.ctx;
-  const baseRef = opts.execution.selected_mode === "branch_pr" ? opts.execution.base_sha : null;
   const diffBaseSha = await resolveEvaluatorDiffBase({
     gitRoot: resolvedProject.gitRoot,
     evaluatedSha: opts.evaluatedSha,
-    baseRef,
+    baseRef: opts.execution.base_sha,
     allowSingleCommitFallback: true,
   });
   const taskArtifactPrefixes = opts.artifactTaskIds.map(

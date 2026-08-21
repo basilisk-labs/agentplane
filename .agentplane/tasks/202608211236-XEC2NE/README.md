@@ -4,7 +4,7 @@ title: "Repair packaged candidate verification-contract refresh after managed up
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -96,10 +96,16 @@ execution_contract:
       - "scripts/lib/installed-migration-matrix.mjs"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/task/verify-record-observed-changes.ts"
+      - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -146,7 +152,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:72cd736118fceeab089fd4e238fda58598fb2541579928c49781514b2bc32503"
+      digest: "sha256:aaa1d16d79481edb8756af3890a34c4b9576d39c55a9cf62506eadf30968514e"
       escalation_reasons:
         - "central_component:scripts/lib/installed-migration-matrix.mjs"
         - "external_effect_requires_real_e2e"
@@ -157,10 +163,16 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/task/verify-record-observed-changes.ts"
+          - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -196,7 +208,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "a2db162a53c1405c06a4c72cdcb0a406da174cc4"
+  message: "🚧 XEC2NE task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -207,6 +221,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/task/verify-record-observed-changes.ts, packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts; repository effects: repository_write, source_code, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a2db162a53c1. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -222,8 +239,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Reproduced the packaged-candidate failure and isolated a direct-mode verification/evaluator diff-base mismatch. No implementation change remains in the worktree. Recommended action: Extend scope to the direct verification observation implementation and its durability test, then use execution.base_sha consistently with evaluator preparation. Requested scope: roots=packages/agentplane/src/commands/task/verify-record-observed-changes.ts,packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts; repository effects=repository_write,source_code,tests; request digest=sha256:63057e2bc751ff80813cca6a93cb1942eb27a5dc3fc0fe41cd4f8ed4fab919f2. Agentplane receipt: external-agent-blocker/tr_7e2472510d4cbba63c98f39fdbb588a8/sha256:fb4b97f9c0a7b9ee74c862aa38fb1840c4016ef1cdfe62b9fd99de446d524631/sha256:63057e2bc751ff80813cca6a93cb1942eb27a5dc3fc0fe41cd4f8ed4fab919f2."
+  -
+    type: "status"
+    at: "2026-08-21T17:16:29.139Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a2db162a53c1. CLI accepted one state-bound external-agent semantic result."
+    commit: "a2db162a53c1405c06a4c72cdcb0a406da174cc4"
 doc_version: 3
-doc_updated_at: "2026-08-21T12:48:42.314Z"
+doc_updated_at: "2026-08-21T17:16:29.139Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the packaged-candidate-flow qualification regression exposed after rebasing PR #4853 onto current main. The direct upgrade scenario must record verification evidence that covers the exact evaluated diff, including .agentplane/agents/UPGRADER.json, without weakening evaluator enforcement. Validate the focused packaged-candidate-flow and relevant tests, publish and merge the prerequisite PR, then refresh PR #4853."
 sections:
@@ -268,6 +293,8 @@ extensions:
     schema_version: 1
     status: "applied"
     transition_id: "tr_7e2472510d4cbba63c98f39fdbb588a8"
+  implementation_commit:
+    hash: "a2db162a53c1405c06a4c72cdcb0a406da174cc4"
   workflow_route_baseline:
     start_head_sha: "3cc2c4424893a61cf576d3bd82622216030b8bb1"
     version: 1
