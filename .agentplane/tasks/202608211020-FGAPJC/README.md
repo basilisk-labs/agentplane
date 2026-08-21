@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 64
+revision: 65
 origin:
   system: "manual"
 depends_on: []
@@ -34,33 +34,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T13:35:39.546Z"
+  updated_at: "2026-08-21T13:44:00.500Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "0a339f786ae5602d7c378c9844e8e36ddafa3931"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "5a68dd0ebe6f6a3377efd4e22ab93fb49258a973"
   blueprint_digest: "15a8472a282a435dc9ede295a803682f824c9089c52fb65d8a94c49be1481dfa"
   evidence_refs:
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-133504400-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-133504400-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8ab444484ee2da5de9a0408920ef2726bc95469189fa9144917696f1a32227fd.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-133504400-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-133504400-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-133504400-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-134327051-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-134327051-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/9a80e179d76bd70fc8e4e4f419da97eb96e90e04265d02671e61d2cc198053ad.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-134327051-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-134327051-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/20260821-134327051-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211020-FGAPJC/README.md"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/e9fcc4a5eff3fadf528e849e6abb36f0836566b571bc8bf912688f8c472baf23.patch"
-    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/6d9caaaa550fbd5694ed23cf0ceeef22c935d72646d7e28f23e5ef50bb496ac7.json"
-    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821133447125-b90640d358358fd9.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/903c9732f3258a64c50155384c0bded4ec54fc2ba0710795bccf66bf445d96e4.patch"
+    - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/4ba8c155ea459e03cfa870db2147103b0ddb188d084b5af6971732910f1712ba.json"
+    - ".agentplane/tasks/202608211020-FGAPJC/verification/20260821134307664-6303fafd2510b88e.json"
     - ".agentplane/tasks/202608211020-FGAPJC/quality/objects/sha256/8caea4f2006dd1b91373fd1ce7c68c558cda026bbc9f5e729421d84935075bb9.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The exact CodeQL-reported /=+$/ expression is no longer present in parseHostUserDecision."
-    - "The replacement scans trailing padding once, rejects more than two padding characters, and performs a single slice."
-    - "The 100,000-character padding regression passes and exercises the hostile-input shape cited by CodeQL."
-    - "Supervisor-owned critical verification passed all 12 chunks; typecheck, policy routing, and doctor also pass."
-    - "Residual risk: Hosted CodeQL and the remaining exact-SHA CI matrix must pass before merge."
+    - "codePointAt performs the same ASCII '=' comparison required by the padding scan."
+    - "No regex, suppression, allowlist, or behavioral scope expansion was introduced."
+    - "lint:core, the focused 8-test suite, typecheck, and all 12 supervisor critical chunks pass."
+    - "Residual risk: Provider checks must pass on the newly published SHA before integration."
 token_usage:
   agent_runs: 23
   input_tokens: null
@@ -771,7 +770,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T13:43:10.436Z"
+doc_updated_at: "2026-08-21T13:44:00.535Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
