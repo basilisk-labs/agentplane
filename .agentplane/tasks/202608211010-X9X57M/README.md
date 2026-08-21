@@ -2,10 +2,10 @@
 id: "202608211010-X9X57M"
 title: "Route new task creation to the primary checkout"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -28,7 +28,7 @@ plan_approval:
   note: "User explicitly approved plan X9X57M in Codex task on 2026-08-21."
 verification:
   state: "ok"
-  updated_at: "2026-08-21T11:57:25.488Z"
+  updated_at: "2026-08-21T12:19:38.969Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
@@ -275,8 +275,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "045177684b4a9ddda25266a94e507ceafe67f93e"
-  message: "🚧 X9X57M task: record external evaluator result"
+  hash: "900058312378fead1b30143ef55486e982909865"
+  message: "🚧 X9X57M task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -311,6 +311,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The task worktree contains only the task-owned quality-review artifacts created by the authorized evaluator rework record; the read-only episode has no writable roots and cannot reconcile them."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 900058312378. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -402,8 +405,22 @@ events:
     at: "2026-08-21T12:14:17.972Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The task worktree contains only the task-owned quality-review artifacts created by the authorized evaluator rework record; the read-only episode has no writable roots and cannot reconcile them."
+  -
+    type: "status"
+    at: "2026-08-21T12:18:44.385Z"
+    author: "SUPERVISOR"
+    from: "DONE"
+    to: "DOING"
+    note: "Implementation committed: 900058312378. CLI accepted one state-bound external-agent semantic result."
+    commit: "900058312378fead1b30143ef55486e982909865"
+  -
+    type: "verify"
+    at: "2026-08-21T12:19:38.969Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T12:14:18.006Z"
+doc_updated_at: "2026-08-21T12:19:41.924Z"
 doc_updated_by: "SUPERVISOR"
 description: "Prevent task new invoked from a branch_pr task worktree from writing the new task README into that worktree; route creation through the primary checkout and add regression coverage for isolated task ownership."
 sections:
@@ -618,6 +635,66 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-21T12:19:38.969Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a053af66390f1f442af2a3fd68fb9d21143c1a9162ba6422c60e24d327d919e6, input_digest=sha256:1a52169581711de6fe1ce69c2c3ba2d54995a13e3aba3d58310dc1f20c991ab0
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211010-X9X57M Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211010-X9X57M Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211010-X9X57M Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211010-X9X57M Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211010-X9X57M Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211010-X9X57M-route-new-task-creation-to-the-primary-checkout/.agentplane/tasks/202608211010-X9X57M/blueprint/resolved-snapshot.json
+    - old_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+    - current_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608211010-X9X57M
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608211010-X9X57M
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -642,8 +719,7 @@ extensions:
     status: "applied"
     transition_id: "tr_62e7ce4306c819c883ddeee581756eb3"
   implementation_commit:
-    hash: "57fccb717fea31fa31489f9e28cc7f9233be5baf"
-    message: "🚧 X9X57M task: apply external agent result"
+    hash: "900058312378fead1b30143ef55486e982909865"
   task_execution_context:
     base_ref: "main"
     base_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
@@ -822,6 +898,66 @@ Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a053af66390f1f442af2a3fd68fb9d21143c1a9162ba6422c60e24d327d919e6, input_digest=sha256:b321349d93df558fcaf6689caa425d95bbad638b017660a08d2e1d5ae08837df
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211010-X9X57M Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211010-X9X57M Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211010-X9X57M Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211010-X9X57M Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211010-X9X57M Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211010-X9X57M-route-new-task-creation-to-the-primary-checkout/.agentplane/tasks/202608211010-X9X57M/blueprint/resolved-snapshot.json
+- old_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+- current_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608211010-X9X57M
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608211010-X9X57M
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T12:19:38.969Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a053af66390f1f442af2a3fd68fb9d21143c1a9162ba6422c60e24d327d919e6, input_digest=sha256:1a52169581711de6fe1ce69c2c3ba2d54995a13e3aba3d58310dc1f20c991ab0
 
 Details:
 

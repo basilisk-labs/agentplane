@@ -6,7 +6,7 @@ Created: 2026-08-21T10:13:57.503Z
 
 - Task: `202608211010-X9X57M`
 - Title: Route new task creation to the primary checkout
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608211010-X9X57M/route-new-task-creation-to-the-primary-checkout`
 - Canonical task record: `.agentplane/tasks/202608211010-X9X57M/README.md`
 
