@@ -15,8 +15,13 @@ Fix the packaged-candidate-flow qualification regression exposed after rebasing 
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note:
+
+```text
+Hosted verify-contract failed format:check for verify-record-observed-changes.ts; apply Prettier and
+reverify exact head.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,9 +32,9 @@ Fix the packaged-candidate-flow qualification regression exposed after rebasing 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../task/verify-record-observed-changes.ts         |  26 +++++-
+ .../task/verify-record-observed-changes.ts         |  23 ++++-
  .../task/verify-record.durability.unit.test.ts     | 102 +++++++++++++++++++++
- 2 files changed, 127 insertions(+), 1 deletion(-)
+ 2 files changed, 124 insertions(+), 1 deletion(-)
 ```
 
 </details>

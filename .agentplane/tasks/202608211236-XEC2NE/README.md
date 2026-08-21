@@ -2,10 +2,10 @@
 id: "202608211236-XEC2NE"
 title: "Repair packaged candidate verification-contract refresh after managed upgrade"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -28,41 +28,22 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved the prepared plan in Codex on 2026-08-21."
 verification:
-  state: "ok"
-  updated_at: "2026-08-21T21:30:14.965Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
-quality_review:
-  state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T21:30:54.181Z"
+  state: "needs_rework"
+  updated_at: "2026-08-21T21:34:43.608Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  note: "Hosted verify-contract failed format:check for verify-record-observed-changes.ts; apply Prettier and reverify exact head."
+  attempts: 1
+quality_review:
+  state: "rework"
+  updated_at: "2026-08-21T21:34:43.608Z"
+  updated_by: "EVALUATOR"
+  note: "Hosted verify-contract failed format:check for verify-record-observed-changes.ts; apply Prettier and reverify exact head."
   evaluated_sha: "30277665d28ff2675083f977113c4ecf1935400f"
   blueprint_digest: "a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03"
   evidence_refs:
-    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213026169-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213026169-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/ced8a02a6c917b67ea6e189a0c943179ed37efc36f4d429f31bae22e85dc8387.md"
-    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213026169-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213026169-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213026169-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211236-XEC2NE/README.md"
-    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/c2a8cc6feec01e0b3e533a4fa4fc3d35d332eac1322ac33f842695110520e797.patch"
-    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/247cbf3cee6d1b0865f48010cd65790878242eae45c937b62cad4a236e0d1714.json"
-    - ".agentplane/tasks/202608211236-XEC2NE/verification/20260821213014965-be6521b70880264c.json"
-    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/73f1a9cd33c6e6e962312f58f47c8f76b5db9208bca7643cb72dee0a8e4ce8a1.json"
-    - ".agentplane/policy/dod.code.md"
-    - ".agentplane/policy/dod.core.md"
-    - ".agentplane/policy/security.must.md"
-    - ".agentplane/policy/workflow.branch_pr.md"
-  findings:
-    - "The implementation no longer treats task_execution_context alone as proof that a direct base was frozen before execution."
-    - "The frozen-base regression covers both commits after the baseline."
-    - "The legacy regression proves that a synthesized evaluated SHA does not collapse changed-path observation to an empty range."
-    - "The packaged eight-scenario migration flow remains green."
-    - "Residual risk: The updated PR head must receive fresh hosted checks and the addressed P1 thread must be resolved before integration."
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211236-XEC2NE-repair-packaged-candidate-verification-contract/.agentplane/tasks/202608211236-XEC2NE/blueprint/resolved-snapshot.json"
+  findings: []
 token_usage:
   agent_runs: 7
   input_tokens: null
@@ -276,9 +257,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit:
-  hash: "18900e2be7ba548fabe8020848b1ebd6fa009176"
-  message: "🚧 XEC2NE task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -393,8 +372,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "18900e2be7ba548fabe8020848b1ebd6fa009176"
+  -
+    type: "verify"
+    at: "2026-08-21T21:34:43.608Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Hosted verify-contract failed format:check for verify-record-observed-changes.ts; apply Prettier and reverify exact head."
 doc_version: 3
-doc_updated_at: "2026-08-21T21:31:16.249Z"
+doc_updated_at: "2026-08-21T21:34:47.664Z"
 doc_updated_by: "CODER"
 description: "Fix the packaged-candidate-flow qualification regression exposed after rebasing PR #4853 onto current main. The direct upgrade scenario must record verification evidence that covers the exact evaluated diff, including .agentplane/agents/UPGRADER.json, without weakening evaluator enforcement. Validate the focused packaged-candidate-flow and relevant tests, publish and merge the prerequisite PR, then refresh PR #4853."
 sections:
@@ -605,6 +590,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608211236-XEC2NE
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-21T21:34:43.608Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Hosted verify-contract failed format:check for verify-record-observed-changes.ts; apply Prettier and reverify exact head.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:420e55f562620587a5fff7e29aa97da200497386784ba9ef82e96c218d22ea21, input_digest=sha256:66e0792e5cdf43bb6f24ccc2b748ced48f2683bf8a7fc8de879bf428f88822d0
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211236-XEC2NE-repair-packaged-candidate-verification-contract/.agentplane/tasks/202608211236-XEC2NE/blueprint/resolved-snapshot.json
+    - old_digest: a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03
+    - current_digest: a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608211236-XEC2NE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -865,6 +880,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608211236-XEC2NE
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T21:34:43.608Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Hosted verify-contract failed format:check for verify-record-observed-changes.ts; apply Prettier and reverify exact head.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:420e55f562620587a5fff7e29aa97da200497386784ba9ef82e96c218d22ea21, input_digest=sha256:66e0792e5cdf43bb6f24ccc2b748ced48f2683bf8a7fc8de879bf428f88822d0
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211236-XEC2NE-repair-packaged-candidate-verification-contract/.agentplane/tasks/202608211236-XEC2NE/blueprint/resolved-snapshot.json
+- old_digest: a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03
+- current_digest: a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608211236-XEC2NE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

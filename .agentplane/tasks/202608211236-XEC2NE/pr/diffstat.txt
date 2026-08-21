@@ -1,3 +1,3 @@
- .../task/verify-record-observed-changes.ts         |  26 +++++-
+ .../task/verify-record-observed-changes.ts         |  23 ++++-
  .../task/verify-record.durability.unit.test.ts     | 102 +++++++++++++++++++++
- 2 files changed, 127 insertions(+), 1 deletion(-)
+ 2 files changed, 124 insertions(+), 1 deletion(-)

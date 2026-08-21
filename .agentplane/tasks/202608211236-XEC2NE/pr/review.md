@@ -6,14 +6,14 @@ Created: 2026-08-21T12:41:06.582Z
 
 - Task: `202608211236-XEC2NE`
 - Title: Repair packaged candidate verification-contract refresh after managed upgrade
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608211236-XEC2NE/repair-packaged-candidate-verification-contract`
 - Canonical task record: `.agentplane/tasks/202608211236-XEC2NE/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Hosted verify-contract failed format:check for verify-record-observed-changes.ts; apply Prettier and reverify exact head.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,9 @@ Created: 2026-08-21T12:41:06.582Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../task/verify-record-observed-changes.ts         |  26 +++++-
+ .../task/verify-record-observed-changes.ts         |  23 ++++-
  .../task/verify-record.durability.unit.test.ts     | 102 +++++++++++++++++++++
- 2 files changed, 127 insertions(+), 1 deletion(-)
+ 2 files changed, 124 insertions(+), 1 deletion(-)
 ```
 
 </details>
