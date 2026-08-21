@@ -13,7 +13,7 @@ Created: 2026-08-20T21:18:16.979Z
 ## Verification
 
 - State: blocked_external
-- Note: Rework: Declared check failed: bun run --filter=agentplane test -- --maxWorkers=1
+- Note: Live GitLab queue canary exposed a GitHub-only hosted-check invocation: run-next omits branch and exact head, so provider dispatch falls through to gh.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
