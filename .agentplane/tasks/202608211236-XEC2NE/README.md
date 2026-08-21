@@ -1,10 +1,10 @@
 ---
 id: "202608211236-XEC2NE"
 title: "Repair packaged candidate verification-contract refresh after managed upgrade"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -28,9 +28,9 @@ plan_approval:
   note: "User explicitly approved the prepared plan in Codex on 2026-08-21."
 verification:
   state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  updated_at: "2026-08-21T17:13:07.957Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 execution_route:
   frozen: true
@@ -67,6 +67,8 @@ execution_contract:
       - "release_metadata"
       - "security_boundary"
     writable_roots:
+      - "packages/agentplane/src/commands/task/verify-record-observed-changes.ts"
+      - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
       - "packages/agentplane/test"
       - "scripts/lib/installed-migration-matrix.mjs"
   declaration:
@@ -79,6 +81,7 @@ execution_contract:
     rationale:
       - "A separate branch_pr task preserves the completed GitLab feature task while allowing an exact-head prerequisite fix and hosted validation."
       - "The failing hosted scenario is deterministic and localized to the installed direct-upgrade qualification flow."
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/task/verify-record-observed-changes.ts,packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts; repository_effects=repository_write,source_code,tests"
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -87,6 +90,8 @@ execution_contract:
     reversibility: "recovery_required"
     schema_version: 2
     scope_roots:
+      - "packages/agentplane/src/commands/task/verify-record-observed-changes.ts"
+      - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
       - "packages/agentplane/test"
       - "scripts/lib/installed-migration-matrix.mjs"
   observed:
@@ -116,6 +121,8 @@ execution_contract:
     contract:
       declared:
         components:
+          - "packages/agentplane/src/commands/task/verify-record-observed-changes.ts"
+          - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
           - "packages/agentplane/test"
           - "scripts/lib/installed-migration-matrix.mjs"
         evidence_requirements:
@@ -139,7 +146,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:b6509e7781632d2b410bb9b0af87f6f2fbdb15a8af36afe380807a11cc50ba44"
+      digest: "sha256:72cd736118fceeab089fd4e238fda58598fb2541579928c49781514b2bc32503"
       escalation_reasons:
         - "central_component:scripts/lib/installed-migration-matrix.mjs"
         - "external_effect_requires_real_e2e"
@@ -197,6 +204,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Reproduced the packaged-candidate failure and isolated a direct-mode verification/evaluator diff-base mismatch. No implementation change remains in the worktree. Recommended action: Extend scope to the direct verification observation implementation and its durability test, then use execution.base_sha consistently with evaluator preparation. Requested scope: roots=packages/agentplane/src/commands/task/verify-record-observed-changes.ts,packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts; repository effects=repository_write,source_code,tests; request digest=sha256:63057e2bc751ff80813cca6a93cb1942eb27a5dc3fc0fe41cd4f8ed4fab919f2. Agentplane receipt: external-agent-blocker/tr_7e2472510d4cbba63c98f39fdbb588a8/sha256:fb4b97f9c0a7b9ee74c862aa38fb1840c4016ef1cdfe62b9fd99de446d524631/sha256:63057e2bc751ff80813cca6a93cb1942eb27a5dc3fc0fe41cd4f8ed4fab919f2."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/task/verify-record-observed-changes.ts, packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts; repository effects: repository_write, source_code, tests."
 events:
   -
     type: "status"
@@ -240,6 +250,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-08-21T17:13:07.957Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:fb4b97f9c0a7b9ee74c862aa38fb1840c4016ef1cdfe62b9fd99de446d524631"
     kind: "task_scope_extension_request"
     request:
@@ -254,7 +266,7 @@ extensions:
         - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
     request_digest: "sha256:63057e2bc751ff80813cca6a93cb1942eb27a5dc3fc0fe41cd4f8ed4fab919f2"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_7e2472510d4cbba63c98f39fdbb588a8"
   workflow_route_baseline:
     start_head_sha: "3cc2c4424893a61cf576d3bd82622216030b8bb1"
