@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -34,16 +34,34 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
-  updated_at: "2026-08-21T21:34:43.608Z"
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-21T21:37:21.250Z"
   updated_by: "EVALUATOR"
-  note: "Hosted verify-contract failed format:check for verify-record-observed-changes.ts; apply Prettier and reverify exact head."
-  evaluated_sha: "30277665d28ff2675083f977113c4ecf1935400f"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "ed1d441185bef1507d9fe9eaf742380b2a33eb01"
   blueprint_digest: "a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03"
   evidence_refs:
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213655410-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213655410-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/894a48a4f4abb4b54ed52ed2c55ccde3abec1f161501ba7aaf7b11ab6e745437.md"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213655410-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213655410-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213655410-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211236-XEC2NE/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211236-XEC2NE-repair-packaged-candidate-verification-contract/.agentplane/tasks/202608211236-XEC2NE/blueprint/resolved-snapshot.json"
-  findings: []
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/3a490643e78a19949ce0cab3785c8b80bc86bb19ae3ee8f199198c24afb30a7e.patch"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/0d8fe0b68cace51946b576b528dcf727d0c9fc52c90062bb7df4125eb6aa410e.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/verification/20260821213643699-7c93bf7e275e4bd7.json"
+    - ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/73f1a9cd33c6e6e962312f58f47c8f76b5db9208bca7643cb72dee0a8e4ce8a1.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The reviewed helper now matches repository Prettier output."
+    - "No semantic lines or regression expectations changed during formatting rework."
+    - "Focused tests and typecheck pass after formatting."
+    - "Residual risk: Fresh hosted checks remain required for the formatted PR head."
 token_usage:
   agent_runs: 7
   input_tokens: null
@@ -398,7 +416,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T21:36:45.951Z"
+doc_updated_at: "2026-08-21T21:37:21.278Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the packaged-candidate-flow qualification regression exposed after rebasing PR #4853 onto current main. The direct upgrade scenario must record verification evidence that covers the exact evaluated diff, including .agentplane/agents/UPGRADER.json, without weakening evaluator enforcement. Validate the focused packaged-candidate-flow and relevant tests, publish and merge the prerequisite PR, then refresh PR #4853."
 sections:

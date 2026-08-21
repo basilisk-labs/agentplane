@@ -1,0 +1,162 @@
+diff --git a/packages/agentplane/src/commands/task/verify-record-observed-changes.ts b/packages/agentplane/src/commands/task/verify-record-observed-changes.ts
+index 938bc8616..b11bbccad 100644
+--- a/packages/agentplane/src/commands/task/verify-record-observed-changes.ts
++++ b/packages/agentplane/src/commands/task/verify-record-observed-changes.ts
+@@ -2,9 +2,21 @@ import {
+   resolveActualDiffNames,
+   resolveEvaluatorDiffBase,
+ } from "../evaluator/evaluator-diff-evidence.js";
++import { isRecord } from "../../shared/guards.js";
+ import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
++function hasFrozenDirectExecutionBase(extensions: unknown, executionBaseSha: string): boolean {
++  if (!isRecord(extensions)) return false;
++  const routeBaseline = isRecord(extensions.workflow_route_baseline)
++    ? extensions.workflow_route_baseline
++    : null;
++  return (
++    typeof routeBaseline?.start_head_sha === "string" &&
++    routeBaseline.start_head_sha.trim() === executionBaseSha
++  );
++}
++
+ export async function resolveObservedVerificationChangedPaths(opts: {
+   ctx: CommandContext;
+   evaluatedSha: string | null;
+@@ -14,7 +26,16 @@ export async function resolveObservedVerificationChangedPaths(opts: {
+ }): Promise<string[]> {
+   if (!opts.evaluatedSha) return [];
+   const { config, resolvedProject } = opts.ctx;
+-  const baseRef = opts.execution.selected_mode === "branch_pr" ? opts.execution.base_sha : null;
++  const task =
++    opts.execution.selected_mode === "direct"
++      ? await opts.ctx.taskBackend.getTask(opts.taskId)
++      : null;
++  const baseRef =
++    opts.execution.selected_mode === "branch_pr" ||
++    hasFrozenDirectExecutionBase(task?.extensions, opts.execution.base_sha)
++      ? opts.execution.base_sha
++      : null;
++  // Use a frozen execution boundary when it is persisted; legacy direct tasks retain parent fallback.
+   const diffBaseSha = await resolveEvaluatorDiffBase({
+     gitRoot: resolvedProject.gitRoot,
+     evaluatedSha: opts.evaluatedSha,
+diff --git a/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts b/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
+index 7bdde5ae9..b86b5428a 100644
+--- a/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
++++ b/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
+@@ -9,6 +9,7 @@ import { loadCommandContext } from "../shared/task-backend.js";
+ import * as taskMutation from "../shared/task-mutation.js";
+ import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
+ import { cmdVerifyParsed } from "./verify-record.js";
++import { resolveObservedVerificationChangedPaths } from "./verify-record-observed-changes.js";
+ import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
+ import { execFileAsync } from "@agentplaneorg/core/process";
+ 
+@@ -320,4 +321,105 @@ describe("task verification durability", () => {
+     };
+     expect(record.input?.verification_contract_digest).toBe(contract?.digest);
+   });
++
++  it("observes the complete direct task diff from the frozen execution base", async () => {
++    const root = await makeRepo();
++    const taskId = "202602050900-V1F4B";
++    await addTask(root, taskId);
++    await execFileAsync("git", ["add", "."], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: seed direct task base"], { cwd: root });
++    const { stdout: baseShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    const baseSha = baseShaOutput.trim();
++    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
++    const task = await ctx.taskBackend.getTask(taskId);
++    if (!task) throw new Error("missing direct task fixture");
++    await ctx.taskBackend.writeTask?.({
++      ...task,
++      extensions: {
++        ...task.extensions,
++        workflow_route_baseline: {
++          start_head_sha: baseSha,
++        },
++      },
++    });
++    await mkdir(path.join(root, "packages", "app"), { recursive: true });
++    await writeFile(path.join(root, "packages", "app", "first.ts"), "export const first = 1;\n");
++    await execFileAsync("git", ["add", "packages/app/first.ts"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: first direct task change"], { cwd: root });
++    await writeFile(path.join(root, "packages", "app", "second.ts"), "export const second = 2;\n");
++    await execFileAsync("git", ["add", "packages/app/second.ts"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: second direct task change"], { cwd: root });
++    const { stdout: evaluatedShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    const changedPaths = await resolveObservedVerificationChangedPaths({
++      ctx,
++      evaluatedSha: evaluatedShaOutput.trim(),
++      taskId,
++      artifactTaskIds: [taskId],
++      execution: {
++        schema_version: 1,
++        primary_task_id: taskId,
++        task_ids: [taskId],
++        repository_mode: "direct",
++        selected_mode: "direct",
++        requested_mode: "direct",
++        route_source: "execution_contract",
++        reason_codes: [],
++        base_ref: "main",
++        base_sha: baseSha,
++        authoritative_task_source: "base_checkout",
++      },
++    });
++
++    expect(changedPaths).toEqual(["packages/app/first.ts", "packages/app/second.ts"]);
++  });
++
++  it("uses the single-commit fallback when a legacy direct base was not frozen", async () => {
++    const root = await makeRepo();
++    const taskId = "202602050900-V1F5";
++    await addTask(root, taskId);
++    await execFileAsync("git", ["add", "."], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: seed legacy direct task"], { cwd: root });
++    await mkdir(path.join(root, "packages", "app"), { recursive: true });
++    await writeFile(path.join(root, "packages", "app", "first.ts"), "export const first = 1;\n");
++    await execFileAsync("git", ["add", "packages/app/first.ts"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: first legacy direct change"], {
++      cwd: root,
++    });
++    await writeFile(path.join(root, "packages", "app", "second.ts"), "export const second = 2;\n");
++    await execFileAsync("git", ["add", "packages/app/second.ts"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: second legacy direct change"], {
++      cwd: root,
++    });
++    const { stdout: evaluatedShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    const evaluatedSha = evaluatedShaOutput.trim();
++    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
++
++    const changedPaths = await resolveObservedVerificationChangedPaths({
++      ctx,
++      evaluatedSha,
++      taskId,
++      artifactTaskIds: [taskId],
++      execution: {
++        schema_version: 1,
++        primary_task_id: taskId,
++        task_ids: [taskId],
++        repository_mode: "direct",
++        selected_mode: "direct",
++        requested_mode: "direct",
++        route_source: "legacy_migration",
++        reason_codes: [],
++        base_ref: "main",
++        base_sha: evaluatedSha,
++        authoritative_task_source: "base_checkout",
++      },
++    });
++
++    expect(changedPaths).toEqual(["packages/app/second.ts"]);
++  });
+ });

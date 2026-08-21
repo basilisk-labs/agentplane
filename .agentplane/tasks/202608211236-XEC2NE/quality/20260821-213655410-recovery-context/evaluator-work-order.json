@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608211236-XEC2NE-a0d145a0eb16365021cd5caf",
+  "prepared_at": "2026-08-21T21:36:55.410Z",
+  "task": {
+    "id": "202608211236-XEC2NE",
+    "revision": 27,
+    "objective": "Repair packaged candidate verification-contract refresh after managed upgrade\n\nFix the packaged-candidate-flow qualification regression exposed after rebasing PR #4853 onto current main. The direct upgrade scenario must record verification evidence that covers the exact evaluated diff, including .agentplane/agents/UPGRADER.json, without weakening evaluator enforcement. Validate the focused packaged-candidate-flow and relevant tests, publish and merge the prerequisite PR, then refresh PR #4853.",
+    "acceptance_criteria": [
+      "node scripts/release/check-local-tarball-install-smoke.mjs",
+      "- In scope: Fix the packaged-candidate-flow qualification regression exposed after rebasing PR #4853 onto current main. The direct upgrade scenario must record verification evidence that covers the exact evaluated diff, including .agentplane/agents/UPGRADER.json, without weakening evaluator enforcement. Validate the focused packaged-candidate-flow and relevant tests, publish and merge the prerequisite PR, then refresh PR #4853.\n- Out of scope: unrelated refactors not required for \"Repair packaged candidate verification-contract refresh after managed upgrade\".",
+      "Reproduce the packaged-candidate-flow failure on current main, identify the smallest fixture correction that refreshes verification evidence after managed upgrade mutations without weakening evaluator enforcement, add focused regression coverage if required, run focused qualification and affected tests, then publish and merge the prerequisite PR before refreshing PR #4853.",
+      "PLANNER fallback scaffold for \"Repair packaged candidate verification-contract refresh after managed upgrade\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Repair packaged candidate verification-contract refresh after managed upgrade\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "ed1d441185bef1507d9fe9eaf742380b2a33eb01",
+  "diff_base_sha": "3cc2c4424893a61cf576d3bd82622216030b8bb1",
+  "blueprint_digest": "a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608211236-XEC2NE/quality/20260821-213655410-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:e58716ae3d73a5f8b45a62f619b48e21b81139512067238ec9083a9674ad9b4d",
+    "prompt_path": ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/894a48a4f4abb4b54ed52ed2c55ccde3abec1f161501ba7aaf7b11ab6e745437.md",
+    "result_schema_path": ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608211236-XEC2NE/README.md",
+      "sha256": "sha256:629745eb044ad078619ce70a8dca8d6d1ec3769005ded7abb00de5c532f7a30e",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/3a490643e78a19949ce0cab3785c8b80bc86bb19ae3ee8f199198c24afb30a7e.patch",
+      "sha256": "sha256:3a490643e78a19949ce0cab3785c8b80bc86bb19ae3ee8f199198c24afb30a7e",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/0d8fe0b68cace51946b576b528dcf727d0c9fc52c90062bb7df4125eb6aa410e.json",
+      "sha256": "sha256:0d8fe0b68cace51946b576b528dcf727d0c9fc52c90062bb7df4125eb6aa410e",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608211236-XEC2NE/verification/20260821213643699-7c93bf7e275e4bd7.json",
+      "sha256": "sha256:7fdfaf1671dbc62cad15b9495fe7d10f8d52efe2752cda1e9217b91e3e48dc2f",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/73f1a9cd33c6e6e962312f58f47c8f76b5db9208bca7643cb72dee0a8e4ce8a1.json",
+      "sha256": "sha256:73f1a9cd33c6e6e962312f58f47c8f76b5db9208bca7643cb72dee0a8e4ce8a1",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

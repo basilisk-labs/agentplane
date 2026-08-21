@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608211236-XEC2NE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-21T21:37:21.250Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 4 typed finding(s).",
+  "evaluated_sha": "ed1d441185bef1507d9fe9eaf742380b2a33eb01",
+  "blueprint_digest": "a2d2e4b05db3a0394b65fc8b0dd4e22b31dce02c29abe3b05f7c9b3bfdffac03",
+  "findings": [
+    "The reviewed helper now matches repository Prettier output.",
+    "No semantic lines or regression expectations changed during formatting rework.",
+    "Focused tests and typecheck pass after formatting.",
+    "Residual risk: Fresh hosted checks remain required for the formatted PR head."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608211236-XEC2NE/quality/objects/sha256/3a490643e78a19949ce0cab3785c8b80bc86bb19ae3ee8f199198c24afb30a7e.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
