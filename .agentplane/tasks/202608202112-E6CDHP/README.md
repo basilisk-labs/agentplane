@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 65
+revision: 66
 origin:
   system: "manual"
 depends_on: []
@@ -28,9 +28,9 @@ plan_approval:
   note: "Approved explicitly by Denis in Codex on 2026-08-21 after reviewing the live GitLab findings and remediation plan."
 verification:
   state: "ok"
-  updated_at: "2026-08-21T11:48:49.292Z"
-  updated_by: "TESTER"
-  note: "Accepted with operator-approved verification exception: GitLab implementation and current-head focused regression pass; unstable unrelated local full-suite failures remain recorded and accepted as residual harness risk. Exact-head hosted checks remain mandatory before merge."
+  updated_at: "2026-08-21T22:10:47.917Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
   state: "pass"
@@ -716,8 +716,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "87b13c778358236a40426224165a6d30fd660cb3"
+  -
+    type: "verify"
+    at: "2026-08-21T22:10:47.917Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-21T11:51:39.086Z"
+doc_updated_at: "2026-08-21T22:11:10.147Z"
 doc_updated_by: "CODER"
 description: "Repair the two defects reproduced against gitlab.nordavind.ru: glab JSON mutation requests omit Content-Type application/json and conflict preparation applies GitHub-only mergeability coherence rules to GitLab observations. Add focused regression tests, preserve GitHub behavior, and qualify the local implementation before repeating the authorized live canary."
 sections:
@@ -1293,6 +1299,72 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-21T22:10:47.917Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:f34c60552bbd481dd15f10a0354cb114d458823e95f4806fe6dc752468d4dc36
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202112-E6CDHP Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202112-E6CDHP Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202112-E6CDHP Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202112-E6CDHP Verification Contract check hosted_integration
+
+    Check: real_e2e
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202112-E6CDHP Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608202112-E6CDHP Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+    - old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1324,6 +1396,7 @@ extensions:
   task_execution_context:
     base_ref: "main"
     base_sha: "60be0145753e9e2aecf31f4bbd8471895db13395"
+    repository_identity: null
     schema_version: 1
   workflow_route_baseline:
     start_head_sha: "60be0145753e9e2aecf31f4bbd8471895db13395"
@@ -1892,6 +1965,72 @@ Command: inspect implementation diff, regression tests, and provider readbacks
 Result: pass
 Evidence: GitLab JSON mutations set application/json with explicit hostname; GitLab mergeability states use provider-aware coherence; GitHub behavior remains covered; user accepted only the residual local full-regression instability
 Scope: approved universal GitHub/GitLab behavior
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608202112-E6CDHP-fix-live-gitlab-mr-transport-and-provider-neutra/.agentplane/tasks/202608202112-E6CDHP/blueprint/resolved-snapshot.json
+- old_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- current_digest: e210c95b93855d3926f8366484e5e044283f60b039228bebfd8ef9ccd144705c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608202112-E6CDHP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T22:10:47.917Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c, input_digest=sha256:f34c60552bbd481dd15f10a0354cb114d458823e95f4806fe6dc752468d4dc36
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202112-E6CDHP Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202112-E6CDHP Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202112-E6CDHP Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202112-E6CDHP Verification Contract check hosted_integration
+
+Check: real_e2e
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202112-E6CDHP Verification Contract check real_e2e
+
+Check: task_outcome
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608202112-E6CDHP Verification Contract check task_outcome
 
 BlueprintSnapshotRef:
 - state: current

@@ -1,0 +1,112 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run test:critical\nResult: pass\nEvidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks\nScope: branch_pr task 202608202112-E6CDHP Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bun run test:critical\nResult: pass\nEvidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks\nScope: branch_pr task 202608202112-E6CDHP Verification Contract check critical_paths\n\nCheck: full_regression\nCommand: bun run test:critical\nResult: pass\nEvidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks\nScope: branch_pr task 202608202112-E6CDHP Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: bun run test:critical\nResult: pass\nEvidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks\nScope: branch_pr task 202608202112-E6CDHP Verification Contract check hosted_integration\n\nCheck: real_e2e\nCommand: bun run test:critical\nResult: pass\nEvidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks\nScope: branch_pr task 202608202112-E6CDHP Verification Contract check real_e2e\n\nCheck: task_outcome\nCommand: bun run test:critical\nResult: pass\nEvidence: .agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks\nScope: branch_pr task 202608202112-E6CDHP Verification Contract check task_outcome",
+  "digest": "sha256:ebb201d34ad3f68a045f974fa3fe5c1a1ff6374602c32271ee6d6b84b3507e3a",
+  "implementation_sha": "ea947fe102c5b5d354ad1a441cd0efe578f5de47",
+  "input": {
+    "context": {
+      "digest": "sha256:c604a3866814dba57d1e8b75bf0340937981e8280dda0ec9356a7987f4282f36",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:f34c60552bbd481dd15f10a0354cb114d458823e95f4806fe6dc752468d4dc36",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:f8a7c06ad1cbd504ee92ff48d84fcb249f7b262d208ca47bfaededbaa8c419e6",
+      "digest": "sha256:58500837a1fa8bbc7c1d5bba8d8c979b94316a7d1d0eacedd0af7474a93e7e24",
+      "references": [
+        {
+          "digest": "sha256:b52df0e6b2c33b74092c334581d414221de603845e48e7773fbbcdadfb4c7cd5",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608202112-E6CDHP/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "60be0145753e9e2aecf31f4bbd8471895db13395",
+      "digest": "sha256:6e8c4205f8f737f76acc6b2e3b1e2671df1eac19c0da3072ab510410901d2ee2",
+      "primary_task_id": "202608202112-E6CDHP",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_external_write",
+        "effect_publish",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608202112-E6CDHP"
+      ]
+    },
+    "implementation": {
+      "base_sha": "60be0145753e9e2aecf31f4bbd8471895db13395",
+      "digest": "sha256:3127d140162bca1f3b907f27d7d81ece9ef8136308a12ff078dcf35d69fc215a",
+      "strategy": "branch_diff",
+      "target_sha": "ea947fe102c5b5d354ad1a441cd0efe578f5de47"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:17bee5ef47bd743a9b544ff917267afb11a1346671d405aeb1ec6e05ca372b19",
+    "verify_steps_digest": "sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-08-21T22:10:47.917Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Fix live GitLab MR transport and provider-neutral mergeability validation\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Fix live GitLab MR transport and provider-neutral mergeability validation\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:8eecc6a8269b550473fcd07004d0715ecdd3c25edd9b934120e147076bff5c7c",
+  "task_id": "202608202112-E6CDHP",
+  "verification_command": "agentplane verify 202608202112-E6CDHP --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
