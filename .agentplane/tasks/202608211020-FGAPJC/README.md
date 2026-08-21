@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 137
+revision: 138
 origin:
   system: "manual"
 depends_on: []
@@ -992,6 +992,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The dirty worktree is intentional implementation rework for the exact hosted Hotspot Threshold failure, but this recovery packet is read-only because the task was still projected as DONE."
 events:
   -
     type: "status"
@@ -1571,9 +1574,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "1d39287474377f56b4e41b0b5599757cb180357c"
+  -
+    type: "comment"
+    at: "2026-08-21T19:14:37.859Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The dirty worktree is intentional implementation rework for the exact hosted Hotspot Threshold failure, but this recovery packet is read-only because the task was still projected as DONE."
 doc_version: 3
-doc_updated_at: "2026-08-21T19:08:46.472Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-21T19:14:37.901Z"
+doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
   Summary: |-
