@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check c6020c2167da1faa95bf944a072f70ae36f88868..5ebb45c0efe6b659654defc99c94fbe245e120e9",
+      "command": "git diff --check 103d6b4acce33c88d2f40fc1af8f1a4d72613cb8..d4ff082349267a40582a7ddd534db6a1a9f0125b",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB c6020c2167da1faa95bf944a072f70ae36f88868..5ebb45c0efe6b659654defc99c94fbe245e120e9",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 103d6b4acce33c88d2f40fc1af8f1a4d72613cb8..d4ff082349267a40582a7ddd534db6a1a9f0125b",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,12 +21,9 @@
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.ts",
-        "M\tpackages/agentplane/src/commands/task/configured-authority.test.ts",
-        "M\tpackages/agentplane/src/commands/task/execution-authority-context.test.ts",
-        "M\tpackages/agentplane/src/commands/task/execution-authority-context.ts"
+        "M\tpackages/agentplane/src/commands/shared/task-backend.ts",
+        "A\tpackages/agentplane/src/commands/task/new.primary-checkout.test.ts",
+        "M\tpackages/agentplane/src/commands/task/new.ts"
       ]
     },
     {
@@ -36,8 +33,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "c6020c2167da1faa95bf944a072f70ae36f88868",
-  "implementation_commit": "5ebb45c0efe6b659654defc99c94fbe245e120e9",
+  "execution_base_commit": "103d6b4acce33c88d2f40fc1af8f1a4d72613cb8",
+  "implementation_commit": "d4ff082349267a40582a7ddd534db6a1a9f0125b",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
