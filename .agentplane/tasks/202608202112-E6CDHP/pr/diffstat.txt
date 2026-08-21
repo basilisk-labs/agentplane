@@ -6,6 +6,8 @@
  .../src/commands/integrate-queue.command.ts        |   2 +
  .../src/commands/pr/conflict-rework.test.ts        |  25 +++++
  .../agentplane/src/commands/pr/conflict-rework.ts  |  27 +++++-
+ .../src/commands/pr/hosted-checks.gitlab.test.ts   |  55 ++++++++++-
+ .../agentplane/src/commands/pr/hosted-checks.ts    |  19 ++++
  .../agentplane/src/commands/pr/integrate/cmd.ts    |   3 +-
  .../pr/integrate/internal/route-label.test.ts      |  17 ++++
  .../commands/pr/integrate/internal/route-label.ts  |   7 ++
@@ -13,4 +15,4 @@
  .../src/commands/pr/internal/glab-api.ts           |   4 +-
  .../src/commands/pr/internal/sync-gitlab.test.ts   |  33 +++++++
  .../src/commands/pr/internal/sync-gitlab.ts        |  29 ++++++
- 15 files changed, 327 insertions(+), 14 deletions(-)
+ 17 files changed, 397 insertions(+), 18 deletions(-)
