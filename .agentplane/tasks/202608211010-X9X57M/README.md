@@ -4,7 +4,7 @@ title: "Route new task creation to the primary checkout"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -31,6 +31,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-21T10:55:38.986Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "c716b5d46f6b70a318d93abf54aec51d89de74bb"
+  blueprint_digest: "4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71"
+  evidence_refs:
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-105405490-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-105405490-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/95af4e70e729996b5024c93cafa3daf9d03f1ecbc9388e836fca3402a428e3da.md"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-105405490-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-105405490-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-105405490-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211010-X9X57M/README.md"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/3d3e4e7fae896d1b15c38d4c9ba904a8b3c6f4916af312fa788e12a81df2f2c3.patch"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/e42a3f26cf5fc1ee049ad7181be250c97e80288f50c7129f6265c808d621594e.json"
+    - ".agentplane/tasks/202608211010-X9X57M/verification/20260821105354772-468c12cc80ff46f0.json"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/b75dd320230b9b3ba9fee56b7a965dbbe0cc5b8a2cef042e9525c7af8a6c0669.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The source change directly addresses the reported mutual-block condition: a sibling task README is no longer created inside the invoking task worktree."
+    - "Regression coverage exercises the context resolver, task new CLI behavior, task begin --plan compatibility behavior, and the supervisor-compatible explicit test path."
+    - "Supervisor-managed declared checks all passed after replacing the non-portable wildcard with the explicit regression test path."
+    - "The combined focused suite passed 43 tests across four files during independent evaluator execution."
 execution_route:
   frozen: true
   reason_codes:
