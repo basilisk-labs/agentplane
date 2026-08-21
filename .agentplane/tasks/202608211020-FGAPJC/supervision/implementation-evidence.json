@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 1836ad946ff80d3d3d0d95c19dcd7f037d57fe5c..a84dd9e3fb0566a35efdff8222ab20b9dd994bd0",
+      "command": "git diff --check 883886d39d8245cc2ce16c38acbe54156b56cf0f..68ad03811814fd7c8144525c028f0c9ec6542e82",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,20 +13,24 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1836ad946ff80d3d3d0d95c19dcd7f037d57fe5c..a84dd9e3fb0566a35efdff8222ab20b9dd994bd0",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 883886d39d8245cc2ce16c38acbe54156b56cf0f..68ad03811814fd7c8144525c028f0c9ec6542e82",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
+        "M\t.agentplane/tasks/202608211020-FGAPJC/README.md",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
+        "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-title.txt",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
-        "M\tcheck",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
-        "M\tscripts/checks/run-local-ci.mjs"
+        "A\t.agentplane/tasks/202608211020-FGAPJC/verification/20260821174557634-b581a6b9e360bc32.json",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-start.command.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-start.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
+        "M\tpackages/agentplane/src/commands/task/handoff.shared.ts",
+        "M\tpackages/agentplane/src/commands/task/new.ts"
       ]
     },
     {
@@ -36,41 +40,53 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "1836ad946ff80d3d3d0d95c19dcd7f037d57fe5c",
-  "implementation_commit": "a84dd9e3fb0566a35efdff8222ab20b9dd994bd0",
+  "execution_base_commit": "883886d39d8245cc2ce16c38acbe54156b56cf0f",
+  "implementation_commit": "68ad03811814fd7c8144525c028f0c9ec6542e82",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M check",
-      " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
-      " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
-      " M scripts/checks/run-local-ci.mjs"
+      " M .agentplane/tasks/202608211020-FGAPJC/README.md",
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/github-title.txt",
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/review.md",
+      "?? .agentplane/tasks/202608211020-FGAPJC/verification/20260821174557634-b581a6b9e360bc32.json"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": " M check"
+        "line": " M .agentplane/tasks/202608211020-FGAPJC/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+        "line": " M .agentplane/tasks/202608211020-FGAPJC/pr/github-body.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+        "line": " M .agentplane/tasks/202608211020-FGAPJC/pr/github-title.txt"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M scripts/checks/run-local-ci.mjs"
+        "line": " M .agentplane/tasks/202608211020-FGAPJC/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608211020-FGAPJC/pr/review.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608211020-FGAPJC/verification/20260821174557634-b581a6b9e360bc32.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M check",
-      " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
-      " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
-      " M scripts/checks/run-local-ci.mjs"
+      " M .agentplane/tasks/202608211020-FGAPJC/README.md",
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/github-title.txt",
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
+      " M .agentplane/tasks/202608211020-FGAPJC/pr/review.md",
+      "?? .agentplane/tasks/202608211020-FGAPJC/verification/20260821174557634-b581a6b9e360bc32.json"
     ],
     "unchanged_from_execution_baseline": []
   },

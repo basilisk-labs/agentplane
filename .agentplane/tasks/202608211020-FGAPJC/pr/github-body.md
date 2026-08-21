@@ -15,8 +15,8 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: address unresolved PR review threads for frozen task base routing and detached-HEAD task creation.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

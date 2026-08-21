@@ -12,8 +12,8 @@ Created: 2026-08-21T10:27:11.359Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: address unresolved PR review threads for frozen task base routing and detached-HEAD task creation.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
