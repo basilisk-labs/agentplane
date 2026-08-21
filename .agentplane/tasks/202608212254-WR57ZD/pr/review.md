@@ -6,7 +6,7 @@ Created: 2026-08-21T22:56:08.380Z
 
 - Task: `202608212254-WR57ZD`
 - Title: Accept exact tree identity for GitHub rebase cleanup
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608212254-WR57ZD/accept-exact-tree-identity-for-github-rebase-cle`
 - Canonical task record: `.agentplane/tasks/202608212254-WR57ZD/README.md`
 
