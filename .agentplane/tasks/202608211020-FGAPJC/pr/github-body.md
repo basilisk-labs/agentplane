@@ -16,12 +16,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-The strict-base update preserves the reviewed implementation, and the supervisor-owned verification
-record covers the implementation after merging the current protected base.
-```
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
