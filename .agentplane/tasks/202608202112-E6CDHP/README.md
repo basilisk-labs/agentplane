@@ -1,10 +1,10 @@
 ---
 id: "202608202112-E6CDHP"
 title: "Fix live GitLab MR transport and provider-neutral mergeability validation"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 42
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,10 @@ plan_approval:
   updated_by: "USER"
   note: "Approved explicitly by Denis in Codex on 2026-08-21 after reviewing the live GitLab findings and remediation plan."
 verification:
-  state: "blocked_external"
-  updated_at: "2026-08-21T00:50:54.216Z"
-  updated_by: "TESTER"
-  note: "Live GitLab canary requires integration queue to pass branch and exact head into provider-neutral hosted checks."
+  state: "pending"
+  updated_at: "2026-08-21T00:52:24.578Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 8
 execution_route:
   frozen: true
@@ -67,6 +67,8 @@ execution_contract:
       - "security_boundary"
     writable_roots:
       - "packages/agentplane/src/commands/branch"
+      - "packages/agentplane/src/commands/integrate-queue.command.test.ts"
+      - "packages/agentplane/src/commands/integrate-queue.command.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.ts"
       - "packages/agentplane/src/commands/pr/integrate"
@@ -83,6 +85,7 @@ execution_contract:
       - "The requested GitLab support requires a reviewable branch because it changes hosted mutation and merge routing behavior."
       - "The two defects are narrowly reproduced and can be covered by existing GitLab transport and conflict-route test seams."
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/branch,packages/agentplane/src/commands/pr/integrate; repository_effects=repository_write,source_code,tests"
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/integrate-queue.command.test.ts,packages/agentplane/src/commands/integrate-queue.command.ts; repository_effects=repository_write,source_code,tests"
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -92,13 +95,14 @@ execution_contract:
     schema_version: 2
     scope_roots:
       - "packages/agentplane/src/commands/branch"
+      - "packages/agentplane/src/commands/integrate-queue.command.test.ts"
+      - "packages/agentplane/src/commands/integrate-queue.command.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.ts"
       - "packages/agentplane/src/commands/pr/integrate"
       - "packages/agentplane/src/commands/pr/internal"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -120,10 +124,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -145,6 +146,8 @@ execution_contract:
       declared:
         components:
           - "packages/agentplane/src/commands/branch"
+          - "packages/agentplane/src/commands/integrate-queue.command.test.ts"
+          - "packages/agentplane/src/commands/integrate-queue.command.ts"
           - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
           - "packages/agentplane/src/commands/pr/conflict-rework.ts"
           - "packages/agentplane/src/commands/pr/integrate"
@@ -170,7 +173,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:73295117a5a086df05534dcf4510cb71b5b7a5056885cc6eb49c04b2e6c5525f"
+      digest: "sha256:578dc8c5fa9cc3eac3b635989a31333cd914f20d729f72d578db600d3a3aa9e4"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -236,7 +239,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
@@ -299,6 +301,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Live GitLab integration-queue qualification exposed a provider-dispatch defect outside the current writable roots. Recommended action: Approve the exact scope extension, then pass branch and expectedHeadSha into waitForHostedChecks and add focused queue regression coverage. Requested scope: roots=packages/agentplane/src/commands/integrate-queue.command.test.ts,packages/agentplane/src/commands/integrate-queue.command.ts; repository effects=repository_write,source_code,tests; request digest=sha256:5c4d87ed356b0e1fc215b2ea20b70952ca5d28ff4adcf29d6c758254b192fc20. Agentplane receipt: external-agent-blocker/tr_3b01dfcf5244c58ca954c69fc7f9abae/sha256:c42018799cc77c09eaf917e604f07696ff78607e7f90dd86ab8b55b740af2fda/sha256:5c4d87ed356b0e1fc215b2ea20b70952ca5d28ff4adcf29d6c758254b192fc20."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/integrate-queue.command.test.ts, packages/agentplane/src/commands/integrate-queue.command.ts; repository effects: repository_write, source_code, tests."
 events:
   -
     type: "status"
@@ -799,6 +804,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-08-21T00:52:24.578Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:c42018799cc77c09eaf917e604f07696ff78607e7f90dd86ab8b55b740af2fda"
     kind: "task_scope_extension_request"
     request:
@@ -813,7 +820,7 @@ extensions:
         - "packages/agentplane/src/commands/integrate-queue.command.ts"
     request_digest: "sha256:5c4d87ed356b0e1fc215b2ea20b70952ca5d28ff4adcf29d6c758254b192fc20"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_3b01dfcf5244c58ca954c69fc7f9abae"
   implementation_commit:
     hash: "cb9e5bb7b917b7047e2ed24382100765b925625c"
