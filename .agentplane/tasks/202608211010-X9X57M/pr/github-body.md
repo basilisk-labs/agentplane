@@ -15,8 +15,15 @@ Prevent task new invoked from a branch_pr task worktree from writing the new tas
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note:
+
+```text
+GitHub Actions Core CI verify-contract failed format:check on
+packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts and
+packages/agentplane/src/commands/task/begin.command.ts at head
+45b781db9b7b27af6b625682a110eb25d82b8075.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -31,10 +38,10 @@ Prevent task new invoked from a branch_pr task worktree from writing the new tas
  .../src/cli/run-cli.core.tasks.create.test.ts      | 51 ++++++++++++++++++
  .../src/commands/shared/task-backend.test.ts       | 31 +++++++++++
  .../agentplane/src/commands/shared/task-backend.ts | 24 ++++++---
- .../agentplane/src/commands/task/begin.command.ts  | 11 ++--
+ .../agentplane/src/commands/task/begin.command.ts  |  8 +--
  .../src/commands/task/new.primary-checkout.test.ts | 62 ++++++++++++++++++++++
  packages/agentplane/src/commands/task/new.ts       | 13 ++++-
- 7 files changed, 229 insertions(+), 12 deletions(-)
+ 7 files changed, 226 insertions(+), 12 deletions(-)
 ```
 
 </details>

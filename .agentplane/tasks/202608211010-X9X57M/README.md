@@ -2,10 +2,10 @@
 id: "202608211010-X9X57M"
 title: "Route new task creation to the primary checkout"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +27,11 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved plan X9X57M in Codex task on 2026-08-21."
 verification:
-  state: "ok"
-  updated_at: "2026-08-21T10:53:54.772Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-21T11:53:29.922Z"
+  updated_by: "TESTER"
+  note: "GitHub Actions Core CI verify-contract failed format:check on packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts and packages/agentplane/src/commands/task/begin.command.ts at head 45b781db9b7b27af6b625682a110eb25d82b8075."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -140,7 +140,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task/new.primary-checkout.test.ts"
       - "packages/agentplane/src/commands/task/new.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -172,6 +173,9 @@ execution_contract:
       -
         id: "recorded-check-5"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -271,9 +275,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "dc58e8446fc14e4ba772903124c3dab5f51d88db"
-  message: "🚧 X9X57M task: record external evaluator result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -357,8 +360,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "dc58e8446fc14e4ba772903124c3dab5f51d88db"
+  -
+    type: "verify"
+    at: "2026-08-21T11:53:29.922Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "GitHub Actions Core CI verify-contract failed format:check on packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts and packages/agentplane/src/commands/task/begin.command.ts at head 45b781db9b7b27af6b625682a110eb25d82b8075."
 doc_version: 3
-doc_updated_at: "2026-08-21T11:47:46.205Z"
+doc_updated_at: "2026-08-21T11:53:34.192Z"
 doc_updated_by: "CODER"
 description: "Prevent task new invoked from a branch_pr task worktree from writing the new task README into that worktree; route creation through the primary checkout and add regression coverage for isolated task ownership."
 sections:
@@ -477,6 +486,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608211010-X9X57M
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-21T11:53:29.922Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: GitHub Actions Core CI verify-contract failed format:check on packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts and packages/agentplane/src/commands/task/begin.command.ts at head 45b781db9b7b27af6b625682a110eb25d82b8075.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a053af66390f1f442af2a3fd68fb9d21143c1a9162ba6422c60e24d327d919e6, input_digest=sha256:71e29283b18fb173cb808230360aa3bbeb8b576bc2eed96e2eaf1108a8e02a68
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211010-X9X57M-route-new-task-creation-to-the-primary-checkout/.agentplane/tasks/202608211010-X9X57M/blueprint/resolved-snapshot.json
+    - old_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+    - current_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608211010-X9X57M
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -643,6 +682,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608211010-X9X57M
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T11:53:29.922Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: GitHub Actions Core CI verify-contract failed format:check on packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts and packages/agentplane/src/commands/task/begin.command.ts at head 45b781db9b7b27af6b625682a110eb25d82b8075.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a053af66390f1f442af2a3fd68fb9d21143c1a9162ba6422c60e24d327d919e6, input_digest=sha256:71e29283b18fb173cb808230360aa3bbeb8b576bc2eed96e2eaf1108a8e02a68
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211010-X9X57M-route-new-task-creation-to-the-primary-checkout/.agentplane/tasks/202608211010-X9X57M/blueprint/resolved-snapshot.json
+- old_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+- current_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608211010-X9X57M
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

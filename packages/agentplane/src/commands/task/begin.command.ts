@@ -1,10 +1,7 @@
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { createCliEmitter } from "../../cli/output.js";
-import {
-  resolveTaskOwnerCommandContext,
-  type CommandContext,
-} from "../shared/task-backend.js";
+import { resolveTaskOwnerCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import { runTaskNewParsed, type TaskNewParsed } from "./new.js";
 import { setTaskPlan } from "./plan.js";

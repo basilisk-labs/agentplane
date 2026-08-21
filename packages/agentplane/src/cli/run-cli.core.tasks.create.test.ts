@@ -129,9 +129,9 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
 
     expect(id).toMatch(/^\d{12}-[A-Z0-9]{6}$/u);
     expect(await pathExists(path.join(root, ".agentplane", "tasks", id, "README.md"))).toBe(true);
-    expect(
-      await pathExists(path.join(taskWorktree, ".agentplane", "tasks", id, "README.md")),
-    ).toBe(false);
+    expect(await pathExists(path.join(taskWorktree, ".agentplane", "tasks", id, "README.md"))).toBe(
+      false,
+    );
   });
 
   it("task new runs backend mutation readiness before emitting verify-step warnings", async () => {
