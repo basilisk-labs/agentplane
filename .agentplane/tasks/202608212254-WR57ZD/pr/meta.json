@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608212254-WR57ZD/accept-exact-tree-identity-for-github-rebase-cle",
+  "created_at": "2026-08-21T22:56:08.380Z",
+  "diffstat_sha256": "sha256:8580e7013a20475048d268ec31fdee2ebc6169bd8b71e8212be580358b263cd9",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608212254-WR57ZD",
+  "updated_at": "2026-08-21T22:56:08.380Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -117,6 +117,32 @@ async function gitCherryEquivalent(opts: {
   return lines !== null && lines.length > 0 && lines.every((line) => line.marker === "-");
 }
 
+async function gitSingleParentCommitTreeEquals(opts: {
+  gitRoot: string;
+  commit: string;
+  expectedTreeCommit: string;
+}): Promise<boolean> {
+  try {
+    const [commitLine, commitTree, expectedTree] = await Promise.all([
+      execFileAsync("git", ["rev-list", "--parents", "-n", "1", opts.commit], {
+        cwd: opts.gitRoot,
+        env: gitProofEnv(),
+      }).then(({ stdout }) => stdout.trim()),
+      ...[opts.commit, opts.expectedTreeCommit].map(async (commit) => {
+        const { stdout } = await execFileAsync("git", ["rev-parse", `${commit}^{tree}`], {
+          cwd: opts.gitRoot,
+          env: gitProofEnv(),
+        });
+        return stdout.trim();
+      }),
+    ]);
+    const [, ...parents] = commitLine.split(/\s+/u);
+    return parents.length === 1 && commitTree.length > 0 && commitTree === expectedTree;
+  } catch {
+    return false;
+  }
+}
+
 async function gitMergeBaseParent(opts: {
   gitRoot: string;
   mergeCommit: string;
@@ -404,6 +430,15 @@ export async function resolveProviderReconciliation(opts: {
   };
   if (opts.branchHead === opts.receipt.providerHeadSha) {
     return { proof: { ...common, kind: "exact_head" }, reason: null };
+  }
+  if (
+    await gitSingleParentCommitTreeEquals({
+      gitRoot: opts.gitRoot,
+      commit: opts.receipt.mergeCommit,
+      expectedTreeCommit: opts.receipt.providerHeadSha,
+    })
+  ) {
+    return { proof: { ...common, kind: "provider_rebase_equivalent" }, reason: null };
   }
   if (
     !(await gitProofIsAncestor(
