@@ -1,10 +1,10 @@
 ---
 id: "202608211020-FGAPJC"
 title: "Implement task-scoped autonomous execution after one user-approved plan"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -353,6 +353,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 9866e7885e0e. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation reaches the reviewed compatibility ratchet, whose expected CLI delta source is outside the current writable roots. Recommended action: Extend the exact source root under the active execution grant and issue a fresh packet. Requested scope: roots=scripts/checks/check-compatibility-contract-baseline.mjs; repository effects=repository_write,source_code,tests; request digest=sha256:b79843b692f2410caf8a1533b25a940caad78355294ab5a06bb3b5eb5dd1e821. Agentplane receipt: external-agent-blocker/tr_8fee182cfa92d1c99442c7940db91c75/sha256:bddc6eb34fa4c52de2a37bedda49bcf11851c592ed89b54ba4ca750606e374b2/sha256:b79843b692f2410caf8a1533b25a940caad78355294ab5a06bb3b5eb5dd1e821."
 events:
   -
     type: "status"
@@ -410,8 +413,15 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run check"
+  -
+    type: "status"
+    at: "2026-08-21T11:26:06.293Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation reaches the reviewed compatibility ratchet, whose expected CLI delta source is outside the current writable roots. Recommended action: Extend the exact source root under the active execution grant and issue a fresh packet. Requested scope: roots=scripts/checks/check-compatibility-contract-baseline.mjs; repository effects=repository_write,source_code,tests; request digest=sha256:b79843b692f2410caf8a1533b25a940caad78355294ab5a06bb3b5eb5dd1e821. Agentplane receipt: external-agent-blocker/tr_8fee182cfa92d1c99442c7940db91c75/sha256:bddc6eb34fa4c52de2a37bedda49bcf11851c592ed89b54ba4ca750606e374b2/sha256:b79843b692f2410caf8a1533b25a940caad78355294ab5a06bb3b5eb5dd1e821."
 doc_version: 3
-doc_updated_at: "2026-08-21T11:25:26.926Z"
+doc_updated_at: "2026-08-21T11:26:06.293Z"
 doc_updated_by: "SUPERVISOR"
 description: "Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGrant and OperationLease authority, an autonomous supervisor loop through verification and logical closeout, task-scoped base refs and path-independent workspace recovery, compatibility migration, doctor diagnostics, documentation, and end-to-end one-approval execution coverage. Preserve user control through plan revisions and require a new confirmation only for material drift."
 sections:
@@ -584,27 +594,21 @@ extensions:
     status: "active"
     task_id: "202608211020-FGAPJC"
   agentplane.scope_extension_request:
-    applied_at: "2026-08-21T11:18:57.926Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:6bb3444816cd99b065785444df86646df5cc925b2c44e4e6bb0835601c69abf4"
+    blocker_state_fingerprint: "sha256:bddc6eb34fa4c52de2a37bedda49bcf11851c592ed89b54ba4ca750606e374b2"
     kind: "task_scope_extension_request"
     request:
-      rationale: "These files implement and verify the already approved task-scoped workflow/base routing; their repository effects are a subset of the active grant."
+      rationale: "The approved CLI changes require their exact reviewed compatibility delta to be recorded so the critical suite can validate them."
       repository_effects:
-        - "documentation"
         - "repository_write"
         - "source_code"
         - "tests"
       schema_version: 1
       scope_roots:
-        - "packages/agentplane/src/commands/branch"
-        - "packages/agentplane/src/commands/pr"
-        - "scripts/baselines/v0.7-compatibility-candidate.json"
-        - "website/static/llms-full.txt"
-    request_digest: "sha256:a1d003e40b525a94e63eed2406813825e1a9f228b2b6805c916903abab20264e"
+        - "scripts/checks/check-compatibility-contract-baseline.mjs"
+    request_digest: "sha256:b79843b692f2410caf8a1533b25a940caad78355294ab5a06bb3b5eb5dd1e821"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_bc09beddc0e77338b9dac17a44c59b32"
+    status: "pending"
+    transition_id: "tr_8fee182cfa92d1c99442c7940db91c75"
   implementation_commit:
     hash: "9866e7885e0e0757db0cc0c5188a9e14417034b2"
   task_execution_context:
