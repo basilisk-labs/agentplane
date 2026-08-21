@@ -27,14 +27,14 @@ Prevent task new invoked from a branch_pr task worktree from writing the new tas
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.task-guided.test.ts       | 49 +++++++++++++++++
- .../src/cli/run-cli.core.tasks.create.test.ts      | 51 ++++++++++++++++++
- .../src/commands/shared/task-backend.test.ts       | 31 +++++++++++
- .../agentplane/src/commands/shared/task-backend.ts | 24 ++++++---
+ .../src/cli/run-cli.core.task-guided.test.ts       | 49 ++++++++++++++++
+ .../src/cli/run-cli.core.tasks.create.test.ts      | 51 +++++++++++++++++
+ .../src/commands/shared/task-backend.test.ts       | 31 ++++++++++
+ .../agentplane/src/commands/shared/task-backend.ts | 24 ++++++--
  .../agentplane/src/commands/task/begin.command.ts  |  8 +--
- .../src/commands/task/new.primary-checkout.test.ts | 62 ++++++++++++++++++++++
- packages/agentplane/src/commands/task/new.ts       | 13 ++++-
- 7 files changed, 226 insertions(+), 12 deletions(-)
+ .../src/commands/task/new.primary-checkout.test.ts | 66 ++++++++++++++++++++++
+ packages/agentplane/src/commands/task/new.ts       | 14 ++++-
+ 7 files changed, 231 insertions(+), 12 deletions(-)
 ```
 
 </details>

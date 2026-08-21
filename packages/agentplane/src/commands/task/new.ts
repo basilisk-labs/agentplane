@@ -187,9 +187,10 @@ export async function runTaskNewParsed(opts: {
     const currentCtx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const primaryCtx = await resolvePrimaryCheckoutCommandContext(currentCtx);
     const ctx =
-      currentCtx.config.workflow_mode === "branch_pr" && backendUsesLocalTaskStore(currentCtx)
-        ? await resolvePrimaryCheckoutCommandContext(currentCtx)
+      primaryCtx.config.workflow_mode === "branch_pr" && backendUsesLocalTaskStore(primaryCtx)
+        ? primaryCtx
         : currentCtx;
     const creationLockPath = path.join(
       ctx.resolvedProject.gitRoot,
