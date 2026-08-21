@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202608211010-X9X57M",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-21T12:13:03.246Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "57fccb717fea31fa31489f9e28cc7f9233be5baf",
+  "blueprint_digest": "4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71",
+  "findings": [
+    "runTaskNewParsed checks currentCtx.config.workflow_mode before resolving the primary checkout, so a stale linked worktree configured as direct can bypass routing and recreate task-document contamination."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/7851cb67bcf42134701142f5da9898fdfbc96b7d14f7c19fca2dc0f75e63ec4a.patch"
+  ],
+  "missing_tests": [
+    "Regression coverage for stale linked-worktree workflow_mode differing from the primary checkout."
+  ],
+  "hidden_assumptions": [
+    "The invoking worktree configuration was assumed to match the primary checkout configuration."
+  ],
+  "residual_risks": [
+    "Resolve the primary checkout context before deciding whether branch_pr plus a local task store requires primary routing; preserve direct-mode and remote-backend behavior; add a stale-worktree regression test."
+  ]
+}

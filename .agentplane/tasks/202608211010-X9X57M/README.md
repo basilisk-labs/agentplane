@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -33,23 +33,24 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T11:58:39.367Z"
+  updated_at: "2026-08-21T12:13:03.246Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
   evaluated_sha: "57fccb717fea31fa31489f9e28cc7f9233be5baf"
   blueprint_digest: "4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71"
   evidence_refs:
-    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-115736844-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-115736844-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/da99106036abc724355f5bb35e97aea91be30506e8c71848126a075edc52fbe5.md"
-    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-115736844-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-115736844-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-115736844-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-121302621-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-121302621-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/15e9382471c1cc0a82431fae9a05da2f3d258212860c1ed81d1502bd216dad35.md"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-121302621-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-121302621-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-121302621-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-121302621-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211010-X9X57M/README.md"
     - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/7851cb67bcf42134701142f5da9898fdfbc96b7d14f7c19fca2dc0f75e63ec4a.patch"
-    - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/cf636fdcb6a156c92a36f3001f49604f9a3879606be101953f37ee09bac11898.json"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/d47fe16e8fbac76ace1798238344059fb86916176e1f3516fefc75ede577f9e4.json"
     - ".agentplane/tasks/202608211010-X9X57M/verification/20260821115725488-925c1dea6b4c82c2.json"
     - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/b75dd320230b9b3ba9fee56b7a965dbbe0cc5b8a2cef042e9525c7af8a6c0669.json"
     - ".agentplane/policy/dod.code.md"
@@ -57,10 +58,7 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The rework diff changes only import and line wrapping layout in packages/agentplane/src/commands/task/begin.command.ts and packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts."
-    - "Full repository format:check passes on the committed rework head."
-    - "The combined routing regression suite passes 43 tests across four files on the committed rework head."
-    - "Supervisor-declared lint, typecheck, explicit regression, diff, and policy checks are all recorded as passing."
+    - "runTaskNewParsed checks currentCtx.config.workflow_mode before resolving the primary checkout, so a stale linked worktree configured as direct can bypass routing and recreate task-document contamination."
 token_usage:
   agent_runs: 8
   input_tokens: null
@@ -310,6 +308,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The task worktree contains only the task-owned quality-review artifacts created by the authorized evaluator rework record; the read-only episode has no writable roots and cannot reconcile them."
 events:
   -
     type: "status"
@@ -396,9 +397,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "045177684b4a9ddda25266a94e507ceafe67f93e"
+  -
+    type: "comment"
+    at: "2026-08-21T12:14:17.972Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The task worktree contains only the task-owned quality-review artifacts created by the authorized evaluator rework record; the read-only episode has no writable roots and cannot reconcile them."
 doc_version: 3
-doc_updated_at: "2026-08-21T11:59:04.778Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-21T12:14:18.006Z"
+doc_updated_by: "SUPERVISOR"
 description: "Prevent task new invoked from a branch_pr task worktree from writing the new task README into that worktree; route creation through the primary checkout and add regression coverage for isolated task ownership."
 sections:
   Summary: |-
