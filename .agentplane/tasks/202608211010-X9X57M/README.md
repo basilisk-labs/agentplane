@@ -1,10 +1,10 @@
 ---
 id: "202608211010-X9X57M"
 title: "Route new task creation to the primary checkout"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +27,9 @@ plan_approval:
   note: "User explicitly approved plan X9X57M in Codex task on 2026-08-21."
 verification:
   state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  updated_at: "2026-08-21T10:20:13.336Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 execution_route:
   frozen: true
@@ -63,9 +63,11 @@ execution_contract:
       - "release_metadata"
       - "security_boundary"
     writable_roots:
+      - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
       - "packages/agentplane/src/commands/shared/task-backend.test.ts"
       - "packages/agentplane/src/commands/shared/task-backend.ts"
+      - "packages/agentplane/src/commands/task/begin.command.ts"
       - "packages/agentplane/src/commands/task/new.ts"
   declaration:
     external_effects: []
@@ -75,6 +77,7 @@ execution_contract:
       - "No network, provider, dependency, schema, or public API change is required."
       - "Repository branch_pr policy requires task artifacts to remain isolated by authoritative checkout."
       - "The defect spans command-context selection and task-creation integration behavior, so source changes and focused regression tests are required."
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/cli/run-cli.core.task-guided.test.ts,packages/agentplane/src/commands/task/begin.command.ts; repository_effects=repository_write,source_code,tests"
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -83,9 +86,11 @@ execution_contract:
     reversibility: "reversible"
     schema_version: 2
     scope_roots:
+      - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
       - "packages/agentplane/src/commands/shared/task-backend.test.ts"
       - "packages/agentplane/src/commands/shared/task-backend.ts"
+      - "packages/agentplane/src/commands/task/begin.command.ts"
       - "packages/agentplane/src/commands/task/new.ts"
   observed:
     authority_violations: []
@@ -109,9 +114,11 @@ execution_contract:
     contract:
       declared:
         components:
+          - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
           - "packages/agentplane/src/commands/shared/task-backend.test.ts"
           - "packages/agentplane/src/commands/shared/task-backend.ts"
+          - "packages/agentplane/src/commands/task/begin.command.ts"
           - "packages/agentplane/src/commands/task/new.ts"
         evidence_requirements:
           - "hosted_integration"
@@ -128,8 +135,9 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:b2ac583106ebc72094cc26f27232c27794a7c00f2b59aeafa43c01349ed476c2"
+      digest: "sha256:330f7edde21047043a5a453016acb81b064dc47f5ba28796fe1d57817d066f58"
       escalation_reasons:
+        - "central_component:packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-backend.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-backend.ts"
@@ -182,6 +190,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Implemented primary-checkout routing for branch_pr task creation through the local task store and added focused helper plus CLI regression coverage. Focused tests pass. Compatibility review found that task begin --plan performs a second task mutation through the invoking worktree context after creation; completing the fix without regressing that command requires two additional files outside the approved writable roots. Recommended action: Approve the narrow scope extension, route task begin's post-creation plan mutation through resolveTaskOwnerCommandContext, add a linked-worktree task begin --plan regression, then rerun all required checks. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.task-guided.test.ts,packages/agentplane/src/commands/task/begin.command.ts; repository effects=repository_write,source_code,tests; request digest=sha256:9d47a50e24052a56b1d604d9eac48d520e46a571de409571a0a6fd32ec3a6ad5. Agentplane receipt: external-agent-blocker/tr_946a86d5e9a85ee6f4200bf64c837c10/sha256:ae330482b009f8baafbdf0f97f24c30658d14bc7b2272a96c33e621036a11130/sha256:9d47a50e24052a56b1d604d9eac48d520e46a571de409571a0a6fd32ec3a6ad5."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/cli/run-cli.core.task-guided.test.ts, packages/agentplane/src/commands/task/begin.command.ts; repository effects: repository_write, source_code, tests."
 events:
   -
     type: "status"
@@ -229,6 +240,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-08-21T10:20:13.336Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:ae330482b009f8baafbdf0f97f24c30658d14bc7b2272a96c33e621036a11130"
     kind: "task_scope_extension_request"
     request:
@@ -243,7 +256,7 @@ extensions:
         - "packages/agentplane/src/commands/task/begin.command.ts"
     request_digest: "sha256:9d47a50e24052a56b1d604d9eac48d520e46a571de409571a0a6fd32ec3a6ad5"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_946a86d5e9a85ee6f4200bf64c837c10"
   workflow_route_baseline:
     start_head_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
