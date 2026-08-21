@@ -32,9 +32,9 @@ Rework: Declared check failed: node scripts/qualification/run-v0.7.1-release-qua
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../task/verify-record-observed-changes.ts         |  3 +-
+ .../task/verify-record-observed-changes.ts         |  4 +-
  .../task/verify-record.durability.unit.test.ts     | 45 ++++++++++++++++++++++
- 2 files changed, 46 insertions(+), 2 deletions(-)
+ 2 files changed, 47 insertions(+), 2 deletions(-)
 ```
 
 </details>
