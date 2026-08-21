@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -35,32 +35,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-21T10:55:38.986Z"
+  updated_at: "2026-08-21T11:58:39.367Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 4 typed finding(s)."
-  evaluated_sha: "c716b5d46f6b70a318d93abf54aec51d89de74bb"
+  evaluated_sha: "57fccb717fea31fa31489f9e28cc7f9233be5baf"
   blueprint_digest: "4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71"
   evidence_refs:
-    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-105405490-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-105405490-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/95af4e70e729996b5024c93cafa3daf9d03f1ecbc9388e836fca3402a428e3da.md"
-    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-105405490-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-105405490-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-105405490-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-115736844-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-115736844-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/da99106036abc724355f5bb35e97aea91be30506e8c71848126a075edc52fbe5.md"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-115736844-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-115736844-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/20260821-115736844-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608211010-X9X57M/README.md"
-    - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/3d3e4e7fae896d1b15c38d4c9ba904a8b3c6f4916af312fa788e12a81df2f2c3.patch"
-    - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/e42a3f26cf5fc1ee049ad7181be250c97e80288f50c7129f6265c808d621594e.json"
-    - ".agentplane/tasks/202608211010-X9X57M/verification/20260821105354772-468c12cc80ff46f0.json"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/7851cb67bcf42134701142f5da9898fdfbc96b7d14f7c19fca2dc0f75e63ec4a.patch"
+    - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/cf636fdcb6a156c92a36f3001f49604f9a3879606be101953f37ee09bac11898.json"
+    - ".agentplane/tasks/202608211010-X9X57M/verification/20260821115725488-925c1dea6b4c82c2.json"
     - ".agentplane/tasks/202608211010-X9X57M/quality/objects/sha256/b75dd320230b9b3ba9fee56b7a965dbbe0cc5b8a2cef042e9525c7af8a6c0669.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The source change directly addresses the reported mutual-block condition: a sibling task README is no longer created inside the invoking task worktree."
-    - "Regression coverage exercises the context resolver, task new CLI behavior, task begin --plan compatibility behavior, and the supervisor-compatible explicit test path."
-    - "Supervisor-managed declared checks all passed after replacing the non-portable wildcard with the explicit regression test path."
-    - "The combined focused suite passed 43 tests across four files during independent evaluator execution."
+    - "The rework diff changes only import and line wrapping layout in packages/agentplane/src/commands/task/begin.command.ts and packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts."
+    - "Full repository format:check passes on the committed rework head."
+    - "The combined routing regression suite passes 43 tests across four files on the committed rework head."
+    - "Supervisor-declared lint, typecheck, explicit regression, diff, and policy checks are all recorded as passing."
 token_usage:
   agent_runs: 6
   input_tokens: null
@@ -386,7 +386,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T11:57:27.741Z"
+doc_updated_at: "2026-08-21T11:58:39.399Z"
 doc_updated_by: "SUPERVISOR"
 description: "Prevent task new invoked from a branch_pr task worktree from writing the new task README into that worktree; route creation through the primary checkout and add regression coverage for isolated task ownership."
 sections:
