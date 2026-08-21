@@ -105,6 +105,31 @@ describe("sync-gitlab", () => {
     ).toBe(false);
   });
 
+  it("keeps requested-changes GitLab mergeability on the non-conflict route", async () => {
+    mocks.runGlabApiJson
+      .mockResolvedValueOnce({ id: 7 })
+      .mockResolvedValueOnce(mr({ detailed_merge_status: "requested_changes" }));
+
+    await expect(
+      observeExistingGitLabMrByNumber({
+        gitRoot: "/repo",
+        identity,
+        prNumber: 42,
+        branch: "task/T-1/work",
+        baseBranch: "main",
+      }),
+    ).resolves.toMatchObject({
+      state: "found",
+      pr: {
+        mergeability: {
+          state: "not_conflicting",
+          mergeable: true,
+          providerState: "requested_changes",
+        },
+      },
+    });
+  });
+
   it("recovers an uncertain create by re-observing instead of creating a duplicate MR", async () => {
     mocks.runGlabApiJson
       .mockResolvedValueOnce({ id: 7 })

@@ -44,9 +44,9 @@ Created: 2026-08-20T21:18:16.979Z
  .../commands/pr/integrate/internal/route-label.ts  |   7 ++
  .../src/commands/pr/internal/glab-api.test.ts      |  26 ++++++
  .../src/commands/pr/internal/glab-api.ts           |   4 +-
- .../src/commands/pr/internal/sync-gitlab.test.ts   |  33 +++++++
+ .../src/commands/pr/internal/sync-gitlab.test.ts   |  58 ++++++++++++
  .../src/commands/pr/internal/sync-gitlab.ts        |  29 ++++++
- 17 files changed, 397 insertions(+), 18 deletions(-)
+ 17 files changed, 422 insertions(+), 18 deletions(-)
 ```
 
 </details>
