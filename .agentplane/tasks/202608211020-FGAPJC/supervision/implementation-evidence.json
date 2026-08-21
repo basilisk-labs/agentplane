@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 2a786d09fcb6cb3640348820bc48216db1bea26e..ab8bc62471c377f2d42e485fb597fabec8482e80",
+      "command": "git diff --check 1836ad946ff80d3d3d0d95c19dcd7f037d57fe5c..a84dd9e3fb0566a35efdff8222ab20b9dd994bd0",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2a786d09fcb6cb3640348820bc48216db1bea26e..ab8bc62471c377f2d42e485fb597fabec8482e80",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1836ad946ff80d3d3d0d95c19dcd7f037d57fe5c..a84dd9e3fb0566a35efdff8222ab20b9dd994bd0",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,8 +21,12 @@
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
-        "M\tpackages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts",
-        "A\tpackages/agentplane/src/runner/usecases/task-run-lifecycle-replay-pre-execution.test.ts"
+        "M\tcheck",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
+        "M\tscripts/checks/run-local-ci.mjs"
       ]
     },
     {
@@ -32,15 +36,42 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "2a786d09fcb6cb3640348820bc48216db1bea26e",
-  "implementation_commit": "ab8bc62471c377f2d42e485fb597fabec8482e80",
+  "execution_base_commit": "1836ad946ff80d3d3d0d95c19dcd7f037d57fe5c",
+  "implementation_commit": "a84dd9e3fb0566a35efdff8222ab20b9dd994bd0",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M check",
+      " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
+      " M scripts/checks/run-local-ci.mjs"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M check"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/checks/run-local-ci.mjs"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M check",
+      " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      " M packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
+      " M scripts/checks/run-local-ci.mjs"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
