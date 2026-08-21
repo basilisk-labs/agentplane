@@ -4,6 +4,7 @@ import path from "node:path";
 import { mapBackendError } from "../../cli/error-map.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 import { gitRevParse } from "../shared/git-ops.js";
 import {
   loadBackendTask,
@@ -110,9 +111,15 @@ export async function cmdPrUpdate(opts: {
 }): Promise<number> {
   try {
     const output = createCliEmitter();
-    const commandCtx =
+    const initialCtx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const taskCommand = await loadTaskCommandContext({
+      ctx: initialCtx,
+      taskIds: [opts.taskId, ...(opts.includeTaskIds ?? [])],
+      primaryTaskId: opts.taskId,
+    });
+    const commandCtx = taskCommand.command;
     const { meta, prDir, resolved } = await syncPrArtifacts({
       ctx: commandCtx,
       cwd: opts.cwd,
@@ -120,6 +127,8 @@ export async function cmdPrUpdate(opts: {
       taskId: opts.taskId,
       mode: "update",
       includeTaskIds: opts.includeTaskIds,
+      workflowMode: taskCommand.execution.selected_mode,
+      base: taskCommand.execution.base_ref,
     });
     if (meta.branch) {
       await maybeAutoCommitTaskPrArtifacts({

@@ -76,6 +76,8 @@ export async function cmdWorkStart(opts: {
   agent: string;
   slug: string;
   worktree: boolean;
+  base?: string;
+  workflowMode?: "direct" | "branch_pr";
   quiet?: boolean;
 }): Promise<number> {
   try {
@@ -88,7 +90,7 @@ export async function cmdWorkStart(opts: {
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const resolved = ctx.resolvedProject;
     const config = ctx.config;
-    const mode = config.workflow_mode;
+    const mode = opts.workflowMode ?? config.workflow_mode;
     if (mode !== "branch_pr" && opts.worktree) {
       throw new CliError({
         exitCode: 2,
@@ -121,7 +123,7 @@ export async function cmdWorkStart(opts: {
           status: task.status,
           planApprovalState: task.plan_approval?.state ?? null,
           verificationState: task.verification?.state ?? null,
-          workflowMode: config.workflow_mode,
+          workflowMode: mode,
         },
         git: { stagedPaths: [] },
       }),
@@ -165,6 +167,7 @@ export async function cmdWorkStart(opts: {
         rootOverride: opts.rootOverride ?? null,
         gitRoot: resolved.gitRoot,
         workflowMode: mode,
+        cliBaseOpt: opts.base ?? null,
         missingBaseMessage: "Base branch could not be resolved (use `agentplane branch base set`).",
       });
       const { baseBranch } = lifecycleContext;

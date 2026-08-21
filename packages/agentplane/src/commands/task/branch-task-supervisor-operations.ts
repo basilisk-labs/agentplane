@@ -83,6 +83,8 @@ export async function executeBranchWorkflowOperation(opts: {
         agent: operation.params.agent,
         slug: operation.params.slug,
         worktree: true,
+        base: opts.decision.workspace.baseBranch ?? undefined,
+        workflowMode: opts.decision.workflowMode === "branch_pr" ? "branch_pr" : "direct",
         quiet: true,
       });
       return succeeded(

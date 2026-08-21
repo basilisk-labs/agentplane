@@ -71,7 +71,7 @@ export function isScopeExtensionCoveredByExecutionGrant(opts: {
     return false;
   }
   const pending = parseTaskScopeExtensionRequestState(opts.task);
-  const allowed = new Set(opts.task.execution_contract?.authority.allowed_repository_effects ?? []);
+  const allowed = new Set(opts.task.execution_contract?.authority.allowed_repository_effects);
   if (pending?.status !== "pending" || allowed.size === 0) return false;
   const requestedEffects = new Set([
     ...pending.request.repository_effects,

@@ -99,6 +99,8 @@ export function makeRunWorkStartHandler(
       agent: p.agent,
       slug: p.slug,
       worktree: p.worktree,
+      base: taskCommand.execution.base_ref,
+      workflowMode: mode,
     });
   };
 }
