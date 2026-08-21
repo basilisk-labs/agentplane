@@ -16,7 +16,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 ## Verification
 
 - State: ok
-- Note: Fresh supervisor verification passes for the current implementation and refreshed declared-check evidence.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
