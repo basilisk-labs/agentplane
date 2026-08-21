@@ -16,7 +16,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,11 +27,13 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |   1 +
  check                                              |  17 +
  docs/developer/task-execution-authority.mdx        |  40 ++
  docs/user/branching-and-pr-artifacts.mdx           |  19 +
  docs/user/cli-reference.generated.mdx              |   2 +
  docs/user/task-lifecycle.mdx                       |  46 +-
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  .../src/cli/run-cli.core.lifecycle.plan.test.ts    |  61 +-
  ...n-cli.core.task-advance-effect-recovery.test.ts | 155 +++++
  ...un-cli.core.task-advance.blocked-result.test.ts |  26 +
@@ -104,7 +106,7 @@ Introduce PlanProposal, host-originated user decisions, task-scoped ExecutionGra
  .../check-compatibility-contract-baseline.mjs      |  42 +-
  scripts/checks/run-local-ci.mjs                    |   9 +-
  website/static/llms-full.txt                       |  46 +-
- 77 files changed, 4624 insertions(+), 407 deletions(-)
+ 79 files changed, 4626 insertions(+), 407 deletions(-)
 ```
 
 </details>

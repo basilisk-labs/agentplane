@@ -6,14 +6,14 @@ Created: 2026-08-21T10:27:11.359Z
 
 - Task: `202608211020-FGAPJC`
 - Title: Implement task-scoped autonomous execution after one user-approved plan
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608211020-FGAPJC/implement-task-scoped-autonomous-execution-after`
 - Canonical task record: `.agentplane/tasks/202608211020-FGAPJC/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,11 +29,13 @@ Created: 2026-08-21T10:27:11.359Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |   1 +
  check                                              |  17 +
  docs/developer/task-execution-authority.mdx        |  40 ++
  docs/user/branching-and-pr-artifacts.mdx           |  19 +
  docs/user/cli-reference.generated.mdx              |   2 +
  docs/user/task-lifecycle.mdx                       |  46 +-
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  .../src/cli/run-cli.core.lifecycle.plan.test.ts    |  61 +-
  ...n-cli.core.task-advance-effect-recovery.test.ts | 155 +++++
  ...un-cli.core.task-advance.blocked-result.test.ts |  26 +
@@ -106,7 +108,7 @@ Created: 2026-08-21T10:27:11.359Z
  .../check-compatibility-contract-baseline.mjs      |  42 +-
  scripts/checks/run-local-ci.mjs                    |   9 +-
  website/static/llms-full.txt                       |  46 +-
- 77 files changed, 4624 insertions(+), 407 deletions(-)
+ 79 files changed, 4626 insertions(+), 407 deletions(-)
 ```
 
 </details>
