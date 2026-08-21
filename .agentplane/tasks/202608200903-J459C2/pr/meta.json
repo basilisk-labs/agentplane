@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:bc104c59d21d86f7b814fdf839290930bb1c718ad41b0eb71ae336a760b408d4",
   "pr_number": 4851,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4851",
+  "pre_merge_closure": {
+    "basis_commit": "c312d399d3f9e2705d7a1cd504bb0dab02250189",
+    "branch": "task/202608200903-J459C2/make-task-execution-authority-local-and-direct-e",
+    "pr_number": 4851,
+    "recorded_at": "2026-08-21T00:34:18.136Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
