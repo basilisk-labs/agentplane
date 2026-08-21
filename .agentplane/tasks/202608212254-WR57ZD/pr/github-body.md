@@ -15,15 +15,8 @@ Allow cleanup reconciliation to accept an exact provider receipt when the provid
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework: Declared check failed: bunx vitest run
-packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts
-packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts
-packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts
-```
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
