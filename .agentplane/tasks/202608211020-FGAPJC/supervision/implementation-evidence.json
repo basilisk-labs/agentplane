@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check ba2396ef0d456f217f0f1932134b5691f4750c67..34507b19ab33c1d79ee08e5c5092374d4f4b7bd3",
+      "command": "git diff --check d3a791a7fc6fbb28e7c6196d66e9787fb0bd8655..137b60c7e7f734c0bef3142e7178465a45513a30",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB ba2396ef0d456f217f0f1932134b5691f4750c67..34507b19ab33c1d79ee08e5c5092374d4f4b7bd3",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d3a791a7fc6fbb28e7c6196d66e9787fb0bd8655..137b60c7e7f734c0bef3142e7178465a45513a30",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,8 +21,8 @@
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
-        "M\tpackages/agentplane/src/commands/shared/quality-review-target.ts",
-        "M\tpackages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
+        "A\tpackages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts",
+        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
       ]
     },
     {
@@ -32,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "ba2396ef0d456f217f0f1932134b5691f4750c67",
-  "implementation_commit": "34507b19ab33c1d79ee08e5c5092374d4f4b7bd3",
+  "execution_base_commit": "d3a791a7fc6fbb28e7c6196d66e9787fb0bd8655",
+  "implementation_commit": "137b60c7e7f734c0bef3142e7178465a45513a30",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
