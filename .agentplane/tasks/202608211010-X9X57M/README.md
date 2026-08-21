@@ -4,7 +4,7 @@ title: "Route new task creation to the primary checkout"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -17,7 +17,7 @@ blueprint_request: "code.branch_pr"
 verify:
   - "bun run lint:core"
   - "bun run typecheck"
-  - "bunx vitest run packages/agentplane/src/commands/task/new*.test.ts"
+  - "bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts"
   - "git diff --check"
   - "node .agentplane/policy/check-routing.mjs"
 plan_approval:
@@ -26,11 +26,11 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved plan X9X57M in Codex task on 2026-08-21."
 verification:
-  state: "pending"
-  updated_at: "2026-08-21T10:46:58.222Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-21T10:53:54.772Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -105,13 +105,29 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/task-backend.test.ts"
       - "packages/agentplane/src/commands/shared/task-backend.ts"
       - "packages/agentplane/src/commands/task/begin.command.ts"
+      - "packages/agentplane/src/commands/task/new.primary-checkout.test.ts"
       - "packages/agentplane/src/commands/task/new.ts"
     external_effects: []
     repository_effects:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -149,7 +165,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:80b204cbd03e8ef3ca1df609e59c5e4acfc640245db3f122093c5241f7c07cca"
+      digest: "sha256:b7fb58c5dfc06e5427d86e142528421e313b0889fc54dce3d5366695f81537aa"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
@@ -173,6 +189,7 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/task-backend.test.ts"
           - "packages/agentplane/src/commands/shared/task-backend.ts"
           - "packages/agentplane/src/commands/task/begin.command.ts"
+          - "packages/agentplane/src/commands/task/new.primary-checkout.test.ts"
           - "packages/agentplane/src/commands/task/new.ts"
         external_effects: []
         repository_effects:
@@ -210,7 +227,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "c716b5d46f6b70a318d93abf54aec51d89de74bb"
+  message: "🚧 X9X57M task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -230,6 +249,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/task/new.primary-checkout.test.ts; repository effects: repository_write, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: c716b5d46f6b. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -266,8 +288,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Implementation rework is blocked by the declared verification command: its new*.test.ts glob matches no file, the task document is protected during this semantic episode, and the current writable roots do not permit adding a matching regression test file. Recommended action: Approve the minimal scope extension, add packages/agentplane/src/commands/task/new.primary-checkout.test.ts, run the declared check and required repository checks, then resume the task lifecycle. Requested scope: roots=packages/agentplane/src/commands/task/new.primary-checkout.test.ts; repository effects=repository_write,tests; request digest=sha256:6dc06d68d86fd0130d9ca48472d8114a08ce5d5653ffd35efe46984811feef88. Agentplane receipt: external-agent-blocker/tr_62e7ce4306c819c883ddeee581756eb3/sha256:4eef279c29fde74c7b784480d0411af5a32c3f255ac2d984ab72f3825fa77767/sha256:6dc06d68d86fd0130d9ca48472d8114a08ce5d5653ffd35efe46984811feef88."
+  -
+    type: "status"
+    at: "2026-08-21T10:50:10.691Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: c716b5d46f6b. CLI accepted one state-bound external-agent semantic result."
+    commit: "c716b5d46f6b70a318d93abf54aec51d89de74bb"
+  -
+    type: "verify"
+    at: "2026-08-21T10:53:54.772Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-21T10:37:51.498Z"
+doc_updated_at: "2026-08-21T10:53:56.525Z"
 doc_updated_by: "SUPERVISOR"
 description: "Prevent task new invoked from a branch_pr task worktree from writing the new task README into that worktree; route creation through the primary checkout and add regression coverage for isolated task ownership."
 sections:
@@ -280,15 +316,11 @@ sections:
     - Out of scope: unrelated refactors not required for "Route new task creation to the primary checkout".
   Plan: "Implement primary-checkout routing for task creation. Resolve the primary linked worktree before the creation lock and backend write, preserve behavior when already in the primary checkout or a standalone repository, and add an integration regression proving that task new invoked from task A's branch_pr worktree writes task B only under the primary checkout without dirtying task A. Verify focused task-creation and context-routing tests, typecheck, core lint, policy routing, and diff cleanliness."
   Verify Steps: |-
-    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Run `bunx vitest run packages/agentplane/src/commands/task/new*.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.
-    2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.
-    3. Run `bun run lint:core`. Expected: it succeeds and confirms the requested outcome for this task.
-    4. Run `node .agentplane/policy/check-routing.mjs`. Expected: it succeeds and confirms the requested outcome for this task.
-    5. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.
-    6. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-    7. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+    1. Run `bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts`. Expected: the primary-checkout routing regression passes.
+    2. Run `bun run typecheck`. Expected: TypeScript validation succeeds.
+    3. Run `bun run lint:core`. Expected: core lint succeeds.
+    4. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing validation succeeds.
+    5. Run `git diff --check`. Expected: no whitespace errors are reported.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-08-21T10:35:25.786Z — VERIFY — needs_rework
@@ -336,6 +368,66 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-21T10:53:54.772Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a053af66390f1f442af2a3fd68fb9d21143c1a9162ba6422c60e24d327d919e6, input_digest=sha256:4acdc4eeef199a9c50e7799e55018b6676b9cb5298258b304404bf1eb23bf162
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211010-X9X57M Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211010-X9X57M Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211010-X9X57M Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211010-X9X57M Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608211010-X9X57M Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211010-X9X57M-route-new-task-creation-to-the-primary-checkout/.agentplane/tasks/202608211010-X9X57M/blueprint/resolved-snapshot.json
+    - old_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+    - current_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608211010-X9X57M
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608211010-X9X57M
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -360,7 +452,7 @@ extensions:
     status: "applied"
     transition_id: "tr_62e7ce4306c819c883ddeee581756eb3"
   implementation_commit:
-    hash: "5c561bc702250c816bdc0460a7b1fd5636b5fa5d"
+    hash: "c716b5d46f6b70a318d93abf54aec51d89de74bb"
   task_execution_context:
     base_ref: "main"
     base_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
@@ -387,15 +479,11 @@ Implement primary-checkout routing for task creation. Resolve the primary linked
 
 ## Verify Steps
 
-PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Run `bunx vitest run packages/agentplane/src/commands/task/new*.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.
-2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.
-3. Run `bun run lint:core`. Expected: it succeeds and confirms the requested outcome for this task.
-4. Run `node .agentplane/policy/check-routing.mjs`. Expected: it succeeds and confirms the requested outcome for this task.
-5. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.
-6. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-7. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+1. Run `bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts`. Expected: the primary-checkout routing regression passes.
+2. Run `bun run typecheck`. Expected: TypeScript validation succeeds.
+3. Run `bun run lint:core`. Expected: core lint succeeds.
+4. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing validation succeeds.
+5. Run `git diff --check`. Expected: no whitespace errors are reported.
 
 ## Verification
 
@@ -425,6 +513,66 @@ Command: bunx vitest run packages/agentplane/src/commands/task/new*.test.ts
 Result: fail
 Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#check-3
 Scope: branch_pr task 202608211010-X9X57M declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608211010-X9X57M-route-new-task-creation-to-the-primary-checkout/.agentplane/tasks/202608211010-X9X57M/blueprint/resolved-snapshot.json
+- old_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+- current_digest: 4390e05891ebc760850e21176b4159bea23f12e69ba23fe9efca44a4f1d80e71
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608211010-X9X57M
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608211010-X9X57M
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-21T10:53:54.772Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a053af66390f1f442af2a3fd68fb9d21143c1a9162ba6422c60e24d327d919e6, input_digest=sha256:4acdc4eeef199a9c50e7799e55018b6676b9cb5298258b304404bf1eb23bf162
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211010-X9X57M Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211010-X9X57M Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211010-X9X57M Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211010-X9X57M Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: bun run lint:core && bun run typecheck && bunx vitest run packages/agentplane/src/commands/task/new.primary-checkout.test.ts && git diff --check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608211010-X9X57M/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608211010-X9X57M Verification Contract check task_outcome
 
 BlueprintSnapshotRef:
 - state: current
