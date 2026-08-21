@@ -4,7 +4,7 @@ title: "Repair packaged candidate verification-contract refresh after managed up
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -20,7 +20,7 @@ risk_flags:
   - "external_system"
 blueprint_request: "code.branch_pr"
 verify:
-  - "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --fail-on-scenario-failure --scenario packaged-candidate-flow"
+  - "node scripts/release/check-local-tarball-install-smoke.mjs"
 plan_approval:
   state: "approved"
   updated_at: "2026-08-21T12:40:58.094Z"

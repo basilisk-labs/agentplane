@@ -14,6 +14,7 @@ export async function resolveObservedVerificationChangedPaths(opts: {
 }): Promise<string[]> {
   if (!opts.evaluatedSha) return [];
   const { config, resolvedProject } = opts.ctx;
+  // Verification and evaluator preparation must compare the same execution-bounded diff.
   const diffBaseSha = await resolveEvaluatorDiffBase({
     gitRoot: resolvedProject.gitRoot,
     evaluatedSha: opts.evaluatedSha,
