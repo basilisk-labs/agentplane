@@ -2,10 +2,10 @@
 id: "202608211010-X9X57M"
 title: "Route new task creation to the primary checkout"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -62,9 +62,9 @@ quality_review:
     - "The combined routing regression suite passes 43 tests across four files on the committed rework head."
     - "Supervisor-declared lint, typecheck, explicit regression, diff, and policy checks are all recorded as passing."
 token_usage:
-  agent_runs: 6
+  agent_runs: 8
   input_tokens: null
-  journal_digest: "sha256:6ddfa623efa3af763b163971f0899c2da2d8a4b998b0e6384b78e5d92e56c884"
+  journal_digest: "sha256:a7982adf59aaf518b14b4340f19644dae8ac375d82febafca917b73aecf75b9f"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -74,7 +74,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-21T11:47:46.194Z"
+  updated_at: "2026-08-21T11:59:04.747Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -277,8 +277,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "57fccb717fea31fa31489f9e28cc7f9233be5baf"
-  message: "🚧 X9X57M task: apply external agent result"
+  hash: "045177684b4a9ddda25266a94e507ceafe67f93e"
+  message: "🚧 X9X57M task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -307,6 +307,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 57fccb717fea. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -385,9 +388,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-21T11:59:04.747Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "045177684b4a9ddda25266a94e507ceafe67f93e"
 doc_version: 3
-doc_updated_at: "2026-08-21T11:58:39.399Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-21T11:59:04.778Z"
+doc_updated_by: "CODER"
 description: "Prevent task new invoked from a branch_pr task worktree from writing the new task README into that worktree; route creation through the primary checkout and add regression coverage for isolated task ownership."
 sections:
   Summary: |-
@@ -626,6 +637,7 @@ extensions:
     transition_id: "tr_62e7ce4306c819c883ddeee581756eb3"
   implementation_commit:
     hash: "57fccb717fea31fa31489f9e28cc7f9233be5baf"
+    message: "🚧 X9X57M task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3e756cba6cfd6619327433c5fc38f6a52e79131d"
@@ -868,12 +880,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/6` agent runs
+- Completeness: `0/8` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:6ddfa623efa3af763b163971f0899c2da2d8a4b998b0e6384b78e5d92e56c884`
+- Journal digest: `sha256:a7982adf59aaf518b14b4340f19644dae8ac375d82febafca917b73aecf75b9f`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-21T11:47:46.194Z`
+- Updated at: `2026-08-21T11:59:04.747Z`
