@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 6b84dcd9c9adedbdfde894e56aaaf3c30402ed28..dac4dfb80f96c79b5e67464375d5c17ad7e97ce3",
+      "command": "git diff --check 2a786d09fcb6cb3640348820bc48216db1bea26e..ab8bc62471c377f2d42e485fb597fabec8482e80",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 6b84dcd9c9adedbdfde894e56aaaf3c30402ed28..dac4dfb80f96c79b5e67464375d5c17ad7e97ce3",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2a786d09fcb6cb3640348820bc48216db1bea26e..ab8bc62471c377f2d42e485fb597fabec8482e80",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,8 @@
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/github-body.md",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/meta.json",
         "M\t.agentplane/tasks/202608211020-FGAPJC/pr/review.md",
-        "M\twebsite/static/llms-full.txt"
+        "M\tpackages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts",
+        "A\tpackages/agentplane/src/runner/usecases/task-run-lifecycle-replay-pre-execution.test.ts"
       ]
     },
     {
@@ -31,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "6b84dcd9c9adedbdfde894e56aaaf3c30402ed28",
-  "implementation_commit": "dac4dfb80f96c79b5e67464375d5c17ad7e97ce3",
+  "execution_base_commit": "2a786d09fcb6cb3640348820bc48216db1bea26e",
+  "implementation_commit": "ab8bc62471c377f2d42e485fb597fabec8482e80",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
