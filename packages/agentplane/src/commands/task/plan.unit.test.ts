@@ -305,7 +305,7 @@ describe("task plan commands (unit)", () => {
       cmdTaskPlanApprove({ ctx, cwd: "/repo", taskId: "T-1", by: "USER" }),
     ).rejects.toMatchObject({
       code: "E_VALIDATION",
-      message: expect.stringMatching(/stale.*replanning/iu),
+      message: expect.stringMatching(/stale.*replanning/iu) as unknown,
     });
     expect(store.patch).toHaveBeenCalledTimes(1);
   });

@@ -71,7 +71,7 @@ function initialTask(command?: string): TaskData {
           required_sources: ["repository"],
           optional_sources: [],
           symbol_hints: [],
-          max_bytes: 8_192,
+          max_bytes: 8192,
         },
         risk: "medium" as const,
         capabilities: ["task.verify"],
@@ -148,17 +148,18 @@ function memoryBackend(
       supports_push_sync: false,
       supports_snapshot_export: false,
     },
-    async listTasks() {
-      return [structuredClone(current)];
+    listTasks() {
+      return Promise.resolve([structuredClone(current)]);
     },
-    async getTask(id: string) {
-      return id === TASK_ID ? structuredClone(current) : null;
+    getTask(id: string) {
+      return Promise.resolve(id === TASK_ID ? structuredClone(current) : null);
     },
-    async writeTask(next: TaskData, opts) {
+    writeTask(next: TaskData, opts) {
       if (opts?.expectedRevision !== undefined && opts.expectedRevision !== current.revision) {
         throw new Error("Task revision changed concurrently");
       }
       current = structuredClone(next);
+      return Promise.resolve();
     },
     current: () => structuredClone(current),
     replace(next: TaskData) {
@@ -304,7 +305,7 @@ describe("recordTaskCentricExternalResult", () => {
         status: "unsupported",
         command_identity: "bun test --filter task-centric",
         exit_code: null,
-        detail: expect.stringContaining("was not observed"),
+        detail: expect.stringContaining("was not observed") as unknown,
       }),
     ]);
   });

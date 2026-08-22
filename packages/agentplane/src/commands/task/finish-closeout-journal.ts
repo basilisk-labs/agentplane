@@ -82,8 +82,7 @@ export async function openFinishCloseoutJournal(opts: {
   });
   const existing = await readJournal(filePath);
   const replacesPreparedRecovery = Boolean(
-    existing &&
-    existing.state === "recovery_required" &&
+    existing?.state === "recovery_required" &&
     resumeState(existing) === "prepared" &&
     existing.request_digest !== request_digest &&
     opts.options.force,

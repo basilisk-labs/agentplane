@@ -4,12 +4,14 @@ import {
   type SupervisionOutcome,
 } from "@agentplaneorg/core/tasks";
 
-import type { BranchTaskSupervisorStopCode } from "./branch-task-supervisor.js";
+import type {
+  BranchTaskSupervisorStopCode,
+  BranchTaskSupervisorResult,
+} from "./branch-task-supervisor.js";
 import type {
   DirectTaskSupervisorResult,
   DirectTaskSupervisorStopCode,
 } from "./direct-task-supervisor-result.js";
-import type { BranchTaskSupervisorResult } from "./branch-task-supervisor.js";
 
 function assertNever(value: never): never {
   throw new Error(`Unknown task supervision stop code: ${String(value)}`);
@@ -17,27 +19,33 @@ function assertNever(value: never): never {
 
 export function directStopOutcome(code: DirectTaskSupervisorStopCode): SupervisionOutcome {
   switch (code) {
-    case "approval_required":
+    case "approval_required": {
       return "awaiting_plan_approval";
+    }
     case "semantic_input_required":
-    case "evaluator_rework":
+    case "evaluator_rework": {
       return "external_wait";
+    }
     case "human_input_required":
-    case "evaluator_human_review":
+    case "evaluator_human_review": {
       return "human_required";
-    case "wait_required":
+    }
+    case "wait_required": {
       return "external_wait";
+    }
     case "terminal_route":
     case "unsupported_route_operation":
     case "supervisor_stopped":
     case "executor_blocked":
     case "missing_knowledge":
     case "evaluator_blocked":
-    case "verification_check_unsupported":
+    case "verification_check_unsupported": {
       return "blocked";
+    }
     case "stale_route":
-    case "route_refresh_failed":
+    case "route_refresh_failed": {
       return "stale_state";
+    }
     case "executor_adapter_crash":
     case "runner_failed":
     case "runner_receipt_unobserved":
@@ -49,35 +57,43 @@ export function directStopOutcome(code: DirectTaskSupervisorStopCode): Supervisi
     case "verification_check_failed":
     case "implementation_scope_violation":
     case "implementation_commit_missing":
-    case "finish_failed":
+    case "finish_failed": {
       return "failed";
-    default:
+    }
+    default: {
       return assertNever(code);
+    }
   }
 }
 
 export function branchStopOutcome(code: BranchTaskSupervisorStopCode): SupervisionOutcome {
   switch (code) {
-    case "approval_required":
+    case "approval_required": {
       return "awaiting_plan_approval";
+    }
     case "semantic_input_required":
-    case "evaluator_rework":
+    case "evaluator_rework": {
       return "external_wait";
+    }
     case "human_input_required":
-    case "evaluator_human_review":
+    case "evaluator_human_review": {
       return "human_required";
-    case "wait_required":
+    }
+    case "wait_required": {
       return "external_wait";
+    }
     case "terminal_attention":
     case "step_budget_exhausted":
     case "unsupported_agent_episode":
     case "supervisor_stopped":
     case "executor_blocked":
     case "missing_knowledge":
-    case "evaluator_blocked":
+    case "evaluator_blocked": {
       return "blocked";
-    case "route_refresh_failed":
+    }
+    case "route_refresh_failed": {
       return "stale_state";
+    }
     case "operation_failed":
     case "executor_adapter_crash":
     case "runner_failed":
@@ -88,10 +104,12 @@ export function branchStopOutcome(code: BranchTaskSupervisorStopCode): Supervisi
     case "implementation_scope_violation":
     case "implementation_commit_missing":
     case "verification_failed":
-    case "evaluator_adapter_crash":
+    case "evaluator_adapter_crash": {
       return "failed";
-    default:
+    }
+    default: {
       return assertNever(code);
+    }
   }
 }
 

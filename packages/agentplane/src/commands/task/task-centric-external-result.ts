@@ -134,7 +134,7 @@ export async function recordTaskCentricExternalResult(opts: {
   });
   const adapter = new TaskCentricBackendAdapter({
     backend: opts.command.taskBackend,
-    observeRepository: async () => repository,
+    observeRepository: () => Promise.resolve(repository),
   });
   let expectedRevision = raw.revision ?? aggregate.revision;
   if (opts.semantic.plan_refinement) {

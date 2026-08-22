@@ -1,4 +1,4 @@
-import { normalizeTaskStatus, parseTaskStatus } from "@agentplaneorg/core/tasks";
+import { parseTaskStatus } from "@agentplaneorg/core/tasks";
 
 import {
   toTaskSummary,

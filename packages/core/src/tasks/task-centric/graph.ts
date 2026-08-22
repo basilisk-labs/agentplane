@@ -374,7 +374,7 @@ export class WorkItemScheduler {
     );
     const selected: WorkItem[] = [];
     const activeClaims = opts.active_leases.flatMap((lease) => lease.resource_claims);
-    const ordered = [...opts.graph.work_items].sort(
+    const ordered = opts.graph.work_items.toSorted(
       (left, right) => right.priority - left.priority || left.id.localeCompare(right.id),
     );
     for (const item of ordered) {

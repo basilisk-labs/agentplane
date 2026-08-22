@@ -175,11 +175,7 @@ export class TaskCentricOrchestrator {
       if (task.lifecycle === "COMPLETED") {
         return { status: "completed", task_id: task.id, task_revision: task.revision };
       }
-      if (
-        !plan ||
-        plan.approval.state !== "approved" ||
-        plan.approval.approved_digest !== plan.digest
-      ) {
+      if (plan?.approval.state !== "approved" || plan.approval.approved_digest !== plan.digest) {
         return {
           status: "paused",
           task_id: task.id,

@@ -145,13 +145,13 @@ function memoryBackend(initial = taskData()): TaskBackend & { current(): TaskDat
       supports_push_sync: false,
       supports_snapshot_export: false,
     },
-    async listTasks() {
-      return [structuredClone(current)];
+    listTasks() {
+      return Promise.resolve([structuredClone(current)]);
     },
-    async getTask(taskId: string) {
-      return taskId === current.id ? structuredClone(current) : null;
+    getTask(taskId: string) {
+      return Promise.resolve(taskId === current.id ? structuredClone(current) : null);
     },
-    async writeTask(next: TaskData, opts) {
+    writeTask(next: TaskData, opts) {
       const observed = current.revision ?? 1;
       if (opts?.expectedRevision !== undefined && opts.expectedRevision !== observed) {
         throw new Error(
@@ -159,6 +159,7 @@ function memoryBackend(initial = taskData()): TaskBackend & { current(): TaskDat
         );
       }
       current = structuredClone(next);
+      return Promise.resolve();
     },
     current() {
       return structuredClone(current);
@@ -195,7 +196,7 @@ describe("TaskCentricBackendAdapter", () => {
     const backend = memoryBackend();
     const adapter = new TaskCentricBackendAdapter({
       backend,
-      observeRepository: async () => repository(),
+      observeRepository: () => Promise.resolve(repository()),
     });
     const initial = await adapter.readTask(TASK_ID);
     expect(initial?.work_items).toEqual({});
@@ -208,7 +209,8 @@ describe("TaskCentricBackendAdapter", () => {
       idempotency_key: "materialize-1",
     });
     expect(first).toMatchObject({ previous_revision: 1, next_revision: 2 });
-    expect((await adapter.readTask(TASK_ID))?.work_items.implementation?.state).toBe("READY");
+    const materialized = await adapter.readTask(TASK_ID);
+    expect(materialized?.work_items.implementation?.state).toBe("READY");
 
     await expect(
       adapter.materializeWorkItems({
@@ -235,7 +237,7 @@ describe("TaskCentricBackendAdapter", () => {
     const backend = memoryBackend();
     const adapter = new TaskCentricBackendAdapter({
       backend,
-      observeRepository: async () => repository(),
+      observeRepository: () => Promise.resolve(repository()),
     });
     const initial = (await adapter.readTask(TASK_ID))!;
     await adapter.materializeWorkItems({
@@ -272,7 +274,8 @@ describe("TaskCentricBackendAdapter", () => {
       lease,
       idempotency_key: lease.id,
     });
-    expect((await adapter.reconcile(TASK_ID)).active_leases).toHaveLength(1);
+    const claimed = await adapter.reconcile(TASK_ID);
+    expect(claimed.active_leases).toHaveLength(1);
 
     const semanticResult: SemanticWorkResult = {
       schema_version: 1,
@@ -324,8 +327,10 @@ describe("TaskCentricBackendAdapter", () => {
       ],
       idempotency_key: "result-1",
     });
-    expect((await adapter.reconcile(TASK_ID)).active_leases).toHaveLength(0);
-    expect((await adapter.readTask(TASK_ID))?.work_items.implementation?.state).toBe("COMPLETED");
+    const released = await adapter.reconcile(TASK_ID);
+    const completedWork = await adapter.readTask(TASK_ID);
+    expect(released.active_leases).toHaveLength(0);
+    expect(completedWork?.work_items.implementation?.state).toBe("COMPLETED");
 
     const completed = (await adapter.readTask(TASK_ID))!;
     const mutation = "complete-task";
@@ -386,7 +391,7 @@ describe("TaskCentricBackendAdapter", () => {
     const backend = memoryBackend();
     const adapter = new TaskCentricBackendAdapter({
       backend,
-      observeRepository: async () => repository(),
+      observeRepository: () => Promise.resolve(repository()),
     });
     const initial = (await adapter.readTask(TASK_ID))!;
     await adapter.materializeWorkItems({

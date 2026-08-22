@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 import { describe, expect, it } from "vitest";
 
 import {
@@ -12,6 +13,7 @@ import {
   type ArtifactPort,
   type ContextBundle,
   type ContextPort,
+  type ContentActorPort,
   type DomainEvent,
   type ExecutionLease,
   type GitPort,
@@ -21,6 +23,7 @@ import {
   type RepositorySnapshot,
   type RetryBudget,
   type SemanticWorkResult,
+  type SemanticWorkRequest,
   type TaskAggregate,
   type TaskCheckpoint,
   type TaskPlanProposal,
@@ -73,7 +76,7 @@ function workItem(id: string, depends_on: readonly string[] = []): WorkItem {
       required_sources: ["repository"],
       optional_sources: [],
       symbol_hints: [],
-      max_bytes: 8_192,
+      max_bytes: 8192,
     },
     risk: "medium",
     capabilities: ["test"],
@@ -403,11 +406,9 @@ function contextPort(): ContextPort {
 
 function ports(repository: MemoryRepository) {
   const actorKinds: string[] = [];
-  const actor = {
+  const actor: ContentActorPort = {
     identity: { id: "same-actor", transport: "pull" as const, capabilities: ["test"] },
-    async perform(
-      request: Parameters<NonNullable<typeof actor.perform>>[0],
-    ): Promise<SemanticWorkResult> {
+    async perform(request: SemanticWorkRequest): Promise<SemanticWorkResult> {
       actorKinds.push(request.kind);
       return {
         schema_version: 1,

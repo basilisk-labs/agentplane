@@ -301,7 +301,10 @@ describe("task-centric domain", () => {
       })[1],
     ).toMatchObject({
       ready: false,
-      reason_codes: expect.arrayContaining(["dependency_incomplete:a", "input_missing:out-a"]),
+      reason_codes: expect.arrayContaining([
+        "dependency_incomplete:a",
+        "input_missing:out-a",
+      ]) as unknown,
     });
   });
 

@@ -162,11 +162,7 @@ export function applyPlanRefinement(opts: {
 }): PlanRefinementApplication {
   const classification = classifyPlanChange(opts.refinement);
   const plan = opts.task.current_plan;
-  if (
-    !plan ||
-    plan.approval.state !== "approved" ||
-    plan.approval.approved_digest !== plan.digest
-  ) {
+  if (plan?.approval.state !== "approved" || plan.approval.approved_digest !== plan.digest) {
     throw new Error("Plan refinement requires the exact approved current plan.");
   }
   if (classification.material) {
