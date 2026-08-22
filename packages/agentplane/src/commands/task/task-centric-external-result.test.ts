@@ -242,9 +242,9 @@ describe("recordTaskCentricExternalResult", () => {
       message: "A null-ID WorkItem result is ambiguous because multiple WorkItems are claimed.",
     });
     expect(backend.current().revision).toBe(revision);
-    expect(
-      taskCentricAggregateFromExtensions(backend.current().extensions)?.work_items,
-    ).toMatchObject({
+    const workItems = taskCentricAggregateFromExtensions(backend.current().extensions)?.work_items;
+    expect(Object.keys(workItems ?? {}).toSorted()).toEqual(["a", "b", "c"]);
+    expect(workItems).toMatchObject({
       a: { state: "CLAIMED", claim_id: "claim-a" },
       b: { state: "CLAIMED", claim_id: "claim-b" },
       c: { state: "READY", claim_id: null },
