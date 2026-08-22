@@ -703,6 +703,10 @@ describe("task verify record (unit)", () => {
       mkTask({
         status: "DONE",
         commit: { hash: "abc", message: "msg" },
+        extensions: {
+          implementation_commit: { hash: "implementation-sha" },
+          preserved: { value: true },
+        },
       }),
     );
 
@@ -721,6 +725,8 @@ describe("task verify record (unit)", () => {
     expect(next?.verification?.state).toBe("needs_rework");
     expect(next?.status).toBe("DOING");
     expect(next?.commit).toBeNull();
+    expect(next?.extensions?.implementation_commit).toBeUndefined();
+    expect(next?.extensions?.preserved).toEqual({ value: true });
     expect(writeSpy).not.toHaveBeenCalled();
 
     writeSpy.mockRestore();
