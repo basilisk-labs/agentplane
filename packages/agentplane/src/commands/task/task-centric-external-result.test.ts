@@ -245,9 +245,9 @@ describe("recordTaskCentricExternalResult", () => {
     expect(
       taskCentricAggregateFromExtensions(backend.current().extensions)?.work_items,
     ).toMatchObject({
-      a: { state: "CLAIMED" },
-      b: { state: "CLAIMED" },
-      c: { state: "READY" },
+      a: { state: "CLAIMED", claim_id: "claim-a" },
+      b: { state: "CLAIMED", claim_id: "claim-b" },
+      c: { state: "READY", claim_id: null },
     });
   });
 
