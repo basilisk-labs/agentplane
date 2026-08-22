@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 24
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "Approved by user for autonomous v0.7.8 regression-only release work; host_user_decision=sha256:f5d7652cf2a0f8883d17659b4275d137bc7057b8348898cd8b5677ebdd5114ed"
 verification:
-  state: "pending"
-  updated_at: "2026-08-22T14:35:34.520Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 1
+  state: "needs_rework"
+  updated_at: "2026-08-22T14:38:09.459Z"
+  updated_by: "TESTER"
+  note: "Verification evidence is incomplete: docs_contract was omitted from the structured check IDs."
+  attempts: 2
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -132,18 +132,27 @@ execution_contract:
       - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
       - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "repository_effect:documentation"
+      - "verification:verification-record:fail"
     changed_components:
+      - ".agentplane"
       - "packages/agentplane"
     changed_paths:
+      - ".agentplane/policy/incidents.md"
+      - "packages/agentplane/assets/policy/incidents.md"
       - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
       - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
     external_effects: []
     repository_effects:
+      - "documentation"
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -165,6 +174,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
         evidence_requirements:
           - "hosted_integration"
+          - "repository_effect:documentation"
           - "repository_effect:repository_write"
           - "repository_effect:source_code"
           - "repository_effect:tests"
@@ -178,19 +188,24 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:2cb0d457440803845bd58186c49197afed69890eb8953a25e16d0178f628bbbe"
+      digest: "sha256:f951336c55525d6d2ab7a2b6db8d49c8feeb2eba9d78c36117814ae0e8c53028"
       escalation_reasons: []
       execution_groups:
+        - "docs-schema"
         - "core"
         - "cli"
       observed:
         changed_components:
+          - ".agentplane"
           - "packages/agentplane"
         changed_files:
+          - ".agentplane/policy/incidents.md"
+          - "packages/agentplane/assets/policy/incidents.md"
           - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
           - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
         external_effects: []
         repository_effects:
+          - "documentation"
           - "repository_write"
           - "source_code"
           - "tests"
@@ -205,6 +220,7 @@ execution_contract:
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "docs_contract"
         - "hosted_integration"
         - "task_outcome"
       selector:
@@ -220,10 +236,12 @@ execution_contract:
       source: "execution_contract"
     required_evidence:
       - "hosted_integration"
+      - "repository_effect:documentation"
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -247,6 +265,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: .agentplane/policy/incidents.md, packages/agentplane/assets/policy/incidents.md; repository effects: repository_write."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 63fc858afb39. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -336,8 +357,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator finding cannot be repaired inside the current writable roots; the minimal recovery is to remove only the automatically promoted incident line from the two affected policy files. Recommended action: Approve an exact two-path cleanup authority, remove only INC-20260822-01, and rerun the existing focused verification. Requested scope: roots=.agentplane/policy/incidents.md,packages/agentplane/assets/policy/incidents.md; repository effects=repository_write; request digest=sha256:f085d1f1289e155fb1e79aa690ea9b4df9730907ee89d3c2e8353be944e7a797. Agentplane receipt: external-agent-blocker/tr_883d8d29c8d1a74863858f1e05029d00/sha256:a7f9ba993c80873e49e903d1939036f554290859edf1c6e64f874827f836f622/sha256:f085d1f1289e155fb1e79aa690ea9b4df9730907ee89d3c2e8353be944e7a797."
+  -
+    type: "status"
+    at: "2026-08-22T14:37:17.955Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 63fc858afb39. CLI accepted one state-bound external-agent semantic result."
+    commit: "63fc858afb39fe5b7f5f685014c19923b9ff5cb9"
+  -
+    type: "verify"
+    at: "2026-08-22T14:38:09.459Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Verification evidence is incomplete: docs_contract was omitted from the structured check IDs."
 doc_version: 3
-doc_updated_at: "2026-08-22T14:35:17.541Z"
+doc_updated_at: "2026-08-22T14:38:10.535Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the proven task-centric Core regression in null-ID external result handling: first acceptance must resolve a single claimed or ready WorkItem, and an exact replay after evidence persistence must use the mutation receipt before scheduler selection. Add focused unit coverage. Do not modify context code. This replaces unpublished Task 202608221325-NQJQ5K whose WorkItemGraph incorrectly declared repository sources as upstream required_inputs."
 sections:
@@ -681,6 +716,41 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T14:38:09.459Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Verification evidence is incomplete: docs_contract was omitted from the structured check IDs.
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f3e543bebff673290e54458107b85a0e1473cb0058a0cc5ba54bafc7cca36086, input_digest=sha256:2d390b3d6ae4a89e08f356068a3ce18393b825d7f3fcbb87c6445eb4b9e9760d
+
+    Details:
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass but not mapped to required check id
+    Evidence: policy routing OK
+    Scope: verification evidence schema only
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221335-6DSF3R-fix-idempotent-null-workitem-external-result-acc/.agentplane/tasks/202608221335-6DSF3R/blueprint/resolved-snapshot.json
+    - old_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+    - current_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221335-6DSF3R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608221335-6DSF3R
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1371,6 +1441,41 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T14:38:09.459Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Verification evidence is incomplete: docs_contract was omitted from the structured check IDs.
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f3e543bebff673290e54458107b85a0e1473cb0058a0cc5ba54bafc7cca36086, input_digest=sha256:2d390b3d6ae4a89e08f356068a3ce18393b825d7f3fcbb87c6445eb4b9e9760d
+
+Details:
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass but not mapped to required check id
+Evidence: policy routing OK
+Scope: verification evidence schema only
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221335-6DSF3R-fix-idempotent-null-workitem-external-result-acc/.agentplane/tasks/202608221335-6DSF3R/blueprint/resolved-snapshot.json
+- old_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+- current_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221335-6DSF3R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608221335-6DSF3R
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
