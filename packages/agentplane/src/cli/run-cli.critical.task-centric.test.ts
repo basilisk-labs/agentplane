@@ -10,11 +10,10 @@ import {
   type TaskAggregate,
   type TaskPlanProposal,
 } from "@agentplaneorg/core/tasks";
-import { installRunCliIntegrationHarness, mkTempDir } from "@agentplane/testkit";
+import { installRunCliIntegrationHarness, mkTempDir, captureStdIO } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
-import { captureStdIO } from "@agentplane/testkit";
 
 installRunCliIntegrationHarness();
 
@@ -383,11 +382,12 @@ describe("task-centric fresh repository release gate", { timeout: 180_000 }, () 
         second: { state: "COMPLETED", attempt: 2 },
       },
     });
-    const taskDirectories = (
-      await readdir(path.join(checkout, ".agentplane", "tasks"), {
-        withFileTypes: true,
-      })
-    ).filter((entry) => entry.isDirectory() && /^\d{12}-/u.test(entry.name));
+    const taskEntries = await readdir(path.join(checkout, ".agentplane", "tasks"), {
+      withFileTypes: true,
+    });
+    const taskDirectories = taskEntries.filter(
+      (entry) => entry.isDirectory() && /^\d{12}-/u.test(entry.name),
+    );
     expect(taskDirectories.map((entry) => entry.name)).toEqual([taskId]);
   });
 });

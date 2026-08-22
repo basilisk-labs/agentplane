@@ -8,7 +8,6 @@ import {
   withTaskCentricAggregate,
   type DomainEvent,
   type ExecutionLease,
-  type PendingEffect,
   type PlanRefinement,
   type OutputManifest,
   type ReconciliationSnapshot,
@@ -23,7 +22,7 @@ import {
   type ValidationEvidence,
 } from "@agentplaneorg/core/tasks";
 
-import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import type { TaskBackend } from "../../backends/task-backend.js";
 import {
   aggregateFrom,
   applyEvent,

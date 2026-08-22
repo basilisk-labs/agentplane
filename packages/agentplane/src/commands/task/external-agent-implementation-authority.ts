@@ -484,7 +484,9 @@ export async function applyExternalImplementationResult(opts: {
       semantic,
       verification,
       head: postVerificationHead,
-      dirty_paths: (postVerificationStatus?.lines ?? []).map(pathFromStatusLine).filter(Boolean),
+      dirty_paths: (postVerificationStatus?.lines ?? [])
+        .map((line) => pathFromStatusLine(line))
+        .filter(Boolean),
     });
   if (verification.status !== "passed") {
     if (canonicalProjection.state !== "legacy_task") return;

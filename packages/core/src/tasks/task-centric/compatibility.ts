@@ -52,16 +52,14 @@ export function taskCentricAggregateFromExtensions(
   const intent = record(value?.intent);
   const workItems = record(value?.work_items);
   if (
-    !value ||
-    value.schema_version !== 1 ||
+    value?.schema_version !== 1 ||
     typeof value.id !== "string" ||
     !value.id.trim() ||
     !Number.isInteger(value.revision) ||
     (value.revision as number) < 1 ||
     typeof value.lifecycle !== "string" ||
     !TASK_LIFECYCLE_STATES.has(value.lifecycle as TaskLifecycleState) ||
-    !intent ||
-    intent.task_id !== value.id ||
+    intent?.task_id !== value.id ||
     typeof intent.request !== "string" ||
     !Array.isArray(intent.constraints) ||
     !Array.isArray(intent.acceptance_criteria) ||
@@ -75,8 +73,7 @@ export function taskCentricAggregateFromExtensions(
   if (currentPlan !== null) {
     const plan = record(currentPlan);
     if (
-      !plan ||
-      plan.task_id !== value.id ||
+      plan?.task_id !== value.id ||
       !Number.isInteger(plan.revision) ||
       !isSha256Digest(plan.digest) ||
       !record(plan.approval) ||
@@ -92,8 +89,7 @@ export function taskCentricAggregateFromExtensions(
     for (const archived of value.plan_history) {
       const plan = record(archived);
       if (
-        !plan ||
-        plan.task_id !== value.id ||
+        plan?.task_id !== value.id ||
         !Number.isInteger(plan.revision) ||
         !isSha256Digest(plan.digest) ||
         !record(plan.approval)
@@ -109,8 +105,7 @@ export function taskCentricAggregateFromExtensions(
     for (const amendment of value.plan_amendments) {
       const entry = record(amendment);
       if (
-        !entry ||
-        entry.schema_version !== 1 ||
+        entry?.schema_version !== 1 ||
         typeof entry.id !== "string" ||
         !Number.isInteger(entry.plan_revision) ||
         !isSha256Digest(entry.plan_digest) ||
@@ -126,8 +121,7 @@ export function taskCentricAggregateFromExtensions(
   for (const [id, runtime] of Object.entries(workItems)) {
     const item = record(runtime);
     if (
-      !item ||
-      item.id !== id ||
+      item?.id !== id ||
       typeof item.state !== "string" ||
       !WORK_ITEM_STATES.has(item.state as WorkItemState) ||
       !Number.isInteger(item.revision) ||
@@ -165,33 +159,42 @@ export function projectTaskLifecycleToLegacyStatus(
   switch (lifecycle) {
     case "CAPTURED":
     case "PLANNING":
-    case "AWAITING_PLAN_APPROVAL":
+    case "AWAITING_PLAN_APPROVAL": {
       return "TODO";
+    }
     case "ACTIVE":
-    case "FINAL_VALIDATION":
+    case "FINAL_VALIDATION": {
       return "DOING";
+    }
     case "COMPLETED":
-    case "CANCELLED":
+    case "CANCELLED": {
       return "DONE";
+    }
     case "HUMAN_REQUIRED":
     case "BLOCKED":
-    case "EFFECT_IN_DOUBT":
+    case "EFFECT_IN_DOUBT": {
       return "BLOCKED";
+    }
   }
 }
 
 export function legacyStatusToTaskLifecycle(status: string): TaskLifecycleState {
   switch (status) {
-    case "TODO":
+    case "TODO": {
       return "CAPTURED";
-    case "DOING":
+    }
+    case "DOING": {
       return "ACTIVE";
-    case "DONE":
+    }
+    case "DONE": {
       return "COMPLETED";
-    case "BLOCKED":
+    }
+    case "BLOCKED": {
       return "BLOCKED";
-    default:
+    }
+    default: {
       throw new Error(`Unknown legacy task status ${status}; explicit migration is required.`);
+    }
   }
 }
 
@@ -200,14 +203,18 @@ export function compatibilityRoleToSemanticWorkKind(
   repair = false,
 ): SemanticWorkKind {
   switch (role) {
-    case "PLANNER":
+    case "PLANNER": {
       return "plan";
-    case "EXECUTOR":
+    }
+    case "EXECUTOR": {
       return repair ? "repair" : "execute";
-    case "EVALUATOR":
+    }
+    case "EVALUATOR": {
       return "review";
-    case "CURATOR":
+    }
+    case "CURATOR": {
       return "clarify";
+    }
   }
 }
 

@@ -181,7 +181,7 @@ describe("commands/workflow", () => {
       verifier: "REVIEWER",
       note: "Looks good",
       verification_command: `agentplane verify ${taskId} --ok --by REVIEWER`,
-      implementation_sha: expect.stringMatching(/^[a-f0-9]{40}$/u),
+      implementation_sha: expect.stringMatching(/^[a-f0-9]{40}$/u) as unknown,
     });
     expect(typeof record.scope).toBe("string");
     expect(String(record.scope)).toContain("Review the requested outcome");

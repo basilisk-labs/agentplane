@@ -374,15 +374,15 @@ export function buildCanonicalAgentWorkOrder(opts: {
   const routeGit = readTaskRouteGitSnapshot(decision);
   const repositorySnapshot = createRepositorySnapshot({
     git:
-      stateFingerprint.git_head !== null
-        ? { kind: "commit", sha: stateFingerprint.git_head, ref: null }
-        : routeGit?.state === "available"
+      stateFingerprint.git_head === null
+        ? routeGit?.state === "available"
           ? { kind: "unborn", ref: null }
           : {
               kind: "unavailable",
               reason_code: routeGit?.errors[0]?.operation ?? "git_observation_unavailable",
               detail: routeGit?.errors[0]?.message,
-            },
+            }
+        : { kind: "commit", sha: stateFingerprint.git_head, ref: null },
     dirty_paths: routeGit?.dirty_paths ?? [],
     policy_digest:
       stateFingerprint.components.policy.state === "present"

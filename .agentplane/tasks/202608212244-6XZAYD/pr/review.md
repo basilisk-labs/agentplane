@@ -30,8 +30,8 @@ Created: 2026-08-21T22:50:57.507Z
 
 ```text
  depcruise.config.cjs                               |   25 +
- .../task-centric-backend-adapter.test.ts           |  500 ++++++
- .../task-backend/task-centric-backend-adapter.ts   |  550 +++++++
+ .../task-centric-backend-adapter.test.ts           |  505 ++++++
+ .../task-backend/task-centric-backend-adapter.ts   |  549 +++++++
  .../task-backend/task-centric-backend-runtime.ts   |  163 ++
  .../src/cli/run-cli.core.task-run.test.ts          |   12 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |    6 +-
@@ -48,12 +48,12 @@ Created: 2026-08-21T22:50:57.507Z
  .../src/commands/task/agent-action-packet.test.ts  |   12 +
  .../src/commands/task/agent-action-packet.ts       |   29 +-
  .../src/commands/task/branch-task-supervisor.ts    |    2 +-
- .../external-agent-implementation-authority.ts     |   44 +-
+ .../external-agent-implementation-authority.ts     |   46 +-
  .../task/external-agent-planning-authority.ts      |  128 +-
  .../task/external-agent-result-application.ts      |    1 +
  .../src/commands/task/external-agent-supervisor.ts |    1 +
  .../commands/task/finish-closeout-journal.test.ts  |   60 +
- .../src/commands/task/finish-closeout-journal.ts   |   18 +-
+ .../src/commands/task/finish-closeout-journal.ts   |   17 +-
  .../agentplane/src/commands/task/finish-shared.ts  |   45 +-
  .../commands/task/finish.close-tail.unit.test.ts   |   10 +-
  .../src/commands/task/finish.state.unit.test.ts    |    6 +-
@@ -65,9 +65,9 @@ Created: 2026-08-21T22:50:57.507Z
  packages/agentplane/src/commands/task/ready.ts     |   10 +-
  .../agentplane/src/commands/task/run.command.ts    |   63 +-
  .../src/commands/task/shared/dependencies.ts       |    6 +-
- .../task/supervision-outcome-disposition.test.ts   |   90 ++
- .../task/supervision-outcome-disposition.ts        |  112 ++
- .../task/task-centric-external-result.test.ts      |  377 +++++
+ .../task/supervision-outcome-disposition.test.ts   |   94 ++
+ .../task/supervision-outcome-disposition.ts        |  130 ++
+ .../task/task-centric-external-result.test.ts      |  378 +++++
  .../commands/task/task-centric-external-result.ts  |  218 +++
  .../src/commands/task/verify-record-execute.ts     |   24 +-
  .../task/verify-record.durability.unit.test.ts     |    4 +-
@@ -94,7 +94,7 @@ Created: 2026-08-21T22:50:57.507Z
  .../src/runner/usecases/task-run-lifecycle.test.ts |  151 +-
  .../runner/usecases/task-run-lifecycle.testkit.ts  |  148 ++
  ...task-run-process-identity-serialization.test.ts |    4 +-
- .../src/runner/usecases/task-run-recipe-context.ts |   28 +
+ .../src/runner/usecases/task-run-recipe-context.ts |   27 +
  ...task-run-recipe-write-scope.integration.test.ts |   56 +-
  .../agentplane/src/runner/usecases/task-run.ts     |   17 +-
  .../architecture-guard.test.ts                     |   19 +
@@ -107,18 +107,18 @@ Created: 2026-08-21T22:50:57.507Z
  packages/core/src/runner/agent-work-order.ts       |   37 +
  packages/core/src/schemas/index.ts                 |    1 +
  packages/core/src/tasks/index.ts                   |    6 +
- .../core/src/tasks/task-centric/compatibility.ts   |  271 ++++
+ .../core/src/tasks/task-centric/compatibility.ts   |  278 ++++
  packages/core/src/tasks/task-centric/digest.ts     |   28 +
  packages/core/src/tasks/task-centric/graph.ts      |  420 +++++
  packages/core/src/tasks/task-centric/index.ts      |   85 +
- packages/core/src/tasks/task-centric/lifecycle.ts  |  362 +++++
+ packages/core/src/tasks/task-centric/lifecycle.ts  |  358 +++++
  packages/core/src/tasks/task-centric/model.ts      |  458 ++++++
- .../src/tasks/task-centric/orchestrator.test.ts    |  539 +++++++
- .../core/src/tasks/task-centric/orchestrator.ts    |  478 ++++++
- packages/core/src/tasks/task-centric/policy.ts     |  258 +++
+ .../src/tasks/task-centric/orchestrator.test.ts    |  540 +++++++
+ .../core/src/tasks/task-centric/orchestrator.ts    |  474 ++++++
+ packages/core/src/tasks/task-centric/policy.ts     |  254 +++
  packages/core/src/tasks/task-centric/ports.ts      |  219 +++
  packages/core/src/tasks/task-centric/schema.ts     |  153 ++
- .../src/tasks/task-centric/task-centric.test.ts    |  569 +++++++
+ .../src/tasks/task-centric/task-centric.test.ts    |  572 +++++++
  packages/core/src/tasks/task-status.test.ts        |   16 +
  packages/core/src/tasks/task-status.ts             |   40 +
  .../spec/schemas/agent-work-order-v2.schema.json   |  213 +++
@@ -127,7 +127,7 @@ Created: 2026-08-21T22:50:57.507Z
  schemas/agent-work-order-v2.schema.json            |  213 +++
  .../baselines/v0.7-compatibility-candidate.json    |   25 +-
  .../check-compatibility-contract-baseline.mjs      |   15 +-
- 98 files changed, 10833 insertions(+), 756 deletions(-)
+ 98 files changed, 10859 insertions(+), 756 deletions(-)
 ```
 
 </details>

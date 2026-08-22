@@ -44,7 +44,11 @@ describe("task supervision outcome dispositions", () => {
         status: "stopped",
         stop: { code, reason: code, route_step_id: "step", operation_id: null },
       }),
-    ).toMatchObject({ kind: expect.stringMatching(/pause|wait/u), exit_code: 0, terminal: false });
+    ).toMatchObject({
+      kind: expect.stringMatching(/pause|wait/u) as unknown,
+      exit_code: 0,
+      terminal: false,
+    });
   });
 
   it.each(DIRECT_NONZERO)("fails closed for direct deterministic stop %s", (code) => {

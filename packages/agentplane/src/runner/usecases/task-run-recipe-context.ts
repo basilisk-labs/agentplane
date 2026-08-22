@@ -18,11 +18,10 @@ export async function resolveTaskRunnerRecipe(opts: {
       recipeDirectoryRelative.startsWith(`..${path.sep}`) ||
       path.isAbsolute(recipeDirectoryRelative));
   if (!opts.recipe || !isOutsideRepository) return opts.recipe;
-  return (
-    await assembleRunnerRecipeContext({
-      project: opts.command.resolvedProject,
-      recipe_id: opts.recipe.recipe_id,
-      scenario_id: opts.recipe.scenario_id,
-    })
-  ).recipe;
+  const assembled = await assembleRunnerRecipeContext({
+    project: opts.command.resolvedProject,
+    recipe_id: opts.recipe.recipe_id,
+    scenario_id: opts.recipe.scenario_id,
+  });
+  return assembled.recipe;
 }

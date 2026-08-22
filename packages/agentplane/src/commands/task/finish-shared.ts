@@ -330,7 +330,7 @@ export async function writeFinishedTasks(opts: {
       });
       const adapter = new TaskCentricBackendAdapter({
         backend: opts.ctx.taskBackend,
-        observeRepository: async () => repository,
+        observeRepository: () => Promise.resolve(repository),
       });
       await adapter.completeTaskFromLegacyVerification({
         task_id: taskId,

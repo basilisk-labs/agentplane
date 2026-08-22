@@ -199,11 +199,7 @@ export class LifecycleEngine {
         },
       ];
     }
-    if (
-      !plan ||
-      plan.approval.state !== "approved" ||
-      plan.approval.approved_digest !== plan.digest
-    ) {
+    if (plan?.approval.state !== "approved" || plan.approval.approved_digest !== plan.digest) {
       return [
         {
           kind: "decision",
