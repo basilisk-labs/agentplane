@@ -230,6 +230,15 @@ export async function mkGitRepoRoot(): Promise<string> {
   return root;
 }
 
+export async function mkGitRepoRootWithCommit(): Promise<string> {
+  const root = await mkGitRepoRoot();
+  await execFileAsync("git", ["commit", "--allow-empty", "-m", "test: seed repository"], {
+    cwd: root,
+    env: cleanGitEnv(),
+  });
+  return root;
+}
+
 export async function mkTempDir(): Promise<string> {
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
   testRoots.add(root);

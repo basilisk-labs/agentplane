@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { mkGitRepoRoot } from "@agentplane/testkit";
+import { mkGitRepoRootWithCommit } from "@agentplane/testkit";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { TaskStore } from "../../commands/shared/task-store/store.js";
 import { CliError } from "../../shared/errors.js";
@@ -84,7 +84,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("recovers a stale SIGKILL-style owner claim before any run directory exists", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = "TASK-STALE-OWNER";
     const stale = staleClaim({ task_id: taskId, run_id: "run-crashed-owner" });
     await writeActiveClaim(root, stale);
@@ -110,7 +110,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("retires a stale lock for an incomplete run without reusing its immutable directory", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = "TASK-INCOMPLETE-CLAIM";
     const stale = staleClaim({ task_id: taskId, run_id: "run-incomplete" });
     const { paths } = await writeActiveClaim(root, stale);
@@ -135,7 +135,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("elects exactly one successor when concurrent starts recover the same stale claim", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = "TASK-CONCURRENT-RECOVERY";
     await writeActiveClaim(
       root,
@@ -174,7 +174,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("runs and releases with unavailable owner identity but refuses stale auto-recovery", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner({
       root,
       script_lines: ["#!/bin/sh", "cat >/dev/null", "exit 0"],
@@ -220,7 +220,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("does not auto-recover a terminal provider outcome before external projection", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner({
       root,
       script_lines: ["#!/bin/sh", "cat >/dev/null", "exit 0"],
@@ -259,7 +259,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("projects a terminal stale-claim outcome before starting a fresh execution", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner({
       root,
       script_lines: ["#!/bin/sh", "cat >/dev/null", "exit 0"],
@@ -311,7 +311,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("makes a reconciled terminal run visible before replay source selection", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner({
       root,
       script_lines: ["#!/bin/sh", "cat >/dev/null", "exit 0"],
@@ -369,7 +369,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("refuses stale-owner recovery while the claimed running child identity is live", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner({
       root,
       script_lines: ["#!/bin/sh", "cat >/dev/null", "exit 0"],
@@ -434,7 +434,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("recovers an orphan claim only after the claimed run is terminal", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner({
       root,
       script_lines: ["#!/bin/sh", "cat >/dev/null", "exit 0"],
@@ -464,7 +464,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("rejects an ancestor symlink without publishing outside the supervisor root", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const paths = await resolveSupervisorTaskRunnerPaths({
       git_root: root,
       workflow_dir: ".agentplane/tasks",
@@ -490,7 +490,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("fails closed on task-directory swap without removing the replacement claim", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = "TASK-DIRECTORY-SWAP";
     const lease = await acquireTaskRunnerActiveClaim({
       git_root: root,
@@ -522,7 +522,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("fails closed without unlinking a replacement generation", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = "TASK-RELEASE-RACE";
     const lease = await acquireTaskRunnerActiveClaim({
       git_root: root,
@@ -557,7 +557,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("retains a terminal claim until a failed TaskData projection is reconciled", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner({
       root,
       script_lines: ["#!/bin/sh", "cat >/dev/null", "exit 0"],
@@ -633,7 +633,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("preserves the exact adapter error while recording a suppressed cleanup violation", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner({
       root,
       script_lines: ["#!/bin/sh", "cat >/dev/null", "exit 0"],
@@ -678,7 +678,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("keeps terminal success authoritative while surfacing claim cleanup diagnostics", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner({
       root,
       script_lines: ["#!/bin/sh", "cat >/dev/null", "exit 0"],
@@ -716,7 +716,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("retains the active claim when terminal cleanup leaves a live process", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner({
       root,
       script_lines: ["#!/bin/sh", "cat >/dev/null", "exit 0"],
@@ -821,7 +821,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("retains the active claim when terminal process cleanup is unverified", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner({
       root,
       script_lines: ["#!/bin/sh", "cat >/dev/null", "exit 0"],
@@ -902,7 +902,7 @@ describe("task-run active claim hardening", () => {
   });
 
   it("releases the active claim after confirmed cleanup of a limited direct-child scope", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner({
       root,
       script_lines: ["#!/bin/sh", "cat >/dev/null", "exit 0"],

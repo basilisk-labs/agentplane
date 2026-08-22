@@ -108,6 +108,26 @@ async function materializeTaskArtifacts(opts: {
       });
     }
   }
+  const agentplaneRoot = path.relative(
+    repositoryRoot,
+    opts.ctx.resolvedProject.agentplaneDir ?? path.join(repositoryRoot, ".agentplane"),
+  );
+  for (const relativePath of [
+    path.join(agentplaneRoot, "WORKFLOW.md"),
+    path.join(agentplaneRoot, "policy"),
+    path.join(agentplaneRoot, "blueprints"),
+    path.join(agentplaneRoot, "recipes"),
+    path.join(agentplaneRoot, "context"),
+    path.join(agentplaneRoot, "cache.sqlite"),
+    path.join(agentplaneRoot, "user-instructions.md"),
+  ]) {
+    const source = path.join(repositoryRoot, relativePath);
+    const target = path.join(opts.workspaceRoot, relativePath);
+    await mkdir(path.dirname(target), { recursive: true });
+    await cp(source, target, { recursive: true, force: true }).catch((error) => {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    });
+  }
 }
 
 export async function allocateTaskWorkspace(opts: {

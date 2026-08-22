@@ -38,6 +38,7 @@ export async function applyAcceptedExternalAgentResult(opts: {
       command: opts.command,
       exchange: opts.exchange,
       envelope: opts.envelope,
+      work_order: opts.work_order,
     });
     return;
   }

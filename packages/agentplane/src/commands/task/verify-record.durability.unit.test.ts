@@ -10,7 +10,7 @@ import * as taskMutation from "../shared/task-mutation.js";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import { cmdVerifyParsed } from "./verify-record.js";
 import { resolveObservedVerificationChangedPaths } from "./verify-record-observed-changes.js";
-import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
+import { mkGitRepoRootWithCommit, writeDefaultConfig } from "@agentplane/testkit";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
 const mocks = vi.hoisted(() => ({
@@ -27,7 +27,7 @@ vi.mock("../../shared/write-if-changed.js", async (importOriginal) => {
 });
 
 async function makeRepo(): Promise<string> {
-  const root = await mkGitRepoRoot();
+  const root = await mkGitRepoRootWithCommit();
   await writeDefaultConfig(root);
   return root;
 }

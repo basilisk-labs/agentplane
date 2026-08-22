@@ -3,13 +3,13 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { mkGitRepoRoot } from "@agentplane/testkit";
+import { mkGitRepoRootWithCommit } from "@agentplane/testkit";
 import { resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
 import { readTaskRunnerActiveClaim } from "./task-run-active-claim.js";
 
 describe("task-run active claim read-only inspection", () => {
   it("returns absent without creating runner claim directories", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = "TASK-READ-ONLY-ABSENT";
     const paths = await resolveSupervisorTaskRunnerPaths({
       git_root: root,

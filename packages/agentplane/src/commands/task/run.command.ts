@@ -1,15 +1,8 @@
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import {
-  executeTaskRunnerExecution,
-  prepareTaskRunnerExecution,
-} from "../../runner/usecases/task-run.js";
-import {
-  projectExecutedTaskRunnerLifecycleResult,
-  projectPreparedTaskRunnerLifecycleResult,
-  taskRunnerLifecycleExitCode,
-} from "../../runner/usecases/task-run-lifecycle-result.js";
+import { prepareTaskRunnerExecution } from "../../runner/usecases/task-run.js";
+import { projectPreparedTaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
 import {
   loadTaskRunnerDiagnosticInspection,
   loadTaskRunnerInspection,
@@ -30,7 +23,6 @@ import {
   renderRunnerStatusPayload,
   runnerReconciliationWarning,
   renderTaskRunnerLifecyclePayload,
-  reportExecutedTaskRun,
   reportPreparedTaskRun,
   tailText,
 } from "./run-render.js";
@@ -39,6 +31,10 @@ import { followRunnerLogs } from "./run-logs-follow.js";
 import { superviseBranchTaskRun } from "./branch-task-supervisor.js";
 import { superviseDirectTaskRun } from "./direct-task-supervisor.js";
 import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
+import {
+  branchTaskSupervisionDisposition,
+  directTaskSupervisionDisposition,
+} from "./supervision-outcome-disposition.js";
 
 export {
   makeRunTaskRunResolveEffectHandler,
@@ -113,8 +109,8 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
       const commandCtx = taskCommand.command;
       const prepared = await prepareTaskRunnerExecution({
         ctx: commandCtx,
-        cwd: ctx.cwd,
-        rootOverride: ctx.rootOverride ?? null,
+        cwd: commandCtx.resolvedProject.gitRoot,
+        rootOverride: null,
         task_id: parsed.taskId,
         mode: "dry_run",
         ...(parsed.remote ? { include_remote: true } : {}),
@@ -170,15 +166,7 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
           result: supervised,
         });
       }
-      return supervised.stop?.code === "runner_failed" ||
-        supervised.stop?.code === "executor_adapter_crash" ||
-        supervised.stop?.code === "runner_receipt_unobserved" ||
-        supervised.stop?.code === "executor_result_missing" ||
-        supervised.stop?.code === "executor_semantic_failed" ||
-        supervised.stop?.code === "evaluator_adapter_crash" ||
-        supervised.stop?.code === "route_refresh_failed"
-        ? 1
-        : 0;
+      return directTaskSupervisionDisposition(supervised).exit_code;
     }
 
     if (taskCommand.execution.selected_mode === "branch_pr") {
@@ -201,38 +189,11 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
           operations: supervised.operation_receipts.length,
         });
       }
-      return supervised.stop?.code === "approval_required" ||
-        supervised.stop?.code === "semantic_input_required" ||
-        supervised.stop?.code === "wait_required" ||
-        supervised.stop?.code === "human_input_required" ||
-        supervised.stop?.code === "terminal_attention"
-        ? 0
-        : supervised.status === "finalized"
-          ? 0
-          : 1;
+      return branchTaskSupervisionDisposition(supervised).exit_code;
     }
 
-    const executed = await executeTaskRunnerExecution({
-      ctx: commandCtx,
-      cwd: ctx.cwd,
-      rootOverride: ctx.rootOverride ?? null,
-      task_id: parsed.taskId,
-      ...(parsed.remote ? { include_remote: true } : {}),
-      danger_authority: dangerAuthority,
-      sandbox_override: parsed.sandbox,
-      task_execution: taskCommand.execution,
-    });
-    const lifecycle = projectExecutedTaskRunnerLifecycleResult({
-      task_id: parsed.taskId,
-      execution: executed,
-    });
-    const payload = renderTaskRunnerLifecyclePayload(lifecycle);
-    if (parsed.json) {
-      output.json(payload);
-    } else {
-      reportExecutedTaskRun(payload, parsed.taskId);
-    }
-    return taskRunnerLifecycleExitCode(lifecycle);
+    const unsupportedMode: never = taskCommand.execution.selected_mode;
+    throw new Error(`Unsupported task execution mode: ${String(unsupportedMode)}.`);
   };
 }
 

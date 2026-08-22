@@ -1,4 +1,4 @@
-import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+import { normalizeTaskStatus, parseTaskStatus } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend/shared/types.js";
 
@@ -69,7 +69,10 @@ export function listOpenTaskDuplicates(
 ): { task: TaskData; score: number; severity: DuplicateTaskSeverity }[] {
   const titleKey = normalizeDuplicateTitleKey(title);
   return tasks
-    .filter((task) => normalizeTaskStatus(task.status) !== "DONE")
+    .filter((task) => {
+      const status = parseTaskStatus(task.status);
+      return status !== null && status !== "DONE";
+    })
     .map((task) => ({
       task,
       score: duplicateSimilarity(task.title ?? "", title),

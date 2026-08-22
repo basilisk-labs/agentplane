@@ -1,10 +1,20 @@
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+import {
+  createLegacyTaskAggregate,
+  createTaskPlanRevision,
+  taskCentricAggregateFromExtensions,
+  TASK_CENTRIC_EXTENSION_KEY,
+  validateTaskPlanProposal,
+  withTaskCentricAggregate,
+} from "@agentplaneorg/core/tasks";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import {
   resolveTaskExecutionContract,
   resolveTaskExecutionRoute,
 } from "../../runtime/task-routing/index.js";
 import { CliError } from "../../shared/errors.js";
+import { TASK_CENTRIC_EXECUTION_CAPABILITIES } from "./task-centric-external-result.js";
 
 import { cmdTaskComment } from "./comment.js";
 import type {
@@ -25,8 +35,10 @@ function planningTaskFields(opts: {
   command: CommandContext;
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
   envelope: ExternalAgentResultEnvelope;
+  work_order: AgentWorkOrderV2;
 }) {
   const intent = opts.envelope.result.task_intent;
+  const structuredProposal = opts.envelope.result.task_plan_proposal;
   const requiresIntent = opts.task.mutation_scope === "unknown";
   if (requiresIntent && !intent) {
     throw new CliError({
@@ -35,7 +47,96 @@ function planningTaskFields(opts: {
         "PLANNER result must include task_intent before a neutral intake task can advance. Return task_kind, mutation_scope, risk_flags, tags, and execution in result.task_intent; mutation_scope must be resolved rather than unknown.",
     });
   }
-  if (!intent) return;
+  let structuredExtensions: Record<string, unknown> | undefined;
+  if (structuredProposal) {
+    if (structuredProposal.task_id !== opts.task.id) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "TaskPlanProposal task_id does not match the planned task.",
+      });
+    }
+    const currentGitHead = opts.work_order.state_fingerprint.git_head;
+    const issuedRepository = opts.work_order.planning_context?.repository_snapshot;
+    const issues = [
+      ...validateTaskPlanProposal({
+        proposal: structuredProposal,
+        expected_task_id: opts.task.id,
+        current_repository_digest:
+          issuedRepository?.digest ?? structuredProposal.planning_baseline.digest,
+        supported_capabilities: TASK_CENTRIC_EXECUTION_CAPABILITIES,
+      }),
+    ];
+    if (
+      issuedRepository &&
+      structuredProposal.planning_baseline.digest !== issuedRepository.digest
+    ) {
+      issues.push({
+        code: "stale_baseline",
+        path: "planning_baseline.digest",
+        message: "TaskPlanProposal repository baseline does not match the issued planning context.",
+      });
+    }
+    if (
+      currentGitHead !== null &&
+      (structuredProposal.planning_baseline.git.kind !== "commit" ||
+        structuredProposal.planning_baseline.git.sha !== currentGitHead)
+    ) {
+      issues.push({
+        code: "stale_baseline",
+        path: "planning_baseline.git",
+        message: "TaskPlanProposal Git baseline does not match the issued work order.",
+      });
+    }
+    if (issues.length > 0) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: `TaskPlanProposal is not executable: ${issues
+          .map((issue) => `${issue.code}@${issue.path}`)
+          .join(", ")}.`,
+      });
+    }
+    const createdAt = new Date().toISOString();
+    const existing = taskCentricAggregateFromExtensions(opts.task.extensions);
+    const aggregate =
+      existing ??
+      createLegacyTaskAggregate({
+        id: opts.task.id,
+        revision: opts.task.revision ?? 1,
+        title: opts.task.title,
+        description: opts.task.description,
+        status: opts.task.status,
+        acceptance_criteria: opts.task.verify,
+        captured_at: opts.task.doc_updated_at ?? createdAt,
+        updated_at: createdAt,
+      });
+    const plan = createTaskPlanRevision({
+      proposal: structuredProposal,
+      revision: (existing?.current_plan?.revision ?? 0) + 1,
+      created_at: createdAt,
+    });
+    structuredExtensions = withTaskCentricAggregate(opts.task.extensions, {
+      ...aggregate,
+      lifecycle: "AWAITING_PLAN_APPROVAL",
+      current_plan: plan,
+      plan_history: existing?.current_plan
+        ? [
+            ...(existing.plan_history ?? []),
+            ...(existing.plan_history?.some(
+              (revision) => revision.digest === existing.current_plan!.digest,
+            )
+              ? []
+              : [existing.current_plan]),
+          ]
+        : (existing?.plan_history ?? []),
+      plan_amendments: [],
+      work_items: {},
+      final_validation: null,
+      updated_at: createdAt,
+    });
+  }
+  if (!intent) {
+    return structuredExtensions ? { extensions: structuredExtensions } : undefined;
+  }
   if (requiresIntent && !intent.execution) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -93,6 +194,7 @@ function planningTaskFields(opts: {
     blueprint_request: intent.blueprint_request,
     execution_route: route,
     execution_contract: executionContract,
+    ...(structuredExtensions ? { extensions: structuredExtensions } : {}),
   };
 }
 
@@ -100,19 +202,26 @@ export async function assertExternalPlanningResultApplicable(opts: {
   command: CommandContext;
   exchange: ExternalAgentExchange;
   envelope: ExternalAgentResultEnvelope;
+  work_order: AgentWorkOrderV2;
 }): Promise<void> {
   if (opts.envelope.result.status !== "completed") return;
   const task = await loadTaskFromContext({
     ctx: opts.command,
     taskId: opts.exchange.task_id,
   });
-  planningTaskFields({ command: opts.command, task, envelope: opts.envelope });
+  planningTaskFields({
+    command: opts.command,
+    task,
+    envelope: opts.envelope,
+    work_order: opts.work_order,
+  });
 }
 
 export async function applyExternalPlanningResult(opts: {
   command: CommandContext;
   exchange: ExternalAgentExchange;
   envelope: ExternalAgentResultEnvelope;
+  work_order: AgentWorkOrderV2;
 }): Promise<void> {
   if (opts.envelope.result.status !== "completed") {
     await cmdTaskComment({
@@ -135,7 +244,12 @@ export async function applyExternalPlanningResult(opts: {
     taskId: opts.exchange.task_id,
     text: opts.envelope.result.summary,
     updatedBy: "PLANNER",
-    taskFields: planningTaskFields({ command: opts.command, task, envelope: opts.envelope }),
+    taskFields: planningTaskFields({
+      command: opts.command,
+      task,
+      envelope: opts.envelope,
+      work_order: opts.work_order,
+    }),
   });
 }
 
@@ -176,6 +290,14 @@ export async function isExternalPlanningResultApplied(opts: {
     });
     if (!sameValue(task.execution_contract?.declaration, expectedContract.declaration))
       return false;
+  }
+  if (opts.envelope.result.task_plan_proposal) {
+    const projection = task.extensions?.[TASK_CENTRIC_EXTENSION_KEY] as
+      | { current_plan?: { proposal?: unknown } }
+      | undefined;
+    if (!sameValue(projection?.current_plan?.proposal, opts.envelope.result.task_plan_proposal)) {
+      return false;
+    }
   }
   return (
     (opts.decision.workflowStep.kind === "approval" &&

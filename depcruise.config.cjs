@@ -41,6 +41,31 @@ module.exports = {
       },
     },
     {
+      name: "task-centric-domain-has-no-concrete-capabilities",
+      severity: "error",
+      comment:
+        "Task-centric domain and policies may depend on pure Core helpers, but not Git, process, filesystem, runner, provider, or CLI implementations.",
+      from: {
+        path: "^packages/core/src/tasks/task-centric/",
+        pathNot: "\\.test\\.ts$",
+      },
+      to: {
+        path: "^(packages/core/src/(git|process|fs|runner)/|packages/agentplane/src/)",
+      },
+    },
+    {
+      name: "task-centric-backend-adapter-does-not-import-command-handlers",
+      severity: "error",
+      comment:
+        "The canonical repository adapter may use backend ports but must not call command handlers or own semantic routing.",
+      from: {
+        path: "^packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter\\.ts$",
+      },
+      to: {
+        path: "^packages/agentplane/src/commands/",
+      },
+    },
+    {
       name: "recipes-stays-framework-agnostic",
       severity: "error",
       comment: "@agentplaneorg/recipes must not depend on CLI or testkit implementation.",

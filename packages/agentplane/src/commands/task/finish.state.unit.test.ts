@@ -25,6 +25,7 @@ function makeMocks() {
     execFileAsync: vi.fn(),
     gitBranchExists: vi.fn(),
     gitCurrentBranch: vi.fn(),
+    gitRevParse: vi.fn(),
     resolveGitIndexLockInfo: vi.fn(),
   };
 }
@@ -93,6 +94,7 @@ vi.mock("@agentplaneorg/core/git", async () => {
     ...actual,
     gitEnv: () => ({}),
     gitCurrentBranch: mocks.gitCurrentBranch,
+    gitRevParse: mocks.gitRevParse,
     resolveBaseBranch: mocks.resolveBaseBranch,
   };
 });
@@ -256,6 +258,7 @@ describeCompatible("task finish state and errors", () => {
     mocks.execFileAsync.mockReset();
     mocks.gitBranchExists.mockReset();
     mocks.gitCurrentBranch.mockReset();
+    mocks.gitRevParse.mockReset();
     mocks.resolveGitIndexLockInfo.mockReset();
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
@@ -265,12 +268,13 @@ describeCompatible("task finish state and errors", () => {
     mocks.execFileAsync.mockImplementation((...args: unknown[]) => {
       const [, gitArgs] = args as [string, string[]];
       if (Array.isArray(gitArgs) && gitArgs[0] === "rev-parse" && gitArgs[1] === "HEAD") {
-        return Promise.resolve({ stdout: "base-head-sha\n", stderr: "" });
+        return Promise.resolve({ stdout: `${"a".repeat(40)}\n`, stderr: "" });
       }
       return Promise.resolve({ stdout: "", stderr: "" });
     });
     mocks.gitBranchExists.mockResolvedValue(false);
     mocks.gitCurrentBranch.mockResolvedValue("main");
+    mocks.gitRevParse.mockResolvedValue("a".repeat(40));
     mocks.resolveGitIndexLockInfo.mockResolvedValue(null);
     mocks.commitFromComment.mockResolvedValue({
       hash: "new-hash",

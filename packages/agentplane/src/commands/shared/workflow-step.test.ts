@@ -996,4 +996,36 @@ describe("typed WorkflowStep reducer", () => {
       evidenceMissing: ["remote_pr"],
     });
   });
+
+  it("routes a material task-centric change back to planning before approval", () => {
+    const concretePlan = "## Plan\n\nImplement the approved bounded change.\n";
+    const pendingTask = {
+      ...task,
+      status: "TODO",
+      doc: concretePlan,
+      plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+    } satisfies TaskData;
+    expect(reduceRouteState(routeState({ task: pendingTask }))).toMatchObject({
+      kind: "approval",
+      request: { type: "plan_approval" },
+    });
+    expect(
+      reduceRouteState(
+        routeState({
+          task: {
+            ...pendingTask,
+            extensions: {
+              "agentplane.task_centric_replan_required": {
+                schema_version: 1,
+                reason_code: "execution_contract_changed",
+              },
+            },
+          },
+        }),
+      ),
+    ).toMatchObject({
+      kind: "agent_episode",
+      episode: { purpose: "planning", role: "PLANNER" },
+    });
+  });
 });

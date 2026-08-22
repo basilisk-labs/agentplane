@@ -3,7 +3,7 @@ import path from "node:path";
 
 import {
   installRunCliIntegrationHarness,
-  mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   waitForCondition,
 } from "@agentplane/testkit";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -30,7 +30,7 @@ afterEach(() => {
 
 describe("task-run process identity publication", () => {
   it("publishes running state before bounded identity enrichment and serializes terminalization", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, [
       "#!/bin/sh",
       'touch "$AGENTPLANE_RUNNER_RUN_DIR/provider-started"',

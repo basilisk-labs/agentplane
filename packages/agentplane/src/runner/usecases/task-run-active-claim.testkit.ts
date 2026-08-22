@@ -26,7 +26,7 @@ import {
   recordFailedExternalRunnerAnchor,
 } from "./task-run-lifecycle.testkit.js";
 
-export { mkGitRepoRoot } from "@agentplane/testkit";
+export { mkGitRepoRootWithCommit as mkGitRepoRoot } from "@agentplane/testkit";
 
 export async function createDoingTask(root: string, title: string): Promise<string> {
   return await createDoingRunnerTask({

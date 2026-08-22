@@ -5,7 +5,7 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
-  mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
@@ -15,9 +15,13 @@ import { afterEach, describe, expect, it } from "vitest";
 import { runCli } from "../../cli/run-cli.js";
 import { cmdContextVerifyTask } from "../../commands/context/verify-task.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import { attachObservedExecutionReceiptFixture } from "../../context/verify-task.testkit.js";
-import { initializeRunnerPolicyFixture } from "./task-run-lifecycle.testkit.js";
+import {
+  initializeRunnerPolicyFixture,
+  materializeRunnerTaskWorkItemFixture,
+} from "./task-run-lifecycle.testkit.js";
 import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
 
 installRunCliIntegrationHarness();
@@ -43,6 +47,7 @@ async function createDoingTask(
     mutation_scope: NonNullable<TaskData["mutation_scope"]>;
     blueprint_request: NonNullable<TaskData["blueprint_request"]>;
     extensions?: Record<string, unknown>;
+    structured_work_item?: boolean;
   },
 ): Promise<string> {
   await initializeRunnerPolicyFixture(root);
@@ -102,6 +107,13 @@ async function createDoingTask(
     blueprint_request: opts.blueprint_request,
     ...(opts.extensions ? { extensions: opts.extensions } : {}),
   });
+  if (opts.structured_work_item !== false) {
+    await materializeRunnerTaskWorkItemFixture({
+      root,
+      task_id: taskId,
+      objective: `Execute integration test task: ${opts.title}.`,
+    });
+  }
   return taskId;
 }
 
@@ -191,19 +203,20 @@ async function configureFakeCodex(root: string): Promise<void> {
 
 describe("context task runner integration", () => {
   it("refuses the exact provider input when user guidance reintroduces process choreography", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeConfig(root, defaultConfig());
+    await writeFile(
+      path.join(root, ".agentplane", "user-instructions.md"),
+      "Run agentplane verify and agentplane finish after every implementation.\n",
+    );
     const taskId = await createDoingTask(root, {
       title: "Normal semantic provider prompt",
       owner: "CODER",
       task_kind: "code",
       mutation_scope: "code",
       blueprint_request: "code.direct",
+      structured_work_item: false,
     });
-    await writeFile(
-      path.join(root, ".agentplane", "user-instructions.md"),
-      "Run agentplane verify and agentplane finish after every implementation.\n",
-    );
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
 
     await expect(
@@ -234,16 +247,17 @@ describe("context task runner integration", () => {
   ])(
     "refuses exact compiled provider input for undeclared control command: %s",
     async (command) => {
-      const root = await mkGitRepoRoot();
+      const root = await mkGitRepoRootWithCommit();
       await writeConfig(root, defaultConfig());
+      await writeFile(path.join(root, ".agentplane", "user-instructions.md"), `${command}\n`);
       const taskId = await createDoingTask(root, {
         title: "Normal semantic provider prompt",
         owner: "CODER",
         task_kind: "code",
         mutation_scope: "code",
         blueprint_request: "code.direct",
+        structured_work_item: false,
       });
-      await writeFile(path.join(root, ".agentplane", "user-instructions.md"), `${command}\n`);
       const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
 
       await expect(
@@ -265,7 +279,7 @@ describe("context task runner integration", () => {
   );
 
   it("refuses a custom workspace-write adapter before context mutation", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const runId = "run-context-custom-advisory";
     await configureCustomRunner(root);
     const taskId = await createContextTask(root, "Custom context advisory receipt");
@@ -297,7 +311,7 @@ describe("context task runner integration", () => {
   });
 
   it("returns the exact context supervisor path before native Codex starts", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const runId = "run-context-codex-unverified";
     await configureFakeCodex(root);
     const taskId = await createContextTask(root, "Native Codex context receipt");
@@ -324,7 +338,7 @@ describe("context task runner integration", () => {
   });
 
   it("still rejects a self-consistent persisted observed-success receipt", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const runId = "run-context-forged-receipt";
     const taskId = await createContextTask(root, "Forged context receipt");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -360,7 +374,7 @@ describe("context task runner integration", () => {
   });
 
   it("derives executor and evaluator sandbox policy through full task preparation", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeConfig(root, defaultConfig());
     const coderTaskId = await createDoingTask(root, {
       title: "Coder role-derived sandbox",
@@ -384,32 +398,38 @@ describe("context task runner integration", () => {
       blueprint_request: "code.direct",
     });
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const coderCommand = await loadTaskCommandContext({ ctx, taskIds: [coderTaskId] });
+    const plannerCommand = await loadTaskCommandContext({ ctx, taskIds: [plannerTaskId] });
+    const evaluatorCommand = await loadTaskCommandContext({ ctx, taskIds: [evaluatorTaskId] });
 
     const coder = await prepareTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
+      ctx: coderCommand.command,
+      cwd: coderCommand.command.resolvedProject.gitRoot,
+      rootOverride: null,
       task_id: coderTaskId,
       mode: "dry_run",
       run_id: "run-coder-role-default",
+      task_execution: coderCommand.execution,
     });
     const planner = await prepareTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
+      ctx: plannerCommand.command,
+      cwd: plannerCommand.command.resolvedProject.gitRoot,
+      rootOverride: null,
       task_id: plannerTaskId,
       mode: "dry_run",
       run_id: "run-planner-role-default",
       execution_role: "PLANNER",
+      task_execution: plannerCommand.execution,
     });
     const evaluator = await prepareTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
+      ctx: evaluatorCommand.command,
+      cwd: evaluatorCommand.command.resolvedProject.gitRoot,
+      rootOverride: null,
       task_id: evaluatorTaskId,
       mode: "dry_run",
       run_id: "run-evaluator-role-default",
       execution_role: "EVALUATOR",
+      task_execution: evaluatorCommand.execution,
     });
 
     expect(coder.bundle.execution.sandbox_policy).toMatchObject({

@@ -181,6 +181,7 @@ export {
   type AgentSemanticResultScopeExtensionRequest,
   type AgentSemanticResultStatus,
   type AgentSemanticResultTaskIntent,
+  type AgentSemanticResultTaskPlanProposal,
   KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES,
   KNOWLEDGE_REQUEST_KIND,
   KNOWLEDGE_REQUEST_SCHEMA_VERSION,
@@ -359,10 +360,14 @@ export { generateTaskId, timestampIdPrefix, TASK_ID_ALPHABET } from "./tasks/tas
 
 export {
   isTaskStatus,
+  migrateLegacyTaskStatus,
   normalizeTaskStatus,
   parseTaskStatus,
+  parseTaskStatusStrict,
   TASK_STATUS_LABEL,
   TASK_STATUS_VALUES,
+  InvalidTaskStatusError,
+  type TaskStatusMigrationReceipt,
   type TaskStatus,
 } from "./tasks/task-status.js";
 

@@ -125,4 +125,22 @@ describe("TaskExecutionContext", () => {
       }),
     ).rejects.toThrow(/mismatched base_sha/u);
   });
+
+  it("rejects the historical zero-SHA sentinel instead of treating it as a commit", async () => {
+    const route = {
+      schema_version: 1,
+      requested_mode: "auto",
+      selected_mode: "direct",
+      repository_mode: "direct",
+      reason_codes: ["automatic_safe_direct"],
+      frozen: true,
+    } as const;
+
+    await expect(
+      resolveTaskExecutionContext({
+        ctx: commandContext("direct"),
+        tasks: [task("TASK-1", route, "0".repeat(40))],
+      }),
+    ).rejects.toMatchObject({ reason_code: "git_base_identity_invalid" });
+  });
 });

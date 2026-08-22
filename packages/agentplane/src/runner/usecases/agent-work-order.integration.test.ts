@@ -7,7 +7,7 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
-  mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   writeConfig,
 } from "@agentplane/testkit";
 import { describe, expect, it, vi } from "vitest";
@@ -131,6 +131,7 @@ async function createPreparedTask(
     root,
     title: "Canonical AgentWorkOrder surface fixture",
     plan_text: "Prepare one canonical AgentWorkOrder for every CLI surface.",
+    structured_work_item: false,
   });
 }
 
@@ -223,8 +224,8 @@ function duplicatePromptOverlayBundle(): Record<string, unknown> {
 }
 
 describe("AgentWorkOrder v2 surface integration", () => {
-  it("projects the execution contract into writable authority and verification intent", async () => {
-    const root = await mkGitRepoRoot();
+  it("keeps legacy execution-contract scope read-only until a structured WorkItem owns authority", async () => {
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createPreparedTask(root);
     const command = await loadCommandContext({ cwd: root, rootOverride: root });
     const task = await loadTaskFromContext({ ctx: command, taskId });
@@ -249,8 +250,9 @@ describe("AgentWorkOrder v2 surface integration", () => {
 
     const view = await captureRunnerWorkOrder({ taskId, root });
     expect(view.work_order.authority).toMatchObject({
-      writable_roots: [path.join(root, "packages/app/src"), path.join(root, "packages/app/test")],
+      writable_roots: [],
       external_side_effects: [],
+      sandbox: "read-only",
     });
     const verificationIntent = view.work_order.verification_intent as {
       requirements: { description: string }[];
@@ -269,7 +271,7 @@ describe("AgentWorkOrder v2 surface integration", () => {
   });
 
   it("keeps an explicitly empty declared scope read-only", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createPreparedTask(root);
     const command = await loadCommandContext({ cwd: root, rootOverride: root });
     const task = await loadTaskFromContext({ ctx: command, taskId });
@@ -301,7 +303,7 @@ describe("AgentWorkOrder v2 surface integration", () => {
   });
 
   it("projects policy-permitted network reads without external write authority", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createPreparedTask(root);
     const command = await loadCommandContext({ cwd: root, rootOverride: root });
     command.config.agents.approvals.require_network = false;
@@ -343,7 +345,7 @@ describe("AgentWorkOrder v2 surface integration", () => {
   });
 
   it("prepares deterministic bounded knowledge through exact, FTS, alias, and graph adapters", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createPreparedTask(root);
     const dependencyId = await createDoingRunnerTask({
       root,
@@ -468,7 +470,7 @@ describe("AgentWorkOrder v2 surface integration", () => {
   });
 
   it("keeps high-confidence bounded retrieval selector-free in the prepared work order", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createPreparedTask(root);
     await mkdir(path.join(root, "context", "wiki"), { recursive: true });
     await writeFile(
@@ -521,7 +523,7 @@ describe("AgentWorkOrder v2 surface integration", () => {
 
   it("renders one canonical work order through real brief, next-action, runner, and Hermes surfaces", async () => {
     for (const workflowMode of ["direct", "branch_pr"] as const) {
-      const root = await mkGitRepoRoot();
+      const root = await mkGitRepoRootWithCommit();
       const taskId = await createPreparedTask(root, workflowMode);
       const worktree =
         workflowMode === "branch_pr" ? await createBranchPrTaskWorktree(root, taskId) : root;
@@ -564,8 +566,8 @@ describe("AgentWorkOrder v2 surface integration", () => {
       expect(runnerView.work_order_preparation).toBeUndefined();
       if (workflowMode === "branch_pr") {
         expect(runnerView.execution).toMatchObject({
-          sandbox_policy: { requested: "workspace-write", source: "role_default" },
-          write_scope: { writable_roots: ["."] },
+          sandbox_policy: { requested: "read-only", source: "route_authority" },
+          write_scope: { writable_roots: [] },
         });
       }
       for (const view of [brief, nextAction, hermes]) {
@@ -587,7 +589,7 @@ describe("AgentWorkOrder v2 surface integration", () => {
   });
 
   it("prepares from the task branch snapshot when next-action runs from the base checkout", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createPreparedTask(root, "branch_pr");
     const worktree = await createBranchPrTaskWorktree(root, taskId);
     const baseContext = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -630,7 +632,7 @@ describe("AgentWorkOrder v2 surface integration", () => {
   });
 
   it("uses one explicit remote opt-in through every comparable work-order surface", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createPreparedTask(root, "branch_pr");
     const worktree = await createBranchPrTaskWorktree(root, taskId);
 
@@ -679,8 +681,8 @@ describe("AgentWorkOrder v2 surface integration", () => {
     }
   });
 
-  it("keeps a plan-unapproved route blocked instead of weakening required state components", async () => {
-    const root = await mkGitRepoRoot();
+  it("keeps a legacy plan mutation on the fresh task-centric planning route", async () => {
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createPreparedTask(root);
     const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
     const task = await commandCtx.taskBackend.getTask(taskId);
@@ -711,20 +713,11 @@ describe("AgentWorkOrder v2 surface integration", () => {
       prepared,
     });
 
-    expect(readiness).toMatchObject({
-      status: "rejected",
-      rejection: {
-        code: "work_order_stale",
-        precondition: {
-          reason_code: "state_fingerprint_required_component_unavailable",
-          unavailable_required_components: ["git", "backend_projection"],
-        },
-      },
-    });
+    expect(readiness).toMatchObject({ status: "ready" });
   });
 
   it("refuses every launch surface before execution when the prompt compiler reports an error", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await mkdir(path.join(root, ".agentplane", "generated"), { recursive: true });
     await writeFile(
       path.join(root, ".agentplane", "generated", "overlay-bundle.json"),
@@ -769,7 +762,7 @@ describe("AgentWorkOrder v2 surface integration", () => {
   });
 
   it("keeps a prepared brief immutable and rejects task, Git, and policy drift before invocation", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createPreparedTask(root);
     const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
 

@@ -29,6 +29,11 @@ import { recordObservedTaskExecutionContract } from "./task-execution-contract-o
 import { cmdVerifyParsed } from "./verify-record.js";
 import { loadTaskFromContext } from "../shared/task-backend.js";
 import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+import {
+  recordTaskCentricExternalResult,
+  type TaskCentricExternalResultProjection,
+} from "./task-centric-external-result.js";
+import type { DirectTaskVerificationResult } from "./direct-task-verification.js";
 
 function pathFromStatusLine(line: string): string {
   const raw = line.length >= 4 ? line.slice(3).trim() : "";
@@ -102,27 +107,24 @@ async function recordExternalImplementationVerification(opts: {
   checkout: string;
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
   workflow: "direct" | "branch_pr";
-}): Promise<void> {
+}): Promise<DirectTaskVerificationResult> {
   const checks = await runDirectTaskVerification({
     command: opts.command,
     task: opts.task,
     task_id: opts.task.id,
     cwd: opts.checkout,
   });
-  if (checks.status !== "passed") {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: checks.reason ?? "Declared implementation verification did not pass.",
-    });
-  }
   const exitCode = await cmdVerifyParsed({
     ctx: opts.command,
     cwd: opts.checkout,
     rootOverride: undefined,
     taskId: opts.task.id,
-    state: "ok",
+    state: checks.status === "passed" ? "ok" : "needs_rework",
     by: "SUPERVISOR",
-    note: "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+    note:
+      checks.status === "passed"
+        ? "Verified: CLI-owned checks passed before independent EVALUATOR review."
+        : `Rework: ${checks.reason ?? "Declared implementation verification did not pass."}`,
     details: renderDirectTaskVerificationDetails({
       task: opts.task,
       taskId: opts.task.id,
@@ -130,7 +132,7 @@ async function recordExternalImplementationVerification(opts: {
       result: checks,
     }),
     localOnly: false,
-    repoFixable: false,
+    repoFixable: checks.status !== "passed",
     incidentTags: [],
     incidentMatch: [],
     quiet: true,
@@ -141,6 +143,7 @@ async function recordExternalImplementationVerification(opts: {
       message: `External-agent implementation verification exited with ${exitCode}.`,
     });
   }
+  return checks;
 }
 
 function assertExternalImplementationReturnState(opts: {
@@ -466,12 +469,31 @@ export async function applyExternalImplementationResult(opts: {
         authorityViolations.join(", "),
     });
   }
-  await recordExternalImplementationVerification({
+  const verification = await recordExternalImplementationVerification({
     command: opts.command,
     checkout: opts.exchange.checkout,
     task: reconciliation.task,
     workflow: opts.decision.workflowMode === "branch_pr" ? "branch_pr" : "direct",
   });
+  const postVerificationHead = await readDirectTaskHead(opts.exchange.checkout);
+  const postVerificationStatus = await readDirectRepositoryStatus(opts.exchange.checkout);
+  const canonicalProjection: TaskCentricExternalResultProjection =
+    await recordTaskCentricExternalResult({
+      command: opts.command,
+      work_order: opts.work_order,
+      semantic,
+      verification,
+      head: postVerificationHead,
+      dirty_paths: (postVerificationStatus?.lines ?? []).map(pathFromStatusLine).filter(Boolean),
+    });
+  if (verification.status !== "passed") {
+    if (canonicalProjection.state !== "legacy_task") return;
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: verification.reason ?? "Declared implementation verification did not pass.",
+    });
+  }
+  if (canonicalProjection.state === "work_item_rework") return;
   if (opts.decision.workflowMode === "branch_pr") {
     opts.command.git.invalidateStatus();
     const currentStatus = await readDirectRepositoryStatus(opts.exchange.checkout);

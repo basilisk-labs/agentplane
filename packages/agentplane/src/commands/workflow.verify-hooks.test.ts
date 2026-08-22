@@ -15,7 +15,12 @@ import {
 } from "./workflow.js";
 import * as taskBackend from "../backends/task-backend.js";
 import { parseCommandArgv } from "../cli/spec/parse.js";
-import { captureStdIO, mkGitRepoRoot, silenceStdIO, writeDefaultConfig } from "@agentplane/testkit";
+import {
+  captureStdIO,
+  mkGitRepoRootWithCommit,
+  silenceStdIO,
+  writeDefaultConfig,
+} from "@agentplane/testkit";
 import { loadCommandContext, loadTaskFromContext } from "./shared/task-backend.js";
 import { verifySpec } from "./verify.spec.js";
 import { cmdVerifyParsed } from "./task/verify-record.js";
@@ -26,7 +31,7 @@ const execFileAsync = promisify(execFile);
 const VERIFY_REWORK_FULL_GATE_TIMEOUT_MS = 60_000;
 
 async function makeRepo(): Promise<string> {
-  const root = await mkGitRepoRoot();
+  const root = await mkGitRepoRootWithCommit();
   await writeDefaultConfig(root);
   return root;
 }
@@ -176,7 +181,7 @@ describe("commands/workflow", () => {
       verifier: "REVIEWER",
       note: "Looks good",
       verification_command: `agentplane verify ${taskId} --ok --by REVIEWER`,
-      implementation_sha: null,
+      implementation_sha: expect.stringMatching(/^[a-f0-9]{40}$/u),
     });
     expect(typeof record.scope).toBe("string");
     expect(String(record.scope)).toContain("Review the requested outcome");

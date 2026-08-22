@@ -72,7 +72,7 @@ vi.mock("@agentplaneorg/core/git", async () => {
     ...actual,
     gitEnv: () => ({}),
     gitCurrentBranch: mocks.gitCurrentBranch,
-    gitRevParse: vi.fn().mockResolvedValue(".git"),
+    gitRevParse: vi.fn().mockResolvedValue("a".repeat(40)),
     resolveBaseBranch: mocks.resolveBaseBranch,
   };
 });
@@ -247,7 +247,7 @@ describe("task finish validation", () => {
     mocks.execFileAsync.mockImplementation((...args: unknown[]) => {
       const [, gitArgs] = args as [string, string[]];
       if (Array.isArray(gitArgs) && gitArgs[0] === "rev-parse" && gitArgs[1] === "HEAD") {
-        return Promise.resolve({ stdout: "base-head-sha\n", stderr: "" });
+        return Promise.resolve({ stdout: `${"a".repeat(40)}\n`, stderr: "" });
       }
       return Promise.resolve({ stdout: "", stderr: "" });
     });
@@ -861,7 +861,7 @@ describe("task finish validation", () => {
 
     expect(mocks.execFileAsync).toHaveBeenCalledWith(
       "git",
-      ["checkout", "-b", "task-close/T-1/base-head-sh"],
+      ["checkout", "-b", `task-close/T-1/${"a".repeat(12)}`],
       expect.any(Object),
     );
     expect(mocks.execFileAsync).toHaveBeenCalledWith(
@@ -897,7 +897,7 @@ describe("task finish validation", () => {
     mocks.execFileAsync.mockImplementation((...args: unknown[]) => {
       const [, gitArgs] = args as [string, string[]];
       if (Array.isArray(gitArgs) && gitArgs[0] === "rev-parse" && gitArgs[1] === "HEAD") {
-        return Promise.resolve({ stdout: "base-head-sha\n", stderr: "" });
+        return Promise.resolve({ stdout: `${"a".repeat(40)}\n`, stderr: "" });
       }
       if (Array.isArray(gitArgs) && gitArgs[0] === "log" && gitArgs[1] === "origin/main") {
         return Promise.resolve({

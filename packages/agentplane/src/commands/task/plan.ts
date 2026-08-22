@@ -2,11 +2,17 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import {
   EXECUTION_GRANT_EXTENSION_KEY,
+  TASK_CENTRIC_EXTENSION_KEY,
+  TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY,
+  approveTaskPlan,
   createExecutionGrant,
   createPlanProposal,
+  materializeApprovedWorkItems,
   ensureDocSections,
   taskDocToSectionMap,
   type PlanApprovalEvidenceKind,
+  taskCentricAggregateFromExtensions,
+  withTaskCentricAggregate,
 } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
@@ -47,6 +53,7 @@ type PlanningTaskFields = Pick<
   | "tags"
   | "execution_route"
   | "execution_contract"
+  | "extensions"
 >;
 
 function planningTaskFieldsChanged(
@@ -141,15 +148,23 @@ export async function setTaskPlan(opts: {
             JSON.stringify(opts.taskFields.execution_contract);
         const approvalInvalidated = planChanged || executionScopeChanged;
         if (!planChanged && !docChanged && !updatedBy && !taskFieldsChanged) return null;
+        const suppliedExtensions = opts.taskFields?.extensions;
         const extensions = approvalInvalidated
           ? (() => {
-              const next = { ...(current.extensions ?? {}) };
+              const next = { ...(current.extensions ?? {}), ...(suppliedExtensions ?? {}) };
               delete next[EXECUTION_GRANT_EXTENSION_KEY];
+              if (!suppliedExtensions?.[TASK_CENTRIC_EXTENSION_KEY]) {
+                next[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY] = {
+                  schema_version: 1,
+                  reason_code: planChanged ? "plan_changed" : "execution_contract_changed",
+                };
+              }
               return next;
             })()
-          : undefined;
+          : suppliedExtensions;
         const taskFields = {
           ...(opts.taskFields ?? {}),
+          ...(extensions ? { extensions } : {}),
           ...(approvalInvalidated
             ? {
                 plan_approval: {
@@ -158,7 +173,7 @@ export async function setTaskPlan(opts: {
                   updated_by: null,
                   note: null,
                 },
-                extensions,
+                ...(extensions ? { extensions } : {}),
               }
             : {}),
         };
@@ -212,6 +227,7 @@ export async function cmdTaskPlanApprove(opts: {
   by: string;
   note?: string;
   expectedTaskRevision?: number;
+  expectedPlanDigest?: string;
   approvalEvidence?: {
     kind: PlanApprovalEvidenceKind;
     digest?: string | null;
@@ -277,6 +293,32 @@ export async function cmdTaskPlanApprove(opts: {
               approval_evidence_digest: opts.approvalEvidence?.digest ?? null,
               issued_at: approvedAt,
             });
+            const taskCentric = taskCentricAggregateFromExtensions(current.extensions);
+            if (
+              opts.expectedPlanDigest !== undefined &&
+              taskCentric?.current_plan?.digest !== opts.expectedPlanDigest
+            ) {
+              throw new CliError({
+                code: "E_VALIDATION",
+                message: "Canonical task plan digest changed before approval.",
+              });
+            }
+            const taskCentricExtensions = taskCentric?.current_plan
+              ? withTaskCentricAggregate(
+                  current.extensions,
+                  materializeApprovedWorkItems({
+                    task: taskCentric,
+                    plan: approveTaskPlan({
+                      plan: taskCentric.current_plan,
+                      expected_digest: taskCentric.current_plan.digest,
+                      actor: by,
+                      approved_at: approvedAt,
+                      policy_facts: [opts.approvalEvidence?.kind ?? "manual_operator"],
+                    }),
+                    now: approvedAt,
+                  }),
+                )
+              : current.extensions;
             return {
               task: {
                 plan_approval: {
@@ -286,7 +328,7 @@ export async function cmdTaskPlanApprove(opts: {
                   note: note || null,
                 },
                 extensions: {
-                  ...(current.extensions ?? {}),
+                  ...(taskCentricExtensions ?? {}),
                   [EXECUTION_GRANT_EXTENSION_KEY]: grant,
                 },
               },
@@ -325,6 +367,32 @@ export async function cmdTaskPlanApprove(opts: {
           approval_evidence_digest: opts.approvalEvidence?.digest ?? null,
           issued_at: approvedAt,
         });
+        const taskCentric = taskCentricAggregateFromExtensions(task.extensions);
+        if (
+          opts.expectedPlanDigest !== undefined &&
+          taskCentric?.current_plan?.digest !== opts.expectedPlanDigest
+        ) {
+          throw new CliError({
+            code: "E_VALIDATION",
+            message: "Canonical task plan digest changed before approval.",
+          });
+        }
+        const taskCentricExtensions = taskCentric?.current_plan
+          ? withTaskCentricAggregate(
+              task.extensions,
+              materializeApprovedWorkItems({
+                task: taskCentric,
+                plan: approveTaskPlan({
+                  plan: taskCentric.current_plan,
+                  expected_digest: taskCentric.current_plan.digest,
+                  actor: by,
+                  approved_at: approvedAt,
+                  policy_facts: [opts.approvalEvidence?.kind ?? "manual_operator"],
+                }),
+                now: approvedAt,
+              }),
+            )
+          : task.extensions;
         await backend.writeTask(
           {
             ...task,
@@ -335,7 +403,7 @@ export async function cmdTaskPlanApprove(opts: {
               note: note || null,
             },
             extensions: {
-              ...(task.extensions ?? {}),
+              ...(taskCentricExtensions ?? {}),
               [EXECUTION_GRANT_EXTENSION_KEY]: grant,
             },
           },

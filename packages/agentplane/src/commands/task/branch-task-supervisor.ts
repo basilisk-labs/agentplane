@@ -47,7 +47,7 @@ export type BranchTaskSupervisorStopCode =
   | "evaluator_blocked"
   | "evaluator_adapter_crash";
 
-type BranchTaskSupervisorStop = {
+export type BranchTaskSupervisorStop = {
   code: BranchTaskSupervisorStopCode;
   reason: string;
   route_step_id: string;

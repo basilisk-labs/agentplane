@@ -7,7 +7,7 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
-  mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
@@ -103,7 +103,7 @@ async function configureCustomRunnerFixture(root: string, scriptLines: string[])
 
 describe("task-run lifecycle replay provenance", () => {
   it("resume creates a fresh run from current task/config and external source provenance", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunnerFixture(root, [
       "#!/bin/sh",
       String.raw`printf "resumed runner %s\n" "$AGENTPLANE_RUNNER_RUN_DIR"`,
@@ -182,7 +182,7 @@ describe("task-run lifecycle replay provenance", () => {
   });
 
   it("retry creates a fresh run from current task/config and external source provenance", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunnerFixture(root, [
       "#!/bin/sh",
       String.raw`printf "retried runner %s\n" "$AGENTPLANE_RUNNER_RUN_DIR"`,

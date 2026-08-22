@@ -64,23 +64,73 @@ function addEntityTerm(index: EntityIndex, term: string, entityId: string): void
   index.by_term.set(key, current);
 }
 
-async function readJsonl(root: string, relative: string): Promise<Record<string, unknown>[]> {
+export async function readStructuredContextJsonl(
+  root: string,
+  relative: string,
+): Promise<{ rows: Record<string, unknown>[]; omissions: ReceiptOmission[] }> {
   try {
     const raw = await readFile(path.join(root, relative), "utf8");
-    if (Buffer.byteLength(raw, "utf8") > MAX_STRUCTURED_FILE_BYTES) return [];
-    return raw.split(/\r?\n/u).flatMap((line) => {
+    if (Buffer.byteLength(raw, "utf8") > MAX_STRUCTURED_FILE_BYTES) {
+      return {
+        rows: [],
+        omissions: [
+          {
+            query: relative,
+            adapter: "selection",
+            reason_code: "source_oversize",
+            detail: `Structured context source exceeds ${MAX_STRUCTURED_FILE_BYTES} bytes.`,
+          },
+        ],
+      };
+    }
+    let malformed = 0;
+    const rows = raw.split(/\r?\n/u).flatMap((line) => {
       if (!line.trim()) return [];
       try {
         const row = JSON.parse(line) as unknown;
-        return row && typeof row === "object" && !Array.isArray(row)
-          ? [row as Record<string, unknown>]
-          : [];
+        if (row && typeof row === "object" && !Array.isArray(row)) {
+          return [row as Record<string, unknown>];
+        }
+        malformed += 1;
+        return [];
       } catch {
+        malformed += 1;
         return [];
       }
     });
-  } catch {
-    return [];
+    return {
+      rows,
+      omissions:
+        malformed > 0
+          ? [
+              {
+                query: relative,
+                adapter: "selection",
+                reason_code: "source_malformed",
+                detail: `${malformed} malformed JSONL rows were excluded.`,
+              },
+            ]
+          : [],
+    };
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException | null)?.code;
+    return {
+      rows: [],
+      omissions: [
+        {
+          query: relative,
+          adapter: "selection",
+          reason_code:
+            code === "ENOENT"
+              ? "source_missing"
+              : code === "EACCES" || code === "EPERM"
+                ? "source_denied"
+                : "source_unavailable",
+          detail:
+            error instanceof Error ? error.message : "Structured context source is unavailable.",
+        },
+      ],
+    };
   }
 }
 
@@ -92,13 +142,18 @@ function stringField(row: Record<string, unknown>, ...keys: string[]): string | 
   return null;
 }
 
-async function buildEntityIndex(root: string): Promise<EntityIndex> {
+async function buildEntityIndex(
+  root: string,
+): Promise<{ index: EntityIndex; omissions: ReceiptOmission[] }> {
   const index: EntityIndex = { by_term: new Map(), neighbours: new Map() };
-  const [entities, aliases, edges] = await Promise.all([
-    readJsonl(root, ".agentplane/context/derived/graph/entities.jsonl"),
-    readJsonl(root, ".agentplane/context/derived/ontology/aliases.jsonl"),
-    readJsonl(root, ".agentplane/context/derived/graph/edges.jsonl"),
+  const [entitiesResult, aliasesResult, edgesResult] = await Promise.all([
+    readStructuredContextJsonl(root, ".agentplane/context/derived/graph/entities.jsonl"),
+    readStructuredContextJsonl(root, ".agentplane/context/derived/ontology/aliases.jsonl"),
+    readStructuredContextJsonl(root, ".agentplane/context/derived/graph/edges.jsonl"),
   ]);
+  const entities = entitiesResult.rows;
+  const aliases = aliasesResult.rows;
+  const edges = edgesResult.rows;
   for (const entity of entities) {
     const id = stringField(entity, "id", "entity_id");
     if (!id) continue;
@@ -135,7 +190,10 @@ async function buildEntityIndex(root: string): Promise<EntityIndex> {
         (left.edge_id ?? "").localeCompare(right.edge_id ?? ""),
     );
   }
-  return index;
+  return {
+    index,
+    omissions: [...entitiesResult.omissions, ...aliasesResult.omissions, ...edgesResult.omissions],
+  };
 }
 
 function encoded(value: string): string {
@@ -287,27 +345,48 @@ function entityCandidates(opts: { queries: QueryTerm[]; index: EntityIndex }): C
 async function dependencyContext(opts: {
   ctx: CommandContext;
   task_envelope: RunnerTaskContextEnvelope;
-}): Promise<{ title: string; result_summary?: string; description: string }[]> {
+}): Promise<{
+  dependencies: { title: string; result_summary?: string; description: string }[];
+  omissions: ReceiptOmission[];
+}> {
   const taskIds = opts.task_envelope.source_task.depends_on ?? [];
-  if (taskIds.length === 0) return [];
-  const tasks = opts.ctx.taskBackend.getTasks
-    ? await opts.ctx.taskBackend.getTasks(taskIds).catch(() => [])
-    : await Promise.all(
-        taskIds.map(async (taskId) => await opts.ctx.taskBackend.getTask(taskId)),
-      ).catch(() => []);
-  return tasks
-    .flatMap((task) =>
-      task?.status === "DONE"
-        ? [
-            {
-              title: task.title,
-              ...(task.result_summary ? { result_summary: task.result_summary } : {}),
-              description: task.description,
-            },
-          ]
-        : [],
-    )
-    .toSorted((left, right) => left.title.localeCompare(right.title));
+  if (taskIds.length === 0) return { dependencies: [], omissions: [] };
+  let tasks: Awaited<ReturnType<typeof opts.ctx.taskBackend.getTask>>[];
+  try {
+    tasks = opts.ctx.taskBackend.getTasks
+      ? await opts.ctx.taskBackend.getTasks(taskIds)
+      : await Promise.all(
+          taskIds.map(async (taskId) => await opts.ctx.taskBackend.getTask(taskId)),
+        );
+  } catch (error) {
+    return {
+      dependencies: [],
+      omissions: [
+        {
+          query: taskIds.join(","),
+          adapter: "selection",
+          reason_code: "source_unavailable",
+          detail: `Dependency context backend failed: ${error instanceof Error ? error.message : "unknown error"}`,
+        },
+      ],
+    };
+  }
+  return {
+    dependencies: tasks
+      .flatMap((task) =>
+        task?.status === "DONE"
+          ? [
+              {
+                title: task.title,
+                ...(task.result_summary ? { result_summary: task.result_summary } : {}),
+                description: task.description,
+              },
+            ]
+          : [],
+      )
+      .toSorted((left, right) => left.title.localeCompare(right.title)),
+    omissions: [],
+  };
 }
 
 export async function prepareTaskKnowledgeRetrieval(opts: {
@@ -317,7 +396,7 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
   repository_root: string;
   semantic_selector?: SemanticRetrievalSelector;
 }): Promise<TaskKnowledgeRetrieval> {
-  const [projection, index, dependencies] = await Promise.all([
+  const [projection, entityIndex, dependencyResult] = await Promise.all([
     readContextProjection(opts.repository_root),
     buildEntityIndex(opts.repository_root),
     dependencyContext({ ctx: opts.command_ctx, task_envelope: opts.task_envelope }),
@@ -325,10 +404,10 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
   const queryPlan = taskQueryPlan({
     task_envelope: opts.task_envelope,
     blueprint: opts.blueprint,
-    dependencies,
+    dependencies: dependencyResult.dependencies,
   });
   const queries = queryPlan.queries;
-  const omissions: ReceiptOmission[] = [];
+  const omissions: ReceiptOmission[] = [...entityIndex.omissions, ...dependencyResult.omissions];
   if (queryPlan.omitted_count > 0 || queryPlan.collection_saturated) {
     omissions.push({
       query: null,
@@ -339,7 +418,9 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
   }
   const candidates = new Map<string, Candidate>();
   for (const candidate of exactCandidates(queries)) addCandidate(candidates, candidate);
-  for (const candidate of entityCandidates({ queries, index })) addCandidate(candidates, candidate);
+  for (const candidate of entityCandidates({ queries, index: entityIndex.index })) {
+    addCandidate(candidates, candidate);
+  }
   for (const candidate of await ftsCandidates({ root: opts.repository_root, queries, omissions })) {
     addCandidate(candidates, candidate);
   }

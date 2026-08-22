@@ -410,6 +410,7 @@ export async function acceptExternalAgentResult(opts: {
         command: checkoutCommand,
         exchange,
         envelope,
+        work_order: workOrder,
       });
     }
     if (exchange.status === "issued") {

@@ -21,6 +21,8 @@ import {
   type StateFingerprint,
   type StateFingerprintPreconditionDiagnostic,
 } from "./state-fingerprint.js";
+import { REPOSITORY_SNAPSHOT_ZOD_SCHEMA } from "../tasks/task-centric/schema.js";
+import { taskCentricDigest } from "../tasks/task-centric/digest.js";
 
 export const AGENT_WORK_ORDER_SCHEMA_VERSION = 2 as const;
 export const AGENT_WORK_ORDER_KIND = "agent_work_order" as const;
@@ -79,6 +81,30 @@ const AGENT_WORK_ORDER_TASK_ZOD_SCHEMA = z
     objective: DESCRIPTION_SCHEMA,
     acceptance_criteria: z.array(ACCEPTANCE_CRITERION_ZOD_SCHEMA).min(1),
     unresolved_questions: z.array(UNRESOLVED_QUESTION_ZOD_SCHEMA),
+    work_item_id: IDENTIFIER_SCHEMA.nullable().optional(),
+  })
+  .strict();
+
+const PLANNING_CONTEXT_RETRIEVAL_ZOD_SCHEMA = z.discriminatedUnion("status", [
+  z
+    .object({ status: z.literal("available"), ref: PATH_SCHEMA, digest: SHA256_DIGEST_SCHEMA })
+    .strict(),
+  z
+    .object({
+      status: z.enum(["omitted", "malformed", "denied", "unavailable"]),
+      ref: PATH_SCHEMA,
+      reason_code: IDENTIFIER_SCHEMA,
+      required: z.boolean(),
+    })
+    .strict(),
+]);
+
+const AGENT_WORK_ORDER_PLANNING_CONTEXT_ZOD_SCHEMA = z
+  .object({
+    schema_version: z.literal(1),
+    repository_snapshot: REPOSITORY_SNAPSHOT_ZOD_SCHEMA,
+    retrievals: z.array(PLANNING_CONTEXT_RETRIEVAL_ZOD_SCHEMA),
+    digest: SHA256_DIGEST_SCHEMA,
   })
   .strict();
 
@@ -197,6 +223,7 @@ export const AGENT_WORK_ORDER_V2_ZOD_SCHEMA = z
     state_fingerprint_policy: STATE_FINGERPRINT_POLICY_ZOD_SCHEMA,
     authority: AGENT_WORK_ORDER_AUTHORITY_ZOD_SCHEMA,
     context_intent: AGENT_WORK_ORDER_CONTEXT_INTENT_ZOD_SCHEMA,
+    planning_context: AGENT_WORK_ORDER_PLANNING_CONTEXT_ZOD_SCHEMA.optional(),
     knowledge_refs: z.array(KNOWLEDGE_REF_ZOD_SCHEMA),
     prepared_evidence: z.array(AGENT_WORK_ORDER_PREPARED_EVIDENCE_ZOD_SCHEMA),
     required_inputs: z.array(ARTIFACT_REF_ZOD_SCHEMA),
@@ -207,6 +234,16 @@ export const AGENT_WORK_ORDER_V2_ZOD_SCHEMA = z
   })
   .strict()
   .superRefine((value, ctx) => {
+    if (value.planning_context) {
+      const { digest, ...identity } = value.planning_context;
+      if (digest !== taskCentricDigest(identity)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["planning_context", "digest"],
+          message: "Planning context digest does not match its canonical content.",
+        });
+      }
+    }
     try {
       validateStateFingerprint(value.state_fingerprint);
     } catch (error) {

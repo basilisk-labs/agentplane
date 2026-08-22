@@ -2,7 +2,7 @@ import { mkdir, readFile, readdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schemas";
-import { installRunCliIntegrationHarness, mkGitRepoRoot } from "@agentplane/testkit";
+import { installRunCliIntegrationHarness, mkGitRepoRootWithCommit } from "@agentplane/testkit";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
@@ -86,7 +86,7 @@ async function writeOrphanedEffectStarted(opts: {
 
 describe("task-run cancellation effect-in-doubt guard", () => {
   it("refuses to treat another run's claim as the effect-in-doubt guard", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
     const taskId = await createDoingTask(root, "Refuse unrelated effect guard");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -172,7 +172,7 @@ describe("task-run cancellation effect-in-doubt guard", () => {
   });
 
   it("fails closed when supervisor history contains a run without state", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
     const taskId = await createDoingTask(root, "Block incomplete supervisor history");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -202,7 +202,7 @@ describe("task-run cancellation effect-in-doubt guard", () => {
   });
 
   it("allows a crash-empty run directory with no state or spawn authority", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
     const taskId = await createDoingTask(root, "Allow crash-empty supervisor history");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -227,7 +227,7 @@ describe("task-run cancellation effect-in-doubt guard", () => {
   });
 
   it("allows a versioned pre-provider run whose state disappeared before child spawn", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
     const taskId = await createDoingTask(root, "Allow versioned pre-provider history");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -260,7 +260,7 @@ describe("task-run cancellation effect-in-doubt guard", () => {
   });
 
   it("blocks an orphaned non-latest effect before acquiring a new claim", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
     const taskId = await createDoingTask(root, "Block historical orphaned effect");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -347,7 +347,7 @@ describe("task-run cancellation effect-in-doubt guard", () => {
   });
 
   it("blocks an older orphaned effect after retiring a newer stale terminal claim", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
     const taskId = await createDoingTask(root, "Block orphan hidden by terminal claim");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -402,7 +402,7 @@ describe("task-run cancellation effect-in-doubt guard", () => {
   });
 
   it("blocks an older orphan after recovering a stale prepared claim in acquire", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
     const taskId = await createDoingTask(root, "Block orphan hidden by prepared claim");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -457,7 +457,7 @@ describe("task-run cancellation effect-in-doubt guard", () => {
   it.each(["effect_unknown", "post_state_unknown"] as const)(
     "restores a durable blocker when cancel observes %s without its active claim",
     async (outcome) => {
-      const root = await mkGitRepoRoot();
+      const root = await mkGitRepoRootWithCommit();
       await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
       const taskId = await createDoingTask(root, `Restore ${outcome} cancellation guard`);
       const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
