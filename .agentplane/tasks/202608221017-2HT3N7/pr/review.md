@@ -6,7 +6,7 @@ Created: 2026-08-22T10:19:00.838Z
 
 - Task: `202608221017-2HT3N7`
 - Title: Port the complete pre-merge quality-review lifecycle fix from blocked task 202608220851-XN5YNK into a clean branch_pr...
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608221017-2HT3N7/port-the-complete-pre-merge-quality-review-lifec`
 - Canonical task record: `.agentplane/tasks/202608221017-2HT3N7/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-22T10:19:00.838Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-22T10:19:00.838Z
+- Updated: 2026-08-22T10:22:48.051Z
 - Branch: task/202608221017-2HT3N7/port-the-complete-pre-merge-quality-review-lifec
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
