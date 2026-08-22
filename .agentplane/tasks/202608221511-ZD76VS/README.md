@@ -1,10 +1,11 @@
 ---
 id: "202608221511-ZD76VS"
 title: "Finalize the v0.7.8 maximum-assimilation compatibility gate"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,20 @@ quality_review:
     - "The test covers the maximum-assimilation profile, a real ingested source, retained prompt and output contracts, nine existing artifacts, and the task-centric plan-approval route."
     - "No regression was exposed, so the absence of production changes is correct."
     - "Residual risk: Hosted PR integration checks remain a separate supervisor-owned gate before merge."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:c4a86362e4035cb699283852bfe5970d7d3bb0849b19bc6cace2494d15c7c6d2"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-22T15:19:39.244Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -209,8 +224,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "6caaae4fe8c1f9d69b2c9644ae41be6643bd9731"
-  message: "🚧 ZD76VS task: apply external agent result"
+  hash: "d1ee25d55952f4df4453e27e65c3a0384a03a88a"
+  message: "🚧 ZD76VS task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -218,6 +233,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 6caaae4fe8c1. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -240,9 +258,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-22T15:19:39.244Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "d1ee25d55952f4df4453e27e65c3a0384a03a88a"
 doc_version: 3
-doc_updated_at: "2026-08-22T15:18:14.638Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-22T15:19:39.255Z"
+doc_updated_by: "CODER"
 description: "Add exactly one compatibility E2E proving the existing context.maximum_assimilation workflow enters and preserves its contract through the new task-centric Core. Reuse existing context contracts, prompts, extraction schemas, artifacts, provenance, and approval gate. Fix only a regression proven by this E2E. Do not implement Knowledge Assimilation. This replaces unpublished Task 202608221453-EKC1X8 after its legacy execution contract omitted repository_effect:tests and failed to record the WorkItem completion receipt."
 sections:
   Summary: |-
@@ -478,7 +504,23 @@ extensions:
       schema_version: 1
       task_id: "202608221511-ZD76VS"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608221511-ZD76VS"
+            - "git:6caaae4fe8c1f9d69b2c9644ae41be6643bd9731"
+          check_id: "check-v078-release-gate"
+          command_identity: "bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-22T15:18:12.354Z"
+          repository_snapshot_digest: "sha256:46a41d87666c1fb28c73f80a2916ceaa4df9ba5f612af15793724fda3bda5295"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608221511-ZD76VS"
     intent:
       acceptance_criteria:
@@ -494,12 +536,12 @@ extensions:
 
         Add exactly one compatibility E2E proving the existing context.maximum_assimilation workflow enters and preserves its contract through the new task-centric Core. Reuse existing context contracts, prompts, extraction schemas, artifacts, provenance, and approval gate. Fix only a regression proven by this E2E. Do not implement Knowledge Assimilation. This replaces unpublished Task 202608221453-EKC1X8 after its legacy execution contract omitted repository_effect:tests and failed to record the WorkItem completion receipt.
       task_id: "202608221511-ZD76VS"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 11
     schema_version: 1
-    updated_at: "2026-08-22T15:18:15.647Z"
+    updated_at: "2026-08-22T15:19:39.244Z"
     work_items:
       maximum-assimilation-task-centric-compatibility-e2e:
         attempt: 1
@@ -567,11 +609,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608221511-ZD76VS"
+      legacy-finish:202608221511-ZD76VS:2026-08-22T15:18:12.354Z:6caaae4fe8c1f9d69b2c9644ae41be6643bd9731:
+        aggregate_digest: "sha256:11e49e0f09eceaa933e818267ca8ecf6f19eadf6c82ab7c6b154dae1160cccd8"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-22T15:19:39.244Z"
+          cause_refs:
+            - "task-verification:202608221511-ZD76VS"
+            - "git:6caaae4fe8c1f9d69b2c9644ae41be6643bd9731"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_057e38e8e22b0d8c471f3f6e"
+          mutation_id: "legacy-finish:202608221511-ZD76VS:2026-08-22T15:18:12.354Z:6caaae4fe8c1f9d69b2c9644ae41be6643bd9731"
+          plan_digest: "sha256:1d6f1bb8558d75271f137264a83a1ff69330180ea77585cd2a5f0be818a92f9a"
+          plan_revision: 1
+          repository_fingerprint: "sha256:46a41d87666c1fb28c73f80a2916ceaa4df9ba5f612af15793724fda3bda5295"
+          schema_version: 1
+          task_id: "202608221511-ZD76VS"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608221511-ZD76VS:2026-08-22T15:18:12.354Z:6caaae4fe8c1f9d69b2c9644ae41be6643bd9731"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202608221511-ZD76VS"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "6caaae4fe8c1f9d69b2c9644ae41be6643bd9731"
+    message: "🚧 ZD76VS task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a"
@@ -676,3 +744,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:c4a86362e4035cb699283852bfe5970d7d3bb0849b19bc6cace2494d15c7c6d2`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-22T15:19:39.244Z`
