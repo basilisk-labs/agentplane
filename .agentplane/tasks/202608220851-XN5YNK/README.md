@@ -4,7 +4,7 @@ title: "Fix the pre-merge closure quality gate so an EVALUATOR pass anchored on 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -14,18 +14,18 @@ task_kind: "code"
 mutation_scope: "code"
 blueprint_request: "code.branch_pr"
 verify:
+  - "bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
   - "bun run typecheck"
-  - "bun test packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
 plan_approval:
   state: "approved"
   updated_at: "2026-08-22T09:30:57.245Z"
   updated_by: "USER"
   note: "User explicitly approved plan sha256:bda2dff9cb96b08c3eaf203c67503b58e14409708e4525574fb1520f294a6f47 in Codex task 01a0267d-9ca7-7521-aec7-4fa3902bb965."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-22T09:41:02.910Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -79,11 +79,32 @@ execution_contract:
       - "packages/agentplane/src/commands/task"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+      - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -116,7 +137,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:df2c5eed8cc378dfecd3d023e8b17db6e5b412254c2d71b6e143576fbc1646fa"
+      digest: "sha256:99d41274e0657ebbbf4b74e421d17ee4205e217657cad316f56e3b1b519eb0ba"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/quality-review-target.ts"
       execution_groups:
@@ -125,10 +146,16 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+          - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -160,11 +187,19 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "57139ec2832971f07261c9205dd8987b859d5bd3"
+  message: "🚧 XN5YNK task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 109a630bc2b9. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 57139ec28329. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -173,9 +208,37 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-22T09:35:51.110Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 109a630bc2b9. CLI accepted one state-bound external-agent semantic result."
+    commit: "109a630bc2b9efe3507a3a90d93ff39a64b24b29"
+  -
+    type: "verify"
+    at: "2026-08-22T09:35:51.991Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun test packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
+  -
+    type: "status"
+    at: "2026-08-22T09:41:01.052Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 57139ec28329. CLI accepted one state-bound external-agent semantic result."
+    commit: "57139ec2832971f07261c9205dd8987b859d5bd3"
+  -
+    type: "verify"
+    at: "2026-08-22T09:41:02.910Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T09:31:10.981Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-22T09:41:09.105Z"
+doc_updated_by: "SUPERVISOR"
 description: "Release-blocking lifecycle defect: evaluator run anchors evaluated_sha to the current task-artifact-only head; finish correctly resolves the underlying implementation commit but then rejects the review because evaluated_sha is not byte-equal to that implementation SHA. Preserve semantic freshness while accepting a proven task-artifact-only advance."
 sections:
   Summary: |-
@@ -194,6 +257,106 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-22T09:35:51.991Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun test packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67389007022d540a997bdfc69b430e8963ef6f18d49204ae66d0db6dce24eccd, input_digest=sha256:53df4272fb78c19a8879ba64af10bdeb23464c2ccc66e724c071835bc38164ea
+
+    Details:
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608220851-XN5YNK declared verification
+
+    Command: bun test packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts
+    Result: fail
+    Evidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608220851-XN5YNK declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220851-XN5YNK-fix-the-pre-merge-closure-quality-gate-so-an-eva/.agentplane/tasks/202608220851-XN5YNK/blueprint/resolved-snapshot.json
+    - old_digest: f6148699c6d4c681a714d6729b36386ad0074d899ba1ff29083ca51da8c5e966
+    - current_digest: f6148699c6d4c681a714d6729b36386ad0074d899ba1ff29083ca51da8c5e966
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608220851-XN5YNK
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T09:41:02.910Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67389007022d540a997bdfc69b430e8963ef6f18d49204ae66d0db6dce24eccd, input_digest=sha256:65a8fa0876a7fd0ea9a1dfae36dbc45a5b32b3b05fa0cfbac51804803cbb5732
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220851-XN5YNK Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220851-XN5YNK Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220851-XN5YNK Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220851-XN5YNK Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220851-XN5YNK Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220851-XN5YNK-fix-the-pre-merge-closure-quality-gate-so-an-eva/.agentplane/tasks/202608220851-XN5YNK/blueprint/resolved-snapshot.json
+    - old_digest: f6148699c6d4c681a714d6729b36386ad0074d899ba1ff29083ca51da8c5e966
+    - current_digest: f6148699c6d4c681a714d6729b36386ad0074d899ba1ff29083ca51da8c5e966
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608220851-XN5YNK
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -417,12 +580,13 @@ extensions:
         revision: 1
         state: "READY"
         validation_result: null
+  implementation_commit:
+    hash: "57139ec2832971f07261c9205dd8987b859d5bd3"
   task_execution_context:
     base_ref: "main"
     base_sha: "49a18763cb42144bc5279ddb129c51c63acd9244"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "49a18763cb42144bc5279ddb129c51c63acd9244"
     version: 1
@@ -454,6 +618,106 @@ PLANNER fallback scaffold for "Fix the pre-merge closure quality gate so an EVAL
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-22T09:35:51.991Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun test packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67389007022d540a997bdfc69b430e8963ef6f18d49204ae66d0db6dce24eccd, input_digest=sha256:53df4272fb78c19a8879ba64af10bdeb23464c2ccc66e724c071835bc38164ea
+
+Details:
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608220851-XN5YNK declared verification
+
+Command: bun test packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts
+Result: fail
+Evidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608220851-XN5YNK declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220851-XN5YNK-fix-the-pre-merge-closure-quality-gate-so-an-eva/.agentplane/tasks/202608220851-XN5YNK/blueprint/resolved-snapshot.json
+- old_digest: f6148699c6d4c681a714d6729b36386ad0074d899ba1ff29083ca51da8c5e966
+- current_digest: f6148699c6d4c681a714d6729b36386ad0074d899ba1ff29083ca51da8c5e966
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608220851-XN5YNK
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T09:41:02.910Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67389007022d540a997bdfc69b430e8963ef6f18d49204ae66d0db6dce24eccd, input_digest=sha256:65a8fa0876a7fd0ea9a1dfae36dbc45a5b32b3b05fa0cfbac51804803cbb5732
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220851-XN5YNK Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220851-XN5YNK Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220851-XN5YNK Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220851-XN5YNK Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220851-XN5YNK Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220851-XN5YNK-fix-the-pre-merge-closure-quality-gate-so-an-eva/.agentplane/tasks/202608220851-XN5YNK/blueprint/resolved-snapshot.json
+- old_digest: f6148699c6d4c681a714d6729b36386ad0074d899ba1ff29083ca51da8c5e966
+- current_digest: f6148699c6d4c681a714d6729b36386ad0074d899ba1ff29083ca51da8c5e966
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608220851-XN5YNK
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

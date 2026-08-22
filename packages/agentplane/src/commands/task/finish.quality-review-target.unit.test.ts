@@ -180,6 +180,25 @@ describe("finish quality review target selection", () => {
     ).rejects.toThrow("finish requires a fresh EVALUATOR quality review");
   });
 
+  it("rejects a reviewed commit outside the implementation ancestry", async () => {
+    const loaded = mkLoadedTask("unrelated-review-sha");
+    mocks.gitIsAncestor.mockResolvedValue(false);
+    mocks.isTaskLocalOnlyAdvance.mockResolvedValue(true);
+    const { assertQualityReviewBeforeFinish } = await import("./finish-blueprint-evidence.js");
+
+    await expect(
+      assertQualityReviewBeforeFinish({
+        ctx: mkCtx(),
+        loadedTasks: [loaded],
+        taskCommitInfo: { hash: "unrelated-review-sha", message: "task: unrelated evidence" },
+        implementationCommitInfo: { hash: "impl-sha", message: "feat: implementation" },
+        execution: mkExecution(),
+      }),
+    ).rejects.toThrow("finish requires a fresh EVALUATOR quality review");
+
+    expect(mocks.isTaskLocalOnlyAdvance).not.toHaveBeenCalled();
+  });
+
   it("prefers explicit --implementation-commit over artifact --commit", async () => {
     mocks.readCommitInfo.mockResolvedValue({ hash: "impl-sha", message: "feat: implement T-1" });
     const { resolveImplementationCommitInfo } = await import("./finish-execute-commit.js");

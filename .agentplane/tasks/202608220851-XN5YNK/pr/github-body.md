@@ -15,8 +15,8 @@ Release-blocking lifecycle defect: evaluator run anchors evaluated_sha to the cu
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,9 +27,9 @@ Release-blocking lifecycle defect: evaluator run anchors evaluated_sha to the cu
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/task/finish-blueprint-evidence.ts | 39 ++++++++++-------
- .../task/finish.quality-review-target.unit.test.ts | 50 ++++++++++++++++++++++
- 2 files changed, 74 insertions(+), 15 deletions(-)
+ .../src/commands/task/finish-blueprint-evidence.ts | 39 +++++++-----
+ .../task/finish.quality-review-target.unit.test.ts | 69 ++++++++++++++++++++++
+ 2 files changed, 93 insertions(+), 15 deletions(-)
 ```
 
 </details>

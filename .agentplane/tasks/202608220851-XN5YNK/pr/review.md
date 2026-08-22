@@ -12,8 +12,8 @@ Created: 2026-08-22T09:31:11.730Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,9 @@ Created: 2026-08-22T09:31:11.730Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/task/finish-blueprint-evidence.ts | 39 ++++++++++-------
- .../task/finish.quality-review-target.unit.test.ts | 50 ++++++++++++++++++++++
- 2 files changed, 74 insertions(+), 15 deletions(-)
+ .../src/commands/task/finish-blueprint-evidence.ts | 39 +++++++-----
+ .../task/finish.quality-review-target.unit.test.ts | 69 ++++++++++++++++++++++
+ 2 files changed, 93 insertions(+), 15 deletions(-)
 ```
 
 </details>

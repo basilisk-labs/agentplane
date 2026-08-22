@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "command": "bun run typecheck",
+      "duration_ms": 122,
+      "exit_code": 0,
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "command": "bun test packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts",
+      "duration_ms": 82,
+      "exit_code": 1,
+      "script": null,
+      "stderr_tail": "\npackages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts:\n\n# Unhandled error between tests\n-------------------------------\n3 | import type { TaskData } from \"../../backends/task-backend.js\";\n4 | import type { TaskExecutionContext } from \"../../runtime/task-execution-context/index.js\";\n5 | import type { CommandContext } from \"../shared/task-backend.js\";\n6 | import type { LoadedFinishTask, ResolvedCommitInfo } from \"./finish-shared.js\";\n7 | \n8 | const mocks = vi.hoisted(() => ({\n                     ^\nTypeError: vi.hoisted is not a function. (In 'vi.hoisted(() => ({\n  gitIsAncestor: vi.fn(),\n  gitRevParse: vi.fn(),\n  isTaskLocalOnlyAdvance: vi.fn(),\n  isTaskSetLocalOnlyAdvance: vi.fn(),\n  readCommitInfo: vi.fn(),\n  hasAcceptedVerificationRecord: vi.fn(),\n  checkTaskBlueprintSnapshotDrift: vi.fn()\n}))', 'vi.hoisted' is undefined)\n      at /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220851-XN5YNK-fix-the-pre-merge-closure-quality-gate-so-an-eva/packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts:8:18\n      at loadAndEvaluateModule (2:1)\n-------------------------------\n\n\n 0 pass\n 1 fail\n 1 error\nRan 1 test across 1 file. [46.00ms]\n",
+      "stdout_tail": "bun test v1.3.6 (d530ed99)\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: bun test packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202608220851-XN5YNK"
+}

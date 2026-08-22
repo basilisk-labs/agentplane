@@ -1,0 +1,116 @@
+{
+  "details": "Command: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608220851-XN5YNK declared verification\n\nCommand: bun test packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts\nResult: fail\nEvidence: .agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608220851-XN5YNK declared verification",
+  "digest": "sha256:ec043618756f3755e9a553e2761df02998fe482a56e7f07bbdd80ed60350816e",
+  "implementation_sha": "109a630bc2b9efe3507a3a90d93ff39a64b24b29",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:53df4272fb78c19a8879ba64af10bdeb23464c2ccc66e724c071835bc38164ea",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:c54045b94a827ffc6afc9e3b571c01da898b57b745b82bf353391aca6f0ebc02",
+      "digest": "sha256:220665f75d09e0859398cd79da382c8a63149a8a51410362644e61fe4b9b5f09",
+      "references": [
+        {
+          "digest": "sha256:fbed0ba7e36cdf22976f067f145e7d275f95cd845c0dbe934924645caea8700f",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:fbed0ba7e36cdf22976f067f145e7d275f95cd845c0dbe934924645caea8700f",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608220851-XN5YNK/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "49a18763cb42144bc5279ddb129c51c63acd9244",
+      "digest": "sha256:994bbfc2d5c5261c01dc132a1ee6f385af441ae484f523d09426a6d7a0577ef6",
+      "primary_task_id": "202608220851-XN5YNK",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608220851-XN5YNK"
+      ]
+    },
+    "implementation": {
+      "base_sha": "49a18763cb42144bc5279ddb129c51c63acd9244",
+      "digest": "sha256:94966c59c7a89b76f8f9e27ae776104bb216bda67627db051327d65addf4c649",
+      "strategy": "branch_diff",
+      "target_sha": "109a630bc2b9efe3507a3a90d93ff39a64b24b29"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:99d41274e0657ebbbf4b74e421d17ee4205e217657cad316f56e3b1b519eb0ba",
+    "verify_steps_digest": "sha256:67389007022d540a997bdfc69b430e8963ef6f18d49204ae66d0db6dce24eccd"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun test packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts",
+  "recorded_at": "2026-08-22T09:35:51.991Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Fix the pre-merge closure quality gate so an EVALUATOR pass anchored on a task-artifact-only head is accepted for the underlying implementation commit, with a regression test covering evaluator-run evidence commits followed by finish.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Fix the pre-merge closure quality gate so an EVALUATOR pass anchored on a task-artifact-only head is accepted for the underlying implementation commit, with a regression test covering evaluator-run evidence commits followed by finish.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:67389007022d540a997bdfc69b430e8963ef6f18d49204ae66d0db6dce24eccd",
+  "task_id": "202608220851-XN5YNK",
+  "verification_command": "agentplane verify 202608220851-XN5YNK --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
