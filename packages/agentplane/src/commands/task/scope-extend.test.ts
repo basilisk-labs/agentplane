@@ -35,7 +35,7 @@ import {
 
 const NOW = "2026-08-18T01:00:00.000Z";
 
-function taskCentricAggregate(taskId: string) {
+function taskCentricAggregate(taskId: string, parallel = false) {
   const validation: ValidationPlan = {
     schema_version: 1,
     criteria: [
@@ -87,7 +87,10 @@ function taskCentricAggregate(taskId: string) {
     }),
     work_items: {
       schema_version: 1,
-      work_items: [item("active", [], "docs/releases"), item("later", ["active"], "src/later.ts")],
+      work_items: [
+        item("active", [], "docs/releases"),
+        item("later", parallel ? [] : ["active"], "src/later.ts"),
+      ],
     },
     assumptions: [],
     unresolved_questions: [],
@@ -181,6 +184,34 @@ function fixture(
 }
 
 describe("blocked task execution scope extension", () => {
+  it("fails closed when more than one task-centric WorkItem is schedulable", () => {
+    const { command, pending, task } = fixture();
+    task.extensions = {
+      ...withTaskCentricAggregate(task.extensions, taskCentricAggregate(task.id, true)),
+      [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
+    };
+    const executionContract = extendBlockedTaskExecutionContract({
+      command,
+      task,
+      scope_roots: ["website"],
+      repository_effects: ["release_metadata"],
+      request_digest: pending.request_digest,
+      by: "USER",
+    });
+
+    expect(() =>
+      applyApprovedTaskScopeExtension({
+        task,
+        executionContract,
+        pending,
+        scopeRoots: ["website"],
+        repositoryEffects: ["release_metadata"],
+        by: "USER",
+        now: NOW,
+      }),
+    ).toThrow("exactly one schedulable WorkItem");
+  });
+
   it("creates an approved plan revision for only the selected task-centric WorkItem", () => {
     const { command, pending, task } = fixture();
     const aggregate = taskCentricAggregate(task.id);

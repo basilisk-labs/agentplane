@@ -12,8 +12,8 @@ Created: 2026-08-22T21:31:27.901Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,9 @@ Created: 2026-08-22T21:31:27.901Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../shared/task-scope-extension-request.ts         |  91 +++++++++++++-
- .../src/commands/task/scope-extend.test.ts         | 140 +++++++++++++++++++++
- 2 files changed, 229 insertions(+), 2 deletions(-)
+ .../shared/task-scope-extension-request.ts         |  91 ++++++++++-
+ .../src/commands/task/scope-extend.test.ts         | 171 +++++++++++++++++++++
+ 2 files changed, 260 insertions(+), 2 deletions(-)
 ```
 
 </details>
