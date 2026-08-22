@@ -2,10 +2,10 @@
 id: "202608212244-6XZAYD"
 title: "Implement the task-centric refactoring roadmap v2 and publish the next patch release"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 54
+revision: 55
 origin:
   system: "manual"
 depends_on: []
@@ -28,10 +28,10 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "User confirmed exact plan digest in Codex task; host_user_decision=sha256:f5d9083511651b29dd00284b298bcaf85d49e76762063fbd26008ffa0d2aae09"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-22T03:42:30.856Z"
-  updated_by: "EVALUATOR"
-  note: "Rework: packaged mixed-scope qualification lacks the required baseline-bound task_plan_proposal; hosted verify-real-e2e remains release-blocking."
+  state: "pending"
+  updated_at: "2026-08-22T03:44:18.170Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 1
 quality_review:
   state: "rework"
@@ -115,6 +115,7 @@ execution_contract:
       - "schemas"
       - "scripts/baselines"
       - "scripts/checks"
+      - "scripts/qualification"
       - "skills"
       - "tsconfig.depcruise.json"
       - "vitest.config.ts"
@@ -131,6 +132,7 @@ execution_contract:
       - "The roadmap changes the central task lifecycle, public CLI and schemas, tests, generated assets, architecture rules, and release metadata."
       - "The user explicitly approved the complete roadmap and patch release; new approval is reserved for material scope, security, acceptance, or version drift."
       - "USER-approved blocked-result scope extension: roots=scripts/baselines,scripts/checks; repository_effects=public_api,repository_write,schema,tests"
+      - "USER-approved blocked-result scope extension: roots=scripts/qualification; repository_effects=ci,repository_write,tests"
     repository_effects:
       - "ci"
       - "dependencies"
@@ -161,13 +163,13 @@ execution_contract:
       - "schemas"
       - "scripts/baselines"
       - "scripts/checks"
+      - "scripts/qualification"
       - "skills"
       - "tsconfig.depcruise.json"
       - "vitest.config.ts"
       - "vitest.workspace.ts"
   observed:
-    authority_violations:
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "depcruise.config.cjs"
       - "packages/agentplane"
@@ -282,31 +284,7 @@ execution_contract:
       - "schema"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "verification-record"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -349,6 +327,7 @@ execution_contract:
           - "schemas"
           - "scripts/baselines"
           - "scripts/checks"
+          - "scripts/qualification"
           - "skills"
           - "tsconfig.depcruise.json"
           - "vitest.config.ts"
@@ -387,7 +366,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:590e8f70c844e24448f5c8337163b84dc1b772d62c33893a91597cf3c3281fd9"
+      digest: "sha256:88216c2fd36d0cf2bb042620566131a24b87a82a657cb07bc60a8dd7949f4af6"
       escalation_reasons:
         - "central_component:bun.lock"
         - "central_component:package.json"
@@ -592,7 +571,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -640,6 +618,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The required packaged mixed-scope qualification rework is outside the current EXECUTOR writable roots. Recommended action: Apply the pending scripts/qualification scope extension as USER and issue a fresh EXECUTOR packet. Requested scope: roots=scripts/qualification; repository effects=ci,repository_write,tests; request digest=sha256:3a33a97a5a7ae578c2b682475692d3815c8a3a756171c1b29fe35ead73d68f09. Agentplane receipt: external-agent-blocker/tr_45dea0a7848952c5e2fd67ace7a71701/sha256:1bb12e44c6427cbacbb07c178a4fe186074f74763b387b871644a996e661edb6/sha256:3a33a97a5a7ae578c2b682475692d3815c8a3a756171c1b29fe35ead73d68f09."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: scripts/qualification; repository effects: ci, repository_write, tests."
 events:
   -
     type: "status"
@@ -1994,6 +1975,8 @@ extensions:
     status: "active"
     task_id: "202608212244-6XZAYD"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-22T03:44:18.170Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:1bb12e44c6427cbacbb07c178a4fe186074f74763b387b871644a996e661edb6"
     kind: "task_scope_extension_request"
     request:
@@ -2007,7 +1990,7 @@ extensions:
         - "scripts/qualification"
     request_digest: "sha256:3a33a97a5a7ae578c2b682475692d3815c8a3a756171c1b29fe35ead73d68f09"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_45dea0a7848952c5e2fd67ace7a71701"
   task_execution_context:
     base_ref: "main"
