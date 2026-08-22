@@ -4,7 +4,7 @@ title: "Archive resolved task-centric external result routing incident before v0
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,10 +25,10 @@ plan_approval:
   updated_by: "USER"
   note: "User authorized autonomous release prerequisites; approved exact incident-closeout plan sha256:8f8a7e52fc22fadabf1996a14889aa6b5427c6c70aed7de795f5eefc726fef56."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-22T19:50:44.904Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -88,11 +88,58 @@ execution_contract:
       - "packages/agentplane/assets/policy/incidents.md"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - ".agentplane"
+      - "docs"
+      - "packages/agentplane"
+    changed_paths:
+      - ".agentplane/policy/incidents.md"
+      - "docs/developer/incident-archive.mdx"
+      - "packages/agentplane/assets/policy/incidents.md"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_release_metadata"
@@ -128,7 +175,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:90ddbd2353c4570453b323ff26b54cbba28238d693c37d30194807296fb156df"
+      digest: "sha256:d5290952d43fd0f5ecc7dc72e853eb358db4d2cc33588cf9b4b62c45af8f167d"
       escalation_reasons:
         - "effect_release_metadata"
         - "external_effect_requires_real_e2e"
@@ -139,10 +186,18 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - ".agentplane"
+          - "docs"
+          - "packages/agentplane"
+        changed_files:
+          - ".agentplane/policy/incidents.md"
+          - "docs/developer/incident-archive.mdx"
+          - "packages/agentplane/assets/policy/incidents.md"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -200,8 +255,14 @@ events:
     to: "DOING"
     note: "Implementation committed: f98361067fec. Archived only the resolved task-centric external result routing incident and passed the routing and release incident gates."
     commit: "f98361067fecc048cbc5fbb24d6f599ea94ae27d"
+  -
+    type: "verify"
+    at: "2026-08-22T19:50:44.904Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-22T19:44:04.849Z"
+doc_updated_at: "2026-08-22T19:50:45.972Z"
 doc_updated_by: "CODER"
 description: "Dedicated release prerequisite for active INC-20260822-01. Preserve the incident in docs/developer/incident-archive.mdx with exact evidence from task 202608221335-6DSF3R and merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, then remove only that resolved entry from .agentplane/policy/incidents.md and its packaged mirror. Do not change implementation, context, task-centric architecture, or any other incident. Record the existing archive identifier collision explicitly instead of rewriting historical evidence."
 sections:
@@ -221,6 +282,114 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-22T19:50:44.904Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:546c729330bcb78967036f274dc77265d6413f6e7e98f0ce3631bd5f6af470df, input_digest=sha256:00583fc9a2e84ea8b17e09fedfb059b27047a7d064d03419df5d344df7607ec1
+
+    Details:
+
+    Check: docs_contract
+    Command: bun run release:incidents:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608221939-911DRN Verification Contract check docs_contract (1/4)
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608221939-911DRN Verification Contract check docs_contract (2/4)
+
+    Check: docs_contract
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608221939-911DRN Verification Contract check docs_contract (3/4)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608221939-911DRN Verification Contract check docs_contract (4/4)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608221939-911DRN Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run release:incidents:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608221939-911DRN Verification Contract check real_e2e (1/4)
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608221939-911DRN Verification Contract check real_e2e (2/4)
+
+    Check: real_e2e
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608221939-911DRN Verification Contract check real_e2e (3/4)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608221939-911DRN Verification Contract check real_e2e (4/4)
+
+    Check: task_outcome
+    Command: bun run release:incidents:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608221939-911DRN Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608221939-911DRN Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608221939-911DRN Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608221939-911DRN Verification Contract check task_outcome (4/4)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221939-911DRN-archive-resolved-task-centric-external-result-ro/.agentplane/tasks/202608221939-911DRN/blueprint/resolved-snapshot.json
+    - old_digest: d631740d9732f4866e388192d53d5436b3aa926ae4d4f977ead7aa5b52e05595
+    - current_digest: d631740d9732f4866e388192d53d5436b3aa926ae4d4f977ead7aa5b52e05595
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221939-911DRN
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608221939-911DRN
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -445,7 +614,6 @@ extensions:
     base_sha: "81279b3b18a7d08881d57dce0f8dd1abdd5910b4"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "explicit"
   workflow_route_baseline:
     start_head_sha: "81279b3b18a7d08881d57dce0f8dd1abdd5910b4"
     version: 1
@@ -477,6 +645,114 @@ PLANNER fallback scaffold for "Archive resolved task-centric external result rou
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-22T19:50:44.904Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:546c729330bcb78967036f274dc77265d6413f6e7e98f0ce3631bd5f6af470df, input_digest=sha256:00583fc9a2e84ea8b17e09fedfb059b27047a7d064d03419df5d344df7607ec1
+
+Details:
+
+Check: docs_contract
+Command: bun run release:incidents:check
+Result: pass
+Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608221939-911DRN Verification Contract check docs_contract (1/4)
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608221939-911DRN Verification Contract check docs_contract (2/4)
+
+Check: docs_contract
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608221939-911DRN Verification Contract check docs_contract (3/4)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608221939-911DRN Verification Contract check docs_contract (4/4)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608221939-911DRN Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run release:incidents:check
+Result: pass
+Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608221939-911DRN Verification Contract check real_e2e (1/4)
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608221939-911DRN Verification Contract check real_e2e (2/4)
+
+Check: real_e2e
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608221939-911DRN Verification Contract check real_e2e (3/4)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608221939-911DRN Verification Contract check real_e2e (4/4)
+
+Check: task_outcome
+Command: bun run release:incidents:check
+Result: pass
+Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608221939-911DRN Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608221939-911DRN Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608221939-911DRN Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608221939-911DRN/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608221939-911DRN Verification Contract check task_outcome (4/4)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221939-911DRN-archive-resolved-task-centric-external-result-ro/.agentplane/tasks/202608221939-911DRN/blueprint/resolved-snapshot.json
+- old_digest: d631740d9732f4866e388192d53d5436b3aa926ae4d4f977ead7aa5b52e05595
+- current_digest: d631740d9732f4866e388192d53d5436b3aa926ae4d4f977ead7aa5b52e05595
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221939-911DRN
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608221939-911DRN
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
