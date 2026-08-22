@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608221939-911DRN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-22T20:08:50.425Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "3ccbf74b7715b65d2e0a38270242b5abd5c87101",
+  "blueprint_digest": "d631740d9732f4866e388192d53d5436b3aa926ae4d4f977ead7aa5b52e05595",
+  "findings": [
+    "WorkItem archive-resolved-routing-incident is COMPLETED with both declared validation checks passed and both expected semantic outputs recorded.",
+    "The only rework delta adds the exact branch verification commit to the archive evidence; it does not alter active registries, implementation, context, or release candidate files.",
+    "Canonical and packaged active registries remain byte-identical and the release incident gate passes.",
+    "The pre-existing archived identifier collision remains explicitly documented without rewriting the older record.",
+    "Residual risk: Hosted integration must pass on the exact final PR head before merge."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/1024c3d2e07abbe3eb00de723f168b34bf62f5a81038a671e12b7f67976d33ae.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
