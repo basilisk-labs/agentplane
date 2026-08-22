@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Material scope extensions no longer abort before persistence: completion-contract drift removes the stale execution grant so subsequent work requires fresh plan authority.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/51401e9d84e453d68d1f6b68cb7933d84ec1e2a37ed303c6f821abf45c237876.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Legacy execution grants are validated and migrated with repository/completion context before an in-grant scope rebase.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/51401e9d84e453d68d1f6b68cb7933d84ec1e2a37ed303c6f821abf45c237876.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Regression tests cover both review cases and the prior provenance-preserving rebase path; focused suites pass 15 of 15 tests.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/51401e9d84e453d68d1f6b68cb7933d84ec1e2a37ed303c6f821abf45c237876.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The CLI-owned verification record for implementation SHA 51372b22fe98ff770b7a48ea9c9539e5307eaf3e reports lint, typecheck, routing, and doctor success.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/51401e9d84e453d68d1f6b68cb7933d84ec1e2a37ed303c6f821abf45c237876.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted CI and integration must be rerun for the new PR head before release.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/51401e9d84e453d68d1f6b68cb7933d84ec1e2a37ed303c6f821abf45c237876.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
