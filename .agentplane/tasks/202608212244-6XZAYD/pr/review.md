@@ -6,14 +6,14 @@ Created: 2026-08-21T22:50:57.507Z
 
 - Task: `202608212244-6XZAYD`
 - Title: Implement the task-centric refactoring roadmap v2 and publish the next patch release
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608212244-6XZAYD/implement-the-task-centric-refactoring-roadmap-v`
 - Canonical task record: `.agentplane/tasks/202608212244-6XZAYD/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Lifecycle rework required: verified review-fix commit b5e43fb48 is not registered as the task implementation commit; code checks pass, but formal implementation evidence still points to 5aded5e30.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
