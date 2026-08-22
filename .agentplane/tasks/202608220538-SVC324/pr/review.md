@@ -12,8 +12,8 @@ Created: 2026-08-22T05:45:29.328Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Lifecycle rework: implementation checks pass, but required task-centric work-item results must be recorded before completion.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

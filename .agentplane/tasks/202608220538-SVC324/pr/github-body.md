@@ -15,13 +15,8 @@ Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, arc
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Lifecycle rework: implementation checks pass, but required task-centric work-item results must be
-recorded before completion.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

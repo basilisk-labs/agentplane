@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 2d8dec7699746b602d9510e1b67e485203a8264f..2c0c9c4fabdf7dd0e68b8bf5c5c4d12373b52cd1",
+      "command": "git diff --check 4dbb8baf491a74439b4df88ce2553fe9192dbf46..c29b0ef72b046e477c3930c919ef7f2a240937d5",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,29 +13,17 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2d8dec7699746b602d9510e1b67e485203a8264f..2c0c9c4fabdf7dd0e68b8bf5c5c4d12373b52cd1",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 4dbb8baf491a74439b4df88ce2553fe9192dbf46..c29b0ef72b046e477c3930c919ef7f2a240937d5",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/policy/incidents.md",
+        "M\t.agentplane/tasks/202608220538-SVC324/README.md",
         "M\t.agentplane/tasks/202608220538-SVC324/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608220538-SVC324/pr/github-body.md",
         "M\t.agentplane/tasks/202608220538-SVC324/pr/meta.json",
         "M\t.agentplane/tasks/202608220538-SVC324/pr/review.md",
-        "M\tdocs/developer/incident-archive.mdx",
-        "M\tpackages/agentplane/assets/policy/incidents.md",
-        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.ts",
-        "M\tpackages/agentplane/src/commands/shared/route-decision-verification.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step-factory.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step-quality.test.ts",
-        "M\tpackages/agentplane/src/commands/task/scope-extend.test.ts",
-        "M\tpackages/agentplane/src/commands/task/scope-extend.ts",
-        "M\tpackages/agentplane/src/commands/task/supervision-outcome-disposition.test.ts",
-        "M\tpackages/agentplane/src/commands/task/supervision-outcome-disposition.ts",
-        "M\tpackages/core/src/tasks/index.ts",
-        "M\tpackages/core/src/tasks/plan-execution-grant.test.ts",
-        "M\tpackages/core/src/tasks/plan-execution-grant.ts"
+        "A\t.agentplane/tasks/202608220538-SVC324/verification/20260822063300536-b9f156b25aadd0f6.json",
+        "M\tpackages/agentplane/src/commands/task/scope-extend.test.ts"
       ]
     },
     {
@@ -45,15 +33,48 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "2d8dec7699746b602d9510e1b67e485203a8264f",
-  "implementation_commit": "2c0c9c4fabdf7dd0e68b8bf5c5c4d12373b52cd1",
+  "execution_base_commit": "4dbb8baf491a74439b4df88ce2553fe9192dbf46",
+  "implementation_commit": "c29b0ef72b046e477c3930c919ef7f2a240937d5",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M .agentplane/tasks/202608220538-SVC324/README.md",
+      " M .agentplane/tasks/202608220538-SVC324/pr/github-body.md",
+      " M .agentplane/tasks/202608220538-SVC324/pr/meta.json",
+      " M .agentplane/tasks/202608220538-SVC324/pr/review.md",
+      "?? .agentplane/tasks/202608220538-SVC324/verification/20260822063300536-b9f156b25aadd0f6.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608220538-SVC324/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608220538-SVC324/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608220538-SVC324/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608220538-SVC324/pr/review.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608220538-SVC324/verification/20260822063300536-b9f156b25aadd0f6.json"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202608220538-SVC324/README.md",
+      " M .agentplane/tasks/202608220538-SVC324/pr/github-body.md",
+      " M .agentplane/tasks/202608220538-SVC324/pr/meta.json",
+      " M .agentplane/tasks/202608220538-SVC324/pr/review.md",
+      "?? .agentplane/tasks/202608220538-SVC324/verification/20260822063300536-b9f156b25aadd0f6.json"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,

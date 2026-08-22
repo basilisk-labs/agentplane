@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The scope-rebased grant implementation preserves approval provenance and completion binding, with strengthened task-level regression assertions for grant identity, capabilities, and issuance time.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/fde36a97400f51027d2fc34c88ae8fc32bfc4a7070b04c0b7f47296062eef971.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Evaluator blocked outcomes are routed to implementation rework except for the explicitly retained deterministic-evidence and human-review boundaries.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/fde36a97400f51027d2fc34c88ae8fc32bfc4a7070b04c0b7f47296062eef971.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The active incident registries and archive changes remain synchronized, and the corrected graph requires both code-output manifests before incident closure.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/fde36a97400f51027d2fc34c88ae8fc32bfc4a7070b04c0b7f47296062eef971.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: The newly corrected plan still requires item-specific semantic results, fresh hosted CI for the final published PR head, and exact-SHA integration before release.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/fde36a97400f51027d2fc34c88ae8fc32bfc4a7070b04c0b7f47296062eef971.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

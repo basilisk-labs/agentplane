@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -22,45 +22,44 @@ verify:
   - "node .agentplane/policy/check-routing.mjs"
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-22T05:45:07.056Z"
+  updated_at: "2026-08-22T06:41:42.058Z"
   updated_by: "USER"
-  note: "Approved under the user's confirmed implementation-and-patch-release goal; host_user_decision packet omitted required host identifiers."
+  note: "Approved under the user-confirmed implementation and patch-release goal; this replan only corrects internal work-item input typing without expanding scope."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-22T06:33:00.536Z"
-  updated_by: "TESTER"
-  note: "Lifecycle rework: implementation checks pass, but required task-centric work-item results must be recorded before completion."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-22T06:36:55.877Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-22T06:21:58.244Z"
+  updated_at: "2026-08-22T06:42:22.043Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "858e6503aef9fe92dc73c95346d20da23af39090"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "c29b0ef72b046e477c3930c919ef7f2a240937d5"
   blueprint_digest: "bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb"
   evidence_refs:
-    - ".agentplane/tasks/202608220538-SVC324/quality/20260822-062046230-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608220538-SVC324/quality/20260822-062046230-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/fee74862a605c6c0deb4dc6d6584e33550a196f6d53a70ab42cd9f228063b585.md"
-    - ".agentplane/tasks/202608220538-SVC324/quality/20260822-062046230-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608220538-SVC324/quality/20260822-062046230-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608220538-SVC324/quality/20260822-062046230-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608220538-SVC324/quality/20260822-064149386-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608220538-SVC324/quality/20260822-064149386-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/f8661c69c54c33541c0194cdb086433cbed022d2e155a1101a435a3c47e04f4a.md"
+    - ".agentplane/tasks/202608220538-SVC324/quality/20260822-064149386-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608220538-SVC324/quality/20260822-064149386-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608220538-SVC324/quality/20260822-064149386-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608220538-SVC324/README.md"
-    - ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/0a8f62331d240d24b8fe81616e0712fdb1a4f0d988e13bf1c24c63e3606c12ff.patch"
-    - ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/a59eba06fb221742f517104927c8a4fa2c463c0632bf8f241ee2828cedeb8a63.json"
-    - ".agentplane/tasks/202608220538-SVC324/verification/20260822061955488-464163d16b22b14a.json"
+    - ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/fde36a97400f51027d2fc34c88ae8fc32bfc4a7070b04c0b7f47296062eef971.patch"
+    - ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/53eb3a2040fc90428ae7677241a0558edda71cf22cc89cf70f4fb57400d09b19.json"
+    - ".agentplane/tasks/202608220538-SVC324/verification/20260822063655877-15595047ed0239be.json"
     - ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/5d31a02d0e9d479f0205b716461e59dda9200538084bfa6c7938686b2f4aa7b6.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The grant rebase rejects a stale previous grant and logical completion drift before recomputing the signed scope digest, while retaining the original approval provenance."
-    - "The scope-extension command persists the rebased grant in the same task mutation as the extended execution contract."
-    - "Branch and direct routing now send non-evidence-gap blocked quality reviews to CODER implementation_rework; deterministic_evidence_gap remains a TESTER refresh and human_review remains a USER boundary."
-    - "Both active registries are synchronized and the two incident records are preserved in the historical archive with source-task, enforcement, and closure evidence."
-    - "Residual risk: Hosted CI and exact-SHA integration remain lifecycle gates after this semantic verdict."
+    - "The scope-rebased grant implementation preserves approval provenance and completion binding, with strengthened task-level regression assertions for grant identity, capabilities, and issuance time."
+    - "Evaluator blocked outcomes are routed to implementation rework except for the explicitly retained deterministic-evidence and human-review boundaries."
+    - "The active incident registries and archive changes remain synchronized, and the corrected graph requires both code-output manifests before incident closure."
+    - "Residual risk: The newly corrected plan still requires item-specific semantic results, fresh hosted CI for the final published PR head, and exact-SHA integration before release."
 token_usage:
   agent_runs: 4
   input_tokens: null
@@ -317,7 +316,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "c29b0ef72b046e477c3930c919ef7f2a240937d5"
+  message: "🚧 SVC324 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -337,6 +338,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: c29b0ef72b04. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -394,9 +398,23 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Lifecycle rework: implementation checks pass, but required task-centric work-item results must be recorded before completion."
+  -
+    type: "status"
+    at: "2026-08-22T06:35:31.449Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: c29b0ef72b04. CLI accepted one state-bound external-agent semantic result."
+    commit: "c29b0ef72b046e477c3930c919ef7f2a240937d5"
+  -
+    type: "verify"
+    at: "2026-08-22T06:36:55.877Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T06:33:04.589Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-22T06:42:22.078Z"
+doc_updated_by: "SUPERVISOR"
 description: "Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, archive both incidents with exact evidence, and unblock the approved patch release."
 sections:
   Summary: |-
@@ -406,7 +424,7 @@ sections:
   Scope: |-
     - In scope: Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, archive both incidents with exact evidence, and unblock the approved patch release.
     - Out of scope: unrelated refactors not required for "Resolve task autonomy and evaluator rework incidents".
-  Plan: "Implement scope-rebased execution grants, route repo-fixable evaluator blockers to implementation rework, add focused regression coverage, then archive INC-20260821-01 and INC-20260822-01 with exact evidence."
+  Plan: "Implement scope-rebased execution grants, route repo-fixable evaluator blockers to implementation rework, add focused regression coverage, then archive INC-20260821-01 and INC-20260822-01 with exact evidence. Treat incident identifiers, approval records, and repository files as context sources rather than work-item output dependencies; only outputs produced by predecessor work items may appear in required_inputs."
   Verify Steps: |-
     PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -579,6 +597,72 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-22T06:36:55.877Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a93c86c8d22c7479bf47b8dcac7f7d2518f86ec47e654b2591646268bf070bfd, input_digest=sha256:d81ffcbde25138e07d460d433e480edb7424962e8dc7ef88e5d65b0fd06c4b0f
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220538-SVC324 Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220538-SVC324 Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220538-SVC324 Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220538-SVC324 Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220538-SVC324 Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220538-SVC324 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220538-SVC324-resolve-task-autonomy-and-evaluator-rework-incid/.agentplane/tasks/202608220538-SVC324/blueprint/resolved-snapshot.json
+    - old_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+    - current_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608220538-SVC324
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608220538-SVC324
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -596,16 +680,16 @@ extensions:
       - "repository.write"
       - "task.lifecycle"
       - "task.scope.extend"
-    completion_contract_digest: "sha256:fba971ef6a121384c40c5fc93d8592325723d6d58911d7f1df7633db663de72c"
-    digest: "sha256:00f4aa9dd0c7d5f1954f9b21793152d8e60cc83c23b6e0a62bf4c87eb9908a51"
-    grant_id: "68abc1ea-485b-44be-8f5d-eeac6c2ebeda"
-    issued_at: "2026-08-22T05:45:07.056Z"
+    completion_contract_digest: "sha256:0d83153ad484e92ab5e456e61a87999fc4a74366513d657a8ee2528b040f6f6d"
+    digest: "sha256:cea6978e093bbc34fd3f6565a982fed136dd7153d26b697593440f95a92b2436"
+    grant_id: "1aaeeff1-c6c2-48e0-9ccd-fba76d960ce9"
+    issued_at: "2026-08-22T06:41:42.058Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:ba1c641bfc1c7757e4081b05fdbd879552c7e08ddc2b60cca8a028b1780ca356"
-    plan_revision: 2
+    plan_digest: "sha256:c30069a5086cecae03e2029491ead9d534bfe305de3c8736e37650c098a7dd6b"
+    plan_revision: 20
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    scope_digest: "sha256:f2597e379e84d7b1cabc5d1fe65f4cdc98cc2387e3b61c1b60d7ce1c79cf0131"
+    scope_digest: "sha256:478b7801e3e40df27d06f5072b991cb30909f428011f2c6a5871cab7fceafdfc"
     status: "active"
     task_id: "202608220538-SVC324"
   agentplane.scope_extension_request:
@@ -635,36 +719,38 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-08-22T05:45:07.056Z"
+        approved_at: "2026-08-22T06:41:42.058Z"
         approved_by: "USER"
-        approved_digest: "sha256:0991c31470ed77c42b09d34f19cda5c42a94b64264836f6cd874d924c7912ddc"
+        approved_digest: "sha256:79bc4d77de944db0a1ad3d9b3fb72ce9fc6f407167244f132198c8d97d7b3d56"
         policy_facts:
           - "manual_operator"
         state: "approved"
-      created_at: "2026-08-22T05:43:34.880Z"
-      digest: "sha256:0991c31470ed77c42b09d34f19cda5c42a94b64264836f6cd874d924c7912ddc"
+      created_at: "2026-08-22T06:41:15.252Z"
+      digest: "sha256:79bc4d77de944db0a1ad3d9b3fb72ce9fc6f407167244f132198c8d97d7b3d56"
       proposal:
         assumptions:
           - "The two incident fixes can share one dedicated branch_pr task because both are required by the same release gate and touch the task supervision authority boundary."
-          - "Unrelated untracked task artifacts listed in the planning baseline remain outside this task and must be preserved."
+          - "Incident IDs, approval records, and repository source files are context sources and not produced work-item outputs."
+          - "Unrelated untracked task artifacts remain outside this task and must be preserved."
         planning_baseline:
-          captured_at: "2026-08-22T05:38:58.729Z"
+          captured_at: "2026-08-22T06:39:08.540Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:18137d642aad5856f63b7533129bd7f31ad5f9d0725cd5c0ad2e24fa9df7fab4"
+          digest: "sha256:ffc37ceb8baea9e6a85c1d99e018cfc296e989710775e6ad91388f3c9579aa01"
           dirty_paths:
-            - ".agentplane/tasks/202608210955-9SX2C6/README.md"
-            - ".agentplane/tasks/202608212244-Q3QMJR/README.md"
-            - ".agentplane/tasks/202608220034-FPEFRK/README.md"
-            - ".agentplane/tasks/202608220034-FPEFRK/blueprint/resolved-snapshot.json"
             - ".agentplane/tasks/202608220538-SVC324/README.md"
+            - ".agentplane/tasks/202608220538-SVC324/pr/github-body.md"
+            - ".agentplane/tasks/202608220538-SVC324/pr/meta.json"
+            - ".agentplane/tasks/202608220538-SVC324/pr/review.md"
+            - ".agentplane/tasks/202608220538-SVC324/supervision/implementation-evidence.json"
+            - ".agentplane/tasks/202608220538-SVC324/verification/20260822063655877-15595047ed0239be.json"
           git:
             kind: "commit"
             ref: null
-            sha: "258015fbf8be6e888dae88d12ad78f2dbcaaf89f"
+            sha: "c29b0ef72b046e477c3930c919ef7f2a240937d5"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:1"
+          task_history_cursor: "task-revision:19"
         schema_version: 1
         task_id: "202608220538-SVC324"
         top_level_validation:
@@ -734,11 +820,8 @@ extensions:
               id: "scope-rebased-grant"
               objective: "Derive and persist a scope-rebased execution grant after an approved non-material scope extension while retaining approval provenance and completion-contract binding."
               optional: false
-              priority: 3
-              required_inputs:
-                - "INC-20260821-01"
-                - "approved execution grant"
-                - "pending scope extension"
+              priority: 4
+              required_inputs: []
               resource_claims:
                 -
                   kind: "path"
@@ -813,10 +896,7 @@ extensions:
               objective: "Route repo-fixable evaluator blocked or rework outcomes to a fresh implementation-rework episode without repeating unchanged evaluator episodes."
               optional: false
               priority: 3
-              required_inputs:
-                - "INC-20260822-01"
-                - "supervision outcome disposition"
-                - "branch evaluator episode"
+              required_inputs: []
               resource_claims:
                 -
                   kind: "path"
@@ -927,7 +1007,7 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:490fdf7d7c0b29c281dfbcecb996488b4e660f6993351e128299112f1e3b11d1"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202608220538-SVC324"
     event_cursor: 0
@@ -959,10 +1039,307 @@ extensions:
       task_id: "202608220538-SVC324"
     lifecycle: "ACTIVE"
     plan_amendments: []
-    plan_history: []
-    revision: 2
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-08-22T05:45:07.056Z"
+          approved_by: "USER"
+          approved_digest: "sha256:0991c31470ed77c42b09d34f19cda5c42a94b64264836f6cd874d924c7912ddc"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-08-22T05:43:34.880Z"
+        digest: "sha256:0991c31470ed77c42b09d34f19cda5c42a94b64264836f6cd874d924c7912ddc"
+        proposal:
+          assumptions:
+            - "The two incident fixes can share one dedicated branch_pr task because both are required by the same release gate and touch the task supervision authority boundary."
+            - "Unrelated untracked task artifacts listed in the planning baseline remain outside this task and must be preserved."
+          planning_baseline:
+            captured_at: "2026-08-22T05:38:58.729Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:18137d642aad5856f63b7533129bd7f31ad5f9d0725cd5c0ad2e24fa9df7fab4"
+            dirty_paths:
+              - ".agentplane/tasks/202608210955-9SX2C6/README.md"
+              - ".agentplane/tasks/202608212244-Q3QMJR/README.md"
+              - ".agentplane/tasks/202608220034-FPEFRK/README.md"
+              - ".agentplane/tasks/202608220034-FPEFRK/blueprint/resolved-snapshot.json"
+              - ".agentplane/tasks/202608220538-SVC324/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "258015fbf8be6e888dae88d12ad78f2dbcaaf89f"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202608220538-SVC324"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "top-level-typecheck"
+                kind: "deterministic"
+                required: true
+              -
+                capability: "task.verify"
+                command: "bun run lint:core"
+                id: "top-level-lint"
+                kind: "deterministic"
+                required: true
+              -
+                capability: "task.verify"
+                command: "node .agentplane/policy/check-routing.mjs"
+                id: "top-level-routing"
+                kind: "deterministic"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "top-level-typecheck"
+                  - "top-level-lint"
+                  - "top-level-routing"
+                description: "Both repo fixes, focused regression coverage, policy synchronization, hosted integration, and incident archive evidence are complete."
+                id: "incident-fixes-complete"
+                required: true
+            evidence_fingerprint: "sha256:b4a5f32de256190b6c0eb147938f87eb07c3cedd7a524f65692be8b1aa819137"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "scope-rebased-grant-typecheck"
+                      - "scope-rebased-grant-lint"
+                    description: "An approved in-grant scope extension produces an active grant for the new scope digest, preserves approval provenance, and rejects completion-contract drift."
+                    id: "scope-rebased-grant-acceptance"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 131072
+                  optional_sources:
+                    - "packages/agentplane/src/commands/task/configured-authority.ts"
+                  required_sources:
+                    - "repository"
+                    - ".agentplane/policy/incidents.md"
+                    - "packages/core/src/tasks/plan-execution-grant.ts"
+                    - "packages/agentplane/src/commands/task/scope-extend.ts"
+                  symbol_hints:
+                    - "createExecutionGrant"
+                    - "isExecutionGrantActive"
+                    - "extendBlockedTaskExecutionContract"
+                    - "activeExecutionGrantForTask"
+                depends_on: []
+                expected_outputs:
+                  - "scope-rebased-grant-implementation"
+                  - "scope-rebased-grant-regression-tests"
+                id: "scope-rebased-grant"
+                objective: "Derive and persist a scope-rebased execution grant after an approved non-material scope extension while retaining approval provenance and completion-contract binding."
+                optional: false
+                priority: 3
+                required_inputs:
+                  - "INC-20260821-01"
+                  - "approved execution grant"
+                  - "pending scope extension"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/plan-execution-grant.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/scope-extend.ts"
+                risk: "high"
+                scope_roots:
+                  - "packages/core/src/tasks/plan-execution-grant.ts"
+                  - "packages/core/src/tasks/plan-execution-grant.test.ts"
+                  - "packages/agentplane/src/commands/task/scope-extend.ts"
+                  - "packages/agentplane/src/commands/task/configured-authority.ts"
+                  - "packages/agentplane/src/commands/task/configured-authority.test.ts"
+                  - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "scope-rebased-grant-typecheck"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run lint:core"
+                      id: "scope-rebased-grant-lint"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "scope-rebased-grant-typecheck"
+                        - "scope-rebased-grant-lint"
+                      description: "An approved in-grant scope extension produces an active grant for the new scope digest, preserves approval provenance, and rejects completion-contract drift."
+                      id: "scope-rebased-grant-acceptance"
+                      required: true
+                  evidence_fingerprint: "sha256:79325875bda8853899f20c761a6b0ad666ddf97ac35532669448cce8f1595a43"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "evaluator-rework-typecheck"
+                      - "evaluator-rework-lint"
+                    description: "A repo-fixable evaluator outcome invalidates stale verification and requests implementation rework; unchanged evaluator evidence cannot create a no-progress loop."
+                    id: "evaluator-rework-routing-acceptance"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 131072
+                  optional_sources:
+                    - "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts"
+                    - "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts"
+                  required_sources:
+                    - "repository"
+                    - ".agentplane/policy/incidents.md"
+                    - "packages/agentplane/src/commands/task/supervision-outcome-disposition.ts"
+                    - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+                  symbol_hints:
+                    - "branchStopOutcome"
+                    - "directStopOutcome"
+                    - "executeBranchEvaluatorEpisode"
+                depends_on: []
+                expected_outputs:
+                  - "evaluator-rework-routing-implementation"
+                  - "no-progress-loop-regression-tests"
+                id: "evaluator-rework-routing"
+                objective: "Route repo-fixable evaluator blocked or rework outcomes to a fresh implementation-rework episode without repeating unchanged evaluator episodes."
+                optional: false
+                priority: 3
+                required_inputs:
+                  - "INC-20260822-01"
+                  - "supervision outcome disposition"
+                  - "branch evaluator episode"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/supervision-outcome-disposition.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task/supervision-outcome-disposition.ts"
+                  - "packages/agentplane/src/commands/task/supervision-outcome-disposition.test.ts"
+                  - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+                  - "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts"
+                  - "packages/agentplane/src/commands/task/direct-task-supervisor.ts"
+                  - "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "evaluator-rework-typecheck"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run lint:core"
+                      id: "evaluator-rework-lint"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "evaluator-rework-typecheck"
+                        - "evaluator-rework-lint"
+                      description: "A repo-fixable evaluator outcome invalidates stale verification and requests implementation rework; unchanged evaluator evidence cannot create a no-progress loop."
+                      id: "evaluator-rework-routing-acceptance"
+                      required: true
+                  evidence_fingerprint: "sha256:e9e0e6807fb1c441cb67cb8a5c78a1bab52410748d05df01b09539941c340515"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "incident-routing-check"
+                    description: "Both incident IDs are absent from the active registry, present in the historical archive with exact fix/test evidence, and policy routing remains valid."
+                    id: "incident-closure-acceptance"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 65536
+                  optional_sources:
+                    - "packages/agentplane/assets/policy/incidents.md"
+                  required_sources:
+                    - "repository"
+                    - ".agentplane/policy/governance.md"
+                    - ".agentplane/policy/incidents.md"
+                    - "docs/developer/incident-archive.mdx"
+                  symbol_hints:
+                    - "INC-20260821-01"
+                    - "INC-20260822-01"
+                depends_on:
+                  - "scope-rebased-grant"
+                  - "evaluator-rework-routing"
+                expected_outputs:
+                  - "archived-INC-20260821-01"
+                  - "archived-INC-20260822-01"
+                  - "release-gate-unblocked"
+                id: "incident-closure"
+                objective: "Archive both resolved incidents with implementation and verification evidence and remove them from the active incident registry."
+                optional: false
+                priority: 2
+                required_inputs:
+                  - "scope-rebased-grant-implementation"
+                  - "scope-rebased-grant-regression-tests"
+                  - "evaluator-rework-routing-implementation"
+                  - "no-progress-loop-regression-tests"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: ".agentplane/policy/incidents.md"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/developer/incident-archive.mdx"
+                risk: "medium"
+                scope_roots:
+                  - ".agentplane/policy/incidents.md"
+                  - "packages/agentplane/assets/policy/incidents.md"
+                  - "docs/developer/incident-archive.mdx"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "node .agentplane/policy/check-routing.mjs"
+                      id: "incident-routing-check"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "incident-routing-check"
+                      description: "Both incident IDs are absent from the active registry, present in the historical archive with exact fix/test evidence, and policy routing remains valid."
+                      id: "incident-closure-acceptance"
+                      required: true
+                  evidence_fingerprint: "sha256:490fdf7d7c0b29c281dfbcecb996488b4e660f6993351e128299112f1e3b11d1"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202608220538-SVC324"
+    revision: 3
     schema_version: 1
-    updated_at: "2026-08-22T05:45:07.056Z"
+    updated_at: "2026-08-22T06:41:42.058Z"
     work_items:
       evaluator-rework-routing:
         attempt: 0
@@ -991,6 +1368,8 @@ extensions:
         revision: 1
         state: "READY"
         validation_result: null
+  implementation_commit:
+    hash: "c29b0ef72b046e477c3930c919ef7f2a240937d5"
   task_execution_context:
     base_ref: "main"
     base_sha: "258015fbf8be6e888dae88d12ad78f2dbcaaf89f"
@@ -1014,7 +1393,7 @@ Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, arc
 
 ## Plan
 
-Implement scope-rebased execution grants, route repo-fixable evaluator blockers to implementation rework, add focused regression coverage, then archive INC-20260821-01 and INC-20260822-01 with exact evidence.
+Implement scope-rebased execution grants, route repo-fixable evaluator blockers to implementation rework, add focused regression coverage, then archive INC-20260821-01 and INC-20260822-01 with exact evidence. Treat incident identifiers, approval records, and repository files as context sources rather than work-item output dependencies; only outputs produced by predecessor work items may appear in required_inputs.
 
 ## Verify Steps
 
@@ -1185,6 +1564,72 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T06:36:55.877Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a93c86c8d22c7479bf47b8dcac7f7d2518f86ec47e654b2591646268bf070bfd, input_digest=sha256:d81ffcbde25138e07d460d433e480edb7424962e8dc7ef88e5d65b0fd06c4b0f
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220538-SVC324 Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220538-SVC324 Verification Contract check critical_paths
+
+Check: docs_contract
+Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220538-SVC324 Verification Contract check docs_contract
+
+Check: full_regression
+Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220538-SVC324 Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220538-SVC324 Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220538-SVC324 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220538-SVC324-resolve-task-autonomy-and-evaluator-rework-incid/.agentplane/tasks/202608220538-SVC324/blueprint/resolved-snapshot.json
+- old_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+- current_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608220538-SVC324
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608220538-SVC324
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
