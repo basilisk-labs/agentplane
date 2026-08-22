@@ -6,14 +6,14 @@ Created: 2026-08-22T13:40:02.178Z
 
 - Task: `202608221335-6DSF3R`
 - Title: Fix idempotent null-WorkItem external result acceptance
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608221335-6DSF3R/fix-idempotent-null-workitem-external-result-acc`
 - Canonical task record: `.agentplane/tasks/202608221335-6DSF3R/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,11 @@ Created: 2026-08-22T13:40:02.178Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |   1 +
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  .../task/task-centric-external-result.test.ts      | 143 +++++++++++++++++++--
  .../commands/task/task-centric-external-result.ts  |  39 +++++-
- 2 files changed, 165 insertions(+), 17 deletions(-)
+ 4 files changed, 167 insertions(+), 17 deletions(-)
 ```
 
 </details>
