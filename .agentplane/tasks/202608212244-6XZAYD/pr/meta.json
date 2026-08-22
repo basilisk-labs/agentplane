@@ -3,17 +3,10 @@
   "branch": "task/202608212244-6XZAYD/implement-the-task-centric-refactoring-roadmap-v",
   "created_at": "2026-08-21T22:50:57.507Z",
   "diffstat_sha256": "sha256:57ecb3168e06bc5cc7c4b6c516dae6e32e87332cb2fec99a475fda5a6ea28443",
-  "last_verified_at": "2026-08-22T04:37:16.161Z",
+  "last_verified_at": "2026-08-22T04:39:29.450Z",
   "last_verified_diffstat_sha256": "sha256:57ecb3168e06bc5cc7c4b6c516dae6e32e87332cb2fec99a475fda5a6ea28443",
   "pr_number": 4862,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4862",
-  "pre_merge_closure": {
-    "basis_commit": "cd6e0dfd1464de7964c2c19661fdc95b646287fc",
-    "branch": "task/202608212244-6XZAYD/implement-the-task-centric-refactoring-roadmap-v",
-    "pr_number": 4862,
-    "recorded_at": "2026-08-22T04:16:51.976Z",
-    "state": "closed_before_merge"
-  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -27,6 +20,6 @@
   "task_id": "202608212244-6XZAYD",
   "updated_at": "2026-08-22T01:44:31.114Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }
