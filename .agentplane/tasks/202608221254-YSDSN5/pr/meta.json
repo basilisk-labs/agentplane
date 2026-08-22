@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608221254-YSDSN5/add-one-compatibility-e2e-proving-the-existing-c",
+  "created_at": "2026-08-22T12:59:09.522Z",
+  "diffstat_sha256": "sha256:35c9943f93753e8f3f1b0377ad86a90aaaf126c429390f2c5140fcd3ac84d75e",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608221254-YSDSN5",
+  "updated_at": "2026-08-22T12:59:09.522Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
