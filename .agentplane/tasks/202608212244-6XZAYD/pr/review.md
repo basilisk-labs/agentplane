@@ -13,7 +13,7 @@ Created: 2026-08-21T22:50:57.507Z
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -53,14 +53,15 @@ Created: 2026-08-21T22:50:57.507Z
  .../commands/task/finish.validation.unit.test.ts   |    8 +-
  .../agentplane/src/commands/task/new-duplicates.ts |    7 +-
  .../src/commands/task/plan-approve.command.ts      |    8 +-
- packages/agentplane/src/commands/task/plan.ts      |   78 +-
+ packages/agentplane/src/commands/task/plan.ts      |   89 +-
+ .../agentplane/src/commands/task/plan.unit.test.ts |   73 +
  packages/agentplane/src/commands/task/ready.ts     |   10 +-
  .../agentplane/src/commands/task/run.command.ts    |   63 +-
  .../src/commands/task/shared/dependencies.ts       |    6 +-
  .../task/supervision-outcome-disposition.test.ts   |   90 ++
  .../task/supervision-outcome-disposition.ts        |  112 ++
- .../task/task-centric-external-result.test.ts      |  343 ++++
- .../commands/task/task-centric-external-result.ts  |  210 +++
+ .../task/task-centric-external-result.test.ts      |  377 +++++
+ .../commands/task/task-centric-external-result.ts  |  218 +++
  .../task/verify-record.durability.unit.test.ts     |    4 +-
  packages/agentplane/src/commands/workflow.test.ts  |    1 +
  .../src/commands/workflow.verify-hooks.test.ts     |   11 +-
@@ -97,7 +98,7 @@ Created: 2026-08-21T22:50:57.507Z
  packages/core/src/tasks/index.ts                   |    6 +
  .../core/src/tasks/task-centric/compatibility.ts   |  271 ++++
  packages/core/src/tasks/task-centric/digest.ts     |   28 +
- packages/core/src/tasks/task-centric/graph.ts      |  410 +++++
+ packages/core/src/tasks/task-centric/graph.ts      |  420 +++++
  packages/core/src/tasks/task-centric/index.ts      |   85 +
  packages/core/src/tasks/task-centric/lifecycle.ts  |  362 +++++
  packages/core/src/tasks/task-centric/model.ts      |  458 ++++++
@@ -106,7 +107,7 @@ Created: 2026-08-21T22:50:57.507Z
  packages/core/src/tasks/task-centric/policy.ts     |  258 +++
  packages/core/src/tasks/task-centric/ports.ts      |  219 +++
  packages/core/src/tasks/task-centric/schema.ts     |  153 ++
- .../src/tasks/task-centric/task-centric.test.ts    |  555 +++++++
+ .../src/tasks/task-centric/task-centric.test.ts    |  569 +++++++
  packages/core/src/tasks/task-status.test.ts        |   16 +
  packages/core/src/tasks/task-status.ts             |   40 +
  .../spec/schemas/agent-work-order-v2.schema.json   |  213 +++
@@ -115,7 +116,7 @@ Created: 2026-08-21T22:50:57.507Z
  schemas/agent-work-order-v2.schema.json            |  213 +++
  .../baselines/v0.7-compatibility-candidate.json    |   25 +-
  .../check-compatibility-contract-baseline.mjs      |   15 +-
- 86 files changed, 10204 insertions(+), 418 deletions(-)
+ 87 files changed, 10354 insertions(+), 418 deletions(-)
 ```
 
 </details>
