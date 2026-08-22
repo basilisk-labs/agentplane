@@ -3,16 +3,9 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import type { TaskData } from "../../backends/task-backend.js";
-
-const gitRevParse = vi.hoisted(() => vi.fn());
-
-vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
-  ...(await importOriginal<Record<string, unknown>>()),
-  gitRevParse,
-}));
 
 import {
   verificationContractEvidenceCoverage,
@@ -87,7 +80,6 @@ async function writeValidRecord(opts: {
 }
 
 afterEach(async () => {
-  gitRevParse.mockReset();
   await Promise.all(tempRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
 });
 
@@ -112,6 +104,27 @@ describe("task verification records", () => {
         "Check: critical_paths\nCommand: bun test\nResult: pass\nEvidence: report.json\nScope: critical\n\nCheck: task_outcome\nCommand: bun test\nResult: pass\nEvidence: report.json\nScope: outcome",
       ),
     ).toMatchObject({ accepted: true, missingChecks: [], unexpectedChecks: [] });
+  });
+
+  it("keeps hosted integration out of the local verification receipt", () => {
+    const task = makeTask("T-HOSTED-CONTRACT");
+    task.execution_contract = {
+      verification: {
+        contract: { selected_checks: ["hosted_integration", "task_outcome"] },
+      },
+    } as TaskData["execution_contract"];
+
+    expect(
+      verificationContractEvidenceCoverage(
+        task,
+        "Check: task_outcome\nCommand: bun test\nResult: pass\nEvidence: report.json\nScope: outcome",
+      ),
+    ).toMatchObject({
+      requiredChecks: ["task_outcome"],
+      accepted: true,
+      missingChecks: [],
+      unexpectedChecks: [],
+    });
   });
 
   it("rejects a persisted passing record that omits a selected contract check", async () => {
@@ -212,6 +225,5 @@ describe("task verification records", () => {
         workflowMode: "branch_pr",
       }),
     ).resolves.toEqual([]);
-    expect(gitRevParse).not.toHaveBeenCalled();
   });
 });

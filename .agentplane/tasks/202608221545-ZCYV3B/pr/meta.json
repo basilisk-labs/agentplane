@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202608221545-ZCYV3B/stop-verification-receipts-from-overstating-chec",
+  "created_at": "2026-08-22T15:47:34.719Z",
+  "diffstat_sha256": "sha256:d3fe521faf863a7445c3a3b8c478a37004785a426f408e2bcf1d397df5f19f20",
+  "last_verified_at": "2026-08-22T18:40:27.410Z",
+  "last_verified_diffstat_sha256": "sha256:d3fe521faf863a7445c3a3b8c478a37004785a426f408e2bcf1d397df5f19f20",
+  "pr_number": 4874,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4874",
+  "pre_merge_closure": {
+    "basis_commit": "7c4a748ae4d956c93ebc14822b4faa018de08933",
+    "branch": "task/202608221545-ZCYV3B/stop-verification-receipts-from-overstating-chec",
+    "pr_number": 4874,
+    "recorded_at": "2026-08-22T18:42:25.674Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608221545-ZCYV3B",
+  "updated_at": "2026-08-22T17:56:34.218Z",
+  "verify": {
+    "status": "pass"
+  }
+}

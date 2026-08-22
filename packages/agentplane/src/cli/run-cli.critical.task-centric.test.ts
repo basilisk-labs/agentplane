@@ -261,7 +261,14 @@ describe("task-centric fresh repository release gate", { timeout: 180_000 }, () 
       ].join("\n"),
       "utf8",
     );
-    await execFileAsync("git", ["add", "scripts/check-task-centric.mjs"], { cwd: root });
+    await writeFile(
+      path.join(root, "package.json"),
+      `${JSON.stringify({ scripts: { "ci:local:full": DETERMINISTIC_CHECK } }, null, 2)}\n`,
+      "utf8",
+    );
+    await execFileAsync("git", ["add", "scripts/check-task-centric.mjs", "package.json"], {
+      cwd: root,
+    });
     await execFileAsync(
       "git",
       ["commit", "--no-verify", "-m", "test: add deterministic task check"],

@@ -1,0 +1,50 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check cf6640993f9f7e4661756a617e2314232466d02c..fb41078849aa875586fe6c0efbe37ce84e80927b",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB cf6640993f9f7e4661756a617e2314232466d02c..fb41078849aa875586fe6c0efbe37ce84e80927b",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608221545-ZCYV3B/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608221545-ZCYV3B/pr/github-body.md",
+        "M\t.agentplane/tasks/202608221545-ZCYV3B/pr/meta.json",
+        "M\t.agentplane/tasks/202608221545-ZCYV3B/pr/review.md",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-verification-result.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-verification-result.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "cf6640993f9f7e4661756a617e2314232466d02c",
+  "implementation_commit": "fb41078849aa875586fe6c0efbe37ce84e80927b",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608221545-ZCYV3B"
+}

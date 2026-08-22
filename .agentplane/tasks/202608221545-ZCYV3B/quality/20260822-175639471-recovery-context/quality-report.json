@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608221545-ZCYV3B",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-22T17:57:15.746Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "e6c2c2e7babc19179e3eb05c4f47ef22af50e665",
+  "blueprint_digest": "0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb",
+  "findings": [
+    "Local evidence binds each selected check to an executed command.",
+    "hosted_integration is excluded from local receipts and remains a hosted-provider gate.",
+    "full_regression is backed only by the distinct successful bun run ci:local:full command.",
+    "The only scope extension is the proven task-centric E2E fixture correction; context and Knowledge Assimilation behavior are unchanged.",
+    "Residual risk: Hosted integration still must pass on the exact PR SHA before merge."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/130a62c3128d2c65183b6576050702be8ebbbaa3f1f715523a6e65f99f9839fd.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

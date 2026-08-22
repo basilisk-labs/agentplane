@@ -387,6 +387,7 @@ describe("direct task verification", () => {
           {
             command: "bun run test:critical",
             script: "test:critical",
+            check_ids: ["critical_paths", "task_outcome"],
             exit_code: 0,
             duration_ms: 10,
             stdout_tail: "pass",
@@ -399,6 +400,186 @@ describe("direct task verification", () => {
     expect(details).toContain("Check: critical_paths");
     expect(details).toContain("Check: task_outcome");
     expect(details.match(/Command: bun run test:critical/gu)).toHaveLength(2);
+  });
+
+  it("runs and binds full regression separately without claiming hosted integration", async () => {
+    const cwd = await root();
+    await writeFile(
+      path.join(cwd, "package.json"),
+      JSON.stringify({
+        packageManager: "bun@1.3.6",
+        scripts: { "ci:local:full": "node scripts/checks/full.mjs" },
+      }),
+      "utf8",
+    );
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "1 pass", stderr: "" });
+    const task = {
+      verify: ["bun test packages/agentplane/src/cli/focused.test.ts"],
+      task_kind: "code" as const,
+      mutation_scope: "code" as const,
+      execution_contract: {
+        ...executionContract(["repository_write", "source_code"]),
+        verification: {
+          required_evidence: ["hosted_integration", "task_outcome"],
+          contract: {
+            selected_checks: [
+              "affected_unit_integration",
+              "critical_paths",
+              "full_regression",
+              "hosted_integration",
+              "task_outcome",
+            ],
+          },
+        },
+      },
+    } as unknown as Pick<
+      TaskData,
+      "verify" | "task_kind" | "mutation_scope" | "execution_contract" | "sections"
+    >;
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task,
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+
+    expect(result.status).toBe("passed");
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ command: "bun", args: ["run", "ci:local:full"] }),
+    );
+    expect(result.checks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          command: "bun test packages/agentplane/src/cli/focused.test.ts",
+          check_ids: ["affected_unit_integration", "critical_paths", "task_outcome"],
+        }),
+        expect.objectContaining({
+          command: "bun run ci:local:full",
+          check_ids: [
+            "affected_unit_integration",
+            "critical_paths",
+            "full_regression",
+            "task_outcome",
+          ],
+        }),
+      ]),
+    );
+    const details = renderDirectTaskVerificationDetails({
+      task,
+      taskId: TASK_ID,
+      workflow: "branch_pr",
+      result,
+    });
+    expect(details).toContain("Check: full_regression\nCommand: bun run ci:local:full");
+    expect(details).not.toContain("Check: hosted_integration");
+    expect(details).not.toMatch(/Check: full_regression\nCommand: bun test/gu);
+  });
+
+  it("uses the configured package runner for the canonical full script", async () => {
+    const cwd = await root();
+    await writeFile(
+      path.join(cwd, "package.json"),
+      JSON.stringify({
+        scripts: {
+          "test:fast": "node scripts/checks/fast.mjs",
+          "ci:local:full": "node scripts/checks/full.mjs",
+        },
+      }),
+      "utf8",
+    );
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "1 pass", stderr: "" });
+    const contract = executionContract(["repository_write", "source_code"]);
+    contract.verification.contract = { selected_checks: ["full_regression", "task_outcome"] };
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { verify: ["npm run test:fast"], execution_contract: contract },
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+
+    expect(result.status).toBe("passed");
+    expect(mocks.runProcess).toHaveBeenCalledTimes(2);
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ command: "npm", args: ["run", "ci:local:full"] }),
+    );
+    expect(result.checks[1]).toMatchObject({
+      command: "npm run ci:local:full",
+      check_ids: ["full_regression", "task_outcome"],
+    });
+  });
+
+  it("recognizes a repository-wide non-JavaScript test command as full evidence", async () => {
+    const cwd = await root();
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "42 passed", stderr: "" });
+    const contract = executionContract(["repository_write", "source_code"]);
+    contract.verification.contract = { selected_checks: ["full_regression", "task_outcome"] };
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { verify: ["python -m pytest"], execution_contract: contract },
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+
+    expect(result).toMatchObject({
+      status: "passed",
+      checks: [
+        {
+          command: "python -m pytest",
+          check_ids: ["full_regression", "task_outcome"],
+          exit_code: 0,
+        },
+      ],
+    });
+    expect(mocks.runProcess).toHaveBeenCalledOnce();
+  });
+
+  it("does not pass a required full regression when the repository has no full script", async () => {
+    const cwd = await root();
+    await writeFile(path.join(cwd, "package.json"), JSON.stringify({ scripts: {} }), "utf8");
+    const contract = executionContract(["repository_write", "source_code"]);
+    contract.verification.contract = { selected_checks: ["full_regression", "task_outcome"] };
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: {
+        verify: ["bun test focused.test.ts"],
+        execution_contract: contract,
+      },
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+
+    expect(result).toMatchObject({
+      status: "unsupported",
+      reason:
+        "Verification Contract requires full_regression, but package.json does not define ci:local:full.",
+      checks: [
+        {
+          command: "bun test focused.test.ts",
+          check_ids: ["task_outcome"],
+          exit_code: 0,
+        },
+      ],
+    });
+    const artifact = JSON.parse(await readFile(path.join(cwd, result.artifact_path), "utf8")) as {
+      status: string;
+      checks: { check_ids: string[] }[];
+    };
+    expect(artifact).toMatchObject({
+      status: "unsupported",
+      checks: [{ check_ids: ["task_outcome"] }],
+    });
+    expect(artifact.checks.flatMap((check) => check.check_ids)).not.toContain("full_regression");
+    expect(mocks.runProcess).toHaveBeenCalledOnce();
   });
 
   it("gives the canonical provider qualification its bounded release window", async () => {

@@ -23,6 +23,7 @@ type DirectTaskCheck = {
   command: string;
   declared_command?: string;
   script: string | null;
+  check_ids: string[];
   exit_code: number | null;
   duration_ms: number;
   stdout_tail: string;
@@ -49,19 +50,27 @@ export function renderDirectTaskVerificationDetails(opts: {
   result: DirectTaskVerificationResult;
 }): string {
   const checks = opts.result.checks;
-  const selectedChecks = opts.task.execution_contract?.verification.contract?.selected_checks ?? [];
+  const selectedChecks = (
+    opts.task.execution_contract?.verification.contract?.selected_checks ?? []
+  ).filter((checkId) => checkId !== "hosted_integration");
   if (opts.result.status === "passed" && selectedChecks.length > 0) {
-    const commands = checks.map(({ command }) => command).join(" && ");
     return selectedChecks
-      .map((checkId) =>
-        [
-          `Check: ${checkId}`,
-          `Command: ${commands}`,
-          "Result: pass",
-          `Evidence: ${opts.result.artifact_path}#checks`,
-          `Scope: ${opts.workflow} task ${opts.taskId} Verification Contract check ${checkId}`,
-        ].join("\n"),
-      )
+      .map((checkId) => {
+        const matching = checks.filter((check) => check.check_ids.includes(checkId));
+        if (matching.length === 0) return null;
+        return matching
+          .map((check, index) =>
+            [
+              `Check: ${checkId}`,
+              `Command: ${check.command}`,
+              "Result: pass",
+              `Evidence: ${opts.result.artifact_path}#check-${String(checks.indexOf(check) + 1)}`,
+              `Scope: ${opts.workflow} task ${opts.taskId} Verification Contract check ${checkId}${matching.length > 1 ? ` (${String(index + 1)}/${String(matching.length)})` : ""}`,
+            ].join("\n"),
+          )
+          .join("\n\n");
+      })
+      .filter((details): details is string => details !== null)
       .join("\n\n");
   }
   return checks
@@ -120,19 +129,64 @@ function directTaskVerificationCommands(
   return commands;
 }
 
+function selectedLocalChecks(task: Pick<TaskData, "execution_contract">): string[] {
+  return (task.execution_contract?.verification.contract?.selected_checks ?? []).filter(
+    (checkId) => checkId !== "hosted_integration",
+  );
+}
+
+function isFullRegressionCommand(command: string): boolean {
+  const parsed = parseDirectTaskCheck(command);
+  if (!parsed) return false;
+  if (parsed.script === "ci:local:full") return true;
+  if (
+    ["npm", "pnpm", "yarn"].includes(parsed.executable) &&
+    (parsed.args.length === 1 || parsed.args[0] === "run") &&
+    parsed.script === "test"
+  ) {
+    return true;
+  }
+  if (parsed.executable === "bun" && parsed.args.length === 1 && parsed.args[0] === "test") {
+    return true;
+  }
+  if (parsed.executable === "pytest") {
+    return parsed.args.every((argument) => argument.startsWith("-"));
+  }
+  if (parsed.executable === "python" && parsed.args[0] === "-m" && parsed.args[1] === "pytest") {
+    return parsed.args.slice(2).every((argument) => argument.startsWith("-"));
+  }
+  return parsed.executable === "go" && parsed.args[0] === "test" && parsed.args.includes("./...");
+}
+
+function checkIdsForCommand(command: string, selectedChecks: readonly string[]): string[] {
+  if (isFullRegressionCommand(command)) return [...selectedChecks];
+  return selectedChecks.filter((checkId) => checkId !== "full_regression");
+}
+
 function hasPlannerFallbackVerifySteps(task: Pick<TaskData, "sections">): boolean {
   return task.sections?.["Verify Steps"]?.includes("PLANNER fallback scaffold") === true;
 }
 
-async function readRootPackageScripts(gitRoot: string): Promise<Set<string> | null> {
+type RootPackageInfo = {
+  scripts: Set<string>;
+  runner: "bun" | "npm" | "pnpm" | "yarn";
+};
+
+async function readRootPackageInfo(gitRoot: string): Promise<RootPackageInfo | null> {
   try {
     const parsed = JSON.parse(await readFile(path.join(gitRoot, "package.json"), "utf8")) as {
       scripts?: unknown;
+      packageManager?: unknown;
     };
     if (!parsed.scripts || typeof parsed.scripts !== "object" || Array.isArray(parsed.scripts)) {
       return null;
     }
-    return new Set(Object.keys(parsed.scripts));
+    const configuredRunner =
+      typeof parsed.packageManager === "string" ? parsed.packageManager.split("@")[0] : null;
+    const runner = ["bun", "npm", "pnpm", "yarn"].includes(configuredRunner ?? "")
+      ? (configuredRunner as RootPackageInfo["runner"])
+      : "npm";
+    return { scripts: new Set(Object.keys(parsed.scripts)), runner };
   } catch {
     return null;
   }
@@ -207,6 +261,7 @@ async function writeCheckArtifact(opts: {
             command: check.command,
             declared_command: check.declared_command,
             script: check.script,
+            check_ids: check.check_ids,
             exit_code: check.exit_code,
           };
         });
@@ -252,9 +307,22 @@ export async function runDirectTaskVerification(opts: {
 }): Promise<DirectTaskVerificationResult> {
   const checks: DirectTaskCheck[] = [];
   const commands = directTaskVerificationCommands(opts.task);
-  const packageScripts = hasPlannerFallbackVerifySteps(opts.task)
-    ? await readRootPackageScripts(opts.command.resolvedProject.gitRoot)
-    : null;
+  const selectedChecks = selectedLocalChecks(opts.task);
+  const requiresFullRegression = selectedChecks.includes("full_regression");
+  const rootPackage =
+    hasPlannerFallbackVerifySteps(opts.task) || requiresFullRegression
+      ? await readRootPackageInfo(opts.command.resolvedProject.gitRoot)
+      : null;
+  let missingRequiredCheckReason: string | null = null;
+  const hasFullRegressionCommand = commands.some((command) => isFullRegressionCommand(command));
+  if (requiresFullRegression && !hasFullRegressionCommand) {
+    if (rootPackage?.scripts.has("ci:local:full")) {
+      commands.push(`${rootPackage.runner} run ci:local:full`);
+    } else {
+      missingRequiredCheckReason =
+        "Verification Contract requires full_regression, but package.json does not define ci:local:full.";
+    }
+  }
   if (commands.length === 0) {
     const result = {
       status: "unsupported" as const,
@@ -268,7 +336,7 @@ export async function runDirectTaskVerification(opts: {
       ? resolvePlannerFallbackCommand({
           command: declaredCommand,
           declared_commands: commands,
-          package_scripts: packageScripts,
+          package_scripts: rootPackage?.scripts ?? null,
         })
       : declaredCommand;
     const parsed = parseDirectTaskCheck(command);
@@ -295,6 +363,7 @@ export async function runDirectTaskVerification(opts: {
         command,
         ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
         script: parsed.script,
+        check_ids: checkIdsForCommand(command, selectedChecks),
         exit_code: executed.exitCode,
         duration_ms: Math.max(0, Date.now() - started),
         stdout_tail: tail(executed.stdout),
@@ -321,6 +390,7 @@ export async function runDirectTaskVerification(opts: {
         command,
         ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
         script: parsed.script,
+        check_ids: checkIdsForCommand(command, selectedChecks),
         exit_code: null,
         duration_ms: Math.max(0, Date.now() - started),
         stdout_tail: "",
@@ -333,6 +403,14 @@ export async function runDirectTaskVerification(opts: {
       };
       return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
     }
+  }
+  if (missingRequiredCheckReason) {
+    const result = {
+      status: "unsupported" as const,
+      checks,
+      reason: missingRequiredCheckReason,
+    };
+    return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
   }
   const result = { status: "passed" as const, checks, reason: null };
   return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
