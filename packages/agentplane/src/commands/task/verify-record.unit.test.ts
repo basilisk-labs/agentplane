@@ -152,8 +152,9 @@ describe("task verify record (unit)", () => {
       writes.push(String(chunk));
       return true;
     });
+    const writeTask = vi.fn<(task: TaskData) => Promise<void>>(() => Promise.resolve());
     const backend = makeWriteThroughBackend({
-      writeTask: () => Promise.resolve(),
+      writeTask,
       getTaskDoc: () =>
         Promise.resolve(
           [
@@ -206,6 +207,9 @@ describe("task verify record (unit)", () => {
     expect(mocks.resolveQualityReviewTargetSha).toHaveBeenCalledWith(
       expect.objectContaining({ headSha: "implementation-sha" }),
     );
+    expect(writeTask.mock.calls[0]?.[0].extensions?.implementation_commit).toEqual({
+      hash: "implementation-sha",
+    });
 
     writeSpy.mockRestore();
   });
