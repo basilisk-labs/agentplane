@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -32,35 +32,35 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-22T14:25:28.334Z"
+  updated_at: "2026-08-22T14:41:47.607Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 7 typed finding(s)."
-  evaluated_sha: "347cd5e8ef6ad810f7dfac0885d91b62b0f05498"
+  evaluated_sha: "2cf14db0fa4a700268e8365661fd04f66d2d0dce"
   blueprint_digest: "34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2"
   evidence_refs:
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-142452734-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-142452734-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/85268e1eb2125ddc0909cd9915f839b2bceb37f82a44083f0821d54ee06cbf91.md"
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-142452734-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-142452734-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-142452734-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-144106775-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-144106775-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/360d9e0080db55d62697e2abdc32081b163eb008b6fdfc60271f0dc34ffb1bba.md"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-144106775-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-144106775-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-144106775-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608221335-6DSF3R/README.md"
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/89d957a193d6bba5e8f54cf3e48ef54f45c44f6e867be64372e5445f5fb491b0.patch"
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/2d8bba6f9bf17e4e5a846750afeaeab11da575bcf6f18fe08d4eef3464cc378b.json"
-    - ".agentplane/tasks/202608221335-6DSF3R/verification/20260822142208791-3af246a4cca91454.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/5161b798b0664b03580d7a27fdb8eac6a98dd6e3b52c07a636ec7050a5cfc782.patch"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/7a45b280ee40bbeac532e5376f8bafdace88b22fce09c11881892ce3a5118e32.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/verification/20260822143950600-cf81a603a74bc0a2.json"
     - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/36719933ca26a362c0c41082c757b3f09276b883be1f026518f942d15578c2a3.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The production guard executes only for null-ID work orders and rejects claimedIds.length greater than one with E_VALIDATION."
-    - "The existing single-claim and zero-claim scheduler paths remain unchanged."
-    - "The regression fixture contains two CLAIMED WorkItems plus an unrelated READY WorkItem, so the pre-fix wrong-target path is exercised."
-    - "The test asserts no revision change and preserves both claims and the ready WorkItem after rejection."
-    - "Focused test, ESLint, and Prettier evidence passed; no context subsystem path changed."
-    - "Residual risk: The updated PR head requires exact-SHA hosted checks and resolution of the now-addressed review thread before integration."
-    - "Residual risk: The separate context.maximum_assimilation compatibility E2E remains mandatory before the v0.7.8 release."
+    - "The receipt replay branch executes before any scheduler or claimed-item selection."
+    - "A null-ID result with exactly one claimed WorkItem selects that claim; multiple claims raise E_VALIDATION before scheduler fallback."
+    - "The regression fixture proves rejection preserves revision, WorkItem cardinality, both claim identities, and the unrelated READY item."
+    - "The current verification record covers affected_unit_integration, critical_paths, docs_contract, hosted_integration, and task_outcome."
+    - "Focused test, targeted ESLint, Prettier, and policy routing checks passed; no context subsystem code changed."
+    - "Residual risk: The updated PR head still requires exact-SHA hosted checks and resolution of the addressed GitHub review thread before integration."
+    - "Residual risk: The separate context.maximum_assimilation compatibility E2E remains mandatory before v0.7.8 publication."
 token_usage:
   agent_runs: 5
   input_tokens: null
@@ -406,7 +406,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T14:39:52.751Z"
+doc_updated_at: "2026-08-22T14:41:47.634Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the proven task-centric Core regression in null-ID external result handling: first acceptance must resolve a single claimed or ready WorkItem, and an exact replay after evidence persistence must use the mutation receipt before scheduler selection. Add focused unit coverage. Do not modify context code. This replaces unpublished Task 202608221325-NQJQ5K whose WorkItemGraph incorrectly declared repository sources as upstream required_inputs."
 sections:
