@@ -15,14 +15,14 @@ Dedicated release prerequisite for active INC-20260822-01. Preserve the incident
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-22T19:40:39.048Z
+- Updated: 2026-08-22T19:44:24.434Z
 - Branch: task/202608221939-911DRN/archive-resolved-task-centric-external-result-ro
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
