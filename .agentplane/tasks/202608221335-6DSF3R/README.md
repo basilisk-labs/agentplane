@@ -2,10 +2,10 @@
 id: "202608221335-6DSF3R"
 title: "Fix idempotent null-WorkItem external result acceptance"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -62,9 +62,9 @@ quality_review:
     - "Residual risk: The updated PR head requires exact-SHA hosted checks and resolution of the now-addressed review thread before integration."
     - "Residual risk: The separate context.maximum_assimilation compatibility E2E remains mandatory before the v0.7.8 release."
 token_usage:
-  agent_runs: 3
+  agent_runs: 5
   input_tokens: null
-  journal_digest: "sha256:31987222af5bd03ce1982147ec9a7ab02075033caf7f74998fbfdbc38b34c80e"
+  journal_digest: "sha256:f6bc2ada84e283d841afac1ca0142356f25ad8f483b568afe3a813463499ce9a"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -74,7 +74,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-22T13:44:40.779Z"
+  updated_at: "2026-08-22T14:25:52.418Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -235,8 +235,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "347cd5e8ef6ad810f7dfac0885d91b62b0f05498"
-  message: "🚧 6DSF3R task: apply external agent result"
+  hash: "fdbbd71ca81eb202bf488681d480b78ac272560c"
+  message: "🚧 6DSF3R task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -250,6 +250,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 347cd5e8ef6a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -300,9 +303,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-22T14:25:52.418Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "fdbbd71ca81eb202bf488681d480b78ac272560c"
 doc_version: 3
-doc_updated_at: "2026-08-22T14:25:28.366Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-22T14:25:52.446Z"
+doc_updated_by: "CODER"
 description: "Fix the proven task-centric Core regression in null-ID external result handling: first acceptance must resolve a single claimed or ready WorkItem, and an exact replay after evidence persistence must use the mutation receipt before scheduler selection. Add focused unit coverage. Do not modify context code. This replaces unpublished Task 202608221325-NQJQ5K whose WorkItemGraph incorrectly declared repository sources as upstream required_inputs."
 sections:
   Summary: |-
@@ -791,6 +802,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "347cd5e8ef6ad810f7dfac0885d91b62b0f05498"
+    message: "🚧 6DSF3R task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ee460292f9d253a5ba6fe2ca95a6d0fd5e7a7088"
@@ -985,12 +997,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/3` agent runs
+- Completeness: `0/5` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:31987222af5bd03ce1982147ec9a7ab02075033caf7f74998fbfdbc38b34c80e`
+- Journal digest: `sha256:f6bc2ada84e283d841afac1ca0142356f25ad8f483b568afe3a813463499ce9a`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-22T13:44:40.779Z`
+- Updated at: `2026-08-22T14:25:52.418Z`
