@@ -6,7 +6,7 @@ Created: 2026-08-22T15:47:34.719Z
 
 - Task: `202608221545-ZCYV3B`
 - Title: Stop verification receipts from overstating check coverage
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608221545-ZCYV3B/stop-verification-receipts-from-overstating-chec`
 - Canonical task record: `.agentplane/tasks/202608221545-ZCYV3B/README.md`
 
