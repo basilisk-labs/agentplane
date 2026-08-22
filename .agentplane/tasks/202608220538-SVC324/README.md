@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -74,7 +74,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-22T06:29:40.973Z"
+  updated_at: "2026-08-22T06:32:15.208Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -313,8 +313,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "47ab9fb0eee1b408018a989a873495230fb7677f"
-  message: "🚧 SVC324 task: record external evaluator result"
+  hash: "dfdc2d301c5c43b123a623080a8e6aef2551a857"
+  message: "🚧 SVC324 task: pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -331,6 +331,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -374,8 +377,16 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "47ab9fb0eee1b408018a989a873495230fb7677f"
+  -
+    type: "status"
+    at: "2026-08-22T06:32:15.208Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "dfdc2d301c5c43b123a623080a8e6aef2551a857"
 doc_version: 3
-doc_updated_at: "2026-08-22T06:29:40.986Z"
+doc_updated_at: "2026-08-22T06:32:15.242Z"
 doc_updated_by: "CODER"
 description: "Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, archive both incidents with exact evidence, and unblock the approved patch release."
 sections:
@@ -1134,4 +1145,4 @@ DecisionContextRef:
 - Provenance: `supervisor_journal/agentplane`
 - Journal digest: `sha256:a7abd97b64e9f93d73f2ad53c7d70e2bae6eef185e91ec0a13934e6a3f0bef9f`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-22T06:29:40.973Z`
+- Updated at: `2026-08-22T06:32:15.208Z`
