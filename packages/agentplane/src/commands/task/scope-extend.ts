@@ -1,6 +1,7 @@
 import {
+  computeLogicalCompletionContractDigest,
   EXECUTION_GRANT_EXTENSION_KEY,
-  executionGrantFromExtensions,
+  executionGrantForContextFromExtensions,
   rebaseExecutionGrantScope,
   type TaskRepositoryEffect,
 } from "@agentplaneorg/core/tasks";
@@ -25,6 +26,7 @@ import {
   scopeExtensionReceiptForState,
 } from "../shared/task-scope-extension-request.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 
 const output = createCliEmitter();
 
@@ -142,9 +144,22 @@ export function extendBlockedTaskExecutionContract(opts: {
 export function taskWithRebasedExecutionGrant(opts: {
   task: TaskData;
   execution_contract: NonNullable<TaskData["execution_contract"]>;
+  repository_identity: string;
 }) {
-  const executionGrant = executionGrantFromExtensions(opts.task.extensions);
+  const executionGrant = executionGrantForContextFromExtensions({
+    extensions: opts.task.extensions,
+    repository_identity: opts.repository_identity,
+    execution_contract: opts.task.execution_contract,
+  });
   if (!executionGrant) return opts.task;
+  if (
+    computeLogicalCompletionContractDigest(opts.task.execution_contract) !==
+    computeLogicalCompletionContractDigest(opts.execution_contract)
+  ) {
+    const extensions = { ...(opts.task.extensions ?? {}) };
+    delete extensions[EXECUTION_GRANT_EXTENSION_KEY];
+    return { ...opts.task, extensions };
+  }
   return {
     ...opts.task,
     extensions: {
@@ -229,9 +244,14 @@ export async function cmdTaskScopeExtend(opts: {
       });
     }
     const now = new Date().toISOString();
+    const repositoryIdentity = await resolveLogicalRepositoryIdentity({
+      git_root: command.resolvedProject.gitRoot,
+      task,
+    });
     const taskWithRebasedGrant = taskWithRebasedExecutionGrant({
       task,
       execution_contract: executionContract,
+      repository_identity: repositoryIdentity,
     });
     await command.taskBackend.writeTask(
       applyApprovedTaskScopeExtension({

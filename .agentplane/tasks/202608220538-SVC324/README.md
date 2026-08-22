@@ -2,10 +2,10 @@
 id: "202608220538-SVC324"
 title: "Resolve task autonomy and evaluator rework incidents"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 38
+revision: 39
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +26,11 @@ plan_approval:
   updated_by: "USER"
   note: "Approved under the user-confirmed implementation and patch-release goal; this replan only corrects internal work-item input typing without expanding scope."
 verification:
-  state: "ok"
-  updated_at: "2026-08-22T06:52:20.291Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-22T07:19:54.456Z"
+  updated_by: "REVIEWER"
+  note: "GitHub review found two unresolved scope-extension defects: approved material extensions abort before persistence, and legacy grants are not migrated before rebasing."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -316,9 +316,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit:
-  hash: "4981110a97aedf51c55f60c9043f71da41d51acd"
-  message: "🚧 SVC324 task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -480,8 +478,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "4981110a97aedf51c55f60c9043f71da41d51acd"
+  -
+    type: "verify"
+    at: "2026-08-22T07:19:54.456Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "GitHub review found two unresolved scope-extension defects: approved material extensions abort before persistence, and legacy grants are not migrated before rebasing."
 doc_version: 3
-doc_updated_at: "2026-08-22T06:55:13.045Z"
+doc_updated_at: "2026-08-22T07:19:59.492Z"
 doc_updated_by: "CODER"
 description: "Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, archive both incidents with exact evidence, and unblock the approved patch release."
 sections:
@@ -953,6 +957,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608220538-SVC324
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T07:19:54.456Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: GitHub review found two unresolved scope-extension defects: approved material extensions abort before persistence, and legacy grants are not migrated before rebasing.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a93c86c8d22c7479bf47b8dcac7f7d2518f86ec47e654b2591646268bf070bfd, input_digest=sha256:a6965e1f2ecf5ebdc811a244c36f0d51fd54bf821595595c526b6391d852085a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220538-SVC324-resolve-task-autonomy-and-evaluator-rework-incid/.agentplane/tasks/202608220538-SVC324/blueprint/resolved-snapshot.json
+    - old_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+    - current_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608220538-SVC324
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1973,9 +2007,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf"
-    message: "🚧 SVC324 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "258015fbf8be6e888dae88d12ad78f2dbcaaf89f"
@@ -2464,6 +2495,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608220538-SVC324
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T07:19:54.456Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: GitHub review found two unresolved scope-extension defects: approved material extensions abort before persistence, and legacy grants are not migrated before rebasing.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a93c86c8d22c7479bf47b8dcac7f7d2518f86ec47e654b2591646268bf070bfd, input_digest=sha256:a6965e1f2ecf5ebdc811a244c36f0d51fd54bf821595595c526b6391d852085a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220538-SVC324-resolve-task-autonomy-and-evaluator-rework-incid/.agentplane/tasks/202608220538-SVC324/blueprint/resolved-snapshot.json
+- old_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+- current_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608220538-SVC324
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
