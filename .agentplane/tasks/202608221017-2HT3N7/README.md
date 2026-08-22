@@ -2,10 +2,10 @@
 id: "202608221017-2HT3N7"
 title: "Port the complete pre-merge quality-review lifecycle fix from blocked task 202608220851-XN5YNK into a clean branch_pr task: accept only proven task-artifact-only reviewed descendants, normalize closure-owned token_usage and implementation commit message while preserving the implementation hash, and clear task_centric_replan_required when a replacement canonical plan is supplied. Include the focused regression tests already proven in the blocked task."
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -60,7 +60,7 @@ quality_review:
 token_usage:
   agent_runs: 3
   input_tokens: null
-  journal_digest: "sha256:f15590baad860ad4f4bb3d26b51156854c488f9bad9eb1fcbad1d32e0072e15d"
+  journal_digest: "sha256:f3e333f2e58c10d8953fb2a5aeb9fd084ded223580061927fe1f8778e11808e2"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -70,7 +70,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-22T10:24:03.073Z"
+  updated_at: "2026-08-22T11:00:04.544Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -247,7 +247,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "2ca70512587ecf8b1927143f9bd66beec46d6ccd"
+  message: "🔍 2HT3N7 task: record linked batch quality review"
 comments:
   -
     author: "CODER"
@@ -255,6 +257,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b2e7c138fd33. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -306,8 +311,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified P1 linked-batch rework after explicit needs-rework transition; hosted exact-SHA gate remains pending publication."
+  -
+    type: "status"
+    at: "2026-08-22T11:00:04.544Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "2ca70512587ecf8b1927143f9bd66beec46d6ccd"
 doc_version: 3
-doc_updated_at: "2026-08-22T10:59:19.700Z"
+doc_updated_at: "2026-08-22T11:00:04.572Z"
 doc_updated_by: "CODER"
 description: "A clean task is required because the original supervisor journal correctly refuses replay after state drift. Keep changes to packages/agentplane/src/commands/task and packages/agentplane/src/commands/shared/quality-review-target.ts plus task-owned tests."
 sections:
@@ -892,6 +905,9 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "13310d16d22523346f108bb14a064f9447bf8334"
+    message: "🐛 2HT3N7 code: include linked batch task artifacts"
   task_execution_context:
     base_ref: "main"
     base_sha: "49a18763cb42144bc5279ddb129c51c63acd9244"
@@ -1156,6 +1172,6 @@ DecisionContextRef:
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:f15590baad860ad4f4bb3d26b51156854c488f9bad9eb1fcbad1d32e0072e15d`
+- Journal digest: `sha256:f3e333f2e58c10d8953fb2a5aeb9fd084ded223580061927fe1f8778e11808e2`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-22T10:24:03.073Z`
+- Updated at: `2026-08-22T11:00:04.544Z`
