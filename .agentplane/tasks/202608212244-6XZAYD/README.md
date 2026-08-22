@@ -4,7 +4,7 @@ title: "Implement the task-centric refactoring roadmap v2 and publish the next p
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -32,6 +32,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "blocked"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-22T01:45:48.519Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned blocked with 5 typed finding(s)."
+  evaluated_sha: "8ae1df8b06aa992a90d7b678bf5d2c34f7455969"
+  blueprint_digest: "d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306"
+  evidence_refs:
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-014451867-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-014451867-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/c5e0670493e021a5b197f646509e79d783acd1aa00f9e72bb183f148647a8d63.md"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-014451867-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-014451867-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-014451867-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-014451867-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/README.md"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/950b2e772855aeab03a5ec4a9d642d7d2de6175ce035f04960ad5dd6bd0ef346.patch"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/4d1bfed0136cbe7ec5e30dd075e80cee8dec5bc0d6a5ad71e27a24a5f0b12bf3.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/verification/20260822014352903-2db6306ae85d2f0a.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/0f9e0c0f8b0f85b8effd9074a1316c56971aceb5da4a5fce5935f4726c154946.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
+  findings:
+    - "bun run bench:compatibility:candidate:check passes, proving the checked-in candidate is internally current under its existing capture rules."
+    - "bun run bench:compatibility:check fails with AgentWorkOrder contract artifact digest drift for current surface b80a796dd770c30b2f7325400aa28178c6484f5d58a284b212910c3af611b436."
+    - "The necessary exact candidate digest/provenance update and its validator live under scripts/baselines and scripts/checks, which were outside the EXECUTOR packet authority."
+    - "Release prepublish remains independently gated by active incident INC-20260821-01 and must be handled by a dedicated incident review/fix task after implementation verification."
+    - "Residual risk: Publishing without ratchet recording would leave the public AgentWorkOrder schema change outside the exact compatibility review contract."
 execution_route:
   frozen: true
   reason_codes:
