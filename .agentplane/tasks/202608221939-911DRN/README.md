@@ -2,10 +2,10 @@
 id: "202608221939-911DRN"
 title: "Archive resolved task-centric external result routing incident before v0.7.8"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -285,6 +285,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Recovery: reopen the prematurely closed task so the already-implemented WorkItem result can be accepted after the protected-path commit failure."
 events:
   -
     type: "status"
@@ -315,8 +318,15 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "6caf71b8f96f0f50ba892e671c4d7110d0088552"
+  -
+    type: "status"
+    at: "2026-08-22T19:57:08.799Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Recovery: reopen the prematurely closed task so the already-implemented WorkItem result can be accepted after the protected-path commit failure."
 doc_version: 3
-doc_updated_at: "2026-08-22T19:55:07.675Z"
+doc_updated_at: "2026-08-22T19:57:08.829Z"
 doc_updated_by: "CODER"
 description: "Dedicated release prerequisite for active INC-20260822-01. Preserve the incident in docs/developer/incident-archive.mdx with exact evidence from task 202608221335-6DSF3R and merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, then remove only that resolved entry from .agentplane/policy/incidents.md and its packaged mirror. Do not change implementation, context, task-centric architecture, or any other incident. Record the existing archive identifier collision explicitly instead of rewriting historical evidence."
 sections:
