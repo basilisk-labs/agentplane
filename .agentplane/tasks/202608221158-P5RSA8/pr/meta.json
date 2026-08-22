@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:068e5bd98ebb08d411610e7f4fb86130ddf4a4323a8b4e5c42672eebe283d9c3",
   "pr_number": 4868,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4868",
+  "pre_merge_closure": {
+    "basis_commit": "0b32f949a5efdaeb2eb8acbe3b0d2b3b875d2e18",
+    "branch": "task/202608221158-P5RSA8/refresh-the-clone-baseline-after-the-completed-t",
+    "pr_number": 4868,
+    "recorded_at": "2026-08-22T12:06:26.250Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
