@@ -12,8 +12,8 @@ Created: 2026-08-22T13:40:02.178Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Verification is blocked because a lifecycle operation changed two global policy files outside the approved WorkItem scope after the implementation commit.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
