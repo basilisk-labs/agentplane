@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -32,19 +32,19 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "human_supplied"
-  updated_at: "2026-08-22T19:55:07.653Z"
+  updated_at: "2026-08-22T19:58:45.577Z"
   updated_by: "HUMAN"
-  note: "The closeout remains limited to the three approved incident paths; exact regression provenance is archived, both active registries are synchronized, and deterministic gates pass."
-  evaluated_sha: "c80192fa421a2079bcc08dd208217252aba7568d"
+  note: "Control-plane rework only: the approved source diff is complete, but required WorkItem archive-resolved-routing-incident remains READY because the original protected-path result acceptance failed before recording it."
+  evaluated_sha: "3a1756b3130116996a4043d92d8b678d4ad97af4"
   blueprint_digest: "d631740d9732f4866e388192d53d5436b3aa926ae4d4f977ead7aa5b52e05595"
   evidence_refs:
-    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195507004-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195507004-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/a4ab99c9b25a6ac5ded44ae3d7b5a759d9c9a7bc61445d2618fd8f0c1947ee64.md"
-    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195507004-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195507004-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195844735-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195844735-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/ccf01e789cdd78daaf93da3222c46d9ae30b2769cda694bea40d58d6d0cfd29d.md"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195844735-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195844735-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608221939-911DRN/README.md"
     - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/b0c0e111997a99feae1921d10f292ab28e0085ca2ba71258c2ad222b3c8945b6.patch"
     - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/3f5d8fcfd4cf51495be7a2e2afea49c538099fead569c0c930a364554b985409.json"
@@ -53,12 +53,9 @@ quality_review:
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/dod.docs.md"
     - ".agentplane/policy/security.must.md"
-    - "git diff 81279b3b18a7d08881d57dce0f8dd1abdd5910b4..c80192fa421a -- .agentplane/policy/incidents.md docs/developer/incident-archive.mdx packages/agentplane/assets/policy/incidents.md"
-    - "node .agentplane/policy/check-routing.mjs"
-    - "bun run release:incidents:check"
+    - ".agentplane/tasks/202608221939-911DRN/README.md#extensions.task_aggregate.work_items.archive-resolved-routing-incident.state"
   findings:
-    - "No implementation or context path changed."
-    - "The current task-only closeout tail does not alter the reviewed incident diff."
+    - "No repository implementation change is requested."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -337,7 +334,7 @@ events:
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "87096ef466001e470cbff48559d629c198846022"
 doc_version: 3
-doc_updated_at: "2026-08-22T19:57:53.618Z"
+doc_updated_at: "2026-08-22T19:58:45.597Z"
 doc_updated_by: "CODER"
 description: "Dedicated release prerequisite for active INC-20260822-01. Preserve the incident in docs/developer/incident-archive.mdx with exact evidence from task 202608221335-6DSF3R and merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, then remove only that resolved entry from .agentplane/policy/incidents.md and its packaged mirror. Do not change implementation, context, task-centric architecture, or any other incident. Record the existing archive identifier collision explicitly instead of rewriting historical evidence."
 sections:
