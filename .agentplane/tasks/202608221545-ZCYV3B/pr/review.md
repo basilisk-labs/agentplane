@@ -6,13 +6,13 @@ Created: 2026-08-22T15:47:34.719Z
 
 - Task: `202608221545-ZCYV3B`
 - Title: Stop verification receipts from overstating check coverage
-- Status: DOING
+- Status: BLOCKED
 - Branch: `task/202608221545-ZCYV3B/stop-verification-receipts-from-overstating-chec`
 - Canonical task record: `.agentplane/tasks/202608221545-ZCYV3B/README.md`
 
 ## Verification
 
-- State: needs_rework
+- State: blocked_external
 - Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
