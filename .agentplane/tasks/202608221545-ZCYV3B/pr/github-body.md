@@ -15,8 +15,8 @@ Fix only the proven task-centric verification regression from PR #4873: one focu
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -30,11 +30,11 @@ Fix only the proven task-centric verification regression from PR #4873: one focu
  .../src/cli/run-cli.critical.task-centric.test.ts  |   9 +-
  .../shared/task-verification-records.test.ts       |  32 ++++--
  .../commands/shared/task-verification-records.ts   |   4 +-
- .../commands/task/direct-task-verification.test.ts | 116 +++++++++++++++++++++
- .../src/commands/task/direct-task-verification.ts  |  72 ++++++++++---
- .../external-agent-verification-result.test.ts     |  39 ++++++-
+ .../commands/task/direct-task-verification.test.ts | 115 +++++++++++++++++++++
+ .../src/commands/task/direct-task-verification.ts  |  76 +++++++++++---
+ .../external-agent-verification-result.test.ts     |  37 ++++++-
  .../task/external-agent-verification-result.ts     |  38 ++++---
- 7 files changed, 272 insertions(+), 38 deletions(-)
+ 7 files changed, 271 insertions(+), 40 deletions(-)
 ```
 
 </details>

@@ -62,9 +62,9 @@ function completedVerificationDetails(opts: {
   artifact: DeclaredChecksArtifact;
 }): string {
   const evidence = `${verificationArtifactPath(opts.command, opts.taskId)}#checks`;
-  const checks = (
-    opts.selectedChecks.length > 0 ? opts.selectedChecks : ["task_outcome"]
-  ).filter((checkId) => checkId !== "hosted_integration");
+  const checks = (opts.selectedChecks.length > 0 ? opts.selectedChecks : ["task_outcome"]).filter(
+    (checkId) => checkId !== "hosted_integration",
+  );
   return checks
     .flatMap((checkId) => {
       const commands = opts.artifact.checks

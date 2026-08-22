@@ -129,9 +129,7 @@ function directTaskVerificationCommands(
   return commands;
 }
 
-function selectedLocalChecks(
-  task: Pick<TaskData, "execution_contract">,
-): string[] {
+function selectedLocalChecks(task: Pick<TaskData, "execution_contract">): string[] {
   return (task.execution_contract?.verification.contract?.selected_checks ?? []).filter(
     (checkId) => checkId !== "hosted_integration",
   );
@@ -281,16 +279,18 @@ export async function runDirectTaskVerification(opts: {
   const commands = directTaskVerificationCommands(opts.task);
   const selectedChecks = selectedLocalChecks(opts.task);
   const requiresFullRegression = selectedChecks.includes("full_regression");
-  const packageScripts = hasPlannerFallbackVerifySteps(opts.task) || requiresFullRegression
-    ? await readRootPackageScripts(opts.command.resolvedProject.gitRoot)
-    : null;
+  const packageScripts =
+    hasPlannerFallbackVerifySteps(opts.task) || requiresFullRegression
+      ? await readRootPackageScripts(opts.command.resolvedProject.gitRoot)
+      : null;
   let missingRequiredCheckReason: string | null = null;
-  if (requiresFullRegression && !commands.some(isFullRegressionCommand)) {
-    if (!packageScripts?.has("ci:local:full")) {
+  const hasFullRegressionCommand = commands.some((command) => isFullRegressionCommand(command));
+  if (requiresFullRegression && !hasFullRegressionCommand) {
+    if (packageScripts?.has("ci:local:full")) {
+      commands.push("bun run ci:local:full");
+    } else {
       missingRequiredCheckReason =
         "Verification Contract requires full_regression, but package.json does not define ci:local:full.";
-    } else {
-      commands.push("bun run ci:local:full");
     }
   }
   if (commands.length === 0) {
