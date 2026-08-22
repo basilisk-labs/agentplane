@@ -12,8 +12,8 @@ Created: 2026-08-21T22:50:57.507Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Lifecycle rework required: clear the stale implementation receipt before registering review-fix commit 8921a755e.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -64,7 +64,7 @@ Created: 2026-08-21T22:50:57.507Z
  .../commands/task/task-centric-external-result.ts  |  218 +++
  .../src/commands/task/verify-record-execute.ts     |   24 +-
  .../task/verify-record.durability.unit.test.ts     |    4 +-
- .../src/commands/task/verify-record.unit.test.ts   |    6 +
+ .../src/commands/task/verify-record.unit.test.ts   |   13 +-
  packages/agentplane/src/commands/workflow.test.ts  |    1 +
  .../src/commands/workflow.verify-hooks.test.ts     |   11 +-
  .../src/runner/context/task-context.test.ts        |   16 +-
@@ -118,7 +118,7 @@ Created: 2026-08-21T22:50:57.507Z
  schemas/agent-work-order-v2.schema.json            |  213 +++
  .../baselines/v0.7-compatibility-candidate.json    |   25 +-
  .../check-compatibility-contract-baseline.mjs      |   15 +-
- 89 files changed, 10374 insertions(+), 428 deletions(-)
+ 89 files changed, 10380 insertions(+), 429 deletions(-)
 ```
 
 </details>
