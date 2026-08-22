@@ -1,6 +1,7 @@
  depcruise.config.cjs                               |   25 +
  .../task-centric-backend-adapter.test.ts           |  500 ++++++
  .../task-backend/task-centric-backend-adapter.ts   |  689 ++++++++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |    6 +-
  .../src/cli/run-cli.critical.task-centric.test.ts  |  393 +++++
  .../evaluator-episode.calibration.test.ts          |    8 +-
  .../src/commands/hermes/hermes-runtime.ts          |   20 +-
@@ -81,4 +82,6 @@
  packages/testkit/src/cli-harness.ts                |    9 +
  schemas/agent-semantic-result.schema.json          | 1695 ++++++++++++++++++++
  schemas/agent-work-order-v2.schema.json            |  213 +++
- 83 files changed, 10171 insertions(+), 405 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |   25 +-
+ .../check-compatibility-contract-baseline.mjs      |   15 +-
+ 86 files changed, 10204 insertions(+), 418 deletions(-)
