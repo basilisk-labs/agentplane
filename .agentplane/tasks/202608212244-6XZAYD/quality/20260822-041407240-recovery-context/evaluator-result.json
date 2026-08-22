@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The frozen evaluator diff covers the full roadmap implementation plus the packaged mixed-scope qualification correction and both synchronized incident-policy projections.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/e74c54784b7a485edf9c1aa1da6a77ca613e1357a996febaf6e1761521929255.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The current verification record is bound to implementation SHA 2bfa2c162a9ee70580ba00e2f76ae072f084152e and branch base 134c95fd629d5ebcf0e17196ccb4b44f60c993fd.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/e74c54784b7a485edf9c1aa1da6a77ca613e1357a996febaf6e1761521929255.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Lint, type checking, schemas, compatibility ratchets, routing, packaged mixed-scope lifecycle, and the 38-test qualification contract pass on the incident-aware branch state.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/e74c54784b7a485edf9c1aa1da6a77ca613e1357a996febaf6e1761521929255.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The two incident policy files are byte-identical and the protected packages/agentplane/assets/AGENTS.md file remains untouched.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/e74c54784b7a485edf9c1aa1da6a77ca613e1357a996febaf6e1761521929255.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Hosted exact-head checks, integration, dedicated incident review, and release publication remain lifecycle gates rather than implementation defects.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/e74c54784b7a485edf9c1aa1da6a77ca613e1357a996febaf6e1761521929255.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted checks must pass against the published exact PR head before integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/e74c54784b7a485edf9c1aa1da6a77ca613e1357a996febaf6e1761521929255.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Release publication remains gated by a dedicated review and closure of active incidents.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/e74c54784b7a485edf9c1aa1da6a77ca613e1357a996febaf6e1761521929255.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
