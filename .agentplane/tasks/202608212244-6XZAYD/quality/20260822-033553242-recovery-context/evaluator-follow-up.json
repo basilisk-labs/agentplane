@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608212244-6XZAYD-92f9a05f3c60857c3604a693",
+  "task_id": "202608212244-6XZAYD",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Extend task scope to scripts/qualification, update only the packaged mixed-scope fixture to submit a baseline-bound task_plan_proposal, rerun its contract and clean-candidate qualification, then reevaluate.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "bun run lint:core passes on the current implementation head.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "The current scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs contains no task_plan_proposal, mixedScopeTaskPlanProposal, or digest helper for a baseline-bound structured plan.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "The hosted verify-real-e2e failure therefore remains reproducible in contract terms: the neutral task returns another PLANNER episode instead of reaching approval_required.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "The required qualification fixture lives under scripts/qualification, which was absent from the EXECUTOR packet writable roots.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "summary": "Residual risk: Publishing the current head would retain a known release-blocking verify-real-e2e failure.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033553242-recovery-context/evaluator-result.json"
+}
