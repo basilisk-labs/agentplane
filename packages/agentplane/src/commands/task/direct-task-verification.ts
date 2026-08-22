@@ -23,6 +23,7 @@ type DirectTaskCheck = {
   command: string;
   declared_command?: string;
   script: string | null;
+  check_ids: string[];
   exit_code: number | null;
   duration_ms: number;
   stdout_tail: string;
@@ -49,19 +50,27 @@ export function renderDirectTaskVerificationDetails(opts: {
   result: DirectTaskVerificationResult;
 }): string {
   const checks = opts.result.checks;
-  const selectedChecks = opts.task.execution_contract?.verification.contract?.selected_checks ?? [];
+  const selectedChecks = (
+    opts.task.execution_contract?.verification.contract?.selected_checks ?? []
+  ).filter((checkId) => checkId !== "hosted_integration");
   if (opts.result.status === "passed" && selectedChecks.length > 0) {
-    const commands = checks.map(({ command }) => command).join(" && ");
     return selectedChecks
-      .map((checkId) =>
-        [
-          `Check: ${checkId}`,
-          `Command: ${commands}`,
-          "Result: pass",
-          `Evidence: ${opts.result.artifact_path}#checks`,
-          `Scope: ${opts.workflow} task ${opts.taskId} Verification Contract check ${checkId}`,
-        ].join("\n"),
-      )
+      .map((checkId) => {
+        const matching = checks.filter((check) => check.check_ids.includes(checkId));
+        if (matching.length === 0) return null;
+        return matching
+          .map((check, index) =>
+            [
+              `Check: ${checkId}`,
+              `Command: ${check.command}`,
+              "Result: pass",
+              `Evidence: ${opts.result.artifact_path}#check-${String(checks.indexOf(check) + 1)}`,
+              `Scope: ${opts.workflow} task ${opts.taskId} Verification Contract check ${checkId}${matching.length > 1 ? ` (${String(index + 1)}/${String(matching.length)})` : ""}`,
+            ].join("\n"),
+          )
+          .join("\n\n");
+      })
+      .filter((details): details is string => details !== null)
       .join("\n\n");
   }
   return checks
@@ -118,6 +127,23 @@ function directTaskVerificationCommands(
     if (!commands.includes(required)) commands.push(required);
   }
   return commands;
+}
+
+function selectedLocalChecks(
+  task: Pick<TaskData, "execution_contract">,
+): string[] {
+  return (task.execution_contract?.verification.contract?.selected_checks ?? []).filter(
+    (checkId) => checkId !== "hosted_integration",
+  );
+}
+
+function isFullRegressionCommand(command: string): boolean {
+  return parseDirectTaskCheck(command)?.script === "ci:local:full";
+}
+
+function checkIdsForCommand(command: string, selectedChecks: readonly string[]): string[] {
+  if (isFullRegressionCommand(command)) return [...selectedChecks];
+  return selectedChecks.filter((checkId) => checkId !== "full_regression");
 }
 
 function hasPlannerFallbackVerifySteps(task: Pick<TaskData, "sections">): boolean {
@@ -207,6 +233,7 @@ async function writeCheckArtifact(opts: {
             command: check.command,
             declared_command: check.declared_command,
             script: check.script,
+            check_ids: check.check_ids,
             exit_code: check.exit_code,
           };
         });
@@ -252,9 +279,23 @@ export async function runDirectTaskVerification(opts: {
 }): Promise<DirectTaskVerificationResult> {
   const checks: DirectTaskCheck[] = [];
   const commands = directTaskVerificationCommands(opts.task);
-  const packageScripts = hasPlannerFallbackVerifySteps(opts.task)
+  const selectedChecks = selectedLocalChecks(opts.task);
+  const requiresFullRegression = selectedChecks.includes("full_regression");
+  const packageScripts = hasPlannerFallbackVerifySteps(opts.task) || requiresFullRegression
     ? await readRootPackageScripts(opts.command.resolvedProject.gitRoot)
     : null;
+  if (requiresFullRegression && !commands.some(isFullRegressionCommand)) {
+    if (!packageScripts?.has("ci:local:full")) {
+      const result = {
+        status: "unsupported" as const,
+        checks,
+        reason:
+          "Verification Contract requires full_regression, but package.json does not define ci:local:full.",
+      };
+      return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+    }
+    commands.push("bun run ci:local:full");
+  }
   if (commands.length === 0) {
     const result = {
       status: "unsupported" as const,
@@ -295,6 +336,7 @@ export async function runDirectTaskVerification(opts: {
         command,
         ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
         script: parsed.script,
+        check_ids: checkIdsForCommand(command, selectedChecks),
         exit_code: executed.exitCode,
         duration_ms: Math.max(0, Date.now() - started),
         stdout_tail: tail(executed.stdout),
@@ -321,6 +363,7 @@ export async function runDirectTaskVerification(opts: {
         command,
         ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
         script: parsed.script,
+        check_ids: checkIdsForCommand(command, selectedChecks),
         exit_code: null,
         duration_ms: Math.max(0, Date.now() - started),
         stdout_tail: "",

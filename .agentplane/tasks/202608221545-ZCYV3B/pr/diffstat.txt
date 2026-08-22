@@ -1,0 +1,7 @@
+ .../shared/task-verification-records.test.ts       |  21 +++++
+ .../commands/shared/task-verification-records.ts   |   4 +-
+ .../commands/task/direct-task-verification.test.ts | 100 +++++++++++++++++++++
+ .../src/commands/task/direct-task-verification.ts  |  67 +++++++++++---
+ .../external-agent-verification-result.test.ts     |  33 ++++++-
+ .../task/external-agent-verification-result.ts     |  38 +++++---
+ 6 files changed, 236 insertions(+), 27 deletions(-)

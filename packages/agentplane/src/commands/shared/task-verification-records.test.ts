@@ -114,6 +114,27 @@ describe("task verification records", () => {
     ).toMatchObject({ accepted: true, missingChecks: [], unexpectedChecks: [] });
   });
 
+  it("keeps hosted integration out of the local verification receipt", () => {
+    const task = makeTask("T-HOSTED-CONTRACT");
+    task.execution_contract = {
+      verification: {
+        contract: { selected_checks: ["hosted_integration", "task_outcome"] },
+      },
+    } as TaskData["execution_contract"];
+
+    expect(
+      verificationContractEvidenceCoverage(
+        task,
+        "Check: task_outcome\nCommand: bun test\nResult: pass\nEvidence: report.json\nScope: outcome",
+      ),
+    ).toMatchObject({
+      requiredChecks: ["task_outcome"],
+      accepted: true,
+      missingChecks: [],
+      unexpectedChecks: [],
+    });
+  });
+
   it("rejects a persisted passing record that omits a selected contract check", async () => {
     const gitRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-verification-contract-"));
     tempRoots.push(gitRoot);

@@ -48,7 +48,11 @@ describe("external verification result", () => {
     mocks.loadTask.mockResolvedValue({
       verification: { updated_by: "SUPERVISOR", note: "old" },
       execution_contract: {
-        verification: { contract: { selected_checks: ["full_regression", "task_outcome"] } },
+        verification: {
+          contract: {
+            selected_checks: ["full_regression", "hosted_integration", "task_outcome"],
+          },
+        },
       },
     });
     mocks.verify.mockResolvedValue(0);
@@ -72,7 +76,14 @@ describe("external verification result", () => {
     mocks.readFile.mockResolvedValue(
       JSON.stringify({
         status: "passed",
-        checks: [{ command: "bun run test:fast", exit_code: 0 }],
+        checks: [
+          { command: "bun run test:fast", check_ids: ["task_outcome"], exit_code: 0 },
+          {
+            command: "bun run ci:local:full",
+            check_ids: ["full_regression", "task_outcome"],
+            exit_code: 0,
+          },
+        ],
       }),
     );
 
@@ -89,9 +100,27 @@ describe("external verification result", () => {
       throw new Error("expected structured verification details");
     }
     expect(verifyInput.details).toContain("Check: full_regression");
+    expect(verifyInput.details).toContain("Command: bun run ci:local:full");
+    expect(verifyInput.details).not.toContain("Check: hosted_integration");
     expect(verifyInput.details).toContain(
       ".agentplane/tasks/202608190000-ABC123/supervision/declared-checks.json#checks",
     );
+  });
+
+  it("rejects completed TESTER output when full regression has no concrete command", async () => {
+    mocks.readFile.mockResolvedValue(
+      JSON.stringify({
+        status: "passed",
+        checks: [
+          { command: "bun run test:fast", check_ids: ["task_outcome"], exit_code: 0 },
+        ],
+      }),
+    );
+
+    await expect(
+      applyExternalVerificationResult({ command, exchange, semantic: semantic("completed") }),
+    ).rejects.toThrow("lacks concrete evidence for full_regression");
+    expect(mocks.verify).not.toHaveBeenCalled();
   });
 
   it("rejects completed TESTER output when declared checks did not pass", async () => {
