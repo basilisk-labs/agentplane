@@ -1,0 +1,17 @@
+{
+  "checks": [
+    {
+      "command": "bun test packages/agentplane/src/commands/task/task-centric-external-result.test.ts",
+      "duration_ms": 95,
+      "exit_code": 0,
+      "script": null,
+      "stderr_tail": "\npackages/agentplane/src/commands/task/task-centric-external-result.test.ts:\n(pass) recordTaskCentricExternalResult > replays a null-ID result against its claimed WorkItem instead of the next item [5.29ms]\n(pass) recordTaskCentricExternalResult > advances internal WorkItems while keeping one top-level Task [1.24ms]\n(pass) recordTaskCentricExternalResult > records deterministic failure as bounded rework instead of false success [0.47ms]\n(pass) recordTaskCentricExternalResult > requires command-specific evidence for every declared validation command [0.63ms]\n(pass) recordTaskCentricExternalResult > records local amendments without invalidating approval and routes material changes to replanning [1.45ms]\n\n 5 pass\n 0 fail\n 27 expect() calls\nRan 5 tests across 1 file. [89.00ms]\n",
+      "stdout_tail": "bun test v1.3.6 (d530ed99)\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202608221335-6DSF3R"
+}
