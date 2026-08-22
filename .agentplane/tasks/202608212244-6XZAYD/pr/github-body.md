@@ -15,8 +15,13 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note:
+
+```text
+Lifecycle rework required: clear the stale implementation receipt before registering review-fix
+commit 8921a755e.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -60,7 +65,9 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
  .../task/supervision-outcome-disposition.ts        |  112 ++
  .../task/task-centric-external-result.test.ts      |  377 +++++
  .../commands/task/task-centric-external-result.ts  |  218 +++
+ .../src/commands/task/verify-record-execute.ts     |   24 +-
  .../task/verify-record.durability.unit.test.ts     |    4 +-
+ .../src/commands/task/verify-record.unit.test.ts   |    6 +
  packages/agentplane/src/commands/workflow.test.ts  |    1 +
  .../src/commands/workflow.verify-hooks.test.ts     |   11 +-
  .../src/runner/context/task-context.test.ts        |   16 +-
@@ -114,7 +121,7 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
  schemas/agent-work-order-v2.schema.json            |  213 +++
  .../baselines/v0.7-compatibility-candidate.json    |   25 +-
  .../check-compatibility-contract-baseline.mjs      |   15 +-
- 87 files changed, 10354 insertions(+), 418 deletions(-)
+ 89 files changed, 10374 insertions(+), 428 deletions(-)
 ```
 
 </details>
