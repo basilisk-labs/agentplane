@@ -1,10 +1,11 @@
 ---
 id: "202608221115-2H0QP2"
 title: "Port the verified types.ts guardrail fix from blocked task 202608220823-XT1GTG into a clean branch_pr task: rename task-execution-context/types.ts and workspace-allocation/types.ts to model.ts, update only their local imports, preserve readonly semantics, and prove check:types-files plus typecheck pass."
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -53,6 +54,20 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "No actionable defect found: both module renames are complete, all local references target model.js, and explicit readonly properties preserve the original Readonly object contracts."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:7c0aada38fdbd7bd3be93720700e367f122e5ba22fe0480693fd28328660a7a2"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-22T11:21:39.038Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -207,8 +222,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "task_outcome"
 commit:
-  hash: "7a1d5d67747d806e5e2402bd9fe5c48eaf0522ed"
-  message: "🚧 2H0QP2 task: apply external agent result"
+  hash: "e6b80e554931452b6ad32e79f5754ac9d72728c5"
+  message: "🚧 2H0QP2 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -216,6 +231,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 7a1d5d67747d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -238,9 +256,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-22T11:21:39.038Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "e6b80e554931452b6ad32e79f5754ac9d72728c5"
 doc_version: 3
-doc_updated_at: "2026-08-22T11:18:48.932Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-22T11:21:39.048Z"
+doc_updated_by: "CODER"
 description: "Port the verified types.ts guardrail fix from blocked task 202608220823-XT1GTG into a clean branch_pr task: rename task-execution-context/types.ts and workspace-allocation/types.ts to model.ts, update only their local imports, preserve readonly semantics, and prove check:types-files plus typecheck pass."
 sections:
   Summary: |-
@@ -480,7 +506,34 @@ extensions:
       schema_version: 1
       task_id: "202608221115-2H0QP2"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608221115-2H0QP2"
+            - "git:7a1d5d67747d806e5e2402bd9fe5c48eaf0522ed"
+          check_id: "top-types-file-guard"
+          command_identity: "bun run check:types-files"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-22T11:18:46.941Z"
+          repository_snapshot_digest: "sha256:1f86702ff05ed196101947fb0b57ab78e840b6af06032bb6b10dfa7e7e87e246"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608221115-2H0QP2"
+            - "git:7a1d5d67747d806e5e2402bd9fe5c48eaf0522ed"
+          check_id: "top-typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-22T11:18:46.941Z"
+          repository_snapshot_digest: "sha256:1f86702ff05ed196101947fb0b57ab78e840b6af06032bb6b10dfa7e7e87e246"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608221115-2H0QP2"
     intent:
       acceptance_criteria:
@@ -501,12 +554,12 @@ extensions:
 
         Port the verified types.ts guardrail fix from blocked task 202608220823-XT1GTG into a clean branch_pr task: rename task-execution-context/types.ts and workspace-allocation/types.ts to model.ts, update only their local imports, preserve readonly semantics, and prove check:types-files plus typecheck pass.
       task_id: "202608221115-2H0QP2"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 11
     schema_version: 1
-    updated_at: "2026-08-22T11:18:49.988Z"
+    updated_at: "2026-08-22T11:21:39.038Z"
     work_items:
       port-semantic-module-names:
         attempt: 1
@@ -614,11 +667,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608221115-2H0QP2"
+      legacy-finish:202608221115-2H0QP2:2026-08-22T11:18:46.941Z:7a1d5d67747d806e5e2402bd9fe5c48eaf0522ed:
+        aggregate_digest: "sha256:516f5fd0637602111f54919e0bb5739251f6d588b54f0480cd22525dfedcfa1e"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-22T11:21:39.038Z"
+          cause_refs:
+            - "task-verification:202608221115-2H0QP2"
+            - "git:7a1d5d67747d806e5e2402bd9fe5c48eaf0522ed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c8eb2a7faa85096ad7450b55"
+          mutation_id: "legacy-finish:202608221115-2H0QP2:2026-08-22T11:18:46.941Z:7a1d5d67747d806e5e2402bd9fe5c48eaf0522ed"
+          plan_digest: "sha256:9e06b9fba5c4f1991f9853acbeccbe6dccbd2462fe475429d95314b16261efa5"
+          plan_revision: 1
+          repository_fingerprint: "sha256:1f86702ff05ed196101947fb0b57ab78e840b6af06032bb6b10dfa7e7e87e246"
+          schema_version: 1
+          task_id: "202608221115-2H0QP2"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608221115-2H0QP2:2026-08-22T11:18:46.941Z:7a1d5d67747d806e5e2402bd9fe5c48eaf0522ed"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202608221115-2H0QP2"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "7a1d5d67747d806e5e2402bd9fe5c48eaf0522ed"
+    message: "🚧 2H0QP2 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "0a1e75c439bca55f63f905f1ff3651ef04d49f23"
@@ -717,3 +796,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:7c0aada38fdbd7bd3be93720700e367f122e5ba22fe0480693fd28328660a7a2`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-22T11:21:39.038Z`

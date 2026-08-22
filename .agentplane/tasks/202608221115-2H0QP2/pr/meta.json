@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:2011bd3233893e3f37ffe4f7038760ceba34f79dec4f418ee0fc931820926ae1",
   "pr_number": 4867,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4867",
+  "pre_merge_closure": {
+    "basis_commit": "e6b80e554931452b6ad32e79f5754ac9d72728c5",
+    "branch": "task/202608221115-2H0QP2/port-the-verified-types-ts-guardrail-fix-from-bl",
+    "pr_number": 4867,
+    "recorded_at": "2026-08-22T11:21:39.169Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
