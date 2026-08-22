@@ -1,10 +1,11 @@
 ---
 id: "202608221158-P5RSA8"
 title: "Refresh the clone baseline after the completed task-centric roadmap"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -54,6 +55,20 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "No actionable defect found: both the focused clone ratchet and the complete contract gate pass, while the percentage of duplicated lines improved despite 67 additional measured sources."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:5e459e1bef5981caa90cbe4cea520ad48f876e54438297331fd783ba4e0851e9"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-22T12:06:26.132Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -206,8 +221,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "67ab5811f56da356041febc60f57eb1c575263e3"
-  message: "🚧 P5RSA8 task: apply external agent result"
+  hash: "0b32f949a5efdaeb2eb8acbe3b0d2b3b875d2e18"
+  message: "🚧 P5RSA8 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -215,6 +230,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 67ab5811f56d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -237,9 +255,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-22T12:06:26.132Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "0b32f949a5efdaeb2eb8acbe3b0d2b3b875d2e18"
 doc_version: 3
-doc_updated_at: "2026-08-22T12:05:35.011Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-22T12:06:26.140Z"
+doc_updated_by: "CODER"
 description: "Review the post-roadmap clone report, confirm the small absolute drift is intentional relative to 67 additional sources and an improved duplication percentage, refresh only scripts/baselines/clone-baseline.json, and prove clone:check plus ci:contract pass so v0.7.8 prepublish can proceed without changing release artifacts."
 sections:
   Summary: |-
@@ -489,7 +515,34 @@ extensions:
       schema_version: 1
       task_id: "202608221158-P5RSA8"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608221158-P5RSA8"
+            - "git:67ab5811f56da356041febc60f57eb1c575263e3"
+          check_id: "top-clone-check"
+          command_identity: "bun run clone:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-22T12:05:32.975Z"
+          repository_snapshot_digest: "sha256:885e4b667e79fea51535411cfa4d98128b88016f9909560d7eeed8092cf98e27"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608221158-P5RSA8"
+            - "git:67ab5811f56da356041febc60f57eb1c575263e3"
+          check_id: "top-ci-contract"
+          command_identity: "bun run ci:contract"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-22T12:05:32.975Z"
+          repository_snapshot_digest: "sha256:885e4b667e79fea51535411cfa4d98128b88016f9909560d7eeed8092cf98e27"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608221158-P5RSA8"
     intent:
       acceptance_criteria:
@@ -510,12 +563,12 @@ extensions:
 
         Review the post-roadmap clone report, confirm the small absolute drift is intentional relative to 67 additional sources and an improved duplication percentage, refresh only scripts/baselines/clone-baseline.json, and prove clone:check plus ci:contract pass so v0.7.8 prepublish can proceed without changing release artifacts.
       task_id: "202608221158-P5RSA8"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 11
     schema_version: 1
-    updated_at: "2026-08-22T12:05:36.360Z"
+    updated_at: "2026-08-22T12:06:26.132Z"
     work_items:
       refresh-clone-ratchet:
         attempt: 1
@@ -623,11 +676,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608221158-P5RSA8"
+      legacy-finish:202608221158-P5RSA8:2026-08-22T12:05:32.975Z:67ab5811f56da356041febc60f57eb1c575263e3:
+        aggregate_digest: "sha256:e8c6d6ed400b93eddffc7c76b4b484ba4e7d7d6551bf7ec6015077a286846667"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-22T12:06:26.132Z"
+          cause_refs:
+            - "task-verification:202608221158-P5RSA8"
+            - "git:67ab5811f56da356041febc60f57eb1c575263e3"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3ed9f0358a4ff6661c8dd30a"
+          mutation_id: "legacy-finish:202608221158-P5RSA8:2026-08-22T12:05:32.975Z:67ab5811f56da356041febc60f57eb1c575263e3"
+          plan_digest: "sha256:e493a91c8e931e8e33a6a185cb5d1c3f6b3eb8b5efbfc6c4ae40a682f27801de"
+          plan_revision: 1
+          repository_fingerprint: "sha256:885e4b667e79fea51535411cfa4d98128b88016f9909560d7eeed8092cf98e27"
+          schema_version: 1
+          task_id: "202608221158-P5RSA8"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608221158-P5RSA8:2026-08-22T12:05:32.975Z:67ab5811f56da356041febc60f57eb1c575263e3"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202608221158-P5RSA8"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "67ab5811f56da356041febc60f57eb1c575263e3"
+    message: "🚧 P5RSA8 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "5fd1963ef2f73adae882539030f5086767a973be"
@@ -732,3 +811,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:5e459e1bef5981caa90cbe4cea520ad48f876e54438297331fd783ba4e0851e9`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-22T12:06:26.132Z`
