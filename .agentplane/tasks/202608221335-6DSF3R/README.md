@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -24,42 +24,43 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "Approved by user for autonomous v0.7.8 regression-only release work; host_user_decision=sha256:f5d7652cf2a0f8883d17659b4275d137bc7057b8348898cd8b5677ebdd5114ed"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-22T14:19:04.291Z"
-  updated_by: "REVIEWER"
-  note: "Hosted P1 review found ambiguous null-ID routing when multiple WorkItems are CLAIMED; fail closed before scheduler fallback and add focused coverage."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-22T14:22:08.791Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-22T13:44:30.928Z"
+  updated_at: "2026-08-22T14:25:28.334Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "497e1f510d9bfee1cb55cfc21002f6442af26690"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "347cd5e8ef6ad810f7dfac0885d91b62b0f05498"
   blueprint_digest: "34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2"
   evidence_refs:
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-134258505-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-134258505-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/cb19579d76784224615b9437de413671a31149238ddd50483ef0968dc9b4914a.md"
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-134258505-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-134258505-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-134258505-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-142452734-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-142452734-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/85268e1eb2125ddc0909cd9915f839b2bceb37f82a44083f0821d54ee06cbf91.md"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-142452734-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-142452734-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-142452734-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608221335-6DSF3R/README.md"
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/696efd0a124835bc1bd04eb029e3ae05849f187dae91c48390dc9a120743e4a0.patch"
-    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/215ade9a68e5419b12b4499040bace83274a932fc2fd1fcde783c3121b0c426c.json"
-    - ".agentplane/tasks/202608221335-6DSF3R/verification/20260822134238704-0139a02b4bce383d.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/89d957a193d6bba5e8f54cf3e48ef54f45c44f6e867be64372e5445f5fb491b0.patch"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/2d8bba6f9bf17e4e5a846750afeaeab11da575bcf6f18fe08d4eef3464cc378b.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/verification/20260822142208791-3af246a4cca91454.json"
     - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/36719933ca26a362c0c41082c757b3f09276b883be1f026518f942d15578c2a3.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen diff is limited to task-centric-external-result.ts and its focused unit test."
-    - "Receipt lookup now precedes scheduler selection, so exact replay returns the original WorkItem outcome without a second mutation."
-    - "A first null-ID result selects exactly one claimed WorkItem; ambiguous and missing targets continue to fail closed through the existing path."
-    - "CLI-owned verification passed the declared test with 5 tests, 27 assertions, and no failures."
-    - "Residual risk: The PR head still requires exact-SHA hosted checks before integration."
-    - "Residual risk: The separate context.maximum_assimilation compatibility E2E remains a release gate after this Core repair merges."
+    - "The production guard executes only for null-ID work orders and rejects claimedIds.length greater than one with E_VALIDATION."
+    - "The existing single-claim and zero-claim scheduler paths remain unchanged."
+    - "The regression fixture contains two CLAIMED WorkItems plus an unrelated READY WorkItem, so the pre-fix wrong-target path is exercised."
+    - "The test asserts no revision change and preserves both claims and the ready WorkItem after rejection."
+    - "Focused test, ESLint, and Prettier evidence passed; no context subsystem path changed."
+    - "Residual risk: The updated PR head requires exact-SHA hosted checks and resolution of the now-addressed review thread before integration."
+    - "Residual risk: The separate context.maximum_assimilation compatibility E2E remains mandatory before the v0.7.8 release."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -233,7 +234,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "347cd5e8ef6ad810f7dfac0885d91b62b0f05498"
+  message: "🚧 6DSF3R task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -244,6 +247,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 347cd5e8ef6a. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -280,9 +286,23 @@ events:
     author: "REVIEWER"
     state: "needs_rework"
     note: "Hosted P1 review found ambiguous null-ID routing when multiple WorkItems are CLAIMED; fail closed before scheduler fallback and add focused coverage."
+  -
+    type: "status"
+    at: "2026-08-22T14:22:08.360Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 347cd5e8ef6a. CLI accepted one state-bound external-agent semantic result."
+    commit: "347cd5e8ef6ad810f7dfac0885d91b62b0f05498"
+  -
+    type: "verify"
+    at: "2026-08-22T14:22:08.791Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T14:19:18.893Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-22T14:25:28.366Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix the proven task-centric Core regression in null-ID external result handling: first acceptance must resolve a single claimed or ready WorkItem, and an exact replay after evidence persistence must use the mutation receipt before scheduler selection. Add focused unit coverage. Do not modify context code. This replaces unpublished Task 202608221325-NQJQ5K whose WorkItemGraph incorrectly declared repository sources as upstream required_inputs."
 sections:
   Summary: |-
@@ -379,6 +399,60 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T14:22:08.791Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f3e543bebff673290e54458107b85a0e1473cb0058a0cc5ba54bafc7cca36086, input_digest=sha256:b2e7f6fff4ec18da8633f8aee3a67323bdfa4df84645258878e9f7bc7cca21b8
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun test packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221335-6DSF3R/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221335-6DSF3R Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun test packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221335-6DSF3R/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221335-6DSF3R Verification Contract check critical_paths
+
+    Check: hosted_integration
+    Command: bun test packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221335-6DSF3R/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221335-6DSF3R Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: bun test packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221335-6DSF3R/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221335-6DSF3R Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221335-6DSF3R-fix-idempotent-null-workitem-external-result-acc/.agentplane/tasks/202608221335-6DSF3R/blueprint/resolved-snapshot.json
+    - old_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+    - current_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221335-6DSF3R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608221335-6DSF3R
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -715,6 +789,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "347cd5e8ef6ad810f7dfac0885d91b62b0f05498"
   task_execution_context:
     base_ref: "main"
     base_sha: "ee460292f9d253a5ba6fe2ca95a6d0fd5e7a7088"
@@ -829,6 +905,60 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T14:22:08.791Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f3e543bebff673290e54458107b85a0e1473cb0058a0cc5ba54bafc7cca36086, input_digest=sha256:b2e7f6fff4ec18da8633f8aee3a67323bdfa4df84645258878e9f7bc7cca21b8
+
+Details:
+
+Check: affected_unit_integration
+Command: bun test packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221335-6DSF3R/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221335-6DSF3R Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun test packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221335-6DSF3R/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221335-6DSF3R Verification Contract check critical_paths
+
+Check: hosted_integration
+Command: bun test packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221335-6DSF3R/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221335-6DSF3R Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: bun test packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221335-6DSF3R/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221335-6DSF3R Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221335-6DSF3R-fix-idempotent-null-workitem-external-result-acc/.agentplane/tasks/202608221335-6DSF3R/blueprint/resolved-snapshot.json
+- old_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+- current_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221335-6DSF3R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608221335-6DSF3R
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

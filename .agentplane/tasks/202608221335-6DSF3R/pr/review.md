@@ -12,8 +12,8 @@ Created: 2026-08-22T13:40:02.178Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted P1 review found ambiguous null-ID routing when multiple WorkItems are CLAIMED; fail closed before scheduler fallback and add focused coverage.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

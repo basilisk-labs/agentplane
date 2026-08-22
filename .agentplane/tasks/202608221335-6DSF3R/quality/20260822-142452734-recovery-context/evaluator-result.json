@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The production guard executes only for null-ID work orders and rejects claimedIds.length greater than one with E_VALIDATION.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/89d957a193d6bba5e8f54cf3e48ef54f45c44f6e867be64372e5445f5fb491b0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The existing single-claim and zero-claim scheduler paths remain unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/89d957a193d6bba5e8f54cf3e48ef54f45c44f6e867be64372e5445f5fb491b0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The regression fixture contains two CLAIMED WorkItems plus an unrelated READY WorkItem, so the pre-fix wrong-target path is exercised.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/89d957a193d6bba5e8f54cf3e48ef54f45c44f6e867be64372e5445f5fb491b0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The test asserts no revision change and preserves both claims and the ready WorkItem after rejection.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/89d957a193d6bba5e8f54cf3e48ef54f45c44f6e867be64372e5445f5fb491b0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Focused test, ESLint, and Prettier evidence passed; no context subsystem path changed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/89d957a193d6bba5e8f54cf3e48ef54f45c44f6e867be64372e5445f5fb491b0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: The updated PR head requires exact-SHA hosted checks and resolution of the now-addressed review thread before integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/89d957a193d6bba5e8f54cf3e48ef54f45c44f6e867be64372e5445f5fb491b0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: The separate context.maximum_assimilation compatibility E2E remains mandatory before the v0.7.8 release.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/89d957a193d6bba5e8f54cf3e48ef54f45c44f6e867be64372e5445f5fb491b0.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
