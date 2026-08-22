@@ -1,0 +1,487 @@
+---
+id: "202608221939-911DRN"
+title: "Archive resolved task-centric external result routing incident before v0.7.8"
+status: "DOING"
+priority: "high"
+owner: "CODER"
+revision: 5
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "release"
+  - "incident"
+task_kind: "docs"
+mutation_scope: "docs"
+risk_flags:
+  - "merge"
+blueprint_request: "docs.change"
+verify:
+  - "bun run release:incidents:check"
+  - "node .agentplane/policy/check-routing.mjs"
+plan_approval:
+  state: "approved"
+  updated_at: "2026-08-22T19:40:28.783Z"
+  updated_by: "USER"
+  note: "User authorized autonomous release prerequisites; approved exact incident-closeout plan sha256:8f8a7e52fc22fadabf1996a14889aa6b5427c6c70aed7de795f5eefc726fef56."
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
+execution_route:
+  frozen: true
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_release_metadata"
+    - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
+  repository_mode: "branch_pr"
+  requested_mode: "branch_pr"
+  schema_version: 1
+  selected_mode: "branch_pr"
+execution_contract:
+  authority:
+    allowed_external_effects: []
+    allowed_repository_effects:
+      - "documentation"
+      - "release_metadata"
+      - "repository_write"
+    forbidden_external_effects:
+      - "network_read"
+      - "external_write"
+      - "credentials"
+      - "publish"
+      - "deploy"
+      - "destructive_git"
+    forbidden_repository_effects:
+      - "source_code"
+      - "tests"
+      - "public_api"
+      - "schema"
+      - "dependencies"
+      - "ci"
+      - "security_boundary"
+    writable_roots:
+      - ".agentplane/policy/incidents.md"
+      - "docs/developer/incident-archive.mdx"
+      - "packages/agentplane/assets/policy/incidents.md"
+  declaration:
+    external_effects: []
+    implementation_uncertainty: "bounded"
+    preferred_mode: "branch_pr"
+    rationale:
+      - "Release policy requires a dedicated task to preserve resolved incident evidence and clear the active registry before release planning."
+      - "The canonical and packaged incident registries must remain synchronized."
+      - "The change is isolated to three policy/documentation paths and must pass protected branch review."
+    repository_effects:
+      - "documentation"
+      - "release_metadata"
+      - "repository_write"
+    requirements_uncertainty: "bounded"
+    reversibility: "recovery_required"
+    schema_version: 2
+    scope_roots:
+      - ".agentplane/policy/incidents.md"
+      - "docs/developer/incident-archive.mdx"
+      - "packages/agentplane/assets/policy/incidents.md"
+  observed:
+    authority_violations: []
+    changed_components: []
+    changed_paths: []
+    external_effects: []
+    repository_effects: []
+    verification_results: []
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_release_metadata"
+    - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
+  repository_mode: "branch_pr"
+  safety:
+    approval_effects: []
+    requires_user_approval: false
+    requires_worktree: true
+  schema_version: 1
+  selected_mode: "branch_pr"
+  source: "agent_declared"
+  verification:
+    contract:
+      declared:
+        components:
+          - ".agentplane/policy/incidents.md"
+          - "docs/developer/incident-archive.mdx"
+          - "packages/agentplane/assets/policy/incidents.md"
+        evidence_requirements:
+          - "hosted_integration"
+          - "repository_effect:documentation"
+          - "repository_effect:release_metadata"
+          - "repository_effect:repository_write"
+          - "task_outcome"
+        external_effects: []
+        repository_effects:
+          - "documentation"
+          - "release_metadata"
+          - "repository_write"
+        risk:
+          implementation_uncertainty: "bounded"
+          requirements_uncertainty: "bounded"
+          reversibility: "recovery_required"
+      digest: "sha256:90ddbd2353c4570453b323ff26b54cbba28238d693c37d30194807296fb156df"
+      escalation_reasons:
+        - "effect_release_metadata"
+        - "external_effect_requires_real_e2e"
+        - "reversibility_recovery_required"
+      execution_groups:
+        - "docs-schema"
+        - "core"
+        - "runtime"
+        - "cli"
+      observed:
+        changed_components: []
+        changed_files: []
+        external_effects: []
+        repository_effects: []
+      phase: "task"
+      policy_floor:
+        monotonic_strengthening: true
+        pr_full_regression: true
+        unknown_or_central_full_regression: true
+      requires_full_regression: true
+      requires_real_e2e: true
+      schema_version: 2
+      selected_checks:
+        - "docs_contract"
+        - "full_regression"
+        - "hosted_integration"
+        - "real_e2e"
+        - "task_outcome"
+      selector:
+        bucket: null
+        buckets: []
+        execution_mode: "semantic"
+        kind: "semantic"
+        lint_targets: []
+        reason: "execution_declaration"
+        run_cli_docs_check: false
+        selected_test_files: []
+        vitest_pool: "forks"
+      source: "execution_contract"
+    required_evidence:
+      - "hosted_integration"
+      - "repository_effect:documentation"
+      - "repository_effect:release_metadata"
+      - "repository_effect:repository_write"
+      - "task_outcome"
+commit:
+  hash: "f98361067fecc048cbc5fbb24d6f599ea94ae27d"
+  message: "📝 911DRN task: archive resolved routing incident"
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed: f98361067fec. Archived only the resolved task-centric external result routing incident and passed the routing and release incident gates."
+events:
+  -
+    type: "status"
+    at: "2026-08-22T19:40:38.298Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-22T19:44:04.849Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: f98361067fec. Archived only the resolved task-centric external result routing incident and passed the routing and release incident gates."
+    commit: "f98361067fecc048cbc5fbb24d6f599ea94ae27d"
+doc_version: 3
+doc_updated_at: "2026-08-22T19:44:04.849Z"
+doc_updated_by: "CODER"
+description: "Dedicated release prerequisite for active INC-20260822-01. Preserve the incident in docs/developer/incident-archive.mdx with exact evidence from task 202608221335-6DSF3R and merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, then remove only that resolved entry from .agentplane/policy/incidents.md and its packaged mirror. Do not change implementation, context, task-centric architecture, or any other incident. Record the existing archive identifier collision explicitly instead of rewriting historical evidence."
+sections:
+  Summary: |-
+    Archive resolved task-centric external result routing incident before v0.7.8
+
+    Dedicated release prerequisite for active INC-20260822-01. Preserve the incident in docs/developer/incident-archive.mdx with exact evidence from task 202608221335-6DSF3R and merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, then remove only that resolved entry from .agentplane/policy/incidents.md and its packaged mirror. Do not change implementation, context, task-centric architecture, or any other incident. Record the existing archive identifier collision explicitly instead of rewriting historical evidence.
+  Scope: |-
+    - In scope: Dedicated release prerequisite for active INC-20260822-01. Preserve the incident in docs/developer/incident-archive.mdx with exact evidence from task 202608221335-6DSF3R and merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, then remove only that resolved entry from .agentplane/policy/incidents.md and its packaged mirror. Do not change implementation, context, task-centric architecture, or any other incident. Record the existing archive identifier collision explicitly instead of rewriting historical evidence.
+    - Out of scope: unrelated refactors not required for "Archive resolved task-centric external result routing incident before v0.7.8".
+  Plan: "Archive only the already-fixed active routing incident with exact task and merged-main evidence, synchronize the packaged incident registry, and reopen the v0.7.8 release gate."
+  Verify Steps: |-
+    PLANNER fallback scaffold for "Archive resolved task-centric external result routing incident before v0.7.8". Replace with task-specific acceptance checks when PLANNER context is available.
+
+    1. Review the requested outcome for "Archive resolved task-centric external result routing incident before v0.7.8". Expected: the visible result matches ## Summary and stays inside approved scope.
+    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+extensions:
+  agentplane.execution_grant:
+    actor: "USER"
+    approval_evidence_digest: null
+    approval_kind: "manual_operator"
+    capabilities:
+      - "provider.merge"
+      - "provider.pr"
+      - "repository.integrate"
+      - "repository.write"
+      - "task.lifecycle"
+      - "task.scope.extend"
+    completion_contract_digest: "sha256:6b16ba2a00608470b2f2d9fb92e7a74a6f4f94751a7dd9466be581925ec74693"
+    digest: "sha256:5f30e47372a8059f72f4f312facb3f5b0c180887ceb8ca49473ab1a92bc7f65d"
+    grant_id: "403378eb-9929-410b-b0a7-343b81227cd1"
+    issued_at: "2026-08-22T19:40:28.783Z"
+    kind: "agentplane.execution_grant"
+    plan_digest: "sha256:be0ecaa1ca40a6552c4be8e2fe4675ce167444694a7279fdeca6db588b6d0bb1"
+    plan_revision: 2
+    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+    schema_version: 1
+    scope_digest: "sha256:65c831e0feecf9f0b8267ff725cd968fd26f6faccdb928ead5b133466541f5fe"
+    status: "active"
+    task_id: "202608221939-911DRN"
+  agentplane.task_centric:
+    current_plan:
+      approval:
+        approved_at: "2026-08-22T19:40:28.783Z"
+        approved_by: "USER"
+        approved_digest: "sha256:8f8a7e52fc22fadabf1996a14889aa6b5427c6c70aed7de795f5eefc726fef56"
+        policy_facts:
+          - "manual_operator"
+        state: "approved"
+      created_at: "2026-08-22T19:40:19.329Z"
+      digest: "sha256:8f8a7e52fc22fadabf1996a14889aa6b5427c6c70aed7de795f5eefc726fef56"
+      proposal:
+        assumptions:
+          - "Merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a contains the already-qualified null-ID selection fix from task 202608221335-6DSF3R."
+          - "No other active incident entry is in scope for this release prerequisite."
+        planning_baseline:
+          captured_at: "2026-08-22T19:39:07.763Z"
+          config_digest: null
+          context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+          digest: "sha256:2b5193df6547ec35f726d91908c4d369e668c6d2ba0eb2a544c62ea34e6e0308"
+          dirty_paths:
+            - ".agentplane/tasks/202608210955-9SX2C6/README.md"
+            - ".agentplane/tasks/202608212244-Q3QMJR/README.md"
+            - ".agentplane/tasks/202608220034-FPEFRK/README.md"
+            - ".agentplane/tasks/202608220034-FPEFRK/blueprint/resolved-snapshot.json"
+            - ".agentplane/tasks/202608221924-8JJWSF/README.md"
+            - ".agentplane/tasks/202608221939-911DRN/README.md"
+          git:
+            kind: "commit"
+            ref: null
+            sha: "81279b3b18a7d08881d57dce0f8dd1abdd5910b4"
+          policy_digest: null
+          schema_version: 1
+          task_history_cursor: "task-revision:1"
+        schema_version: 1
+        task_id: "202608221939-911DRN"
+        top_level_validation:
+          checks:
+            -
+              capability: "task.verify"
+              command: "node .agentplane/policy/check-routing.mjs"
+              id: "check-routing-policy"
+              kind: "deterministic"
+              required: true
+            -
+              capability: "task.verify"
+              command: "bun run release:incidents:check"
+              id: "check-release-incidents"
+              kind: "deterministic"
+              required: true
+          criteria:
+            -
+              check_ids:
+                - "check-routing-policy"
+                - "check-release-incidents"
+              description: "Resolved evidence is archived, both active registries are synchronized and clean, and the v0.7.8 incident gate is reopened."
+              id: "incident-closeout-complete"
+              required: true
+          evidence_fingerprint: "sha256:3cdfc349e7c2ed819a8e11e98ef85533a73523fb8796285c6e7cd29c25b9b0e4"
+          schema_version: 1
+        unresolved_questions: []
+        work_items:
+          schema_version: 1
+          work_items:
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "check-routing-policy"
+                  description: "The archive records the exact active incident facts, source task 202608221335-6DSF3R, merged main fix 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, regression tests, and the pre-existing identifier collision without altering older archive history."
+                  id: "incident-evidence-preserved"
+                  required: true
+                -
+                  check_ids:
+                    - "check-release-incidents"
+                  description: "Only the resolved routing incident is removed and the canonical and packaged active registries remain byte-identical."
+                  id: "active-registries-clean"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 196608
+                optional_sources:
+                  - "packages/agentplane/assets/policy/incidents.md"
+                required_sources:
+                  - ".agentplane/policy/governance.md"
+                  - ".agentplane/policy/incidents.md"
+                  - "docs/developer/incident-archive.mdx"
+                  - ".agentplane/tasks/202608221335-6DSF3R/README.md"
+                symbol_hints:
+                  - "INC-20260822-01"
+                  - "external result routing"
+                  - "claimed targets"
+              depends_on: []
+              expected_outputs:
+                - "archived-INC-20260822-01-routing-regression"
+                - "release-incident-gate-green"
+              id: "archive-resolved-routing-incident"
+              objective: "Append an exact-evidence archive record for the task-centric external result routing regression, remove only that resolved active entry from both synchronized incident registries, and prove the release incident gate and routing policy checks pass."
+              optional: false
+              priority: 1
+              required_inputs: []
+              resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: ".agentplane/policy/incidents.md"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/assets/policy/incidents.md"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/developer/incident-archive.mdx"
+              risk: "low"
+              scope_roots:
+                - ".agentplane/policy/incidents.md"
+                - "docs/developer/incident-archive.mdx"
+                - "packages/agentplane/assets/policy/incidents.md"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "node .agentplane/policy/check-routing.mjs"
+                    id: "check-routing-policy"
+                    kind: "deterministic"
+                    required: true
+                  -
+                    capability: "task.verify"
+                    command: "bun run release:incidents:check"
+                    id: "check-release-incidents"
+                    kind: "deterministic"
+                    required: true
+                criteria:
+                  -
+                    check_ids:
+                      - "check-routing-policy"
+                    description: "The archive contains exact resolved evidence and explicitly documents the historical identifier collision."
+                    id: "incident-evidence-preserved"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-release-incidents"
+                    description: "The release incident gate passes after synchronized active-registry cleanup."
+                    id: "active-registries-clean"
+                    required: true
+                evidence_fingerprint: "sha256:70a5e71cb3df7cba8cb959a9ac1c13c348065dad9f5fb0baa1731a697687ecfb"
+                schema_version: 1
+      revision: 1
+      schema_version: 1
+      task_id: "202608221939-911DRN"
+    event_cursor: 0
+    final_validation: null
+    id: "202608221939-911DRN"
+    intent:
+      acceptance_criteria:
+        -
+          check_ids: []
+          description: "bun run release:incidents:check"
+          id: "legacy-1"
+          required: true
+        -
+          check_ids: []
+          description: "node .agentplane/policy/check-routing.mjs"
+          id: "legacy-2"
+          required: true
+      captured_at: "2026-08-22T19:39:00.308Z"
+      constraints: []
+      request: |-
+        Archive resolved task-centric external result routing incident before v0.7.8
+
+        Dedicated release prerequisite for active INC-20260822-01. Preserve the incident in docs/developer/incident-archive.mdx with exact evidence from task 202608221335-6DSF3R and merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, then remove only that resolved entry from .agentplane/policy/incidents.md and its packaged mirror. Do not change implementation, context, task-centric architecture, or any other incident. Record the existing archive identifier collision explicitly instead of rewriting historical evidence.
+      task_id: "202608221939-911DRN"
+    lifecycle: "ACTIVE"
+    plan_amendments: []
+    plan_history: []
+    revision: 2
+    schema_version: 1
+    updated_at: "2026-08-22T19:40:28.783Z"
+    work_items:
+      archive-resolved-routing-incident:
+        attempt: 0
+        claim_id: null
+        id: "archive-resolved-routing-incident"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
+  task_execution_context:
+    base_ref: "main"
+    base_sha: "81279b3b18a7d08881d57dce0f8dd1abdd5910b4"
+    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+    schema_version: 1
+    source: "explicit"
+  workflow_route_baseline:
+    start_head_sha: "81279b3b18a7d08881d57dce0f8dd1abdd5910b4"
+    version: 1
+id_source: "generated"
+---
+## Summary
+
+Archive resolved task-centric external result routing incident before v0.7.8
+
+Dedicated release prerequisite for active INC-20260822-01. Preserve the incident in docs/developer/incident-archive.mdx with exact evidence from task 202608221335-6DSF3R and merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, then remove only that resolved entry from .agentplane/policy/incidents.md and its packaged mirror. Do not change implementation, context, task-centric architecture, or any other incident. Record the existing archive identifier collision explicitly instead of rewriting historical evidence.
+
+## Scope
+
+- In scope: Dedicated release prerequisite for active INC-20260822-01. Preserve the incident in docs/developer/incident-archive.mdx with exact evidence from task 202608221335-6DSF3R and merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, then remove only that resolved entry from .agentplane/policy/incidents.md and its packaged mirror. Do not change implementation, context, task-centric architecture, or any other incident. Record the existing archive identifier collision explicitly instead of rewriting historical evidence.
+- Out of scope: unrelated refactors not required for "Archive resolved task-centric external result routing incident before v0.7.8".
+
+## Plan
+
+Archive only the already-fixed active routing incident with exact task and merged-main evidence, synchronize the packaged incident registry, and reopen the v0.7.8 release gate.
+
+## Verify Steps
+
+PLANNER fallback scaffold for "Archive resolved task-centric external result routing incident before v0.7.8". Replace with task-specific acceptance checks when PLANNER context is available.
+
+1. Review the requested outcome for "Archive resolved task-centric external result routing incident before v0.7.8". Expected: the visible result matches ## Summary and stays inside approved scope.
+2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings
