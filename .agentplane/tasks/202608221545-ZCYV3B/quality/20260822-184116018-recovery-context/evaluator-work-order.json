@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608221545-ZCYV3B-120073e7383ccea2e400ef2b",
+  "prepared_at": "2026-08-22T18:41:16.018Z",
+  "task": {
+    "id": "202608221545-ZCYV3B",
+    "revision": 37,
+    "objective": "Stop verification receipts from overstating check coverage\n\nFix only the proven task-centric verification regression from PR #4873: one focused declared command must not be recorded as full_regression or hosted_integration evidence. Preserve separate hosted-provider gating, run a real repository full-regression command when the contract requires it, and bind each recorded check to concrete executed evidence. Add regression tests. Do not change context or Knowledge Assimilation behavior.",
+    "acceptance_criteria": [
+      "bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-verification-result.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts",
+      "- In scope: Fix only the proven task-centric verification regression from PR #4873: one focused declared command must not be recorded as full_regression or hosted_integration evidence. Preserve separate hosted-provider gating, run a real repository full-regression command when the contract requires it, and bind each recorded check to concrete executed evidence. Add regression tests. Do not change context or Knowledge Assimilation behavior.\n- Out of scope: unrelated refactors not required for \"Stop verification receipts from overstating check coverage\".",
+      "Correct verification evidence coverage without changing context behavior or the hosted integration gate.",
+      "PLANNER fallback scaffold for \"Stop verification receipts from overstating check coverage\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Stop verification receipts from overstating check coverage\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "fb41078849aa875586fe6c0efbe37ce84e80927b",
+  "diff_base_sha": "1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a",
+  "blueprint_digest": "0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-184116018-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:f85081f245e9b561419c32c6e71a0b9dff4f3b68c8dc341c684a9f2286165a93",
+    "prompt_path": ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/39be453b67c7d7e133295290cb091adb0ac50edf5534aa93beb5c0c83784a9c6.md",
+    "result_schema_path": ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608221545-ZCYV3B/README.md",
+      "sha256": "sha256:d373f00188bcc5def7260c5ced58c8e5acd8ca51693b742bb60e2df9a39088fe",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/f89bf9f7fdb369617f0151ca56dd4e1acbf2d643c7fa060720d5c5a45136017c.patch",
+      "sha256": "sha256:f89bf9f7fdb369617f0151ca56dd4e1acbf2d643c7fa060720d5c5a45136017c",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/a92ebc8a2953690bc7ac229e505c35a72bc3f25d028c61de34be7e42354e17da.json",
+      "sha256": "sha256:a92ebc8a2953690bc7ac229e505c35a72bc3f25d028c61de34be7e42354e17da",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608221545-ZCYV3B/verification/20260822184027410-fec76002adc667a0.json",
+      "sha256": "sha256:d99f8fbc3b19055542a0da0d11eb524aa02fdf7aae596fa7ba07de668c9cdc9a",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/eb2f6a7db5a1ae1b7674b0c9b39598156fc79e8ec4033253b2c966f8bc40ec73.json",
+      "sha256": "sha256:eb2f6a7db5a1ae1b7674b0c9b39598156fc79e8ec4033253b2c966f8bc40ec73",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

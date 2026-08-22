@@ -2,10 +2,10 @@
 id: "202608221545-ZCYV3B"
 title: "Stop verification receipts from overstating check coverage"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 38
 origin:
   system: "manual"
 depends_on: []
@@ -25,40 +25,41 @@ plan_approval:
   note: "host_user_decision=sha256:defee467b01eefa8d1131fcd66aa9f6b83c7e5a46f97ab5b6eae0014070d57a4"
 verification:
   state: "ok"
-  updated_at: "2026-08-22T17:55:34.688Z"
+  updated_at: "2026-08-22T18:40:27.410Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-22T17:57:15.746Z"
+  updated_at: "2026-08-22T18:41:43.360Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "e6c2c2e7babc19179e3eb05c4f47ef22af50e665"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "fb41078849aa875586fe6c0efbe37ce84e80927b"
   blueprint_digest: "0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb"
   evidence_refs:
-    - ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-175639471-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-175639471-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/8d2ae778655d8878d5b99644c5230fdb24399026307865b7637cd2f628cb1b37.md"
-    - ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-175639471-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-175639471-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-175639471-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-184116018-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-184116018-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/39be453b67c7d7e133295290cb091adb0ac50edf5534aa93beb5c0c83784a9c6.md"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-184116018-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-184116018-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-184116018-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608221545-ZCYV3B/README.md"
-    - ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/130a62c3128d2c65183b6576050702be8ebbbaa3f1f715523a6e65f99f9839fd.patch"
-    - ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/f6b451504b0430cb04b88210974364309cf97ee7099a552c58b6651a3b3d37e9.json"
-    - ".agentplane/tasks/202608221545-ZCYV3B/verification/20260822175534688-794758a12d1689dc.json"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/f89bf9f7fdb369617f0151ca56dd4e1acbf2d643c7fa060720d5c5a45136017c.patch"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/a92ebc8a2953690bc7ac229e505c35a72bc3f25d028c61de34be7e42354e17da.json"
+    - ".agentplane/tasks/202608221545-ZCYV3B/verification/20260822184027410-fec76002adc667a0.json"
     - ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/eb2f6a7db5a1ae1b7674b0c9b39598156fc79e8ec4033253b2c966f8bc40ec73.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Local evidence binds each selected check to an executed command."
-    - "hosted_integration is excluded from local receipts and remains a hosted-provider gate."
-    - "full_regression is backed only by the distinct successful bun run ci:local:full command."
-    - "The only scope extension is the proven task-centric E2E fixture correction; context and Knowledge Assimilation behavior are unchanged."
-    - "Residual risk: Hosted integration still must pass on the exact PR SHA before merge."
+    - "Full-suite evidence is no longer coupled exclusively to ci:local:full or Bun."
+    - "Canonical package scripts execute through the configured package manager, defaulting to npm for npm-only repositories."
+    - "Repository-wide Python and Go commands have conservative full-suite classification."
+    - "Legacy TESTER completion without selected checks retains concrete task_outcome evidence."
+    - "Focused and full-repository checks pass, and no context behavior changed."
+    - "Residual risk: The updated PR head must pass hosted checks and receive resolution of all three addressed review threads before merge."
 token_usage:
   agent_runs: 9
   input_tokens: null
@@ -272,8 +273,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "77a7c46d945c1acc908789f6bb940434c18c5b16"
-  message: "🚧 ZCYV3B task: record external evaluator result"
+  hash: "fb41078849aa875586fe6c0efbe37ce84e80927b"
+  message: "🚧 ZCYV3B task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -317,6 +318,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: fb41078849aa. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -452,9 +456,23 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "77a7c46d945c1acc908789f6bb940434c18c5b16"
+  -
+    type: "status"
+    at: "2026-08-22T18:31:13.174Z"
+    author: "SUPERVISOR"
+    from: "DONE"
+    to: "DOING"
+    note: "Implementation committed: fb41078849aa. CLI accepted one state-bound external-agent semantic result."
+    commit: "fb41078849aa875586fe6c0efbe37ce84e80927b"
+  -
+    type: "verify"
+    at: "2026-08-22T18:40:27.410Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T17:57:51.869Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-22T18:41:43.391Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix only the proven task-centric verification regression from PR #4873: one focused declared command must not be recorded as full_regression or hosted_integration evidence. Preserve separate hosted-provider gating, run a real repository full-regression command when the contract requires it, and bind each recorded check to concrete executed evidence. Add regression tests. Do not change context or Knowledge Assimilation behavior."
 sections:
   Summary: |-
@@ -734,6 +752,78 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T18:40:27.410Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e53c419db3d564888ffad6f61c6eb347c5fdeb5fbcad08289828f74178742ef3, input_digest=sha256:e0536c12846d32bee6bd7a16827c11f73d906463ba1798c6a9965bc7a1585aff
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-verification-result.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608221545-ZCYV3B Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608221545-ZCYV3B Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-verification-result.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608221545-ZCYV3B Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608221545-ZCYV3B Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608221545-ZCYV3B Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-verification-result.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608221545-ZCYV3B Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608221545-ZCYV3B Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221545-ZCYV3B-stop-verification-receipts-from-overstating-chec/.agentplane/tasks/202608221545-ZCYV3B/blueprint/resolved-snapshot.json
+    - old_digest: 0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb
+    - current_digest: 0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221545-ZCYV3B
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608221545-ZCYV3B
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1084,8 +1174,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "e6c2c2e7babc19179e3eb05c4f47ef22af50e665"
-    message: "🚧 ZCYV3B task: apply external agent result"
+    hash: "fb41078849aa875586fe6c0efbe37ce84e80927b"
   task_execution_context:
     base_ref: "main"
     base_sha: "1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a"
@@ -1383,6 +1472,78 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T18:40:27.410Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e53c419db3d564888ffad6f61c6eb347c5fdeb5fbcad08289828f74178742ef3, input_digest=sha256:e0536c12846d32bee6bd7a16827c11f73d906463ba1798c6a9965bc7a1585aff
+
+Details:
+
+Check: affected_unit_integration
+Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-verification-result.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608221545-ZCYV3B Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608221545-ZCYV3B Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-verification-result.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608221545-ZCYV3B Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608221545-ZCYV3B Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608221545-ZCYV3B Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-verification-result.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608221545-ZCYV3B Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608221545-ZCYV3B Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221545-ZCYV3B-stop-verification-receipts-from-overstating-chec/.agentplane/tasks/202608221545-ZCYV3B/blueprint/resolved-snapshot.json
+- old_digest: 0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb
+- current_digest: 0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221545-ZCYV3B
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608221545-ZCYV3B
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
