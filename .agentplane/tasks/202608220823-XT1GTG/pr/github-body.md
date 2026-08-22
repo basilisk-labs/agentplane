@@ -15,8 +15,8 @@ Restore the types.ts guardrail for the task-centric execution domains by renamin
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -30,10 +30,12 @@ Restore the types.ts guardrail for the task-centric execution domains by renamin
  .../src/runtime/task-execution-context/index.ts    |  2 +-
  .../src/runtime/task-execution-context/model.ts    | 39 ++++++++++++++++++++++
  .../src/runtime/task-execution-context/resolve.ts  |  2 +-
+ .../src/runtime/task-execution-context/types.ts    | 39 ----------------------
  .../src/runtime/workspace-allocation/allocate.ts   |  2 +-
  .../src/runtime/workspace-allocation/lease.ts      |  2 +-
  .../src/runtime/workspace-allocation/model.ts      | 27 +++++++++++++++
- 6 files changed, 70 insertions(+), 4 deletions(-)
+ .../src/runtime/workspace-allocation/types.ts      | 27 ---------------
+ 8 files changed, 70 insertions(+), 70 deletions(-)
 ```
 
 </details>

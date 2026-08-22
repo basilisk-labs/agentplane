@@ -3,37 +3,37 @@ import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 
-export type TaskExecutionRequestedMode = "auto" | TaskExecutionRouteMode;
+export type AuthoritativeTaskSource =
+  | "base_checkout"
+  | "backend_projection"
+  | "task_branch_snapshot"
+  | "task_worktree";
 
 export type TaskExecutionRouteSource =
   | "execution_contract"
   | "execution_route"
-  | "repository_floor"
-  | "legacy_migration";
+  | "legacy_migration"
+  | "repository_floor";
 
-export type AuthoritativeTaskSource =
-  | "base_checkout"
-  | "task_worktree"
-  | "task_branch_snapshot"
-  | "backend_projection";
+export type TaskExecutionRequestedMode = TaskExecutionRouteMode | "auto";
 
-export type TaskExecutionContext = Readonly<{
-  schema_version: 1;
-  primary_task_id: string;
-  task_ids: readonly string[];
-  repository_mode: TaskExecutionRouteMode;
-  selected_mode: TaskExecutionRouteMode;
-  requested_mode: TaskExecutionRequestedMode;
-  route_source: TaskExecutionRouteSource;
-  reason_codes: readonly string[];
-  base_ref: string;
-  base_sha: string;
-  authoritative_task_source: AuthoritativeTaskSource;
-}>;
+export type TaskExecutionContext = {
+  readonly schema_version: 1;
+  readonly primary_task_id: string;
+  readonly task_ids: readonly string[];
+  readonly repository_mode: TaskExecutionRouteMode;
+  readonly selected_mode: TaskExecutionRouteMode;
+  readonly requested_mode: TaskExecutionRequestedMode;
+  readonly route_source: TaskExecutionRouteSource;
+  readonly reason_codes: readonly string[];
+  readonly base_ref: string;
+  readonly base_sha: string;
+  readonly authoritative_task_source: AuthoritativeTaskSource;
+};
 
-export type TaskCommandContext = Readonly<{
-  command: CommandContext;
-  execution: TaskExecutionContext;
-  primary_task: TaskData;
-  tasks: readonly TaskData[];
-}>;
+export type TaskCommandContext = {
+  readonly command: CommandContext;
+  readonly execution: TaskExecutionContext;
+  readonly primary_task: TaskData;
+  readonly tasks: readonly TaskData[];
+};

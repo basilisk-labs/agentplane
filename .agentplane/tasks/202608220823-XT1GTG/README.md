@@ -4,7 +4,7 @@ title: "Restore the types.ts guardrail for the task-centric execution domains by
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,14 +22,15 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:8127072dfa1ec15a60bdd838eff1e8a462b4bdf8e5887da5cabe6f7f06c0c9b9"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-22T08:30:09.117Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
   reason_codes:
+    - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
   requested_mode: "branch_pr"
@@ -73,11 +74,34 @@ execution_contract:
     scope_roots: []
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/runtime/task-execution-context/index.ts"
+      - "packages/agentplane/src/runtime/task-execution-context/model.ts"
+      - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
+      - "packages/agentplane/src/runtime/task-execution-context/types.ts"
+      - "packages/agentplane/src/runtime/workspace-allocation/allocate.ts"
+      - "packages/agentplane/src/runtime/workspace-allocation/lease.ts"
+      - "packages/agentplane/src/runtime/workspace-allocation/model.ts"
+      - "packages/agentplane/src/runtime/workspace-allocation/types.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -106,16 +130,27 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:5cce438a0252ecd96091bc582c42af2d777ee0f2a627b7930089252831afd436"
+      digest: "sha256:003238e6bb09a5decdf296b781a56f6a94c39da3cf35c7dbb89440eabe4a5404"
       escalation_reasons: []
       execution_groups:
         - "core"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/runtime/task-execution-context/index.ts"
+          - "packages/agentplane/src/runtime/task-execution-context/model.ts"
+          - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
+          - "packages/agentplane/src/runtime/task-execution-context/types.ts"
+          - "packages/agentplane/src/runtime/workspace-allocation/allocate.ts"
+          - "packages/agentplane/src/runtime/workspace-allocation/lease.ts"
+          - "packages/agentplane/src/runtime/workspace-allocation/model.ts"
+          - "packages/agentplane/src/runtime/workspace-allocation/types.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -145,11 +180,16 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "task_outcome"
-commit: null
+commit:
+  hash: "c96e713f5f8458c99b484ebb168f8751744b935d"
+  message: "🚧 XT1GTG task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: c96e713f5f84. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -158,9 +198,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-22T08:30:06.197Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: c96e713f5f84. CLI accepted one state-bound external-agent semantic result."
+    commit: "c96e713f5f8458c99b484ebb168f8751744b935d"
+  -
+    type: "verify"
+    at: "2026-08-22T08:30:09.117Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T08:24:57.543Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-22T08:30:15.472Z"
+doc_updated_by: "SUPERVISOR"
 description: "Restore the types.ts guardrail for the task-centric execution domains by renaming the two new generic type modules to semantic model filenames and updating only their local imports, then verify the release blocker is cleared."
 sections:
   Summary: |-
@@ -179,6 +233,60 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-22T08:30:09.117Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:ae91a1a72a41643d5404dd5d4f5be746f8c335acafb369909d2dc131b6c2f941, input_digest=sha256:2921af420a5249463b96e48466a95d569785af5f81b7cfd03a4687678117d737
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run check:types-files && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608220823-XT1GTG/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220823-XT1GTG Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run check:types-files && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608220823-XT1GTG/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220823-XT1GTG Verification Contract check critical_paths
+
+    Check: hosted_integration
+    Command: bun run check:types-files && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608220823-XT1GTG/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220823-XT1GTG Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: bun run check:types-files && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608220823-XT1GTG/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220823-XT1GTG Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220823-XT1GTG-restore-the-types-ts-guardrail-for-the-task-cent/.agentplane/tasks/202608220823-XT1GTG/blueprint/resolved-snapshot.json
+    - old_digest: 769cedf0ac91f9c142d4fd1d4d15b4b4312ad157805f3f129acf7782529cf564
+    - current_digest: 769cedf0ac91f9c142d4fd1d4d15b4b4312ad157805f3f129acf7782529cf564
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608220823-XT1GTG
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -386,12 +494,13 @@ extensions:
         revision: 1
         state: "READY"
         validation_result: null
+  implementation_commit:
+    hash: "c96e713f5f8458c99b484ebb168f8751744b935d"
   task_execution_context:
     base_ref: "main"
     base_sha: "49a18763cb42144bc5279ddb129c51c63acd9244"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "49a18763cb42144bc5279ddb129c51c63acd9244"
     version: 1
@@ -423,6 +532,60 @@ PLANNER fallback scaffold for "Restore the types.ts guardrail for the task-centr
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-22T08:30:09.117Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:ae91a1a72a41643d5404dd5d4f5be746f8c335acafb369909d2dc131b6c2f941, input_digest=sha256:2921af420a5249463b96e48466a95d569785af5f81b7cfd03a4687678117d737
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run check:types-files && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608220823-XT1GTG/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220823-XT1GTG Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run check:types-files && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608220823-XT1GTG/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220823-XT1GTG Verification Contract check critical_paths
+
+Check: hosted_integration
+Command: bun run check:types-files && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608220823-XT1GTG/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220823-XT1GTG Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: bun run check:types-files && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608220823-XT1GTG/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220823-XT1GTG Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220823-XT1GTG-restore-the-types-ts-guardrail-for-the-task-cent/.agentplane/tasks/202608220823-XT1GTG/blueprint/resolved-snapshot.json
+- old_digest: 769cedf0ac91f9c142d4fd1d4d15b4b4312ad157805f3f129acf7782529cf564
+- current_digest: 769cedf0ac91f9c142d4fd1d4d15b4b4312ad157805f3f129acf7782529cf564
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608220823-XT1GTG
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
