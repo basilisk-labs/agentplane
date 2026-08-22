@@ -38,19 +38,46 @@ const BRANCH_PAUSES = [
 ] as const satisfies readonly BranchTaskSupervisorStopCode[];
 
 describe("task supervision outcome dispositions", () => {
-  it.each(DIRECT_PAUSES)("classifies direct pause %s without false failure", (code) => {
-    const outcome = directStopOutcome(code);
-    expect(["awaiting_plan_approval", "external_wait", "human_required"]).toContain(outcome);
+  it("keeps evaluator blockers recoverable in both supervisor routes", () => {
+    expect(directStopOutcome("evaluator_blocked")).toBe("external_wait");
+    expect(branchStopOutcome("evaluator_blocked")).toBe("external_wait");
     expect(
       directTaskSupervisionDisposition({
         status: "stopped",
-        stop: { code, reason: code, route_step_id: "step", operation_id: null },
+        stop: {
+          code: "evaluator_blocked",
+          reason: "repository rework is available",
+          route_step_id: "quality",
+          operation_id: null,
+        },
       }),
-    ).toMatchObject({
-      kind: expect.stringMatching(/pause|wait/u) as unknown,
-      exit_code: 0,
-      terminal: false,
+    ).toMatchObject({ kind: "wait", exit_code: 0, terminal: false });
+    expect(
+      branchTaskSupervisionDisposition({
+        status: "stopped",
+        stop: {
+          code: "evaluator_blocked",
+          reason: "repository rework is available",
+          route_step_id: "quality",
+          operation_id: null,
+        },
+      }),
+    ).toMatchObject({ kind: "wait", exit_code: 0, terminal: false });
+  });
+
+  it.each(DIRECT_PAUSES)("classifies direct pause %s without false failure", (code) => {
+    const outcome = directStopOutcome(code);
+    expect(["awaiting_plan_approval", "external_wait", "human_required"]).toContain(outcome);
+    const disposition = directTaskSupervisionDisposition({
+      status: "stopped",
+      stop: { code, reason: code, route_step_id: "step", operation_id: null },
     });
+    expect(["pause", "wait"]).toContain(disposition.kind);
+    expect(disposition.reason_code).toBe(
+      outcome === "awaiting_plan_approval" ? "plan_approval_required" : outcome,
+    );
+    expect(disposition.exit_code).toBe(0);
+    expect(disposition.terminal).toBe(false);
   });
 
   it.each(DIRECT_NONZERO)("fails closed for direct deterministic stop %s", (code) => {
