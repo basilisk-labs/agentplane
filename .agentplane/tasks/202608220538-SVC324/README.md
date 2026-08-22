@@ -2,10 +2,10 @@
 id: "202608220538-SVC324"
 title: "Resolve task autonomy and evaluator rework incidents"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 38
 origin:
   system: "manual"
 depends_on: []
@@ -61,9 +61,9 @@ quality_review:
     - "Both incidents are absent from synchronized active registries and archived with exact item result and evidence commits."
     - "Residual risk: The final PR head still requires publication, hosted CI, exact-SHA integration, and post-merge closeout before release."
 token_usage:
-  agent_runs: 4
+  agent_runs: 11
   input_tokens: null
-  journal_digest: "sha256:a7abd97b64e9f93d73f2ad53c7d70e2bae6eef185e91ec0a13934e6a3f0bef9f"
+  journal_digest: "sha256:c26128f2aed533e5136626414b2fc6997fa52e9faf39de37559686aa30be2d33"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -73,7 +73,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-22T06:32:15.208Z"
+  updated_at: "2026-08-22T06:55:13.010Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -317,8 +317,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf"
-  message: "🚧 SVC324 task: apply external agent result"
+  hash: "4981110a97aedf51c55f60c9043f71da41d51acd"
+  message: "🚧 SVC324 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -350,6 +350,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 0c3d192a3554. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -469,9 +472,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-22T06:55:13.010Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "4981110a97aedf51c55f60c9043f71da41d51acd"
 doc_version: 3
-doc_updated_at: "2026-08-22T06:54:02.542Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-22T06:55:13.045Z"
+doc_updated_by: "CODER"
 description: "Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, archive both incidents with exact evidence, and unblock the approved patch release."
 sections:
   Summary: |-
@@ -1296,7 +1307,45 @@ extensions:
       schema_version: 1
       task_id: "202608220538-SVC324"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608220538-SVC324"
+            - "git:0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf"
+          check_id: "top-level-typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-22T06:52:20.291Z"
+          repository_snapshot_digest: "sha256:fc9058520c95f5519d27a2b8e873e483e320b3f02031e87c3c0110dfd4bd4a7b"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608220538-SVC324"
+            - "git:0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf"
+          check_id: "top-level-lint"
+          command_identity: "bun run lint:core"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-22T06:52:20.291Z"
+          repository_snapshot_digest: "sha256:fc9058520c95f5519d27a2b8e873e483e320b3f02031e87c3c0110dfd4bd4a7b"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608220538-SVC324"
+            - "git:0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf"
+          check_id: "top-level-routing"
+          command_identity: "node .agentplane/policy/check-routing.mjs"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-22T06:52:20.291Z"
+          repository_snapshot_digest: "sha256:fc9058520c95f5519d27a2b8e873e483e320b3f02031e87c3c0110dfd4bd4a7b"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608220538-SVC324"
     intent:
       acceptance_criteria:
@@ -1322,7 +1371,7 @@ extensions:
 
         Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, archive both incidents with exact evidence, and unblock the approved patch release.
       task_id: "202608220538-SVC324"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1622,9 +1671,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608220538-SVC324"
-    revision: 35
+    revision: 38
     schema_version: 1
-    updated_at: "2026-08-22T06:52:27.357Z"
+    updated_at: "2026-08-22T06:55:13.010Z"
     work_items:
       evaluator-rework-routing:
         attempt: 1
@@ -1896,11 +1945,37 @@ extensions:
         previous_revision: 26
         schema_version: 1
         task_id: "202608220538-SVC324"
+      legacy-finish:202608220538-SVC324:2026-08-22T06:52:20.291Z:0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf:
+        aggregate_digest: "sha256:0dd79ec2f7fcf05eb29701c48f25447fed1fee05ca1b344f0f47f3f22340799d"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-22T06:55:13.010Z"
+          cause_refs:
+            - "task-verification:202608220538-SVC324"
+            - "git:0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_598d325787d28c72e02dbf9a"
+          mutation_id: "legacy-finish:202608220538-SVC324:2026-08-22T06:52:20.291Z:0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf"
+          plan_digest: "sha256:79bc4d77de944db0a1ad3d9b3fb72ce9fc6f407167244f132198c8d97d7b3d56"
+          plan_revision: 2
+          repository_fingerprint: "sha256:fc9058520c95f5519d27a2b8e873e483e320b3f02031e87c3c0110dfd4bd4a7b"
+          schema_version: 1
+          task_id: "202608220538-SVC324"
+          task_revision: 35
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608220538-SVC324:2026-08-22T06:52:20.291Z:0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf"
+        next_revision: 38
+        previous_revision: 37
+        schema_version: 1
+        task_id: "202608220538-SVC324"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf"
+    message: "🚧 SVC324 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "258015fbf8be6e888dae88d12ad78f2dbcaaf89f"
@@ -2407,12 +2482,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/4` agent runs
+- Completeness: `0/11` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:a7abd97b64e9f93d73f2ad53c7d70e2bae6eef185e91ec0a13934e6a3f0bef9f`
+- Journal digest: `sha256:c26128f2aed533e5136626414b2fc6997fa52e9faf39de37559686aa30be2d33`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-22T06:32:15.208Z`
+- Updated at: `2026-08-22T06:55:13.010Z`
