@@ -362,6 +362,19 @@ async function recordVerificationResult(opts: {
             result: opts.state === "ok" ? "pass" : "fail",
           });
         }
+        const nextExtensions = {
+          ...current.extensions,
+          task_execution_context: {
+            schema_version: 1,
+            base_ref: verificationExecutionContext.base_ref,
+            base_sha: verificationExecutionContext.base_sha,
+            repository_identity:
+              taskExecutionBaseFromExtensions(current.extensions)?.repository_identity ?? null,
+          },
+        };
+        if (opts.state !== "ok") {
+          Reflect.deleteProperty(nextExtensions, "implementation_commit");
+        }
         const reconciledContract = reconcileTaskExecutionContract({
           contract: observedExecutionContract,
           changed_paths: observedChangedPaths,
@@ -370,16 +383,7 @@ async function recordVerificationResult(opts: {
         intents.unshift(
           setTaskFieldsIntent({
             execution_contract: reconciledContract,
-            extensions: {
-              ...current.extensions,
-              task_execution_context: {
-                schema_version: 1,
-                base_ref: verificationExecutionContext.base_ref,
-                base_sha: verificationExecutionContext.base_sha,
-                repository_identity:
-                  taskExecutionBaseFromExtensions(current.extensions)?.repository_identity ?? null,
-              },
-            },
+            extensions: nextExtensions,
           }),
         );
         if (opts.by === "EVALUATOR") {
