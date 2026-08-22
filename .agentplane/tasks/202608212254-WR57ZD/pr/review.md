@@ -13,7 +13,7 @@ Created: 2026-08-21T22:56:08.380Z
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note: Verification passes for the current task head and covers the hosted lint rework.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
