@@ -16,7 +16,12 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note:
+
+```text
+Verified review-fix commit b5e43fb48 with focused regression tests, the complete critical suite, the
+full fast suite, compatibility ratchet checks, and static gates.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
