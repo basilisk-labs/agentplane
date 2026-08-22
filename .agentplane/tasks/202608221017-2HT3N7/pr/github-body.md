@@ -15,8 +15,13 @@ A clean task is required because the original supervisor journal correctly refus
 
 ## Verification
 
-- State: ok
-- Note: Verified P1 linked-batch rework on commit 530a65558e1b; hosted exact-SHA gate remains pending publication.
+- State: needs_rework
+- Note:
+
+```text
+P1 review requires linked batch task IDs in the reviewed descendant check; implementation updated in
+commit 13310d16d225.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

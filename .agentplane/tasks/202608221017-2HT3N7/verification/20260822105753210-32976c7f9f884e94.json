@@ -1,0 +1,101 @@
+{
+  "details": null,
+  "digest": "sha256:32976c7f9f884e94efcdb3ba4c2e0f87e744701e47f03cc130714d8be9f4cd79",
+  "implementation_sha": "b2e7c138fd33a094ac62d263af4debb087c3b7c2",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:285c17b397892599cb5ece4716d245a61436f1ad6d9b1ad7d4dfb9e4545020a9",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "49a18763cb42144bc5279ddb129c51c63acd9244",
+      "digest": "sha256:585b0d836d4bfbc3568d88c91dea0086108269606a98e0ab308b2a0567ceb015",
+      "primary_task_id": "202608221017-2HT3N7",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608221017-2HT3N7"
+      ]
+    },
+    "implementation": {
+      "base_sha": "49a18763cb42144bc5279ddb129c51c63acd9244",
+      "digest": "sha256:a0de6dbe5145fbf012af60fd39dcd9985e6c5b03a88163b5dc101b8e8bbc4cdf",
+      "strategy": "branch_diff",
+      "target_sha": "b2e7c138fd33a094ac62d263af4debb087c3b7c2"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:8b7e271887390f608a9aa0f0aabc4ccec7b53c017f50220404281c67dda36043",
+    "verify_steps_digest": "sha256:26dd3a31aaf3763020301924d517a4a5b502aa094f75b76e490f126a2efc955e"
+  },
+  "kind": "task_verification_record",
+  "note": "P1 review requires linked batch task IDs in the reviewed descendant check; implementation updated in commit 13310d16d225.",
+  "recorded_at": "2026-08-22T10:57:53.210Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Port the complete pre-merge quality-review lifecycle fix from blocked task 202608220851-XN5YNK into a clean branch_pr task: accept only proven task-artifact-only reviewed descendants, normalize closure-owned token_usage and implementation commit message while preserving the implementation hash, and clear task_centric_replan_required when a replacement canonical plan is supplied. Include the focused regression tests already proven in the blocked task.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Port the complete pre-merge quality-review lifecycle fix from blocked task 202608220851-XN5YNK into a clean branch_pr task: accept only proven task-artifact-only reviewed descendants, normalize closure-owned token_usage and implementation commit message while preserving the implementation hash, and clear task_centric_replan_required when a replacement canonical plan is supplied. Include the focused regression tests already proven in the blocked task.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:26dd3a31aaf3763020301924d517a4a5b502aa094f75b76e490f126a2efc955e",
+  "task_id": "202608221017-2HT3N7",
+  "verification_command": "agentplane task verify rework 202608221017-2HT3N7 --rework --by REVIEWER",
+  "verifier": "REVIEWER"
+}
