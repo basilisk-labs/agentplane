@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, open, readFile, rename, unlink } from "node:fs/promises";
 import path from "node:path";
 
-import type { WorkspaceLease } from "./types.js";
+import type { WorkspaceLease } from "./model.js";
 
 function leaseDirectory(commonGitDir: string): string {
   return path.join(commonGitDir, "agentplane", "workspace-leases");
