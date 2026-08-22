@@ -2,10 +2,10 @@
 id: "202608221335-6DSF3R"
 title: "Fix idempotent null-WorkItem external result acceptance"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "Approved by user for autonomous v0.7.8 regression-only release work; host_user_decision=sha256:f5d7652cf2a0f8883d17659b4275d137bc7057b8348898cd8b5677ebdd5114ed"
 verification:
-  state: "ok"
-  updated_at: "2026-08-22T13:42:38.704Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-22T14:19:04.291Z"
+  updated_by: "REVIEWER"
+  note: "Hosted P1 review found ambiguous null-ID routing when multiple WorkItems are CLAIMED; fail closed before scheduler fallback and add focused coverage."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -126,7 +126,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
       - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -150,6 +151,9 @@ execution_contract:
       -
         id: "recorded-check-4"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -228,9 +232,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "14be5496bbc51ca4d291b5f2702865934d7ae2ca"
-  message: "🚧 6DSF3R task: record external evaluator result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -271,8 +274,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "14be5496bbc51ca4d291b5f2702865934d7ae2ca"
+  -
+    type: "verify"
+    at: "2026-08-22T14:19:04.291Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "Hosted P1 review found ambiguous null-ID routing when multiple WorkItems are CLAIMED; fail closed before scheduler fallback and add focused coverage."
 doc_version: 3
-doc_updated_at: "2026-08-22T13:44:40.789Z"
+doc_updated_at: "2026-08-22T14:19:18.893Z"
 doc_updated_by: "CODER"
 description: "Fix the proven task-centric Core regression in null-ID external result handling: first acceptance must resolve a single claimed or ready WorkItem, and an exact replay after evidence persistence must use the mutation receipt before scheduler selection. Add focused unit coverage. Do not modify context code. This replaces unpublished Task 202608221325-NQJQ5K whose WorkItemGraph incorrectly declared repository sources as upstream required_inputs."
 sections:
@@ -346,11 +355,48 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-22T14:19:04.291Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: Hosted P1 review found ambiguous null-ID routing when multiple WorkItems are CLAIMED; fail closed before scheduler fallback and add focused coverage.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f3e543bebff673290e54458107b85a0e1473cb0058a0cc5ba54bafc7cca36086, input_digest=sha256:31b248aa6b73a61861cb1c688ecacc34ad00fd2c2dcf214313024245667ac5ea
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221335-6DSF3R-fix-idempotent-null-workitem-external-result-acc/.agentplane/tasks/202608221335-6DSF3R/blueprint/resolved-snapshot.json
+    - old_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+    - current_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221335-6DSF3R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Multiple CLAIMED items currently fall through to WorkItemScheduler, which can select an unrelated READY item.
+      Impact: A null-ID external result can be recorded against the wrong WorkItem.
+      Resolution: Reject ambiguous claimed targets and prove scheduler fallback is used only when no WorkItem is claimed.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
+      IncidentScope: task-centric external result routing
+      IncidentTags: task-centric, idempotency
 extensions:
   agentplane.execution_grant:
     actor: "HOST:codex-desktop:USER"
@@ -669,9 +715,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "497e1f510d9bfee1cb55cfc21002f6442af26690"
-    message: "🚧 6DSF3R task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ee460292f9d253a5ba6fe2ca95a6d0fd5e7a7088"
@@ -762,6 +805,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-22T14:19:04.291Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: Hosted P1 review found ambiguous null-ID routing when multiple WorkItems are CLAIMED; fail closed before scheduler fallback and add focused coverage.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f3e543bebff673290e54458107b85a0e1473cb0058a0cc5ba54bafc7cca36086, input_digest=sha256:31b248aa6b73a61861cb1c688ecacc34ad00fd2c2dcf214313024245667ac5ea
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221335-6DSF3R-fix-idempotent-null-workitem-external-result-acc/.agentplane/tasks/202608221335-6DSF3R/blueprint/resolved-snapshot.json
+- old_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+- current_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221335-6DSF3R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -770,6 +843,14 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Multiple CLAIMED items currently fall through to WorkItemScheduler, which can select an unrelated READY item.
+  Impact: A null-ID external result can be recorded against the wrong WorkItem.
+  Resolution: Reject ambiguous claimed targets and prove scheduler fallback is used only when no WorkItem is claimed.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
+  IncidentScope: task-centric external result routing
+  IncidentTags: task-centric, idempotency
 
 ## Token Usage
 

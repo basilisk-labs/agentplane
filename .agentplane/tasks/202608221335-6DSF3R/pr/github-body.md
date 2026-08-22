@@ -15,8 +15,13 @@ Fix the proven task-centric Core regression in null-ID external result handling:
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note:
+
+```text
+Hosted P1 review found ambiguous null-ID routing when multiple WorkItems are CLAIMED; fail closed
+before scheduler fallback and add focused coverage.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,9 +32,9 @@ Fix the proven task-centric Core regression in null-ID external result handling:
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../task/task-centric-external-result.test.ts      | 64 +++++++++++++++++++++-
- .../commands/task/task-centric-external-result.ts  | 33 +++++++++--
- 2 files changed, 90 insertions(+), 7 deletions(-)
+ .../task/task-centric-external-result.test.ts      | 143 +++++++++++++++++++--
+ .../commands/task/task-centric-external-result.ts  |  39 +++++-
+ 2 files changed, 165 insertions(+), 17 deletions(-)
 ```
 
 </details>

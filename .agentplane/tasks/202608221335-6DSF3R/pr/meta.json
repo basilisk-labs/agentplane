@@ -2,18 +2,11 @@
   "base": "main",
   "branch": "task/202608221335-6DSF3R/fix-idempotent-null-workitem-external-result-acc",
   "created_at": "2026-08-22T13:40:02.178Z",
-  "diffstat_sha256": "sha256:0138cbb9495d7a5b6ce516fc5e1d179f0dc3b81159409405cb059f2850bffe54",
-  "last_verified_at": "2026-08-22T13:42:38.704Z",
+  "diffstat_sha256": "sha256:58bbcddc17736e4572658427bbadd20bffbcea83945dd051c216e6a63ec5ca1c",
+  "last_verified_at": "2026-08-22T14:19:04.291Z",
   "last_verified_diffstat_sha256": "sha256:0138cbb9495d7a5b6ce516fc5e1d179f0dc3b81159409405cb059f2850bffe54",
   "pr_number": 4871,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4871",
-  "pre_merge_closure": {
-    "basis_commit": "14be5496bbc51ca4d291b5f2702865934d7ae2ca",
-    "branch": "task/202608221335-6DSF3R/fix-idempotent-null-workitem-external-result-acc",
-    "pr_number": 4871,
-    "recorded_at": "2026-08-22T13:44:40.917Z",
-    "state": "closed_before_merge"
-  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -27,6 +20,6 @@
   "task_id": "202608221335-6DSF3R",
   "updated_at": "2026-08-22T13:42:54.186Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }

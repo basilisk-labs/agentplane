@@ -51,22 +51,32 @@ function check(id: string, command?: string) {
   };
 }
 
-function initialTask(command?: string): TaskData {
+function initialTask(
+  command?: string,
+  items: readonly Readonly<{
+    id: string;
+    depends_on: readonly string[];
+    required_inputs: readonly string[];
+  }>[] = [
+    { id: "a", depends_on: [], required_inputs: [] },
+    { id: "b", depends_on: ["a"], required_inputs: ["out-a"] },
+  ],
+): TaskData {
   const proposal: TaskPlanProposal = {
     schema_version: 1,
     task_id: TASK_ID,
     planning_baseline: repository(),
     work_items: {
       schema_version: 1,
-      work_items: ["a", "b"].map((id, index) => ({
-        id,
-        objective: `Implement ${id}`,
-        depends_on: index === 0 ? [] : ["a"],
-        required_inputs: index === 0 ? [] : ["out-a"],
-        expected_outputs: [`out-${id}`],
+      work_items: items.map((item, index) => ({
+        id: item.id,
+        objective: `Implement ${item.id}`,
+        depends_on: [...item.depends_on],
+        required_inputs: [...item.required_inputs],
+        expected_outputs: [`out-${item.id}`],
         scope_roots: ["packages"],
-        acceptance_criteria: check(id, id === "a" ? command : undefined).criteria,
-        validation: check(id, id === "a" ? command : undefined),
+        acceptance_criteria: check(item.id, item.id === "a" ? command : undefined).criteria,
+        validation: check(item.id, item.id === "a" ? command : undefined),
         context: {
           required_sources: ["repository"],
           optional_sources: [],
@@ -77,7 +87,7 @@ function initialTask(command?: string): TaskData {
         capabilities: ["task.verify"],
         resource_claims: [{ kind: "path" as const, resource: "packages", mode: "write" as const }],
         optional: false,
-        priority: 2 - index,
+        priority: items.length - index,
       })),
     },
     assumptions: [],
@@ -192,6 +202,55 @@ const semantic = {
 } as const satisfies AgentSemanticResult;
 
 describe("recordTaskCentricExternalResult", () => {
+  it("rejects a null-ID result when multiple WorkItems are claimed", async () => {
+    const initial = initialTask(undefined, [
+      { id: "a", depends_on: [], required_inputs: [] },
+      { id: "b", depends_on: [], required_inputs: [] },
+      { id: "c", depends_on: [], required_inputs: [] },
+    ]);
+    const aggregate = taskCentricAggregateFromExtensions(initial.extensions)!;
+    const backend = memoryBackend({
+      ...initial,
+      extensions: withTaskCentricAggregate(initial.extensions, {
+        ...aggregate,
+        work_items: {
+          ...aggregate.work_items,
+          a: { ...aggregate.work_items.a!, state: "CLAIMED", claim_id: "claim-a" },
+          b: { ...aggregate.work_items.b!, state: "CLAIMED", claim_id: "claim-b" },
+        },
+      }),
+    });
+    const command = { taskBackend: backend } as unknown as CommandContext;
+    const revision = backend.current().revision;
+
+    await expect(
+      recordTaskCentricExternalResult({
+        command,
+        work_order: workOrder(null, "work-ambiguous-claims"),
+        semantic: { ...semantic, work_order_id: "work-ambiguous-claims" },
+        verification: {
+          status: "passed",
+          artifact_path: ".agentplane/checks.json",
+          checks: [],
+          reason: null,
+        },
+        head: HEAD,
+        dirty_paths: [],
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      message: "A null-ID WorkItem result is ambiguous because multiple WorkItems are claimed.",
+    });
+    expect(backend.current().revision).toBe(revision);
+    expect(
+      taskCentricAggregateFromExtensions(backend.current().extensions)?.work_items,
+    ).toMatchObject({
+      a: { state: "CLAIMED" },
+      b: { state: "CLAIMED" },
+      c: { state: "READY" },
+    });
+  });
+
   it("replays a null-ID result against its claimed WorkItem instead of the next item", async () => {
     const initial = initialTask();
     const aggregate = taskCentricAggregateFromExtensions(initial.extensions)!;
