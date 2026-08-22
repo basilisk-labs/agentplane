@@ -4,7 +4,7 @@ title: "Refresh the clone baseline after the completed task-centric roadmap"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,10 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:0c3a1df7fb28df727dc2405591435564ba85b6da3580c903862eaea1a77d903e"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-22T12:05:32.975Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -78,11 +78,29 @@ execution_contract:
       - "scripts/baselines/clone-baseline.json"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "scripts"
+    changed_paths:
+      - "scripts/baselines/clone-baseline.json"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -114,27 +132,34 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:de92d92020912c06758106ac304c209b4316e1d8b48aeeb646a36e8bc8104d28"
-      escalation_reasons: []
+      digest: "sha256:30edc6cad61113d07e2c1645fde62323a6e57214837dc5c86998235089820221"
+      escalation_reasons:
+        - "unknown_path:scripts/baselines/clone-baseline.json"
       execution_groups:
+        - "docs-schema"
         - "core"
+        - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "scripts"
+        changed_files:
+          - "scripts/baselines/clone-baseline.json"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
         pr_full_regression: true
         unknown_or_central_full_regression: true
-      requires_full_regression: false
+      requires_full_regression: true
       requires_real_e2e: false
       schema_version: 2
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "full_regression"
         - "hosted_integration"
         - "task_outcome"
       selector:
@@ -154,11 +179,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "67ab5811f56da356041febc60f57eb1c575263e3"
+  message: "🚧 P5RSA8 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 67ab5811f56d. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -167,9 +197,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-22T12:03:30.501Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 67ab5811f56d. CLI accepted one state-bound external-agent semantic result."
+    commit: "67ab5811f56da356041febc60f57eb1c575263e3"
+  -
+    type: "verify"
+    at: "2026-08-22T12:05:32.975Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T11:59:43.566Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-22T12:05:35.011Z"
+doc_updated_by: "SUPERVISOR"
 description: "Review the post-roadmap clone report, confirm the small absolute drift is intentional relative to 67 additional sources and an improved duplication percentage, refresh only scripts/baselines/clone-baseline.json, and prove clone:check plus ci:contract pass so v0.7.8 prepublish can proceed without changing release artifacts."
 sections:
   Summary: |-
@@ -188,6 +232,66 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-22T12:05:32.975Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4124a41ec448a2ad6e32d06ef88dc5b282ded43f9b3d7d1e709486a1ae0300ec, input_digest=sha256:fd39626b76a70f6d938fba026ab46ca5a72671b0830c50aeb983af55248ce1bc
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:contract && bun run clone:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221158-P5RSA8 Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run ci:contract && bun run clone:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221158-P5RSA8 Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun run ci:contract && bun run clone:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221158-P5RSA8 Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bun run ci:contract && bun run clone:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221158-P5RSA8 Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: bun run ci:contract && bun run clone:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221158-P5RSA8 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221158-P5RSA8-refresh-the-clone-baseline-after-the-completed-t/.agentplane/tasks/202608221158-P5RSA8/blueprint/resolved-snapshot.json
+    - old_digest: c61799a3b90c845dacb04fd56f88ebbf6c91d73d75102c558a2c6731b6240262
+    - current_digest: c61799a3b90c845dacb04fd56f88ebbf6c91d73d75102c558a2c6731b6240262
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221158-P5RSA8
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -383,25 +487,126 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 8
     schema_version: 1
-    updated_at: "2026-08-22T11:59:33.544Z"
+    updated_at: "2026-08-22T12:05:36.360Z"
     work_items:
       refresh-clone-ratchet:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "refresh-clone-ratchet"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:b7857771ab903885332674b85a94fd79e575695c9d09f66e4d7bd59e87e6419e"
+            id: "clone_baseline:post-roadmap"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608221158-P5RSA8"
+              work_item_id: "refresh-clone-ratchet"
+            provenance:
+              - "sha256:fbc47db456a991bbbde182eaee6aad983b05ccd27c47e58777adae715b89c5c4"
+              - ".agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:be54733eded981ae82341691033183c4cd454fbbc554a9ec0ef1b25a02ee1fca"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:d379dd659f2d3bebf73679b71d542667e5c30ced9209407a50f257cefadc935f"
+            id: "clone_check:pass"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608221158-P5RSA8"
+              work_item_id: "refresh-clone-ratchet"
+            provenance:
+              - "sha256:fbc47db456a991bbbde182eaee6aad983b05ccd27c47e58777adae715b89c5c4"
+              - ".agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:be54733eded981ae82341691033183c4cd454fbbc554a9ec0ef1b25a02ee1fca"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:70d2a8e9f76518f64c05971c90c7a32a8dc03477ce627bd912caf1ac9550f104"
+            id: "ci_contract:pass"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608221158-P5RSA8"
+              work_item_id: "refresh-clone-ratchet"
+            provenance:
+              - "sha256:fbc47db456a991bbbde182eaee6aad983b05ccd27c47e58777adae715b89c5c4"
+              - ".agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:be54733eded981ae82341691033183c4cd454fbbc554a9ec0ef1b25a02ee1fca"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json"
+              check_id: "clone-check"
+              command_identity: "bun run clone:check"
+              detail: "Observed by bun run clone:check."
+              exit_code: 0
+              observed_at: "2026-08-22T12:05:36.356Z"
+              repository_snapshot_digest: "sha256:be54733eded981ae82341691033183c4cd454fbbc554a9ec0ef1b25a02ee1fca"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json"
+              check_id: "ci-contract"
+              command_identity: "bun run ci:contract"
+              detail: "Observed by bun run ci:contract."
+              exit_code: 0
+              observed_at: "2026-08-22T12:05:36.356Z"
+              repository_snapshot_digest: "sha256:be54733eded981ae82341691033183c4cd454fbbc554a9ec0ef1b25a02ee1fca"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608221158-P5RSA8-executor-05c36c10d84b4a6f3da6d6b7:
+        aggregate_digest: "sha256:501c25f610b0e9d2061bbc036b7d252f16abb42090db42e54caf893c801149f8"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-22T12:05:36.360Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_0fe888500fcb58c3777c0ac6"
+          mutation_id: "external-result:work-order-202608221158-P5RSA8-executor-05c36c10d84b4a6f3da6d6b7"
+          plan_digest: "sha256:e493a91c8e931e8e33a6a185cb5d1c3f6b3eb8b5efbfc6c4ae40a682f27801de"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608221158-P5RSA8"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "refresh-clone-ratchet"
+        mutation_id: "external-result:work-order-202608221158-P5RSA8-executor-05c36c10d84b4a6f3da6d6b7"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202608221158-P5RSA8"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "67ab5811f56da356041febc60f57eb1c575263e3"
   task_execution_context:
     base_ref: "main"
     base_sha: "5fd1963ef2f73adae882539030f5086767a973be"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "5fd1963ef2f73adae882539030f5086767a973be"
     version: 1
@@ -433,6 +638,66 @@ PLANNER fallback scaffold for "Refresh the clone baseline after the completed ta
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-22T12:05:32.975Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4124a41ec448a2ad6e32d06ef88dc5b282ded43f9b3d7d1e709486a1ae0300ec, input_digest=sha256:fd39626b76a70f6d938fba026ab46ca5a72671b0830c50aeb983af55248ce1bc
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:contract && bun run clone:check
+Result: pass
+Evidence: .agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221158-P5RSA8 Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run ci:contract && bun run clone:check
+Result: pass
+Evidence: .agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221158-P5RSA8 Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun run ci:contract && bun run clone:check
+Result: pass
+Evidence: .agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221158-P5RSA8 Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bun run ci:contract && bun run clone:check
+Result: pass
+Evidence: .agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221158-P5RSA8 Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: bun run ci:contract && bun run clone:check
+Result: pass
+Evidence: .agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221158-P5RSA8 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221158-P5RSA8-refresh-the-clone-baseline-after-the-completed-t/.agentplane/tasks/202608221158-P5RSA8/blueprint/resolved-snapshot.json
+- old_digest: c61799a3b90c845dacb04fd56f88ebbf6c91d73d75102c558a2c6731b6240262
+- current_digest: c61799a3b90c845dacb04fd56f88ebbf6c91d73d75102c558a2c6731b6240262
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221158-P5RSA8
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

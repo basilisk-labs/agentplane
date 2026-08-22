@@ -15,8 +15,8 @@ Review the post-roadmap clone report, confirm the small absolute drift is intent
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
