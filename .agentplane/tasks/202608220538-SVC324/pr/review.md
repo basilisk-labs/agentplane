@@ -12,8 +12,8 @@ Created: 2026-08-22T05:45:29.328Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Lifecycle rework: execute and record the approved task-centric work items before pre-merge completion; current code verification remains otherwise green.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
