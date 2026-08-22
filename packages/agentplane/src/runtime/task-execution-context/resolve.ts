@@ -30,7 +30,7 @@ import type {
   TaskExecutionContext,
   TaskExecutionRequestedMode,
   TaskExecutionRouteSource,
-} from "./types.js";
+} from "./model.js";
 import { findRelocatableWorktreeForBranch } from "../workspace-allocation/rediscover.js";
 
 type FrozenBaseIdentity = Readonly<{ base_ref: string; base_sha: string }>;

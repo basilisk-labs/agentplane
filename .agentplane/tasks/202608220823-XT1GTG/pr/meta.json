@@ -1,0 +1,22 @@
+{
+  "base": "main",
+  "branch": "task/202608220823-XT1GTG/restore-the-types-ts-guardrail-for-the-task-cent",
+  "created_at": "2026-08-22T08:24:58.311Z",
+  "diffstat_sha256": "sha256:2011bd3233893e3f37ffe4f7038760ceba34f79dec4f418ee0fc931820926ae1",
+  "last_verified_at": "2026-08-22T08:30:09.117Z",
+  "last_verified_diffstat_sha256": "sha256:2011bd3233893e3f37ffe4f7038760ceba34f79dec4f418ee0fc931820926ae1",
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608220823-XT1GTG",
+  "updated_at": "2026-08-22T08:24:58.311Z",
+  "verify": {
+    "status": "pass"
+  }
+}
