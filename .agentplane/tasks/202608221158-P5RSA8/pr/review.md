@@ -6,7 +6,7 @@ Created: 2026-08-22T11:59:44.328Z
 
 - Task: `202608221158-P5RSA8`
 - Title: Refresh the clone baseline after the completed task-centric roadmap
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608221158-P5RSA8/refresh-the-clone-baseline-after-the-completed-t`
 - Canonical task record: `.agentplane/tasks/202608221158-P5RSA8/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-22T11:59:44.328Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-22T11:59:44.328Z
+- Updated: 2026-08-22T12:05:46.137Z
 - Branch: task/202608221158-P5RSA8/refresh-the-clone-baseline-after-the-completed-t
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
