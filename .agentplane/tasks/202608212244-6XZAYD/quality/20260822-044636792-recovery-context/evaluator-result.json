@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The fresh CLI-owned verification record is bound to implementation SHA 0889b981d988a5c970125ffd33d8bca8ba1e99d7, replacing the stale 2bfa2c1 receipt.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/f1d6936ec294a0cb5b9d4b12f03bdf7204d91ade117a2f66dc708398c63a0876.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The hosted verify-static root cause is removed: TaskExecutionBaseResolutionError and BranchTaskSupervisorStop are internal declarations, while the stable stop-code vocabulary remains public.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/f1d6936ec294a0cb5b9d4b12f03bdf7204d91ade117a2f66dc708398c63a0876.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The two private declarations now document their API boundary without altering runtime behavior.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/f1d6936ec294a0cb5b9d4b12f03bdf7204d91ade117a2f66dc708398c63a0876.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Knip reports the AgentPlane CLI at files=0/0 and total=0/0, with the repository baseline unchanged at total=21/21.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/f1d6936ec294a0cb5b9d4b12f03bdf7204d91ade117a2f66dc708398c63a0876.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Lint, type checking, architecture checks, and three focused test files pass on the corrected branch state.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/f1d6936ec294a0cb5b9d4b12f03bdf7204d91ade117a2f66dc708398c63a0876.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted checks must pass against the republished exact PR head before integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/f1d6936ec294a0cb5b9d4b12f03bdf7204d91ade117a2f66dc708398c63a0876.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Release publication remains gated by dedicated review and closure of active incidents.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/f1d6936ec294a0cb5b9d4b12f03bdf7204d91ade117a2f66dc708398c63a0876.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
