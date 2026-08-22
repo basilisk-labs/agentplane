@@ -8,10 +8,10 @@
   "pr_number": 4874,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4874",
   "pre_merge_closure": {
-    "basis_commit": "77a7c46d945c1acc908789f6bb940434c18c5b16",
+    "basis_commit": "7c4a748ae4d956c93ebc14822b4faa018de08933",
     "branch": "task/202608221545-ZCYV3B/stop-verification-receipts-from-overstating-chec",
     "pr_number": 4874,
-    "recorded_at": "2026-08-22T17:57:52.086Z",
+    "recorded_at": "2026-08-22T18:42:25.674Z",
     "state": "closed_before_merge"
   },
   "provider": {
