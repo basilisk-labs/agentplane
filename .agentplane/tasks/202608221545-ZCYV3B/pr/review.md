@@ -13,7 +13,7 @@ Created: 2026-08-22T15:47:34.719Z
 ## Verification
 
 - State: needs_rework
-- Note: Rework: Declared check failed: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-verification-result.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,13 +29,13 @@ Created: 2026-08-22T15:47:34.719Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../shared/task-verification-records.test.ts       |  32 ++++---
+ .../shared/task-verification-records.test.ts       |  32 +++++--
  .../commands/shared/task-verification-records.ts   |   4 +-
- .../commands/task/direct-task-verification.test.ts | 100 +++++++++++++++++++++
- .../src/commands/task/direct-task-verification.ts  |  67 +++++++++++---
+ .../commands/task/direct-task-verification.test.ts | 106 +++++++++++++++++++++
+ .../src/commands/task/direct-task-verification.ts  |  72 +++++++++++---
  .../external-agent-verification-result.test.ts     |  39 +++++++-
  .../task/external-agent-verification-result.ts     |  38 +++++---
- 6 files changed, 243 insertions(+), 37 deletions(-)
+ 6 files changed, 254 insertions(+), 37 deletions(-)
 ```
 
 </details>

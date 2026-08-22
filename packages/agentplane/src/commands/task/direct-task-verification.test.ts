@@ -496,9 +496,15 @@ describe("direct task verification", () => {
       status: "unsupported",
       reason:
         "Verification Contract requires full_regression, but package.json does not define ci:local:full.",
-      checks: [],
+      checks: [
+        {
+          command: "bun test focused.test.ts",
+          check_ids: ["task_outcome"],
+          exit_code: 0,
+        },
+      ],
     });
-    expect(mocks.runProcess).not.toHaveBeenCalled();
+    expect(mocks.runProcess).toHaveBeenCalledOnce();
   });
 
   it("gives the canonical provider qualification its bounded release window", async () => {
