@@ -1,1 +1,1 @@
-🚧 6DSF3R task: Fix idempotent null-WorkItem external result acceptance [202608221335-6DSF3R]
+✅ 6DSF3R task: Fix idempotent null-WorkItem external result acceptance [202608221335-6DSF3R]
