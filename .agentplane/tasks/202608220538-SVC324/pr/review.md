@@ -12,8 +12,8 @@ Created: 2026-08-22T05:45:29.328Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: blueprint snapshot refreshed after authorized pre-merge closure preparation; local, evaluator, and hosted evidence pass.
+- State: needs_rework
+- Note: Lifecycle rework: implementation checks pass, but required task-centric work-item results must be recorded before completion.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -32,19 +32,19 @@ Created: 2026-08-22T05:45:29.328Z
  .agentplane/policy/incidents.md                    |  2 -
  docs/developer/incident-archive.mdx                |  6 ++
  packages/agentplane/assets/policy/incidents.md     |  2 -
- .../route-decision-blockers.quality-review.test.ts | 32 ++++++++++
+ .../route-decision-blockers.quality-review.test.ts | 32 +++++++++
  .../src/commands/shared/route-decision-blockers.ts |  9 +--
  .../commands/shared/route-decision-verification.ts | 10 ++-
  .../src/commands/shared/workflow-step-factory.ts   | 30 +++++++++
  .../commands/shared/workflow-step-quality.test.ts  | 38 +++++++++--
- .../src/commands/task/scope-extend.test.ts         | 73 +++++++++++++++++++++-
+ .../src/commands/task/scope-extend.test.ts         | 76 +++++++++++++++++++++-
  .../agentplane/src/commands/task/scope-extend.ts   | 33 +++++++++-
  .../task/supervision-outcome-disposition.test.ts   |  2 +
  .../task/supervision-outcome-disposition.ts        | 10 +--
  packages/core/src/tasks/index.ts                   |  1 +
- .../core/src/tasks/plan-execution-grant.test.ts    | 36 +++++++++++
+ .../core/src/tasks/plan-execution-grant.test.ts    | 36 ++++++++++
  packages/core/src/tasks/plan-execution-grant.ts    | 37 +++++++++++
- 15 files changed, 300 insertions(+), 21 deletions(-)
+ 15 files changed, 303 insertions(+), 21 deletions(-)
 ```
 
 </details>
