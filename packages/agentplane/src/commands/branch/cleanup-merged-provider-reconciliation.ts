@@ -117,9 +117,36 @@ async function gitCherryEquivalent(opts: {
   return lines !== null && lines.length > 0 && lines.every((line) => line.marker === "-");
 }
 
-async function gitMergeBaseParent(opts: {
+async function gitSingleParentCommitTreeEquals(opts: {
+  gitRoot: string;
+  commit: string;
+  expectedTreeCommit: string;
+}): Promise<boolean> {
+  try {
+    const [commitLine, commitTree, expectedTree] = await Promise.all([
+      execFileAsync("git", ["rev-list", "--parents", "-n", "1", opts.commit], {
+        cwd: opts.gitRoot,
+        env: gitProofEnv(),
+      }).then(({ stdout }) => stdout.trim()),
+      ...[opts.commit, opts.expectedTreeCommit].map(async (commit) => {
+        const { stdout } = await execFileAsync("git", ["rev-parse", `${commit}^{tree}`], {
+          cwd: opts.gitRoot,
+          env: gitProofEnv(),
+        });
+        return stdout.trim();
+      }),
+    ]);
+    const [, ...parents] = commitLine.split(/\s+/u);
+    return parents.length === 1 && commitTree.length > 0 && commitTree === expectedTree;
+  } catch {
+    return false;
+  }
+}
+
+async function gitProviderBaseParent(opts: {
   gitRoot: string;
   mergeCommit: string;
+  allowSingleParent: boolean;
 }): Promise<string | null> {
   try {
     const { stdout } = await execFileAsync(
@@ -128,7 +155,9 @@ async function gitMergeBaseParent(opts: {
       { cwd: opts.gitRoot, env: gitProofEnv() },
     );
     const [, ...parents] = stdout.trim().split(/\s+/u);
-    return parents.length >= 2 ? (parents[0] ?? null) : null;
+    return parents.length >= 2 || (opts.allowSingleParent && parents.length === 1)
+      ? (parents[0] ?? null)
+      : null;
   } catch {
     return null;
   }
@@ -405,7 +434,15 @@ export async function resolveProviderReconciliation(opts: {
   if (opts.branchHead === opts.receipt.providerHeadSha) {
     return { proof: { ...common, kind: "exact_head" }, reason: null };
   }
+  const singleParentTreeEquivalent =
+    opts.receipt.providerHeadSha !== opts.receipt.mergeCommit &&
+    (await gitSingleParentCommitTreeEquals({
+      gitRoot: opts.gitRoot,
+      commit: opts.receipt.mergeCommit,
+      expectedTreeCommit: opts.receipt.providerHeadSha,
+    }));
   if (
+    !singleParentTreeEquivalent &&
     !(await gitProofIsAncestor(
       opts.gitRoot,
       opts.receipt.providerHeadSha,
@@ -433,9 +470,10 @@ export async function resolveProviderReconciliation(opts: {
       reason: "provider rebase is not patch-equivalent to the stale local task head",
     };
   }
-  const providerBase = await gitMergeBaseParent({
+  const providerBase = await gitProviderBaseParent({
     gitRoot: opts.gitRoot,
     mergeCommit: opts.receipt.mergeCommit,
+    allowSingleParent: singleParentTreeEquivalent,
   });
   if (!providerBase) {
     return {

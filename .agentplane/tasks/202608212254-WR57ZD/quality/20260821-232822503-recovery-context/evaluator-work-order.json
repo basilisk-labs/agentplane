@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608212254-WR57ZD-997970c4eb3d4994c5ab5cfd",
+  "prepared_at": "2026-08-21T23:28:22.503Z",
+  "task": {
+    "id": "202608212254-WR57ZD",
+    "revision": 9,
+    "objective": "Accept exact tree identity for GitHub rebase cleanup\n\nAllow cleanup reconciliation to accept an exact provider receipt when the provider head tree equals the single-parent GitHub rebase merge commit tree; preserve existing identity, object, receipt, and negative guards. Add focused regression tests, publish a PR, merge after hosted checks, then retry cleanup for E6CDHP and XEC2NE.",
+    "acceptance_criteria": [
+      "bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts",
+      "- In scope: Allow cleanup reconciliation to accept an exact provider receipt when the provider head tree equals the single-parent GitHub rebase merge commit tree; preserve existing identity, object, receipt, and negative guards. Add focused regression tests, publish a PR, merge after hosted checks, then retry cleanup for E6CDHP and XEC2NE.\n- Out of scope: unrelated refactors not required for \"Accept exact tree identity for GitHub rebase cleanup\".",
+      "1. Inspect cleanup reconciliation and focused rebase/receipt tests.\n2. Add fail-closed exact tree-identity proof before the ancestry-only path while preserving identity, object, task, and provider receipt validation.\n3. Add positive single-parent rebase-merge and negative differing-tree regression coverage; run the assigned focused tests.\n4. Return the semantic result to AgentPlane, then let AgentPlane publish, verify, integrate, hosted-close, and clean the affected task artifacts.",
+      "PLANNER fallback scaffold for \"Accept exact tree identity for GitHub rebase cleanup\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Accept exact tree identity for GitHub rebase cleanup\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "a7486f56f75d4c4ae7eee42745b25a08ccb2a733",
+  "diff_base_sha": "134c95fd629d5ebcf0e17196ccb4b44f60c993fd",
+  "blueprint_digest": "f5e933c531525da8a83036a4f85f7fec8d7fb2f4dfb39e9455f48bafbb0cb09d",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608212254-WR57ZD/quality/20260821-232822503-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:db00412f5f431836bb591704c4562fd47bd7f86a616d01ef5537b91c17ac86eb",
+    "prompt_path": ".agentplane/tasks/202608212254-WR57ZD/quality/objects/sha256/1b7a703e022379116f704e85cd3a0bf7dbcc7ec5f604875f4e048b6d02667b1a.md",
+    "result_schema_path": ".agentplane/tasks/202608212254-WR57ZD/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608212254-WR57ZD/README.md",
+      "sha256": "sha256:f5f9294232742e6b12c05e99c176b78ec03ff5509746726d73a42b9374a7e63e",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608212254-WR57ZD/quality/objects/sha256/ecc87977e7885904d0babac8a5d53287bfb5ccec07b25f09f879cbc67b8f502b.patch",
+      "sha256": "sha256:ecc87977e7885904d0babac8a5d53287bfb5ccec07b25f09f879cbc67b8f502b",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608212254-WR57ZD/quality/objects/sha256/2ea805664373667058a045140ecab32dccae0f1302a469ee941d478856d97cc2.json",
+      "sha256": "sha256:2ea805664373667058a045140ecab32dccae0f1302a469ee941d478856d97cc2",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608212254-WR57ZD/verification/20260821232803536-31440a977b88d461.json",
+      "sha256": "sha256:cac9a7cbec27a809b0a9315c9add0d056d9ed951677761ba1afe5bbc0fbc8aed",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608212254-WR57ZD/quality/objects/sha256/b6a5e0e1f607d12b9ccb1734fb25ee4d9da7942018d9ba62a4927b4b0a2870d3.json",
+      "sha256": "sha256:b6a5e0e1f607d12b9ccb1734fb25ee4d9da7942018d9ba62a4927b4b0a2870d3",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

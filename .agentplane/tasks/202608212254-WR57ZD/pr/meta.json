@@ -1,0 +1,37 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-08-22T01:01:32Z",
+  "base": "main",
+  "branch": "task/202608212254-WR57ZD/accept-exact-tree-identity-for-github-rebase-cle",
+  "created_at": "2026-08-21T22:56:08.380Z",
+  "diffstat_sha256": "sha256:eeb5b5171df3843fa5ae35e858b5e63043ea7abc6d57160312a84ad055e8657c",
+  "last_verified_at": "2026-08-22T00:28:42.735Z",
+  "last_verified_diffstat_sha256": "sha256:eeb5b5171df3843fa5ae35e858b5e63043ea7abc6d57160312a84ad055e8657c",
+  "merge_commit": "f0f5533e70d40e0d55e98939c488d8266f35fd12",
+  "merge_strategy": "merge",
+  "merged_at": "2026-08-22T01:01:32Z",
+  "pr_number": 4860,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4860",
+  "pre_merge_closure": {
+    "basis_commit": "76de62783d21696f41f8b7282c79baa389c0158a",
+    "branch": "task/202608212254-WR57ZD/accept-exact-tree-identity-for-github-rebase-cle",
+    "pr_number": 4860,
+    "recorded_at": "2026-08-21T23:29:55.448Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202608212254-WR57ZD",
+  "updated_at": "2026-08-22T01:01:32Z",
+  "verify": {
+    "status": "pass"
+  }
+}

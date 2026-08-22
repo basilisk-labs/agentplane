@@ -1,0 +1,47 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 045bedf5a9ca52b2d7ad79370827bad92998ce61..a7486f56f75d4c4ae7eee42745b25a08ccb2a733",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 045bedf5a9ca52b2d7ad79370827bad92998ce61..a7486f56f75d4c4ae7eee42745b25a08ccb2a733",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608212254-WR57ZD/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608212254-WR57ZD/pr/github-body.md",
+        "M\t.agentplane/tasks/202608212254-WR57ZD/pr/meta.json",
+        "M\t.agentplane/tasks/202608212254-WR57ZD/pr/review.md",
+        "M\tpackages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "045bedf5a9ca52b2d7ad79370827bad92998ce61",
+  "implementation_commit": "a7486f56f75d4c4ae7eee42745b25a08ccb2a733",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608212254-WR57ZD"
+}

@@ -54,6 +54,14 @@ type TaskCloseReceiptFixture = {
   mergeCommit: string;
 };
 
+type SingleParentRebaseReceiptFixture = TaskCloseReceiptFixture & {
+  localBranch: string;
+  localHead: string;
+  providerHead: string;
+  providerBase: string;
+  singleParentMergeCommit: string;
+};
+
 function markDone(readme: string, commitHash: string): string {
   const done = readme.replace('status: "TODO"', 'status: "DONE"');
   const commitBlock = `commit:\n  hash: "${commitHash}"\n  message: "close evidence"`;
@@ -164,6 +172,91 @@ async function createTaskCloseReceiptFixture(): Promise<TaskCloseReceiptFixture>
   };
 }
 
+async function createSingleParentRebaseReceiptFixture(opts: {
+  mergeTree: "provider" | "base";
+}): Promise<SingleParentRebaseReceiptFixture> {
+  const fixture = await createTaskCloseReceiptFixture();
+  const localBranch = `local-single-parent/${fixture.taskId}`;
+  const providerBranch = `provider-single-parent/${fixture.taskId}`;
+  await execFileAsync("git", ["checkout", "-b", localBranch, "main"], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+  await writeFile(
+    path.join(fixture.root, "single-parent-rebase-proof.txt"),
+    "same semantic patch\n",
+    "utf8",
+  );
+  await commitAll(fixture.root, "chore local single-parent cleanup proof");
+  const localHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+  const localHead = localHeadResult.stdout.trim();
+
+  await execFileAsync("git", ["checkout", "main"], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+  await writeFile(
+    path.join(fixture.root, "single-parent-provider-base.txt"),
+    "advance protected base\n",
+    "utf8",
+  );
+  await commitAll(fixture.root, "chore advance single-parent provider base");
+  const providerBaseResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+  const providerBase = providerBaseResult.stdout.trim();
+
+  await execFileAsync("git", ["checkout", "-b", providerBranch], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+  await execFileAsync("git", ["cherry-pick", localHead], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+  const providerHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+  const providerHead = providerHeadResult.stdout.trim();
+  await execFileAsync("git", ["checkout", "main"], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+
+  const mergeTreeCommit = opts.mergeTree === "provider" ? providerHead : providerBase;
+  const singleParentMergeCommitResult = await execFileAsync(
+    "git",
+    [
+      "commit-tree",
+      `${mergeTreeCommit}^{tree}`,
+      "-p",
+      providerBase,
+      "-m",
+      "GitHub rebase merge receipt",
+    ],
+    { cwd: fixture.root, env: cleanGitEnv() },
+  );
+  const singleParentMergeCommit = singleParentMergeCommitResult.stdout.trim();
+  await execFileAsync("git", ["update-ref", "refs/heads/main", singleParentMergeCommit], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+
+  return {
+    ...fixture,
+    localBranch,
+    localHead,
+    providerHead,
+    providerBase,
+    singleParentMergeCommit,
+  };
+}
+
 async function installTaskCloseFakeGh(opts: {
   fixture: TaskCloseReceiptFixture;
   headSha: string;
@@ -219,7 +312,7 @@ async function runWithFakeGh(fakeBin: string, argv: string[]) {
   }
 }
 
-describe("cleanup merged provider receipt type guard", () => {
+describe("cleanup merged provider receipt type guard", { timeout: TEST_TIMEOUT_MS }, () => {
   it("fails closed for noncommit task-close receipt identities and preserves branch and worktree", async () => {
     const fixture = await createTaskCloseReceiptFixture();
     const cases: {
@@ -502,6 +595,124 @@ describe("cleanup merged provider receipt type guard", () => {
       providerHeadSha: providerHead,
       mergeCommit,
     });
+  });
+
+  it("accepts a single-parent GitHub rebase merge when its tree exactly matches the provider head", async () => {
+    const fixture = await createSingleParentRebaseReceiptFixture({ mergeTree: "provider" });
+    const parentsResult = await execFileAsync(
+      "git",
+      ["rev-list", "--parents", "-n", "1", fixture.singleParentMergeCommit],
+      { cwd: fixture.root, env: cleanGitEnv() },
+    );
+    const parents = parentsResult.stdout.trim().split(/\s+/u);
+    expect(parents).toHaveLength(2);
+    await expect(
+      execFileAsync(
+        "git",
+        ["merge-base", "--is-ancestor", fixture.providerHead, fixture.singleParentMergeCommit],
+        { cwd: fixture.root, env: cleanGitEnv() },
+      ),
+    ).rejects.toMatchObject({ code: 1 });
+
+    const reconciliation = await resolveProviderReconciliation({
+      gitRoot: fixture.root,
+      taskId: fixture.taskId,
+      branch: fixture.localBranch,
+      baseBranch: "main",
+      taskCommitSha: fixture.localHead,
+      branchHead: fixture.localHead,
+      closureBasisCommit: fixture.localHead,
+      receipt: {
+        prNumber: 123,
+        providerHeadSha: fixture.providerHead,
+        mergeCommit: fixture.singleParentMergeCommit,
+      },
+    });
+
+    expect(reconciliation.reason).toBeNull();
+    expect(reconciliation.proof).toMatchObject({
+      kind: "provider_rebase_equivalent",
+      localHeadSha: fixture.localHead,
+      providerHeadSha: fixture.providerHead,
+      mergeCommit: fixture.singleParentMergeCommit,
+    });
+  });
+
+  it("rejects a single-parent rebase receipt when the merge tree differs from the provider head", async () => {
+    const fixture = await createSingleParentRebaseReceiptFixture({ mergeTree: "base" });
+
+    const reconciliation = await resolveProviderReconciliation({
+      gitRoot: fixture.root,
+      taskId: fixture.taskId,
+      branch: fixture.localBranch,
+      baseBranch: "main",
+      taskCommitSha: fixture.localHead,
+      branchHead: fixture.localHead,
+      closureBasisCommit: fixture.localHead,
+      receipt: {
+        prNumber: 123,
+        providerHeadSha: fixture.providerHead,
+        mergeCommit: fixture.singleParentMergeCommit,
+      },
+    });
+
+    expect(reconciliation.proof).toBeNull();
+    expect(reconciliation.reason).toBe(
+      "provider merged head is not contained by the recorded merge commit",
+    );
+  });
+
+  it("rejects an unrelated force-pushed provider head despite exact single-parent merge tree identity", async () => {
+    const fixture = await createSingleParentRebaseReceiptFixture({ mergeTree: "provider" });
+    const unrelatedProviderBranch = `unrelated-single-parent/${fixture.taskId}`;
+    await execFileAsync("git", ["checkout", "-b", unrelatedProviderBranch, fixture.providerBase], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    await writeFile(
+      path.join(fixture.root, "single-parent-unrelated-provider.txt"),
+      "force-pushed unrelated provider patch\n",
+      "utf8",
+    );
+    await commitAll(fixture.root, "chore unrelated force-pushed provider head");
+    const unrelatedProviderHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    const unrelatedProviderHead = unrelatedProviderHeadResult.stdout.trim();
+    const unrelatedMergeCommitResult = await execFileAsync(
+      "git",
+      [
+        "commit-tree",
+        `${unrelatedProviderHead}^{tree}`,
+        "-p",
+        fixture.providerBase,
+        "-m",
+        "GitHub unrelated rebase merge receipt",
+      ],
+      { cwd: fixture.root, env: cleanGitEnv() },
+    );
+    const unrelatedMergeCommit = unrelatedMergeCommitResult.stdout.trim();
+
+    const reconciliation = await resolveProviderReconciliation({
+      gitRoot: fixture.root,
+      taskId: fixture.taskId,
+      branch: fixture.localBranch,
+      baseBranch: "main",
+      taskCommitSha: fixture.localHead,
+      branchHead: fixture.localHead,
+      closureBasisCommit: fixture.localHead,
+      receipt: {
+        prNumber: 123,
+        providerHeadSha: unrelatedProviderHead,
+        mergeCommit: unrelatedMergeCommit,
+      },
+    });
+
+    expect(reconciliation.proof).toBeNull();
+    expect(reconciliation.reason).toBe(
+      "provider rebase is not patch-equivalent to the stale local task head",
+    );
   });
 
   it("rejects annotated tags for every live reconciliation identity before ancestry proof", async () => {
