@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608221158-P5RSA8-1ec84d8b97b5b3ca904ca3f2",
+  "prepared_at": "2026-08-22T12:05:49.843Z",
+  "task": {
+    "id": "202608221158-P5RSA8",
+    "revision": 8,
+    "objective": "Refresh the clone baseline after the completed task-centric roadmap\n\nReview the post-roadmap clone report, confirm the small absolute drift is intentional relative to 67 additional sources and an improved duplication percentage, refresh only scripts/baselines/clone-baseline.json, and prove clone:check plus ci:contract pass so v0.7.8 prepublish can proceed without changing release artifacts.",
+    "acceptance_criteria": [
+      "bun run ci:contract",
+      "bun run clone:check",
+      "- In scope: Review the post-roadmap clone report, confirm the small absolute drift is intentional relative to 67 additional sources and an improved duplication percentage, refresh only scripts/baselines/clone-baseline.json, and prove clone:check plus ci:contract pass so v0.7.8 prepublish can proceed without changing release artifacts.\n- Out of scope: unrelated refactors not required for \"Refresh the clone baseline after the completed task-centric roadmap\".",
+      "Review and intentionally refresh the clone ratchet for the completed roadmap, changing only the canonical baseline and proving both the focused guard and the full contract gate.",
+      "PLANNER fallback scaffold for \"Refresh the clone baseline after the completed task-centric roadmap\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Refresh the clone baseline after the completed task-centric roadmap\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "67ab5811f56da356041febc60f57eb1c575263e3",
+  "diff_base_sha": "5fd1963ef2f73adae882539030f5086767a973be",
+  "blueprint_digest": "c61799a3b90c845dacb04fd56f88ebbf6c91d73d75102c558a2c6731b6240262",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608221158-P5RSA8/quality/20260822-120549843-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:777ee9ba01fb42a2b549886620a6b9a887b93ff2e8b39a23e4222305035375e4",
+    "prompt_path": ".agentplane/tasks/202608221158-P5RSA8/quality/objects/sha256/5af282cfebba12ecbaf9cdb751ae32b7e609998638913a99a8226079f0d4c715.md",
+    "result_schema_path": ".agentplane/tasks/202608221158-P5RSA8/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608221158-P5RSA8/README.md",
+      "sha256": "sha256:1a864a78835e4b36e71e50a7a1d544f1ed1e4aeb160016d53566641ac47212d1",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608221158-P5RSA8/quality/objects/sha256/bdc4fce982a4582d30aad74de290d21e1af30e1ac7de5cf780e6a0b2c4132e8e.patch",
+      "sha256": "sha256:bdc4fce982a4582d30aad74de290d21e1af30e1ac7de5cf780e6a0b2c4132e8e",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608221158-P5RSA8/quality/objects/sha256/1212d9107b0ba42ae4c1a96ea1c0fcccf50249176a76a81ae4a86ec9742e590e.json",
+      "sha256": "sha256:1212d9107b0ba42ae4c1a96ea1c0fcccf50249176a76a81ae4a86ec9742e590e",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608221158-P5RSA8/verification/20260822120532975-380dadf4d6f3daa8.json",
+      "sha256": "sha256:76d552adfdc44dc10d1019ded9137f4e27facd5203c248dcc57e6d4eba651d73",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608221158-P5RSA8/quality/objects/sha256/5cc09db7f5942cdefbe2fb7e388be39f1838c2e49ca3ee62618d93b1363771e3.json",
+      "sha256": "sha256:5cc09db7f5942cdefbe2fb7e388be39f1838c2e49ca3ee62618d93b1363771e3",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
