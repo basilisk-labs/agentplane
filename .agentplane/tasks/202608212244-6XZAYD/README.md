@@ -4,7 +4,7 @@ title: "Implement the task-centric refactoring roadmap v2 and publish the next p
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -33,36 +33,35 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-22T01:47:00.164Z"
+  updated_at: "2026-08-22T01:54:47.385Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 5 typed finding(s)."
-  evaluated_sha: "8ae1df8b06aa992a90d7b678bf5d2c34f7455969"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "5aded5e304f1f5cb6871da3e748d96f63b63253b"
   blueprint_digest: "d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306"
   evidence_refs:
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-014606256-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-014606256-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/6c8f26126617b989de573e4473ca1aeeb7247b8a67bda9f01732207161f25218.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-014606256-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-014606256-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-014606256-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-014606256-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-015410545-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-015410545-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/0ec031e9a6f420feb8f427308887506305b50974448d6ac582f6d64e3a0d5f1d.md"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-015410545-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-015410545-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-015410545-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608212244-6XZAYD/README.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/950b2e772855aeab03a5ec4a9d642d7d2de6175ce035f04960ad5dd6bd0ef346.patch"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/4d1bfed0136cbe7ec5e30dd075e80cee8dec5bc0d6a5ad71e27a24a5f0b12bf3.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/verification/20260822014352903-2db6306ae85d2f0a.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/c594a8034a5f9069bb52c1f8c370e11013a580e5e82f4ed78554977369de2d5a.patch"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/7860452080b5f9aa52369e1ea7f2d1b88b95d9dd589a7252a28e29345d2a629f.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/verification/20260822015346142-c04206ccb5d678f0.json"
     - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/0f9e0c0f8b0f85b8effd9074a1316c56971aceb5da4a5fce5935f4726c154946.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "bun run bench:compatibility:candidate:check passes."
-    - "bun run bench:compatibility:check fails with AgentWorkOrder contract artifact digest drift for surface b80a796dd770c30b2f7325400aa28178c6484f5d58a284b212910c3af611b436."
-    - "Rework must update scripts/baselines/v0.7-compatibility-candidate.json and scripts/checks/check-compatibility-contract-baseline.mjs with exact task provenance and must preserve the immutable baseline anchor."
-    - "The rework packet must include scripts/baselines and scripts/checks in writable scope; those roots were absent from the prior EXECUTOR authority."
-    - "Residual risk: The critical compatibility suite cannot pass until the exact reviewed ratchet artifact is updated."
+    - "Compatibility candidate and validator include exact source-task provenance and the reviewed AgentWorkOrder schema digest without modifying the immutable baseline anchor."
+    - "bun run bench:compatibility:candidate:check and bun run bench:compatibility:check pass for surface b80a796dd770c30b2f7325400aa28178c6484f5d58a284b212910c3af611b436."
+    - "All 13 critical CLI chunks pass, including the task-centric two-WorkItem acceptance scenario."
+    - "Formatting, typecheck, schema synchronization, routing policy, and diff whitespace checks pass."
+    - "Residual risk: Release publication remains subject to the repository's separate active-incident gate and hosted exact-SHA verification."
 execution_route:
   frozen: true
   reason_codes:
