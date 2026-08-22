@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "bun run bench:compatibility:candidate:check passes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/950b2e772855aeab03a5ec4a9d642d7d2de6175ce035f04960ad5dd6bd0ef346.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "bun run bench:compatibility:check fails with AgentWorkOrder contract artifact digest drift for surface b80a796dd770c30b2f7325400aa28178c6484f5d58a284b212910c3af611b436.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/950b2e772855aeab03a5ec4a9d642d7d2de6175ce035f04960ad5dd6bd0ef346.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Rework must update scripts/baselines/v0.7-compatibility-candidate.json and scripts/checks/check-compatibility-contract-baseline.mjs with exact task provenance and must preserve the immutable baseline anchor.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/950b2e772855aeab03a5ec4a9d642d7d2de6175ce035f04960ad5dd6bd0ef346.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The rework packet must include scripts/baselines and scripts/checks in writable scope; those roots were absent from the prior EXECUTOR authority.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/950b2e772855aeab03a5ec4a9d642d7d2de6175ce035f04960ad5dd6bd0ef346.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: The critical compatibility suite cannot pass until the exact reviewed ratchet artifact is updated.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/950b2e772855aeab03a5ec4a9d642d7d2de6175ce035f04960ad5dd6bd0ef346.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "recovery_context": "Issue a bounded EXECUTOR rework packet with scripts/baselines and scripts/checks writable, update only the reviewed candidate and validator, rerun compatibility and critical checks, then reevaluate."
+}
