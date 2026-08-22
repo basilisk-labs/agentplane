@@ -1,10 +1,11 @@
 ---
 id: "202608221939-911DRN"
 title: "Archive resolved task-centric external result routing incident before v0.7.8"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -59,6 +60,20 @@ quality_review:
     - "The earlier archived record that reused INC-20260822-01 is unchanged, and the new record explicitly documents the collision plus the scope/source_task disambiguation."
     - "Both declared deterministic checks passed in the recorded branch verification."
     - "Residual risk: Hosted integration must still pass on the exact incident-closeout PR SHA before merge."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:0e8739d7bd57e207781810442a8b229a4127a29ccebfe2507dc1e3d6979a4b9e"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-22T19:52:25.931Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -259,8 +274,8 @@ execution_contract:
       - "repository_effect:repository_write"
       - "task_outcome"
 commit:
-  hash: "f98361067fecc048cbc5fbb24d6f599ea94ae27d"
-  message: "📝 911DRN task: archive resolved routing incident"
+  hash: "6caf71b8f96f0f50ba892e671c4d7110d0088552"
+  message: "🚧 911DRN task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -268,6 +283,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: f98361067fec. Archived only the resolved task-centric external result routing incident and passed the routing and release incident gates."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -290,8 +308,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-22T19:52:25.931Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "6caf71b8f96f0f50ba892e671c4d7110d0088552"
 doc_version: 3
-doc_updated_at: "2026-08-22T19:50:45.972Z"
+doc_updated_at: "2026-08-22T19:52:25.940Z"
 doc_updated_by: "CODER"
 description: "Dedicated release prerequisite for active INC-20260822-01. Preserve the incident in docs/developer/incident-archive.mdx with exact evidence from task 202608221335-6DSF3R and merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, then remove only that resolved entry from .agentplane/policy/incidents.md and its packaged mirror. Do not change implementation, context, task-centric architecture, or any other incident. Record the existing archive identifier collision explicitly instead of rewriting historical evidence."
 sections:
@@ -638,6 +664,9 @@ extensions:
         revision: 1
         state: "READY"
         validation_result: null
+  implementation_commit:
+    hash: "562d8d43f5aa676dddf53e671d212a6f55c03fde"
+    message: "📝 911DRN task: archive resolved routing incident"
   task_execution_context:
     base_ref: "main"
     base_sha: "81279b3b18a7d08881d57dce0f8dd1abdd5910b4"
@@ -790,3 +819,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:0e8739d7bd57e207781810442a8b229a4127a29ccebfe2507dc1e3d6979a4b9e`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-22T19:52:25.931Z`
