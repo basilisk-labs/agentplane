@@ -15,14 +15,14 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-21T22:50:57.507Z
+- Updated: 2026-08-22T01:44:31.114Z
 - Branch: task/202608212244-6XZAYD/implement-the-task-centric-refactoring-roadmap-v
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -30,6 +30,7 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
  depcruise.config.cjs                               |   25 +
  .../task-centric-backend-adapter.test.ts           |  500 ++++++
  .../task-backend/task-centric-backend-adapter.ts   |  689 ++++++++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |    6 +-
  .../src/cli/run-cli.critical.task-centric.test.ts  |  393 +++++
  .../evaluator-episode.calibration.test.ts          |    8 +-
  .../src/commands/hermes/hermes-runtime.ts          |   20 +-
@@ -110,7 +111,9 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
  packages/testkit/src/cli-harness.ts                |    9 +
  schemas/agent-semantic-result.schema.json          | 1695 ++++++++++++++++++++
  schemas/agent-work-order-v2.schema.json            |  213 +++
- 83 files changed, 10171 insertions(+), 405 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |   25 +-
+ .../check-compatibility-contract-baseline.mjs      |   15 +-
+ 86 files changed, 10204 insertions(+), 418 deletions(-)
 ```
 
 </details>

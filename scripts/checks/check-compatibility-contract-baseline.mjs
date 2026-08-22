@@ -349,6 +349,7 @@ function validateReviewedCandidate({
     "202608181404-CR1F9W",
     "202608200903-J459C2",
     "202608211020-FGAPJC",
+    "202608212244-6XZAYD",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -390,6 +391,7 @@ function validateReviewedCandidate({
     "202608181404-CR1F9W",
     "202608200903-J459C2",
     "202608211020-FGAPJC",
+    "202608212244-6XZAYD",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -737,7 +739,7 @@ function validateReviewedCandidate({
     "AgentWorkOrder contract artifact comparison drift",
   );
   assert(
-    agentWorkOrderArtifact.source_task === "202607221848-T9B3PS",
+    agentWorkOrderArtifact.source_task === "202608212244-6XZAYD",
     "AgentWorkOrder contract artifact source task drift",
   );
   const agentWorkOrderSchema = JSON.parse(
@@ -862,10 +864,16 @@ function validateReviewedCandidate({
       "202607221849-8YYZ9X",
       "202607291449-FTHNAR",
       "202607221852-YP9QCH",
+      "202608212244-6XZAYD",
     ],
     cli_topology: cliSourceTasks,
-    machine_output_contract: ["202607221848-ABG7SD"],
-    workflow_schema: ["202607221846-4VB97J", "202608112213-NWJCBW", "202608171853-X3FD5M"],
+    machine_output_contract: ["202607221848-ABG7SD", "202608212244-6XZAYD"],
+    workflow_schema: [
+      "202607221846-4VB97J",
+      "202608112213-NWJCBW",
+      "202608171853-X3FD5M",
+      "202608212244-6XZAYD",
+    ],
     tarball_policy: [
       "202607221846-4VB97J",
       "202607221848-ER5H6N",
@@ -873,6 +881,7 @@ function validateReviewedCandidate({
       "202607221849-8YYZ9X",
       "202608021231-SHYJGK",
       "202608021535-CNQKXP",
+      "202608212244-6XZAYD",
     ],
   };
   for (const delta of candidate.deltas) {
