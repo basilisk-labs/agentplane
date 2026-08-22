@@ -22,7 +22,7 @@ Add exactly one compatibility E2E proving the existing context.maximum_assimilat
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-22T15:16:04.743Z
+- Updated: 2026-08-22T15:18:26.103Z
 - Branch: task/202608221511-ZD76VS/finalize-the-v0-7-8-maximum-assimilation-compati
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
