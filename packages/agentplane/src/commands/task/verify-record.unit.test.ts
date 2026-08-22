@@ -210,6 +210,7 @@ describe("task verify record (unit)", () => {
     expect(writeTask.mock.calls[0]?.[0].extensions?.implementation_commit).toEqual({
       hash: "implementation-sha",
     });
+    expect(writeTask.mock.calls[0]?.[0].extensions?.task_execution_context).toBeDefined();
 
     writeSpy.mockRestore();
   });
