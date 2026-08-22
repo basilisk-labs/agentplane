@@ -16,12 +16,7 @@ Fix the proven task-centric Core regression in null-ID external result handling:
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-The post-rework branch verification is evidence-backed and passes the declared contract on clean
-commit 3e415879c857a25df22f1af2f41198813c63d42b.
-```
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
