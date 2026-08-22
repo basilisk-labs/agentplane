@@ -21,6 +21,9 @@ const REPOSITORY_EFFECTS = [
 ] as const satisfies readonly TaskRepositoryEffect[];
 
 function optionalStringOption(value: unknown): string | undefined {
+  if (typeof value === "string") {
+    return value.trim() || undefined;
+  }
   return toStringList(value).at(-1);
 }
 

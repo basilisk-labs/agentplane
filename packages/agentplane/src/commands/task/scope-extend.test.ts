@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import { parseCommandArgv } from "../../cli/spec/parse.js";
 import {
   approveTaskPlan,
   createLegacyTaskAggregate,
@@ -32,6 +33,71 @@ import {
   extendBlockedTaskExecutionContract,
   taskWithRebasedExecutionGrant,
 } from "./scope-extend.js";
+import { taskScopeExtendSpec } from "./scope-extend.command.js";
+
+const REQUEST_DIGEST = `sha256:${"1".repeat(64)}`;
+const STATE_SCOPE_DIGEST = `sha256:${"2".repeat(64)}`;
+const STATE_FINGERPRINT = `sha256:${"3".repeat(64)}`;
+
+describe("task scope extend command parsing", () => {
+  it.each([
+    {
+      option: "--state-scope-digest",
+      value: STATE_SCOPE_DIGEST,
+      expected: { stateScopeDigest: STATE_SCOPE_DIGEST },
+    },
+    {
+      option: "--state-fingerprint",
+      value: STATE_FINGERPRINT,
+      expected: { stateFingerprint: STATE_FINGERPRINT },
+    },
+  ])("preserves scalar $option", ({ option, value, expected }) => {
+    expect(
+      parseCommandArgv(taskScopeExtendSpec, [
+        "T-1",
+        "--scope-root",
+        "packages/agentplane",
+        "--request-digest",
+        REQUEST_DIGEST,
+        option,
+        value,
+        "--by",
+        "USER",
+      ]),
+    ).toMatchObject({
+      parsed: {
+        taskId: "T-1",
+        scopeRoots: ["packages/agentplane"],
+        requestDigest: REQUEST_DIGEST,
+        by: "USER",
+        ...expected,
+      },
+    });
+  });
+
+  it("continues to reject missing and malformed state bindings", () => {
+    const base = [
+      "T-1",
+      "--scope-root",
+      "packages/agentplane",
+      "--request-digest",
+      REQUEST_DIGEST,
+      "--by",
+      "USER",
+    ];
+
+    expect(() => parseCommandArgv(taskScopeExtendSpec, base)).toThrow(
+      "One of --state-scope-digest or --state-fingerprint is required.",
+    );
+    expect(() =>
+      parseCommandArgv(taskScopeExtendSpec, [
+        ...base,
+        "--state-scope-digest",
+        "sha256:not-a-digest",
+      ]),
+    ).toThrow("--state-scope-digest must be an exact sha256:<64 lowercase hex> digest.");
+  });
+});
 
 const NOW = "2026-08-18T01:00:00.000Z";
 
