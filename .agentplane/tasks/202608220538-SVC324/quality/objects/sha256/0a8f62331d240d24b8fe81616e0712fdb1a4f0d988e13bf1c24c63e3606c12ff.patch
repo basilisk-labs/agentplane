@@ -1,0 +1,602 @@
+diff --git a/.agentplane/policy/incidents.md b/.agentplane/policy/incidents.md
+index 3b07617e9..3499a0898 100644
+--- a/.agentplane/policy/incidents.md
++++ b/.agentplane/policy/incidents.md
+@@ -1,5 +1,3 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+-- id: INC-20260821-01 | date: 2026-08-21 | scope: task autonomy | tags: execution-grant, architecture, code | match: task.scope.extend, integration.enqueue, execution-grant, architecture, code, task, autonomy, implement, scoped, autonomous, execution, after, one, user, approved, plan | failure: A grant-authorized scope extension changes execution_contract.scope_digest without deriving a matching active ExecutionGrant. | advice: Derive and persist a scope-rebased grant after an in-grant non-material scope extension, retaining approval provenance and rejecting material completion-contract drift. | rule: Analogous task autonomy work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608211020-FGAPJC; commit 507af3b93374 | enforcement: manual | fixability: repo-fixable | state: open
+-- id: INC-20260822-01 | date: 2026-08-22 | scope: scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs | tags: qualification, task-centric, code, architecture | match: qualification, task-centric, code, architecture, scripts, check, packaged, mixed, scope, lifecycle, mjs, implement, the, task, centric, refactoring | failure: Blocked quality review did not route to implementation rework and repeatedly re-issued evaluator episodes after task-only evidence commits. | advice: Record verification rework, issue a fresh EXECUTOR packet, and return a structured scripts/qualification scope-extension blocker before applying the fixture update. | rule: Analogous scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608212244-6XZAYD; commit e7910fe252b9 | enforcement: manual | fixability: repo-fixable | state: open
+diff --git a/docs/developer/incident-archive.mdx b/docs/developer/incident-archive.mdx
+index d46d14c7c..b16fb4fe8 100644
+--- a/docs/developer/incident-archive.mdx
++++ b/docs/developer/incident-archive.mdx
+@@ -4,6 +4,12 @@ Historical registry for workflow incidents that are no longer active.
+ 
+ Active incidents live in `.agentplane/policy/incidents.md`. Move entries here once the repo has a durable mitigation, a shipped repo fix, or an external constraint has been reduced to a documented fallback instead of an active blocker.
+ 
++## 2026-08-22 Task authority and evaluator rework routing
++
++- id: INC-20260821-01 | date: 2026-08-21 | scope: task autonomy | tags: execution-grant, architecture, code | match: task.scope.extend, integration.enqueue, execution-grant, architecture, code, task, autonomy, implement, scoped, autonomous, execution, after, one, user, approved, plan | failure: A grant-authorized scope extension changes execution_contract.scope_digest without deriving a matching active ExecutionGrant. | advice: Derive and persist a scope-rebased grant after an in-grant non-material scope extension, retaining approval provenance and rejecting material completion-contract drift. | rule: Approved non-material scope extensions MUST persist a scope-rebased execution grant only when the logical completion contract is unchanged. | evidence: source task `202608211020-FGAPJC`, source commit `507af3b93374`; fix task `202608220538-SVC324`; `rebaseExecutionGrantScope` preserves approval provenance and rejects completion-contract drift; focused `plan-execution-grant.test.ts` and `scope-extend.test.ts` regressions plus declared type, lint, policy-routing, hosted integration, and release gates enforce the repair. | enforcement: execution-grant parser/digest validation, scope-extension persistence tests, hosted CI, and release incident gate | fixability: repo-fixable | state: archived | archived_by: task `202608220538-SVC324` | archive_reason: approved scope extension now derives and persists a valid grant for the new scope while material completion drift fails closed.
++
++- id: INC-20260822-01 | date: 2026-08-22 | scope: scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs | tags: qualification, task-centric, code, architecture | match: qualification, task-centric, code, architecture, scripts, check, packaged, mixed, scope, lifecycle, mjs, implement, the, task, centric, refactoring | failure: Blocked quality review did not route to implementation rework and repeatedly re-issued evaluator episodes after task-only evidence commits. | advice: Record verification rework, issue a fresh EXECUTOR packet, and return a structured scripts/qualification scope-extension blocker before applying the fixture update. | rule: A non-evidence-gap blocked evaluator review MUST route to bounded implementation rework; deterministic evidence gaps remain TESTER work and human-review verdicts remain USER work. | evidence: source task `202608212244-6XZAYD`, source commit `e7910fe252b9`; fix task `202608220538-SVC324`; route-decision regressions distinguish repo-fixable blocked reviews from `deterministic_evidence_gap`, and supervision disposition tests keep the recoverable stop non-terminal. | enforcement: route-decision quality-review tests, evaluator calibration tests, supervision disposition tests, hosted CI, and release incident gate | fixability: repo-fixable | state: archived | archived_by: task `202608220538-SVC324` | archive_reason: the route no longer repeats an unchanged evaluator episode for repository-fixable blocked reviews and preserves the separate deterministic evidence and human authority paths.
++
+ ## 2026-08-18 Branch task artifact ownership
+ 
+ - id: INC-20260818-01 | date: 2026-08-18 | scope: branch_pr task artifact ownership | tags: ownership, evidence, release, v0.7.7 | match: ownership, evidence, release, v0.7.7, branch, task, artifact, qualify, and, publish, agentplane, from, exact, main, 708f0d7d5b813ea2bb4de659d9eb113a752e3c63, promote | failure: Generic volatile-evidence deletion bypasses foreign task ownership. | advice: Require task-specific authority for volatile foreign-task deletion; keep additions, modifications, durable evidence, and sibling or task-id-prefix paths fail-closed. | rule: Branch PR artifact reconciliation MUST allow foreign volatile deletion only when the exact path is a descendant of a task-specific writable root. | evidence: source and fix task `202608181750-CRZNFC`; implementation commit `6ed0b4b62b786d389f6a2b0ea3730973238c3985`; exact-root allow and default, sibling, task-id-prefix, modification, and durable-evidence rejection regressions passed; the complete release prepublish gate passed after the fix before incident promotion. | enforcement: `packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts`, sync and integrate preparation enforcement, hosted CI, and release incident gate | fixability: repo-fixable | state: archived | archived_by: task `202608181750-CRZNFC` | archive_reason: the authority bypass is fixed at both sync and integration boundaries with exact descendant matching and regression coverage; no operator or engineering follow-up remains for this failure class.
+diff --git a/packages/agentplane/assets/policy/incidents.md b/packages/agentplane/assets/policy/incidents.md
+index 3b07617e9..3499a0898 100644
+--- a/packages/agentplane/assets/policy/incidents.md
++++ b/packages/agentplane/assets/policy/incidents.md
+@@ -1,5 +1,3 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+-- id: INC-20260821-01 | date: 2026-08-21 | scope: task autonomy | tags: execution-grant, architecture, code | match: task.scope.extend, integration.enqueue, execution-grant, architecture, code, task, autonomy, implement, scoped, autonomous, execution, after, one, user, approved, plan | failure: A grant-authorized scope extension changes execution_contract.scope_digest without deriving a matching active ExecutionGrant. | advice: Derive and persist a scope-rebased grant after an in-grant non-material scope extension, retaining approval provenance and rejecting material completion-contract drift. | rule: Analogous task autonomy work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608211020-FGAPJC; commit 507af3b93374 | enforcement: manual | fixability: repo-fixable | state: open
+-- id: INC-20260822-01 | date: 2026-08-22 | scope: scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs | tags: qualification, task-centric, code, architecture | match: qualification, task-centric, code, architecture, scripts, check, packaged, mixed, scope, lifecycle, mjs, implement, the, task, centric, refactoring | failure: Blocked quality review did not route to implementation rework and repeatedly re-issued evaluator episodes after task-only evidence commits. | advice: Record verification rework, issue a fresh EXECUTOR packet, and return a structured scripts/qualification scope-extension blocker before applying the fixture update. | rule: Analogous scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608212244-6XZAYD; commit e7910fe252b9 | enforcement: manual | fixability: repo-fixable | state: open
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts
+index 042218b00..a1cbde286 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts
+@@ -169,6 +169,17 @@ function reworkTask(verificationUpdatedAt: string): TaskData {
+   return task;
+ }
+ 
++function blockedReviewTask(recoveryReason?: "deterministic_evidence_gap"): TaskData {
++  const task = reworkTask("2026-07-23T23:59:59.000Z");
++  task.quality_review = {
++    ...task.quality_review!,
++    state: "blocked",
++    note: "The quality review is blocked on repository-fixable work.",
++    ...(recoveryReason ? { recovery_reason: recoveryReason } : {}),
++  };
++  return task;
++}
++
+ function verificationReworkTask(withNewImplementation: boolean): TaskData {
+   const task = reviewedTask();
+   task.status = "DOING";
+@@ -228,6 +239,27 @@ describe("DOING route quality rework", () => {
+       expect.arrayContaining([expect.objectContaining({ code: "quality_review_stale" })]),
+     );
+   });
++
++  it("routes a non-evidence-gap blocked review to implementation rework", async () => {
++    const blockers = await blockersFor(reviewedSha, undefined, openPrFlow(), blockedReviewTask());
++
++    expect(blockers).toEqual(
++      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
++    );
++  });
++
++  it("keeps a deterministic evidence gap out of implementation rework", async () => {
++    const blockers = await blockersFor(
++      reviewedSha,
++      undefined,
++      openPrFlow(),
++      blockedReviewTask("deterministic_evidence_gap"),
++    );
++
++    expect(blockers).not.toEqual(
++      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
++    );
++  });
+ });
+ 
+ describe("DOING route verification rework", () => {
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+index 7068d9e6c..232596183 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+@@ -24,6 +24,7 @@ import {
+ import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
+ import {
+   hasAcceptedVerificationForCurrentImplementation,
++  qualityReviewRequiresImplementationRework,
+   qualityReworkHasNewVerification,
+   verificationReworkHasNewImplementation,
+ } from "./route-decision-verification.js";
+@@ -166,7 +167,7 @@ async function qualityReviewIsFreshForHead(opts: {
+   task: TaskData;
+   headSha: string | null;
+   batchOwnership: RouteBatchOwnership;
+-  expectedState: "pass" | "rework";
++  expectedState: "pass" | "rework" | "blocked";
+   workflowMode: "direct" | "branch_pr";
+ }): Promise<boolean> {
+   const review = opts.task.quality_review;
+@@ -399,7 +400,7 @@ export async function deriveBlockers(opts: {
+     }
+   }
+   if (opts.task.status === "DONE") {
+-    if (opts.workflowMode === "branch_pr" && opts.task.quality_review?.state === "rework") {
++    if (opts.workflowMode === "branch_pr" && qualityReviewRequiresImplementationRework(opts.task)) {
+       addBlocker(
+         blockers,
+         "implementation_rework_required",
+@@ -460,7 +461,7 @@ export async function deriveBlockers(opts: {
+       !implementationReworkRequired &&
+       taskIsDoing &&
+       opts.task.verification?.state === "ok" &&
+-      opts.task.quality_review?.state === "rework" &&
++      qualityReviewRequiresImplementationRework(opts.task) &&
+       !qualityReworkHasNewVerification(opts.task)
+     ) {
+       implementationReworkRequired = await qualityReviewIsFreshForHead({
+@@ -468,7 +469,7 @@ export async function deriveBlockers(opts: {
+         task: opts.task,
+         headSha: opts.prFlow?.branch.headSha ?? opts.resume.head_sha,
+         batchOwnership: opts.batchOwnership,
+-        expectedState: "rework",
++        expectedState: opts.task.quality_review?.state === "blocked" ? "blocked" : "rework",
+         workflowMode: opts.workflowMode,
+       });
+     }
+diff --git a/packages/agentplane/src/commands/shared/route-decision-verification.ts b/packages/agentplane/src/commands/shared/route-decision-verification.ts
+index 2237cd850..de1fde7c4 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-verification.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-verification.ts
+@@ -24,11 +24,19 @@ function hostedCloseVerificationTarget(
+     : null;
+ }
+ 
++export function qualityReviewRequiresImplementationRework(task: TaskData): boolean {
++  return (
++    task.quality_review?.state === "rework" ||
++    (task.quality_review?.state === "blocked" &&
++      task.quality_review.recovery_reason !== "deterministic_evidence_gap")
++  );
++}
++
+ export function qualityReworkHasNewVerification(task: TaskData): boolean {
+   const reviewUpdatedAt = task.quality_review?.updated_at;
+   const verificationUpdatedAt = task.verification?.updated_at;
+   if (
+-    task.quality_review?.state !== "rework" ||
++    !qualityReviewRequiresImplementationRework(task) ||
+     task.verification?.state !== "ok" ||
+     !reviewUpdatedAt ||
+     !verificationUpdatedAt
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-factory.ts b/packages/agentplane/src/commands/shared/workflow-step-factory.ts
+index 302a7e67f..acc88af11 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-factory.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-factory.ts
+@@ -1,6 +1,10 @@
+ import type { TaskData } from "../../backends/task-backend.js";
+ import { isRecord } from "../../shared/guards.js";
+ import type { RouteBlocker } from "./route-oracle.js";
++import {
++  qualityReviewRequiresImplementationRework,
++  qualityReworkHasNewVerification,
++} from "./route-decision-verification.js";
+ import { cliOperationStep } from "./workflow-step-authority.js";
+ import {
+   authorityRef,
+@@ -182,6 +186,32 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
+     state.task.verification?.state === "ok" &&
+     String(state.task.status).toUpperCase() === "DOING"
+   ) {
++    if (
++      qualityReviewRequiresImplementationRework(state.task) &&
++      !qualityReworkHasNewVerification(state.task)
++    ) {
++      return agentEpisodeStep({
++        state,
++        id: "agent.direct_implementation_rework",
++        code: "implementation_rework_required",
++        phase: "implementation_rework_required",
++        checkout: "current_checkout",
++        role: "CODER",
++        purpose: "implementation_rework",
++        summary: "apply the repository-fixable EVALUATOR findings before reverification",
++        objective:
++          "Implement the bounded evaluator recovery context, then return control for fresh deterministic verification.",
++        semanticMutationAllowed: true,
++        mustNot: [
++          "do not rerun the unchanged quality-review episode before implementation changes",
++          "do not preserve stale verification as evidence for the revised implementation",
++        ],
++        returnControlWhen:
++          "after CODER records the revised implementation; then recompute the route for TESTER verification",
++        evidenceMissing: ["verified_implementation_rework"],
++        selectedBlocker: routeBlockerFor(state, "implementation_rework_required"),
++      });
++    }
+     if (state.task.quality_review?.state !== "pass") {
+       return agentEpisodeStep({
+         state,
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-quality.test.ts b/packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+index b5c9b321a..e70dad0c7 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+@@ -168,7 +168,7 @@ describe("quality evidence refresh route", () => {
+     });
+   });
+ 
+-  it("does not refresh an unclassified semantic EVALUATOR block even when its evidence is current", () => {
++  it("routes an unclassified semantic EVALUATOR block to implementation rework", () => {
+     const step = reduceRouteState(
+       routeState({
+         task: {
+@@ -182,15 +182,45 @@ describe("quality evidence refresh route", () => {
+           },
+         },
+         blockers: [
+-          { code: "quality_review_stale", summary: "quality review requires frozen evidence" },
++          {
++            code: "implementation_rework_required",
++            summary: "blocked review requires repository rework",
++          },
+         ],
+       }),
+     );
+ 
+     expect(step).toMatchObject({
+       kind: "agent_episode",
+-      phase: "quality_review_needed",
+-      episode: { purpose: "quality_review", role: "EVALUATOR" },
++      phase: "implementation_rework_required",
++      episode: { purpose: "implementation_rework", role: "CODER" },
++    });
++  });
++
++  it("routes a direct blocked review to implementation rework without another evaluator episode", () => {
++    const step = reduceRouteState(
++      routeState({
++        workflowMode: "direct",
++        task: {
++          ...task,
++          verification: { state: "ok", updated_at: "2026-07-29T14:40:00.000Z" },
++          quality_review: {
++            ...deterministicEvidenceGapReview(),
++            note: "The implementation violates the task invariant.",
++            findings: ["The implementation violates the task invariant."],
++            recovery_reason: undefined,
++          },
++        },
++        blockers: [],
++      }),
++    );
++
++    expect(step).toMatchObject({
++      kind: "agent_episode",
++      phase: "implementation_rework_required",
++      authoritativeCheckout: "current_checkout",
++      execution: { semanticMutationAllowed: true },
++      episode: { purpose: "implementation_rework", role: "CODER" },
+     });
+   });
+ 
+diff --git a/packages/agentplane/src/commands/task/scope-extend.test.ts b/packages/agentplane/src/commands/task/scope-extend.test.ts
+index 1328e97a1..5d9af4eda 100644
+--- a/packages/agentplane/src/commands/task/scope-extend.test.ts
++++ b/packages/agentplane/src/commands/task/scope-extend.test.ts
+@@ -1,6 +1,11 @@
+ import { describe, expect, it } from "vitest";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
++import {
++  createExecutionGrant,
++  createPlanProposal,
++  isExecutionGrantActive,
++} from "@agentplaneorg/core/tasks";
+ import { makeTaskCommandContext, makeTaskFixture } from "@agentplane/testkit/task";
+ import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
+ import {
+@@ -11,7 +16,10 @@ import {
+   TASK_SCOPE_EXTENSION_REQUEST_KEY,
+ } from "../shared/task-scope-extension-request.js";
+ 
+-import { extendBlockedTaskExecutionContract } from "./scope-extend.js";
++import {
++  extendBlockedTaskExecutionContract,
++  taskWithRebasedExecutionGrant,
++} from "./scope-extend.js";
+ 
+ function fixture(
+   overrides: Partial<TaskData> = {},
+@@ -137,6 +145,69 @@ describe("blocked task execution scope extension", () => {
+     });
+   });
+ 
++  it("persists a provenance-preserving active grant for an in-grant extension", () => {
++    const { command, pending, task } = fixture();
++    task.execution_contract!.authority.allowed_repository_effects.push("release_metadata");
++    task.execution_contract!.verification.required_evidence = [
++      ...new Set([
++        ...task.execution_contract!.verification.required_evidence,
++        "repository_effect:release_metadata",
++        "repository_effect:repository_write",
++      ]),
++    ].toSorted();
++    const repositoryIdentity = `sha256:${"f".repeat(64)}`;
++    const grant = createExecutionGrant({
++      proposal: createPlanProposal({
++        task_id: task.id,
++        task_revision: task.revision ?? 1,
++        plan: task.sections?.Plan ?? "",
++        execution_contract: task.execution_contract,
++        repository_identity: repositoryIdentity,
++      }),
++      execution_contract: task.execution_contract,
++      actor: "HOST:codex:USER",
++      approval_kind: "host_user_decision",
++      approval_evidence_digest: `sha256:${"a".repeat(64)}`,
++      issued_at: "2026-08-18T00:00:00.000Z",
++    });
++    task.extensions = {
++      ...(task.extensions ?? {}),
++      "agentplane.execution_grant": grant,
++    };
++    const executionContract = extendBlockedTaskExecutionContract({
++      command,
++      task,
++      scope_roots: ["website"],
++      repository_effects: ["release_metadata"],
++      request_digest: pending.request_digest,
++      by: "USER",
++    });
++    expect(executionContract.verification.required_evidence).toEqual(
++      task.execution_contract!.verification.required_evidence,
++    );
++
++    const updated = taskWithRebasedExecutionGrant({
++      task,
++      execution_contract: executionContract,
++    });
++    const rebased = updated.extensions?.["agentplane.execution_grant"];
++
++    expect(rebased).toMatchObject({
++      actor: grant.actor,
++      approval_kind: grant.approval_kind,
++      approval_evidence_digest: grant.approval_evidence_digest,
++    });
++    expect(
++      isExecutionGrantActive({
++        grant: rebased as typeof grant,
++        task_id: task.id,
++        plan: task.sections?.Plan ?? "",
++        execution_contract: executionContract,
++        repository_identity: repositoryIdentity,
++      }),
++    ).toBe(true);
++  });
++
+   it("requires a BLOCKED task, blocker receipt, and explicit USER authority", () => {
+     const { command, pending, task } = fixture();
+     const cases: { task: TaskData; by: string; message: RegExp }[] = [
+diff --git a/packages/agentplane/src/commands/task/scope-extend.ts b/packages/agentplane/src/commands/task/scope-extend.ts
+index 9e44126df..10fc11a30 100644
+--- a/packages/agentplane/src/commands/task/scope-extend.ts
++++ b/packages/agentplane/src/commands/task/scope-extend.ts
+@@ -1,5 +1,11 @@
+-import type { TaskRepositoryEffect } from "@agentplaneorg/core/tasks";
++import {
++  EXECUTION_GRANT_EXTENSION_KEY,
++  executionGrantFromExtensions,
++  rebaseExecutionGrantScope,
++  type TaskRepositoryEffect,
++} from "@agentplaneorg/core/tasks";
+ 
++import type { TaskData } from "../../backends/task-backend.js";
+ import { mapBackendError } from "../../cli/error-map.js";
+ import { createCliEmitter, emitCommandResult } from "../../cli/output.js";
+ import { CliError } from "../../shared/errors.js";
+@@ -133,6 +139,25 @@ export function extendBlockedTaskExecutionContract(opts: {
+   }).contract;
+ }
+ 
++export function taskWithRebasedExecutionGrant(opts: {
++  task: TaskData;
++  execution_contract: NonNullable<TaskData["execution_contract"]>;
++}) {
++  const executionGrant = executionGrantFromExtensions(opts.task.extensions);
++  if (!executionGrant) return opts.task;
++  return {
++    ...opts.task,
++    extensions: {
++      ...(opts.task.extensions ?? {}),
++      [EXECUTION_GRANT_EXTENSION_KEY]: rebaseExecutionGrantScope({
++        grant: executionGrant,
++        previous_execution_contract: opts.task.execution_contract!,
++        next_execution_contract: opts.execution_contract,
++      }),
++    },
++  };
++}
++
+ export async function cmdTaskScopeExtend(opts: {
+   ctx: CommandContext;
+   cwd: string;
+@@ -204,9 +229,13 @@ export async function cmdTaskScopeExtend(opts: {
+       });
+     }
+     const now = new Date().toISOString();
++    const taskWithRebasedGrant = taskWithRebasedExecutionGrant({
++      task,
++      execution_contract: executionContract,
++    });
+     await command.taskBackend.writeTask(
+       applyApprovedTaskScopeExtension({
+-        task,
++        task: taskWithRebasedGrant,
+         executionContract,
+         pending,
+         scopeRoots: opts.scopeRoots,
+diff --git a/packages/agentplane/src/commands/task/supervision-outcome-disposition.test.ts b/packages/agentplane/src/commands/task/supervision-outcome-disposition.test.ts
+index 3eee15cf1..31cd90172 100644
+--- a/packages/agentplane/src/commands/task/supervision-outcome-disposition.test.ts
++++ b/packages/agentplane/src/commands/task/supervision-outcome-disposition.test.ts
+@@ -15,6 +15,7 @@ const DIRECT_PAUSES = [
+   "human_input_required",
+   "wait_required",
+   "evaluator_rework",
++  "evaluator_blocked",
+   "evaluator_human_review",
+ ] as const satisfies readonly DirectTaskSupervisorStopCode[];
+ 
+@@ -32,6 +33,7 @@ const BRANCH_PAUSES = [
+   "human_input_required",
+   "wait_required",
+   "evaluator_rework",
++  "evaluator_blocked",
+   "evaluator_human_review",
+ ] as const satisfies readonly BranchTaskSupervisorStopCode[];
+ 
+diff --git a/packages/agentplane/src/commands/task/supervision-outcome-disposition.ts b/packages/agentplane/src/commands/task/supervision-outcome-disposition.ts
+index 46b523261..3bb19d017 100644
+--- a/packages/agentplane/src/commands/task/supervision-outcome-disposition.ts
++++ b/packages/agentplane/src/commands/task/supervision-outcome-disposition.ts
+@@ -23,7 +23,8 @@ export function directStopOutcome(code: DirectTaskSupervisorStopCode): Supervisi
+       return "awaiting_plan_approval";
+     }
+     case "semantic_input_required":
+-    case "evaluator_rework": {
++    case "evaluator_rework":
++    case "evaluator_blocked": {
+       return "external_wait";
+     }
+     case "human_input_required":
+@@ -38,7 +39,6 @@ export function directStopOutcome(code: DirectTaskSupervisorStopCode): Supervisi
+     case "supervisor_stopped":
+     case "executor_blocked":
+     case "missing_knowledge":
+-    case "evaluator_blocked":
+     case "verification_check_unsupported": {
+       return "blocked";
+     }
+@@ -72,7 +72,8 @@ export function branchStopOutcome(code: BranchTaskSupervisorStopCode): Supervisi
+       return "awaiting_plan_approval";
+     }
+     case "semantic_input_required":
+-    case "evaluator_rework": {
++    case "evaluator_rework":
++    case "evaluator_blocked": {
+       return "external_wait";
+     }
+     case "human_input_required":
+@@ -87,8 +88,7 @@ export function branchStopOutcome(code: BranchTaskSupervisorStopCode): Supervisi
+     case "unsupported_agent_episode":
+     case "supervisor_stopped":
+     case "executor_blocked":
+-    case "missing_knowledge":
+-    case "evaluator_blocked": {
++    case "missing_knowledge": {
+       return "blocked";
+     }
+     case "route_refresh_failed": {
+diff --git a/packages/core/src/tasks/index.ts b/packages/core/src/tasks/index.ts
+index ef606abd8..1c220b122 100644
+--- a/packages/core/src/tasks/index.ts
++++ b/packages/core/src/tasks/index.ts
+@@ -78,6 +78,7 @@ export {
+   parseHostUserDecision,
+   parseOperationLease,
+   parsePlanProposal,
++  rebaseExecutionGrantScope,
+   type ExecutionGrant,
+   type ExecutionGrantCapability,
+   type HostUserDecision,
+diff --git a/packages/core/src/tasks/plan-execution-grant.test.ts b/packages/core/src/tasks/plan-execution-grant.test.ts
+index 5e931add0..9951fe81e 100644
+--- a/packages/core/src/tasks/plan-execution-grant.test.ts
++++ b/packages/core/src/tasks/plan-execution-grant.test.ts
+@@ -14,6 +14,7 @@ import {
+   parseHostUserDecision,
+   parseOperationLease,
+   parsePlanProposal,
++  rebaseExecutionGrantScope,
+ } from "./plan-execution-grant.js";
+ 
+ const REPOSITORY_IDENTITY = `sha256:${"f".repeat(64)}`;
+@@ -212,6 +213,41 @@ describe("task-scoped execution grants", () => {
+         repository_identity: REPOSITORY_IDENTITY,
+       }),
+     ).toBe(false);
++
++    const rebased = rebaseExecutionGrantScope({
++      grant,
++      previous_execution_contract: initial,
++      next_execution_contract: materiallyExpanded,
++    });
++    expect(rebased).toMatchObject({
++      grant_id: grant.grant_id,
++      actor: grant.actor,
++      approval_kind: grant.approval_kind,
++      approval_evidence_digest: grant.approval_evidence_digest,
++      issued_at: grant.issued_at,
++    });
++    expect(rebased.digest).not.toBe(grant.digest);
++    expect(
++      isExecutionGrantActive({
++        grant: rebased,
++        task_id: "task-1",
++        plan: "Implement the approved repository change",
++        execution_contract: materiallyExpanded,
++        repository_identity: REPOSITORY_IDENTITY,
++      }),
++    ).toBe(true);
++
++    const completionDrift = {
++      ...materiallyExpanded,
++      verification: { required_evidence: ["task_outcome", "hosted_integration"] },
++    } satisfies TaskExecutionContract;
++    expect(() =>
++      rebaseExecutionGrantScope({
++        grant,
++        previous_execution_contract: initial,
++        next_execution_contract: completionDrift,
++      }),
++    ).toThrow(/logical completion contract/u);
+   });
+ 
+   it("deterministically upgrades a valid legacy grant without changing historical evidence", () => {
+diff --git a/packages/core/src/tasks/plan-execution-grant.ts b/packages/core/src/tasks/plan-execution-grant.ts
+index ed747a84a..200310197 100644
+--- a/packages/core/src/tasks/plan-execution-grant.ts
++++ b/packages/core/src/tasks/plan-execution-grant.ts
+@@ -377,6 +377,43 @@ export function isExecutionGrantActive(opts: {
+   );
+ }
+ 
++export function rebaseExecutionGrantScope(opts: {
++  grant: ExecutionGrant;
++  previous_execution_contract: TaskExecutionContract;
++  next_execution_contract: TaskExecutionContract;
++}): ExecutionGrant {
++  const previousScopeDigest = computeExecutionScopeDigest(opts.previous_execution_contract);
++  const previousCompletionDigest = computeLogicalCompletionContractDigest(
++    opts.previous_execution_contract,
++  );
++  if (
++    opts.grant.scope_digest !== previousScopeDigest ||
++    opts.grant.completion_contract_digest !== previousCompletionDigest
++  ) {
++    throw new Error("Execution grant is not active for the previous execution contract.");
++  }
++
++  const nextCompletionDigest = computeLogicalCompletionContractDigest(opts.next_execution_contract);
++  if (nextCompletionDigest !== previousCompletionDigest) {
++    throw new Error(
++      "Execution scope rebase cannot change the logical completion contract " +
++        `(previous=${previousCompletionDigest} next=${nextCompletionDigest}).`,
++    );
++  }
++
++  const { digest: _digest, ...current } = opts.grant;
++  const unsigned = {
++    ...current,
++    scope_digest: computeExecutionScopeDigest(opts.next_execution_contract),
++  };
++  const rebased = parseExecutionGrant({
++    ...unsigned,
++    digest: executionGrantDigest(unsigned),
++  });
++  if (!rebased) throw new Error("Execution scope rebase produced an invalid grant.");
++  return rebased;
++}
++
+ function removeValidBase64UrlPadding(encoded: string): string | null {
+   let paddingStart = encoded.length;
+   while (paddingStart > 0 && encoded.codePointAt(paddingStart - 1) === 61) {
