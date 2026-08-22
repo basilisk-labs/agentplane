@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608220851-XN5YNK/fix-the-pre-merge-closure-quality-gate-so-an-eva",
+  "created_at": "2026-08-22T09:31:11.730Z",
+  "diffstat_sha256": "sha256:d889f432b2a6476ca0c9ad405da59a13df1741a8297aa58832bdf77ae8db6594",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608220851-XN5YNK",
+  "updated_at": "2026-08-22T09:31:11.730Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

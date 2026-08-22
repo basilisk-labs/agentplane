@@ -6,6 +6,7 @@ import type { CommandContext } from "../shared/task-backend.js";
 import type { LoadedFinishTask, ResolvedCommitInfo } from "./finish-shared.js";
 
 const mocks = vi.hoisted(() => ({
+  gitIsAncestor: vi.fn(),
   gitRevParse: vi.fn(),
   isTaskLocalOnlyAdvance: vi.fn(),
   isTaskSetLocalOnlyAdvance: vi.fn(),
@@ -16,6 +17,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
+  gitIsAncestor: mocks.gitIsAncestor,
   gitRevParse: mocks.gitRevParse,
 }));
 vi.mock("../shared/task-local-freshness.js", () => ({
@@ -90,6 +92,7 @@ function mkExecution(): TaskExecutionContext {
 
 describe("finish quality review target selection", () => {
   beforeEach(() => {
+    mocks.gitIsAncestor.mockReset().mockResolvedValue(true);
     mocks.gitRevParse.mockReset().mockRejectedValue(new Error("no parent"));
     mocks.isTaskLocalOnlyAdvance.mockReset();
     mocks.isTaskSetLocalOnlyAdvance.mockReset();
@@ -128,6 +131,53 @@ describe("finish quality review target selection", () => {
       | undefined;
     expect(verificationCall?.evaluatedSha).toBe("impl-sha");
     expect(verificationCall?.targetContext?.execution).toEqual(mkExecution());
+  });
+
+  it("accepts an EVALUATOR pass anchored on a task-artifact-only descendant", async () => {
+    const loaded = mkLoadedTask("artifact-review-sha");
+    loaded.task.execution_contract = {
+      verification: { contract: { selected_checks: ["task_outcome"] } },
+    } as TaskData["execution_contract"];
+    mocks.isTaskLocalOnlyAdvance.mockResolvedValue(true);
+    const { assertQualityReviewBeforeFinish } = await import("./finish-blueprint-evidence.js");
+
+    await expect(
+      assertQualityReviewBeforeFinish({
+        ctx: mkCtx(),
+        loadedTasks: [loaded],
+        taskCommitInfo: { hash: "artifact-head-sha", message: "task: record evidence" },
+        implementationCommitInfo: { hash: "impl-sha", message: "feat: implementation" },
+        execution: mkExecution(),
+      }),
+    ).resolves.toBeUndefined();
+
+    expect(mocks.isTaskLocalOnlyAdvance).toHaveBeenCalledWith({
+      gitRoot: "/repo",
+      workflowDir: ".agentplane/tasks",
+      taskId: "T-1",
+      tasksPath: ".agentplane/tasks.json",
+      fromRef: "impl-sha",
+      toRef: "artifact-review-sha",
+    });
+    expect(mocks.hasAcceptedVerificationRecord).toHaveBeenCalledWith(
+      expect.objectContaining({ evaluatedSha: "artifact-review-sha" }),
+    );
+  });
+
+  it("rejects an EVALUATOR pass when the reviewed descendant contains semantic drift", async () => {
+    const loaded = mkLoadedTask("semantic-drift-sha");
+    mocks.isTaskLocalOnlyAdvance.mockResolvedValue(false);
+    const { assertQualityReviewBeforeFinish } = await import("./finish-blueprint-evidence.js");
+
+    await expect(
+      assertQualityReviewBeforeFinish({
+        ctx: mkCtx(),
+        loadedTasks: [loaded],
+        taskCommitInfo: { hash: "semantic-drift-sha", message: "feat: semantic drift" },
+        implementationCommitInfo: { hash: "impl-sha", message: "feat: implementation" },
+        execution: mkExecution(),
+      }),
+    ).rejects.toThrow("finish requires a fresh EVALUATOR quality review");
   });
 
   it("prefers explicit --implementation-commit over artifact --commit", async () => {
