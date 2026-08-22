@@ -78,6 +78,7 @@ export {
   parseHostUserDecision,
   parseOperationLease,
   parsePlanProposal,
+  rebaseExecutionGrantScope,
   type ExecutionGrant,
   type ExecutionGrantCapability,
   type HostUserDecision,

@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import {
+  createExecutionGrant,
+  createPlanProposal,
+  isExecutionGrantActive,
+} from "@agentplaneorg/core/tasks";
 import { makeTaskCommandContext, makeTaskFixture } from "@agentplane/testkit/task";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import {
@@ -11,7 +16,10 @@ import {
   TASK_SCOPE_EXTENSION_REQUEST_KEY,
 } from "../shared/task-scope-extension-request.js";
 
-import { extendBlockedTaskExecutionContract } from "./scope-extend.js";
+import {
+  extendBlockedTaskExecutionContract,
+  taskWithRebasedExecutionGrant,
+} from "./scope-extend.js";
 
 function fixture(
   overrides: Partial<TaskData> = {},
@@ -135,6 +143,69 @@ describe("blocked task execution scope extension", () => {
       state: "pending",
       note: "Invalidated by USER-approved execution scope extension.",
     });
+  });
+
+  it("persists a provenance-preserving active grant for an in-grant extension", () => {
+    const { command, pending, task } = fixture();
+    task.execution_contract!.authority.allowed_repository_effects.push("release_metadata");
+    task.execution_contract!.verification.required_evidence = [
+      ...new Set([
+        ...task.execution_contract!.verification.required_evidence,
+        "repository_effect:release_metadata",
+        "repository_effect:repository_write",
+      ]),
+    ].toSorted();
+    const repositoryIdentity = `sha256:${"f".repeat(64)}`;
+    const grant = createExecutionGrant({
+      proposal: createPlanProposal({
+        task_id: task.id,
+        task_revision: task.revision ?? 1,
+        plan: task.sections?.Plan ?? "",
+        execution_contract: task.execution_contract,
+        repository_identity: repositoryIdentity,
+      }),
+      execution_contract: task.execution_contract,
+      actor: "HOST:codex:USER",
+      approval_kind: "host_user_decision",
+      approval_evidence_digest: `sha256:${"a".repeat(64)}`,
+      issued_at: "2026-08-18T00:00:00.000Z",
+    });
+    task.extensions = {
+      ...(task.extensions ?? {}),
+      "agentplane.execution_grant": grant,
+    };
+    const executionContract = extendBlockedTaskExecutionContract({
+      command,
+      task,
+      scope_roots: ["website"],
+      repository_effects: ["release_metadata"],
+      request_digest: pending.request_digest,
+      by: "USER",
+    });
+    expect(executionContract.verification.required_evidence).toEqual(
+      task.execution_contract!.verification.required_evidence,
+    );
+
+    const updated = taskWithRebasedExecutionGrant({
+      task,
+      execution_contract: executionContract,
+    });
+    const rebased = updated.extensions?.["agentplane.execution_grant"];
+
+    expect(rebased).toMatchObject({
+      actor: grant.actor,
+      approval_kind: grant.approval_kind,
+      approval_evidence_digest: grant.approval_evidence_digest,
+    });
+    expect(
+      isExecutionGrantActive({
+        grant: rebased as typeof grant,
+        task_id: task.id,
+        plan: task.sections?.Plan ?? "",
+        execution_contract: executionContract,
+        repository_identity: repositoryIdentity,
+      }),
+    ).toBe(true);
   });
 
   it("requires a BLOCKED task, blocker receipt, and explicit USER authority", () => {

@@ -169,6 +169,17 @@ function reworkTask(verificationUpdatedAt: string): TaskData {
   return task;
 }
 
+function blockedReviewTask(recoveryReason?: "deterministic_evidence_gap"): TaskData {
+  const task = reworkTask("2026-07-23T23:59:59.000Z");
+  task.quality_review = {
+    ...task.quality_review!,
+    state: "blocked",
+    note: "The quality review is blocked on repository-fixable work.",
+    ...(recoveryReason ? { recovery_reason: recoveryReason } : {}),
+  };
+  return task;
+}
+
 function verificationReworkTask(withNewImplementation: boolean): TaskData {
   const task = reviewedTask();
   task.status = "DOING";
@@ -226,6 +237,27 @@ describe("DOING route quality rework", () => {
     );
     expect(blockers).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ code: "quality_review_stale" })]),
+    );
+  });
+
+  it("routes a non-evidence-gap blocked review to implementation rework", async () => {
+    const blockers = await blockersFor(reviewedSha, undefined, openPrFlow(), blockedReviewTask());
+
+    expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+  });
+
+  it("keeps a deterministic evidence gap out of implementation rework", async () => {
+    const blockers = await blockersFor(
+      reviewedSha,
+      undefined,
+      openPrFlow(),
+      blockedReviewTask("deterministic_evidence_gap"),
+    );
+
+    expect(blockers).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
     );
   });
 });

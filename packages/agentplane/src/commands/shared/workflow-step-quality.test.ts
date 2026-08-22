@@ -168,7 +168,7 @@ describe("quality evidence refresh route", () => {
     });
   });
 
-  it("does not refresh an unclassified semantic EVALUATOR block even when its evidence is current", () => {
+  it("routes an unclassified semantic EVALUATOR block to implementation rework", () => {
     const step = reduceRouteState(
       routeState({
         task: {
@@ -182,15 +182,45 @@ describe("quality evidence refresh route", () => {
           },
         },
         blockers: [
-          { code: "quality_review_stale", summary: "quality review requires frozen evidence" },
+          {
+            code: "implementation_rework_required",
+            summary: "blocked review requires repository rework",
+          },
         ],
       }),
     );
 
     expect(step).toMatchObject({
       kind: "agent_episode",
-      phase: "quality_review_needed",
-      episode: { purpose: "quality_review", role: "EVALUATOR" },
+      phase: "implementation_rework_required",
+      episode: { purpose: "implementation_rework", role: "CODER" },
+    });
+  });
+
+  it("routes a direct blocked review to implementation rework without another evaluator episode", () => {
+    const step = reduceRouteState(
+      routeState({
+        workflowMode: "direct",
+        task: {
+          ...task,
+          verification: { state: "ok", updated_at: "2026-07-29T14:40:00.000Z" },
+          quality_review: {
+            ...deterministicEvidenceGapReview(),
+            note: "The implementation violates the task invariant.",
+            findings: ["The implementation violates the task invariant."],
+            recovery_reason: undefined,
+          },
+        },
+        blockers: [],
+      }),
+    );
+
+    expect(step).toMatchObject({
+      kind: "agent_episode",
+      phase: "implementation_rework_required",
+      authoritativeCheckout: "current_checkout",
+      execution: { semanticMutationAllowed: true },
+      episode: { purpose: "implementation_rework", role: "CODER" },
     });
   });
 

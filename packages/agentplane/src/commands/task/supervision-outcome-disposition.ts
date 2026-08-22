@@ -23,7 +23,8 @@ export function directStopOutcome(code: DirectTaskSupervisorStopCode): Supervisi
       return "awaiting_plan_approval";
     }
     case "semantic_input_required":
-    case "evaluator_rework": {
+    case "evaluator_rework":
+    case "evaluator_blocked": {
       return "external_wait";
     }
     case "human_input_required":
@@ -38,7 +39,6 @@ export function directStopOutcome(code: DirectTaskSupervisorStopCode): Supervisi
     case "supervisor_stopped":
     case "executor_blocked":
     case "missing_knowledge":
-    case "evaluator_blocked":
     case "verification_check_unsupported": {
       return "blocked";
     }
@@ -72,7 +72,8 @@ export function branchStopOutcome(code: BranchTaskSupervisorStopCode): Supervisi
       return "awaiting_plan_approval";
     }
     case "semantic_input_required":
-    case "evaluator_rework": {
+    case "evaluator_rework":
+    case "evaluator_blocked": {
       return "external_wait";
     }
     case "human_input_required":
@@ -87,8 +88,7 @@ export function branchStopOutcome(code: BranchTaskSupervisorStopCode): Supervisi
     case "unsupported_agent_episode":
     case "supervisor_stopped":
     case "executor_blocked":
-    case "missing_knowledge":
-    case "evaluator_blocked": {
+    case "missing_knowledge": {
       return "blocked";
     }
     case "route_refresh_failed": {
