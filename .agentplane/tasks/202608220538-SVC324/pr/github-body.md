@@ -15,8 +15,8 @@ Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, arc
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -37,12 +37,12 @@ Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, arc
  .../commands/shared/workflow-step-quality.test.ts  | 38 +++++++++--
  .../src/commands/task/scope-extend.test.ts         | 76 +++++++++++++++++++++-
  .../agentplane/src/commands/task/scope-extend.ts   | 33 +++++++++-
- .../task/supervision-outcome-disposition.test.ts   |  2 +
+ .../task/supervision-outcome-disposition.test.ts   | 45 ++++++++++---
  .../task/supervision-outcome-disposition.ts        | 10 +--
  packages/core/src/tasks/index.ts                   |  1 +
  .../core/src/tasks/plan-execution-grant.test.ts    | 42 ++++++++++++
  packages/core/src/tasks/plan-execution-grant.ts    | 37 +++++++++++
- 15 files changed, 309 insertions(+), 21 deletions(-)
+ 15 files changed, 344 insertions(+), 29 deletions(-)
 ```
 
 </details>
