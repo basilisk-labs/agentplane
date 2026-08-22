@@ -1,0 +1,109 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks\nScope: branch_pr task 202608221017-2HT3N7 Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks\nScope: branch_pr task 202608221017-2HT3N7 Verification Contract check critical_paths\n\nCheck: full_regression\nCommand: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks\nScope: branch_pr task 202608221017-2HT3N7 Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks\nScope: branch_pr task 202608221017-2HT3N7 Verification Contract check hosted_integration\n\nCheck: task_outcome\nCommand: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks\nScope: branch_pr task 202608221017-2HT3N7 Verification Contract check task_outcome",
+  "digest": "sha256:c0477463db4b4d92ff424175daaaeb0fd16a7bf4b8aa6198fd2dfa3417ccb10d",
+  "implementation_sha": "b2e7c138fd33a094ac62d263af4debb087c3b7c2",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:8c82be4ca185ea607ffbdda581e0f3d96dd2759a3f823c2cdbeb10a08b1351dd",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:6bf7b69db1a5b0137fadf5e29e9350c37e6529cb05ddf540b75d41b51fa4c28e",
+      "digest": "sha256:13b388502b16c01f93aeb922540aa85cb09894a11a5ed0a00ee1ce612179cca1",
+      "references": [
+        {
+          "digest": "sha256:45ba556d0f7d37882e31a80e45f0b7521053cae8cbf2eef586063859c8acfcf8",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "49a18763cb42144bc5279ddb129c51c63acd9244",
+      "digest": "sha256:585b0d836d4bfbc3568d88c91dea0086108269606a98e0ab308b2a0567ceb015",
+      "primary_task_id": "202608221017-2HT3N7",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608221017-2HT3N7"
+      ]
+    },
+    "implementation": {
+      "base_sha": "49a18763cb42144bc5279ddb129c51c63acd9244",
+      "digest": "sha256:a0de6dbe5145fbf012af60fd39dcd9985e6c5b03a88163b5dc101b8e8bbc4cdf",
+      "strategy": "branch_diff",
+      "target_sha": "b2e7c138fd33a094ac62d263af4debb087c3b7c2"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:8b7e271887390f608a9aa0f0aabc4ccec7b53c017f50220404281c67dda36043",
+    "verify_steps_digest": "sha256:26dd3a31aaf3763020301924d517a4a5b502aa094f75b76e490f126a2efc955e"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-22T10:22:35.168Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Port the complete pre-merge quality-review lifecycle fix from blocked task 202608220851-XN5YNK into a clean branch_pr task: accept only proven task-artifact-only reviewed descendants, normalize closure-owned token_usage and implementation commit message while preserving the implementation hash, and clear task_centric_replan_required when a replacement canonical plan is supplied. Include the focused regression tests already proven in the blocked task.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Port the complete pre-merge quality-review lifecycle fix from blocked task 202608220851-XN5YNK into a clean branch_pr task: accept only proven task-artifact-only reviewed descendants, normalize closure-owned token_usage and implementation commit message while preserving the implementation hash, and clear task_centric_replan_required when a replacement canonical plan is supplied. Include the focused regression tests already proven in the blocked task.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:26dd3a31aaf3763020301924d517a4a5b502aa094f75b76e490f126a2efc955e",
+  "task_id": "202608221017-2HT3N7",
+  "verification_command": "agentplane verify 202608221017-2HT3N7 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

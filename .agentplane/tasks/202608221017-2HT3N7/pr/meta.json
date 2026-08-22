@@ -3,7 +3,8 @@
   "branch": "task/202608221017-2HT3N7/port-the-complete-pre-merge-quality-review-lifec",
   "created_at": "2026-08-22T10:19:00.838Z",
   "diffstat_sha256": "sha256:dcd0238c8c9a32563b74d7402a5d7e5fe923f914ba11c24a2c97411433536432",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-22T10:22:35.168Z",
+  "last_verified_diffstat_sha256": "sha256:dcd0238c8c9a32563b74d7402a5d7e5fe923f914ba11c24a2c97411433536432",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202608221017-2HT3N7",
   "updated_at": "2026-08-22T10:19:00.838Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

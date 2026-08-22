@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "command": "bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts",
+      "duration_ms": 2083,
+      "exit_code": 0,
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221017-2HT3N7-port-the-complete-pre-merge-quality-review-lifec\n\n/repo/.agentplane/tasks/T-1/README.md\n\n Test Files  2 passed (2)\n      Tests  27 passed (27)\n   Start at  13:22:33\n   Duration  832ms (transform 906ms, setup 0ms, import 479ms, tests 902ms, environment 0ms)\n\n"
+    },
+    {
+      "command": "bun run typecheck",
+      "duration_ms": 96,
+      "exit_code": 0,
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202608221017-2HT3N7"
+}
