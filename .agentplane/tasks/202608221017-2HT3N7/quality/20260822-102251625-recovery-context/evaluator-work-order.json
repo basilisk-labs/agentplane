@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608221017-2HT3N7-28666946536d725214703f77",
+  "prepared_at": "2026-08-22T10:22:51.625Z",
+  "task": {
+    "id": "202608221017-2HT3N7",
+    "revision": 8,
+    "objective": "Port the complete pre-merge quality-review lifecycle fix from blocked task 202608220851-XN5YNK into a clean branch_pr task: accept only proven task-artifact-only reviewed descendants, normalize closure-owned token_usage and implementation commit message while preserving the implementation hash, and clear task_centric_replan_required when a replacement canonical plan is supplied. Include the focused regression tests already proven in the blocked task.\n\nA clean task is required because the original supervisor journal correctly refuses replay after state drift. Keep changes to packages/agentplane/src/commands/task and packages/agentplane/src/commands/shared/quality-review-target.ts plus task-owned tests.",
+    "acceptance_criteria": [
+      "bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts",
+      "bun run typecheck",
+      "- In scope: A clean task is required because the original supervisor journal correctly refuses replay after state drift. Keep changes to packages/agentplane/src/commands/task and packages/agentplane/src/commands/shared/quality-review-target.ts plus task-owned tests.\n- Out of scope: unrelated refactors not required for \"Port the complete pre-merge quality-review lifecycle fix from blocked task 202608220851-XN5YNK into a clean branch_pr task: accept only proven task-artifact-only reviewed descendants, normalize closure-owned token_usage and implementation commit message while preserving the implementation hash, and clear task_centric_replan_required when a replacement canonical plan is supplied. Include the focused regression tests already proven in the blocked task.\".",
+      "Port the proven lifecycle quality-gate and canonical-plan fixes into one clean, schedulable branch_pr WorkItem.",
+      "PLANNER fallback scaffold for \"Port the complete pre-merge quality-review lifecycle fix from blocked task 202608220851-XN5YNK into a clean branch_pr task: accept only proven task-artifact-only reviewed descendants, normalize closure-owned token_usage and implementation commit message while preserving the implementation hash, and clear task_centric_replan_required when a replacement canonical plan is supplied. Include the focused regression tests already proven in the blocked task.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Port the complete pre-merge quality-review lifecycle fix from blocked task 202608220851-XN5YNK into a clean branch_pr task: accept only proven task-artifact-only reviewed descendants, normalize closure-owned token_usage and implementation commit message while preserving the implementation hash, and clear task_centric_replan_required when a replacement canonical plan is supplied. Include the focused regression tests already proven in the blocked task.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "b2e7c138fd33a094ac62d263af4debb087c3b7c2",
+  "diff_base_sha": "49a18763cb42144bc5279ddb129c51c63acd9244",
+  "blueprint_digest": "75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608221017-2HT3N7/quality/20260822-102251625-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:31b25cc368ea9b870cb54a1bc6847f5bcd7bf745809cb2383dd73f8a082c342b",
+    "prompt_path": ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/c138d04d66e1b13901a083644cd1059fa982cb72d7e6552a757b1117c8da8598.md",
+    "result_schema_path": ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608221017-2HT3N7/README.md",
+      "sha256": "sha256:4be0a518239b370dcd6712abf7dde37b274f7cb80316ff331ec0cd86a25602c7",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/d7d07de9baacb223b5f0c92621edb7f3d9d01903bb53b9cdfd6327bacf371a68.patch",
+      "sha256": "sha256:d7d07de9baacb223b5f0c92621edb7f3d9d01903bb53b9cdfd6327bacf371a68",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/d779fd3719458caa5880806184a234fed0e7dce651cece1611af37931f8af479.json",
+      "sha256": "sha256:d779fd3719458caa5880806184a234fed0e7dce651cece1611af37931f8af479",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608221017-2HT3N7/verification/20260822102235168-c0477463db4b4d92.json",
+      "sha256": "sha256:9b0077c665112cfd71f751f8d7cb48b169b08da00d03efce77396f273afdf5b6",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/db5535bad06e966855e2678a3ea5532e81f1e64e32df13f19d9cb83eaee04fef.json",
+      "sha256": "sha256:db5535bad06e966855e2678a3ea5532e81f1e64e32df13f19d9cb83eaee04fef",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

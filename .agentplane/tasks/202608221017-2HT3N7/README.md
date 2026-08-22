@@ -4,7 +4,7 @@ title: "Port the complete pre-merge quality-review lifecycle fix from blocked ta
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -27,6 +27,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-22T10:23:54.394Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "b2e7c138fd33a094ac62d263af4debb087c3b7c2"
+  blueprint_digest: "75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705"
+  evidence_refs:
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/20260822-102251625-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/20260822-102251625-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/c138d04d66e1b13901a083644cd1059fa982cb72d7e6552a757b1117c8da8598.md"
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/20260822-102251625-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/20260822-102251625-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/20260822-102251625-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608221017-2HT3N7/README.md"
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/d7d07de9baacb223b5f0c92621edb7f3d9d01903bb53b9cdfd6327bacf371a68.patch"
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/d779fd3719458caa5880806184a234fed0e7dce651cece1611af37931f8af479.json"
+    - ".agentplane/tasks/202608221017-2HT3N7/verification/20260822102235168-c0477463db4b4d92.json"
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/db5535bad06e966855e2678a3ea5532e81f1e64e32df13f19d9cb83eaee04fef.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The finish gate requires implementation ancestry and task-artifact-only drift before accepting a reviewed descendant."
+    - "Lifecycle normalization ignores token usage and only the implementation commit message while preserving the implementation hash."
+    - "A replacement canonical plan clears the stale replan marker."
+    - "Focused regression tests, typecheck, ESLint, and diff validation pass."
+    - "Residual risk: Hosted integration remains a supervisor-owned post-PR gate."
 execution_route:
   frozen: true
   reason_codes:

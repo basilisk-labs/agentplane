@@ -1,0 +1,311 @@
+diff --git a/packages/agentplane/src/commands/shared/quality-review-target.ts b/packages/agentplane/src/commands/shared/quality-review-target.ts
+index 004482bf2..8ed0fd114 100644
+--- a/packages/agentplane/src/commands/shared/quality-review-target.ts
++++ b/packages/agentplane/src/commands/shared/quality-review-target.ts
+@@ -116,6 +116,7 @@ function lifecycleComparableTaskReadme(markdown: string): string | null {
+       "revision",
+       "result_summary",
+       "status",
++      "token_usage",
+       "verification",
+       "quality_review",
+       "commit",
+@@ -130,6 +131,11 @@ function lifecycleComparableTaskReadme(markdown: string): string | null {
+       const extensions = { ...frontmatter.extensions };
+       Reflect.deleteProperty(extensions, SIDE_EFFECT_AUTHORITY_EXTENSION_KEY);
+       Reflect.deleteProperty(extensions, WORKFLOW_ROUTE_BASELINE_EXTENSION_KEY);
++      if (isRecord(extensions.implementation_commit)) {
++        const implementationCommit = { ...extensions.implementation_commit };
++        Reflect.deleteProperty(implementationCommit, "message");
++        extensions.implementation_commit = implementationCommit;
++      }
+       if (Object.keys(extensions).length === 0) {
+         Reflect.deleteProperty(frontmatter, "extensions");
+       } else {
+diff --git a/packages/agentplane/src/commands/task/finish-blueprint-evidence.ts b/packages/agentplane/src/commands/task/finish-blueprint-evidence.ts
+index 7d955edb9..7cfde2e8f 100644
+--- a/packages/agentplane/src/commands/task/finish-blueprint-evidence.ts
++++ b/packages/agentplane/src/commands/task/finish-blueprint-evidence.ts
+@@ -6,7 +6,10 @@ import { gitIsAncestor } from "@agentplaneorg/core/git";
+ import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
+ import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+-import { isTaskSetLocalOnlyAdvance } from "../shared/task-local-freshness.js";
++import {
++  isTaskLocalOnlyAdvance,
++  isTaskSetLocalOnlyAdvance,
++} from "../shared/task-local-freshness.js";
+ import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+ import {
+   hasAcceptedVerificationRecord,
+@@ -139,12 +142,7 @@ async function resolveExpectedQualitySha(opts: {
+   baselineSha: string | null;
+ }): Promise<string | null> {
+   const reviewedSha = opts.loaded.task.quality_review?.evaluated_sha ?? null;
+-  if (
+-    opts.taskIds.length <= 1 ||
+-    !opts.baselineSha ||
+-    !reviewedSha ||
+-    reviewedSha === opts.baselineSha
+-  ) {
++  if (!opts.baselineSha || !reviewedSha || reviewedSha === opts.baselineSha) {
+     return opts.baselineSha;
+   }
+ 
+@@ -155,13 +153,24 @@ async function resolveExpectedQualitySha(opts: {
+   ).catch(() => false);
+   if (!reviewedAfterBaseline) return opts.baselineSha;
+ 
+-  const taskArtifactsOnly = await isTaskSetLocalOnlyAdvance({
+-    gitRoot: opts.ctx.resolvedProject.gitRoot,
+-    workflowDir: opts.ctx.config.paths.workflow_dir,
+-    taskIds: opts.taskIds,
+-    tasksPath: opts.ctx.config.paths.tasks_path,
+-    fromRef: opts.baselineSha,
+-    toRef: reviewedSha,
+-  }).catch(() => false);
++  const taskArtifactsOnly = await (
++    opts.taskIds.length === 1
++      ? isTaskLocalOnlyAdvance({
++          gitRoot: opts.ctx.resolvedProject.gitRoot,
++          workflowDir: opts.ctx.config.paths.workflow_dir,
++          taskId: opts.loaded.taskId,
++          tasksPath: opts.ctx.config.paths.tasks_path,
++          fromRef: opts.baselineSha,
++          toRef: reviewedSha,
++        })
++      : isTaskSetLocalOnlyAdvance({
++          gitRoot: opts.ctx.resolvedProject.gitRoot,
++          workflowDir: opts.ctx.config.paths.workflow_dir,
++          taskIds: opts.taskIds,
++          tasksPath: opts.ctx.config.paths.tasks_path,
++          fromRef: opts.baselineSha,
++          toRef: reviewedSha,
++        })
++  ).catch(() => false);
+   return taskArtifactsOnly ? reviewedSha : opts.baselineSha;
+ }
+diff --git a/packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts b/packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts
+index 0f5854837..a742e7681 100644
+--- a/packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts
++++ b/packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts
+@@ -3,9 +3,11 @@ import { defaultConfig } from "@agentplaneorg/core/config";
+ import type { TaskData } from "../../backends/task-backend.js";
+ import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+ import type { CommandContext } from "../shared/task-backend.js";
++import { taskReadmesHaveOnlyLifecycleDrift } from "../shared/quality-review-target.js";
+ import type { LoadedFinishTask, ResolvedCommitInfo } from "./finish-shared.js";
+ 
+ const mocks = vi.hoisted(() => ({
++  gitIsAncestor: vi.fn(),
+   gitRevParse: vi.fn(),
+   isTaskLocalOnlyAdvance: vi.fn(),
+   isTaskSetLocalOnlyAdvance: vi.fn(),
+@@ -16,6 +18,7 @@ const mocks = vi.hoisted(() => ({
+ 
+ vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
+   ...(await importOriginal<Record<string, unknown>>()),
++  gitIsAncestor: mocks.gitIsAncestor,
+   gitRevParse: mocks.gitRevParse,
+ }));
+ vi.mock("../shared/task-local-freshness.js", () => ({
+@@ -90,6 +93,7 @@ function mkExecution(): TaskExecutionContext {
+ 
+ describe("finish quality review target selection", () => {
+   beforeEach(() => {
++    mocks.gitIsAncestor.mockReset().mockResolvedValue(true);
+     mocks.gitRevParse.mockReset().mockRejectedValue(new Error("no parent"));
+     mocks.isTaskLocalOnlyAdvance.mockReset();
+     mocks.isTaskSetLocalOnlyAdvance.mockReset();
+@@ -103,6 +107,40 @@ describe("finish quality review target selection", () => {
+     });
+   });
+ 
++  it("treats pre-merge token usage as lifecycle-only task metadata", () => {
++    const before = `---
++id: T-1
++title: Quality target
++status: DOING
++revision: 1
++extensions:
++  implementation_commit:
++    hash: abc123
++---
++# Quality target
++`;
++    const after = `---
++id: T-1
++title: Quality target
++status: DONE
++revision: 2
++token_usage:
++  agent_runs: 1
++  journal_digest: "sha256:test"
++  observed_by: agentplane
++  source: supervisor_journal
++  state: unavailable
++extensions:
++  implementation_commit:
++    hash: abc123
++    message: "feat: reviewed implementation"
++---
++# Quality target
++`;
++
++    expect(taskReadmesHaveOnlyLifecycleDrift(before, after)).toBe(true);
++  });
++
+   it("blocks finish when the persisted Verification Contract lacks accepted evidence", async () => {
+     const loaded = mkLoadedTask();
+     loaded.task.execution_contract = {
+@@ -130,6 +168,72 @@ describe("finish quality review target selection", () => {
+     expect(verificationCall?.targetContext?.execution).toEqual(mkExecution());
+   });
+ 
++  it("accepts an EVALUATOR pass anchored on a task-artifact-only descendant", async () => {
++    const loaded = mkLoadedTask("artifact-review-sha");
++    loaded.task.execution_contract = {
++      verification: { contract: { selected_checks: ["task_outcome"] } },
++    } as TaskData["execution_contract"];
++    mocks.isTaskLocalOnlyAdvance.mockResolvedValue(true);
++    const { assertQualityReviewBeforeFinish } = await import("./finish-blueprint-evidence.js");
++
++    await expect(
++      assertQualityReviewBeforeFinish({
++        ctx: mkCtx(),
++        loadedTasks: [loaded],
++        taskCommitInfo: { hash: "artifact-head-sha", message: "task: record evidence" },
++        implementationCommitInfo: { hash: "impl-sha", message: "feat: implementation" },
++        execution: mkExecution(),
++      }),
++    ).resolves.toBeUndefined();
++
++    expect(mocks.isTaskLocalOnlyAdvance).toHaveBeenCalledWith({
++      gitRoot: "/repo",
++      workflowDir: ".agentplane/tasks",
++      taskId: "T-1",
++      tasksPath: ".agentplane/tasks.json",
++      fromRef: "impl-sha",
++      toRef: "artifact-review-sha",
++    });
++    expect(mocks.hasAcceptedVerificationRecord).toHaveBeenCalledWith(
++      expect.objectContaining({ evaluatedSha: "artifact-review-sha" }),
++    );
++  });
++
++  it("rejects an EVALUATOR pass when the reviewed descendant contains semantic drift", async () => {
++    const loaded = mkLoadedTask("semantic-drift-sha");
++    mocks.isTaskLocalOnlyAdvance.mockResolvedValue(false);
++    const { assertQualityReviewBeforeFinish } = await import("./finish-blueprint-evidence.js");
++
++    await expect(
++      assertQualityReviewBeforeFinish({
++        ctx: mkCtx(),
++        loadedTasks: [loaded],
++        taskCommitInfo: { hash: "semantic-drift-sha", message: "feat: semantic drift" },
++        implementationCommitInfo: { hash: "impl-sha", message: "feat: implementation" },
++        execution: mkExecution(),
++      }),
++    ).rejects.toThrow("finish requires a fresh EVALUATOR quality review");
++  });
++
++  it("rejects a reviewed commit outside the implementation ancestry", async () => {
++    const loaded = mkLoadedTask("unrelated-review-sha");
++    mocks.gitIsAncestor.mockResolvedValue(false);
++    mocks.isTaskLocalOnlyAdvance.mockResolvedValue(true);
++    const { assertQualityReviewBeforeFinish } = await import("./finish-blueprint-evidence.js");
++
++    await expect(
++      assertQualityReviewBeforeFinish({
++        ctx: mkCtx(),
++        loadedTasks: [loaded],
++        taskCommitInfo: { hash: "unrelated-review-sha", message: "task: unrelated evidence" },
++        implementationCommitInfo: { hash: "impl-sha", message: "feat: implementation" },
++        execution: mkExecution(),
++      }),
++    ).rejects.toThrow("finish requires a fresh EVALUATOR quality review");
++
++    expect(mocks.isTaskLocalOnlyAdvance).not.toHaveBeenCalled();
++  });
++
+   it("prefers explicit --implementation-commit over artifact --commit", async () => {
+     mocks.readCommitInfo.mockResolvedValue({ hash: "impl-sha", message: "feat: implement T-1" });
+     const { resolveImplementationCommitInfo } = await import("./finish-execute-commit.js");
+diff --git a/packages/agentplane/src/commands/task/plan.ts b/packages/agentplane/src/commands/task/plan.ts
+index 058cba35d..7b61055e7 100644
+--- a/packages/agentplane/src/commands/task/plan.ts
++++ b/packages/agentplane/src/commands/task/plan.ts
+@@ -154,7 +154,9 @@ export async function setTaskPlan(opts: {
+           ? (() => {
+               const next = { ...(current.extensions ?? {}), ...(suppliedExtensions ?? {}) };
+               delete next[EXECUTION_GRANT_EXTENSION_KEY];
+-              if (!suppliedExtensions?.[TASK_CENTRIC_EXTENSION_KEY]) {
++              if (suppliedExtensions?.[TASK_CENTRIC_EXTENSION_KEY]) {
++                delete next[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY];
++              } else {
+                 next[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY] = {
+                   schema_version: 1,
+                   reason_code: planChanged ? "plan_changed" : "execution_contract_changed",
+diff --git a/packages/agentplane/src/commands/task/plan.unit.test.ts b/packages/agentplane/src/commands/task/plan.unit.test.ts
+index bc23e1bf9..e6ba15e90 100644
+--- a/packages/agentplane/src/commands/task/plan.unit.test.ts
++++ b/packages/agentplane/src/commands/task/plan.unit.test.ts
+@@ -90,6 +90,58 @@ describe("task plan commands (unit)", () => {
+     mockResolveLogicalRepositoryIdentity.mockResolvedValue(`sha256:${"f".repeat(64)}`);
+   });
+ 
++  it("setTaskPlan clears the replan marker when a replacement canonical plan is supplied", async () => {
++    const ctx = mkCtx();
++    let currentTask = mkTask({
++      id: "T-1",
++      doc: [
++        "## Summary",
++        "x",
++        "",
++        "## Plan",
++        "old",
++        "",
++        "## Verify Steps",
++        "ok",
++        "",
++        "## Notes",
++        "n/a",
++      ].join("\n"),
++      extensions: {
++        "agentplane.task_centric": { schema_version: 1, id: "T-1" },
++        "agentplane.task_centric_replan_required": {
++          schema_version: 1,
++          reason_code: "plan_changed",
++        },
++      },
++    });
++    const replacement = { schema_version: 1, id: "T-1", revision: 2 };
++    const store = {
++      update: vi
++        .fn()
++        .mockImplementation(
++          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
++            currentTask = await updater(currentTask);
++            return { changed: true, task: currentTask };
++          },
++        ),
++    };
++    mockBackendIsLocalFileBackend.mockReturnValue(true);
++    mockGetTaskStore.mockReturnValue(store);
++
++    const { setTaskPlan } = await import("./plan.js");
++    await setTaskPlan({
++      ctx,
++      cwd: "/repo",
++      taskId: "T-1",
++      text: "replacement",
++      taskFields: { extensions: { "agentplane.task_centric": replacement } },
++    });
++
++    expect(currentTask.extensions?.["agentplane.task_centric"]).toEqual(replacement);
++    expect(currentTask.extensions).not.toHaveProperty("agentplane.task_centric_replan_required");
++  });
++
+   it("cmdTaskPlanApprove rejects empty --by", async () => {
+     const ctx = mkCtx();
+     mockLoadTaskFromContext.mockResolvedValue(mkTask({ doc: "## Summary\nx\n" }));
