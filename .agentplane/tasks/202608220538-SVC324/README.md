@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -31,6 +31,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-22T06:54:02.431Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf"
+  blueprint_digest: "bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb"
+  evidence_refs:
+    - ".agentplane/tasks/202608220538-SVC324/quality/20260822-065233870-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608220538-SVC324/quality/20260822-065233870-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/ea52707aac6fa8f89a0eaedc2ffe6eb1185345819a8c06bc8838eb58cc687e5e.md"
+    - ".agentplane/tasks/202608220538-SVC324/quality/20260822-065233870-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608220538-SVC324/quality/20260822-065233870-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608220538-SVC324/quality/20260822-065233870-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608220538-SVC324/README.md"
+    - ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/957dd465d7b4af6300aca995fca7ac15a5a91a2ba9f2293354c7410c6533c02b.patch"
+    - ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/123d12a9fa8178cff7cbaa047e4fc81a2cafb92a3bdc71b1bde73bcdc6102cc5.json"
+    - ".agentplane/tasks/202608220538-SVC324/verification/20260822065220291-dcac4d5a8f71e03b.json"
+    - ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/5d31a02d0e9d479f0205b716461e59dda9200538084bfa6c7938686b2f4aa7b6.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Scope-rebased grants preserve approval provenance and completion binding while recomputing the authorized execution scope digest."
+    - "Both supervisor routes keep evaluator_blocked recoverable and non-terminal, while deterministic evidence gaps and human review retain separate authority paths."
+    - "Both incidents are absent from synchronized active registries and archived with exact item result and evidence commits."
+    - "Residual risk: The final PR head still requires publication, hosted CI, exact-SHA integration, and post-merge closeout before release."
 token_usage:
   agent_runs: 4
   input_tokens: null
@@ -441,7 +470,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T06:52:23.053Z"
+doc_updated_at: "2026-08-22T06:54:02.542Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, archive both incidents with exact evidence, and unblock the approved patch release."
 sections:
