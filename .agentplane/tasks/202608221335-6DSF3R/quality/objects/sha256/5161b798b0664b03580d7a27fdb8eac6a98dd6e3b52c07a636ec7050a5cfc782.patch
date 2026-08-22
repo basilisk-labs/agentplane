@@ -1,0 +1,267 @@
+diff --git a/.agentplane/policy/incidents.md b/.agentplane/policy/incidents.md
+index 3499a0898..96760c528 100644
+--- a/.agentplane/policy/incidents.md
++++ b/.agentplane/policy/incidents.md
+@@ -1,3 +1,4 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
++- id: INC-20260822-01 | date: 2026-08-22 | scope: task-centric external result routing | tags: task-centric, idempotency, core, regression | match: task-centric, idempotency, core, regression, task, centric, external, result, routing, fix, idempotent, null, workitem, acceptance, the, proven | failure: Multiple CLAIMED items currently fall through to WorkItemScheduler, which can select an unrelated READY item. | advice: Reject ambiguous claimed targets and prove scheduler fallback is used only when no WorkItem is claimed. | rule: Analogous task-centric external result routing work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608221335-6DSF3R; commit fdbbd71ca81e | enforcement: manual | fixability: repo-fixable | state: open
+diff --git a/packages/agentplane/assets/policy/incidents.md b/packages/agentplane/assets/policy/incidents.md
+index 3499a0898..96760c528 100644
+--- a/packages/agentplane/assets/policy/incidents.md
++++ b/packages/agentplane/assets/policy/incidents.md
+@@ -1,3 +1,4 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
++- id: INC-20260822-01 | date: 2026-08-22 | scope: task-centric external result routing | tags: task-centric, idempotency, core, regression | match: task-centric, idempotency, core, regression, task, centric, external, result, routing, fix, idempotent, null, workitem, acceptance, the, proven | failure: Multiple CLAIMED items currently fall through to WorkItemScheduler, which can select an unrelated READY item. | advice: Reject ambiguous claimed targets and prove scheduler fallback is used only when no WorkItem is claimed. | rule: Analogous task-centric external result routing work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608221335-6DSF3R; commit fdbbd71ca81e | enforcement: manual | fixability: repo-fixable | state: open
+diff --git a/packages/agentplane/src/commands/task/task-centric-external-result.test.ts b/packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+index f1a11ed76..914945a1d 100644
+--- a/packages/agentplane/src/commands/task/task-centric-external-result.test.ts
++++ b/packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+@@ -51,22 +51,32 @@ function check(id: string, command?: string) {
+   };
+ }
+ 
+-function initialTask(command?: string): TaskData {
++function initialTask(
++  command?: string,
++  items: readonly Readonly<{
++    id: string;
++    depends_on: readonly string[];
++    required_inputs: readonly string[];
++  }>[] = [
++    { id: "a", depends_on: [], required_inputs: [] },
++    { id: "b", depends_on: ["a"], required_inputs: ["out-a"] },
++  ],
++): TaskData {
+   const proposal: TaskPlanProposal = {
+     schema_version: 1,
+     task_id: TASK_ID,
+     planning_baseline: repository(),
+     work_items: {
+       schema_version: 1,
+-      work_items: ["a", "b"].map((id, index) => ({
+-        id,
+-        objective: `Implement ${id}`,
+-        depends_on: index === 0 ? [] : ["a"],
+-        required_inputs: index === 0 ? [] : ["out-a"],
+-        expected_outputs: [`out-${id}`],
++      work_items: items.map((item, index) => ({
++        id: item.id,
++        objective: `Implement ${item.id}`,
++        depends_on: [...item.depends_on],
++        required_inputs: [...item.required_inputs],
++        expected_outputs: [`out-${item.id}`],
+         scope_roots: ["packages"],
+-        acceptance_criteria: check(id, id === "a" ? command : undefined).criteria,
+-        validation: check(id, id === "a" ? command : undefined),
++        acceptance_criteria: check(item.id, item.id === "a" ? command : undefined).criteria,
++        validation: check(item.id, item.id === "a" ? command : undefined),
+         context: {
+           required_sources: ["repository"],
+           optional_sources: [],
+@@ -77,7 +87,7 @@ function initialTask(command?: string): TaskData {
+         capabilities: ["task.verify"],
+         resource_claims: [{ kind: "path" as const, resource: "packages", mode: "write" as const }],
+         optional: false,
+-        priority: 2 - index,
++        priority: items.length - index,
+       })),
+     },
+     assumptions: [],
+@@ -168,7 +178,7 @@ function memoryBackend(
+   } as TaskBackend & { current(): TaskData; replace(task: TaskData): void };
+ }
+ 
+-function workOrder(workItemId: string, workOrderId: string): AgentWorkOrderV2 {
++function workOrder(workItemId: string | null, workOrderId: string): AgentWorkOrderV2 {
+   return {
+     work_order_id: workOrderId,
+     role: "EXECUTOR",
+@@ -192,6 +202,117 @@ const semantic = {
+ } as const satisfies AgentSemanticResult;
+ 
+ describe("recordTaskCentricExternalResult", () => {
++  it("rejects a null-ID result when multiple WorkItems are claimed", async () => {
++    const initial = initialTask(undefined, [
++      { id: "a", depends_on: [], required_inputs: [] },
++      { id: "b", depends_on: [], required_inputs: [] },
++      { id: "c", depends_on: [], required_inputs: [] },
++    ]);
++    const aggregate = taskCentricAggregateFromExtensions(initial.extensions)!;
++    const backend = memoryBackend({
++      ...initial,
++      extensions: withTaskCentricAggregate(initial.extensions, {
++        ...aggregate,
++        work_items: {
++          ...aggregate.work_items,
++          a: { ...aggregate.work_items.a!, state: "CLAIMED", claim_id: "claim-a" },
++          b: { ...aggregate.work_items.b!, state: "CLAIMED", claim_id: "claim-b" },
++        },
++      }),
++    });
++    const command = { taskBackend: backend } as unknown as CommandContext;
++    const revision = backend.current().revision;
++
++    await expect(
++      recordTaskCentricExternalResult({
++        command,
++        work_order: workOrder(null, "work-ambiguous-claims"),
++        semantic: { ...semantic, work_order_id: "work-ambiguous-claims" },
++        verification: {
++          status: "passed",
++          artifact_path: ".agentplane/checks.json",
++          checks: [],
++          reason: null,
++        },
++        head: HEAD,
++        dirty_paths: [],
++      }),
++    ).rejects.toMatchObject({
++      code: "E_VALIDATION",
++      message: "A null-ID WorkItem result is ambiguous because multiple WorkItems are claimed.",
++    });
++    expect(backend.current().revision).toBe(revision);
++    const workItems = taskCentricAggregateFromExtensions(backend.current().extensions)?.work_items;
++    expect(Object.keys(workItems ?? {}).toSorted()).toEqual(["a", "b", "c"]);
++    expect(workItems).toMatchObject({
++      a: { state: "CLAIMED", claim_id: "claim-a" },
++      b: { state: "CLAIMED", claim_id: "claim-b" },
++      c: { state: "READY", claim_id: null },
++    });
++  });
++
++  it("replays a null-ID result against its claimed WorkItem instead of the next item", async () => {
++    const initial = initialTask();
++    const aggregate = taskCentricAggregateFromExtensions(initial.extensions)!;
++    const backend = memoryBackend({
++      ...initial,
++      extensions: withTaskCentricAggregate(initial.extensions, {
++        ...aggregate,
++        work_items: {
++          ...aggregate.work_items,
++          a: { ...aggregate.work_items.a!, state: "CLAIMED", claim_id: "claim-a" },
++        },
++      }),
++    });
++    const command = { taskBackend: backend } as unknown as CommandContext;
++    const verification = {
++      status: "passed" as const,
++      artifact_path: ".agentplane/checks.json",
++      checks: [],
++      reason: null,
++    };
++    const issued = workOrder(null, "work-null-id");
++    const result = { ...semantic, work_order_id: "work-null-id" };
++
++    await expect(
++      recordTaskCentricExternalResult({
++        command,
++        work_order: issued,
++        semantic: result,
++        verification,
++        head: HEAD,
++        dirty_paths: [],
++      }),
++    ).resolves.toEqual({
++      state: "work_item_completed",
++      work_item_id: "a",
++      remaining_required_work_items: 1,
++    });
++    expect(
++      taskCentricAggregateFromExtensions(backend.current().extensions)?.work_items,
++    ).toMatchObject({ a: { state: "COMPLETED" }, b: { state: "PLANNED" } });
++    const completedRevision = backend.current().revision;
++
++    await expect(
++      recordTaskCentricExternalResult({
++        command,
++        work_order: issued,
++        semantic: result,
++        verification,
++        head: HEAD,
++        dirty_paths: [],
++      }),
++    ).resolves.toEqual({
++      state: "work_item_completed",
++      work_item_id: "a",
++      remaining_required_work_items: 1,
++    });
++    expect(
++      taskCentricAggregateFromExtensions(backend.current().extensions)?.work_items,
++    ).toMatchObject({ a: { state: "COMPLETED" }, b: { state: "PLANNED" } });
++    expect(backend.current().revision).toBe(completedRevision);
++  });
++
+   it("advances internal WorkItems while keeping one top-level Task", async () => {
+     const backend = memoryBackend();
+     const command = { taskBackend: backend } as unknown as CommandContext;
+diff --git a/packages/agentplane/src/commands/task/task-centric-external-result.ts b/packages/agentplane/src/commands/task/task-centric-external-result.ts
+index 769856ae2..32138b346 100644
+--- a/packages/agentplane/src/commands/task/task-centric-external-result.ts
++++ b/packages/agentplane/src/commands/task/task-centric-external-result.ts
+@@ -12,6 +12,7 @@ import {
+ import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+ 
+ import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
++import { runtimeFrom } from "../../adapters/task-backend/task-centric-backend-runtime.js";
+ import { CliError } from "../../shared/errors.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ import type { DirectTaskVerificationResult } from "./direct-task-verification.js";
+@@ -91,14 +92,40 @@ export async function recordTaskCentricExternalResult(opts: {
+       message: "Task-centric WorkItem result requires a valid observed Git HEAD.",
+     });
+   }
++  const idempotencyKey = `external-result:${opts.work_order.work_order_id}`;
++  const priorReceipt = runtimeFrom(raw).mutation_receipts[idempotencyKey];
++  const priorWorkItemId = priorReceipt?.event.work_item_id ?? null;
++  if (priorReceipt?.event.entity === "work_item" && priorWorkItemId) {
++    const remaining = aggregate.current_plan.proposal.work_items.work_items.filter(
++      (item) => !item.optional && aggregate.work_items[item.id]?.state !== "COMPLETED",
++    ).length;
++    return {
++      state: priorReceipt.event.to === "COMPLETED" ? "work_item_completed" : "work_item_rework",
++      work_item_id: priorWorkItemId,
++      remaining_required_work_items: remaining,
++    };
++  }
+   const requestedId = opts.work_order.task.work_item_id ?? null;
++  const claimedIds = Object.values(aggregate.work_items)
++    .filter((item) => item.state === "CLAIMED")
++    .map((item) => item.id);
++  if (!requestedId && claimedIds.length > 1) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "A null-ID WorkItem result is ambiguous because multiple WorkItems are claimed.",
++    });
++  }
+   const selected = requestedId
+     ? aggregate.current_plan.proposal.work_items.work_items.find((item) => item.id === requestedId)
+-    : new WorkItemScheduler(1).select({
+-        graph: aggregate.current_plan.proposal.work_items,
+-        runtime: aggregate.work_items,
+-        active_leases: [],
+-      })[0];
++    : claimedIds.length === 1
++      ? aggregate.current_plan.proposal.work_items.work_items.find(
++          (item) => item.id === claimedIds[0],
++        )
++      : new WorkItemScheduler(1).select({
++          graph: aggregate.current_plan.proposal.work_items,
++          runtime: aggregate.work_items,
++          active_leases: [],
++        })[0];
+   if (!selected) {
+     throw new CliError({
+       code: "E_VALIDATION",
+@@ -202,7 +229,7 @@ export async function recordTaskCentricExternalResult(opts: {
+     semantic_result: result,
+     outputs,
+     validation: evidence,
+-    idempotency_key: `external-result:${opts.work_order.work_order_id}`,
++    idempotency_key: idempotencyKey,
+   });
+   const validation = aggregateValidation(selected.validation, evidence);
+   const next = await adapter.readTask(aggregate.id);

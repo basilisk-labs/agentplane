@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608221335-6DSF3R-53017dbd9572ab8f1b9b3ac7",
+  "prepared_at": "2026-08-22T14:41:06.775Z",
+  "task": {
+    "id": "202608221335-6DSF3R",
+    "revision": 30,
+    "objective": "Fix idempotent null-WorkItem external result acceptance\n\nFix the proven task-centric Core regression in null-ID external result handling: first acceptance must resolve a single claimed or ready WorkItem, and an exact replay after evidence persistence must use the mutation receipt before scheduler selection. Add focused unit coverage. Do not modify context code. This replaces unpublished Task 202608221325-NQJQ5K whose WorkItemGraph incorrectly declared repository sources as upstream required_inputs.",
+    "acceptance_criteria": [
+      "bun test packages/agentplane/src/commands/task/task-centric-external-result.test.ts",
+      "- In scope: Fix the proven task-centric Core regression in null-ID external result handling: first acceptance must resolve a single claimed or ready WorkItem, and an exact replay after evidence persistence must use the mutation receipt before scheduler selection. Add focused unit coverage. Do not modify context code. This replaces unpublished Task 202608221325-NQJQ5K whose WorkItemGraph incorrectly declared repository sources as upstream required_inputs.\n- Out of scope: unrelated refactors not required for \"Fix idempotent null-WorkItem external result acceptance\".",
+      "Fix one proven task-centric Core regression: a null-ID external work order must resolve the already claimed WorkItem, and an exact replay must use its persisted idempotency receipt before scheduler selection. Add focused unit coverage; do not touch context code.",
+      "PLANNER fallback scaffold for \"Fix idempotent null-WorkItem external result acceptance\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Fix idempotent null-WorkItem external result acceptance\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "2cf14db0fa4a700268e8365661fd04f66d2d0dce",
+  "diff_base_sha": "ee460292f9d253a5ba6fe2ca95a6d0fd5e7a7088",
+  "blueprint_digest": "34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-144106775-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:f5b6572afe293b4552a7852414f373a7c30f620cfc830c895eca98900c53e35f",
+    "prompt_path": ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/360d9e0080db55d62697e2abdc32081b163eb008b6fdfc60271f0dc34ffb1bba.md",
+    "result_schema_path": ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608221335-6DSF3R/README.md",
+      "sha256": "sha256:542acd54a0a8f81da10dd4a86c4bd3cb9422beae51216c19cf1b4671b6388b2d",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/5161b798b0664b03580d7a27fdb8eac6a98dd6e3b52c07a636ec7050a5cfc782.patch",
+      "sha256": "sha256:5161b798b0664b03580d7a27fdb8eac6a98dd6e3b52c07a636ec7050a5cfc782",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/7a45b280ee40bbeac532e5376f8bafdace88b22fce09c11881892ce3a5118e32.json",
+      "sha256": "sha256:7a45b280ee40bbeac532e5376f8bafdace88b22fce09c11881892ce3a5118e32",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608221335-6DSF3R/verification/20260822143950600-cf81a603a74bc0a2.json",
+      "sha256": "sha256:b6b0411269fddbc83b1062e10e367630956da5c96cd87d7692cba23b5534cf27",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/36719933ca26a362c0c41082c757b3f09276b883be1f026518f942d15578c2a3.json",
+      "sha256": "sha256:36719933ca26a362c0c41082c757b3f09276b883be1f026518f942d15578c2a3",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
