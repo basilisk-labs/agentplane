@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608212244-6XZAYD-3e401312e8c23a1c6199efcf",
+  "task_id": "202608212244-6XZAYD",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Record verification rework, issue an EXECUTOR packet, then extend that packet's scope to scripts/qualification through the structured blocker flow.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "Static analysis passes.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "The implementation diff contains no baseline-bound task_plan_proposal update for the packaged mixed-scope fixture.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "Hosted verify-real-e2e remains release-blocking.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "Residual risk: Current hosted verify-real-e2e remains release-blocking.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033942903-recovery-context/evaluator-result.json"
+}

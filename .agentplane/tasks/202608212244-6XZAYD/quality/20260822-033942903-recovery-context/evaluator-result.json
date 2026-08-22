@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Static analysis passes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The implementation diff contains no baseline-bound task_plan_proposal update for the packaged mixed-scope fixture.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Hosted verify-real-e2e remains release-blocking.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: Current hosted verify-real-e2e remains release-blocking.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A clean-candidate packaged-mixed-scope-lifecycle qualification pass is required."
+  ],
+  "hidden_assumptions": [
+    "The recorded implementation result claimed an out-of-authority qualification edit that is absent from the diff."
+  ],
+  "recovery_context": "Record verification rework, issue an EXECUTOR packet, then extend that packet's scope to scripts/qualification through the structured blocker flow."
+}

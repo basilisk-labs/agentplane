@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 50
+revision: 51
 origin:
   system: "manual"
 depends_on: []
@@ -36,19 +36,19 @@ verification:
 quality_review:
   state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-22T03:39:31.243Z"
+  updated_at: "2026-08-22T03:42:02.977Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 5 typed finding(s)."
+  note: "EVALUATOR returned blocked with 4 typed finding(s)."
   evaluated_sha: "c651ebc5c1bfea5e9a7ba0eb66dab528eb9b5482"
   blueprint_digest: "d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306"
   evidence_refs:
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033827432-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033827432-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/e3123c0d1cfd81cbaf150f73b3f1b6efd02a43971a7944cc1565f90ecc49a392.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033827432-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033827432-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033827432-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033827432-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033942903-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033942903-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/c34af2f9103df51f801c58d8da4fbdf7cd87562261cc3eb57d2957a115010b1d.md"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033942903-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033942903-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033942903-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033942903-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608212244-6XZAYD/README.md"
     - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
     - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2cd6e402ad6c2deaaad07bbd8edbbc019e412de34cf5db4586379236477439f7.json"
@@ -59,10 +59,9 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "Repository-wide lint passes on the current implementation lineage."
-    - "The frozen evaluator evidence does not include a baseline-bound task_plan_proposal change in scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs."
-    - "The known hosted verify-real-e2e failure therefore remains unresolved: the planner route repeats instead of returning approval_required."
-    - "The required scripts/qualification mutation was outside the implementation packet authority and needs an explicit state-bound scope extension."
+    - "Static analysis passes."
+    - "The implementation diff contains no baseline-bound task_plan_proposal update for the packaged mixed-scope fixture."
+    - "Hosted verify-real-e2e remains release-blocking."
     - "Residual risk: Current hosted verify-real-e2e remains release-blocking."
 token_usage:
   agent_runs: 18
@@ -854,7 +853,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T03:39:31.281Z"
+doc_updated_at: "2026-08-22T03:42:03.009Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:
