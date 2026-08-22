@@ -4,7 +4,7 @@ title: "Archive resolved task-centric external result routing incident before v0
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -30,6 +30,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-22T19:52:19.125Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "562d8d43f5aa676dddf53e671d212a6f55c03fde"
+  blueprint_digest: "d631740d9732f4866e388192d53d5436b3aa926ae4d4f977ead7aa5b52e05595"
+  evidence_refs:
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195053830-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195053830-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/2884396ce6997a4a7051b3189d37df466d35b1d331a48f05d4639b86dacee907.md"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195053830-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195053830-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195053830-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608221939-911DRN/README.md"
+    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/b0c0e111997a99feae1921d10f292ab28e0085ca2ba71258c2ad222b3c8945b6.patch"
+    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/e42b43454a31d023f988f5d96b40926ce8862e9f6950e7e6772e82d309ce9b63.json"
+    - ".agentplane/tasks/202608221939-911DRN/verification/20260822195044904-58b9a4c4e580e8e3.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/176f6af5b8a54ecd8543ff2d8de332aa1b2b086966be1ea9788d94178acf2685.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/dod.docs.md"
+    - ".agentplane/policy/security.must.md"
+  findings:
+    - "The diff removes exactly one active incident line from each byte-identical registry and appends one archival record; no implementation or context path changes."
+    - "The archival record binds the failure and remediation to task 202608221335-6DSF3R, implementation and evaluator commits, the focused regression command, merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, and hosted completion."
+    - "The earlier archived record that reused INC-20260822-01 is unchanged, and the new record explicitly documents the collision plus the scope/source_task disambiguation."
+    - "Both declared deterministic checks passed in the recorded branch verification."
+    - "Residual risk: Hosted integration must still pass on the exact incident-closeout PR SHA before merge."
 execution_route:
   frozen: true
   reason_codes:
