@@ -16,7 +16,7 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +27,9 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |    1 +
  depcruise.config.cjs                               |   25 +
+ packages/agentplane/assets/policy/incidents.md     |    1 +
  .../task-centric-backend-adapter.test.ts           |  505 ++++++
  .../task-backend/task-centric-backend-adapter.ts   |  549 +++++++
  .../task-backend/task-centric-backend-runtime.ts   |  163 ++
@@ -126,7 +128,7 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
  .../baselines/v0.7-compatibility-candidate.json    |   25 +-
  .../check-compatibility-contract-baseline.mjs      |   15 +-
  .../check-packaged-mixed-scope-lifecycle.mjs       |  109 +-
- 99 files changed, 10964 insertions(+), 760 deletions(-)
+ 101 files changed, 10966 insertions(+), 760 deletions(-)
 ```
 
 </details>
