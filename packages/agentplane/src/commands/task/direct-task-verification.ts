@@ -284,17 +284,14 @@ export async function runDirectTaskVerification(opts: {
   const packageScripts = hasPlannerFallbackVerifySteps(opts.task) || requiresFullRegression
     ? await readRootPackageScripts(opts.command.resolvedProject.gitRoot)
     : null;
+  let missingRequiredCheckReason: string | null = null;
   if (requiresFullRegression && !commands.some(isFullRegressionCommand)) {
     if (!packageScripts?.has("ci:local:full")) {
-      const result = {
-        status: "unsupported" as const,
-        checks,
-        reason:
-          "Verification Contract requires full_regression, but package.json does not define ci:local:full.",
-      };
-      return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+      missingRequiredCheckReason =
+        "Verification Contract requires full_regression, but package.json does not define ci:local:full.";
+    } else {
+      commands.push("bun run ci:local:full");
     }
-    commands.push("bun run ci:local:full");
   }
   if (commands.length === 0) {
     const result = {
@@ -376,6 +373,14 @@ export async function runDirectTaskVerification(opts: {
       };
       return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
     }
+  }
+  if (missingRequiredCheckReason) {
+    const result = {
+      status: "unsupported" as const,
+      checks,
+      reason: missingRequiredCheckReason,
+    };
+    return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
   }
   const result = { status: "passed" as const, checks, reason: null };
   return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
