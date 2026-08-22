@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:dcd0238c8c9a32563b74d7402a5d7e5fe923f914ba11c24a2c97411433536432",
   "pr_number": 4866,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4866",
+  "pre_merge_closure": {
+    "basis_commit": "7251d79d8d4ed911dc37895c4c4f4231e1b44d12",
+    "branch": "task/202608221017-2HT3N7/port-the-complete-pre-merge-quality-review-lifec",
+    "pr_number": 4866,
+    "recorded_at": "2026-08-22T10:24:03.203Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
