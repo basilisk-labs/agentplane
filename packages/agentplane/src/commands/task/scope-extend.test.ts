@@ -4,6 +4,7 @@ import type { TaskData } from "../../backends/task-backend.js";
 import {
   createExecutionGrant,
   createPlanProposal,
+  executionGrantDigest,
   isExecutionGrantActive,
 } from "@agentplaneorg/core/tasks";
 import { makeTaskCommandContext, makeTaskFixture } from "@agentplane/testkit/task";
@@ -189,6 +190,7 @@ describe("blocked task execution scope extension", () => {
     const updated = taskWithRebasedExecutionGrant({
       task,
       execution_contract: executionContract,
+      repository_identity: repositoryIdentity,
     });
     const rebased = updated.extensions?.["agentplane.execution_grant"];
 
@@ -203,6 +205,124 @@ describe("blocked task execution scope extension", () => {
     expect(
       isExecutionGrantActive({
         grant: rebased as typeof grant,
+        task_id: task.id,
+        plan: task.sections?.Plan ?? "",
+        execution_contract: executionContract,
+        repository_identity: repositoryIdentity,
+      }),
+    ).toBe(true);
+  });
+
+  it("persists material extensions after invalidating the old completion-bound grant", () => {
+    const { command, pending, task } = fixture();
+    const repositoryIdentity = `sha256:${"f".repeat(64)}`;
+    const grant = createExecutionGrant({
+      proposal: createPlanProposal({
+        task_id: task.id,
+        task_revision: task.revision ?? 1,
+        plan: task.sections?.Plan ?? "",
+        execution_contract: task.execution_contract,
+        repository_identity: repositoryIdentity,
+      }),
+      execution_contract: task.execution_contract,
+      actor: "USER",
+      approval_kind: "manual_operator",
+      issued_at: "2026-08-18T00:00:00.000Z",
+    });
+    task.extensions = {
+      ...(task.extensions ?? {}),
+      "agentplane.execution_grant": grant,
+    };
+    const executionContract = extendBlockedTaskExecutionContract({
+      command,
+      task,
+      scope_roots: ["website"],
+      repository_effects: ["release_metadata"],
+      request_digest: pending.request_digest,
+      by: "USER",
+    });
+
+    const withoutStaleGrant = taskWithRebasedExecutionGrant({
+      task,
+      execution_contract: executionContract,
+      repository_identity: repositoryIdentity,
+    });
+    const updated = applyApprovedTaskScopeExtension({
+      task: withoutStaleGrant,
+      executionContract,
+      pending,
+      scopeRoots: ["website"],
+      repositoryEffects: ["release_metadata"],
+      by: "USER",
+      now: "2026-08-18T01:00:00.000Z",
+    });
+
+    expect(updated.execution_contract).toEqual(executionContract);
+    expect(updated.extensions?.["agentplane.execution_grant"]).toBeUndefined();
+  });
+
+  it("migrates and rebases a legacy execution grant during an in-grant extension", () => {
+    const { command, pending, task } = fixture();
+    task.execution_contract!.authority.allowed_repository_effects.push("release_metadata");
+    task.execution_contract!.verification.required_evidence = [
+      ...new Set([
+        ...task.execution_contract!.verification.required_evidence,
+        "repository_effect:release_metadata",
+        "repository_effect:repository_write",
+      ]),
+    ].toSorted();
+    const repositoryIdentity = `sha256:${"f".repeat(64)}`;
+    const current = createExecutionGrant({
+      proposal: createPlanProposal({
+        task_id: task.id,
+        task_revision: task.revision ?? 1,
+        plan: task.sections?.Plan ?? "",
+        execution_contract: task.execution_contract,
+        repository_identity: repositoryIdentity,
+      }),
+      execution_contract: task.execution_contract,
+      actor: "HOST:codex:USER",
+      approval_kind: "host_user_decision",
+      approval_evidence_digest: `sha256:${"a".repeat(64)}`,
+      issued_at: "2026-08-18T00:00:00.000Z",
+    });
+    const {
+      digest: _digest,
+      repository_identity: _repositoryIdentity,
+      completion_contract_digest: _completionContractDigest,
+      ...legacyUnsigned
+    } = current;
+    task.extensions = {
+      ...(task.extensions ?? {}),
+      "agentplane.execution_grant": {
+        ...legacyUnsigned,
+        digest: executionGrantDigest(legacyUnsigned),
+      },
+    };
+    const executionContract = extendBlockedTaskExecutionContract({
+      command,
+      task,
+      scope_roots: ["website"],
+      repository_effects: ["release_metadata"],
+      request_digest: pending.request_digest,
+      by: "USER",
+    });
+
+    const updated = taskWithRebasedExecutionGrant({
+      task,
+      execution_contract: executionContract,
+      repository_identity: repositoryIdentity,
+    });
+    const rebased = updated.extensions?.["agentplane.execution_grant"];
+
+    expect(rebased).toMatchObject({
+      grant_id: current.grant_id,
+      repository_identity: repositoryIdentity,
+      completion_contract_digest: current.completion_contract_digest,
+    });
+    expect(
+      isExecutionGrantActive({
+        grant: rebased as typeof current,
         task_id: task.id,
         plan: task.sections?.Plan ?? "",
         execution_contract: executionContract,
