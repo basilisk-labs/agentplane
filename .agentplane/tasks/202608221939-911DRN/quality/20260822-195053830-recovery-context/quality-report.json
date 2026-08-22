@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608221939-911DRN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-22T19:52:19.125Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "562d8d43f5aa676dddf53e671d212a6f55c03fde",
+  "blueprint_digest": "d631740d9732f4866e388192d53d5436b3aa926ae4d4f977ead7aa5b52e05595",
+  "findings": [
+    "The diff removes exactly one active incident line from each byte-identical registry and appends one archival record; no implementation or context path changes.",
+    "The archival record binds the failure and remediation to task 202608221335-6DSF3R, implementation and evaluator commits, the focused regression command, merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, and hosted completion.",
+    "The earlier archived record that reused INC-20260822-01 is unchanged, and the new record explicitly documents the collision plus the scope/source_task disambiguation.",
+    "Both declared deterministic checks passed in the recorded branch verification.",
+    "Residual risk: Hosted integration must still pass on the exact incident-closeout PR SHA before merge."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/b0c0e111997a99feae1921d10f292ab28e0085ca2ba71258c2ad222b3c8945b6.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

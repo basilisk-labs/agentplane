@@ -1,0 +1,24 @@
+# Semantic quality review: pass
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned pass with 5 typed finding(s).
+
+## Findings
+- The diff removes exactly one active incident line from each byte-identical registry and appends one archival record; no implementation or context path changes.
+- The archival record binds the failure and remediation to task 202608221335-6DSF3R, implementation and evaluator commits, the focused regression command, merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, and hosted completion.
+- The earlier archived record that reused INC-20260822-01 is unchanged, and the new record explicitly documents the collision plus the scope/source_task disambiguation.
+- Both declared deterministic checks passed in the recorded branch verification.
+- Residual risk: Hosted integration must still pass on the exact incident-closeout PR SHA before merge.
+
+## Evidence
+- .agentplane/tasks/202608221939-911DRN/quality/objects/sha256/b0c0e111997a99feae1921d10f292ab28e0085ca2ba71258c2ad222b3c8945b6.patch
+
+## Missing Tests
+- none recorded
+
+## Hidden Assumptions
+- none recorded
+
+## Residual Risks
+- none recorded
