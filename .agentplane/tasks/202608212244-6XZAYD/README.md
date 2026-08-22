@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 58
+revision: 59
 origin:
   system: "manual"
 depends_on: []
@@ -34,16 +34,36 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
-  updated_at: "2026-08-22T03:42:30.856Z"
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-22T03:49:38.905Z"
   updated_by: "EVALUATOR"
-  note: "Rework: packaged mixed-scope qualification lacks the required baseline-bound task_plan_proposal; hosted verify-real-e2e remains release-blocking."
-  evaluated_sha: "c651ebc5c1bfea5e9a7ba0eb66dab528eb9b5482"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "1f5e97a7198380b8f7b2190ffebcbc71daed4b38"
   blueprint_digest: "d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306"
   evidence_refs:
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-034801886-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-034801886-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/7d038d66928e0277ba34fd1b188c584ba5ff0308ef2e8bbd904dfd11a576cbff.md"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-034801886-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-034801886-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-034801886-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608212244-6XZAYD/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212244-6XZAYD-implement-the-task-centric-refactoring-roadmap-v/.agentplane/tasks/202608212244-6XZAYD/blueprint/resolved-snapshot.json"
-  findings: []
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/5838685c5eb595138edc6313b0b6d792da262cc2c18289ff4356832289b00c34.patch"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/7e58ad657a7ce2d2043fd53dd7ea23de6a8d5c96fd5ac945d16538e808117cfb.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/verification/20260822034749580-0784b1a5f89602df.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/0f9e0c0f8b0f85b8effd9074a1316c56971aceb5da4a5fce5935f4726c154946.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
+  findings:
+    - "The frozen diff adds a baseline-bound TaskPlanProposal with complete scope, acceptance, deterministic validation, context, capability, and resource claims."
+    - "The direct packaged mixed-scope lifecycle passed from the committed candidate and reached approval_required after planning."
+    - "The scenario completed one Task through implementation, verification, evaluator acceptance, finish, stale-envelope rejection, final consumer readback, and temporary-state cleanup."
+    - "Repository-wide lint, typecheck, schema, hotspot, compatibility, routing, and qualification contract checks passed before evaluation."
+    - "Residual risk: The new PR head still requires exact-SHA hosted checks before integration."
+    - "Residual risk: Release publication remains gated by the dedicated incident review and release prepublish workflow."
 token_usage:
   agent_runs: 18
   input_tokens: null
@@ -876,7 +896,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T03:47:52.181Z"
+doc_updated_at: "2026-08-22T03:49:38.943Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:

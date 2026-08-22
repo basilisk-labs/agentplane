@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608212244-6XZAYD-e13cb111d8765f170d64dec8",
+  "prepared_at": "2026-08-22T03:48:01.886Z",
+  "task": {
+    "id": "202608212244-6XZAYD",
+    "revision": 58,
+    "objective": "Implement the task-centric refactoring roadmap v2 and publish the next patch release\n\nImplement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope.",
+    "acceptance_criteria": [
+      "- In scope: Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope.\n- Out of scope: unrelated refactors not required for \"Implement the task-centric refactoring roadmap v2 and publish the next patch release\".",
+      "1. Establish a live baseline: map RF2-001 through RF2-058 to current symbols, tests, schemas, and already-shipped behavior; record only genuine gaps and preserve compatible WorkOrder, SemanticResult, receipt, hook, journal, provider, and workspace mechanisms.\n2. Complete Phase 0 characterization for outcome dispositions, direct/branch/external/managed golden paths, lifecycle invariants, crash reconciliation, and the fresh-repository gateway.\n3. Complete the correctness floor RF2-006 through RF2-011: exhaustive outcome disposition, validated Git base identity without zero-SHA fallback, strict state parsing with explicit migration, transition-owned verification rework, typed context retrieval failures, and one explicit task-run dispatch path.\n4. Add the task-centric domain model RF2-012 through RF2-019 in pure Core modules: immutable TaskIntent and RepositorySnapshot, root Task lifecycle, digest-bound TaskPlanRevision approval, internal WorkItemGraph, atomic DomainEvent and TransitionReceipt, legacy projections, write boundaries, and ReconciliationSnapshot facts.\n5. Add pure services RF2-020 through RF2-028: graph validation/readiness, deterministic scheduling and claims, actor-neutral semantic request/result, canonical validation, typed failures/recovery/decisions, one shared plan-change classifier, lifecycle engine, and root completion evaluation.\n6. Introduce ports and adapters RF2-029 through RF2-035: CAS TaskRepositoryPort, Git/Workspace/ContentActor/Validation/Provider/Artifact/Context ports, one application loop for direct and branch_pr strategies, and baseline-bound ExecutionLease authority.\n7. Strengthen intake, planning, approval, and context RF2-036 through RF2-044: stable machine gateway, thin AGENTS/CLAUDE gateway, current PlanningContextBuilder, structured TaskPlanProposal, deterministic validation, exact digest approval, atomic internal WorkItem materialization, per-item context refresh, and typed output manifests/retrieval receipts.\n8. Implement autonomous execution RF2-045 through RF2-049: one task-centric loop for pull, managed, and manual actors; bounded execute/diagnose/repair/review episodes; local plan adaptation; material replan boundaries; and typed human decision tickets.\n9. Complete recovery and orchestration RF2-050 through RF2-054: durable checkpoints, centralized retry/idempotency budgets, resource claims, worktree/merge-queue integration, and a release-blocking fresh-repository architectural E2E gate.\n10. Complete migration and deletion RF2-055 through RF2-058: canonical ExecutionContract, removal of project/role-centric ownership assumptions after adapters are proven, live-index/archive separation, dependency-boundary enforcement, and thin handlers.\n11. Validate incrementally with targeted unit, property, integration, architecture, schema, generated-asset, and CLI checks; then run the full regression, release prepublish gate, and the literal 20-step release acceptance scenario including deterministic rework, crash resume, exact plan revision approval, material replan, final completion, and absence of any Project record.\n12. Let AgentPlane integrate through the protected branch_pr route. After exact-head hosted checks pass, prepare and publish the next patch release, then verify the Git tag, GitHub release, package registry versions and dist-tags, installed CLI behavior, exact release SHA, post-release main state, and clean tracked/untracked state. Stop for a new approval only if scope roots, security boundary, version/tag, release target, or acceptance criteria materially change.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.\n3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "1f5e97a7198380b8f7b2190ffebcbc71daed4b38",
+  "diff_base_sha": "134c95fd629d5ebcf0e17196ccb4b44f60c993fd",
+  "blueprint_digest": "d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-034801886-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:331fd6853f00762b3069f55019beb39011728882056f49ceeccc0947fcc7002c",
+    "prompt_path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/7d038d66928e0277ba34fd1b188c584ba5ff0308ef2e8bbd904dfd11a576cbff.md",
+    "result_schema_path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608212244-6XZAYD/README.md",
+      "sha256": "sha256:c08a8a7068b0bf50ac7a00b3b720c52a74bf59ab3423945216b669d765cb3d9a",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/5838685c5eb595138edc6313b0b6d792da262cc2c18289ff4356832289b00c34.patch",
+      "sha256": "sha256:5838685c5eb595138edc6313b0b6d792da262cc2c18289ff4356832289b00c34",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/7e58ad657a7ce2d2043fd53dd7ea23de6a8d5c96fd5ac945d16538e808117cfb.json",
+      "sha256": "sha256:7e58ad657a7ce2d2043fd53dd7ea23de6a8d5c96fd5ac945d16538e808117cfb",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608212244-6XZAYD/verification/20260822034749580-0784b1a5f89602df.json",
+      "sha256": "sha256:240cae2f2fb5aa39778a3de354f98ee2151790b94ebc4125ae38dd95839bcc17",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/0f9e0c0f8b0f85b8effd9074a1316c56971aceb5da4a5fce5935f4726c154946.json",
+      "sha256": "sha256:0f9e0c0f8b0f85b8effd9074a1316c56971aceb5da4a5fce5935f4726c154946",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:47ab8b04f9d747491398390dac415b34aa6d3df0cf0fb61e9924fd3e4851ec48",
+      "required": true
+    }
+  ]
+}
