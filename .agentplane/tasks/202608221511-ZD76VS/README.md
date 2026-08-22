@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -25,9 +25,9 @@ plan_approval:
   note: "host_user_decision=sha256:3eaf15dfec56c566f0394230b5d8c655e3c2f4cef855968cc20a7aaa42cb1c40"
 verification:
   state: "ok"
-  updated_at: "2026-08-22T15:18:12.354Z"
+  updated_at: "2026-08-22T19:05:25.911Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
   state: "pass"
@@ -145,6 +145,12 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
         result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -266,8 +272,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "d1ee25d55952f4df4453e27e65c3a0384a03a88a"
+  -
+    type: "verify"
+    at: "2026-08-22T19:05:25.911Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-22T15:19:39.255Z"
+doc_updated_at: "2026-08-22T19:05:30.545Z"
 doc_updated_by: "CODER"
 description: "Add exactly one compatibility E2E proving the existing context.maximum_assimilation workflow enters and preserves its contract through the new task-centric Core. Reuse existing context contracts, prompts, extraction schemas, artifacts, provenance, and approval gate. Fix only a regression proven by this E2E. Do not implement Knowledge Assimilation. This replaces unpublished Task 202608221453-EKC1X8 after its legacy execution contract omitted repository_effect:tests and failed to record the WorkItem completion receipt."
 sections:
@@ -338,6 +350,78 @@ sections:
 
     DecisionContextRef:
     - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T19:05:25.911Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:51946f8e8b9cbfe7e0fd516255803f8249ae7117003250686fef72bb704772a6, input_digest=sha256:f6c0b011fcda4d64ca1a9fefdb2761ffbd1d10c6d82d73fb29a08ef22f164b5a
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608221511-ZD76VS Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608221511-ZD76VS Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608221511-ZD76VS Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608221511-ZD76VS Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608221511-ZD76VS Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608221511-ZD76VS Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608221511-ZD76VS Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221511-ZD76VS-finalize-the-v0-7-8-maximum-assimilation-compati/.agentplane/tasks/202608221511-ZD76VS/blueprint/resolved-snapshot.json
+    - old_digest: aec19170f7f7d261e36aac7f12794feba0b263fa7731d8a854dfbe65ccc105f6
+    - current_digest: aec19170f7f7d261e36aac7f12794feba0b263fa7731d8a854dfbe65ccc105f6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221511-ZD76VS
+
+    DecisionContextRef:
+    - operator_action: stop
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
@@ -727,6 +811,78 @@ BlueprintSnapshotRef:
 
 DecisionContextRef:
 - operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T19:05:25.911Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:51946f8e8b9cbfe7e0fd516255803f8249ae7117003250686fef72bb704772a6, input_digest=sha256:f6c0b011fcda4d64ca1a9fefdb2761ffbd1d10c6d82d73fb29a08ef22f164b5a
+
+Details:
+
+Check: affected_unit_integration
+Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608221511-ZD76VS Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608221511-ZD76VS Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608221511-ZD76VS Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608221511-ZD76VS Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608221511-ZD76VS Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608221511-ZD76VS Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608221511-ZD76VS Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221511-ZD76VS-finalize-the-v0-7-8-maximum-assimilation-compati/.agentplane/tasks/202608221511-ZD76VS/blueprint/resolved-snapshot.json
+- old_digest: aec19170f7f7d261e36aac7f12794feba0b263fa7731d8a854dfbe65ccc105f6
+- current_digest: aec19170f7f7d261e36aac7f12794feba0b263fa7731d8a854dfbe65ccc105f6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221511-ZD76VS
+
+DecisionContextRef:
+- operator_action: stop
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none

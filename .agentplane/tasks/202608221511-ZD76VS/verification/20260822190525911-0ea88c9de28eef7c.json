@@ -1,0 +1,116 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608221511-ZD76VS Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608221511-ZD76VS Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608221511-ZD76VS Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608221511-ZD76VS Verification Contract check critical_paths (2/2)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608221511-ZD76VS Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608221511-ZD76VS Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608221511-ZD76VS Verification Contract check task_outcome (2/2)",
+  "digest": "sha256:0ea88c9de28eef7c15289a5881f66ffa2d50d98000db3b221b88405c149fce5e",
+  "implementation_sha": "6caaae4fe8c1f9d69b2c9644ae41be6643bd9731",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:f6c0b011fcda4d64ca1a9fefdb2761ffbd1d10c6d82d73fb29a08ef22f164b5a",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:294fc66ee5c51a38225497b73050d761b773810bb0fe4c981bcf6e7ab8ec89dc",
+      "digest": "sha256:65b9e9e0e191eef24c065bf09f510e17f311cbede762bb4c8574251f8b61237b",
+      "references": [
+        {
+          "digest": "sha256:d43f5f2c80579b3e6d34fb4b1039bd71b467f33da4a6a3d30ad15cf23f9b0f74",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:d43f5f2c80579b3e6d34fb4b1039bd71b467f33da4a6a3d30ad15cf23f9b0f74",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608221511-ZD76VS/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a",
+      "digest": "sha256:8d6d1471cef6bce842d8a128fefcf1687ed536ace6e00326138aca15dca41112",
+      "primary_task_id": "202608221511-ZD76VS",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608221511-ZD76VS"
+      ]
+    },
+    "implementation": {
+      "base_sha": "1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a",
+      "digest": "sha256:5ad8a875ddd814838aa43f01958d84886e22fc33d93540f76011651bb5eb328a",
+      "strategy": "branch_diff",
+      "target_sha": "6caaae4fe8c1f9d69b2c9644ae41be6643bd9731"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:1f2abda64267c43e39d7fc4e93ac72381d4e344ad0923523864c5b501dccf62c",
+    "verify_steps_digest": "sha256:51946f8e8b9cbfe7e0fd516255803f8249ae7117003250686fef72bb704772a6"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-08-22T19:05:25.911Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Finalize the v0.7.8 maximum-assimilation compatibility gate\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Finalize the v0.7.8 maximum-assimilation compatibility gate\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:51946f8e8b9cbfe7e0fd516255803f8249ae7117003250686fef72bb704772a6",
+  "task_id": "202608221511-ZD76VS",
+  "verification_command": "agentplane verify 202608221511-ZD76VS --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
