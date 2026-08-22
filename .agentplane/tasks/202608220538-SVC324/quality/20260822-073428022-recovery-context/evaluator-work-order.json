@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608220538-SVC324-f63f5059574dc20ee6746916",
+  "prepared_at": "2026-08-22T07:34:28.022Z",
+  "task": {
+    "id": "202608220538-SVC324",
+    "revision": 42,
+    "objective": "Resolve task autonomy and evaluator rework incidents\n\nImplement and test repository fixes for INC-20260821-01 and INC-20260822-01, archive both incidents with exact evidence, and unblock the approved patch release.",
+    "acceptance_criteria": [
+      "bun run lint:core",
+      "bun run typecheck",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, archive both incidents with exact evidence, and unblock the approved patch release.\n- Out of scope: unrelated refactors not required for \"Resolve task autonomy and evaluator rework incidents\".",
+      "Implement scope-rebased execution grants, route repo-fixable evaluator blockers to implementation rework, add focused regression coverage, then archive INC-20260821-01 and INC-20260822-01 with exact evidence. Treat incident identifiers, approval records, and repository files as context sources rather than work-item output dependencies; only outputs produced by predecessor work items may appear in required_inputs.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run lint:core`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `node .agentplane/policy/check-routing.mjs`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "51372b22fe98ff770b7a48ea9c9539e5307eaf3e",
+  "diff_base_sha": "258015fbf8be6e888dae88d12ad78f2dbcaaf89f",
+  "blueprint_digest": "bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608220538-SVC324/quality/20260822-073428022-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:df5e6cf97406badbb8e76e282971597b09ef7bf0d55a7d08326776793838064a",
+    "prompt_path": ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/fc65fc659eda36eea88415849dcefa65d26f5ffcefe4d3c7b3ccb7f1b7bdfc61.md",
+    "result_schema_path": ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608220538-SVC324/README.md",
+      "sha256": "sha256:ddc64a8d8e6dae1f7ba418b1efd2d3c7b93e18e0b70cbb960978804bb794da6d",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/51401e9d84e453d68d1f6b68cb7933d84ec1e2a37ed303c6f821abf45c237876.patch",
+      "sha256": "sha256:51401e9d84e453d68d1f6b68cb7933d84ec1e2a37ed303c6f821abf45c237876",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/c245a8302b03e100031873f0216e23db41b3ca54c2428c3a92e37d0d4089b4db.json",
+      "sha256": "sha256:c245a8302b03e100031873f0216e23db41b3ca54c2428c3a92e37d0d4089b4db",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608220538-SVC324/verification/20260822073253990-044e42f356a12666.json",
+      "sha256": "sha256:f37ed733015a2c751e1e815bab1f3ac240c46d629c9b6269013b14535ee0dd43",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608220538-SVC324/quality/objects/sha256/5d31a02d0e9d479f0205b716461e59dda9200538084bfa6c7938686b2f4aa7b6.json",
+      "sha256": "sha256:5d31a02d0e9d479f0205b716461e59dda9200538084bfa6c7938686b2f4aa7b6",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
