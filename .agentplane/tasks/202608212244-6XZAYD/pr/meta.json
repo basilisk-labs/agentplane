@@ -8,10 +8,10 @@
   "pr_number": 4862,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4862",
   "pre_merge_closure": {
-    "basis_commit": "4f2838259ab4c57b39d995ba514f60c8ef1db321",
+    "basis_commit": "9c1dfd937eca47e0601b6d61282932c551d999cd",
     "branch": "task/202608212244-6XZAYD/implement-the-task-centric-refactoring-roadmap-v",
     "pr_number": 4862,
-    "recorded_at": "2026-08-22T02:46:41.696Z",
+    "recorded_at": "2026-08-22T02:57:28.051Z",
     "state": "closed_before_merge"
   },
   "provider": {
