@@ -1,0 +1,45 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check a6637a128f139243de1a312bc17845bee7f0d152..3ccbf74b7715b65d2e0a38270242b5abd5c87101",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB a6637a128f139243de1a312bc17845bee7f0d152..3ccbf74b7715b65d2e0a38270242b5abd5c87101",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608221939-911DRN/pr/github-title.txt",
+        "M\t.agentplane/tasks/202608221939-911DRN/pr/review.md",
+        "M\tdocs/developer/incident-archive.mdx"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "a6637a128f139243de1a312bc17845bee7f0d152",
+  "implementation_commit": "3ccbf74b7715b65d2e0a38270242b5abd5c87101",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608221939-911DRN"
+}

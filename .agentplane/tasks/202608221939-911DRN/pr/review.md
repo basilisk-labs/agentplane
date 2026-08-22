@@ -6,14 +6,14 @@ Created: 2026-08-22T19:40:39.048Z
 
 - Task: `202608221939-911DRN`
 - Title: Archive resolved task-centric external result routing incident before v0.7.8
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608221939-911DRN/archive-resolved-task-centric-external-result-ro`
 - Canonical task record: `.agentplane/tasks/202608221939-911DRN/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
