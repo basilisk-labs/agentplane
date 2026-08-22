@@ -15,8 +15,8 @@ Add one compatibility E2E proving the existing context.maximum_assimilation flow
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: No executable declared verification checks are configured for this task.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,8 +27,8 @@ Add one compatibility E2E proving the existing context.maximum_assimilation flow
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...i.critical.context-maximum-assimilation.test.ts | 126 +++++++++++++++++++++
- 1 file changed, 126 insertions(+)
+ ...i.critical.context-maximum-assimilation.test.ts | 128 +++++++++++++++++++++
+ 1 file changed, 128 insertions(+)
 ```
 
 </details>

@@ -24,6 +24,7 @@ type AgentPacket = {
       request?: { task_id?: string; plan_digest?: string; decision?: string };
     };
   };
+  exchange?: unknown;
 };
 
 async function runCommand(root: string, argv: readonly string[]): Promise<string> {
@@ -122,5 +123,6 @@ describe("maximum-assimilation task-centric compatibility", { timeout: 180_000 }
         },
       },
     });
+    expect(planning.exchange).toBeUndefined();
   });
 });

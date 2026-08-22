@@ -4,7 +4,7 @@ title: "Add one compatibility E2E proving the existing context.maximum_assimilat
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -16,18 +16,19 @@ tags:
   - "release-blocker"
 task_kind: "code"
 mutation_scope: "code"
-verify: []
+verify:
+  - "bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts"
 plan_approval:
   state: "approved"
   updated_at: "2026-08-22T12:58:55.352Z"
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:27d6d37beebedd56d595b635d91d4126c9dcba5466e70eaa2afbb12448a41ba5"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-22T13:04:21.724Z"
+  state: "ok"
+  updated_at: "2026-08-22T13:08:16.636Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: No executable declared verification checks are configured for this task."
-  attempts: 1
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -95,6 +96,21 @@ execution_contract:
       - "repository_write"
       - "tests"
     verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
       -
         id: "verification-record"
         result: "fail"
@@ -182,7 +198,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "aad2bf7db0f364c48023d4577232c7bf9e9b5e95"
+  message: "🚧 YSDSN5 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -190,6 +208,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 6291d20e8cf2. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: cf95fa71be34. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: aad2bf7db0f3. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -212,8 +236,36 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: No executable declared verification checks are configured for this task."
+  -
+    type: "status"
+    at: "2026-08-22T13:06:16.835Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: cf95fa71be34. CLI accepted one state-bound external-agent semantic result."
+    commit: "cf95fa71be34f287caaa24ec2f816d3689d0c068"
+  -
+    type: "verify"
+    at: "2026-08-22T13:06:17.155Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: No executable declared verification checks are configured for this task."
+  -
+    type: "status"
+    at: "2026-08-22T13:08:12.601Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: aad2bf7db0f3. CLI accepted one state-bound external-agent semantic result."
+    commit: "aad2bf7db0f364c48023d4577232c7bf9e9b5e95"
+  -
+    type: "verify"
+    at: "2026-08-22T13:08:16.636Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T13:04:23.659Z"
+doc_updated_at: "2026-08-22T13:08:18.566Z"
 doc_updated_by: "SUPERVISOR"
 description: "Add one compatibility E2E proving the existing context.maximum_assimilation flow operates through the new task-centric core before v0.7.8 publication. Preserve existing context contracts, prompts, and artifacts. If the E2E exposes a regression, fix only that regression and do not redesign the context subsystem."
 sections:
@@ -243,6 +295,96 @@ sections:
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:62b80a44da7229cc3432b97e589db887f54e50abd9e2e6e305781deb3e7c453e, input_digest=sha256:1824508483607700fb9bfdc14722e7c79f9d19852883a072ee88fdac028f0b00
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221254-YSDSN5-add-one-compatibility-e2e-proving-the-existing-c/.agentplane/tasks/202608221254-YSDSN5/blueprint/resolved-snapshot.json
+    - old_digest: 5be5fc58b425343e6cc7c0c8bdbccea2ca157599b8ae12649ac48d1e6c64f8f8
+    - current_digest: 5be5fc58b425343e6cc7c0c8bdbccea2ca157599b8ae12649ac48d1e6c64f8f8
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221254-YSDSN5
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T13:06:17.155Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: No executable declared verification checks are configured for this task.
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:62b80a44da7229cc3432b97e589db887f54e50abd9e2e6e305781deb3e7c453e, input_digest=sha256:c94f0a3275b4d9bd5b45824a1ee290c7f24b0761d20c86190dea5d521ffc969b
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221254-YSDSN5-add-one-compatibility-e2e-proving-the-existing-c/.agentplane/tasks/202608221254-YSDSN5/blueprint/resolved-snapshot.json
+    - old_digest: 5be5fc58b425343e6cc7c0c8bdbccea2ca157599b8ae12649ac48d1e6c64f8f8
+    - current_digest: 5be5fc58b425343e6cc7c0c8bdbccea2ca157599b8ae12649ac48d1e6c64f8f8
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221254-YSDSN5
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T13:08:16.636Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:62b80a44da7229cc3432b97e589db887f54e50abd9e2e6e305781deb3e7c453e, input_digest=sha256:e9d22c33e9f37367bf7dee23ad9cfdcbd86264529cc3fbab9d9338c138df1436
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221254-YSDSN5 Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221254-YSDSN5 Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221254-YSDSN5 Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221254-YSDSN5 Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221254-YSDSN5 Verification Contract check task_outcome
 
     BlueprintSnapshotRef:
     - state: current
@@ -464,6 +606,8 @@ extensions:
         revision: 1
         state: "READY"
         validation_result: null
+  implementation_commit:
+    hash: "aad2bf7db0f364c48023d4577232c7bf9e9b5e95"
   task_execution_context:
     base_ref: "main"
     base_sha: "ee460292f9d253a5ba6fe2ca95a6d0fd5e7a7088"
@@ -510,6 +654,96 @@ Attempts: 1
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:62b80a44da7229cc3432b97e589db887f54e50abd9e2e6e305781deb3e7c453e, input_digest=sha256:1824508483607700fb9bfdc14722e7c79f9d19852883a072ee88fdac028f0b00
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221254-YSDSN5-add-one-compatibility-e2e-proving-the-existing-c/.agentplane/tasks/202608221254-YSDSN5/blueprint/resolved-snapshot.json
+- old_digest: 5be5fc58b425343e6cc7c0c8bdbccea2ca157599b8ae12649ac48d1e6c64f8f8
+- current_digest: 5be5fc58b425343e6cc7c0c8bdbccea2ca157599b8ae12649ac48d1e6c64f8f8
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221254-YSDSN5
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T13:06:17.155Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: No executable declared verification checks are configured for this task.
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:62b80a44da7229cc3432b97e589db887f54e50abd9e2e6e305781deb3e7c453e, input_digest=sha256:c94f0a3275b4d9bd5b45824a1ee290c7f24b0761d20c86190dea5d521ffc969b
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221254-YSDSN5-add-one-compatibility-e2e-proving-the-existing-c/.agentplane/tasks/202608221254-YSDSN5/blueprint/resolved-snapshot.json
+- old_digest: 5be5fc58b425343e6cc7c0c8bdbccea2ca157599b8ae12649ac48d1e6c64f8f8
+- current_digest: 5be5fc58b425343e6cc7c0c8bdbccea2ca157599b8ae12649ac48d1e6c64f8f8
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221254-YSDSN5
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T13:08:16.636Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:62b80a44da7229cc3432b97e589db887f54e50abd9e2e6e305781deb3e7c453e, input_digest=sha256:e9d22c33e9f37367bf7dee23ad9cfdcbd86264529cc3fbab9d9338c138df1436
+
+Details:
+
+Check: affected_unit_integration
+Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221254-YSDSN5 Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221254-YSDSN5 Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221254-YSDSN5 Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221254-YSDSN5 Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221254-YSDSN5 Verification Contract check task_outcome
 
 BlueprintSnapshotRef:
 - state: current
