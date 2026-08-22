@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 73
+revision: 74
 origin:
   system: "manual"
 depends_on: []
@@ -619,7 +619,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "2bfa2c162a9ee70580ba00e2f76ae072f084152e"
+  message: "🚧 6XZAYD task: pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -989,8 +991,15 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Verification is blocked by a stale implementation receipt that targets the pre-incident implementation commit."
+  -
+    type: "status"
+    at: "2026-08-22T04:13:25.312Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    commit: "2bfa2c162a9ee70580ba00e2f76ae072f084152e"
 doc_version: 3
-doc_updated_at: "2026-08-22T04:12:18.495Z"
+doc_updated_at: "2026-08-22T04:13:25.373Z"
 doc_updated_by: "CODER"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:
