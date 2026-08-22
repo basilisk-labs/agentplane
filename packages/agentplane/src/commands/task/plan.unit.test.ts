@@ -237,6 +237,79 @@ describe("task plan commands (unit)", () => {
     expect(currentTask.plan_approval?.updated_by).toBe("A");
   });
 
+  it("cmdTaskPlanApprove refuses a stale canonical plan after the Plan section changed", async () => {
+    const currentTask = mkTask({
+      id: "T-1",
+      tags: ["docs"],
+      doc: [
+        "## Summary",
+        "x",
+        "",
+        "## Plan",
+        "new operator plan",
+        "",
+        "## Verify Steps",
+        "Run checks",
+        "",
+        "## Notes",
+        "n/a",
+      ].join("\n"),
+      plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+      extensions: {
+        "agentplane.task_centric": {
+          schema_version: 1,
+          id: "T-1",
+          revision: 1,
+          lifecycle: "AWAITING_PLAN_APPROVAL",
+          intent: {
+            task_id: "T-1",
+            request: "x",
+            constraints: [],
+            acceptance_criteria: [],
+            captured_at: "2026-08-22T00:00:00.000Z",
+          },
+          current_plan: {
+            schema_version: 1,
+            task_id: "T-1",
+            revision: 1,
+            digest: `sha256:${"a".repeat(64)}`,
+            proposal: {},
+            approval: { state: "pending" },
+            created_at: "2026-08-22T00:00:00.000Z",
+          },
+          work_items: {},
+          event_cursor: 0,
+          updated_at: "2026-08-22T00:00:00.000Z",
+        },
+        "agentplane.task_centric_replan_required": {
+          schema_version: 1,
+          reason_code: "plan_changed",
+        },
+      },
+    });
+    const store = {
+      get: vi.fn().mockResolvedValue(currentTask),
+      patch: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) =>
+            await builder(currentTask),
+        ),
+    };
+    const ctx = mkCtx();
+    mockBackendIsLocalFileBackend.mockReturnValue(true);
+    mockGetTaskStore.mockReturnValue(store);
+
+    const { cmdTaskPlanApprove } = await import("./plan.js");
+    await expect(
+      cmdTaskPlanApprove({ ctx, cwd: "/repo", taskId: "T-1", by: "USER" }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      message: expect.stringMatching(/stale.*replanning/iu),
+    });
+    expect(store.patch).toHaveBeenCalledTimes(1);
+  });
+
   it("cmdTaskPlanApprove enforces Notes for spike tasks", async () => {
     const ctx = mkCtx();
     mockLoadTaskFromContext.mockResolvedValue(

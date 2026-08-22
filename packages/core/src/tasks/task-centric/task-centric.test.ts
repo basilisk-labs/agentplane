@@ -234,6 +234,20 @@ describe("task-centric domain", () => {
       validateWorkItemGraph(cyclic.work_items, new Set(["test"])).map((issue) => issue.code),
     ).toEqual(expect.arrayContaining(["dependency_cycle", "unsupported_capability"]));
 
+    const uncovered = proposal([
+      item({
+        id: "uncovered",
+        validation: {
+          ...validation("uncovered"),
+          criteria: [],
+        },
+      }),
+    ]);
+    expect(validateWorkItemGraph(uncovered.work_items).map((issue) => issue.code)).toContain(
+      "missing_validation",
+    );
+    expect(() => parseTaskPlanProposal(uncovered)).toThrow(/not fully covered/u);
+
     const stale = { ...proposal([item({ id: "a" })]), unresolved_questions: ["Material choice"] };
     expect(
       validateTaskPlanProposal({

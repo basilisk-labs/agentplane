@@ -109,12 +109,22 @@ export function validateWorkItemGraph(
       });
     }
     const checkIds = new Set(item.validation.checks.map((check) => check.id));
+    const validationCriteriaById = new Map(
+      item.validation.criteria.map((criterion) => [criterion.id, criterion]),
+    );
     for (const criterion of item.acceptance_criteria) {
-      if (criterion.required && criterion.check_ids.some((id) => !checkIds.has(id))) {
+      if (!criterion.required) continue;
+      const validationCriterion = validationCriteriaById.get(criterion.id);
+      const missingDeclaredCheck = criterion.check_ids.some((id) => !checkIds.has(id));
+      const validationDoesNotCoverAcceptance =
+        criterion.check_ids.length === 0 ||
+        !validationCriterion?.required ||
+        criterion.check_ids.some((id) => !validationCriterion.check_ids.includes(id));
+      if (missingDeclaredCheck || validationDoesNotCoverAcceptance) {
         issues.push({
           code: "missing_validation",
           path: `work_items[${index}].acceptance_criteria.${criterion.id}`,
-          message: `Required criterion ${criterion.id} references an unavailable check.`,
+          message: `Required criterion ${criterion.id} is not fully covered by validation criteria and declared checks.`,
         });
       }
     }

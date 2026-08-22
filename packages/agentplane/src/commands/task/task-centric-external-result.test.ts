@@ -32,7 +32,7 @@ function repository() {
   });
 }
 
-function check(id: string) {
+function check(id: string, command?: string) {
   return {
     schema_version: 1 as const,
     criteria: [
@@ -44,13 +44,14 @@ function check(id: string) {
         kind: "deterministic" as const,
         required: true,
         capability: "task.verify",
+        ...(command ? { command } : {}),
       },
     ],
     evidence_fingerprint: taskCentricDigest(id),
   };
 }
 
-function initialTask(): TaskData {
+function initialTask(command?: string): TaskData {
   const proposal: TaskPlanProposal = {
     schema_version: 1,
     task_id: TASK_ID,
@@ -64,8 +65,8 @@ function initialTask(): TaskData {
         required_inputs: index === 0 ? [] : ["out-a"],
         expected_outputs: [`out-${id}`],
         scope_roots: ["packages"],
-        acceptance_criteria: check(id).criteria,
-        validation: check(id),
+        acceptance_criteria: check(id, id === "a" ? command : undefined).criteria,
+        validation: check(id, id === "a" ? command : undefined),
         context: {
           required_sources: ["repository"],
           optional_sources: [],
@@ -127,8 +128,10 @@ function initialTask(): TaskData {
   };
 }
 
-function memoryBackend(): TaskBackend & { current(): TaskData; replace(task: TaskData): void } {
-  let current = structuredClone(initialTask());
+function memoryBackend(
+  initial = initialTask(),
+): TaskBackend & { current(): TaskData; replace(task: TaskData): void } {
+  let current = structuredClone(initial);
   return {
     id: "memory",
     capabilities: {
@@ -273,6 +276,37 @@ describe("recordTaskCentricExternalResult", () => {
     const runtime = taskCentricAggregateFromExtensions(backend.current().extensions)?.work_items.a;
     expect(runtime).toMatchObject({ state: "REWORK_READY", attempt: 1 });
     expect(runtime?.validation_result?.status).toBe("failed");
+  });
+
+  it("requires command-specific evidence for every declared validation command", async () => {
+    const backend = memoryBackend(initialTask("bun test --filter task-centric"));
+    const projection = await recordTaskCentricExternalResult({
+      command: { taskBackend: backend } as unknown as CommandContext,
+      work_order: workOrder("a", "work-missing-command"),
+      semantic: { ...semantic, work_order_id: "work-missing-command" },
+      verification: {
+        status: "passed",
+        artifact_path: ".agentplane/checks.json",
+        checks: [],
+        reason: null,
+      },
+      head: HEAD,
+      dirty_paths: [],
+    });
+
+    expect(projection.state).toBe("work_item_rework");
+    const validationResult = taskCentricAggregateFromExtensions(backend.current().extensions)
+      ?.work_items.a?.validation_result;
+    expect(validationResult?.status).toBe("blocked");
+    expect(validationResult?.evidence).toEqual([
+      expect.objectContaining({
+        check_id: "check-a",
+        status: "unsupported",
+        command_identity: "bun test --filter task-centric",
+        exit_code: null,
+        detail: expect.stringContaining("was not observed"),
+      }),
+    ]);
   });
 
   it("records local amendments without invalidating approval and routes material changes to replanning", async () => {

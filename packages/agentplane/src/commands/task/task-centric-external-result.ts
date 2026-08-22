@@ -43,7 +43,9 @@ function evidenceForCheck(opts: {
           candidate.declared_command === opts.check.command,
       )
     : null;
-  const supported = opts.check.capability === "task.verify" || observed !== undefined;
+  const declaredCommandMissing = opts.check.command !== undefined && observed === undefined;
+  const supported =
+    !declaredCommandMissing && (opts.check.capability === "task.verify" || observed !== undefined);
   const passed =
     supported && (observed ? observed.exit_code === 0 : opts.verification.status === "passed");
   return {
@@ -52,12 +54,18 @@ function evidenceForCheck(opts: {
     observed_at: new Date().toISOString(),
     repository_snapshot_digest: opts.repository_digest,
     command_identity:
-      observed?.command ?? (opts.check.capability === "task.verify" ? "task.verify" : null),
-    exit_code: observed?.exit_code ?? (opts.verification.status === "passed" ? 0 : 1),
+      observed?.command ??
+      opts.check.command ??
+      (opts.check.capability === "task.verify" ? "task.verify" : null),
+    exit_code:
+      observed?.exit_code ??
+      (declaredCommandMissing ? null : opts.verification.status === "passed" ? 0 : 1),
     artifact_refs: [opts.verification.artifact_path],
-    detail: supported
-      ? (opts.verification.reason ?? `Observed by ${observed?.command ?? "task.verify"}.`)
-      : `Validation capability ${opts.check.capability} was not observed by AgentPlane.`,
+    detail: declaredCommandMissing
+      ? `Declared validation command ${opts.check.command} was not observed by AgentPlane.`
+      : supported
+        ? (opts.verification.reason ?? `Observed by ${observed?.command ?? "task.verify"}.`)
+        : `Validation capability ${opts.check.capability} was not observed by AgentPlane.`,
   };
 }
 
