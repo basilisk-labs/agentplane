@@ -1,10 +1,10 @@
 ---
 id: "202608221545-ZCYV3B"
 title: "Stop verification receipts from overstating check coverage"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,10 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:defee467b01eefa8d1131fcd66aa9f6b83c7e5a46f97ab5b6eae0014070d57a4"
 verification:
-  state: "blocked_external"
-  updated_at: "2026-08-22T16:21:59.289Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
+  state: "pending"
+  updated_at: "2026-08-22T16:24:10.524Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 4
 execution_route:
   frozen: true
@@ -60,6 +60,7 @@ execution_contract:
       - "release_metadata"
       - "security_boundary"
     writable_roots:
+      - "packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
       - "packages/agentplane/src/commands/shared/task-verification-records.test.ts"
       - "packages/agentplane/src/commands/shared/task-verification-records.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
@@ -73,6 +74,7 @@ execution_contract:
     rationale:
       - "Only the proven coverage regression and its tests are in scope."
       - "The fix changes verification evidence semantics and requires isolated review."
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts; repository_effects=repository_write,tests"
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -81,6 +83,7 @@ execution_contract:
     reversibility: "reversible"
     schema_version: 2
     scope_roots:
+      - "packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
       - "packages/agentplane/src/commands/shared/task-verification-records.test.ts"
       - "packages/agentplane/src/commands/shared/task-verification-records.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
@@ -88,8 +91,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-verification-result.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-verification-result.ts"
   observed:
-    authority_violations:
-      - "verification:recorded-check-2:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -104,13 +106,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -126,6 +122,7 @@ execution_contract:
     contract:
       declared:
         components:
+          - "packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
           - "packages/agentplane/src/commands/shared/task-verification-records.test.ts"
           - "packages/agentplane/src/commands/shared/task-verification-records.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
@@ -147,8 +144,9 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:9efc66dd86035ff3ee662cd3266b4bb05673b9bf2240f6057736111d9c251d95"
+      digest: "sha256:b4b74e0868b4903d8098d0451d212849e81aab5b1bed221daecd1b4f0893e244"
       escalation_reasons:
+        - "central_component:packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-verification-records.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-verification-records.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-verification-records.test.ts"
@@ -204,7 +202,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-2"
 commit: null
 comments:
   -
@@ -234,6 +231,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The real full gate exposed one critical fixture outside the current authority that must declare its canonical full command. Recommended action: Extend authority by exactly one test file, add the deterministic ci:local:full fixture declaration, and rerun verification. Requested scope: roots=packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts; repository effects=repository_write,tests; request digest=sha256:452e60444b0ba06973be96d28dbe1eea24497a5856df476188cad70e875176e1. Agentplane receipt: external-agent-blocker/tr_ce6cfa95becafcc58ce917afefd2d24e/sha256:a9decfa2b9e783aa9b9f0e98103ee420a5bc3c469175f65be2213e81f63dd07a/sha256:452e60444b0ba06973be96d28dbe1eea24497a5856df476188cad70e875176e1."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts; repository effects: repository_write, tests."
 events:
   -
     type: "status"
@@ -508,30 +508,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
-  agentplane.execution_grant:
-    actor: "HOST:codex-desktop:USER"
-    approval_evidence_digest: "sha256:defee467b01eefa8d1131fcd66aa9f6b83c7e5a46f97ab5b6eae0014070d57a4"
-    approval_kind: "host_user_decision"
-    capabilities:
-      - "provider.merge"
-      - "provider.pr"
-      - "repository.integrate"
-      - "repository.write"
-      - "task.lifecycle"
-      - "task.scope.extend"
-    completion_contract_digest: "sha256:a18e1366f802e14001cd307a12aee83912fec47feade8d43d32d55353fdc8510"
-    digest: "sha256:3a70b53c6c6e115d033c6127acdb3be8b77557a89376aed44aca048811758ad3"
-    grant_id: "117d791b-4314-43c3-a611-c91515e4cff3"
-    issued_at: "2026-08-22T15:47:18.423Z"
-    kind: "agentplane.execution_grant"
-    plan_digest: "sha256:18f9844eaa0654affa955a73e0fe040394c8ef6050870e182adfdb0cb3cdf58e"
-    plan_revision: 2
-    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
-    schema_version: 1
-    scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
-    status: "active"
-    task_id: "202608221545-ZCYV3B"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-22T16:24:10.524Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:a9decfa2b9e783aa9b9f0e98103ee420a5bc3c469175f65be2213e81f63dd07a"
     kind: "task_scope_extension_request"
     request:
@@ -544,7 +523,7 @@ extensions:
         - "packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
     request_digest: "sha256:452e60444b0ba06973be96d28dbe1eea24497a5856df476188cad70e875176e1"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_ce6cfa95becafcc58ce917afefd2d24e"
   agentplane.task_centric:
     current_plan:
