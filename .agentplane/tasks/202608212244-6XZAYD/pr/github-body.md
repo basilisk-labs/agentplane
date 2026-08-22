@@ -47,7 +47,6 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
  .../src/commands/task/advance.command.ts           |    6 +-
  .../src/commands/task/agent-action-packet.test.ts  |   12 +
  .../src/commands/task/agent-action-packet.ts       |   29 +-
- .../src/commands/task/branch-task-supervisor.ts    |    2 +-
  .../external-agent-implementation-authority.ts     |   46 +-
  .../task/external-agent-planning-authority.ts      |  128 +-
  .../task/external-agent-result-application.ts      |    1 +
@@ -128,7 +127,7 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
  .../baselines/v0.7-compatibility-candidate.json    |   25 +-
  .../check-compatibility-contract-baseline.mjs      |   15 +-
  .../check-packaged-mixed-scope-lifecycle.mjs       |  109 +-
- 101 files changed, 10966 insertions(+), 760 deletions(-)
+ 100 files changed, 10965 insertions(+), 759 deletions(-)
 ```
 
 </details>
