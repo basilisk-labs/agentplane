@@ -4,7 +4,7 @@ title: "Port the complete pre-merge quality-review lifecycle fix from blocked ta
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "USER"
   note: "Approved clean recovery plan under the previously granted autonomous release authority; scope matches the blocked task fix."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-22T10:22:35.168Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -79,11 +79,35 @@ execution_contract:
       - "packages/agentplane/src/commands/task"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/shared/quality-review-target.ts"
+      - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+      - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
+      - "packages/agentplane/src/commands/task/plan.ts"
+      - "packages/agentplane/src/commands/task/plan.unit.test.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -116,19 +140,29 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:df2c5eed8cc378dfecd3d023e8b17db6e5b412254c2d71b6e143576fbc1646fa"
+      digest: "sha256:8b7e271887390f608a9aa0f0aabc4ccec7b53c017f50220404281c67dda36043"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/quality-review-target.ts"
+        - "central_path:packages/agentplane/src/commands/shared/quality-review-target.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/shared/quality-review-target.ts"
+          - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+          - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
+          - "packages/agentplane/src/commands/task/plan.ts"
+          - "packages/agentplane/src/commands/task/plan.unit.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -160,11 +194,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "b2e7c138fd33a094ac62d263af4debb087c3b7c2"
+  message: "🚧 2HT3N7 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: b2e7c138fd33. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -173,9 +212,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-22T10:22:32.645Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: b2e7c138fd33. CLI accepted one state-bound external-agent semantic result."
+    commit: "b2e7c138fd33a094ac62d263af4debb087c3b7c2"
+  -
+    type: "verify"
+    at: "2026-08-22T10:22:35.168Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T10:19:00.088Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-22T10:22:37.204Z"
+doc_updated_by: "SUPERVISOR"
 description: "A clean task is required because the original supervisor journal correctly refuses replay after state drift. Keep changes to packages/agentplane/src/commands/task and packages/agentplane/src/commands/shared/quality-review-target.ts plus task-owned tests."
 sections:
   Summary: |-
@@ -194,6 +247,66 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-22T10:22:35.168Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:26dd3a31aaf3763020301924d517a4a5b502aa094f75b76e490f126a2efc955e, input_digest=sha256:8c82be4ca185ea607ffbdda581e0f3d96dd2759a3f823c2cdbeb10a08b1351dd
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221017-2HT3N7 Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221017-2HT3N7 Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221017-2HT3N7 Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221017-2HT3N7 Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221017-2HT3N7 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221017-2HT3N7-port-the-complete-pre-merge-quality-review-lifec/.agentplane/tasks/202608221017-2HT3N7/blueprint/resolved-snapshot.json
+    - old_digest: 75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705
+    - current_digest: 75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221017-2HT3N7
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -399,25 +512,111 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 8
     schema_version: 1
-    updated_at: "2026-08-22T10:18:42.753Z"
+    updated_at: "2026-08-22T10:22:38.250Z"
     work_items:
       port-lifecycle-fixes:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "port-lifecycle-fixes"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:0629591fa34b1bf072504056a638a5e4d26b47de66a31c6ff9865da5583f9d9c"
+            id: "source_change:lifecycle_quality_gate"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608221017-2HT3N7"
+              work_item_id: "port-lifecycle-fixes"
+            provenance:
+              - "sha256:dbddb04644d9d68537cee4306cdc0f42eadc00282cde67e473e7587be6101c20"
+              - ".agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:780307945565b0a98b88d35bc7884757edb6e53ec65693e98c27447ebb813325"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:5aad5f5c8352f785d8b86fee647da6f67eb429b47c05dd62e0fa54c5cabcc4f2"
+            id: "regression_tests:lifecycle_quality_gate"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608221017-2HT3N7"
+              work_item_id: "port-lifecycle-fixes"
+            provenance:
+              - "sha256:dbddb04644d9d68537cee4306cdc0f42eadc00282cde67e473e7587be6101c20"
+              - ".agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:780307945565b0a98b88d35bc7884757edb6e53ec65693e98c27447ebb813325"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json"
+              check_id: "focused"
+              command_identity: "bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts"
+              detail: "Observed by bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts."
+              exit_code: 0
+              observed_at: "2026-08-22T10:22:38.246Z"
+              repository_snapshot_digest: "sha256:780307945565b0a98b88d35bc7884757edb6e53ec65693e98c27447ebb813325"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json"
+              check_id: "types"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-08-22T10:22:38.246Z"
+              repository_snapshot_digest: "sha256:780307945565b0a98b88d35bc7884757edb6e53ec65693e98c27447ebb813325"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608221017-2HT3N7-executor-c2be665ffaf645dfa8d20e49:
+        aggregate_digest: "sha256:ee317b1801af2c18ef7a3f7b1bc3729033e5135d6e3ba1ea9f32a14b517a9260"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-22T10:22:38.250Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_2d84697878b2aed16b5dad1a"
+          mutation_id: "external-result:work-order-202608221017-2HT3N7-executor-c2be665ffaf645dfa8d20e49"
+          plan_digest: "sha256:366fd98e153cbf154e8006694401cd8b22798ee857bdc30542c4cededbda61be"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608221017-2HT3N7"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "port-lifecycle-fixes"
+        mutation_id: "external-result:work-order-202608221017-2HT3N7-executor-c2be665ffaf645dfa8d20e49"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202608221017-2HT3N7"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "b2e7c138fd33a094ac62d263af4debb087c3b7c2"
   task_execution_context:
     base_ref: "main"
     base_sha: "49a18763cb42144bc5279ddb129c51c63acd9244"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "49a18763cb42144bc5279ddb129c51c63acd9244"
     version: 1
@@ -449,6 +648,66 @@ PLANNER fallback scaffold for "Port the complete pre-merge quality-review lifecy
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-22T10:22:35.168Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:26dd3a31aaf3763020301924d517a4a5b502aa094f75b76e490f126a2efc955e, input_digest=sha256:8c82be4ca185ea607ffbdda581e0f3d96dd2759a3f823c2cdbeb10a08b1351dd
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221017-2HT3N7 Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221017-2HT3N7 Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221017-2HT3N7 Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221017-2HT3N7 Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608221017-2HT3N7/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221017-2HT3N7 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221017-2HT3N7-port-the-complete-pre-merge-quality-review-lifec/.agentplane/tasks/202608221017-2HT3N7/blueprint/resolved-snapshot.json
+- old_digest: 75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705
+- current_digest: 75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221017-2HT3N7
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
