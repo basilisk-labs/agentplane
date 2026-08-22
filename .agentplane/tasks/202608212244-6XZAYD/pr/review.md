@@ -13,7 +13,7 @@ Created: 2026-08-21T22:50:57.507Z
 ## Verification
 
 - State: ok
-- Note: Verified implementation commit b5e43fb48; subsequent commits 241ba8d5a, 25e1e9c98, and 9a583e8ab contain only AgentPlane-owned verification and closeout evidence.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
