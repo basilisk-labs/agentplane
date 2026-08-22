@@ -1,10 +1,11 @@
 ---
 id: "202608221017-2HT3N7"
 title: "Port the complete pre-merge quality-review lifecycle fix from blocked task 202608220851-XN5YNK into a clean branch_pr task: accept only proven task-artifact-only reviewed descendants, normalize closure-owned token_usage and implementation commit message while preserving the implementation hash, and clear task_centric_replan_required when a replacement canonical plan is supplied. Include the focused regression tests already proven in the blocked task."
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,20 @@ quality_review:
     - "A replacement canonical plan clears the stale replan marker."
     - "Focused regression tests, typecheck, ESLint, and diff validation pass."
     - "Residual risk: Hosted integration remains a supervisor-owned post-PR gate."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:f15590baad860ad4f4bb3d26b51156854c488f9bad9eb1fcbad1d32e0072e15d"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-22T10:24:03.073Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -225,8 +240,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b2e7c138fd33a094ac62d263af4debb087c3b7c2"
-  message: "🚧 2HT3N7 task: apply external agent result"
+  hash: "7251d79d8d4ed911dc37895c4c4f4231e1b44d12"
+  message: "🚧 2HT3N7 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -234,6 +249,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b2e7c138fd33. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -256,9 +274,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-22T10:24:03.073Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "7251d79d8d4ed911dc37895c4c4f4231e1b44d12"
 doc_version: 3
-doc_updated_at: "2026-08-22T10:22:37.204Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-22T10:24:03.083Z"
+doc_updated_by: "CODER"
 description: "A clean task is required because the original supervisor journal correctly refuses replay after state drift. Keep changes to packages/agentplane/src/commands/task and packages/agentplane/src/commands/shared/quality-review-target.ts plus task-owned tests."
 sections:
   Summary: |-
@@ -518,7 +544,34 @@ extensions:
       schema_version: 1
       task_id: "202608221017-2HT3N7"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608221017-2HT3N7"
+            - "git:b2e7c138fd33a094ac62d263af4debb087c3b7c2"
+          check_id: "top-focused"
+          command_identity: "bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-22T10:22:35.168Z"
+          repository_snapshot_digest: "sha256:eb287c786ef5725e0aaa9ab788b921e6e1a003a676a908caa5a9ac7a70334ea1"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608221017-2HT3N7"
+            - "git:b2e7c138fd33a094ac62d263af4debb087c3b7c2"
+          check_id: "top-types"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-22T10:22:35.168Z"
+          repository_snapshot_digest: "sha256:eb287c786ef5725e0aaa9ab788b921e6e1a003a676a908caa5a9ac7a70334ea1"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608221017-2HT3N7"
     intent:
       acceptance_criteria:
@@ -539,12 +592,12 @@ extensions:
 
         A clean task is required because the original supervisor journal correctly refuses replay after state drift. Keep changes to packages/agentplane/src/commands/task and packages/agentplane/src/commands/shared/quality-review-target.ts plus task-owned tests.
       task_id: "202608221017-2HT3N7"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 11
     schema_version: 1
-    updated_at: "2026-08-22T10:22:38.250Z"
+    updated_at: "2026-08-22T10:24:03.073Z"
     work_items:
       port-lifecycle-fixes:
         attempt: 1
@@ -637,11 +690,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608221017-2HT3N7"
+      legacy-finish:202608221017-2HT3N7:2026-08-22T10:22:35.168Z:b2e7c138fd33a094ac62d263af4debb087c3b7c2:
+        aggregate_digest: "sha256:3823938c7e487eb0160b092fa1711baceaffe213eb6f32785ad1a4bfb339b94a"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-22T10:24:03.073Z"
+          cause_refs:
+            - "task-verification:202608221017-2HT3N7"
+            - "git:b2e7c138fd33a094ac62d263af4debb087c3b7c2"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5482547ead6d7524587c59ee"
+          mutation_id: "legacy-finish:202608221017-2HT3N7:2026-08-22T10:22:35.168Z:b2e7c138fd33a094ac62d263af4debb087c3b7c2"
+          plan_digest: "sha256:366fd98e153cbf154e8006694401cd8b22798ee857bdc30542c4cededbda61be"
+          plan_revision: 1
+          repository_fingerprint: "sha256:eb287c786ef5725e0aaa9ab788b921e6e1a003a676a908caa5a9ac7a70334ea1"
+          schema_version: 1
+          task_id: "202608221017-2HT3N7"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608221017-2HT3N7:2026-08-22T10:22:35.168Z:b2e7c138fd33a094ac62d263af4debb087c3b7c2"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202608221017-2HT3N7"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "b2e7c138fd33a094ac62d263af4debb087c3b7c2"
+    message: "🚧 2HT3N7 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "49a18763cb42144bc5279ddb129c51c63acd9244"
@@ -746,3 +825,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:f15590baad860ad4f4bb3d26b51156854c488f9bad9eb1fcbad1d32e0072e15d`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-22T10:24:03.073Z`
