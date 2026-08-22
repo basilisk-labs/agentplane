@@ -1,0 +1,17 @@
+{
+  "checks": [
+    {
+      "command": "bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts",
+      "duration_ms": 3272,
+      "exit_code": 0,
+      "script": null,
+      "stderr_tail": "\npackages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts:\n(pass) maximum-assimilation task-centric compatibility > preserves the context contract while entering the task-centric planning route [3017.78ms]\n\n 1 pass\n 0 fail\n 22 expect() calls\nRan 1 test across 1 file. [3.26s]\n",
+      "stdout_tail": "bun test v1.3.6 (d530ed99)\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202608221511-ZD76VS"
+}

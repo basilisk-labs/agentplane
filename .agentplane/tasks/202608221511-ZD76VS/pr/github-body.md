@@ -15,8 +15,8 @@ Add exactly one compatibility E2E proving the existing context.maximum_assimilat
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
