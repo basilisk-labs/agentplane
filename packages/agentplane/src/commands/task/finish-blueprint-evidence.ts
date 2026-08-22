@@ -16,7 +16,11 @@ import {
   requiredVerificationContractChecks,
 } from "../shared/task-verification-records.js";
 
-import type { LoadedFinishTask, ResolvedCommitInfo } from "./finish-shared.js";
+import {
+  resolveBatchArtifactTaskIds,
+  type LoadedFinishTask,
+  type ResolvedCommitInfo,
+} from "./finish-shared.js";
 import { assertEvaluatorQualityReviewPassed } from "./quality-review-gate.js";
 
 const BLUEPRINT_SNAPSHOT_REF_MARKER = "BlueprintSnapshotRef:";
@@ -153,8 +157,10 @@ async function resolveExpectedQualitySha(opts: {
   ).catch(() => false);
   if (!reviewedAfterBaseline) return opts.baselineSha;
 
+  const artifactTaskIds =
+    opts.taskIds.length === 1 ? resolveBatchArtifactTaskIds(opts.loaded) : opts.taskIds;
   const taskArtifactsOnly = await (
-    opts.taskIds.length === 1
+    artifactTaskIds.length === 1
       ? isTaskLocalOnlyAdvance({
           gitRoot: opts.ctx.resolvedProject.gitRoot,
           workflowDir: opts.ctx.config.paths.workflow_dir,
@@ -166,7 +172,7 @@ async function resolveExpectedQualitySha(opts: {
       : isTaskSetLocalOnlyAdvance({
           gitRoot: opts.ctx.resolvedProject.gitRoot,
           workflowDir: opts.ctx.config.paths.workflow_dir,
-          taskIds: opts.taskIds,
+          taskIds: artifactTaskIds,
           tasksPath: opts.ctx.config.paths.tasks_path,
           fromRef: opts.baselineSha,
           toRef: reviewedSha,

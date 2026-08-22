@@ -2,7 +2,6 @@ import { gitRevParse } from "@agentplaneorg/core/git";
 
 import { invalidValueMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { isRecord } from "../../shared/guards.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import {
   isTaskLocalOnlyAdvance,
@@ -16,27 +15,11 @@ import {
 } from "./shared.js";
 import {
   existingCommitInfo,
+  resolveBatchArtifactTaskIds,
   type LoadedFinishTask,
   type ResolvedCommitInfo,
 } from "./finish-shared.js";
 import type { FinishExecutionPlan, FinishOptions } from "./finish-types.js";
-
-function resolveBatchArtifactTaskIds(loaded: LoadedFinishTask): string[] {
-  const batch = isRecord(loaded.task.extensions?.branch_pr_batch)
-    ? loaded.task.extensions.branch_pr_batch
-    : null;
-  if (
-    batch?.role !== "primary" ||
-    batch.primary_task_id !== loaded.taskId ||
-    !Array.isArray(batch.included_task_ids)
-  ) {
-    return [loaded.taskId];
-  }
-  const includedTaskIds = batch.included_task_ids.filter(
-    (value): value is string => typeof value === "string" && value.length > 0,
-  );
-  return [...new Set([loaded.taskId, ...includedTaskIds])];
-}
 
 async function isTaskArtifactOnlyAdvance(opts: {
   ctx: CommandContext;
