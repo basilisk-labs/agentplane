@@ -4,7 +4,7 @@ title: "Fix idempotent null-WorkItem external result acceptance"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -28,6 +28,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-22T13:44:30.928Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "497e1f510d9bfee1cb55cfc21002f6442af26690"
+  blueprint_digest: "34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2"
+  evidence_refs:
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-134258505-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-134258505-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/cb19579d76784224615b9437de413671a31149238ddd50483ef0968dc9b4914a.md"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-134258505-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-134258505-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/20260822-134258505-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/README.md"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/696efd0a124835bc1bd04eb029e3ae05849f187dae91c48390dc9a120743e4a0.patch"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/215ade9a68e5419b12b4499040bace83274a932fc2fd1fcde783c3121b0c426c.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/verification/20260822134238704-0139a02b4bce383d.json"
+    - ".agentplane/tasks/202608221335-6DSF3R/quality/objects/sha256/36719933ca26a362c0c41082c757b3f09276b883be1f026518f942d15578c2a3.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The frozen diff is limited to task-centric-external-result.ts and its focused unit test."
+    - "Receipt lookup now precedes scheduler selection, so exact replay returns the original WorkItem outcome without a second mutation."
+    - "A first null-ID result selects exactly one claimed WorkItem; ambiguous and missing targets continue to fail closed through the existing path."
+    - "CLI-owned verification passed the declared test with 5 tests, 27 assertions, and no failures."
+    - "Residual risk: The PR head still requires exact-SHA hosted checks before integration."
+    - "Residual risk: The separate context.maximum_assimilation compatibility E2E remains a release gate after this Core repair merges."
 execution_route:
   frozen: true
   reason_codes:
