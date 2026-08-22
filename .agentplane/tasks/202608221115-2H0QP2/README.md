@@ -4,7 +4,7 @@ title: "Port the verified types.ts guardrail fix from blocked task 202608220823-
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,14 +22,15 @@ plan_approval:
   updated_by: "USER"
   note: "User authorized autonomous continuation and patch release in the confirmed plan."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-22T11:18:46.941Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
   reason_codes:
+    - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
   requested_mode: "branch_pr"
@@ -73,11 +74,34 @@ execution_contract:
     scope_roots: []
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/runtime/task-execution-context/index.ts"
+      - "packages/agentplane/src/runtime/task-execution-context/model.ts"
+      - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
+      - "packages/agentplane/src/runtime/task-execution-context/types.ts"
+      - "packages/agentplane/src/runtime/workspace-allocation/allocate.ts"
+      - "packages/agentplane/src/runtime/workspace-allocation/lease.ts"
+      - "packages/agentplane/src/runtime/workspace-allocation/model.ts"
+      - "packages/agentplane/src/runtime/workspace-allocation/types.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -106,16 +130,27 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:5cce438a0252ecd96091bc582c42af2d777ee0f2a627b7930089252831afd436"
+      digest: "sha256:003238e6bb09a5decdf296b781a56f6a94c39da3cf35c7dbb89440eabe4a5404"
       escalation_reasons: []
       execution_groups:
         - "core"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/runtime/task-execution-context/index.ts"
+          - "packages/agentplane/src/runtime/task-execution-context/model.ts"
+          - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
+          - "packages/agentplane/src/runtime/task-execution-context/types.ts"
+          - "packages/agentplane/src/runtime/workspace-allocation/allocate.ts"
+          - "packages/agentplane/src/runtime/workspace-allocation/lease.ts"
+          - "packages/agentplane/src/runtime/workspace-allocation/model.ts"
+          - "packages/agentplane/src/runtime/workspace-allocation/types.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -145,11 +180,16 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "task_outcome"
-commit: null
+commit:
+  hash: "7a1d5d67747d806e5e2402bd9fe5c48eaf0522ed"
+  message: "🚧 2H0QP2 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 7a1d5d67747d. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -158,9 +198,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-22T11:18:46.507Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 7a1d5d67747d. CLI accepted one state-bound external-agent semantic result."
+    commit: "7a1d5d67747d806e5e2402bd9fe5c48eaf0522ed"
+  -
+    type: "verify"
+    at: "2026-08-22T11:18:46.941Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T11:16:51.568Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-22T11:18:48.932Z"
+doc_updated_by: "SUPERVISOR"
 description: "Port the verified types.ts guardrail fix from blocked task 202608220823-XT1GTG into a clean branch_pr task: rename task-execution-context/types.ts and workspace-allocation/types.ts to model.ts, update only their local imports, preserve readonly semantics, and prove check:types-files plus typecheck pass."
 sections:
   Summary: |-
@@ -179,6 +233,60 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-22T11:18:46.941Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:cd51dfb903e70ca55b8efb1b7c404d9c5b4db4241ec4d6dae2989cf123b58f65, input_digest=sha256:a532bac1bb22927cfa45ef1cf5a2a2a074ba392572eae4af14927e000b3f6c4d
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run check:types-files && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608221115-2H0QP2/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221115-2H0QP2 Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run check:types-files && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608221115-2H0QP2/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221115-2H0QP2 Verification Contract check critical_paths
+
+    Check: hosted_integration
+    Command: bun run check:types-files && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608221115-2H0QP2/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221115-2H0QP2 Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: bun run check:types-files && bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608221115-2H0QP2/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608221115-2H0QP2 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221115-2H0QP2-port-the-verified-types-ts-guardrail-fix-from-bl/.agentplane/tasks/202608221115-2H0QP2/blueprint/resolved-snapshot.json
+    - old_digest: 040c1699bf78b48ccc66902bc8490aff81cb76f72978587651c540ed5afc0076
+    - current_digest: 040c1699bf78b48ccc66902bc8490aff81cb76f72978587651c540ed5afc0076
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221115-2H0QP2
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -370,25 +478,126 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 8
     schema_version: 1
-    updated_at: "2026-08-22T11:16:41.603Z"
+    updated_at: "2026-08-22T11:18:49.988Z"
     work_items:
       port-semantic-module-names:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "port-semantic-module-names"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:1a0c2ffcf9da12a38bcd6a9338d28c0bea4a67dbfb61042d55191f719b5cb1e2"
+            id: "source_module:task-execution-context/model.ts"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608221115-2H0QP2"
+              work_item_id: "port-semantic-module-names"
+            provenance:
+              - "sha256:2a025e2b142de8715fdb0b1176e6505ff9f8d205546a77ff195dd82ee2b4f182"
+              - ".agentplane/tasks/202608221115-2H0QP2/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:c2485acb3a33c5e6fd3a4c6acd2af1c3628f9945ed43b07c1c42640855dbb1c2"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:66db9677ec3047c6d27bcc43caa82fa51ba387e3a657d218358f17d8113830d1"
+            id: "source_module:workspace-allocation/model.ts"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608221115-2H0QP2"
+              work_item_id: "port-semantic-module-names"
+            provenance:
+              - "sha256:2a025e2b142de8715fdb0b1176e6505ff9f8d205546a77ff195dd82ee2b4f182"
+              - ".agentplane/tasks/202608221115-2H0QP2/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:c2485acb3a33c5e6fd3a4c6acd2af1c3628f9945ed43b07c1c42640855dbb1c2"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:2d852caa466a5c52ff4283e66efd83c3baf99190156437dde2c569c6855ae774"
+            id: "guardrail:types.ts_count_10"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608221115-2H0QP2"
+              work_item_id: "port-semantic-module-names"
+            provenance:
+              - "sha256:2a025e2b142de8715fdb0b1176e6505ff9f8d205546a77ff195dd82ee2b4f182"
+              - ".agentplane/tasks/202608221115-2H0QP2/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:c2485acb3a33c5e6fd3a4c6acd2af1c3628f9945ed43b07c1c42640855dbb1c2"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608221115-2H0QP2/supervision/declared-checks.json"
+              check_id: "types-file-guard"
+              command_identity: "bun run check:types-files"
+              detail: "Observed by bun run check:types-files."
+              exit_code: 0
+              observed_at: "2026-08-22T11:18:49.983Z"
+              repository_snapshot_digest: "sha256:c2485acb3a33c5e6fd3a4c6acd2af1c3628f9945ed43b07c1c42640855dbb1c2"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608221115-2H0QP2/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-08-22T11:18:49.983Z"
+              repository_snapshot_digest: "sha256:c2485acb3a33c5e6fd3a4c6acd2af1c3628f9945ed43b07c1c42640855dbb1c2"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608221115-2H0QP2-executor-faf3485009ac4186b13b880e:
+        aggregate_digest: "sha256:6923275d624c99968c56c24d5ab57d9e9a6b286a3da4afe867ad6246a94ac0bc"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-22T11:18:49.988Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_726929f69dcb6d98bc831404"
+          mutation_id: "external-result:work-order-202608221115-2H0QP2-executor-faf3485009ac4186b13b880e"
+          plan_digest: "sha256:9e06b9fba5c4f1991f9853acbeccbe6dccbd2462fe475429d95314b16261efa5"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608221115-2H0QP2"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "port-semantic-module-names"
+        mutation_id: "external-result:work-order-202608221115-2H0QP2-executor-faf3485009ac4186b13b880e"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202608221115-2H0QP2"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "7a1d5d67747d806e5e2402bd9fe5c48eaf0522ed"
   task_execution_context:
     base_ref: "main"
     base_sha: "0a1e75c439bca55f63f905f1ff3651ef04d49f23"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "0a1e75c439bca55f63f905f1ff3651ef04d49f23"
     version: 1
@@ -420,6 +629,60 @@ PLANNER fallback scaffold for "Port the verified types.ts guardrail fix from blo
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-22T11:18:46.941Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:cd51dfb903e70ca55b8efb1b7c404d9c5b4db4241ec4d6dae2989cf123b58f65, input_digest=sha256:a532bac1bb22927cfa45ef1cf5a2a2a074ba392572eae4af14927e000b3f6c4d
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run check:types-files && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608221115-2H0QP2/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221115-2H0QP2 Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run check:types-files && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608221115-2H0QP2/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221115-2H0QP2 Verification Contract check critical_paths
+
+Check: hosted_integration
+Command: bun run check:types-files && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608221115-2H0QP2/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221115-2H0QP2 Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: bun run check:types-files && bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608221115-2H0QP2/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608221115-2H0QP2 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221115-2H0QP2-port-the-verified-types-ts-guardrail-fix-from-bl/.agentplane/tasks/202608221115-2H0QP2/blueprint/resolved-snapshot.json
+- old_digest: 040c1699bf78b48ccc66902bc8490aff81cb76f72978587651c540ed5afc0076
+- current_digest: 040c1699bf78b48ccc66902bc8490aff81cb76f72978587651c540ed5afc0076
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221115-2H0QP2
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
