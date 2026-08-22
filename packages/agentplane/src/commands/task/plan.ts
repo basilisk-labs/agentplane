@@ -154,7 +154,9 @@ export async function setTaskPlan(opts: {
           ? (() => {
               const next = { ...(current.extensions ?? {}), ...(suppliedExtensions ?? {}) };
               delete next[EXECUTION_GRANT_EXTENSION_KEY];
-              if (!suppliedExtensions?.[TASK_CENTRIC_EXTENSION_KEY]) {
+              if (suppliedExtensions?.[TASK_CENTRIC_EXTENSION_KEY]) {
+                delete next[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY];
+              } else {
                 next[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY] = {
                   schema_version: 1,
                   reason_code: planChanged ? "plan_changed" : "execution_contract_changed",

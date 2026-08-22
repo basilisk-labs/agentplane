@@ -116,6 +116,7 @@ function lifecycleComparableTaskReadme(markdown: string): string | null {
       "revision",
       "result_summary",
       "status",
+      "token_usage",
       "verification",
       "quality_review",
       "commit",
@@ -130,6 +131,11 @@ function lifecycleComparableTaskReadme(markdown: string): string | null {
       const extensions = { ...frontmatter.extensions };
       Reflect.deleteProperty(extensions, SIDE_EFFECT_AUTHORITY_EXTENSION_KEY);
       Reflect.deleteProperty(extensions, WORKFLOW_ROUTE_BASELINE_EXTENSION_KEY);
+      if (isRecord(extensions.implementation_commit)) {
+        const implementationCommit = { ...extensions.implementation_commit };
+        Reflect.deleteProperty(implementationCommit, "message");
+        extensions.implementation_commit = implementationCommit;
+      }
       if (Object.keys(extensions).length === 0) {
         Reflect.deleteProperty(frontmatter, "extensions");
       } else {
