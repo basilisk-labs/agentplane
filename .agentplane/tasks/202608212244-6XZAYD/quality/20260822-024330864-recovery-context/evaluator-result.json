@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "All roadmap and P1 review changes remain present in the frozen implementation diff.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/94e6d02d825122cee616ba83df755b9f3a09b8876a3621d99442a22f6ea9ef64.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Prepared finish recovery may be superseded only with explicit force before any task-state or close-commit effect.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/94e6d02d825122cee616ba83df755b9f3a09b8876a3621d99442a22f6ea9ef64.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Recovery stays fail-closed after task_state_written and close_commit_written.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/94e6d02d825122cee616ba83df755b9f3a09b8876a3621d99442a22f6ea9ef64.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "All 13 critical CLI chunks pass on the current implementation head.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/94e6d02d825122cee616ba83df755b9f3a09b8876a3621d99442a22f6ea9ef64.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The focused finish-closeout suite passes 6/6; typecheck, schemas, compatibility, routing, and diff checks pass.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/94e6d02d825122cee616ba83df755b9f3a09b8876a3621d99442a22f6ea9ef64.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: The updated PR head still requires hosted checks and exact-SHA merge verification.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/94e6d02d825122cee616ba83df755b9f3a09b8876a3621d99442a22f6ea9ef64.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Release publication still requires the dedicated incident-review task and release qualification.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/94e6d02d825122cee616ba83df755b9f3a09b8876a3621d99442a22f6ea9ef64.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
