@@ -2,10 +2,10 @@
 id: "202608221545-ZCYV3B"
 title: "Stop verification receipts from overstating check coverage"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 38
+revision: 39
 origin:
   system: "manual"
 depends_on: []
@@ -61,9 +61,9 @@ quality_review:
     - "Focused and full-repository checks pass, and no context behavior changed."
     - "Residual risk: The updated PR head must pass hosted checks and receive resolution of all three addressed review threads before merge."
 token_usage:
-  agent_runs: 9
+  agent_runs: 11
   input_tokens: null
-  journal_digest: "sha256:a24c5dcc3ca287ea93495eacf52d0a48e73a781753ffc95172d07329f636ef8e"
+  journal_digest: "sha256:b31726556c46954a585f075555cee9f59d66414a8effd3d87f7227ce2e902f5a"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -73,7 +73,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-22T17:57:51.846Z"
+  updated_at: "2026-08-22T18:42:25.588Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -273,8 +273,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "fb41078849aa875586fe6c0efbe37ce84e80927b"
-  message: "🚧 ZCYV3B task: apply external agent result"
+  hash: "7c4a748ae4d956c93ebc14822b4faa018de08933"
+  message: "🚧 ZCYV3B task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -321,6 +321,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: fb41078849aa. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -470,9 +473,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-22T18:42:25.588Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "7c4a748ae4d956c93ebc14822b4faa018de08933"
 doc_version: 3
-doc_updated_at: "2026-08-22T18:41:43.391Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-22T18:42:25.621Z"
+doc_updated_by: "CODER"
 description: "Fix only the proven task-centric verification regression from PR #4873: one focused declared command must not be recorded as full_regression or hosted_integration evidence. Preserve separate hosted-provider gating, run a real repository full-regression command when the contract requires it, and bind each recorded check to concrete executed evidence. Add regression tests. Do not change context or Knowledge Assimilation behavior."
 sections:
   Summary: |-
@@ -1175,6 +1186,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "fb41078849aa875586fe6c0efbe37ce84e80927b"
+    message: "🚧 ZCYV3B task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a"
@@ -1562,12 +1574,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/9` agent runs
+- Completeness: `0/11` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:a24c5dcc3ca287ea93495eacf52d0a48e73a781753ffc95172d07329f636ef8e`
+- Journal digest: `sha256:b31726556c46954a585f075555cee9f59d66414a8effd3d87f7227ce2e902f5a`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-22T17:57:51.846Z`
+- Updated at: `2026-08-22T18:42:25.588Z`
