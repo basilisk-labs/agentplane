@@ -15,8 +15,15 @@ Fix only the proven task-centric verification regression from PR #4873: one focu
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Rework: Declared check failed: bun test
+packages/agentplane/src/commands/task/direct-task-verification.test.ts
+packages/agentplane/src/commands/task/external-agent-verification-result.test.ts
+packages/agentplane/src/commands/shared/task-verification-records.test.ts
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,13 +34,13 @@ Fix only the proven task-centric verification regression from PR #4873: one focu
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../shared/task-verification-records.test.ts       |  21 +++++
+ .../shared/task-verification-records.test.ts       |  32 ++++---
  .../commands/shared/task-verification-records.ts   |   4 +-
  .../commands/task/direct-task-verification.test.ts | 100 +++++++++++++++++++++
  .../src/commands/task/direct-task-verification.ts  |  67 +++++++++++---
- .../external-agent-verification-result.test.ts     |  33 ++++++-
+ .../external-agent-verification-result.test.ts     |  39 +++++++-
  .../task/external-agent-verification-result.ts     |  38 +++++---
- 6 files changed, 236 insertions(+), 27 deletions(-)
+ 6 files changed, 243 insertions(+), 37 deletions(-)
 ```
 
 </details>

@@ -2,8 +2,9 @@
   "base": "main",
   "branch": "task/202608221545-ZCYV3B/stop-verification-receipts-from-overstating-chec",
   "created_at": "2026-08-22T15:47:34.719Z",
-  "diffstat_sha256": "sha256:25f8c0b62d119427e71c8690810bd4428281fc4a68007c7370363b0e515227d5",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:d93e5b7723a513e043f3c0cfc7d03662580726e9f580ada4ec3b978d684b645f",
+  "last_verified_at": "2026-08-22T15:55:08.257Z",
+  "last_verified_diffstat_sha256": "sha256:25f8c0b62d119427e71c8690810bd4428281fc4a68007c7370363b0e515227d5",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202608221545-ZCYV3B",
   "updated_at": "2026-08-22T15:47:34.719Z",
   "verify": {
-    "status": "skipped"
+    "status": "fail"
   }
 }

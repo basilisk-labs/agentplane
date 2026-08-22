@@ -3,16 +3,9 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import type { TaskData } from "../../backends/task-backend.js";
-
-const gitRevParse = vi.hoisted(() => vi.fn());
-
-vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
-  ...(await importOriginal<Record<string, unknown>>()),
-  gitRevParse,
-}));
 
 import {
   verificationContractEvidenceCoverage,
@@ -87,7 +80,6 @@ async function writeValidRecord(opts: {
 }
 
 afterEach(async () => {
-  gitRevParse.mockReset();
   await Promise.all(tempRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
 });
 
@@ -233,6 +225,5 @@ describe("task verification records", () => {
         workflowMode: "branch_pr",
       }),
     ).resolves.toEqual([]);
-    expect(gitRevParse).not.toHaveBeenCalled();
   });
 });

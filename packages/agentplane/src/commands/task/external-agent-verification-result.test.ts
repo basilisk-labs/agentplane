@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+if (typeof vi.hoisted !== "function") {
+  Object.defineProperty(vi, "hoisted", {
+    value: <T>(factory: () => T): T => factory(),
+  });
+}
+
 const mocks = vi.hoisted(() => ({
   readFile: vi.fn(),
   loadTask: vi.fn(),
