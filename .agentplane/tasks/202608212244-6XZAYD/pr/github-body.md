@@ -15,8 +15,8 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Lifecycle rework required: register finish closeout recovery fix f0327c0de as the current implementation.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -45,6 +45,8 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
  .../task/external-agent-planning-authority.ts      |  128 +-
  .../task/external-agent-result-application.ts      |    1 +
  .../src/commands/task/external-agent-supervisor.ts |    1 +
+ .../commands/task/finish-closeout-journal.test.ts  |   60 +
+ .../src/commands/task/finish-closeout-journal.ts   |   16 +-
  .../agentplane/src/commands/task/finish-shared.ts  |   45 +-
  .../commands/task/finish.close-tail.unit.test.ts   |   10 +-
  .../src/commands/task/finish.state.unit.test.ts    |    6 +-
@@ -116,7 +118,7 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
  schemas/agent-work-order-v2.schema.json            |  213 +++
  .../baselines/v0.7-compatibility-candidate.json    |   25 +-
  .../check-compatibility-contract-baseline.mjs      |   15 +-
- 89 files changed, 10380 insertions(+), 429 deletions(-)
+ 91 files changed, 10454 insertions(+), 431 deletions(-)
 ```
 
 </details>
