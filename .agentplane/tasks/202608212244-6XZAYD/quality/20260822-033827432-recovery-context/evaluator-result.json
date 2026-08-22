@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Repository-wide lint passes on the current implementation lineage.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The frozen evaluator evidence does not include a baseline-bound task_plan_proposal change in scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The known hosted verify-real-e2e failure therefore remains unresolved: the planner route repeats instead of returning approval_required.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The required scripts/qualification mutation was outside the implementation packet authority and needs an explicit state-bound scope extension.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Current hosted verify-real-e2e remains release-blocking.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "The clean-candidate packaged-mixed-scope-lifecycle release qualification must pass."
+  ],
+  "hidden_assumptions": [
+    "The recorded implementation result claims a qualification change that is absent from the frozen diff."
+  ],
+  "recovery_context": "Extend scope to scripts/qualification, add the baseline-bound structured proposal to the packaged mixed-scope fixture, rerun the contract and clean-candidate scenario, and reevaluate."
+}
