@@ -6,7 +6,7 @@ Created: 2026-08-21T22:50:57.507Z
 
 - Task: `202608212244-6XZAYD`
 - Title: Implement the task-centric refactoring roadmap v2 and publish the next patch release
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608212244-6XZAYD/implement-the-task-centric-refactoring-roadmap-v`
 - Canonical task record: `.agentplane/tasks/202608212244-6XZAYD/README.md`
 
