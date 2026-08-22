@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,10 @@ plan_approval:
   updated_by: "USER"
   note: "Approved under the user-confirmed implementation and patch-release goal; this replan only corrects internal work-item input typing without expanding scope."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-22T06:52:20.291Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 token_usage:
   agent_runs: 4
@@ -287,7 +287,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf"
+  message: "🚧 SVC324 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -316,6 +318,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 2e07e5b66dd1. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 0c3d192a3554. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -421,8 +426,22 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-22T06:50:55.488Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 0c3d192a3554. CLI accepted one state-bound external-agent semantic result."
+    commit: "0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf"
+  -
+    type: "verify"
+    at: "2026-08-22T06:52:20.291Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T06:49:16.028Z"
+doc_updated_at: "2026-08-22T06:52:23.053Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, archive both incidents with exact evidence, and unblock the approved patch release."
 sections:
@@ -776,6 +795,72 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a93c86c8d22c7479bf47b8dcac7f7d2518f86ec47e654b2591646268bf070bfd, input_digest=sha256:4f27528a9ca43f3482da98b9280ef12dc8e68b9fb08dbd1691ac6a7794ff9f51
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220538-SVC324 Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220538-SVC324 Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220538-SVC324 Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220538-SVC324 Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220538-SVC324 Verification Contract check hosted_integration
+
+    Check: task_outcome
+    Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608220538-SVC324 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220538-SVC324-resolve-task-autonomy-and-evaluator-rework-incid/.agentplane/tasks/202608220538-SVC324/blueprint/resolved-snapshot.json
+    - old_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+    - current_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608220538-SVC324
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608220538-SVC324
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T06:52:20.291Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a93c86c8d22c7479bf47b8dcac7f7d2518f86ec47e654b2591646268bf070bfd, input_digest=sha256:befbfbae05f1f1762eec317d9851be8face9fd44759a907f0456905483ff47eb
 
     Details:
 
@@ -1508,9 +1593,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608220538-SVC324"
-    revision: 31
+    revision: 35
     schema_version: 1
-    updated_at: "2026-08-22T06:49:20.018Z"
+    updated_at: "2026-08-22T06:52:27.357Z"
     work_items:
       evaluator-rework-routing:
         attempt: 1
@@ -1577,14 +1662,74 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       incident-closure:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "incident-closure"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:523d6863d2b551da60a5566f0fb9bf70c60d19fc283184b99821442d815c35ed"
+            id: "archived-INC-20260821-01"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608220538-SVC324"
+              work_item_id: "incident-closure"
+            provenance:
+              - "sha256:cba68799c53cca20c6cd14a07121a766cb1de9f1b7962d8d6507705c8e11771f"
+              - ".agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:11a27baca43f50dceeb18a5bc9c4b64890730bec911a3dc81c1da4fd81b8bb7e"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:16a0e3e8fbc4ed37e462e83de669543ff2e5627aa97552e8705dae112ff04932"
+            id: "archived-INC-20260822-01"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608220538-SVC324"
+              work_item_id: "incident-closure"
+            provenance:
+              - "sha256:cba68799c53cca20c6cd14a07121a766cb1de9f1b7962d8d6507705c8e11771f"
+              - ".agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:11a27baca43f50dceeb18a5bc9c4b64890730bec911a3dc81c1da4fd81b8bb7e"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:0fe7dd91f8f5c4aa477abd8c527955200f8a5e19d3665ad7c2cac2ae8e3a265f"
+            id: "release-gate-unblocked"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608220538-SVC324"
+              work_item_id: "incident-closure"
+            provenance:
+              - "sha256:cba68799c53cca20c6cd14a07121a766cb1de9f1b7962d8d6507705c8e11771f"
+              - ".agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:11a27baca43f50dceeb18a5bc9c4b64890730bec911a3dc81c1da4fd81b8bb7e"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json"
+              check_id: "incident-routing-check"
+              command_identity: "node .agentplane/policy/check-routing.mjs"
+              detail: "Observed by node .agentplane/policy/check-routing.mjs."
+              exit_code: 0
+              observed_at: "2026-08-22T06:52:27.349Z"
+              repository_snapshot_digest: "sha256:11a27baca43f50dceeb18a5bc9c4b64890730bec911a3dc81c1da4fd81b8bb7e"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       scope-rebased-grant:
         attempt: 1
         claim_id: null
@@ -1653,6 +1798,29 @@ extensions:
     checkpoints: []
     leases: []
     mutation_receipts:
+      external-result:work-order-202608220538-SVC324-executor-45b324d112ec8d16fa22d5e7:
+        aggregate_digest: "sha256:2d83672cfb049602d573bed1d95fc8074a56aab129b328dac5ca7c1b3e75b3a8"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-22T06:52:27.357Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_e2dbadc56a840b3f25e76375"
+          mutation_id: "external-result:work-order-202608220538-SVC324-executor-45b324d112ec8d16fa22d5e7"
+          plan_digest: "sha256:79bc4d77de944db0a1ad3d9b3fb72ce9fc6f407167244f132198c8d97d7b3d56"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608220538-SVC324"
+          task_revision: 34
+          to: "COMPLETED"
+          work_item_id: "incident-closure"
+        mutation_id: "external-result:work-order-202608220538-SVC324-executor-45b324d112ec8d16fa22d5e7"
+        next_revision: 35
+        previous_revision: 34
+        schema_version: 1
+        task_id: "202608220538-SVC324"
       external-result:work-order-202608220538-SVC324-executor-7e01050a25bfb71255dc708b:
         aggregate_digest: "sha256:2afac5b335ae60e1d023a2f125018dec2c0f5b66a60dd84eee9ab618d9f16a78"
         event:
@@ -1703,7 +1871,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "2e07e5b66dd193af7474d160a5bc5c17e4964896"
+    hash: "0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf"
   task_execution_context:
     base_ref: "main"
     base_sha: "258015fbf8be6e888dae88d12ad78f2dbcaaf89f"
@@ -2074,6 +2242,72 @@ Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a93c86c8d22c7479bf47b8dcac7f7d2518f86ec47e654b2591646268bf070bfd, input_digest=sha256:4f27528a9ca43f3482da98b9280ef12dc8e68b9fb08dbd1691ac6a7794ff9f51
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220538-SVC324 Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220538-SVC324 Verification Contract check critical_paths
+
+Check: docs_contract
+Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220538-SVC324 Verification Contract check docs_contract
+
+Check: full_regression
+Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220538-SVC324 Verification Contract check full_regression
+
+Check: hosted_integration
+Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220538-SVC324 Verification Contract check hosted_integration
+
+Check: task_outcome
+Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608220538-SVC324/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608220538-SVC324 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220538-SVC324-resolve-task-autonomy-and-evaluator-rework-incid/.agentplane/tasks/202608220538-SVC324/blueprint/resolved-snapshot.json
+- old_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+- current_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608220538-SVC324
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608220538-SVC324
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T06:52:20.291Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a93c86c8d22c7479bf47b8dcac7f7d2518f86ec47e654b2591646268bf070bfd, input_digest=sha256:befbfbae05f1f1762eec317d9851be8face9fd44759a907f0456905483ff47eb
 
 Details:
 
