@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202608221115-2H0QP2",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-22T11:21:30.749Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "7a1d5d67747d806e5e2402bd9fe5c48eaf0522ed",
+  "blueprint_digest": "040c1699bf78b48ccc66902bc8490aff81cb76f72978587651c540ed5afc0076",
+  "findings": [
+    "No actionable defect found: both module renames are complete, all local references target model.js, and explicit readonly properties preserve the original Readonly object contracts."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608221115-2H0QP2/quality/objects/sha256/eba89c757ac08da90bd127945ca0e8efdef8b10c5d01409d16350082d72972e6.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

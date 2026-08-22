@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608221115-2H0QP2-ebc13e4ea68477dea4f3f53e",
+  "prepared_at": "2026-08-22T11:19:03.750Z",
+  "task": {
+    "id": "202608221115-2H0QP2",
+    "revision": 8,
+    "objective": "Port the verified types.ts guardrail fix from blocked task 202608220823-XT1GTG into a clean branch_pr task: rename task-execution-context/types.ts and workspace-allocation/types.ts to model.ts, update only their local imports, preserve readonly semantics, and prove check:types-files plus typecheck pass.\n\nPort the verified types.ts guardrail fix from blocked task 202608220823-XT1GTG into a clean branch_pr task: rename task-execution-context/types.ts and workspace-allocation/types.ts to model.ts, update only their local imports, preserve readonly semantics, and prove check:types-files plus typecheck pass.",
+    "acceptance_criteria": [
+      "bun run check:types-files",
+      "bun run typecheck",
+      "- In scope: Port the verified types.ts guardrail fix from blocked task 202608220823-XT1GTG into a clean branch_pr task: rename task-execution-context/types.ts and workspace-allocation/types.ts to model.ts, update only their local imports, preserve readonly semantics, and prove check:types-files plus typecheck pass.\n- Out of scope: unrelated refactors not required for \"Port the verified types.ts guardrail fix from blocked task 202608220823-XT1GTG into a clean branch_pr task: rename task-execution-context/types.ts and workspace-allocation/types.ts to model.ts, update only their local imports, preserve readonly semantics, and prove check:types-files plus typecheck pass.\".",
+      "Port the already verified semantic module rename into a clean task and validate the filename guardrail and TypeScript graph.",
+      "PLANNER fallback scaffold for \"Port the verified types.ts guardrail fix from blocked task 202608220823-XT1GTG into a clean branch_pr task: rename task-execution-context/types.ts and workspace-allocation/types.ts to model.ts, update only their local imports, preserve readonly semantics, and prove check:types-files plus typecheck pass.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Port the verified types.ts guardrail fix from blocked task 202608220823-XT1GTG into a clean branch_pr task: rename task-execution-context/types.ts and workspace-allocation/types.ts to model.ts, update only their local imports, preserve readonly semantics, and prove check:types-files plus typecheck pass.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "7a1d5d67747d806e5e2402bd9fe5c48eaf0522ed",
+  "diff_base_sha": "0a1e75c439bca55f63f905f1ff3651ef04d49f23",
+  "blueprint_digest": "040c1699bf78b48ccc66902bc8490aff81cb76f72978587651c540ed5afc0076",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608221115-2H0QP2/quality/20260822-111903750-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:44de8a437fb4c00e1701eb907c7fcb58a553b248eeb6c9d4a78b5868b3a26771",
+    "prompt_path": ".agentplane/tasks/202608221115-2H0QP2/quality/objects/sha256/4ebf5d05063a459334738a014246f3b7f294ce011e1a4c8e6b353197a22be138.md",
+    "result_schema_path": ".agentplane/tasks/202608221115-2H0QP2/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608221115-2H0QP2/README.md",
+      "sha256": "sha256:3c1406278485614117c8732bfb32a9b39c73101bf1188442eea016485675900d",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608221115-2H0QP2/quality/objects/sha256/eba89c757ac08da90bd127945ca0e8efdef8b10c5d01409d16350082d72972e6.patch",
+      "sha256": "sha256:eba89c757ac08da90bd127945ca0e8efdef8b10c5d01409d16350082d72972e6",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608221115-2H0QP2/quality/objects/sha256/81f2c01a985bd3fe5b2b3de67e1834ff085be4b29e321fa155b211dde09660fc.json",
+      "sha256": "sha256:81f2c01a985bd3fe5b2b3de67e1834ff085be4b29e321fa155b211dde09660fc",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608221115-2H0QP2/verification/20260822111846941-9d5a454136f0c28c.json",
+      "sha256": "sha256:b8bba20d7f3d7d6cdb0794882df83f0683d64a14cc1a096cb324e28fbcf6a20e",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608221115-2H0QP2/quality/objects/sha256/2d056c7546ba64b9419f4380eefdf1757ad6c39fa804d8aa80a23e0addc7475f.json",
+      "sha256": "sha256:2d056c7546ba64b9419f4380eefdf1757ad6c39fa804d8aa80a23e0addc7475f",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
