@@ -15,8 +15,8 @@ Prepare, verify, merge, publish, and post-publish verify stable v0.7.8 from exac
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run release:prepublish
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,10 +27,24 @@ Prepare, verify, merge, publish, and post-publish verify stable v0.7.8 from exac
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/assets/header.svg                             |   4 +-
+ docs/assets/readme-headers/adr.svg                 |   4 +-
+ docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
+ docs/assets/readme-headers/agentplane.svg          |   4 +-
+ docs/assets/readme-headers/core.svg                |   4 +-
+ docs/assets/readme-headers/docs.svg                |   4 +-
+ docs/assets/readme-headers/humanizer.svg           |   4 +-
+ docs/assets/readme-headers/recipes.svg             |   4 +-
+ docs/assets/readme-headers/releases.svg            |   4 +-
+ docs/assets/readme-headers/schemas.svg             |   4 +-
+ docs/assets/readme-headers/scripts.svg             |   4 +-
+ docs/assets/readme-headers/skills.svg              |   4 +-
+ docs/assets/readme-headers/spec.svg                |   4 +-
+ docs/assets/readme-headers/testkit.svg             |   4 +-
  docs/releases/v0.7.8.md                            |  52 +++++++++++++++++++++
  website/static/img/social/docs/releases/v0.7.8.png | Bin 0 -> 53352 bytes
  website/static/img/social/manifest.json            |   8 ++++
- 3 files changed, 60 insertions(+)
+ 17 files changed, 88 insertions(+), 28 deletions(-)
 ```
 
 </details>

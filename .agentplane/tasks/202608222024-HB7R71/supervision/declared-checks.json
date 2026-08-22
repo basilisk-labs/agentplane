@@ -1,0 +1,22 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run release:prepublish",
+      "duration_ms": 117,
+      "exit_code": 1,
+      "script": "release:prepublish",
+      "stderr_tail": "$ bun run release:prepublish:fast && bun run release:prepublish:heavy\n$ bun run release:check\n$ bun run release:incidents:check && bun run release:acr-example:check && bun run docs:readme-header:check && bun run docs:social:check && bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && bun run --filter=@agentplane/testkit build && bun run --filter=@agentplaneorg/recipes build && node scripts/release-check.mjs\n$ node scripts/check-release-incidents.mjs\n$ node scripts/checks/check-acr-example-version.mjs\n$ node scripts/generate/generate-readme-header.mjs --check\nREADME header artifacts are stale:\n- docs/assets/readme-headers/agentplane.svg\n- docs/assets/readme-headers/agentplane-cli.svg\n- docs/assets/readme-headers/core.svg\n- docs/assets/readme-headers/recipes.svg\n- docs/assets/readme-headers/spec.svg\n- docs/assets/readme-headers/testkit.svg\n- docs/assets/readme-headers/docs.svg\n- docs/assets/readme-headers/releases.svg\n- docs/assets/readme-headers/adr.svg\n- docs/assets/readme-headers/scripts.svg\n- docs/assets/readme-headers/schemas.svg\n- docs/assets/readme-headers/skills.svg\n- docs/assets/readme-headers/humanizer.svg\n- docs/assets/header.svg\nRun: bun run docs:readme-header:generate\nerror: script \"docs:readme-header:check\" exited with code 1\nerror: script \"release:check\" exited with code 1\nerror: script \"release:prepublish:fast\" exited with code 1\nerror: script \"release:prepublish\" exited with code 1\n",
+      "stdout_tail": "Release incident gate passed: incidents.md has no active entries.\nACR example version OK (0.7.8-beta.1)\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: bun run release:prepublish",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202608222024-HB7R71"
+}
