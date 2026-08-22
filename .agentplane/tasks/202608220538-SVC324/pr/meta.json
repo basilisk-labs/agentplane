@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:763f990131549a6115b2fc96f9de90ac96e9efb1bf0abf478d9e9f81034149d5",
   "pr_number": 4863,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4863",
+  "pre_merge_closure": {
+    "basis_commit": "3b0b0e5263937a05deeb2bcc6d3cbad2423d1989",
+    "branch": "task/202608220538-SVC324/resolve-task-autonomy-and-evaluator-rework-incid",
+    "pr_number": 4863,
+    "recorded_at": "2026-08-22T07:35:51.874Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

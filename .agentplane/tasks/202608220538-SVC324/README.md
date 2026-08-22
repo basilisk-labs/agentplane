@@ -2,10 +2,10 @@
 id: "202608220538-SVC324"
 title: "Resolve task autonomy and evaluator rework incidents"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 43
+revision: 44
 origin:
   system: "manual"
 depends_on: []
@@ -62,9 +62,9 @@ quality_review:
     - "The CLI-owned verification record for implementation SHA 51372b22fe98ff770b7a48ea9c9539e5307eaf3e reports lint, typecheck, routing, and doctor success."
     - "Residual risk: Hosted CI and integration must be rerun for the new PR head before release."
 token_usage:
-  agent_runs: 11
+  agent_runs: 13
   input_tokens: null
-  journal_digest: "sha256:c26128f2aed533e5136626414b2fc6997fa52e9faf39de37559686aa30be2d33"
+  journal_digest: "sha256:f58a665570e5bf447f81c114a3a126de7727361f7ee741b4beb8bb5a84631c4e"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -74,7 +74,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-22T06:55:13.010Z"
+  updated_at: "2026-08-22T07:35:51.339Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -318,8 +318,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "51372b22fe98ff770b7a48ea9c9539e5307eaf3e"
-  message: "🚧 SVC324 task: apply external agent result"
+  hash: "3b0b0e5263937a05deeb2bcc6d3cbad2423d1989"
+  message: "🚧 SVC324 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -357,6 +357,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 51372b22fe98. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -504,9 +507,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-22T07:35:51.339Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "3b0b0e5263937a05deeb2bcc6d3cbad2423d1989"
 doc_version: 3
-doc_updated_at: "2026-08-22T07:35:15.267Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-22T07:35:51.528Z"
+doc_updated_by: "CODER"
 description: "Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, archive both incidents with exact evidence, and unblock the approved patch release."
 sections:
   Summary: |-
@@ -2095,6 +2106,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "51372b22fe98ff770b7a48ea9c9539e5307eaf3e"
+    message: "🚧 SVC324 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "258015fbf8be6e888dae88d12ad78f2dbcaaf89f"
@@ -2697,12 +2709,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/11` agent runs
+- Completeness: `0/13` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:c26128f2aed533e5136626414b2fc6997fa52e9faf39de37559686aa30be2d33`
+- Journal digest: `sha256:f58a665570e5bf447f81c114a3a126de7727361f7ee741b4beb8bb5a84631c4e`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-22T06:55:13.010Z`
+- Updated at: `2026-08-22T07:35:51.339Z`
