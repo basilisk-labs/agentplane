@@ -6,7 +6,10 @@ import { gitIsAncestor } from "@agentplaneorg/core/git";
 import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { isTaskSetLocalOnlyAdvance } from "../shared/task-local-freshness.js";
+import {
+  isTaskLocalOnlyAdvance,
+  isTaskSetLocalOnlyAdvance,
+} from "../shared/task-local-freshness.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import {
   hasAcceptedVerificationRecord,
@@ -139,12 +142,7 @@ async function resolveExpectedQualitySha(opts: {
   baselineSha: string | null;
 }): Promise<string | null> {
   const reviewedSha = opts.loaded.task.quality_review?.evaluated_sha ?? null;
-  if (
-    opts.taskIds.length <= 1 ||
-    !opts.baselineSha ||
-    !reviewedSha ||
-    reviewedSha === opts.baselineSha
-  ) {
+  if (!opts.baselineSha || !reviewedSha || reviewedSha === opts.baselineSha) {
     return opts.baselineSha;
   }
 
@@ -155,13 +153,24 @@ async function resolveExpectedQualitySha(opts: {
   ).catch(() => false);
   if (!reviewedAfterBaseline) return opts.baselineSha;
 
-  const taskArtifactsOnly = await isTaskSetLocalOnlyAdvance({
-    gitRoot: opts.ctx.resolvedProject.gitRoot,
-    workflowDir: opts.ctx.config.paths.workflow_dir,
-    taskIds: opts.taskIds,
-    tasksPath: opts.ctx.config.paths.tasks_path,
-    fromRef: opts.baselineSha,
-    toRef: reviewedSha,
-  }).catch(() => false);
+  const taskArtifactsOnly = await (
+    opts.taskIds.length === 1
+      ? isTaskLocalOnlyAdvance({
+          gitRoot: opts.ctx.resolvedProject.gitRoot,
+          workflowDir: opts.ctx.config.paths.workflow_dir,
+          taskId: opts.loaded.taskId,
+          tasksPath: opts.ctx.config.paths.tasks_path,
+          fromRef: opts.baselineSha,
+          toRef: reviewedSha,
+        })
+      : isTaskSetLocalOnlyAdvance({
+          gitRoot: opts.ctx.resolvedProject.gitRoot,
+          workflowDir: opts.ctx.config.paths.workflow_dir,
+          taskIds: opts.taskIds,
+          tasksPath: opts.ctx.config.paths.tasks_path,
+          fromRef: opts.baselineSha,
+          toRef: reviewedSha,
+        })
+  ).catch(() => false);
   return taskArtifactsOnly ? reviewedSha : opts.baselineSha;
 }

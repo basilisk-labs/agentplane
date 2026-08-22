@@ -1,0 +1,6 @@
+ .../src/commands/shared/quality-review-target.ts   |   6 ++
+ .../src/commands/task/finish-blueprint-evidence.ts |  39 +++++---
+ .../task/finish.quality-review-target.unit.test.ts | 104 +++++++++++++++++++++
+ packages/agentplane/src/commands/task/plan.ts      |   4 +-
+ .../agentplane/src/commands/task/plan.unit.test.ts |  52 +++++++++++
+ 5 files changed, 189 insertions(+), 16 deletions(-)

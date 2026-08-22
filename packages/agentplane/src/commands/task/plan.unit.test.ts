@@ -90,6 +90,58 @@ describe("task plan commands (unit)", () => {
     mockResolveLogicalRepositoryIdentity.mockResolvedValue(`sha256:${"f".repeat(64)}`);
   });
 
+  it("setTaskPlan clears the replan marker when a replacement canonical plan is supplied", async () => {
+    const ctx = mkCtx();
+    let currentTask = mkTask({
+      id: "T-1",
+      doc: [
+        "## Summary",
+        "x",
+        "",
+        "## Plan",
+        "old",
+        "",
+        "## Verify Steps",
+        "ok",
+        "",
+        "## Notes",
+        "n/a",
+      ].join("\n"),
+      extensions: {
+        "agentplane.task_centric": { schema_version: 1, id: "T-1" },
+        "agentplane.task_centric_replan_required": {
+          schema_version: 1,
+          reason_code: "plan_changed",
+        },
+      },
+    });
+    const replacement = { schema_version: 1, id: "T-1", revision: 2 };
+    const store = {
+      update: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+            currentTask = await updater(currentTask);
+            return { changed: true, task: currentTask };
+          },
+        ),
+    };
+    mockBackendIsLocalFileBackend.mockReturnValue(true);
+    mockGetTaskStore.mockReturnValue(store);
+
+    const { setTaskPlan } = await import("./plan.js");
+    await setTaskPlan({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      text: "replacement",
+      taskFields: { extensions: { "agentplane.task_centric": replacement } },
+    });
+
+    expect(currentTask.extensions?.["agentplane.task_centric"]).toEqual(replacement);
+    expect(currentTask.extensions).not.toHaveProperty("agentplane.task_centric_replan_required");
+  });
+
   it("cmdTaskPlanApprove rejects empty --by", async () => {
     const ctx = mkCtx();
     mockLoadTaskFromContext.mockResolvedValue(mkTask({ doc: "## Summary\nx\n" }));
