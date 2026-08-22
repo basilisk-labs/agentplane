@@ -1,11 +1,11 @@
 ---
 id: "202608212254-WR57ZD"
 title: "Accept exact tree identity for GitHub rebase cleanup"
-result_summary: "pre-merge closure"
-status: "DOING"
+result_summary: "Merged via PR #4860."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -62,19 +62,19 @@ quality_review:
     - "The exact declared verification command passed all 29 focused tests after the suite-level timeout was aligned with the adjacent integration suite."
     - "The existing provider-only patch regression remains effective for ordinary two-parent merge topology."
 token_usage:
-  agent_runs: 3
+  agent_runs: 0
   input_tokens: null
-  journal_digest: "sha256:88ea9ec4f907afb7fc9f377dadb40df444438ba7cd7c90e9d515de67bf27d856"
+  journal_digest: null
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
-  source: "supervisor_journal"
+  source: "unavailable"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-21T23:29:55.153Z"
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-22T01:02:18.659Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -254,8 +254,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "76de62783d21696f41f8b7282c79baa389c0158a"
-  message: "🚧 WR57ZD task: record external evaluator result"
+  hash: "f0f5533e70d40e0d55e98939c488d8266f35fd12"
+  message: "🐛 WR57ZD rebase: preserve patch proof on tree receipt"
 comments:
   -
     author: "CODER"
@@ -272,6 +272,9 @@ comments:
   -
     author: "USER"
     body: "Reopen within approved scope to address unresolved P1 review feedback before integration."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4860 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -353,9 +356,17 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Reopen within approved scope to address unresolved P1 review feedback before integration."
+  -
+    type: "status"
+    at: "2026-08-22T01:02:18.659Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4860 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+    commit: "f0f5533e70d40e0d55e98939c488d8266f35fd12"
 doc_version: 3
-doc_updated_at: "2026-08-22T00:30:47.915Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-08-22T01:02:18.720Z"
+doc_updated_by: "INTEGRATOR"
 description: "Allow cleanup reconciliation to accept an exact provider receipt when the provider head tree equals the single-parent GitHub rebase merge commit tree; preserve existing identity, object, receipt, and negative guards. Add focused regression tests, publish a PR, merge after hosted checks, then retry cleanup for E6CDHP and XEC2NE."
 sections:
   Summary: |-
@@ -1324,12 +1335,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/3` agent runs
+- Completeness: `0/0` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
-- Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:88ea9ec4f907afb7fc9f377dadb40df444438ba7cd7c90e9d515de67bf27d856`
-- Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-21T23:29:55.153Z`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-22T01:02:18.659Z`
