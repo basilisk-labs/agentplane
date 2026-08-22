@@ -2,10 +2,10 @@
 id: "202608221335-6DSF3R"
 title: "Fix idempotent null-WorkItem external result acceptance"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "BLOCKED"
 priority: "med"
 owner: "CODER"
-revision: 21
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -251,6 +251,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator finding cannot be repaired inside the current writable roots; the minimal recovery is to remove only the automatically promoted incident line from the two affected policy files. Recommended action: Approve an exact two-path cleanup authority, remove only INC-20260822-01, and rerun the existing focused verification. Requested scope: roots=.agentplane/policy/incidents.md,packages/agentplane/assets/policy/incidents.md; repository effects=repository_write; request digest=sha256:f085d1f1289e155fb1e79aa690ea9b4df9730907ee89d3c2e8353be944e7a797. Agentplane receipt: external-agent-blocker/tr_883d8d29c8d1a74863858f1e05029d00/sha256:a7f9ba993c80873e49e903d1939036f554290859edf1c6e64f874827f836f622/sha256:f085d1f1289e155fb1e79aa690ea9b4df9730907ee89d3c2e8353be944e7a797."
 events:
   -
     type: "status"
@@ -333,9 +336,16 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Verification is blocked because a lifecycle operation changed two global policy files outside the approved WorkItem scope after the implementation commit."
+  -
+    type: "status"
+    at: "2026-08-22T14:35:17.507Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator finding cannot be repaired inside the current writable roots; the minimal recovery is to remove only the automatically promoted incident line from the two affected policy files. Recommended action: Approve an exact two-path cleanup authority, remove only INC-20260822-01, and rerun the existing focused verification. Requested scope: roots=.agentplane/policy/incidents.md,packages/agentplane/assets/policy/incidents.md; repository effects=repository_write; request digest=sha256:f085d1f1289e155fb1e79aa690ea9b4df9730907ee89d3c2e8353be944e7a797. Agentplane receipt: external-agent-blocker/tr_883d8d29c8d1a74863858f1e05029d00/sha256:a7f9ba993c80873e49e903d1939036f554290859edf1c6e64f874827f836f622/sha256:f085d1f1289e155fb1e79aa690ea9b4df9730907ee89d3c2e8353be944e7a797."
 doc_version: 3
-doc_updated_at: "2026-08-22T14:34:07.378Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-22T14:35:17.541Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix the proven task-centric Core regression in null-ID external result handling: first acceptance must resolve a single claimed or ready WorkItem, and an exact replay after evidence persistence must use the mutation receipt before scheduler selection. Add focused unit coverage. Do not modify context code. This replaces unpublished Task 202608221325-NQJQ5K whose WorkItemGraph incorrectly declared repository sources as upstream required_inputs."
 sections:
   Summary: |-
@@ -720,6 +730,21 @@ extensions:
     scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
     status: "active"
     task_id: "202608221335-6DSF3R"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:a7f9ba993c80873e49e903d1939036f554290859edf1c6e64f874827f836f622"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "Restore the approved Core-only branch scope by deleting the single automatically promoted incident entry that invalidates verification."
+      repository_effects:
+        - "repository_write"
+      schema_version: 1
+      scope_roots:
+        - ".agentplane/policy/incidents.md"
+        - "packages/agentplane/assets/policy/incidents.md"
+    request_digest: "sha256:f085d1f1289e155fb1e79aa690ea9b4df9730907ee89d3c2e8353be944e7a797"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_883d8d29c8d1a74863858f1e05029d00"
   agentplane.task_centric:
     current_plan:
       approval:
