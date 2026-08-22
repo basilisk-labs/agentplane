@@ -432,11 +432,12 @@ export async function resolveProviderReconciliation(opts: {
     return { proof: { ...common, kind: "exact_head" }, reason: null };
   }
   if (
-    await gitSingleParentCommitTreeEquals({
+    opts.receipt.providerHeadSha !== opts.receipt.mergeCommit &&
+    (await gitSingleParentCommitTreeEquals({
       gitRoot: opts.gitRoot,
       commit: opts.receipt.mergeCommit,
       expectedTreeCommit: opts.receipt.providerHeadSha,
-    })
+    }))
   ) {
     return { proof: { ...common, kind: "provider_rebase_equivalent" }, reason: null };
   }
