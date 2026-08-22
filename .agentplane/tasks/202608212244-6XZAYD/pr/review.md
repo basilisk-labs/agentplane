@@ -13,7 +13,7 @@ Created: 2026-08-21T22:50:57.507Z
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note: The committed implementation remains verified after supervisor-owned verification recording.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
