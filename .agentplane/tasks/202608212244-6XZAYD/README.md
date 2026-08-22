@@ -4,7 +4,7 @@ title: "Implement the task-centric refactoring roadmap v2 and publish the next p
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -27,10 +27,10 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "User confirmed exact plan digest in Codex task; host_user_decision=sha256:f5d9083511651b29dd00284b298bcaf85d49e76762063fbd26008ffa0d2aae09"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-22T01:43:52.903Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -136,11 +136,126 @@ execution_contract:
       - "vitest.workspace.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "depcruise.config.cjs"
+      - "packages/agentplane"
+      - "packages/core"
+      - "packages/spec"
+      - "packages/testkit"
+      - "schemas"
+    changed_paths:
+      - "depcruise.config.cjs"
+      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
+      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
+      - "packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
+      - "packages/agentplane/src/commands/hermes/hermes-runtime.ts"
+      - "packages/agentplane/src/commands/hermes/hermes.command.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
+      - "packages/agentplane/src/commands/task/advance.command.ts"
+      - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
+      - "packages/agentplane/src/commands/task/agent-action-packet.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
+      - "packages/agentplane/src/commands/task/external-agent-result-application.ts"
+      - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+      - "packages/agentplane/src/commands/task/finish-shared.ts"
+      - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+      - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
+      - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
+      - "packages/agentplane/src/commands/task/new-duplicates.ts"
+      - "packages/agentplane/src/commands/task/plan-approve.command.ts"
+      - "packages/agentplane/src/commands/task/plan.ts"
+      - "packages/agentplane/src/commands/task/ready.ts"
+      - "packages/agentplane/src/commands/task/run.command.ts"
+      - "packages/agentplane/src/commands/task/shared/dependencies.ts"
+      - "packages/agentplane/src/commands/task/supervision-outcome-disposition.test.ts"
+      - "packages/agentplane/src/commands/task/supervision-outcome-disposition.ts"
+      - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
+      - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
+      - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+      - "packages/agentplane/src/commands/workflow.test.ts"
+      - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+      - "packages/agentplane/src/runner/context/task-context.test.ts"
+      - "packages/agentplane/src/runner/usecases/agent-work-order-build.ts"
+      - "packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts"
+      - "packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-knowledge-request-lifecycle.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-knowledge-retrieval-query.ts"
+      - "packages/agentplane/src/runner/usecases/task-knowledge-retrieval.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-active-claim-readonly.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-active-claim.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-active-claim.testkit.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel-effect-in-doubt.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-provenance.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-lifecycle.testkit.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-process-identity-serialization.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run.ts"
+      - "packages/agentplane/src/runtime/task-execution-context/architecture-guard.test.ts"
+      - "packages/agentplane/src/runtime/task-execution-context/resolve.test.ts"
+      - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
+      - "packages/agentplane/src/runtime/workspace-allocation/allocate.ts"
+      - "packages/core/schemas/agent-work-order-v2.schema.json"
+      - "packages/core/src/index.ts"
+      - "packages/core/src/runner/agent-semantic-result.ts"
+      - "packages/core/src/runner/agent-work-order.ts"
+      - "packages/core/src/schemas/index.ts"
+      - "packages/core/src/tasks/index.ts"
+      - "packages/core/src/tasks/task-centric/compatibility.ts"
+      - "packages/core/src/tasks/task-centric/digest.ts"
+      - "packages/core/src/tasks/task-centric/graph.ts"
+      - "packages/core/src/tasks/task-centric/index.ts"
+      - "packages/core/src/tasks/task-centric/lifecycle.ts"
+      - "packages/core/src/tasks/task-centric/model.ts"
+      - "packages/core/src/tasks/task-centric/orchestrator.test.ts"
+      - "packages/core/src/tasks/task-centric/orchestrator.ts"
+      - "packages/core/src/tasks/task-centric/policy.ts"
+      - "packages/core/src/tasks/task-centric/ports.ts"
+      - "packages/core/src/tasks/task-centric/schema.ts"
+      - "packages/core/src/tasks/task-centric/task-centric.test.ts"
+      - "packages/core/src/tasks/task-status.test.ts"
+      - "packages/core/src/tasks/task-status.ts"
+      - "packages/spec/schemas/agent-work-order-v2.schema.json"
+      - "packages/testkit/src/cli-harness.ts"
+      - "schemas/agent-semantic-result.schema.json"
+      - "schemas/agent-work-order-v2.schema.json"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "public_api"
+      - "repository_write"
+      - "schema"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -219,10 +334,35 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:19cf4c4d00eccc68cf2ac4a349d53bc2a693134e89dd9d5abbbcf39a6d9b1478"
+      digest: "sha256:340b15931a9c93b7a9a4d69a6522a4460f590cdfc98451d897ccc2b2dac9355b"
       escalation_reasons:
         - "central_component:bun.lock"
         - "central_component:package.json"
+        - "central_path:packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step.test.ts"
+        - "central_path:packages/core/schemas/agent-work-order-v2.schema.json"
+        - "central_path:packages/core/src/index.ts"
+        - "central_path:packages/core/src/runner/agent-semantic-result.ts"
+        - "central_path:packages/core/src/runner/agent-work-order.ts"
+        - "central_path:packages/core/src/schemas/index.ts"
+        - "central_path:packages/core/src/tasks/index.ts"
+        - "central_path:packages/core/src/tasks/task-centric/compatibility.ts"
+        - "central_path:packages/core/src/tasks/task-centric/digest.ts"
+        - "central_path:packages/core/src/tasks/task-centric/graph.ts"
+        - "central_path:packages/core/src/tasks/task-centric/index.ts"
+        - "central_path:packages/core/src/tasks/task-centric/lifecycle.ts"
+        - "central_path:packages/core/src/tasks/task-centric/model.ts"
+        - "central_path:packages/core/src/tasks/task-centric/orchestrator.test.ts"
+        - "central_path:packages/core/src/tasks/task-centric/orchestrator.ts"
+        - "central_path:packages/core/src/tasks/task-centric/policy.ts"
+        - "central_path:packages/core/src/tasks/task-centric/ports.ts"
+        - "central_path:packages/core/src/tasks/task-centric/schema.ts"
+        - "central_path:packages/core/src/tasks/task-centric/task-centric.test.ts"
+        - "central_path:packages/core/src/tasks/task-status.test.ts"
+        - "central_path:packages/core/src/tasks/task-status.ts"
+        - "central_path:schemas/agent-semantic-result.schema.json"
+        - "central_path:schemas/agent-work-order-v2.schema.json"
         - "effect_ci"
         - "effect_dependencies"
         - "effect_public_api"
@@ -237,10 +377,104 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "depcruise.config.cjs"
+          - "packages/agentplane"
+          - "packages/core"
+          - "packages/spec"
+          - "packages/testkit"
+          - "schemas"
+        changed_files:
+          - "depcruise.config.cjs"
+          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
+          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
+          - "packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
+          - "packages/agentplane/src/commands/hermes/hermes-runtime.ts"
+          - "packages/agentplane/src/commands/hermes/hermes.command.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
+          - "packages/agentplane/src/commands/task/advance.command.ts"
+          - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
+          - "packages/agentplane/src/commands/task/agent-action-packet.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+          - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
+          - "packages/agentplane/src/commands/task/external-agent-result-application.ts"
+          - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+          - "packages/agentplane/src/commands/task/finish-shared.ts"
+          - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+          - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
+          - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
+          - "packages/agentplane/src/commands/task/new-duplicates.ts"
+          - "packages/agentplane/src/commands/task/plan-approve.command.ts"
+          - "packages/agentplane/src/commands/task/plan.ts"
+          - "packages/agentplane/src/commands/task/ready.ts"
+          - "packages/agentplane/src/commands/task/run.command.ts"
+          - "packages/agentplane/src/commands/task/shared/dependencies.ts"
+          - "packages/agentplane/src/commands/task/supervision-outcome-disposition.test.ts"
+          - "packages/agentplane/src/commands/task/supervision-outcome-disposition.ts"
+          - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
+          - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
+          - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+          - "packages/agentplane/src/commands/workflow.test.ts"
+          - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+          - "packages/agentplane/src/runner/context/task-context.test.ts"
+          - "packages/agentplane/src/runner/usecases/agent-work-order-build.ts"
+          - "packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts"
+          - "packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-knowledge-request-lifecycle.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-knowledge-retrieval-query.ts"
+          - "packages/agentplane/src/runner/usecases/task-knowledge-retrieval.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-active-claim-readonly.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-active-claim.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-active-claim.testkit.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel-effect-in-doubt.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-provenance.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-lifecycle.testkit.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-process-identity-serialization.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run.ts"
+          - "packages/agentplane/src/runtime/task-execution-context/architecture-guard.test.ts"
+          - "packages/agentplane/src/runtime/task-execution-context/resolve.test.ts"
+          - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
+          - "packages/agentplane/src/runtime/workspace-allocation/allocate.ts"
+          - "packages/core/schemas/agent-work-order-v2.schema.json"
+          - "packages/core/src/index.ts"
+          - "packages/core/src/runner/agent-semantic-result.ts"
+          - "packages/core/src/runner/agent-work-order.ts"
+          - "packages/core/src/schemas/index.ts"
+          - "packages/core/src/tasks/index.ts"
+          - "packages/core/src/tasks/task-centric/compatibility.ts"
+          - "packages/core/src/tasks/task-centric/digest.ts"
+          - "packages/core/src/tasks/task-centric/graph.ts"
+          - "packages/core/src/tasks/task-centric/index.ts"
+          - "packages/core/src/tasks/task-centric/lifecycle.ts"
+          - "packages/core/src/tasks/task-centric/model.ts"
+          - "packages/core/src/tasks/task-centric/orchestrator.test.ts"
+          - "packages/core/src/tasks/task-centric/orchestrator.ts"
+          - "packages/core/src/tasks/task-centric/policy.ts"
+          - "packages/core/src/tasks/task-centric/ports.ts"
+          - "packages/core/src/tasks/task-centric/schema.ts"
+          - "packages/core/src/tasks/task-centric/task-centric.test.ts"
+          - "packages/core/src/tasks/task-status.test.ts"
+          - "packages/core/src/tasks/task-status.ts"
+          - "packages/spec/schemas/agent-work-order-v2.schema.json"
+          - "packages/testkit/src/cli-harness.ts"
+          - "schemas/agent-semantic-result.schema.json"
+          - "schemas/agent-work-order-v2.schema.json"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "public_api"
+          - "repository_write"
+          - "schema"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -284,11 +518,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "8ae1df8b06aa992a90d7b678bf5d2c34f7455969"
+  message: "🚧 6XZAYD task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 8ae1df8b06aa. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -297,9 +536,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-22T01:43:04.573Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 8ae1df8b06aa. CLI accepted one state-bound external-agent semantic result."
+    commit: "8ae1df8b06aa992a90d7b678bf5d2c34f7455969"
+  -
+    type: "verify"
+    at: "2026-08-22T01:43:52.903Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-21T22:50:54.907Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-22T01:44:01.871Z"
+doc_updated_by: "SUPERVISOR"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:
   Summary: |-
@@ -330,6 +583,78 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-22T01:43:52.903Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6, input_digest=sha256:271640c5dd262e32e6fe69efe5f2dbd7abde0d6b68129626041d4d34c72061b0
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608212244-6XZAYD Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608212244-6XZAYD Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608212244-6XZAYD Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608212244-6XZAYD Verification Contract check full_regression
+
+    Check: hosted_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608212244-6XZAYD Verification Contract check hosted_integration
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608212244-6XZAYD Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: branch_pr task 202608212244-6XZAYD Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212244-6XZAYD-implement-the-task-centric-refactoring-roadmap-v/.agentplane/tasks/202608212244-6XZAYD/blueprint/resolved-snapshot.json
+    - old_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+    - current_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608212244-6XZAYD
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -360,12 +685,13 @@ extensions:
     scope_digest: "sha256:6cfff1cbeea391464fb74ad5762a771f9c6aa60b72a09e7741d3ea236d5c818b"
     status: "active"
     task_id: "202608212244-6XZAYD"
+  implementation_commit:
+    hash: "8ae1df8b06aa992a90d7b678bf5d2c34f7455969"
   task_execution_context:
     base_ref: "main"
     base_sha: "134c95fd629d5ebcf0e17196ccb4b44f60c993fd"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "explicit"
   workflow_route_baseline:
     start_head_sha: "134c95fd629d5ebcf0e17196ccb4b44f60c993fd"
     version: 1
@@ -408,6 +734,78 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-22T01:43:52.903Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6, input_digest=sha256:271640c5dd262e32e6fe69efe5f2dbd7abde0d6b68129626041d4d34c72061b0
+
+Details:
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608212244-6XZAYD Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608212244-6XZAYD Verification Contract check critical_paths
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608212244-6XZAYD Verification Contract check docs_contract
+
+Check: full_regression
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608212244-6XZAYD Verification Contract check full_regression
+
+Check: hosted_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608212244-6XZAYD Verification Contract check hosted_integration
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608212244-6XZAYD Verification Contract check real_e2e
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: branch_pr task 202608212244-6XZAYD Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212244-6XZAYD-implement-the-task-centric-refactoring-roadmap-v/.agentplane/tasks/202608212244-6XZAYD/blueprint/resolved-snapshot.json
+- old_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+- current_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608212244-6XZAYD
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
