@@ -1,0 +1,62 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run lint:core",
+      "duration_ms": 58833,
+      "exit_code": 0,
+      "script": "lint:core",
+      "stderr_tail": "$ eslint packages scripts eslint.config.cjs vitest.config.ts\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 202,
+      "exit_code": 0,
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts",
+      "duration_ms": 2590,
+      "exit_code": 0,
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222129-K0TGS4-propagate-approved-scope-extension-into-task-cen\n\n\n Test Files  1 passed (1)\n      Tests  8 passed (8)\n   Start at  00:38:33\n   Duration  1.42s (transform 993ms, setup 0ms, import 1.33s, tests 15ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 994390,
+      "exit_code": 1,
+      "script": "ci:local:full",
+      "stderr_tail": "agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts > task-run supervisor active claim > makes an ordinary executing run authoritative against a concurrent replay\nError: Timed out waiting for custom runner claim marker\n ❯ waitForCondition packages/testkit/src/wait.ts:24:9\n     22|\n     23|   if (opts.onTimeout) throw opts.onTimeout(lastValue);\n     24|   throw new Error(`Timed out waiting for ${opts.description}`);\n       |         ^\n     25| }\n     26|\n ❯ waitForStartedRun packages/agentplane/src/runner/usecases/task-run-active-claim.testkit.ts:232:10\n ❯ packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts:219:27\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯\n\n FAIL  packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts > task-run supervisor active claim > rejects a concurrent retry while the authoritative run is running without identity\nError: Test timed out in 60000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts:246:3\n    244|   });\n    245|\n    246|   it(\"rejects a concurrent retry while the authoritative run is runnin…\n       |   ^\n    247|     const root = await mkGitRepoRoot();\n    248|     const startedPath = path.join(root, \"null-identity-claim-started.l…\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯\n\nnode:internal/errors:985\n  const err = new Error(message);\n              ^\n\nError: Command failed: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000\n    at genericNodeError (node:internal/errors:985:15)\n    at wrappedFn (node:internal/errors:539:14)\n    at checkExecSyncError (node:child_process:925:11)\n    at execFileSync (node:child_process:961:15)\n    at run (file:///Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222129-K0TGS4-propagate-approved-scope-extension-into-task-cen/scripts/checks/run-local-ci-group.mjs:4:32)\n    at Object.runtime (file:///Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222129-K0TGS4-propagate-approved-scope-extension-into-task-cen/scripts/checks/run-local-ci-group.mjs:50:5)\n    at file:///Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222129-K0TGS4-propagate-approved-scope-extension-into-task-cen/scripts/checks/run-local-ci-group.mjs:72:14\n    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:671:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  status: 1,\n  signal: null,\n  output: [ null, null, null ],\n  pid: 42044,\n  stdout: null,\n  stderr: null\n}\n\nNode.js v24.11.1\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\nfile:///Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222129-K0TGS4-propagate-approved-scope-extension-into-task-cen/scripts/checks/run-local-ci.mjs:500\n  if (!result.ok) throw new Error(\"Full verification group failed.\");\n                        ^\n\nError: Full verification group failed.\n    at runFullFastPath (file:///Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222129-K0TGS4-propagate-approved-scope-extension-into-task-cen/scripts/checks/run-local-ci.mjs:500:25)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222129-K0TGS4-propagate-approved-scope-extension-into-task-cen/scripts/checks/run-local-ci.mjs:583:7\n\nNode.js v24.11.1\nerror: script \"ci:local:full\" exited with code 1\n",
+      "stdout_tail": "/14 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts\nVitest suite critical-cli: chunk 3/14 passed in 3282ms (Test Files  1 passed (1); Tests  17 passed (17); Duration  2.55s (transform 1.23s, setup 0ms, import 1.52s, tests 236ms, environment 0ms))\nVitest suite critical-cli: chunk 4/14 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts\nVitest suite critical-cli: chunk 4/14 passed in 66246ms (Test Files  1 passed (1); Tests  11 passed (11); Duration  65.62s (transform 1.25s, setup 0ms, import 1.53s, tests 63.50s, environment 0ms))\nVitest suite critical-cli: chunk 5/14 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts\nVitest suite critical-cli: chunk 5/14 passed in 3020ms (Test Files  1 passed (1); Tests  10 passed (10); Duration  2.57s (transform 1.45s, setup 0ms, import 1.84s, tests 320ms, environment 0ms))\nVitest suite critical-cli: chunk 6/14 (1 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts\nVitest suite critical-cli: chunk 6/14 passed in 52619ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  52.32s (transform 2.12s, setup 0ms, import 1.50s, tests 50.39s, environment 0ms))\nVitest suite critical-cli: chunk 7/14 (1 files): packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 7/14 passed in 12291ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  12.09s (transform 1.07s, setup 0ms, import 1.40s, tests 10.26s, environment 0ms))\nVitest suite critical-cli: chunk 8/14 (1 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts\nVitest suite critical-cli: chunk 8/14 passed in 13848ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  13.60s (transform 1.08s, setup 0ms, import 1.40s, tests 12.02s, environment 0ms))\nVitest suite critical-cli: chunk 9/14 (1 files): packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 9/14 passed in 22291ms (Test Files  1 passed (1); Tests  3 passed (3); Duration  21.78s (transform 1.18s, setup 0ms, import 1.50s, tests 20.00s, environment 0ms))\nVitest suite critical-cli: chunk 10/14 (1 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts\nVitest suite critical-cli: chunk 10/14 passed in 21670ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  20.93s (transform 1.11s, setup 0ms, import 1.43s, tests 18.97s, environment 0ms))\nVitest suite critical-cli: chunk 11/14 (1 files): packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 11/14 passed in 15212ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  14.51s (transform 1.04s, setup 0ms, import 1.36s, tests 12.74s, environment 0ms))\nVitest suite critical-cli: chunk 12/14 (1 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts\nVitest suite critical-cli: chunk 12/14 passed in 103630ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  103.35s (transform 2.04s, setup 0ms, import 1.47s, tests 101.57s, environment 0ms))\nVitest suite critical-cli: chunk 13/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 13/14 passed in 1963ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  1.79s (transform 1.20s, setup 0ms, import 1.44s, tests 282ms, environment 0ms))\nVitest suite critical-cli: chunk 14/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 14/14 passed in 10197ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  10.03s (transform 2.39s, setup 0ms, import 2.66s, tests 7.31s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":994270,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":2,\"build_invocations\":1,\"ok\":false}\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: bun run ci:local:full",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202608222129-K0TGS4"
+}
