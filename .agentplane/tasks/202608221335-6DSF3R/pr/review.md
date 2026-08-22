@@ -12,8 +12,8 @@ Created: 2026-08-22T13:40:02.178Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Verification evidence is incomplete: docs_contract was omitted from the structured check IDs.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

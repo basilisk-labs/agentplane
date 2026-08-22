@@ -15,8 +15,8 @@ Fix the proven task-centric Core regression in null-ID external result handling:
 
 ## Verification
 
-- State: needs_rework
-- Note: Verification evidence is incomplete: docs_contract was omitted from the structured check IDs.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
