@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608221511-ZD76VS-f46d6807d4caa2a6d8260e24",
+  "prepared_at": "2026-08-22T15:18:29.995Z",
+  "task": {
+    "id": "202608221511-ZD76VS",
+    "revision": 8,
+    "objective": "Finalize the v0.7.8 maximum-assimilation compatibility gate\n\nAdd exactly one compatibility E2E proving the existing context.maximum_assimilation workflow enters and preserves its contract through the new task-centric Core. Reuse existing context contracts, prompts, extraction schemas, artifacts, provenance, and approval gate. Fix only a regression proven by this E2E. Do not implement Knowledge Assimilation. This replaces unpublished Task 202608221453-EKC1X8 after its legacy execution contract omitted repository_effect:tests and failed to record the WorkItem completion receipt.",
+    "acceptance_criteria": [
+      "bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts",
+      "- In scope: Add exactly one compatibility E2E proving the existing context.maximum_assimilation workflow enters and preserves its contract through the new task-centric Core. Reuse existing context contracts, prompts, extraction schemas, artifacts, provenance, and approval gate. Fix only a regression proven by this E2E. Do not implement Knowledge Assimilation. This replaces unpublished Task 202608221453-EKC1X8 after its legacy execution contract omitted repository_effect:tests and failed to record the WorkItem completion receipt.\n- Out of scope: unrelated refactors not required for \"Finalize the v0.7.8 maximum-assimilation compatibility gate\".",
+      "Add one maximum-assimilation compatibility E2E with a test-only execution contract and no production changes unless the E2E proves a regression.",
+      "PLANNER fallback scaffold for \"Finalize the v0.7.8 maximum-assimilation compatibility gate\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Finalize the v0.7.8 maximum-assimilation compatibility gate\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "6caaae4fe8c1f9d69b2c9644ae41be6643bd9731",
+  "diff_base_sha": "1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a",
+  "blueprint_digest": "aec19170f7f7d261e36aac7f12794feba0b263fa7731d8a854dfbe65ccc105f6",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608221511-ZD76VS/quality/20260822-151829995-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:19728f973024d7e2402502a53b958d8d823067a18996bf9b664ec8f06b419564",
+    "prompt_path": ".agentplane/tasks/202608221511-ZD76VS/quality/objects/sha256/acbe32eaa11cbfc14c33676b5795d9080b6e89ef1fb63392c5e36f7bb16514b5.md",
+    "result_schema_path": ".agentplane/tasks/202608221511-ZD76VS/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608221511-ZD76VS/README.md",
+      "sha256": "sha256:897310e3a3be4940e2d13f3d59c97224ce1cb98d929e61ed670a8f327f4e90c4",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608221511-ZD76VS/quality/objects/sha256/fb382758ebe23148d42eb3b45b844da7afee4d756e43e9635953d0cda0af468b.patch",
+      "sha256": "sha256:fb382758ebe23148d42eb3b45b844da7afee4d756e43e9635953d0cda0af468b",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608221511-ZD76VS/quality/objects/sha256/1bf50c89d3aec5b8dd71fd8f7d5be339b5d8c12e1d4dc90e04d05770f6e351ba.json",
+      "sha256": "sha256:1bf50c89d3aec5b8dd71fd8f7d5be339b5d8c12e1d4dc90e04d05770f6e351ba",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608221511-ZD76VS/verification/20260822151812354-19a582ee23734c7b.json",
+      "sha256": "sha256:2a448259cf1071c14b3f1fc1c2e4724d7a7e1a24f654198d5209fe149c5c7e56",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608221511-ZD76VS/quality/objects/sha256/d02a603bf7a5532dbc440dd514bccfa7a47f2bb471d0cee0b364a40811660314.json",
+      "sha256": "sha256:d02a603bf7a5532dbc440dd514bccfa7a47f2bb471d0cee0b364a40811660314",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The only non-task-artifact repository change is the single approved E2E file.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221511-ZD76VS/quality/objects/sha256/fb382758ebe23148d42eb3b45b844da7afee4d756e43e9635953d0cda0af468b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The test covers the maximum-assimilation profile, a real ingested source, retained prompt and output contracts, nine existing artifacts, and the task-centric plan-approval route.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221511-ZD76VS/quality/objects/sha256/fb382758ebe23148d42eb3b45b844da7afee4d756e43e9635953d0cda0af468b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "No regression was exposed, so the absence of production changes is correct.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221511-ZD76VS/quality/objects/sha256/fb382758ebe23148d42eb3b45b844da7afee4d756e43e9635953d0cda0af468b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted PR integration checks remain a separate supervisor-owned gate before merge.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221511-ZD76VS/quality/objects/sha256/fb382758ebe23148d42eb3b45b844da7afee4d756e43e9635953d0cda0af468b.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The integration harness is assumed to preserve the same CLI behavior exercised by the packaged command path."
+  ]
+}
