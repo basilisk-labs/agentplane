@@ -15,8 +15,13 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note:
+
+```text
+Rework: packaged mixed-scope qualification lacks the required baseline-bound task_plan_proposal;
+hosted verify-real-e2e remains release-blocking.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -12,8 +12,8 @@ Created: 2026-08-21T22:50:57.507Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework: packaged mixed-scope qualification lacks the required baseline-bound task_plan_proposal; hosted verify-real-e2e remains release-blocking.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
