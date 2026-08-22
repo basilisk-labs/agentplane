@@ -2,10 +2,10 @@
 id: "202608221939-911DRN"
 title: "Archive resolved task-centric external result routing incident before v0.7.8"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -62,7 +62,7 @@ quality_review:
 token_usage:
   agent_runs: 3
   input_tokens: null
-  journal_digest: "sha256:0e8739d7bd57e207781810442a8b229a4127a29ccebfe2507dc1e3d6979a4b9e"
+  journal_digest: "sha256:00cac021b458f9f65eaae0d7b602ada249125f20a59ce1b15e8d70b3a899fb38"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -72,7 +72,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-22T19:52:25.931Z"
+  updated_at: "2026-08-22T19:57:53.590Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -273,8 +273,8 @@ execution_contract:
       - "repository_effect:repository_write"
       - "task_outcome"
 commit:
-  hash: "6caf71b8f96f0f50ba892e671c4d7110d0088552"
-  message: "🚧 911DRN task: record external evaluator result"
+  hash: "87096ef466001e470cbff48559d629c198846022"
+  message: "🚧 911DRN task: reopen incomplete work item"
 comments:
   -
     author: "CODER"
@@ -288,6 +288,9 @@ comments:
   -
     author: "CODER"
     body: "Recovery: reopen the prematurely closed task so the already-implemented WorkItem result can be accepted after the protected-path commit failure."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -325,8 +328,16 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Recovery: reopen the prematurely closed task so the already-implemented WorkItem result can be accepted after the protected-path commit failure."
+  -
+    type: "status"
+    at: "2026-08-22T19:57:53.590Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "87096ef466001e470cbff48559d629c198846022"
 doc_version: 3
-doc_updated_at: "2026-08-22T19:57:08.829Z"
+doc_updated_at: "2026-08-22T19:57:53.618Z"
 doc_updated_by: "CODER"
 description: "Dedicated release prerequisite for active INC-20260822-01. Preserve the incident in docs/developer/incident-archive.mdx with exact evidence from task 202608221335-6DSF3R and merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, then remove only that resolved entry from .agentplane/policy/incidents.md and its packaged mirror. Do not change implementation, context, task-centric architecture, or any other incident. Record the existing archive identifier collision explicitly instead of rewriting historical evidence."
 sections:
@@ -838,6 +849,6 @@ DecisionContextRef:
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:0e8739d7bd57e207781810442a8b229a4127a29ccebfe2507dc1e3d6979a4b9e`
+- Journal digest: `sha256:00cac021b458f9f65eaae0d7b602ada249125f20a59ce1b15e8d70b3a899fb38`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-22T19:52:25.931Z`
+- Updated at: `2026-08-22T19:57:53.590Z`
