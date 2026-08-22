@@ -13,7 +13,7 @@ Created: 2026-08-21T22:50:57.507Z
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note: Verified review-fix commit b5e43fb48 with focused regression tests, the complete critical suite, the full fast suite, compatibility ratchet checks, and static gates.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
