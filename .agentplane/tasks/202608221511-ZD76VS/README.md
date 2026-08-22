@@ -4,7 +4,7 @@ title: "Finalize the v0.7.8 maximum-assimilation compatibility gate"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -28,6 +28,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-22T15:19:29.978Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "6caaae4fe8c1f9d69b2c9644ae41be6643bd9731"
+  blueprint_digest: "aec19170f7f7d261e36aac7f12794feba0b263fa7731d8a854dfbe65ccc105f6"
+  evidence_refs:
+    - ".agentplane/tasks/202608221511-ZD76VS/quality/20260822-151829995-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608221511-ZD76VS/quality/20260822-151829995-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608221511-ZD76VS/quality/objects/sha256/acbe32eaa11cbfc14c33676b5795d9080b6e89ef1fb63392c5e36f7bb16514b5.md"
+    - ".agentplane/tasks/202608221511-ZD76VS/quality/20260822-151829995-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608221511-ZD76VS/quality/20260822-151829995-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608221511-ZD76VS/quality/20260822-151829995-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608221511-ZD76VS/README.md"
+    - ".agentplane/tasks/202608221511-ZD76VS/quality/objects/sha256/fb382758ebe23148d42eb3b45b844da7afee4d756e43e9635953d0cda0af468b.patch"
+    - ".agentplane/tasks/202608221511-ZD76VS/quality/objects/sha256/1bf50c89d3aec5b8dd71fd8f7d5be339b5d8c12e1d4dc90e04d05770f6e351ba.json"
+    - ".agentplane/tasks/202608221511-ZD76VS/verification/20260822151812354-19a582ee23734c7b.json"
+    - ".agentplane/tasks/202608221511-ZD76VS/quality/objects/sha256/d02a603bf7a5532dbc440dd514bccfa7a47f2bb471d0cee0b364a40811660314.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The only non-task-artifact repository change is the single approved E2E file."
+    - "The test covers the maximum-assimilation profile, a real ingested source, retained prompt and output contracts, nine existing artifacts, and the task-centric plan-approval route."
+    - "No regression was exposed, so the absence of production changes is correct."
+    - "Residual risk: Hosted PR integration checks remain a separate supervisor-owned gate before merge."
 execution_route:
   frozen: true
   reason_codes:
