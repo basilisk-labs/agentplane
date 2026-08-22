@@ -8,10 +8,10 @@
   "pr_number": 4873,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4873",
   "pre_merge_closure": {
-    "basis_commit": "d1ee25d55952f4df4453e27e65c3a0384a03a88a",
+    "basis_commit": "24b4cdba08df33c75d19a4154368784373508e87",
     "branch": "task/202608221511-ZD76VS/finalize-the-v0-7-8-maximum-assimilation-compati",
     "pr_number": 4873,
-    "recorded_at": "2026-08-22T15:19:39.370Z",
+    "recorded_at": "2026-08-22T19:08:39.211Z",
     "state": "closed_before_merge"
   },
   "provider": {
