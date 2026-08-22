@@ -2,10 +2,10 @@
 id: "202608212244-6XZAYD"
 title: "Implement the task-centric refactoring roadmap v2 and publish the next patch release"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 59
+revision: 60
 origin:
   system: "manual"
 depends_on: []
@@ -65,9 +65,9 @@ quality_review:
     - "Residual risk: The new PR head still requires exact-SHA hosted checks before integration."
     - "Residual risk: Release publication remains gated by the dedicated incident review and release prepublish workflow."
 token_usage:
-  agent_runs: 18
+  agent_runs: 26
   input_tokens: null
-  journal_digest: "sha256:ceadcf7cd7e5b96125d9cf4a70bc4adfec697730273ca9c52b112822fd4f1b75"
+  journal_digest: "sha256:92c2a2fd1cdfc5c4b53ec49f0aa0a5f616470d45e3ec01b417458301a171387f"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -77,7 +77,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-22T03:15:02.267Z"
+  updated_at: "2026-08-22T03:49:47.290Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -615,8 +615,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "1f5e97a7198380b8f7b2190ffebcbc71daed4b38"
-  message: "🚧 6XZAYD task: apply external agent result"
+  hash: "e7910fe252b9d8e3601494b8bed73ea5d00f95ef"
+  message: "🚧 6XZAYD task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -669,6 +669,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 1f5e97a71983. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -895,9 +898,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-22T03:49:47.290Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "e7910fe252b9d8e3601494b8bed73ea5d00f95ef"
 doc_version: 3
-doc_updated_at: "2026-08-22T03:49:38.943Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-22T03:49:47.325Z"
+doc_updated_by: "CODER"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:
   Summary: |-
@@ -2128,6 +2139,7 @@ extensions:
     transition_id: "tr_45dea0a7848952c5e2fd67ace7a71701"
   implementation_commit:
     hash: "1f5e97a7198380b8f7b2190ffebcbc71daed4b38"
+    message: "🚧 6XZAYD task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "134c95fd629d5ebcf0e17196ccb4b44f60c993fd"
@@ -3338,12 +3350,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/18` agent runs
+- Completeness: `0/26` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:ceadcf7cd7e5b96125d9cf4a70bc4adfec697730273ca9c52b112822fd4f1b75`
+- Journal digest: `sha256:92c2a2fd1cdfc5c4b53ec49f0aa0a5f616470d45e3ec01b417458301a171387f`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-22T03:15:02.267Z`
+- Updated at: `2026-08-22T03:49:47.290Z`
