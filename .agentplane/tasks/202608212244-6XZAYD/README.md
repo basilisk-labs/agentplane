@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 38
+revision: 39
 origin:
   system: "manual"
 depends_on: []
@@ -36,35 +36,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-22T02:46:15.336Z"
+  updated_at: "2026-08-22T02:57:16.566Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 7 typed finding(s)."
-  evaluated_sha: "859e0619efaa8e73121c47b8eeb068365f7981e0"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "8bd682c6f586c4e86bfce1465bca2b31d922a568"
   blueprint_digest: "d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306"
   evidence_refs:
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-024330864-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-024330864-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/4ec22ce5ad6ed23f7ea05ea4ac78bff8e752d998e3f2e3e9f4537408e62a6c38.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-024330864-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-024330864-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-024330864-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-025601721-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-025601721-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/9a0b3817dc3c5dff86aab587f72ae2d2264f9c509a63d1ca23a70dcb0ad49034.md"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-025601721-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-025601721-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-025601721-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608212244-6XZAYD/README.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/94e6d02d825122cee616ba83df755b9f3a09b8876a3621d99442a22f6ea9ef64.patch"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/8034b18dbf5d9fcb421f2456adbaecd6ed2f42f92d1cfa57cca4b4062d3e4a18.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/verification/20260822024318638-d1a7721cb3c2e354.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/8998478a79632cba576a716e362b3d86c1b1bc933a9bd71781f9d032b25bc932.patch"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/8aad70fe33d96339d15a4df3fe5776459313461fe2d74952c3011cc065e289c0.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/verification/20260822025454491-fd7fd4904954c4cb.json"
     - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/0f9e0c0f8b0f85b8effd9074a1316c56971aceb5da4a5fce5935f4726c154946.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "All roadmap and P1 review changes remain present in the frozen implementation diff."
-    - "Prepared finish recovery may be superseded only with explicit force before any task-state or close-commit effect."
-    - "Recovery stays fail-closed after task_state_written and close_commit_written."
-    - "All 13 critical CLI chunks pass on the current implementation head."
-    - "The focused finish-closeout suite passes 6/6; typecheck, schemas, compatibility, routing, and diff checks pass."
-    - "Residual risk: The updated PR head still requires hosted checks and exact-SHA merge verification."
-    - "Residual risk: Release publication still requires the dedicated incident-review task and release qualification."
+    - "The hosted verify-contract log identified finish-closeout-journal.ts as the only file failing Prettier."
+    - "The current repository-wide format check passes."
+    - "The focused finish closeout journal suite still passes all six tests."
+    - "The rework changes only formatting in the affected runtime source file."
+    - "Residual risk: Hosted checks must rerun on the newly published exact PR head before integration."
 token_usage:
   agent_runs: 14
   input_tokens: null
@@ -783,7 +781,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T02:54:59.273Z"
+doc_updated_at: "2026-08-22T02:57:16.612Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:

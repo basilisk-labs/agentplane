@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608212244-6XZAYD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-22T02:57:16.566Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "8bd682c6f586c4e86bfce1465bca2b31d922a568",
+  "blueprint_digest": "d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306",
+  "findings": [
+    "The hosted verify-contract log identified finish-closeout-journal.ts as the only file failing Prettier.",
+    "The current repository-wide format check passes.",
+    "The focused finish closeout journal suite still passes all six tests.",
+    "The rework changes only formatting in the affected runtime source file.",
+    "Residual risk: Hosted checks must rerun on the newly published exact PR head before integration."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/8998478a79632cba576a716e362b3d86c1b1bc933a9bd71781f9d032b25bc932.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
