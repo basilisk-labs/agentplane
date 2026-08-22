@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202608221017-2HT3N7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-22T10:59:19.676Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Linked-batch descendant handling now matches the existing batch artifact contract without weakening ancestry or semantic-drift rejection.",
+  "evaluated_sha": "13310d16d22523346f108bb14a064f9447bf8334",
+  "blueprint_digest": "75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705",
+  "findings": [
+    "Primary branch_pr batches expand included_task_ids before choosing the single-task or task-set freshness helper.",
+    "The new regression test proves T-1 plus included T-2 uses isTaskSetLocalOnlyAdvance; the focused suite passes 28 tests.",
+    "Full regression passes 602 files and 4369 tests with one skipped."
+  ],
+  "evidence_refs": [
+    "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts",
+    "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts",
+    ".agentplane/tasks/202608221017-2HT3N7/verification/20260822105836417-6420d1551001d7ad.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted Core CI must still pass on the final published head before integration."
+  ]
+}

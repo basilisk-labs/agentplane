@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -30,34 +30,33 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-22T10:23:54.394Z"
-  updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "b2e7c138fd33a094ac62d263af4debb087c3b7c2"
+  provenance: "human_supplied"
+  updated_at: "2026-08-22T10:59:19.676Z"
+  updated_by: "HUMAN"
+  note: "Linked-batch descendant handling now matches the existing batch artifact contract without weakening ancestry or semantic-drift rejection."
+  evaluated_sha: "13310d16d22523346f108bb14a064f9447bf8334"
   blueprint_digest: "75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705"
   evidence_refs:
-    - ".agentplane/tasks/202608221017-2HT3N7/quality/20260822-102251625-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608221017-2HT3N7/quality/20260822-102251625-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/c138d04d66e1b13901a083644cd1059fa982cb72d7e6552a757b1117c8da8598.md"
-    - ".agentplane/tasks/202608221017-2HT3N7/quality/20260822-102251625-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608221017-2HT3N7/quality/20260822-102251625-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608221017-2HT3N7/quality/20260822-102251625-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/20260822-105919051-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/20260822-105919051-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/bf1d81abe4cddbea3c119b130ac36367e88f6ce8c0a040fc0dec967aad614cef.md"
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/20260822-105919051-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/20260822-105919051-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608221017-2HT3N7/README.md"
-    - ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/d7d07de9baacb223b5f0c92621edb7f3d9d01903bb53b9cdfd6327bacf371a68.patch"
-    - ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/d779fd3719458caa5880806184a234fed0e7dce651cece1611af37931f8af479.json"
-    - ".agentplane/tasks/202608221017-2HT3N7/verification/20260822102235168-c0477463db4b4d92.json"
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/7623fc4976e7d3a66e0b6cdc2b37f86c469e5a753184b5d6cfa1bf6123366774.patch"
+    - ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/7c57cfeeaf37bdf65f7b06e3ebdae02d769783202f8c098dbd029c43cc2378e0.json"
+    - ".agentplane/tasks/202608221017-2HT3N7/verification/20260822105836417-6420d1551001d7ad.json"
     - ".agentplane/tasks/202608221017-2HT3N7/quality/objects/sha256/db5535bad06e966855e2678a3ea5532e81f1e64e32df13f19d9cb83eaee04fef.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
+    - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+    - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
   findings:
-    - "The finish gate requires implementation ancestry and task-artifact-only drift before accepting a reviewed descendant."
-    - "Lifecycle normalization ignores token usage and only the implementation commit message while preserving the implementation hash."
-    - "A replacement canonical plan clears the stale replan marker."
-    - "Focused regression tests, typecheck, ESLint, and diff validation pass."
-    - "Residual risk: Hosted integration remains a supervisor-owned post-PR gate."
+    - "Primary branch_pr batches expand included_task_ids before choosing the single-task or task-set freshness helper."
+    - "The new regression test proves T-1 plus included T-2 uses isTaskSetLocalOnlyAdvance; the focused suite passes 28 tests."
+    - "Full regression passes 602 files and 4369 tests with one skipped."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -308,7 +307,7 @@ events:
     state: "ok"
     note: "Verified P1 linked-batch rework after explicit needs-rework transition; hosted exact-SHA gate remains pending publication."
 doc_version: 3
-doc_updated_at: "2026-08-22T10:58:37.550Z"
+doc_updated_at: "2026-08-22T10:59:19.700Z"
 doc_updated_by: "CODER"
 description: "A clean task is required because the original supervisor journal correctly refuses replay after state drift. Keep changes to packages/agentplane/src/commands/task and packages/agentplane/src/commands/shared/quality-review-target.ts plus task-owned tests."
 sections:
