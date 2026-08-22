@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -61,7 +61,7 @@ quality_review:
 token_usage:
   agent_runs: 3
   input_tokens: null
-  journal_digest: "sha256:c4a86362e4035cb699283852bfe5970d7d3bb0849b19bc6cace2494d15c7c6d2"
+  journal_digest: "sha256:28242aaf23353da51dc7a6f0a54070c7b20bdde16f23940b6f391cb43e5ab9b8"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -71,7 +71,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-22T15:19:39.244Z"
+  updated_at: "2026-08-22T19:08:39.137Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -242,6 +242,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -278,8 +281,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-22T19:08:39.137Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "d1ee25d55952f4df4453e27e65c3a0384a03a88a"
 doc_version: 3
-doc_updated_at: "2026-08-22T19:05:30.545Z"
+doc_updated_at: "2026-08-22T19:08:39.165Z"
 doc_updated_by: "CODER"
 description: "Add exactly one compatibility E2E proving the existing context.maximum_assimilation workflow enters and preserves its contract through the new task-centric Core. Reuse existing context contracts, prompts, extraction schemas, artifacts, provenance, and approval gate. Fix only a regression proven by this E2E. Do not implement Knowledge Assimilation. This replaces unpublished Task 202608221453-EKC1X8 after its legacy execution contract omitted repository_effect:tests and failed to record the WorkItem completion receipt."
 sections:
@@ -910,6 +921,6 @@ DecisionContextRef:
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:c4a86362e4035cb699283852bfe5970d7d3bb0849b19bc6cace2494d15c7c6d2`
+- Journal digest: `sha256:28242aaf23353da51dc7a6f0a54070c7b20bdde16f23940b6f391cb43e5ab9b8`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-22T15:19:39.244Z`
+- Updated at: `2026-08-22T19:08:39.137Z`
