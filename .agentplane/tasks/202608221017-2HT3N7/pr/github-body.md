@@ -16,7 +16,7 @@ A clean task is required because the original supervisor journal correctly refus
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified P1 linked-batch rework on commit 530a65558e1b; hosted exact-SHA gate remains pending publication.
 - Canonical workflow state lives in the task README.
 
 <details>

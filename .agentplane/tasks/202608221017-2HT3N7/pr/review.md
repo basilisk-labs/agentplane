@@ -13,7 +13,7 @@ Created: 2026-08-22T10:19:00.838Z
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified P1 linked-batch rework on commit 530a65558e1b; hosted exact-SHA gate remains pending publication.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
