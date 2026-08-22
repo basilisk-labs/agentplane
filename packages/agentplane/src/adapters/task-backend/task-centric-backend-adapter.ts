@@ -1,12 +1,10 @@
 import {
   aggregateValidation,
   applyPlanRefinement,
-  createLegacyTaskAggregate,
   evaluateTaskCompletion,
   materializeApprovedWorkItems,
   projectTaskLifecycleToLegacyStatus,
   taskCentricAggregateFromExtensions,
-  taskCentricDigest,
   withTaskCentricAggregate,
   type DomainEvent,
   type ExecutionLease,
@@ -26,155 +24,15 @@ import {
 } from "@agentplaneorg/core/tasks";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
-
-const RUNTIME_EXTENSION_KEY = "agentplane.task_centric_runtime";
-
-type TaskCentricRuntimeProjection = Readonly<{
-  schema_version: 1;
-  leases: readonly ExecutionLease[];
-  pending_effects: readonly PendingEffect[];
-  checkpoints: readonly TaskCheckpoint[];
-  retry_budgets: readonly RetryBudget[];
-  mutation_receipts: Readonly<Record<string, TransitionReceipt>>;
-}>;
-
-function emptyRuntime(): TaskCentricRuntimeProjection {
-  return Object.freeze({
-    schema_version: 1,
-    leases: [],
-    pending_effects: [],
-    checkpoints: [],
-    retry_budgets: [],
-    mutation_receipts: Object.freeze({}),
-  });
-}
-
-function runtimeFrom(task: TaskData): TaskCentricRuntimeProjection {
-  const value = task.extensions?.[RUNTIME_EXTENSION_KEY];
-  if (value === undefined) return emptyRuntime();
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new Error("Task-centric runtime projection is malformed.");
-  }
-  const runtime = value as Partial<TaskCentricRuntimeProjection>;
-  if (
-    runtime.schema_version !== 1 ||
-    !Array.isArray(runtime.leases) ||
-    !Array.isArray(runtime.pending_effects) ||
-    !Array.isArray(runtime.checkpoints) ||
-    !Array.isArray(runtime.retry_budgets) ||
-    !runtime.mutation_receipts ||
-    typeof runtime.mutation_receipts !== "object"
-  ) {
-    throw new Error("Task-centric runtime projection is malformed.");
-  }
-  return runtime as TaskCentricRuntimeProjection;
-}
-
-function acceptanceDescriptions(task: TaskData): string[] {
-  return task.verify.length > 0 ? task.verify : [task.sections?.Summary ?? task.description];
-}
-
-function aggregateFrom(task: TaskData): TaskAggregate {
-  const aggregate =
-    taskCentricAggregateFromExtensions(task.extensions) ??
-    createLegacyTaskAggregate({
-      id: task.id,
-      revision: task.revision ?? 1,
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      acceptance_criteria: acceptanceDescriptions(task),
-      captured_at: task.doc_updated_at ?? new Date(0).toISOString(),
-      updated_at: task.doc_updated_at ?? new Date(0).toISOString(),
-    });
-  return Object.freeze({ ...aggregate, revision: task.revision ?? aggregate.revision });
-}
-
-function applyEvent(aggregate: TaskAggregate, event: DomainEvent): TaskAggregate {
-  if (event.task_id !== aggregate.id) throw new Error("Domain event belongs to another task.");
-  if (event.entity === "task") {
-    return Object.freeze({
-      ...aggregate,
-      lifecycle: event.to as TaskAggregate["lifecycle"],
-      revision: aggregate.revision + 1,
-      event_cursor: aggregate.event_cursor + 1,
-      updated_at: event.at,
-    });
-  }
-  if (event.entity === "work_item" && event.work_item_id) {
-    const current = aggregate.work_items[event.work_item_id];
-    if (!current) throw new Error(`Work item ${event.work_item_id} does not exist.`);
-    return Object.freeze({
-      ...aggregate,
-      revision: aggregate.revision + 1,
-      event_cursor: aggregate.event_cursor + 1,
-      work_items: Object.freeze({
-        ...aggregate.work_items,
-        [current.id]: Object.freeze({
-          ...current,
-          state: event.to as typeof current.state,
-          revision: current.revision + 1,
-        }),
-      }),
-      updated_at: event.at,
-    });
-  }
-  return Object.freeze({
-    ...aggregate,
-    revision: aggregate.revision + 1,
-    event_cursor: aggregate.event_cursor + 1,
-    updated_at: event.at,
-  });
-}
-
-function receipt(opts: {
-  task_id: string;
-  previous_revision: number;
-  next: TaskAggregate;
-  mutation_id: string;
-  event: DomainEvent;
-}): TransitionReceipt {
-  return Object.freeze({
-    schema_version: 1,
-    task_id: opts.task_id,
-    previous_revision: opts.previous_revision,
-    next_revision: opts.next.revision,
-    mutation_id: opts.mutation_id,
-    event: opts.event,
-    aggregate_digest: taskCentricDigest(opts.next),
-  });
-}
-
-function syntheticEvent(opts: {
-  task: TaskAggregate;
-  mutation_id: string;
-  entity: DomainEvent["entity"];
-  work_item_id?: string | null;
-  from: string | null;
-  to: string;
-  at?: string;
-  actor_id?: string;
-  cause_refs?: readonly string[];
-  repository_fingerprint?: `sha256:${string}` | null;
-}): DomainEvent {
-  return Object.freeze({
-    schema_version: 1,
-    id: `event_${taskCentricDigest(opts).slice(7, 31)}`,
-    mutation_id: opts.mutation_id,
-    task_id: opts.task.id,
-    task_revision: opts.task.revision,
-    plan_revision: opts.task.current_plan?.revision ?? null,
-    plan_digest: opts.task.current_plan?.digest ?? null,
-    work_item_id: opts.work_item_id ?? null,
-    entity: opts.entity,
-    from: opts.from,
-    to: opts.to,
-    cause_refs: opts.cause_refs ?? [],
-    actor_id: opts.actor_id ?? "agentplane",
-    repository_fingerprint: opts.repository_fingerprint ?? null,
-    at: opts.at ?? new Date().toISOString(),
-  });
-}
+import {
+  aggregateFrom,
+  applyEvent,
+  runtimeFrom,
+  syntheticEvent,
+  TASK_CENTRIC_RUNTIME_EXTENSION_KEY,
+  transitionReceipt,
+  type TaskCentricRuntimeProjection,
+} from "./task-centric-backend-runtime.js";
 
 export class TaskCentricBackendAdapter implements TaskRepositoryPort {
   readonly capabilities = Object.freeze({
@@ -221,7 +79,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
       );
     }
     const normalizedNext = Object.freeze({ ...opts.next, revision: currentRevision + 1 });
-    const nextReceipt = receipt({
+    const nextReceipt = transitionReceipt({
       task_id: opts.task_id,
       previous_revision: currentRevision,
       next: normalizedNext,
@@ -260,7 +118,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
           : {}),
         extensions: {
           ...withTaskCentricAggregate(current.extensions, normalizedNext),
-          [RUNTIME_EXTENSION_KEY]: nextRuntime,
+          [TASK_CENTRIC_RUNTIME_EXTENSION_KEY]: nextRuntime,
         },
       },
       { expectedRevision: currentRevision },
@@ -612,7 +470,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
         ...task,
         extensions: {
           ...(task.extensions ?? {}),
-          [RUNTIME_EXTENSION_KEY]: {
+          [TASK_CENTRIC_RUNTIME_EXTENSION_KEY]: {
             ...runtime,
             checkpoints: [...runtime.checkpoints.slice(-31), checkpoint],
           },
@@ -657,7 +515,10 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
         ...task,
         extensions: {
           ...(task.extensions ?? {}),
-          [RUNTIME_EXTENSION_KEY]: { ...runtime, retry_budgets: [...others, budget] },
+          [TASK_CENTRIC_RUNTIME_EXTENSION_KEY]: {
+            ...runtime,
+            retry_budgets: [...others, budget],
+          },
         },
       },
       { expectedRevision: task.revision ?? 1 },
@@ -686,4 +547,4 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
   }
 }
 
-export { RUNTIME_EXTENSION_KEY as TASK_CENTRIC_RUNTIME_EXTENSION_KEY };
+export { TASK_CENTRIC_RUNTIME_EXTENSION_KEY } from "./task-centric-backend-runtime.js";

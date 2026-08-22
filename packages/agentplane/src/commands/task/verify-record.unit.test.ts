@@ -6,6 +6,7 @@ import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import {
   makeVerificationExecutionContext as executionContext,
+  makeVerifyRecordDoc as mkDoc,
   makeVerifyRecordContext as mkCtx,
   makeVerifyRecordTask as mkTask,
   makeWriteThroughVerificationBackend as makeWriteThroughBackend,
@@ -900,25 +901,21 @@ describe("task verify record (unit)", () => {
       status: "DONE",
       doc_version: 3,
       doc_updated_at: "2026-02-07T00:00:00.000Z",
-      doc: [
-        "## Summary",
-        "Concurrent summary",
-        "",
-        "## Verify Steps",
-        "Concurrent verify steps",
-        "",
-        "## Verification",
-        "<!-- BEGIN VERIFICATION RESULTS -->",
-        "",
-        "### 2026-02-08T00:00:00.000Z — VERIFY — ok",
-        "",
-        "By: OTHER",
-        "",
-        "Note: prior",
-        "",
-        "<!-- END VERIFICATION RESULTS -->",
-        "",
-      ].join("\n"),
+      doc: mkDoc({
+        summary: "Concurrent summary",
+        verifySteps: "Concurrent verify steps",
+        verificationLines: [
+          "<!-- BEGIN VERIFICATION RESULTS -->",
+          "",
+          "### 2026-02-08T00:00:00.000Z — VERIFY — ok",
+          "",
+          "By: OTHER",
+          "",
+          "Note: prior",
+          "",
+          "<!-- END VERIFICATION RESULTS -->",
+        ],
+      }),
     });
     const store = {
       update: vi
@@ -958,16 +955,10 @@ describe("task verify record (unit)", () => {
       status: "DONE",
       doc_version: 3,
       doc_updated_at: "2026-02-07T00:00:00.000Z",
-      doc: [
-        "## Summary",
-        "Concurrent summary",
-        "",
-        "## Verify Steps",
-        "Concurrent verify steps",
-        "",
-        "## Verification",
-        "",
-      ].join("\n"),
+      doc: mkDoc({
+        summary: "Concurrent summary",
+        verifySteps: "Concurrent verify steps",
+      }),
     });
     const store = {
       update: vi

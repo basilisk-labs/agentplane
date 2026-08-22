@@ -1,5 +1,3 @@
-import path from "node:path";
-
 import {
   loadCommandContext,
   resolveCommandGitCommonDir,
@@ -18,7 +16,6 @@ import { appendFrameworkExplainBehaviorInputs } from "../../runtime/explain/inde
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import type { RunnerAdapter } from "../adapters/shared.js";
 import { createRunnerAdapter } from "../adapters/index.js";
-import { assembleRunnerRecipeContext } from "../context/recipe-context.js";
 import { readRecipeRunProfile } from "../adapters/recipe-run-profile.js";
 import { applyRunnerPolicyRefusal, buildRunnerPolicyDecision } from "../policy-decision.js";
 import { buildRunnerExecutionPlaybookContract } from "../playbooks.js";
@@ -95,12 +92,10 @@ import type {
   ExecutedTaskRunnerExecution,
   PreparedTaskRunnerExecution,
 } from "./task-run-execution.js";
-export type {
-  ExecutedTaskRunnerExecution,
-  PreparedTaskRunnerExecution,
-} from "./task-run-execution.js";
-export type { TaskRunnerReplayProvenance } from "./task-run-replay-anchor.js";
+export type * from "./task-run-execution.js";
+export type * from "./task-run-replay-anchor.js";
 import type { PrepareTaskRunnerExecutionOptions } from "./task-run-options.js";
+import { resolveTaskRunnerRecipe } from "./task-run-recipe-context.js";
 
 export async function prepareTaskRunnerExecution(
   opts: PrepareTaskRunnerExecutionOptions,
@@ -110,24 +105,7 @@ export async function prepareTaskRunnerExecution(
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
   const executionContext = await makeReadOnlyExecutionContext(command);
   const target = opts.target ?? { kind: "task", task_id: opts.task_id };
-  const recipeDirectory = opts.recipe?.recipe_dir;
-  const recipeDirectoryRelative = recipeDirectory
-    ? path.relative(command.resolvedProject.gitRoot, path.resolve(recipeDirectory))
-    : null;
-  const recipe =
-    opts.recipe &&
-    recipeDirectoryRelative !== null &&
-    (recipeDirectoryRelative === ".." ||
-      recipeDirectoryRelative.startsWith(`..${path.sep}`) ||
-      path.isAbsolute(recipeDirectoryRelative))
-      ? (
-          await assembleRunnerRecipeContext({
-            project: command.resolvedProject,
-            recipe_id: opts.recipe.recipe_id,
-            scenario_id: opts.recipe.scenario_id,
-          })
-        ).recipe
-      : opts.recipe;
+  const recipe = await resolveTaskRunnerRecipe({ command, recipe: opts.recipe });
   void executionContext.policy.evaluate({
     action: target.kind === "recipe_scenario" ? "scenario_execute" : "task_run",
     config: executionContext.config,
