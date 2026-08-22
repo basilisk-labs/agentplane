@@ -4,7 +4,7 @@ title: "Publish AgentPlane v0.7.8 from exact release-ready main d93e42cc"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -28,10 +28,10 @@ plan_approval:
   note: null
 verification:
   state: "needs_rework"
-  updated_at: "2026-08-22T20:34:27.148Z"
+  updated_at: "2026-08-22T20:44:36.809Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run release:prepublish"
-  attempts: 1
+  attempts: 2
 execution_route:
   frozen: true
   reason_codes:
@@ -126,6 +126,20 @@ execution_contract:
       - "docs"
       - "website"
     changed_paths:
+      - "docs/assets/header.svg"
+      - "docs/assets/readme-headers/adr.svg"
+      - "docs/assets/readme-headers/agentplane-cli.svg"
+      - "docs/assets/readme-headers/agentplane.svg"
+      - "docs/assets/readme-headers/core.svg"
+      - "docs/assets/readme-headers/docs.svg"
+      - "docs/assets/readme-headers/humanizer.svg"
+      - "docs/assets/readme-headers/recipes.svg"
+      - "docs/assets/readme-headers/releases.svg"
+      - "docs/assets/readme-headers/schemas.svg"
+      - "docs/assets/readme-headers/scripts.svg"
+      - "docs/assets/readme-headers/skills.svg"
+      - "docs/assets/readme-headers/spec.svg"
+      - "docs/assets/readme-headers/testkit.svg"
       - "docs/releases/v0.7.8.md"
       - "website/static/img/social/docs/releases/v0.7.8.png"
       - "website/static/img/social/manifest.json"
@@ -199,7 +213,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "irreversible"
-      digest: "sha256:dcc986286d72e3a6c83a429031dd3d996d72923fed66d1752af02f2b10f98770"
+      digest: "sha256:cc9b139c5bd5135b7d41173bcba690bb597c7b7d6759810f17d8b73b3047f50c"
       escalation_reasons:
         - "central_component:bun.lock"
         - "central_component:package.json"
@@ -217,6 +231,20 @@ execution_contract:
           - "docs"
           - "website"
         changed_files:
+          - "docs/assets/header.svg"
+          - "docs/assets/readme-headers/adr.svg"
+          - "docs/assets/readme-headers/agentplane-cli.svg"
+          - "docs/assets/readme-headers/agentplane.svg"
+          - "docs/assets/readme-headers/core.svg"
+          - "docs/assets/readme-headers/docs.svg"
+          - "docs/assets/readme-headers/humanizer.svg"
+          - "docs/assets/readme-headers/recipes.svg"
+          - "docs/assets/readme-headers/releases.svg"
+          - "docs/assets/readme-headers/schemas.svg"
+          - "docs/assets/readme-headers/scripts.svg"
+          - "docs/assets/readme-headers/skills.svg"
+          - "docs/assets/readme-headers/spec.svg"
+          - "docs/assets/readme-headers/testkit.svg"
           - "docs/releases/v0.7.8.md"
           - "website/static/img/social/docs/releases/v0.7.8.png"
           - "website/static/img/social/manifest.json"
@@ -261,7 +289,9 @@ execution_contract:
       - "repository_effect:repository_write"
       - "task_outcome"
       - "verification_recovery:recorded-check-1"
-commit: null
+commit:
+  hash: "d31e5d699c351c428b60d25f79eb96624b1542e6"
+  message: "🚧 HB7R71 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -275,6 +305,15 @@ comments:
   -
     author: "SUPERVISOR"
     body: "External EXECUTOR returned failed: Generated README headers for the current prerelease version and reran the full prepublish gate. The gate now reaches release-ci-base and exposes a reproducible stale-test-fixture regression in the blueprint CLI suite."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: db52e0329e9e. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: d31e5d699c35. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -309,8 +348,37 @@ events:
     at: "2026-08-22T20:43:31.833Z"
     author: "SUPERVISOR"
     body: "External EXECUTOR returned failed: Generated README headers for the current prerelease version and reran the full prepublish gate. The gate now reaches release-ci-base and exposes a reproducible stale-test-fixture regression in the blueprint CLI suite."
+  -
+    type: "status"
+    at: "2026-08-22T20:44:15.237Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: db52e0329e9e. CLI accepted one state-bound external-agent semantic result."
+    commit: "db52e0329e9e4ff00f6e8bfbd96af638d1e76650"
+  -
+    type: "verify"
+    at: "2026-08-22T20:44:36.809Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run release:prepublish"
+  -
+    type: "status"
+    at: "2026-08-22T20:44:43.613Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-22T20:47:01.746Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: d31e5d699c35. CLI accepted one state-bound external-agent semantic result."
+    commit: "d31e5d699c351c428b60d25f79eb96624b1542e6"
 doc_version: 3
-doc_updated_at: "2026-08-22T20:43:31.833Z"
+doc_updated_at: "2026-08-22T20:47:01.746Z"
 doc_updated_by: "SUPERVISOR"
 description: "Prepare, verify, merge, publish, and post-publish verify stable v0.7.8 from exact main d93e42ccaedd59e77fc17c495a01dc7cde049d0f after the mandatory incident gate closeout. Release-only scope: already-merged task-centric Core plus exactly one context.maximum_assimilation compatibility E2E. Do not add Knowledge Assimilation subsystem work, redesign context, or alter existing context contracts, prompts, extraction schemas, artifacts, provenance, or verification gates. Use only repository-owned candidate and hosted publish workflows; bind PR, Core CI release-ready artifact, publish-result, tag, GitHub Release, npm packages, and installed CLI readback to exact SHAs. Complete the repository-owned post-publish evidence follow-up and 0.7.9-beta.1 opening before capturing the final RepositorySnapshot."
 sections:
@@ -338,6 +406,41 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:fcd1755205e6e62787ad1ef5191cb47a6299b20181792de6c6e911e39956a171, input_digest=sha256:9a8c161ae7121196ecc88a229ee16f02078ed04a8e61ee52df9a0157e7452945
+
+    Details:
+
+    Command: bun run release:prepublish
+    Result: fail
+    Evidence: .agentplane/tasks/202608222024-HB7R71/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608222024-HB7R71 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222024-HB7R71-publish-agentplane-v0-7-8-from-exact-release-rea/.agentplane/tasks/202608222024-HB7R71/blueprint/resolved-snapshot.json
+    - old_digest: 7c511ba53f16c946dc07d041c3e803e16d087380acfcff3115443eea0c6b99e8
+    - current_digest: 7c511ba53f16c946dc07d041c3e803e16d087380acfcff3115443eea0c6b99e8
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608222024-HB7R71
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T20:44:36.809Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run release:prepublish
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:fcd1755205e6e62787ad1ef5191cb47a6299b20181792de6c6e911e39956a171, input_digest=sha256:00886876c21e7a306342fa91076a2f4e40616911f76daee1758095e066f19686
 
     Details:
 
@@ -680,19 +783,58 @@ extensions:
     lifecycle: "PLANNING"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 14
     schema_version: 1
-    updated_at: "2026-08-22T20:34:30.081Z"
+    updated_at: "2026-08-22T20:44:40.545Z"
     work_items:
       author-v0-7-8-release-artifacts:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "author-v0-7-8-release-artifacts"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "notes-cover-release-range"
+            - "artwork-generated"
+          code: "validation_failed"
+          kind: "validation"
+          message: "The uncommitted README header changes are intentional generated release artifacts for the current 0.7.8-beta.1 candidate and should be recorded by AgentPlane before the scoped test-fixture rework proceeds."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:885cb4c3ef6ae5099543f3688a979f9a1b80a4abbf82b01ad6c115cd2db39163"
+            id: "v0.7.8-release-notes-and-artwork"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608222024-HB7R71"
+              work_item_id: "author-v0-7-8-release-artifacts"
+            provenance:
+              - "sha256:a45f8d74dae44f1ff428ce030c230e1c3d2d82fe130c7d3a3c79d66314d7f54d"
+              - ".agentplane/tasks/202608222024-HB7R71/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:7634acd76470dd0d02ae53dfbdaeccac3733c2c8b8fe53a9fe7839844b4da2c5"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608222024-HB7R71/supervision/declared-checks.json"
+              check_id: "check-release-fast"
+              command_identity: "bun run release:prepublish:fast"
+              detail: "Declared validation command bun run release:prepublish:fast was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-08-22T20:44:40.520Z"
+              repository_snapshot_digest: "sha256:7634acd76470dd0d02ae53dfbdaeccac3733c2c8b8fe53a9fe7839844b4da2c5"
+              status: "unsupported"
+          schema_version: 1
+          stale_evidence: []
+          status: "blocked"
+          unsatisfied_criteria:
+            - "notes-cover-release-range"
+            - "artwork-generated"
       freeze-and-qualify-v0-7-8:
         attempt: 0
         claim_id: null
@@ -706,6 +848,29 @@ extensions:
     checkpoints: []
     leases: []
     mutation_receipts:
+      external-result:work-order-202608222024-HB7R71-executor-eafa5aed31260d093f884084:
+        aggregate_digest: "sha256:fc16281c7169064049b31f9e7b4c5a61039e1b6749076b96fb8322ad6685b8f1"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-22T20:44:40.545Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_2cccebe5362cf0dabc413dca"
+          mutation_id: "external-result:work-order-202608222024-HB7R71-executor-eafa5aed31260d093f884084"
+          plan_digest: "sha256:6b8e75e5858c537d7b0ad0d227361b385f5ddc76fbf7dbf2ad126d74cfd3d00d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608222024-HB7R71"
+          task_revision: 13
+          to: "REWORK_READY"
+          work_item_id: "author-v0-7-8-release-artifacts"
+        mutation_id: "external-result:work-order-202608222024-HB7R71-executor-eafa5aed31260d093f884084"
+        next_revision: 14
+        previous_revision: 13
+        schema_version: 1
+        task_id: "202608222024-HB7R71"
       plan-refinement:work-order-202608222024-HB7R71-executor-7dfaa484db20aad305a6a83e:
         aggregate_digest: "sha256:2bc9aba703a2844971392bf716061cc33203db59b0cabdf7dc71370d7f4f07cb"
         event:
@@ -733,6 +898,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "d31e5d699c351c428b60d25f79eb96624b1542e6"
   task_execution_context:
     base_ref: "main"
     base_sha: "d93e42ccaedd59e77fc17c495a01dc7cde049d0f"
@@ -777,6 +944,41 @@ Note: Rework: Declared check failed: bun run release:prepublish
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:fcd1755205e6e62787ad1ef5191cb47a6299b20181792de6c6e911e39956a171, input_digest=sha256:9a8c161ae7121196ecc88a229ee16f02078ed04a8e61ee52df9a0157e7452945
+
+Details:
+
+Command: bun run release:prepublish
+Result: fail
+Evidence: .agentplane/tasks/202608222024-HB7R71/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608222024-HB7R71 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222024-HB7R71-publish-agentplane-v0-7-8-from-exact-release-rea/.agentplane/tasks/202608222024-HB7R71/blueprint/resolved-snapshot.json
+- old_digest: 7c511ba53f16c946dc07d041c3e803e16d087380acfcff3115443eea0c6b99e8
+- current_digest: 7c511ba53f16c946dc07d041c3e803e16d087380acfcff3115443eea0c6b99e8
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608222024-HB7R71
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T20:44:36.809Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run release:prepublish
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:fcd1755205e6e62787ad1ef5191cb47a6299b20181792de6c6e911e39956a171, input_digest=sha256:00886876c21e7a306342fa91076a2f4e40616911f76daee1758095e066f19686
 
 Details:
 
