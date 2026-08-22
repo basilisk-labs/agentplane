@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 84
+revision: 85
 origin:
   system: "manual"
 depends_on: []
@@ -36,35 +36,35 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-22T04:15:23.099Z"
+  updated_at: "2026-08-22T04:47:30.814Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 7 typed finding(s)."
-  evaluated_sha: "2bfa2c162a9ee70580ba00e2f76ae072f084152e"
+  evaluated_sha: "0889b981d988a5c970125ffd33d8bca8ba1e99d7"
   blueprint_digest: "d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306"
   evidence_refs:
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-041407240-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-041407240-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/0e56b047e4497d4becbef7fcb536215c31cafb7aac57b3eb983c39d25d5e6ec2.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-041407240-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-041407240-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-041407240-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-044636792-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-044636792-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/e05b632eb2c37394a97f11bd3c26316aa079cd77cf113d4594c3314a99514905.md"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-044636792-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-044636792-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-044636792-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608212244-6XZAYD/README.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/e74c54784b7a485edf9c1aa1da6a77ca613e1357a996febaf6e1761521929255.patch"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/bd30b306cd430563ab4d0fc64d32c356f1c8861864d6918cbba2f465df62dda6.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/verification/20260822041355696-c78b46cfcc417ac5.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/f1d6936ec294a0cb5b9d4b12f03bdf7204d91ade117a2f66dc708398c63a0876.patch"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/f60e13ae1c0628195231652104cc585aa4b32e3a64f70572f0e8343bd39f40da.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/verification/20260822044620932-3517fc09345adeaf.json"
     - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/0f9e0c0f8b0f85b8effd9074a1316c56971aceb5da4a5fce5935f4726c154946.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "The frozen evaluator diff covers the full roadmap implementation plus the packaged mixed-scope qualification correction and both synchronized incident-policy projections."
-    - "The current verification record is bound to implementation SHA 2bfa2c162a9ee70580ba00e2f76ae072f084152e and branch base 134c95fd629d5ebcf0e17196ccb4b44f60c993fd."
-    - "Lint, type checking, schemas, compatibility ratchets, routing, packaged mixed-scope lifecycle, and the 38-test qualification contract pass on the incident-aware branch state."
-    - "The two incident policy files are byte-identical and the protected packages/agentplane/assets/AGENTS.md file remains untouched."
-    - "Hosted exact-head checks, integration, dedicated incident review, and release publication remain lifecycle gates rather than implementation defects."
-    - "Residual risk: Hosted checks must pass against the published exact PR head before integration."
-    - "Residual risk: Release publication remains gated by a dedicated review and closure of active incidents."
+    - "The fresh CLI-owned verification record is bound to implementation SHA 0889b981d988a5c970125ffd33d8bca8ba1e99d7, replacing the stale 2bfa2c1 receipt."
+    - "The hosted verify-static root cause is removed: TaskExecutionBaseResolutionError and BranchTaskSupervisorStop are internal declarations, while the stable stop-code vocabulary remains public."
+    - "The two private declarations now document their API boundary without altering runtime behavior."
+    - "Knip reports the AgentPlane CLI at files=0/0 and total=0/0, with the repository baseline unchanged at total=21/21."
+    - "Lint, type checking, architecture checks, and three focused test files pass on the corrected branch state."
+    - "Residual risk: Hosted checks must pass against the republished exact PR head before integration."
+    - "Residual risk: Release publication remains gated by dedicated review and closure of active incidents."
 token_usage:
   agent_runs: 33
   input_tokens: null
@@ -1069,7 +1069,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T04:46:24.650Z"
+doc_updated_at: "2026-08-22T04:47:30.882Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:
