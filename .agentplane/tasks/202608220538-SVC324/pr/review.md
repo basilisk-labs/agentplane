@@ -12,8 +12,8 @@ Created: 2026-08-22T05:45:29.328Z
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-22T05:45:29.328Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-22T05:45:29.328Z
+- Updated: 2026-08-22T06:18:37.427Z
 - Branch: task/202608220538-SVC324/resolve-task-autonomy-and-evaluator-rework-incid
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
