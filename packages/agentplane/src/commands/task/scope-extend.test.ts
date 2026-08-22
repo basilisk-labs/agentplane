@@ -2,10 +2,21 @@ import { describe, expect, it } from "vitest";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import {
+  approveTaskPlan,
+  createLegacyTaskAggregate,
   createExecutionGrant,
   createPlanProposal,
+  createRepositorySnapshot,
+  createTaskPlanRevision,
   executionGrantDigest,
   isExecutionGrantActive,
+  materializeApprovedWorkItems,
+  taskCentricAggregateFromExtensions,
+  taskCentricDigest,
+  withTaskCentricAggregate,
+  type TaskPlanProposal,
+  type ValidationPlan,
+  type WorkItem,
 } from "@agentplaneorg/core/tasks";
 import { makeTaskCommandContext, makeTaskFixture } from "@agentplane/testkit/task";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
@@ -21,6 +32,89 @@ import {
   extendBlockedTaskExecutionContract,
   taskWithRebasedExecutionGrant,
 } from "./scope-extend.js";
+
+const NOW = "2026-08-18T01:00:00.000Z";
+
+function taskCentricAggregate(taskId: string) {
+  const validation: ValidationPlan = {
+    schema_version: 1,
+    criteria: [
+      {
+        id: "criterion-scope",
+        description: "Validate the scoped WorkItem.",
+        required: true,
+        check_ids: ["check-scope"],
+      },
+    ],
+    checks: [
+      {
+        id: "check-scope",
+        kind: "deterministic",
+        required: true,
+        capability: "task.verify",
+        command: "bun test scope",
+      },
+    ],
+    evidence_fingerprint: taskCentricDigest("scope-extension-test"),
+  };
+  const item = (id: string, dependsOn: string[], scopeRoot: string): WorkItem => ({
+    id,
+    objective: `Implement ${id}`,
+    depends_on: dependsOn,
+    required_inputs: dependsOn.length > 0 ? ["output-active"] : [],
+    expected_outputs: [`output-${id}`],
+    scope_roots: [scopeRoot],
+    acceptance_criteria: validation.criteria,
+    validation,
+    context: { required_sources: ["repository"], optional_sources: [], symbol_hints: [], max_bytes: 16_384 },
+    risk: "low",
+    capabilities: ["task.verify"],
+    resource_claims: [{ kind: "path", resource: scopeRoot, mode: "write" }],
+    optional: false,
+    priority: id === "active" ? 2 : 1,
+  });
+  const proposal: TaskPlanProposal = {
+    schema_version: 1,
+    task_id: taskId,
+    planning_baseline: createRepositorySnapshot({
+      git: { kind: "commit", sha: "a".repeat(40), ref: "refs/heads/main" },
+      dirty_paths: [],
+      policy_digest: null,
+      config_digest: null,
+      context_digest: null,
+      task_history_cursor: "task-revision:1",
+      captured_at: NOW,
+    }),
+    work_items: {
+      schema_version: 1,
+      work_items: [item("active", [], "docs/releases"), item("later", ["active"], "src/later.ts")],
+    },
+    assumptions: [],
+    unresolved_questions: [],
+    top_level_validation: validation,
+  };
+  const draft = createTaskPlanRevision({ proposal, revision: 1, created_at: NOW });
+  const approved = approveTaskPlan({
+    plan: draft,
+    expected_digest: draft.digest,
+    actor: "USER",
+    approved_at: NOW,
+  });
+  return materializeApprovedWorkItems({
+    task: createLegacyTaskAggregate({
+      id: taskId,
+      revision: 1,
+      title: "Scope extension",
+      description: "Exercise one task-centric scope extension.",
+      status: "TODO",
+      acceptance_criteria: ["Extend the selected WorkItem."],
+      captured_at: NOW,
+      updated_at: NOW,
+    }),
+    plan: approved,
+    now: NOW,
+  });
+}
 
 function fixture(
   overrides: Partial<TaskData> = {},
@@ -87,6 +181,52 @@ function fixture(
 }
 
 describe("blocked task execution scope extension", () => {
+  it("creates an approved plan revision for only the selected task-centric WorkItem", () => {
+    const { command, pending, task } = fixture();
+    const aggregate = taskCentricAggregate(task.id);
+    task.extensions = {
+      ...withTaskCentricAggregate(task.extensions, aggregate),
+      [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
+    };
+    const executionContract = extendBlockedTaskExecutionContract({
+      command,
+      task,
+      scope_roots: ["website"],
+      repository_effects: ["release_metadata"],
+      request_digest: pending.request_digest,
+      by: "USER",
+    });
+
+    const updated = applyApprovedTaskScopeExtension({
+      task,
+      executionContract,
+      pending,
+      scopeRoots: ["website"],
+      repositoryEffects: ["release_metadata"],
+      by: "USER",
+      now: NOW,
+    });
+    const next = taskCentricAggregateFromExtensions(updated.extensions);
+
+    expect(next?.current_plan).toMatchObject({
+      revision: 2,
+      approval: { state: "approved", approved_by: "USER" },
+    });
+    expect(next?.current_plan?.digest).not.toBe(aggregate.current_plan?.digest);
+    const nextItems = next?.current_plan?.proposal.work_items.work_items;
+    expect(nextItems?.map((item) => ({ id: item.id, scope_roots: item.scope_roots }))).toEqual([
+      { id: "active", scope_roots: ["docs/releases", "website"] },
+      { id: "later", scope_roots: ["src/later.ts"] },
+    ]);
+    expect(nextItems?.[0]?.resource_claims).toContainEqual({
+      kind: "path",
+      resource: "website",
+      mode: "write",
+    });
+    expect(next?.plan_history).toEqual([aggregate.current_plan]);
+    expect(next?.work_items).toEqual(aggregate.work_items);
+  });
+
   it("adds repository authority monotonically and preserves observations", () => {
     const { command, pending, task } = fixture();
 

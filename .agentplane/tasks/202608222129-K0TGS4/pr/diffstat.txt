@@ -1,0 +1,3 @@
+ .../shared/task-scope-extension-request.ts         |  91 +++++++++++++-
+ .../src/commands/task/scope-extend.test.ts         | 140 +++++++++++++++++++++
+ 2 files changed, 229 insertions(+), 2 deletions(-)

@@ -2,7 +2,17 @@ import { createHash } from "node:crypto";
 import path from "node:path";
 
 import type { AgentSemanticResultScopeExtensionRequest } from "@agentplaneorg/core/schemas";
-import { canonicalizeJson, type TaskRepositoryEffect } from "@agentplaneorg/core/tasks";
+import {
+  approveTaskPlan,
+  canonicalizeJson,
+  createTaskPlanRevision,
+  taskCentricAggregateFromExtensions,
+  withTaskCentricAggregate,
+  WorkItemScheduler,
+  type ResourceClaimSpec,
+  type TaskAggregate,
+  type TaskRepositoryEffect,
+} from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
@@ -180,6 +190,74 @@ export function scopeExtensionReceiptForState(state: TaskScopeExtensionRequestSt
   });
 }
 
+function extendTaskCentricWorkItemScope(opts: {
+  task: TaskData;
+  scopeRoots: readonly string[];
+  by: string;
+  now: string;
+  requestDigest: string;
+}): TaskAggregate | null {
+  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
+  const currentPlan = aggregate?.current_plan;
+  if (!aggregate || !currentPlan || opts.scopeRoots.length === 0) return aggregate;
+  const selected = new WorkItemScheduler(2).select({
+    graph: currentPlan.proposal.work_items,
+    runtime: aggregate.work_items,
+    active_leases: [],
+  });
+  if (selected.length !== 1) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        "Task-centric scope extension requires exactly one schedulable WorkItem for the approved retry.",
+    });
+  }
+  const selectedId = selected[0]!.id;
+  const addedRoots = uniqueSorted(opts.scopeRoots.map((root) => normalizeTaskScopeRoot(root)));
+  const workItems = currentPlan.proposal.work_items.work_items.map((item) => {
+    if (item.id !== selectedId) return item;
+    const scopeRoots = uniqueSorted([...item.scope_roots, ...addedRoots]);
+    const claimsByIdentity = new Map(
+      item.resource_claims.map((claim) => [
+        `${claim.kind}:${claim.resource}:${claim.mode}`,
+        claim,
+      ]),
+    );
+    for (const root of addedRoots) {
+      const claim: ResourceClaimSpec = { kind: "path", resource: root, mode: "write" };
+      claimsByIdentity.set(`${claim.kind}:${claim.resource}:${claim.mode}`, claim);
+    }
+    return {
+      ...item,
+      scope_roots: scopeRoots,
+      resource_claims: [...claimsByIdentity.values()],
+    };
+  });
+  const draft = createTaskPlanRevision({
+    proposal: {
+      ...currentPlan.proposal,
+      work_items: { ...currentPlan.proposal.work_items, work_items: workItems },
+    },
+    revision: currentPlan.revision + 1,
+    created_at: opts.now,
+  });
+  const approved = approveTaskPlan({
+    plan: draft,
+    expected_digest: draft.digest,
+    actor: opts.by,
+    approved_at: opts.now,
+    policy_facts: [`state_bound_scope_extension:${opts.requestDigest}`],
+  });
+  return {
+    ...aggregate,
+    revision: aggregate.revision + 1,
+    current_plan: approved,
+    plan_history: [...(aggregate.plan_history ?? []), currentPlan],
+    event_cursor: aggregate.event_cursor + 1,
+    updated_at: opts.now,
+  };
+}
+
 export function applyApprovedTaskScopeExtension(opts: {
   task: TaskData;
   executionContract: NonNullable<TaskData["execution_contract"]>;
@@ -189,6 +267,13 @@ export function applyApprovedTaskScopeExtension(opts: {
   by: string;
   now: string;
 }): TaskData {
+  const taskCentric = extendTaskCentricWorkItemScope({
+    task: opts.task,
+    scopeRoots: opts.scopeRoots,
+    by: opts.by,
+    now: opts.now,
+    requestDigest: opts.pending.request_digest,
+  });
   return {
     ...opts.task,
     status: "DOING",
@@ -202,7 +287,9 @@ export function applyApprovedTaskScopeExtension(opts: {
     },
     execution_contract: opts.executionContract,
     extensions: {
-      ...(opts.task.extensions ?? {}),
+      ...(taskCentric
+        ? withTaskCentricAggregate(opts.task.extensions, taskCentric)
+        : (opts.task.extensions ?? {})),
       [TASK_SCOPE_EXTENSION_REQUEST_KEY]: {
         ...opts.pending,
         status: "applied",
