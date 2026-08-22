@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:58bbcddc17736e4572658427bbadd20bffbcea83945dd051c216e6a63ec5ca1c",
   "pr_number": 4871,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4871",
+  "pre_merge_closure": {
+    "basis_commit": "fdbbd71ca81eb202bf488681d480b78ac272560c",
+    "branch": "task/202608221335-6DSF3R/fix-idempotent-null-workitem-external-result-acc",
+    "pr_number": 4871,
+    "recorded_at": "2026-08-22T14:25:52.510Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
