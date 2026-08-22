@@ -13,7 +13,7 @@ import { cmdVerifyParsed } from "./verify-record.js";
 
 type DeclaredChecksArtifact = {
   status: "passed" | "failed" | "unsupported";
-  checks: { command: string; exit_code: number | null }[];
+  checks: { command: string; check_ids: string[]; exit_code: number | null }[];
 };
 
 function verificationArtifactPath(command: CommandContext, taskId: string): string {
@@ -41,6 +41,8 @@ async function readPassedDeclaredChecks(opts: {
         !check ||
         typeof check.command !== "string" ||
         check.command.trim().length === 0 ||
+        !Array.isArray(check.check_ids) ||
+        check.check_ids.some((checkId) => typeof checkId !== "string" || !checkId.trim()) ||
         check.exit_code !== 0,
     )
   ) {
@@ -60,18 +62,29 @@ function completedVerificationDetails(opts: {
   artifact: DeclaredChecksArtifact;
 }): string {
   const evidence = `${verificationArtifactPath(opts.command, opts.taskId)}#checks`;
-  const command = opts.artifact.checks.map((check) => check.command).join(" && ");
-  const checks = opts.selectedChecks.length > 0 ? opts.selectedChecks : ["task_outcome"];
+  const selectedChecks = opts.selectedChecks.filter((checkId) => checkId !== "hosted_integration");
+  const checks = selectedChecks.length > 0 ? selectedChecks : ["task_outcome"];
   return checks
-    .map((check) =>
-      [
-        `Check: ${check}`,
-        `Command: ${command}`,
-        "Result: pass",
-        `Evidence: ${evidence}`,
-        `Scope: external TESTER review for task ${opts.taskId}`,
-      ].join("\n"),
-    )
+    .flatMap((checkId) => {
+      const commands = opts.artifact.checks
+        .filter((check) => selectedChecks.length === 0 || check.check_ids.includes(checkId))
+        .map((check) => check.command);
+      if (commands.length === 0) {
+        throw new CliError({
+          code: "E_VALIDATION",
+          message: `Completed external verification lacks concrete evidence for ${checkId}.`,
+        });
+      }
+      return [
+        [
+          `Check: ${checkId}`,
+          `Command: ${commands.join(" && ")}`,
+          "Result: pass",
+          `Evidence: ${evidence}`,
+          `Scope: external TESTER review for task ${opts.taskId}`,
+        ].join("\n"),
+      ];
+    })
     .join("\n\n");
 }
 

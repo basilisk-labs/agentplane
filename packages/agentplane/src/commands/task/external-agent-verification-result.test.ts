@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+if (typeof vi.hoisted !== "function") {
+  Object.defineProperty(vi, "hoisted", {
+    value: <T>(factory: () => T): T => factory(),
+  });
+}
+
 const mocks = vi.hoisted(() => ({
   readFile: vi.fn(),
   loadTask: vi.fn(),
@@ -48,7 +54,11 @@ describe("external verification result", () => {
     mocks.loadTask.mockResolvedValue({
       verification: { updated_by: "SUPERVISOR", note: "old" },
       execution_contract: {
-        verification: { contract: { selected_checks: ["full_regression", "task_outcome"] } },
+        verification: {
+          contract: {
+            selected_checks: ["full_regression", "hosted_integration", "task_outcome"],
+          },
+        },
       },
     });
     mocks.verify.mockResolvedValue(0);
@@ -72,7 +82,14 @@ describe("external verification result", () => {
     mocks.readFile.mockResolvedValue(
       JSON.stringify({
         status: "passed",
-        checks: [{ command: "bun run test:fast", exit_code: 0 }],
+        checks: [
+          { command: "bun run test:fast", check_ids: ["task_outcome"], exit_code: 0 },
+          {
+            command: "bun run ci:local:full",
+            check_ids: ["full_regression", "task_outcome"],
+            exit_code: 0,
+          },
+        ],
       }),
     );
 
@@ -89,9 +106,53 @@ describe("external verification result", () => {
       throw new Error("expected structured verification details");
     }
     expect(verifyInput.details).toContain("Check: full_regression");
+    expect(verifyInput.details).toContain("Command: bun run ci:local:full");
+    expect(verifyInput.details).not.toContain("Check: hosted_integration");
     expect(verifyInput.details).toContain(
       ".agentplane/tasks/202608190000-ABC123/supervision/declared-checks.json#checks",
     );
+  });
+
+  it("rejects completed TESTER output when full regression has no concrete command", async () => {
+    mocks.readFile.mockResolvedValue(
+      JSON.stringify({
+        status: "passed",
+        checks: [{ command: "bun run test:fast", check_ids: ["task_outcome"], exit_code: 0 }],
+      }),
+    );
+
+    await expect(
+      applyExternalVerificationResult({ command, exchange, semantic: semantic("completed") }),
+    ).rejects.toThrow("lacks concrete evidence for full_regression");
+    expect(mocks.verify).not.toHaveBeenCalled();
+  });
+
+  it("preserves task outcome evidence for a legacy contract without selected checks", async () => {
+    mocks.loadTask.mockResolvedValue({
+      verification: { updated_by: "SUPERVISOR", note: "old" },
+      execution_contract: { verification: {} },
+    });
+    mocks.readFile.mockResolvedValue(
+      JSON.stringify({
+        status: "passed",
+        checks: [{ command: "python -m pytest", check_ids: [], exit_code: 0 }],
+      }),
+    );
+
+    await applyExternalVerificationResult({ command, exchange, semantic: semantic("completed") });
+
+    const verifyInput: unknown = mocks.verify.mock.calls[0]?.[0];
+    expect(verifyInput).toMatchObject({ state: "ok", by: "TESTER", repoFixable: false });
+    if (
+      !verifyInput ||
+      typeof verifyInput !== "object" ||
+      !("details" in verifyInput) ||
+      typeof verifyInput.details !== "string"
+    ) {
+      throw new Error("expected structured verification details");
+    }
+    expect(verifyInput.details).toContain("Check: task_outcome");
+    expect(verifyInput.details).toContain("Command: python -m pytest");
   });
 
   it("rejects completed TESTER output when declared checks did not pass", async () => {

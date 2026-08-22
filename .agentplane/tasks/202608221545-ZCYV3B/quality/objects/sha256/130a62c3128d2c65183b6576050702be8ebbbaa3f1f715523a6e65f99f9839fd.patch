@@ -1,0 +1,509 @@
+diff --git a/packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts b/packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts
+index fbea98852..1679d2fd3 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts
+@@ -261,7 +261,14 @@ describe("task-centric fresh repository release gate", { timeout: 180_000 }, ()
+       ].join("\n"),
+       "utf8",
+     );
+-    await execFileAsync("git", ["add", "scripts/check-task-centric.mjs"], { cwd: root });
++    await writeFile(
++      path.join(root, "package.json"),
++      `${JSON.stringify({ scripts: { "ci:local:full": DETERMINISTIC_CHECK } }, null, 2)}\n`,
++      "utf8",
++    );
++    await execFileAsync("git", ["add", "scripts/check-task-centric.mjs", "package.json"], {
++      cwd: root,
++    });
+     await execFileAsync(
+       "git",
+       ["commit", "--no-verify", "-m", "test: add deterministic task check"],
+diff --git a/packages/agentplane/src/commands/shared/task-verification-records.test.ts b/packages/agentplane/src/commands/shared/task-verification-records.test.ts
+index 16bb8fd69..9acce9d44 100644
+--- a/packages/agentplane/src/commands/shared/task-verification-records.test.ts
++++ b/packages/agentplane/src/commands/shared/task-verification-records.test.ts
+@@ -3,17 +3,10 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
+ import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+-import { afterEach, describe, expect, it, vi } from "vitest";
++import { afterEach, describe, expect, it } from "vitest";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+ 
+-const gitRevParse = vi.hoisted(() => vi.fn());
+-
+-vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
+-  ...(await importOriginal<Record<string, unknown>>()),
+-  gitRevParse,
+-}));
+-
+ import {
+   verificationContractEvidenceCoverage,
+   verificationRecordPaths,
+@@ -87,7 +80,6 @@ async function writeValidRecord(opts: {
+ }
+ 
+ afterEach(async () => {
+-  gitRevParse.mockReset();
+   await Promise.all(tempRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
+ });
+ 
+@@ -114,6 +106,27 @@ describe("task verification records", () => {
+     ).toMatchObject({ accepted: true, missingChecks: [], unexpectedChecks: [] });
+   });
+ 
++  it("keeps hosted integration out of the local verification receipt", () => {
++    const task = makeTask("T-HOSTED-CONTRACT");
++    task.execution_contract = {
++      verification: {
++        contract: { selected_checks: ["hosted_integration", "task_outcome"] },
++      },
++    } as TaskData["execution_contract"];
++
++    expect(
++      verificationContractEvidenceCoverage(
++        task,
++        "Check: task_outcome\nCommand: bun test\nResult: pass\nEvidence: report.json\nScope: outcome",
++      ),
++    ).toMatchObject({
++      requiredChecks: ["task_outcome"],
++      accepted: true,
++      missingChecks: [],
++      unexpectedChecks: [],
++    });
++  });
++
+   it("rejects a persisted passing record that omits a selected contract check", async () => {
+     const gitRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-verification-contract-"));
+     tempRoots.push(gitRoot);
+@@ -212,6 +225,5 @@ describe("task verification records", () => {
+         workflowMode: "branch_pr",
+       }),
+     ).resolves.toEqual([]);
+-    expect(gitRevParse).not.toHaveBeenCalled();
+   });
+ });
+diff --git a/packages/agentplane/src/commands/shared/task-verification-records.ts b/packages/agentplane/src/commands/shared/task-verification-records.ts
+index 876d51564..3b47d89c8 100644
+--- a/packages/agentplane/src/commands/shared/task-verification-records.ts
++++ b/packages/agentplane/src/commands/shared/task-verification-records.ts
+@@ -121,7 +121,9 @@ export type VerificationContractEvidenceCoverage = {
+ 
+ export function requiredVerificationContractChecks(task: TaskData): string[] {
+   if (task.execution_contract?.source === "legacy_compatibility") return [];
+-  return [...(task.execution_contract?.verification.contract?.selected_checks ?? [])].toSorted();
++  return (task.execution_contract?.verification.contract?.selected_checks ?? [])
++    .filter((checkId) => checkId !== "hosted_integration")
++    .toSorted();
+ }
+ 
+ export function verificationContractEvidenceCoverage(
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.test.ts b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+index 8e8e694ee..189440f3c 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+@@ -387,6 +387,7 @@ describe("direct task verification", () => {
+           {
+             command: "bun run test:critical",
+             script: "test:critical",
++            check_ids: ["critical_paths", "task_outcome"],
+             exit_code: 0,
+             duration_ms: 10,
+             stdout_tail: "pass",
+@@ -401,6 +402,120 @@ describe("direct task verification", () => {
+     expect(details.match(/Command: bun run test:critical/gu)).toHaveLength(2);
+   });
+ 
++  it("runs and binds full regression separately without claiming hosted integration", async () => {
++    const cwd = await root();
++    await writeFile(
++      path.join(cwd, "package.json"),
++      JSON.stringify({ scripts: { "ci:local:full": "node scripts/checks/full.mjs" } }),
++      "utf8",
++    );
++    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "1 pass", stderr: "" });
++    const task = {
++      verify: ["bun test packages/agentplane/src/cli/focused.test.ts"],
++      task_kind: "code" as const,
++      mutation_scope: "code" as const,
++      execution_contract: {
++        ...executionContract(["repository_write", "source_code"]),
++        verification: {
++          required_evidence: ["hosted_integration", "task_outcome"],
++          contract: {
++            selected_checks: [
++              "affected_unit_integration",
++              "critical_paths",
++              "full_regression",
++              "hosted_integration",
++              "task_outcome",
++            ],
++          },
++        },
++      },
++    } as unknown as Pick<
++      TaskData,
++      "verify" | "task_kind" | "mutation_scope" | "execution_contract" | "sections"
++    >;
++
++    const result = await runDirectTaskVerification({
++      command: command(cwd),
++      task,
++      task_id: TASK_ID,
++      cwd,
++      run_process: mocks.runProcess,
++    });
++
++    expect(result.status).toBe("passed");
++    expect(mocks.runProcess).toHaveBeenNthCalledWith(
++      2,
++      expect.objectContaining({ command: "bun", args: ["run", "ci:local:full"] }),
++    );
++    expect(result.checks).toEqual(
++      expect.arrayContaining([
++        expect.objectContaining({
++          command: "bun test packages/agentplane/src/cli/focused.test.ts",
++          check_ids: ["affected_unit_integration", "critical_paths", "task_outcome"],
++        }),
++        expect.objectContaining({
++          command: "bun run ci:local:full",
++          check_ids: [
++            "affected_unit_integration",
++            "critical_paths",
++            "full_regression",
++            "task_outcome",
++          ],
++        }),
++      ]),
++    );
++    const details = renderDirectTaskVerificationDetails({
++      task,
++      taskId: TASK_ID,
++      workflow: "branch_pr",
++      result,
++    });
++    expect(details).toContain("Check: full_regression\nCommand: bun run ci:local:full");
++    expect(details).not.toContain("Check: hosted_integration");
++    expect(details).not.toMatch(/Check: full_regression\nCommand: bun test/gu);
++  });
++
++  it("does not pass a required full regression when the repository has no full script", async () => {
++    const cwd = await root();
++    await writeFile(path.join(cwd, "package.json"), JSON.stringify({ scripts: {} }), "utf8");
++    const contract = executionContract(["repository_write", "source_code"]);
++    contract.verification.contract = { selected_checks: ["full_regression", "task_outcome"] };
++
++    const result = await runDirectTaskVerification({
++      command: command(cwd),
++      task: {
++        verify: ["bun test focused.test.ts"],
++        execution_contract: contract,
++      },
++      task_id: TASK_ID,
++      cwd,
++      run_process: mocks.runProcess,
++    });
++
++    expect(result).toMatchObject({
++      status: "unsupported",
++      reason:
++        "Verification Contract requires full_regression, but package.json does not define ci:local:full.",
++      checks: [
++        {
++          command: "bun test focused.test.ts",
++          check_ids: ["task_outcome"],
++          exit_code: 0,
++        },
++      ],
++    });
++    const artifact = JSON.parse(await readFile(path.join(cwd, result.artifact_path), "utf8")) as {
++      status: string;
++      checks: { check_ids: string[] }[];
++    };
++    expect(artifact).toMatchObject({
++      status: "unsupported",
++      checks: [{ check_ids: ["task_outcome"] }],
++    });
++    expect(artifact.checks.flatMap((check) => check.check_ids)).not.toContain("full_regression");
++    expect(mocks.runProcess).toHaveBeenCalledOnce();
++  });
++
+   it("gives the canonical provider qualification its bounded release window", async () => {
+     const cwd = await root();
+     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "provider gate ok", stderr: "" });
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.ts b/packages/agentplane/src/commands/task/direct-task-verification.ts
+index d7896d887..2f29a7c35 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.ts
+@@ -23,6 +23,7 @@ type DirectTaskCheck = {
+   command: string;
+   declared_command?: string;
+   script: string | null;
++  check_ids: string[];
+   exit_code: number | null;
+   duration_ms: number;
+   stdout_tail: string;
+@@ -49,19 +50,27 @@ export function renderDirectTaskVerificationDetails(opts: {
+   result: DirectTaskVerificationResult;
+ }): string {
+   const checks = opts.result.checks;
+-  const selectedChecks = opts.task.execution_contract?.verification.contract?.selected_checks ?? [];
++  const selectedChecks = (
++    opts.task.execution_contract?.verification.contract?.selected_checks ?? []
++  ).filter((checkId) => checkId !== "hosted_integration");
+   if (opts.result.status === "passed" && selectedChecks.length > 0) {
+-    const commands = checks.map(({ command }) => command).join(" && ");
+     return selectedChecks
+-      .map((checkId) =>
+-        [
+-          `Check: ${checkId}`,
+-          `Command: ${commands}`,
+-          "Result: pass",
+-          `Evidence: ${opts.result.artifact_path}#checks`,
+-          `Scope: ${opts.workflow} task ${opts.taskId} Verification Contract check ${checkId}`,
+-        ].join("\n"),
+-      )
++      .map((checkId) => {
++        const matching = checks.filter((check) => check.check_ids.includes(checkId));
++        if (matching.length === 0) return null;
++        return matching
++          .map((check, index) =>
++            [
++              `Check: ${checkId}`,
++              `Command: ${check.command}`,
++              "Result: pass",
++              `Evidence: ${opts.result.artifact_path}#check-${String(checks.indexOf(check) + 1)}`,
++              `Scope: ${opts.workflow} task ${opts.taskId} Verification Contract check ${checkId}${matching.length > 1 ? ` (${String(index + 1)}/${String(matching.length)})` : ""}`,
++            ].join("\n"),
++          )
++          .join("\n\n");
++      })
++      .filter((details): details is string => details !== null)
+       .join("\n\n");
+   }
+   return checks
+@@ -120,6 +129,21 @@ function directTaskVerificationCommands(
+   return commands;
+ }
+ 
++function selectedLocalChecks(task: Pick<TaskData, "execution_contract">): string[] {
++  return (task.execution_contract?.verification.contract?.selected_checks ?? []).filter(
++    (checkId) => checkId !== "hosted_integration",
++  );
++}
++
++function isFullRegressionCommand(command: string): boolean {
++  return parseDirectTaskCheck(command)?.script === "ci:local:full";
++}
++
++function checkIdsForCommand(command: string, selectedChecks: readonly string[]): string[] {
++  if (isFullRegressionCommand(command)) return [...selectedChecks];
++  return selectedChecks.filter((checkId) => checkId !== "full_regression");
++}
++
+ function hasPlannerFallbackVerifySteps(task: Pick<TaskData, "sections">): boolean {
+   return task.sections?.["Verify Steps"]?.includes("PLANNER fallback scaffold") === true;
+ }
+@@ -207,6 +231,7 @@ async function writeCheckArtifact(opts: {
+             command: check.command,
+             declared_command: check.declared_command,
+             script: check.script,
++            check_ids: check.check_ids,
+             exit_code: check.exit_code,
+           };
+         });
+@@ -252,9 +277,22 @@ export async function runDirectTaskVerification(opts: {
+ }): Promise<DirectTaskVerificationResult> {
+   const checks: DirectTaskCheck[] = [];
+   const commands = directTaskVerificationCommands(opts.task);
+-  const packageScripts = hasPlannerFallbackVerifySteps(opts.task)
+-    ? await readRootPackageScripts(opts.command.resolvedProject.gitRoot)
+-    : null;
++  const selectedChecks = selectedLocalChecks(opts.task);
++  const requiresFullRegression = selectedChecks.includes("full_regression");
++  const packageScripts =
++    hasPlannerFallbackVerifySteps(opts.task) || requiresFullRegression
++      ? await readRootPackageScripts(opts.command.resolvedProject.gitRoot)
++      : null;
++  let missingRequiredCheckReason: string | null = null;
++  const hasFullRegressionCommand = commands.some((command) => isFullRegressionCommand(command));
++  if (requiresFullRegression && !hasFullRegressionCommand) {
++    if (packageScripts?.has("ci:local:full")) {
++      commands.push("bun run ci:local:full");
++    } else {
++      missingRequiredCheckReason =
++        "Verification Contract requires full_regression, but package.json does not define ci:local:full.";
++    }
++  }
+   if (commands.length === 0) {
+     const result = {
+       status: "unsupported" as const,
+@@ -295,6 +333,7 @@ export async function runDirectTaskVerification(opts: {
+         command,
+         ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
+         script: parsed.script,
++        check_ids: checkIdsForCommand(command, selectedChecks),
+         exit_code: executed.exitCode,
+         duration_ms: Math.max(0, Date.now() - started),
+         stdout_tail: tail(executed.stdout),
+@@ -321,6 +360,7 @@ export async function runDirectTaskVerification(opts: {
+         command,
+         ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
+         script: parsed.script,
++        check_ids: checkIdsForCommand(command, selectedChecks),
+         exit_code: null,
+         duration_ms: Math.max(0, Date.now() - started),
+         stdout_tail: "",
+@@ -334,6 +374,14 @@ export async function runDirectTaskVerification(opts: {
+       return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+     }
+   }
++  if (missingRequiredCheckReason) {
++    const result = {
++      status: "unsupported" as const,
++      checks,
++      reason: missingRequiredCheckReason,
++    };
++    return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
++  }
+   const result = { status: "passed" as const, checks, reason: null };
+   return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+ }
+diff --git a/packages/agentplane/src/commands/task/external-agent-verification-result.test.ts b/packages/agentplane/src/commands/task/external-agent-verification-result.test.ts
+index 60ef472ec..185cef45a 100644
+--- a/packages/agentplane/src/commands/task/external-agent-verification-result.test.ts
++++ b/packages/agentplane/src/commands/task/external-agent-verification-result.test.ts
+@@ -1,5 +1,11 @@
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
++if (typeof vi.hoisted !== "function") {
++  Object.defineProperty(vi, "hoisted", {
++    value: <T>(factory: () => T): T => factory(),
++  });
++}
++
+ const mocks = vi.hoisted(() => ({
+   readFile: vi.fn(),
+   loadTask: vi.fn(),
+@@ -48,7 +54,11 @@ describe("external verification result", () => {
+     mocks.loadTask.mockResolvedValue({
+       verification: { updated_by: "SUPERVISOR", note: "old" },
+       execution_contract: {
+-        verification: { contract: { selected_checks: ["full_regression", "task_outcome"] } },
++        verification: {
++          contract: {
++            selected_checks: ["full_regression", "hosted_integration", "task_outcome"],
++          },
++        },
+       },
+     });
+     mocks.verify.mockResolvedValue(0);
+@@ -72,7 +82,14 @@ describe("external verification result", () => {
+     mocks.readFile.mockResolvedValue(
+       JSON.stringify({
+         status: "passed",
+-        checks: [{ command: "bun run test:fast", exit_code: 0 }],
++        checks: [
++          { command: "bun run test:fast", check_ids: ["task_outcome"], exit_code: 0 },
++          {
++            command: "bun run ci:local:full",
++            check_ids: ["full_regression", "task_outcome"],
++            exit_code: 0,
++          },
++        ],
+       }),
+     );
+ 
+@@ -89,11 +106,27 @@ describe("external verification result", () => {
+       throw new Error("expected structured verification details");
+     }
+     expect(verifyInput.details).toContain("Check: full_regression");
++    expect(verifyInput.details).toContain("Command: bun run ci:local:full");
++    expect(verifyInput.details).not.toContain("Check: hosted_integration");
+     expect(verifyInput.details).toContain(
+       ".agentplane/tasks/202608190000-ABC123/supervision/declared-checks.json#checks",
+     );
+   });
+ 
++  it("rejects completed TESTER output when full regression has no concrete command", async () => {
++    mocks.readFile.mockResolvedValue(
++      JSON.stringify({
++        status: "passed",
++        checks: [{ command: "bun run test:fast", check_ids: ["task_outcome"], exit_code: 0 }],
++      }),
++    );
++
++    await expect(
++      applyExternalVerificationResult({ command, exchange, semantic: semantic("completed") }),
++    ).rejects.toThrow("lacks concrete evidence for full_regression");
++    expect(mocks.verify).not.toHaveBeenCalled();
++  });
++
+   it("rejects completed TESTER output when declared checks did not pass", async () => {
+     mocks.readFile.mockResolvedValue(
+       JSON.stringify({
+diff --git a/packages/agentplane/src/commands/task/external-agent-verification-result.ts b/packages/agentplane/src/commands/task/external-agent-verification-result.ts
+index f723c5b6f..7f4006793 100644
+--- a/packages/agentplane/src/commands/task/external-agent-verification-result.ts
++++ b/packages/agentplane/src/commands/task/external-agent-verification-result.ts
+@@ -13,7 +13,7 @@ import { cmdVerifyParsed } from "./verify-record.js";
+ 
+ type DeclaredChecksArtifact = {
+   status: "passed" | "failed" | "unsupported";
+-  checks: { command: string; exit_code: number | null }[];
++  checks: { command: string; check_ids: string[]; exit_code: number | null }[];
+ };
+ 
+ function verificationArtifactPath(command: CommandContext, taskId: string): string {
+@@ -41,6 +41,8 @@ async function readPassedDeclaredChecks(opts: {
+         !check ||
+         typeof check.command !== "string" ||
+         check.command.trim().length === 0 ||
++        !Array.isArray(check.check_ids) ||
++        check.check_ids.some((checkId) => typeof checkId !== "string" || !checkId.trim()) ||
+         check.exit_code !== 0,
+     )
+   ) {
+@@ -60,18 +62,30 @@ function completedVerificationDetails(opts: {
+   artifact: DeclaredChecksArtifact;
+ }): string {
+   const evidence = `${verificationArtifactPath(opts.command, opts.taskId)}#checks`;
+-  const command = opts.artifact.checks.map((check) => check.command).join(" && ");
+-  const checks = opts.selectedChecks.length > 0 ? opts.selectedChecks : ["task_outcome"];
++  const checks = (opts.selectedChecks.length > 0 ? opts.selectedChecks : ["task_outcome"]).filter(
++    (checkId) => checkId !== "hosted_integration",
++  );
+   return checks
+-    .map((check) =>
+-      [
+-        `Check: ${check}`,
+-        `Command: ${command}`,
+-        "Result: pass",
+-        `Evidence: ${evidence}`,
+-        `Scope: external TESTER review for task ${opts.taskId}`,
+-      ].join("\n"),
+-    )
++    .flatMap((checkId) => {
++      const commands = opts.artifact.checks
++        .filter((check) => check.check_ids.includes(checkId))
++        .map((check) => check.command);
++      if (commands.length === 0) {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message: `Completed external verification lacks concrete evidence for ${checkId}.`,
++        });
++      }
++      return [
++        [
++          `Check: ${checkId}`,
++          `Command: ${commands.join(" && ")}`,
++          "Result: pass",
++          `Evidence: ${evidence}`,
++          `Scope: external TESTER review for task ${opts.taskId}`,
++        ].join("\n"),
++      ];
++    })
+     .join("\n\n");
+ }
+ 
