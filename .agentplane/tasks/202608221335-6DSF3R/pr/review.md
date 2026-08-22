@@ -13,7 +13,7 @@ Created: 2026-08-22T13:40:02.178Z
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note: The post-rework branch verification is evidence-backed and passes the declared contract on clean commit 3e415879c857a25df22f1af2f41198813c63d42b.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
