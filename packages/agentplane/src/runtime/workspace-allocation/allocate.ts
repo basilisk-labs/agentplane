@@ -17,7 +17,7 @@ import {
   assertWorkspaceLeaseOwned,
   releaseWorkspaceLease,
 } from "./lease.js";
-import type { WorkspaceAllocationContext } from "./types.js";
+import type { WorkspaceAllocationContext } from "./model.js";
 import { findRelocatableWorktreeForBranch } from "./rediscover.js";
 
 function sha256(value: string): `sha256:${string}` {
