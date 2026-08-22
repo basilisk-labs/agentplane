@@ -129,6 +129,66 @@ describe("finish closeout journal", () => {
     ).rejects.toThrow("requires recovery");
   });
 
+  it("replaces a different prepared recovery request only with force", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "agentplane-finish-journal-"));
+    roots.push(root);
+    await execFileAsync("git", ["init", "-b", "main"], { cwd: root });
+    const fixture = fixtures(root);
+    const opened = await openFinishCloseoutJournal(fixture);
+    await markFinishCloseoutRecoveryRequired({
+      path: opened.path,
+      journal: opened.journal,
+      error: new Error("validation failed before mutation"),
+      taskId: "TASK-1",
+    });
+
+    const replaced = await openFinishCloseoutJournal({
+      ...fixture,
+      options: {
+        ...fixture.options,
+        body: "Verified: current rework is ready.",
+        force: true,
+      },
+    });
+
+    expect(replaced.journal).toMatchObject({ state: "prepared" });
+    expect(replaced.journal).not.toHaveProperty("previous_state");
+    expect(replaced.journal).not.toHaveProperty("recovery");
+    expect(replaced.journal.request_digest).not.toBe(opened.journal.request_digest);
+    const stored = JSON.parse(await readFile(opened.path, "utf8")) as Record<string, unknown>;
+    expect(stored).toMatchObject({ state: "prepared" });
+  });
+
+  it("does not replace a different recovery request after task state was written", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "agentplane-finish-journal-"));
+    roots.push(root);
+    await execFileAsync("git", ["init", "-b", "main"], { cwd: root });
+    const fixture = fixtures(root);
+    const opened = await openFinishCloseoutJournal(fixture);
+    const taskWritten = await advanceFinishCloseoutJournal({
+      path: opened.path,
+      journal: opened.journal,
+      state: "task_state_written",
+    });
+    await markFinishCloseoutRecoveryRequired({
+      path: opened.path,
+      journal: taskWritten,
+      error: new Error("close commit failed"),
+      taskId: "TASK-1",
+    });
+
+    await expect(
+      openFinishCloseoutJournal({
+        ...fixture,
+        options: {
+          ...fixture.options,
+          body: "Verified: a different request.",
+          force: true,
+        },
+      }),
+    ).rejects.toThrow("requires recovery");
+  });
+
   it.each(["task_state_written", "close_commit_written"] as const)(
     "resumes a matching %s request without resetting it to prepared",
     async (state) => {

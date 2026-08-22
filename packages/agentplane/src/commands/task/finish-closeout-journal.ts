@@ -81,12 +81,24 @@ export async function openFinishCloseoutJournal(opts: {
     execution_digest,
   });
   const existing = await readJournal(filePath);
-  if (existing && existing.state !== "completed" && existing.request_digest !== request_digest) {
+  const replacesPreparedRecovery = Boolean(
+    existing &&
+      existing.state === "recovery_required" &&
+      resumeState(existing) === "prepared" &&
+      existing.request_digest !== request_digest &&
+      opts.options.force,
+  );
+  if (
+    existing &&
+    existing.state !== "completed" &&
+    existing.request_digest !== request_digest &&
+    !replacesPreparedRecovery
+  ) {
     throw new Error(
       `Finish closeout for ${primaryTaskId} requires recovery before a different request can run (${filePath}).`,
     );
   }
-  if (existing && existing.state !== "completed") {
+  if (existing && existing.state !== "completed" && !replacesPreparedRecovery) {
     return {
       path: filePath,
       journal: {
