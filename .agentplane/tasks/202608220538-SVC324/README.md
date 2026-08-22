@@ -2,10 +2,10 @@
 id: "202608220538-SVC324"
 title: "Resolve task autonomy and evaluator rework incidents"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +26,11 @@ plan_approval:
   updated_by: "USER"
   note: "Approved under the user's confirmed implementation-and-patch-release goal; host_user_decision packet omitted required host identifiers."
 verification:
-  state: "ok"
-  updated_at: "2026-08-22T06:28:48.448Z"
+  state: "needs_rework"
+  updated_at: "2026-08-22T06:33:00.536Z"
   updated_by: "TESTER"
-  note: "Verified: blueprint snapshot refreshed after authorized pre-merge closure preparation; local, evaluator, and hosted evidence pass."
-  attempts: 0
+  note: "Lifecycle rework: implementation checks pass, but required task-centric work-item results must be recorded before completion."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -140,7 +140,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task"
       - "packages/core/src/tasks"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - ".agentplane"
       - "docs"
@@ -187,6 +188,9 @@ execution_contract:
       -
         id: "recorded-check-6"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -312,9 +316,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "dfdc2d301c5c43b123a623080a8e6aef2551a857"
-  message: "🚧 SVC324 task: pre-merge closure"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -385,8 +388,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "dfdc2d301c5c43b123a623080a8e6aef2551a857"
+  -
+    type: "verify"
+    at: "2026-08-22T06:33:00.536Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Lifecycle rework: implementation checks pass, but required task-centric work-item results must be recorded before completion."
 doc_version: 3
-doc_updated_at: "2026-08-22T06:32:15.242Z"
+doc_updated_at: "2026-08-22T06:33:04.589Z"
 doc_updated_by: "CODER"
 description: "Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, archive both incidents with exact evidence, and unblock the approved patch release."
 sections:
@@ -531,6 +540,36 @@ sections:
 
     DecisionContextRef:
     - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T06:33:00.536Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Lifecycle rework: implementation checks pass, but required task-centric work-item results must be recorded before completion.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a93c86c8d22c7479bf47b8dcac7f7d2518f86ec47e654b2591646268bf070bfd, input_digest=sha256:0100bb60d92c1f3c020e339c16f2066f37978d61a73107c5b497645e136917d0
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220538-SVC324-resolve-task-autonomy-and-evaluator-rework-incid/.agentplane/tasks/202608220538-SVC324/blueprint/resolved-snapshot.json
+    - old_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+    - current_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608220538-SVC324
+
+    DecisionContextRef:
+    - operator_action: stop
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
@@ -952,9 +991,6 @@ extensions:
         revision: 1
         state: "READY"
         validation_result: null
-  implementation_commit:
-    hash: "858e6503aef9fe92dc73c95346d20da23af39090"
-    message: "🚧 SVC324 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "258015fbf8be6e888dae88d12ad78f2dbcaaf89f"
@@ -1116,6 +1152,36 @@ BlueprintSnapshotRef:
 
 DecisionContextRef:
 - operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T06:33:00.536Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Lifecycle rework: implementation checks pass, but required task-centric work-item results must be recorded before completion.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a93c86c8d22c7479bf47b8dcac7f7d2518f86ec47e654b2591646268bf070bfd, input_digest=sha256:0100bb60d92c1f3c020e339c16f2066f37978d61a73107c5b497645e136917d0
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220538-SVC324-resolve-task-autonomy-and-evaluator-rework-incid/.agentplane/tasks/202608220538-SVC324/blueprint/resolved-snapshot.json
+- old_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+- current_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608220538-SVC324
+
+DecisionContextRef:
+- operator_action: stop
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none

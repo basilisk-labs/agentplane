@@ -193,9 +193,12 @@ describe("blocked task execution scope extension", () => {
     const rebased = updated.extensions?.["agentplane.execution_grant"];
 
     expect(rebased).toMatchObject({
+      grant_id: grant.grant_id,
       actor: grant.actor,
       approval_kind: grant.approval_kind,
       approval_evidence_digest: grant.approval_evidence_digest,
+      capabilities: grant.capabilities,
+      issued_at: grant.issued_at,
     });
     expect(
       isExecutionGrantActive({
