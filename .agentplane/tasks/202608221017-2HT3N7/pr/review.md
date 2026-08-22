@@ -6,14 +6,14 @@ Created: 2026-08-22T10:19:00.838Z
 
 - Task: `202608221017-2HT3N7`
 - Title: Port the complete pre-merge quality-review lifecycle fix from blocked task 202608220851-XN5YNK into a clean branch_pr...
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608221017-2HT3N7/port-the-complete-pre-merge-quality-review-lifec`
 - Canonical task record: `.agentplane/tasks/202608221017-2HT3N7/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified P1 linked-batch rework on commit 530a65558e1b; hosted exact-SHA gate remains pending publication.
+- State: needs_rework
+- Note: P1 review requires linked batch task IDs in the reviewed descendant check; implementation updated in commit 13310d16d225.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

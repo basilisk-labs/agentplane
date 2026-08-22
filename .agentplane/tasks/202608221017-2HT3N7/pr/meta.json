@@ -3,17 +3,10 @@
   "branch": "task/202608221017-2HT3N7/port-the-complete-pre-merge-quality-review-lifec",
   "created_at": "2026-08-22T10:19:00.838Z",
   "diffstat_sha256": "sha256:fce586ac3295f05f888321b859b024d5a1a86ffb0e0ac4a53044fd88cd726eb6",
-  "last_verified_at": "2026-08-22T10:56:02.308Z",
+  "last_verified_at": "2026-08-22T10:57:53.210Z",
   "last_verified_diffstat_sha256": "sha256:fce586ac3295f05f888321b859b024d5a1a86ffb0e0ac4a53044fd88cd726eb6",
   "pr_number": 4866,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4866",
-  "pre_merge_closure": {
-    "basis_commit": "7251d79d8d4ed911dc37895c4c4f4231e1b44d12",
-    "branch": "task/202608221017-2HT3N7/port-the-complete-pre-merge-quality-review-lifec",
-    "pr_number": 4866,
-    "recorded_at": "2026-08-22T10:24:03.203Z",
-    "state": "closed_before_merge"
-  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -27,6 +20,6 @@
   "task_id": "202608221017-2HT3N7",
   "updated_at": "2026-08-22T10:22:48.051Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }

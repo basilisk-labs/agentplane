@@ -2,10 +2,10 @@
 id: "202608221017-2HT3N7"
 title: "Port the complete pre-merge quality-review lifecycle fix from blocked task 202608220851-XN5YNK into a clean branch_pr task: accept only proven task-artifact-only reviewed descendants, normalize closure-owned token_usage and implementation commit message while preserving the implementation hash, and clear task_centric_replan_required when a replacement canonical plan is supplied. Include the focused regression tests already proven in the blocked task."
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "USER"
   note: "Approved clean recovery plan under the previously granted autonomous release authority; scope matches the blocked task fix."
 verification:
-  state: "ok"
-  updated_at: "2026-08-22T10:56:02.308Z"
-  updated_by: "TESTER"
-  note: "Verified P1 linked-batch rework on commit 530a65558e1b; hosted exact-SHA gate remains pending publication."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-22T10:57:53.210Z"
+  updated_by: "REVIEWER"
+  note: "P1 review requires linked batch task IDs in the reviewed descendant check; implementation updated in commit 13310d16d225."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -123,7 +123,8 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/quality-review-target.ts"
       - "packages/agentplane/src/commands/task"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -153,6 +154,9 @@ execution_contract:
       -
         id: "recorded-check-5"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -239,9 +243,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "7251d79d8d4ed911dc37895c4c4f4231e1b44d12"
-  message: "🚧 2HT3N7 task: record external evaluator result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -288,8 +291,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified P1 linked-batch rework on commit 530a65558e1b; hosted exact-SHA gate remains pending publication."
+  -
+    type: "verify"
+    at: "2026-08-22T10:57:53.210Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "P1 review requires linked batch task IDs in the reviewed descendant check; implementation updated in commit 13310d16d225."
 doc_version: 3
-doc_updated_at: "2026-08-22T10:56:07.287Z"
+doc_updated_at: "2026-08-22T10:57:57.328Z"
 doc_updated_by: "CODER"
 description: "A clean task is required because the original supervisor journal correctly refuses replay after state drift. Keep changes to packages/agentplane/src/commands/task and packages/agentplane/src/commands/shared/quality-review-target.ts plus task-owned tests."
 sections:
@@ -409,6 +418,36 @@ sections:
     Result: pass
     Evidence: linked batch IDs route through isTaskSetLocalOnlyAdvance; semantic and unrelated drift rejection remains covered
     Scope: approved lifecycle rework
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221017-2HT3N7-port-the-complete-pre-merge-quality-review-lifec/.agentplane/tasks/202608221017-2HT3N7/blueprint/resolved-snapshot.json
+    - old_digest: 75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705
+    - current_digest: 75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221017-2HT3N7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T10:57:53.210Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: P1 review requires linked batch task IDs in the reviewed descendant check; implementation updated in commit 13310d16d225.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:26dd3a31aaf3763020301924d517a4a5b502aa094f75b76e490f126a2efc955e, input_digest=sha256:285c17b397892599cb5ece4716d245a61436f1ad6d9b1ad7d4dfb9e4545020a9
+
+    Details:
 
     BlueprintSnapshotRef:
     - state: current
@@ -784,9 +823,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "b2e7c138fd33a094ac62d263af4debb087c3b7c2"
-    message: "🚧 2HT3N7 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "49a18763cb42144bc5279ddb129c51c63acd9244"
@@ -923,6 +959,36 @@ Command: inspect batch descendant selection and regression assertions
 Result: pass
 Evidence: linked batch IDs route through isTaskSetLocalOnlyAdvance; semantic and unrelated drift rejection remains covered
 Scope: approved lifecycle rework
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221017-2HT3N7-port-the-complete-pre-merge-quality-review-lifec/.agentplane/tasks/202608221017-2HT3N7/blueprint/resolved-snapshot.json
+- old_digest: 75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705
+- current_digest: 75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221017-2HT3N7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T10:57:53.210Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: P1 review requires linked batch task IDs in the reviewed descendant check; implementation updated in commit 13310d16d225.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:26dd3a31aaf3763020301924d517a4a5b502aa094f75b76e490f126a2efc955e, input_digest=sha256:285c17b397892599cb5ece4716d245a61436f1ad6d9b1ad7d4dfb9e4545020a9
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current
