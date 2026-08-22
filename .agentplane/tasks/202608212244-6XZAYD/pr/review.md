@@ -48,7 +48,7 @@ Created: 2026-08-21T22:50:57.507Z
  .../task/external-agent-result-application.ts      |    1 +
  .../src/commands/task/external-agent-supervisor.ts |    1 +
  .../commands/task/finish-closeout-journal.test.ts  |   60 +
- .../src/commands/task/finish-closeout-journal.ts   |   16 +-
+ .../src/commands/task/finish-closeout-journal.ts   |   18 +-
  .../agentplane/src/commands/task/finish-shared.ts  |   45 +-
  .../commands/task/finish.close-tail.unit.test.ts   |   10 +-
  .../src/commands/task/finish.state.unit.test.ts    |    6 +-
@@ -120,7 +120,7 @@ Created: 2026-08-21T22:50:57.507Z
  schemas/agent-work-order-v2.schema.json            |  213 +++
  .../baselines/v0.7-compatibility-candidate.json    |   25 +-
  .../check-compatibility-contract-baseline.mjs      |   15 +-
- 91 files changed, 10454 insertions(+), 431 deletions(-)
+ 91 files changed, 10455 insertions(+), 432 deletions(-)
 ```
 
 </details>
