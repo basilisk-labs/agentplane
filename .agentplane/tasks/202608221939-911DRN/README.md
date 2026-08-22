@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -33,33 +33,32 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-22T19:52:19.125Z"
-  updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "562d8d43f5aa676dddf53e671d212a6f55c03fde"
+  provenance: "human_supplied"
+  updated_at: "2026-08-22T19:55:07.653Z"
+  updated_by: "HUMAN"
+  note: "The closeout remains limited to the three approved incident paths; exact regression provenance is archived, both active registries are synchronized, and deterministic gates pass."
+  evaluated_sha: "c80192fa421a2079bcc08dd208217252aba7568d"
   blueprint_digest: "d631740d9732f4866e388192d53d5436b3aa926ae4d4f977ead7aa5b52e05595"
   evidence_refs:
-    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195053830-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195053830-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/2884396ce6997a4a7051b3189d37df466d35b1d331a48f05d4639b86dacee907.md"
-    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195053830-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195053830-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195053830-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195507004-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195507004-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/a4ab99c9b25a6ac5ded44ae3d7b5a759d9c9a7bc61445d2618fd8f0c1947ee64.md"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195507004-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195507004-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608221939-911DRN/README.md"
     - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/b0c0e111997a99feae1921d10f292ab28e0085ca2ba71258c2ad222b3c8945b6.patch"
-    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/e42b43454a31d023f988f5d96b40926ce8862e9f6950e7e6772e82d309ce9b63.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/3f5d8fcfd4cf51495be7a2e2afea49c538099fead569c0c930a364554b985409.json"
     - ".agentplane/tasks/202608221939-911DRN/verification/20260822195044904-58b9a4c4e580e8e3.json"
     - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/176f6af5b8a54ecd8543ff2d8de332aa1b2b086966be1ea9788d94178acf2685.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/dod.docs.md"
     - ".agentplane/policy/security.must.md"
+    - "git diff 81279b3b18a7d08881d57dce0f8dd1abdd5910b4..c80192fa421a -- .agentplane/policy/incidents.md docs/developer/incident-archive.mdx packages/agentplane/assets/policy/incidents.md"
+    - "node .agentplane/policy/check-routing.mjs"
+    - "bun run release:incidents:check"
   findings:
-    - "The diff removes exactly one active incident line from each byte-identical registry and appends one archival record; no implementation or context path changes."
-    - "The archival record binds the failure and remediation to task 202608221335-6DSF3R, implementation and evaluator commits, the focused regression command, merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, and hosted completion."
-    - "The earlier archived record that reused INC-20260822-01 is unchanged, and the new record explicitly documents the collision plus the scope/source_task disambiguation."
-    - "Both declared deterministic checks passed in the recorded branch verification."
-    - "Residual risk: Hosted integration must still pass on the exact incident-closeout PR SHA before merge."
+    - "No implementation or context path changed."
+    - "The current task-only closeout tail does not alter the reviewed incident diff."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -317,7 +316,7 @@ events:
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "6caf71b8f96f0f50ba892e671c4d7110d0088552"
 doc_version: 3
-doc_updated_at: "2026-08-22T19:52:25.940Z"
+doc_updated_at: "2026-08-22T19:55:07.675Z"
 doc_updated_by: "CODER"
 description: "Dedicated release prerequisite for active INC-20260822-01. Preserve the incident in docs/developer/incident-archive.mdx with exact evidence from task 202608221335-6DSF3R and merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, then remove only that resolved entry from .agentplane/policy/incidents.md and its packaged mirror. Do not change implementation, context, task-centric architecture, or any other incident. Record the existing archive identifier collision explicitly instead of rewriting historical evidence."
 sections:

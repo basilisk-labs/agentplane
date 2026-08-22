@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608221939-911DRN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-22T19:55:07.653Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The closeout remains limited to the three approved incident paths; exact regression provenance is archived, both active registries are synchronized, and deterministic gates pass.",
+  "evaluated_sha": "c80192fa421a2079bcc08dd208217252aba7568d",
+  "blueprint_digest": "d631740d9732f4866e388192d53d5436b3aa926ae4d4f977ead7aa5b52e05595",
+  "findings": [
+    "No implementation or context path changed.",
+    "The current task-only closeout tail does not alter the reviewed incident diff."
+  ],
+  "evidence_refs": [
+    "git diff 81279b3b18a7d08881d57dce0f8dd1abdd5910b4..c80192fa421a -- .agentplane/policy/incidents.md docs/developer/incident-archive.mdx packages/agentplane/assets/policy/incidents.md",
+    "node .agentplane/policy/check-routing.mjs",
+    "bun run release:incidents:check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted integration must pass on the exact PR head before merge."
+  ]
+}
