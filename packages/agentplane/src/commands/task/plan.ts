@@ -12,6 +12,7 @@ import {
   taskDocToSectionMap,
   type PlanApprovalEvidenceKind,
   taskCentricAggregateFromExtensions,
+  taskCentricReplanRequiredFromExtensions,
   withTaskCentricAggregate,
 } from "@agentplaneorg/core/tasks";
 
@@ -294,6 +295,16 @@ export async function cmdTaskPlanApprove(opts: {
               issued_at: approvedAt,
             });
             const taskCentric = taskCentricAggregateFromExtensions(current.extensions);
+            if (
+              taskCentric?.current_plan &&
+              taskCentricReplanRequiredFromExtensions(current.extensions)
+            ) {
+              throw new CliError({
+                code: "E_VALIDATION",
+                message:
+                  "Canonical task plan is stale after the task document changed; complete replanning before approval.",
+              });
+            }
             if (
               opts.expectedPlanDigest !== undefined &&
               taskCentric?.current_plan?.digest !== opts.expectedPlanDigest
