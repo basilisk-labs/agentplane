@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202608221158-P5RSA8",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-22T12:06:17.856Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "67ab5811f56da356041febc60f57eb1c575263e3",
+  "blueprint_digest": "c61799a3b90c845dacb04fd56f88ebbf6c91d73d75102c558a2c6731b6240262",
+  "findings": [
+    "No actionable defect found: both the focused clone ratchet and the complete contract gate pass, while the percentage of duplicated lines improved despite 67 additional measured sources."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608221158-P5RSA8/quality/objects/sha256/bdc4fce982a4582d30aad74de290d21e1af30e1ac7de5cf780e6a0b2c4132e8e.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

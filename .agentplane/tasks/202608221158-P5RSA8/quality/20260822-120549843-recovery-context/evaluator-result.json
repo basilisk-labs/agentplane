@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "No actionable defect found: both the focused clone ratchet and the complete contract gate pass, while the percentage of duplicated lines improved despite 67 additional measured sources.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221158-P5RSA8/quality/objects/sha256/bdc4fce982a4582d30aad74de290d21e1af30e1ac7de5cf780e6a0b2c4132e8e.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
