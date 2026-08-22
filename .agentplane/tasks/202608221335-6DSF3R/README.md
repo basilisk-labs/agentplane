@@ -2,10 +2,10 @@
 id: "202608221335-6DSF3R"
 title: "Fix idempotent null-WorkItem external result acceptance"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -24,10 +24,10 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "Approved by user for autonomous v0.7.8 regression-only release work; host_user_decision=sha256:f5d7652cf2a0f8883d17659b4275d137bc7057b8348898cd8b5677ebdd5114ed"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-22T14:34:02.666Z"
-  updated_by: "TESTER"
-  note: "Verification is blocked because a lifecycle operation changed two global policy files outside the approved WorkItem scope after the implementation commit."
+  state: "pending"
+  updated_at: "2026-08-22T14:35:34.520Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 1
 quality_review:
   state: "pass"
@@ -107,6 +107,8 @@ execution_contract:
       - "release_metadata"
       - "security_boundary"
     writable_roots:
+      - ".agentplane/policy/incidents.md"
+      - "packages/agentplane/assets/policy/incidents.md"
       - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
       - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
   declaration:
@@ -116,6 +118,7 @@ execution_contract:
     rationale:
       - "A local selection and idempotency repair is sufficient and does not change context architecture."
       - "The failure is reproduced by accepted external results for a null-ID task-centric WorkOrder."
+      - "USER-approved blocked-result scope extension: roots=.agentplane/policy/incidents.md,packages/agentplane/assets/policy/incidents.md; repository_effects=repository_write"
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -124,11 +127,12 @@ execution_contract:
     reversibility: "reversible"
     schema_version: 2
     scope_roots:
+      - ".agentplane/policy/incidents.md"
+      - "packages/agentplane/assets/policy/incidents.md"
       - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
       - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
   observed:
-    authority_violations:
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -139,22 +143,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "verification-record"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -170,6 +159,8 @@ execution_contract:
     contract:
       declared:
         components:
+          - ".agentplane/policy/incidents.md"
+          - "packages/agentplane/assets/policy/incidents.md"
           - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
           - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
         evidence_requirements:
@@ -187,7 +178,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:82dcb6d6787c1347fcf408abe1c2f01f44e3041541f14ab3b8f8f76bb2661260"
+      digest: "sha256:2cb0d457440803845bd58186c49197afed69890eb8953a25e16d0178f628bbbe"
       escalation_reasons: []
       execution_groups:
         - "core"
@@ -233,7 +224,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -254,6 +244,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator finding cannot be repaired inside the current writable roots; the minimal recovery is to remove only the automatically promoted incident line from the two affected policy files. Recommended action: Approve an exact two-path cleanup authority, remove only INC-20260822-01, and rerun the existing focused verification. Requested scope: roots=.agentplane/policy/incidents.md,packages/agentplane/assets/policy/incidents.md; repository effects=repository_write; request digest=sha256:f085d1f1289e155fb1e79aa690ea9b4df9730907ee89d3c2e8353be944e7a797. Agentplane receipt: external-agent-blocker/tr_883d8d29c8d1a74863858f1e05029d00/sha256:a7f9ba993c80873e49e903d1939036f554290859edf1c6e64f874827f836f622/sha256:f085d1f1289e155fb1e79aa690ea9b4df9730907ee89d3c2e8353be944e7a797."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: .agentplane/policy/incidents.md, packages/agentplane/assets/policy/incidents.md; repository effects: repository_write."
 events:
   -
     type: "status"
@@ -707,30 +700,9 @@ sections:
       IncidentScope: task-centric external result routing
       IncidentTags: task-centric, idempotency
 extensions:
-  agentplane.execution_grant:
-    actor: "HOST:codex-desktop:USER"
-    approval_evidence_digest: "sha256:f5d7652cf2a0f8883d17659b4275d137bc7057b8348898cd8b5677ebdd5114ed"
-    approval_kind: "host_user_decision"
-    capabilities:
-      - "provider.merge"
-      - "provider.pr"
-      - "repository.integrate"
-      - "repository.write"
-      - "task.lifecycle"
-      - "task.scope.extend"
-    completion_contract_digest: "sha256:a18e1366f802e14001cd307a12aee83912fec47feade8d43d32d55353fdc8510"
-    digest: "sha256:e58c50d275979bf905df4e8ba5c5f2b42cc615d8bc3efe9e64a96602edf84955"
-    grant_id: "be0cced3-e054-4512-b449-3157ea09fa6f"
-    issued_at: "2026-08-22T13:39:45.672Z"
-    kind: "agentplane.execution_grant"
-    plan_digest: "sha256:36099622e837e9d0493e0f0edec24b50918eb5359df043c07606cdd3629c634c"
-    plan_revision: 2
-    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
-    schema_version: 1
-    scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
-    status: "active"
-    task_id: "202608221335-6DSF3R"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-22T14:35:34.520Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:a7f9ba993c80873e49e903d1939036f554290859edf1c6e64f874827f836f622"
     kind: "task_scope_extension_request"
     request:
@@ -743,7 +715,7 @@ extensions:
         - "packages/agentplane/assets/policy/incidents.md"
     request_digest: "sha256:f085d1f1289e155fb1e79aa690ea9b4df9730907ee89d3c2e8353be944e7a797"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_883d8d29c8d1a74863858f1e05029d00"
   agentplane.task_centric:
     current_plan:
