@@ -22,7 +22,7 @@ A clean task is required because the original supervisor journal correctly refus
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-22T10:19:00.838Z
+- Updated: 2026-08-22T10:22:48.051Z
 - Branch: task/202608221017-2HT3N7/port-the-complete-pre-merge-quality-review-lifec
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
