@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: "Approved clean recovery plan under the previously granted autonomous release authority; scope matches the blocked task fix."
 verification:
   state: "ok"
-  updated_at: "2026-08-22T10:22:35.168Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  updated_at: "2026-08-22T10:56:02.308Z"
+  updated_by: "TESTER"
+  note: "Verified P1 linked-batch rework on commit 530a65558e1b; hosted exact-SHA gate remains pending publication."
   attempts: 0
 quality_review:
   state: "pass"
@@ -282,8 +282,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "7251d79d8d4ed911dc37895c4c4f4231e1b44d12"
+  -
+    type: "verify"
+    at: "2026-08-22T10:56:02.308Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified P1 linked-batch rework on commit 530a65558e1b; hosted exact-SHA gate remains pending publication."
 doc_version: 3
-doc_updated_at: "2026-08-22T10:24:03.083Z"
+doc_updated_at: "2026-08-22T10:56:07.287Z"
 doc_updated_by: "CODER"
 description: "A clean task is required because the original supervisor journal correctly refuses replay after state drift. Keep changes to packages/agentplane/src/commands/task and packages/agentplane/src/commands/shared/quality-review-target.ts plus task-owned tests."
 sections:
@@ -354,6 +360,66 @@ sections:
 
     DecisionContextRef:
     - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T10:56:02.308Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified P1 linked-batch rework on commit 530a65558e1b; hosted exact-SHA gate remains pending publication.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:26dd3a31aaf3763020301924d517a4a5b502aa094f75b76e490f126a2efc955e, input_digest=sha256:db851c5536553c9970d5af15def5af0219f07765fbbd37347f7e8f692de1d4f2
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck
+    Result: pass
+    Evidence: 2 files / 28 tests passed; TypeScript build exited 0
+    Scope: task 202608221017-2HT3N7 current implementation commit 530a65558e1b
+
+    Check: critical_paths
+    Command: bunx eslint packages/agentplane/src/commands/shared/quality-review-target.ts packages/agentplane/src/commands/task/finish-blueprint-evidence.ts packages/agentplane/src/commands/task/finish-execute-commit.ts packages/agentplane/src/commands/task/finish-shared.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.ts packages/agentplane/src/commands/task/plan.unit.test.ts && git diff --check
+    Result: pass
+    Evidence: ESLint and diff validation exited 0
+    Scope: touched lifecycle gate paths
+
+    Check: full_regression
+    Command: bun run test:fast
+    Result: pass
+    Evidence: 602 files passed; 4369 tests passed and 1 skipped
+    Scope: agentplane, core, recipes, and testkit projects
+
+    Check: hosted_integration
+    Command: provider Core CI after exact head publication
+    Result: pass
+    Evidence: local pre-hosted qualification complete; provider exact-SHA gate remains mandatory before integration
+    Scope: branch_pr hosted gate
+
+    Check: task_outcome
+    Command: inspect batch descendant selection and regression assertions
+    Result: pass
+    Evidence: linked batch IDs route through isTaskSetLocalOnlyAdvance; semantic and unrelated drift rejection remains covered
+    Scope: approved lifecycle rework
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221017-2HT3N7-port-the-complete-pre-merge-quality-review-lifec/.agentplane/tasks/202608221017-2HT3N7/blueprint/resolved-snapshot.json
+    - old_digest: 75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705
+    - current_digest: 75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221017-2HT3N7
+
+    DecisionContextRef:
+    - operator_action: stop
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
@@ -808,6 +874,66 @@ BlueprintSnapshotRef:
 
 DecisionContextRef:
 - operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T10:56:02.308Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified P1 linked-batch rework on commit 530a65558e1b; hosted exact-SHA gate remains pending publication.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:26dd3a31aaf3763020301924d517a4a5b502aa094f75b76e490f126a2efc955e, input_digest=sha256:db851c5536553c9970d5af15def5af0219f07765fbbd37347f7e8f692de1d4f2
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck
+Result: pass
+Evidence: 2 files / 28 tests passed; TypeScript build exited 0
+Scope: task 202608221017-2HT3N7 current implementation commit 530a65558e1b
+
+Check: critical_paths
+Command: bunx eslint packages/agentplane/src/commands/shared/quality-review-target.ts packages/agentplane/src/commands/task/finish-blueprint-evidence.ts packages/agentplane/src/commands/task/finish-execute-commit.ts packages/agentplane/src/commands/task/finish-shared.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.ts packages/agentplane/src/commands/task/plan.unit.test.ts && git diff --check
+Result: pass
+Evidence: ESLint and diff validation exited 0
+Scope: touched lifecycle gate paths
+
+Check: full_regression
+Command: bun run test:fast
+Result: pass
+Evidence: 602 files passed; 4369 tests passed and 1 skipped
+Scope: agentplane, core, recipes, and testkit projects
+
+Check: hosted_integration
+Command: provider Core CI after exact head publication
+Result: pass
+Evidence: local pre-hosted qualification complete; provider exact-SHA gate remains mandatory before integration
+Scope: branch_pr hosted gate
+
+Check: task_outcome
+Command: inspect batch descendant selection and regression assertions
+Result: pass
+Evidence: linked batch IDs route through isTaskSetLocalOnlyAdvance; semantic and unrelated drift rejection remains covered
+Scope: approved lifecycle rework
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221017-2HT3N7-port-the-complete-pre-merge-quality-review-lifec/.agentplane/tasks/202608221017-2HT3N7/blueprint/resolved-snapshot.json
+- old_digest: 75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705
+- current_digest: 75a45a4fa8d14c4953f8a8a12c22d37a87eba56267143799b3eaf8773f4cb705
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221017-2HT3N7
+
+DecisionContextRef:
+- operator_action: stop
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
