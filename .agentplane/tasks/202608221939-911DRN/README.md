@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -32,30 +32,34 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
-  provenance: "human_supplied"
-  updated_at: "2026-08-22T19:58:45.577Z"
-  updated_by: "HUMAN"
-  note: "Control-plane rework only: the approved source diff is complete, but required WorkItem archive-resolved-routing-incident remains READY because the original protected-path result acceptance failed before recording it."
-  evaluated_sha: "3a1756b3130116996a4043d92d8b678d4ad97af4"
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-22T20:08:50.425Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "3ccbf74b7715b65d2e0a38270242b5abd5c87101"
   blueprint_digest: "d631740d9732f4866e388192d53d5436b3aa926ae4d4f977ead7aa5b52e05595"
   evidence_refs:
-    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195844735-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195844735-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/ccf01e789cdd78daaf93da3222c46d9ae30b2769cda694bea40d58d6d0cfd29d.md"
-    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195844735-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-195844735-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-200731776-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-200731776-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/8d6b9c0b97ef93ea71223829d7f3c795947b228cd29e7508c7a889bdf0ba4dcc.md"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-200731776-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-200731776-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/20260822-200731776-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608221939-911DRN/README.md"
-    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/b0c0e111997a99feae1921d10f292ab28e0085ca2ba71258c2ad222b3c8945b6.patch"
-    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/3f5d8fcfd4cf51495be7a2e2afea49c538099fead569c0c930a364554b985409.json"
-    - ".agentplane/tasks/202608221939-911DRN/verification/20260822195044904-58b9a4c4e580e8e3.json"
+    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/1024c3d2e07abbe3eb00de723f168b34bf62f5a81038a671e12b7f67976d33ae.patch"
+    - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/c1440ef5d4cb24af5e22e1e058761c15195e8235e49db6299515c2e4164a0865.json"
+    - ".agentplane/tasks/202608221939-911DRN/verification/20260822200720032-4601c47434ae12dd.json"
     - ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/176f6af5b8a54ecd8543ff2d8de332aa1b2b086966be1ea9788d94178acf2685.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/dod.docs.md"
     - ".agentplane/policy/security.must.md"
-    - ".agentplane/tasks/202608221939-911DRN/README.md#extensions.task_aggregate.work_items.archive-resolved-routing-incident.state"
   findings:
-    - "No repository implementation change is requested."
+    - "WorkItem archive-resolved-routing-incident is COMPLETED with both declared validation checks passed and both expected semantic outputs recorded."
+    - "The only rework delta adds the exact branch verification commit to the archive evidence; it does not alter active registries, implementation, context, or release candidate files."
+    - "Canonical and packaged active registries remain byte-identical and the release incident gate passes."
+    - "The pre-existing archived identifier collision remains explicitly documented without rewriting the older record."
+    - "Residual risk: Hosted integration must pass on the exact final PR head before merge."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -351,7 +355,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T20:07:22.639Z"
+doc_updated_at: "2026-08-22T20:08:50.453Z"
 doc_updated_by: "SUPERVISOR"
 description: "Dedicated release prerequisite for active INC-20260822-01. Preserve the incident in docs/developer/incident-archive.mdx with exact evidence from task 202608221335-6DSF3R and merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, then remove only that resolved entry from .agentplane/policy/incidents.md and its packaged mirror. Do not change implementation, context, task-centric architecture, or any other incident. Record the existing archive identifier collision explicitly instead of rewriting historical evidence."
 sections:

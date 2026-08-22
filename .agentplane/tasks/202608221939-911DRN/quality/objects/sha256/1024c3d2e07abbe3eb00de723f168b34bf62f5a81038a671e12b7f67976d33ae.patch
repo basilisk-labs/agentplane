@@ -1,0 +1,33 @@
+diff --git a/.agentplane/policy/incidents.md b/.agentplane/policy/incidents.md
+index 96760c528..3499a0898 100644
+--- a/.agentplane/policy/incidents.md
++++ b/.agentplane/policy/incidents.md
+@@ -1,4 +1,3 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+-- id: INC-20260822-01 | date: 2026-08-22 | scope: task-centric external result routing | tags: task-centric, idempotency, core, regression | match: task-centric, idempotency, core, regression, task, centric, external, result, routing, fix, idempotent, null, workitem, acceptance, the, proven | failure: Multiple CLAIMED items currently fall through to WorkItemScheduler, which can select an unrelated READY item. | advice: Reject ambiguous claimed targets and prove scheduler fallback is used only when no WorkItem is claimed. | rule: Analogous task-centric external result routing work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608221335-6DSF3R; commit fdbbd71ca81e | enforcement: manual | fixability: repo-fixable | state: open
+diff --git a/docs/developer/incident-archive.mdx b/docs/developer/incident-archive.mdx
+index b2997154c..ec6135608 100644
+--- a/docs/developer/incident-archive.mdx
++++ b/docs/developer/incident-archive.mdx
+@@ -4,6 +4,10 @@ Historical registry for workflow incidents that are no longer active.
+ 
+ Active incidents live in `.agentplane/policy/incidents.md`. Move entries here once the repo has a durable mitigation, a shipped repo fix, or an external constraint has been reduced to a documented fallback instead of an active blocker.
+ 
++## 2026-08-22 Task-centric external result routing
++
++- id: INC-20260822-01 | date: 2026-08-22 | scope: task-centric external result routing | tags: task-centric, idempotency, core, regression | match: task-centric, idempotency, core, regression, task, centric, external, result, routing, fix, idempotent, null, workitem, acceptance, the, proven | failure: Multiple CLAIMED items could fall through to WorkItemScheduler, which could select an unrelated READY item. | advice: Reject ambiguous claimed targets and prove scheduler fallback is used only when no WorkItem is claimed. | rule: Analogous task-centric external result routing work MUST review and apply the recorded external incident advice before retrying. | evidence: source and fix task `202608221335-6DSF3R`; implementation commits `84d99a134` and `59dc61a27`; independent evaluator evidence commit `fdbbd71ca81e`; focused command `bun test packages/agentplane/src/commands/task/task-centric-external-result.test.ts` passed; merged main commit `1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a`; incident-closeout branch verification commit `5aa9c76e13210696a6d8d4a524ee9da8b752ba4c`; hosted integration and hosted close passed before cleanup. | enforcement: `packages/agentplane/src/commands/task/task-centric-external-result.test.ts`, task-centric external result selection, hosted CI, and release incident gate | fixability: repo-fixable | state: archived | source_task: `202608221335-6DSF3R` | archived_by: task `202608221939-911DRN` | archive_reason: null-ID acceptance now resolves exactly one claimed WorkItem, fails closed for ambiguous claimed targets, uses scheduler fallback only when none is claimed, and replays persisted receipts before selection; the identifier collides with an earlier archived incident of a different scope, so scope and source_task are the disambiguating provenance and the older record remains unchanged.
++
+ ## 2026-08-22 Task authority and evaluator rework routing
+ 
+ - id: INC-20260821-01 | date: 2026-08-21 | scope: task autonomy | tags: execution-grant, architecture, code | match: task.scope.extend, integration.enqueue, execution-grant, architecture, code, task, autonomy, implement, scoped, autonomous, execution, after, one, user, approved, plan | failure: A grant-authorized scope extension changes execution_contract.scope_digest without deriving a matching active ExecutionGrant. | advice: Derive and persist a scope-rebased grant after an in-grant non-material scope extension, retaining approval provenance and rejecting material completion-contract drift. | rule: Approved non-material scope extensions MUST persist a scope-rebased execution grant only when the logical completion contract is unchanged. | evidence: source task `202608211020-FGAPJC`, source commit `507af3b93374`; fix task `202608220538-SVC324`; item result commit `45549179541301d8f09ba60da5db4bc2ecfc8df8`; item evidence commit `85188361a0ce3a097c554cb5e56c2c4ad0a1a791`; `rebaseExecutionGrantScope` preserves approval provenance and rejects completion-contract drift; focused `plan-execution-grant.test.ts` and `scope-extend.test.ts` regressions plus declared type, lint, policy-routing, hosted integration, and release gates enforce the repair. | enforcement: execution-grant parser/digest validation, scope-extension persistence tests, hosted CI, and release incident gate | fixability: repo-fixable | state: archived | archived_by: task `202608220538-SVC324` | archive_reason: approved scope extension now derives and persists a valid grant for the new scope while material completion drift fails closed.
+diff --git a/packages/agentplane/assets/policy/incidents.md b/packages/agentplane/assets/policy/incidents.md
+index 96760c528..3499a0898 100644
+--- a/packages/agentplane/assets/policy/incidents.md
++++ b/packages/agentplane/assets/policy/incidents.md
+@@ -1,4 +1,3 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+-- id: INC-20260822-01 | date: 2026-08-22 | scope: task-centric external result routing | tags: task-centric, idempotency, core, regression | match: task-centric, idempotency, core, regression, task, centric, external, result, routing, fix, idempotent, null, workitem, acceptance, the, proven | failure: Multiple CLAIMED items currently fall through to WorkItemScheduler, which can select an unrelated READY item. | advice: Reject ambiguous claimed targets and prove scheduler fallback is used only when no WorkItem is claimed. | rule: Analogous task-centric external result routing work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608221335-6DSF3R; commit fdbbd71ca81e | enforcement: manual | fixability: repo-fixable | state: open

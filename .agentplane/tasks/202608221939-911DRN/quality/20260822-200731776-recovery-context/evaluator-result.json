@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "WorkItem archive-resolved-routing-incident is COMPLETED with both declared validation checks passed and both expected semantic outputs recorded.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/1024c3d2e07abbe3eb00de723f168b34bf62f5a81038a671e12b7f67976d33ae.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The only rework delta adds the exact branch verification commit to the archive evidence; it does not alter active registries, implementation, context, or release candidate files.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/1024c3d2e07abbe3eb00de723f168b34bf62f5a81038a671e12b7f67976d33ae.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Canonical and packaged active registries remain byte-identical and the release incident gate passes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/1024c3d2e07abbe3eb00de723f168b34bf62f5a81038a671e12b7f67976d33ae.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The pre-existing archived identifier collision remains explicitly documented without rewriting the older record.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/1024c3d2e07abbe3eb00de723f168b34bf62f5a81038a671e12b7f67976d33ae.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted integration must pass on the exact final PR head before merge.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608221939-911DRN/quality/objects/sha256/1024c3d2e07abbe3eb00de723f168b34bf62f5a81038a671e12b7f67976d33ae.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
