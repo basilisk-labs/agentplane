@@ -1,0 +1,101 @@
+{
+  "details": "",
+  "digest": "sha256:cd6a8f3d094c255002c4093742a2b905627333caa001abac0450e865d4c84a53",
+  "implementation_sha": "6291d20e8cf264ecd545ed7833b60a296c614928",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:1824508483607700fb9bfdc14722e7c79f9d19852883a072ee88fdac028f0b00",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "ee460292f9d253a5ba6fe2ca95a6d0fd5e7a7088",
+      "digest": "sha256:63d3448be0a8553699563d72e297057738e7d3073d2909b5438751f51b786fa3",
+      "primary_task_id": "202608221254-YSDSN5",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "auto",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608221254-YSDSN5"
+      ]
+    },
+    "implementation": {
+      "base_sha": "ee460292f9d253a5ba6fe2ca95a6d0fd5e7a7088",
+      "digest": "sha256:3c6168e2dd166b8ce64f846a5bd320b10e38a9b610ed3d571bf8736b191dd114",
+      "strategy": "branch_diff",
+      "target_sha": "6291d20e8cf264ecd545ed7833b60a296c614928"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:345423c32f7396fc7db34af4286ffd67506cdd99fd1fe541746b77ab7a258fb4",
+    "verify_steps_digest": "sha256:62b80a44da7229cc3432b97e589db887f54e50abd9e2e6e305781deb3e7c453e"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: No executable declared verification checks are configured for this task.",
+  "recorded_at": "2026-08-22T13:04:21.724Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Add one compatibility E2E proving the existing context.maximum_assimilation flow operates through the new task-centric core before v0.7.8 publication. Preserve existing context contracts, prompts, and artifacts. If the E2E exposes a regression, fix only that regression and do not redesign the context subsystem.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Add one compatibility E2E proving the existing context.maximum_assimilation flow operates through the new task-centric core before v0.7.8 publication. Preserve existing context contracts, prompts, and artifacts. If the E2E exposes a regression, fix only that regression and do not redesign the context subsystem.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:62b80a44da7229cc3432b97e589db887f54e50abd9e2e6e305781deb3e7c453e",
+  "task_id": "202608221254-YSDSN5",
+  "verification_command": "agentplane verify 202608221254-YSDSN5 --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
