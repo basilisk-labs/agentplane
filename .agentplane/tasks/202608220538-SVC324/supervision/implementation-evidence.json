@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 85188361a0ce3a097c554cb5e56c2c4ad0a1a791..2e07e5b66dd193af7474d160a5bc5c17e4964896",
+      "command": "git diff --check 0f91b2418808d77f92b405fce0f0146ec58a44f6..0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,15 +13,13 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 85188361a0ce3a097c554cb5e56c2c4ad0a1a791..2e07e5b66dd193af7474d160a5bc5c17e4964896",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 0f91b2418808d77f92b405fce0f0146ec58a44f6..0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202608220538-SVC324/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608220538-SVC324/pr/github-body.md",
-        "M\t.agentplane/tasks/202608220538-SVC324/pr/meta.json",
         "M\t.agentplane/tasks/202608220538-SVC324/pr/review.md",
-        "M\tpackages/agentplane/src/commands/task/supervision-outcome-disposition.test.ts"
+        "M\tdocs/developer/incident-archive.mdx"
       ]
     },
     {
@@ -31,8 +29,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "85188361a0ce3a097c554cb5e56c2c4ad0a1a791",
-  "implementation_commit": "2e07e5b66dd193af7474d160a5bc5c17e4964896",
+  "execution_base_commit": "0f91b2418808d77f92b405fce0f0146ec58a44f6",
+  "implementation_commit": "0c3d192a3554ea45ee40e053c1c4a0bc5339d0cf",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],

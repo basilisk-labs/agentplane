@@ -15,8 +15,8 @@ Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, arc
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
