@@ -1,0 +1,109 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks\nScope: branch_pr task 202608221254-YSDSN5 Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks\nScope: branch_pr task 202608221254-YSDSN5 Verification Contract check critical_paths\n\nCheck: full_regression\nCommand: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks\nScope: branch_pr task 202608221254-YSDSN5 Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks\nScope: branch_pr task 202608221254-YSDSN5 Verification Contract check hosted_integration\n\nCheck: task_outcome\nCommand: bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks\nScope: branch_pr task 202608221254-YSDSN5 Verification Contract check task_outcome",
+  "digest": "sha256:5801cfd574414ae03e35a2a505438ffe5d52de33f1b2db47546c3be6f90770f3",
+  "implementation_sha": "aad2bf7db0f364c48023d4577232c7bf9e9b5e95",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:e9d22c33e9f37367bf7dee23ad9cfdcbd86264529cc3fbab9d9338c138df1436",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:b553f5d633b8636bbb6338fda5306016a1414ddb9a0f938d07934daf721f8874",
+      "digest": "sha256:9f0a9ad33ac98a8b5dbb081777a5699356a873738196b7a70299eb2063b4b12e",
+      "references": [
+        {
+          "digest": "sha256:15157563392bad2b9e8355c0d167c0f72998e0295b991ad8393a220fd25692b4",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608221254-YSDSN5/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "ee460292f9d253a5ba6fe2ca95a6d0fd5e7a7088",
+      "digest": "sha256:63d3448be0a8553699563d72e297057738e7d3073d2909b5438751f51b786fa3",
+      "primary_task_id": "202608221254-YSDSN5",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "auto",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608221254-YSDSN5"
+      ]
+    },
+    "implementation": {
+      "base_sha": "ee460292f9d253a5ba6fe2ca95a6d0fd5e7a7088",
+      "digest": "sha256:f1dc63731c431317f83d6856cc15280a34b0727dcfc958d511bc0062d7dde2e9",
+      "strategy": "branch_diff",
+      "target_sha": "aad2bf7db0f364c48023d4577232c7bf9e9b5e95"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:345423c32f7396fc7db34af4286ffd67506cdd99fd1fe541746b77ab7a258fb4",
+    "verify_steps_digest": "sha256:62b80a44da7229cc3432b97e589db887f54e50abd9e2e6e305781deb3e7c453e"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-22T13:08:16.636Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Add one compatibility E2E proving the existing context.maximum_assimilation flow operates through the new task-centric core before v0.7.8 publication. Preserve existing context contracts, prompts, and artifacts. If the E2E exposes a regression, fix only that regression and do not redesign the context subsystem.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Add one compatibility E2E proving the existing context.maximum_assimilation flow operates through the new task-centric core before v0.7.8 publication. Preserve existing context contracts, prompts, and artifacts. If the E2E exposes a regression, fix only that regression and do not redesign the context subsystem.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:62b80a44da7229cc3432b97e589db887f54e50abd9e2e6e305781deb3e7c453e",
+  "task_id": "202608221254-YSDSN5",
+  "verification_command": "agentplane verify 202608221254-YSDSN5 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
