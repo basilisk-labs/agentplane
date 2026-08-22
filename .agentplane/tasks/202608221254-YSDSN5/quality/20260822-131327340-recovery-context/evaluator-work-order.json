@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608221254-YSDSN5-c3ddf8e1b344101e5a3cdcbc",
+  "prepared_at": "2026-08-22T13:13:27.340Z",
+  "task": {
+    "id": "202608221254-YSDSN5",
+    "revision": 16,
+    "objective": "Add one compatibility E2E proving the existing context.maximum_assimilation flow operates through the new task-centric core before v0.7.8 publication. Preserve existing context contracts, prompts, and artifacts. If the E2E exposes a regression, fix only that regression and do not redesign the context subsystem.\n\nAdd one compatibility E2E proving the existing context.maximum_assimilation flow operates through the new task-centric core before v0.7.8 publication. Preserve existing context contracts, prompts, and artifacts. If the E2E exposes a regression, fix only that regression and do not redesign the context subsystem.",
+    "acceptance_criteria": [
+      "bun test packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts",
+      "- In scope: Add one compatibility E2E proving the existing context.maximum_assimilation flow operates through the new task-centric core before v0.7.8 publication. Preserve existing context contracts, prompts, and artifacts. If the E2E exposes a regression, fix only that regression and do not redesign the context subsystem.\n- Out of scope: unrelated refactors not required for \"Add one compatibility E2E proving the existing context.maximum_assimilation flow operates through the new task-centric core before v0.7.8 publication. Preserve existing context contracts, prompts, and artifacts. If the E2E exposes a regression, fix only that regression and do not redesign the context subsystem.\".",
+      "Add one compatibility E2E that enters maximum assimilation through the public context CLI, preserves the existing context contract surfaces, and observes the resulting Task through the task-centric planning route. Do not redesign context; repair only a regression proven by this E2E.",
+      "PLANNER fallback scaffold for \"Add one compatibility E2E proving the existing context.maximum_assimilation flow operates through the new task-centric core before v0.7.8 publication. Preserve existing context contracts, prompts, and artifacts. If the E2E exposes a regression, fix only that regression and do not redesign the context subsystem.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Add one compatibility E2E proving the existing context.maximum_assimilation flow operates through the new task-centric core before v0.7.8 publication. Preserve existing context contracts, prompts, and artifacts. If the E2E exposes a regression, fix only that regression and do not redesign the context subsystem.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "27be626daa9ee9e379a5ce6d7b6fe0dcfab7c890",
+  "diff_base_sha": "ee460292f9d253a5ba6fe2ca95a6d0fd5e7a7088",
+  "blueprint_digest": "5be5fc58b425343e6cc7c0c8bdbccea2ca157599b8ae12649ac48d1e6c64f8f8",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608221254-YSDSN5/quality/20260822-131327340-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:f8eda148808e89351b91d845fbd9d3e8467ebaac5417858d8e793c5cdb8713e0",
+    "prompt_path": ".agentplane/tasks/202608221254-YSDSN5/quality/objects/sha256/34d14069c5d429540972200b8a657d6cb5916fe1c224c64eff3898821d4d8caf.md",
+    "result_schema_path": ".agentplane/tasks/202608221254-YSDSN5/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608221254-YSDSN5/README.md",
+      "sha256": "sha256:be807332e9056e4fb4261458375abb538a2d6bf5ec6e19c3249760a6b50f3dc8",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608221254-YSDSN5/quality/objects/sha256/2e13a7d00c8eb22a9db3328055e437ea1c142ff719c6c42177b537aa44cfdf71.patch",
+      "sha256": "sha256:2e13a7d00c8eb22a9db3328055e437ea1c142ff719c6c42177b537aa44cfdf71",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608221254-YSDSN5/quality/objects/sha256/6d72d2e8444e2608067fad1d47c2c325316c50d04c5c3f2fb08f231e36742a3e.json",
+      "sha256": "sha256:6d72d2e8444e2608067fad1d47c2c325316c50d04c5c3f2fb08f231e36742a3e",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608221254-YSDSN5/verification/20260822130816636-5801cfd574414ae0.json",
+      "sha256": "sha256:f0ea1ec24d8148c7a3d7480123b7e1cd25c605e59ea57f37c9170da336a1da69",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608221254-YSDSN5/quality/objects/sha256/5c9f8f7ca3b07956dd7f442dfdbc46d529aec6a2f99ea05c46486095f0186229.json",
+      "sha256": "sha256:5c9f8f7ca3b07956dd7f442dfdbc46d529aec6a2f99ea05c46486095f0186229",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
