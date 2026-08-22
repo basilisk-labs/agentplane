@@ -15,8 +15,14 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note:
+
+```text
+Lifecycle rework required: verified review-fix commit b5e43fb48 is not registered as the task
+implementation commit; code checks pass, but formal implementation evidence still points to
+5aded5e30.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
