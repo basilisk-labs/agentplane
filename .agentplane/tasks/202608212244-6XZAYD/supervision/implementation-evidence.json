@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check fc1d61c60c4a8c7cf1ecc72404f618fccc6f3516..d5e3e8aeb175f8a7a5729e14d253b4ab003b9443",
+      "command": "git diff --check 73e473c3656f820ad9ca76b59c7f25a7b5faf6aa..859e0619efaa8e73121c47b8eeb068365f7981e0",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,11 +13,15 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB fc1d61c60c4a8c7cf1ecc72404f618fccc6f3516..d5e3e8aeb175f8a7a5729e14d253b4ab003b9443",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 73e473c3656f820ad9ca76b59c7f25a7b5faf6aa..859e0619efaa8e73121c47b8eeb068365f7981e0",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\tpackages/agentplane/src/commands/task/verify-record.unit.test.ts"
+        "M\t.agentplane/tasks/202608212244-6XZAYD/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608212244-6XZAYD/pr/github-body.md",
+        "M\t.agentplane/tasks/202608212244-6XZAYD/pr/meta.json",
+        "M\t.agentplane/tasks/202608212244-6XZAYD/pr/review.md",
+        "M\tpackages/agentplane/src/commands/task/finish-closeout-journal.ts"
       ]
     },
     {
@@ -27,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "fc1d61c60c4a8c7cf1ecc72404f618fccc6f3516",
-  "implementation_commit": "d5e3e8aeb175f8a7a5729e14d253b4ab003b9443",
+  "execution_base_commit": "73e473c3656f820ad9ca76b59c7f25a7b5faf6aa",
+  "implementation_commit": "859e0619efaa8e73121c47b8eeb068365f7981e0",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
