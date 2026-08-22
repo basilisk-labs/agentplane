@@ -127,6 +127,34 @@ describe("external verification result", () => {
     expect(mocks.verify).not.toHaveBeenCalled();
   });
 
+  it("preserves task outcome evidence for a legacy contract without selected checks", async () => {
+    mocks.loadTask.mockResolvedValue({
+      verification: { updated_by: "SUPERVISOR", note: "old" },
+      execution_contract: { verification: {} },
+    });
+    mocks.readFile.mockResolvedValue(
+      JSON.stringify({
+        status: "passed",
+        checks: [{ command: "python -m pytest", check_ids: [], exit_code: 0 }],
+      }),
+    );
+
+    await applyExternalVerificationResult({ command, exchange, semantic: semantic("completed") });
+
+    const verifyInput: unknown = mocks.verify.mock.calls[0]?.[0];
+    expect(verifyInput).toMatchObject({ state: "ok", by: "TESTER", repoFixable: false });
+    if (
+      !verifyInput ||
+      typeof verifyInput !== "object" ||
+      !("details" in verifyInput) ||
+      typeof verifyInput.details !== "string"
+    ) {
+      throw new Error("expected structured verification details");
+    }
+    expect(verifyInput.details).toContain("Check: task_outcome");
+    expect(verifyInput.details).toContain("Command: python -m pytest");
+  });
+
   it("rejects completed TESTER output when declared checks did not pass", async () => {
     mocks.readFile.mockResolvedValue(
       JSON.stringify({

@@ -28,13 +28,13 @@ Fix only the proven task-centric verification regression from PR #4873: one focu
 
 ```text
  .../src/cli/run-cli.critical.task-centric.test.ts  |   9 +-
- .../shared/task-verification-records.test.ts       |  32 ++++--
+ .../shared/task-verification-records.test.ts       |  32 ++--
  .../commands/shared/task-verification-records.ts   |   4 +-
- .../commands/task/direct-task-verification.test.ts | 115 +++++++++++++++++++++
- .../src/commands/task/direct-task-verification.ts  |  76 +++++++++++---
- .../external-agent-verification-result.test.ts     |  37 ++++++-
- .../task/external-agent-verification-result.ts     |  38 ++++---
- 7 files changed, 271 insertions(+), 40 deletions(-)
+ .../commands/task/direct-task-verification.test.ts | 181 +++++++++++++++++++++
+ .../src/commands/task/direct-task-verification.ts  | 112 +++++++++++--
+ .../external-agent-verification-result.test.ts     |  65 +++++++-
+ .../task/external-agent-verification-result.ts     |  37 +++--
+ 7 files changed, 397 insertions(+), 43 deletions(-)
 ```
 
 </details>

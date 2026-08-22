@@ -406,7 +406,10 @@ describe("direct task verification", () => {
     const cwd = await root();
     await writeFile(
       path.join(cwd, "package.json"),
-      JSON.stringify({ scripts: { "ci:local:full": "node scripts/checks/full.mjs" } }),
+      JSON.stringify({
+        packageManager: "bun@1.3.6",
+        scripts: { "ci:local:full": "node scripts/checks/full.mjs" },
+      }),
       "utf8",
     );
     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "1 pass", stderr: "" });
@@ -473,6 +476,69 @@ describe("direct task verification", () => {
     expect(details).toContain("Check: full_regression\nCommand: bun run ci:local:full");
     expect(details).not.toContain("Check: hosted_integration");
     expect(details).not.toMatch(/Check: full_regression\nCommand: bun test/gu);
+  });
+
+  it("uses the configured package runner for the canonical full script", async () => {
+    const cwd = await root();
+    await writeFile(
+      path.join(cwd, "package.json"),
+      JSON.stringify({
+        scripts: {
+          "test:fast": "node scripts/checks/fast.mjs",
+          "ci:local:full": "node scripts/checks/full.mjs",
+        },
+      }),
+      "utf8",
+    );
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "1 pass", stderr: "" });
+    const contract = executionContract(["repository_write", "source_code"]);
+    contract.verification.contract = { selected_checks: ["full_regression", "task_outcome"] };
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { verify: ["npm run test:fast"], execution_contract: contract },
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+
+    expect(result.status).toBe("passed");
+    expect(mocks.runProcess).toHaveBeenCalledTimes(2);
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ command: "npm", args: ["run", "ci:local:full"] }),
+    );
+    expect(result.checks[1]).toMatchObject({
+      command: "npm run ci:local:full",
+      check_ids: ["full_regression", "task_outcome"],
+    });
+  });
+
+  it("recognizes a repository-wide non-JavaScript test command as full evidence", async () => {
+    const cwd = await root();
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "42 passed", stderr: "" });
+    const contract = executionContract(["repository_write", "source_code"]);
+    contract.verification.contract = { selected_checks: ["full_regression", "task_outcome"] };
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { verify: ["python -m pytest"], execution_contract: contract },
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+
+    expect(result).toMatchObject({
+      status: "passed",
+      checks: [
+        {
+          command: "python -m pytest",
+          check_ids: ["full_regression", "task_outcome"],
+          exit_code: 0,
+        },
+      ],
+    });
+    expect(mocks.runProcess).toHaveBeenCalledOnce();
   });
 
   it("does not pass a required full regression when the repository has no full script", async () => {

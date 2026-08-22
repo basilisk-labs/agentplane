@@ -62,13 +62,12 @@ function completedVerificationDetails(opts: {
   artifact: DeclaredChecksArtifact;
 }): string {
   const evidence = `${verificationArtifactPath(opts.command, opts.taskId)}#checks`;
-  const checks = (opts.selectedChecks.length > 0 ? opts.selectedChecks : ["task_outcome"]).filter(
-    (checkId) => checkId !== "hosted_integration",
-  );
+  const selectedChecks = opts.selectedChecks.filter((checkId) => checkId !== "hosted_integration");
+  const checks = selectedChecks.length > 0 ? selectedChecks : ["task_outcome"];
   return checks
     .flatMap((checkId) => {
       const commands = opts.artifact.checks
-        .filter((check) => check.check_ids.includes(checkId))
+        .filter((check) => selectedChecks.length === 0 || check.check_ids.includes(checkId))
         .map((check) => check.command);
       if (commands.length === 0) {
         throw new CliError({

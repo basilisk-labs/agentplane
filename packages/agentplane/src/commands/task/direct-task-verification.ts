@@ -136,7 +136,26 @@ function selectedLocalChecks(task: Pick<TaskData, "execution_contract">): string
 }
 
 function isFullRegressionCommand(command: string): boolean {
-  return parseDirectTaskCheck(command)?.script === "ci:local:full";
+  const parsed = parseDirectTaskCheck(command);
+  if (!parsed) return false;
+  if (parsed.script === "ci:local:full") return true;
+  if (
+    ["npm", "pnpm", "yarn"].includes(parsed.executable) &&
+    (parsed.args.length === 1 || parsed.args[0] === "run") &&
+    parsed.script === "test"
+  ) {
+    return true;
+  }
+  if (parsed.executable === "bun" && parsed.args.length === 1 && parsed.args[0] === "test") {
+    return true;
+  }
+  if (parsed.executable === "pytest") {
+    return parsed.args.every((argument) => argument.startsWith("-"));
+  }
+  if (parsed.executable === "python" && parsed.args[0] === "-m" && parsed.args[1] === "pytest") {
+    return parsed.args.slice(2).every((argument) => argument.startsWith("-"));
+  }
+  return parsed.executable === "go" && parsed.args[0] === "test" && parsed.args.includes("./...");
 }
 
 function checkIdsForCommand(command: string, selectedChecks: readonly string[]): string[] {
@@ -148,15 +167,26 @@ function hasPlannerFallbackVerifySteps(task: Pick<TaskData, "sections">): boolea
   return task.sections?.["Verify Steps"]?.includes("PLANNER fallback scaffold") === true;
 }
 
-async function readRootPackageScripts(gitRoot: string): Promise<Set<string> | null> {
+type RootPackageInfo = {
+  scripts: Set<string>;
+  runner: "bun" | "npm" | "pnpm" | "yarn";
+};
+
+async function readRootPackageInfo(gitRoot: string): Promise<RootPackageInfo | null> {
   try {
     const parsed = JSON.parse(await readFile(path.join(gitRoot, "package.json"), "utf8")) as {
       scripts?: unknown;
+      packageManager?: unknown;
     };
     if (!parsed.scripts || typeof parsed.scripts !== "object" || Array.isArray(parsed.scripts)) {
       return null;
     }
-    return new Set(Object.keys(parsed.scripts));
+    const configuredRunner =
+      typeof parsed.packageManager === "string" ? parsed.packageManager.split("@")[0] : null;
+    const runner = ["bun", "npm", "pnpm", "yarn"].includes(configuredRunner ?? "")
+      ? (configuredRunner as RootPackageInfo["runner"])
+      : "npm";
+    return { scripts: new Set(Object.keys(parsed.scripts)), runner };
   } catch {
     return null;
   }
@@ -279,15 +309,15 @@ export async function runDirectTaskVerification(opts: {
   const commands = directTaskVerificationCommands(opts.task);
   const selectedChecks = selectedLocalChecks(opts.task);
   const requiresFullRegression = selectedChecks.includes("full_regression");
-  const packageScripts =
+  const rootPackage =
     hasPlannerFallbackVerifySteps(opts.task) || requiresFullRegression
-      ? await readRootPackageScripts(opts.command.resolvedProject.gitRoot)
+      ? await readRootPackageInfo(opts.command.resolvedProject.gitRoot)
       : null;
   let missingRequiredCheckReason: string | null = null;
   const hasFullRegressionCommand = commands.some((command) => isFullRegressionCommand(command));
   if (requiresFullRegression && !hasFullRegressionCommand) {
-    if (packageScripts?.has("ci:local:full")) {
-      commands.push("bun run ci:local:full");
+    if (rootPackage?.scripts.has("ci:local:full")) {
+      commands.push(`${rootPackage.runner} run ci:local:full`);
     } else {
       missingRequiredCheckReason =
         "Verification Contract requires full_regression, but package.json does not define ci:local:full.";
@@ -306,7 +336,7 @@ export async function runDirectTaskVerification(opts: {
       ? resolvePlannerFallbackCommand({
           command: declaredCommand,
           declared_commands: commands,
-          package_scripts: packageScripts,
+          package_scripts: rootPackage?.scripts ?? null,
         })
       : declaredCommand;
     const parsed = parseDirectTaskCheck(command);
