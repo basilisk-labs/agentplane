@@ -2,10 +2,10 @@
 id: "202608221335-6DSF3R"
 title: "Fix idempotent null-WorkItem external result acceptance"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "Approved by user for autonomous v0.7.8 regression-only release work; host_user_decision=sha256:f5d7652cf2a0f8883d17659b4275d137bc7057b8348898cd8b5677ebdd5114ed"
 verification:
-  state: "ok"
-  updated_at: "2026-08-22T14:28:53.533Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-22T14:34:02.666Z"
+  updated_by: "TESTER"
+  note: "Verification is blocked because a lifecycle operation changed two global policy files outside the approved WorkItem scope after the implementation commit."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -234,9 +234,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit:
-  hash: "fdbbd71ca81eb202bf488681d480b78ac272560c"
-  message: "🚧 6DSF3R task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -329,8 +327,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "verify"
+    at: "2026-08-22T14:34:02.666Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Verification is blocked because a lifecycle operation changed two global policy files outside the approved WorkItem scope after the implementation commit."
 doc_version: 3
-doc_updated_at: "2026-08-22T14:28:57.560Z"
+doc_updated_at: "2026-08-22T14:34:07.378Z"
 doc_updated_by: "CODER"
 description: "Fix the proven task-centric Core regression in null-ID external result handling: first acceptance must resolve a single claimed or ready WorkItem, and an exact replay after evidence persistence must use the mutation receipt before scheduler selection. Add focused unit coverage. Do not modify context code. This replaces unpublished Task 202608221325-NQJQ5K whose WorkItemGraph incorrectly declared repository sources as upstream required_inputs."
 sections:
@@ -630,6 +634,36 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608221335-6DSF3R/supervision/declared-checks.json#checks
     Scope: branch_pr task 202608221335-6DSF3R Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221335-6DSF3R-fix-idempotent-null-workitem-external-result-acc/.agentplane/tasks/202608221335-6DSF3R/blueprint/resolved-snapshot.json
+    - old_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+    - current_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221335-6DSF3R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T14:34:02.666Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Verification is blocked because a lifecycle operation changed two global policy files outside the approved WorkItem scope after the implementation commit.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f3e543bebff673290e54458107b85a0e1473cb0058a0cc5ba54bafc7cca36086, input_digest=sha256:6a1f40da430361d7933d1fd37612cf21f9e71e6d240d7d16041913a16eb9848a
+
+    Details:
 
     BlueprintSnapshotRef:
     - state: current
@@ -980,9 +1014,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "347cd5e8ef6ad810f7dfac0885d91b62b0f05498"
-    message: "🚧 6DSF3R task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ee460292f9d253a5ba6fe2ca95a6d0fd5e7a7088"
@@ -1299,6 +1330,36 @@ Command: bun test packages/agentplane/src/commands/task/task-centric-external-re
 Result: pass
 Evidence: .agentplane/tasks/202608221335-6DSF3R/supervision/declared-checks.json#checks
 Scope: branch_pr task 202608221335-6DSF3R Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221335-6DSF3R-fix-idempotent-null-workitem-external-result-acc/.agentplane/tasks/202608221335-6DSF3R/blueprint/resolved-snapshot.json
+- old_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+- current_digest: 34968ce7deea28daecccaec9e09efe859deafec7732217d0dbe727be569836b2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221335-6DSF3R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T14:34:02.666Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Verification is blocked because a lifecycle operation changed two global policy files outside the approved WorkItem scope after the implementation commit.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f3e543bebff673290e54458107b85a0e1473cb0058a0cc5ba54bafc7cca36086, input_digest=sha256:6a1f40da430361d7933d1fd37612cf21f9e71e6d240d7d16041913a16eb9848a
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current
