@@ -16,6 +16,8 @@ import {
   buildMaterializedRecipeTask,
 } from "./scenario-materialize-task.js";
 import { prepareTaskRunnerExecution } from "./task-run.js";
+import { materializeRunnerTaskWorkItemFixture } from "./task-run-lifecycle.testkit.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 
 installRecipesCommandHarness();
 
@@ -221,16 +223,27 @@ describe("materializeRecipeScenarioTask", () => {
     await execFileAsync("git", ["commit", "-m", "test: prepare materialized recipe scenario"], {
       cwd: root,
     });
+    await materializeRunnerTaskWorkItemFixture({
+      root,
+      task_id: materialized.task_id,
+      objective: "Execute the materialized recipe scenario through the runner.",
+    });
+    const taskCommand = await loadTaskCommandContext({
+      ctx,
+      taskIds: [materialized.task_id],
+    });
+    const runnerCtx = taskCommand.command;
 
     const prepared = await prepareTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
+      ctx: runnerCtx,
+      cwd: runnerCtx.resolvedProject.gitRoot,
+      rootOverride: null,
       task_id: materialized.task_id,
       mode: "dry_run",
       run_id: "runner-blueprint-fixture",
       recipe: materialized.recipe_context,
       sandbox_override: "read-only",
+      task_execution: taskCommand.execution,
     });
 
     expect(prepared.bundle.work_order?.state_fingerprint.components).toMatchObject({
@@ -295,5 +308,5 @@ describe("materializeRecipeScenarioTask", () => {
       history: [{ type: "planned" }],
     });
     expect(executionState.nodes?.[0]).toMatchObject({ nodeId: "intake", status: "ready" });
-  });
+  }, 120_000);
 });

@@ -780,6 +780,7 @@ describe("commands/workflow", () => {
 
   it("start/block/finish validate transitions and comments", async () => {
     const root = await makeRepo();
+    await gitCommitFile(root, "seed.txt", "test: seed task execution base");
     const taskId = "202602050900-A9B8";
     await addTask(root, taskId);
 

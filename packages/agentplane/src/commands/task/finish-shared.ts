@@ -1,6 +1,13 @@
-import { ensureDocSections, normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+import {
+  createRepositorySnapshot,
+  ensureDocSections,
+  isGitObjectId,
+  normalizeTaskStatus,
+  taskCentricAggregateFromExtensions,
+} from "@agentplaneorg/core/tasks";
 import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
 
+import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { emitTraceEvent } from "../../shared/trace-events.js";
@@ -300,6 +307,42 @@ export async function writeFinishedTasks(opts: {
       const execution = await applyTransition(task);
       await opts.ctx.taskBackend.writeTask(execution.nextTask);
       loaded.task = execution.nextTask;
+    }
+
+    const canonical = taskCentricAggregateFromExtensions(loaded.task.extensions);
+    if (canonical?.current_plan && canonical.lifecycle !== "COMPLETED") {
+      const implementationHash =
+        opts.implementationCommitInfo?.hash ?? opts.taskCommitInfo?.hash ?? "";
+      const repository = createRepositorySnapshot({
+        git: isGitObjectId(implementationHash)
+          ? { kind: "commit", sha: implementationHash, ref: null }
+          : {
+              kind: "unavailable",
+              reason_code: "implementation_commit_unavailable",
+              detail: implementationHash || undefined,
+            },
+        dirty_paths: [],
+        policy_digest: null,
+        config_digest: null,
+        context_digest: null,
+        task_history_cursor: `task-revision:${String(loaded.task.revision ?? canonical.revision)}`,
+        captured_at: at,
+      });
+      const adapter = new TaskCentricBackendAdapter({
+        backend: opts.ctx.taskBackend,
+        observeRepository: async () => repository,
+      });
+      await adapter.completeTaskFromLegacyVerification({
+        task_id: taskId,
+        repository,
+        actor_id: opts.author,
+        evidence_refs: [
+          `task-verification:${taskId}`,
+          ...(implementationHash ? [`git:${implementationHash}`] : []),
+        ],
+        idempotency_key: `legacy-finish:${taskId}:${loaded.task.verification?.updated_at ?? at}:${implementationHash}`,
+      });
+      loaded.task = (await opts.ctx.taskBackend.getTask(taskId)) ?? loaded.task;
     }
   }
 }

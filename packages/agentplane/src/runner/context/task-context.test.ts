@@ -9,7 +9,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   installRunCliIntegrationHarness,
-  mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   writeDefaultConfig,
 } from "@agentplane/testkit";
 import { loadCommandContext, loadTaskFromContext } from "../../commands/shared/task-backend.js";
@@ -29,7 +29,7 @@ async function writeLocalBackendConfig(root: string): Promise<void> {
 
 describe("assembleRunnerTaskContext", () => {
   it("assembles canonical task context from the configured local backend", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
     await writeLocalBackendConfig(root);
 
@@ -132,7 +132,7 @@ describe("assembleRunnerTaskContext", () => {
   });
 
   it("returns a typed failure when the task is missing", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
     await writeLocalBackendConfig(root);
 
@@ -149,7 +149,7 @@ describe("assembleRunnerTaskContext", () => {
   });
 
   it("compacts long task history and exposes truncation metadata deterministically", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
     await writeLocalBackendConfig(root);
 
@@ -239,7 +239,7 @@ describe("assembleRunnerTaskContext", () => {
   });
 
   it("preserves a multilingual required Plan above the former 3072-byte limit", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
     await writeLocalBackendConfig(root);
     const task = await createTask({
@@ -284,7 +284,7 @@ describe("assembleRunnerTaskContext", () => {
   });
 
   it("fails with a structured issue instead of truncating a required section above 64 KiB", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
     await writeLocalBackendConfig(root);
     const task = await createTask({
@@ -321,7 +321,7 @@ describe("assembleRunnerTaskContext", () => {
   });
 
   it("uses configured structural section metadata for custom non-English headings", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
     await writeLocalBackendConfig(root);
     const task = await createTask({
@@ -368,7 +368,7 @@ describe("assembleRunnerTaskContext", () => {
   });
 
   it("keeps CLI-managed verification history out of required episode input", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
     await writeLocalBackendConfig(root);
     const task = await createTask({

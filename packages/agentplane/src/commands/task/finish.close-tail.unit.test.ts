@@ -58,7 +58,7 @@ vi.mock("@agentplaneorg/core/git", async () => {
   return {
     ...actual,
     gitEnv: () => ({}),
-    gitRevParse: vi.fn().mockResolvedValue(".git"),
+    gitRevParse: vi.fn().mockResolvedValue("a".repeat(40)),
     gitCurrentBranch: mocks.gitCurrentBranch,
     resolveBaseBranch: mocks.resolveBaseBranch,
   };
@@ -161,7 +161,7 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
       statusUnstagedTrackedPaths: vi.fn().mockResolvedValue([]),
       commit: vi.fn().mockResolvedValue(void 0),
       invalidateStatus: vi.fn(),
-      headCommit: vi.fn().mockResolvedValue("base-head-sha"),
+      headCommit: vi.fn().mockResolvedValue("a".repeat(40)),
     } as unknown as GitContext,
     memo: {},
     resolved,
@@ -217,7 +217,7 @@ describe("task finish close-tail", () => {
     mocks.execFileAsync.mockImplementation((...args: unknown[]) => {
       const [, gitArgs] = args as [string, string[]];
       if (Array.isArray(gitArgs) && gitArgs[0] === "rev-parse" && gitArgs[1] === "HEAD") {
-        return Promise.resolve({ stdout: "base-head-sha\n", stderr: "" });
+        return Promise.resolve({ stdout: `${"a".repeat(40)}\n`, stderr: "" });
       }
       return Promise.resolve({ stdout: "", stderr: "" });
     });
@@ -685,7 +685,7 @@ describe("task finish close-tail", () => {
     expect(rc).toBe(0);
     expect(mocks.execFileAsync).toHaveBeenCalledWith(
       "git",
-      ["checkout", "-b", "task-close/T-1/base-head-sh"],
+      ["checkout", "-b", `task-close/T-1/${"a".repeat(12)}`],
       expect.any(Object),
     );
     expect(mocks.cmdCommit).toHaveBeenCalledWith(
@@ -822,7 +822,7 @@ describe("task finish close-tail", () => {
     expect(closeBranch).toBeNull();
     expect(mocks.tryLookupExistingGithubPrByBranch).toHaveBeenCalledWith({
       gitRoot: "/repo",
-      branch: "agents/task-close/T-1/base-head-sh",
+      branch: `agents/task-close/T-1/${"a".repeat(12)}`,
       baseBranch: "main",
     });
     expect(mocks.gitBranchExists).not.toHaveBeenCalled();

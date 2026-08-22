@@ -6,6 +6,7 @@ import {
   buildJsonSchemaDocument,
   schemaErrors,
 } from "../tasks/task-artifact-schema.shared.js";
+import { TASK_PLAN_PROPOSAL_ZOD_SCHEMA } from "../tasks/task-centric/schema.js";
 
 export const AGENT_SEMANTIC_RESULT_SCHEMA_VERSION = 2 as const;
 export const AGENT_SEMANTIC_RESULT_KIND = "agent_semantic_result" as const;
@@ -191,6 +192,20 @@ const AGENT_SEMANTIC_RESULT_TASK_INTENT_ZOD_SCHEMA = z
   })
   .strict();
 
+const AGENT_SEMANTIC_RESULT_PLAN_REFINEMENT_ZOD_SCHEMA = z
+  .object({
+    description: NON_EMPTY_STRING,
+    scope_roots_added: z.array(NON_EMPTY_STRING),
+    outputs_added: z.array(NON_EMPTY_STRING),
+    acceptance_changed: z.boolean(),
+    risk_changed: z.boolean(),
+    external_effects_added: z.array(NON_EMPTY_STRING),
+    dependencies_changed: z.boolean(),
+    architecture_constraints_changed: z.boolean(),
+    operations: z.array(z.enum(["split", "reorder", "add_test", "clarify"])),
+  })
+  .strict();
+
 const AGENT_SEMANTIC_RESULT_BASE_SHAPE = {
   schema_version: z.literal(AGENT_SEMANTIC_RESULT_SCHEMA_VERSION),
   kind: z.literal(AGENT_SEMANTIC_RESULT_KIND),
@@ -199,6 +214,8 @@ const AGENT_SEMANTIC_RESULT_BASE_SHAPE = {
   findings: z.array(z.string()),
   uncertainty: z.array(z.string()),
   task_intent: AGENT_SEMANTIC_RESULT_TASK_INTENT_ZOD_SCHEMA.optional(),
+  task_plan_proposal: TASK_PLAN_PROPOSAL_ZOD_SCHEMA.optional(),
+  plan_refinement: AGENT_SEMANTIC_RESULT_PLAN_REFINEMENT_ZOD_SCHEMA.optional(),
   claimed_checks: z.array(AGENT_SEMANTIC_RESULT_CLAIMED_CHECK_ZOD_SCHEMA).optional(),
   review: AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA.optional(),
 } as const;
@@ -245,6 +262,7 @@ export type AgentSemanticResultClaimedCheck = z.infer<
 export type AgentSemanticResultTaskIntent = z.infer<
   typeof AGENT_SEMANTIC_RESULT_TASK_INTENT_ZOD_SCHEMA
 >;
+export type AgentSemanticResultTaskPlanProposal = z.infer<typeof TASK_PLAN_PROPOSAL_ZOD_SCHEMA>;
 export type AgentSemanticResultReview = z.infer<typeof AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA>;
 
 const AGENT_SEMANTIC_RESULT_SCHEMA = buildJsonSchemaDocument(AGENT_SEMANTIC_RESULT_ZOD_SCHEMA, {

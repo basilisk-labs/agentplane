@@ -20,6 +20,7 @@ import {
   routeRunnerContextIsRelevant,
 } from "../shared/route-guidance.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
 import type { WorkflowOperation } from "../shared/workflow-step.js";
@@ -274,14 +275,20 @@ export async function executeHermesWorkflowOperation(opts: {
   }
 
   const taskId = opts.operation.params.taskId;
+  const taskCommand = opts.ctx.resolvedProject?.gitRoot
+    ? await loadTaskCommandContext({ ctx: opts.ctx, taskIds: [taskId] })
+    : null;
+  const command = taskCommand?.command ?? opts.ctx;
+  const authoritativeCwd = taskCommand?.command.resolvedProject.gitRoot ?? opts.cwd;
   if (opts.dryRun) {
     const prepared = await prepareTaskRunnerExecution({
-      ctx: opts.ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
+      ctx: command,
+      cwd: authoritativeCwd,
+      rootOverride: null,
       task_id: taskId,
       mode: "dry_run",
       ...(opts.includeRemote ? { include_remote: true } : {}),
+      ...(taskCommand ? { task_execution: taskCommand.execution } : {}),
     });
     const lifecycle = projectPreparedTaskRunnerLifecycleResult({
       task_id: taskId,
@@ -297,11 +304,12 @@ export async function executeHermesWorkflowOperation(opts: {
   }
 
   const executed = await executeTaskRunnerExecution({
-    ctx: opts.ctx,
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride,
+    ctx: command,
+    cwd: authoritativeCwd,
+    rootOverride: null,
     task_id: taskId,
     ...(opts.includeRemote ? { include_remote: true } : {}),
+    ...(taskCommand ? { task_execution: taskCommand.execution } : {}),
   });
   const lifecycle = projectExecutedTaskRunnerLifecycleResult({
     task_id: taskId,

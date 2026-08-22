@@ -33,6 +33,7 @@ import {
   reconcileTaskExecutionContract,
   resolveTaskExecutionContract,
 } from "../../runtime/task-routing/index.js";
+import { materializeRunnerTaskWorkItemFixture } from "../../runner/usecases/task-run-lifecycle.testkit.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -391,6 +392,11 @@ describe("evaluator episode calibration", () => {
       updatedBy: "PLANNER",
     });
     await commitTarget(root);
+    await materializeRunnerTaskWorkItemFixture({
+      root,
+      task_id: taskId,
+      objective: "Refresh deterministic evaluator evidence for the completed implementation.",
+    });
 
     const initialCommand = await loadCommandContext({ cwd: root, rootOverride: root });
     await applyTaskMutation({
@@ -470,7 +476,7 @@ describe("evaluator episode calibration", () => {
       phase: "quality_review_needed",
       episode: { purpose: "quality_review", role: "EVALUATOR" },
     });
-  });
+  }, 120_000);
 
   it("escalates repeated ambiguous acceptance scenarios to a human without a router-selected verdict", async () => {
     for (const run of [1, 2]) {

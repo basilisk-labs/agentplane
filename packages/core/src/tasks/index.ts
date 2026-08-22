@@ -105,10 +105,14 @@ export {
 
 export {
   isTaskStatus,
+  migrateLegacyTaskStatus,
   normalizeTaskStatus,
   parseTaskStatus,
+  parseTaskStatusStrict,
   TASK_STATUS_LABEL,
   TASK_STATUS_VALUES,
+  InvalidTaskStatusError,
+  type TaskStatusMigrationReceipt,
   type TaskStatus,
 } from "./task-status.js";
 
@@ -211,3 +215,5 @@ export {
   readTasksExport,
   type TasksLintResult,
 } from "./tasks-lint.js";
+
+export * from "./task-centric/index.js";

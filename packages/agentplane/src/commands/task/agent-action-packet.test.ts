@@ -209,6 +209,18 @@ describe("compact agent action packet", () => {
         },
       });
     }
+    if (workflowStep.kind === "human_input") {
+      expect(packet.human_decision_ticket).toMatchObject({
+        schema_version: 1,
+        kind: "semantic",
+        question: "Choose the product behavior",
+        required_authority: "USER",
+        state_fingerprint: FINGERPRINT,
+        expires_at: null,
+        alternatives: [{ id: "provide_answer" }],
+      });
+      expect(packet.human_decision_ticket?.resume_token).toMatch(/^sha256:[0-9a-f]{64}$/u);
+    }
   });
 
   it("projects the direct runner operation as the external semantic boundary", () => {

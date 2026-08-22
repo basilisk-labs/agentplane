@@ -1,5 +1,5 @@
 import type { CommandCtx } from "../../cli/spec/spec.js";
-import { computePlanDigest } from "@agentplaneorg/core/tasks";
+import { computePlanDigest, taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import {
   prepareAgentWorkOrder,
@@ -359,7 +359,9 @@ export function makeRunTaskAdvanceHandler(deps: {
         preparationCommand.config.authority.approval_receipts.trusted_issuers.length > 0
           ? "signed_user_receipt"
           : "host_user_decision",
-      plan_digest: computePlanDigest(packetTask.sections?.Plan ?? ""),
+      plan_digest:
+        taskCentricAggregateFromExtensions(packetTask.extensions)?.current_plan?.digest ??
+        computePlanDigest(packetTask.sections?.Plan ?? ""),
     });
     assertAgentActionPacketHasNoChoreography(packet);
 

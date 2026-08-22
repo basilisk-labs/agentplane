@@ -19,6 +19,12 @@ const TASK_LOCAL_SEMANTIC_FILES = [
   "runner/usecases/task-run.ts",
 ] as const;
 
+const TASK_CENTRIC_CANONICAL_WRITERS = [
+  "adapters/task-backend/task-centric-backend-adapter.ts",
+  "commands/task/external-agent-planning-authority.ts",
+  "commands/task/plan.ts",
+] as const;
+
 describe("task execution architecture guard", () => {
   it("keeps repository workflow_mode out of task-local lifecycle semantics", async () => {
     const violations: string[] = [];
@@ -37,5 +43,18 @@ describe("task execution architecture guard", () => {
       "utf8",
     );
     expect(routingSource).not.toContain("withEffectiveTaskWorkflowMode");
+  });
+
+  it("keeps canonical lifecycle and plan writes in the approved transition modules", async () => {
+    for (const relativePath of TASK_CENTRIC_CANONICAL_WRITERS) {
+      const source = await readFile(path.join(SOURCE_ROOT, relativePath), "utf8");
+      expect(source.length, relativePath).toBeGreaterThan(0);
+    }
+    const actorAdapter = await readFile(
+      path.join(SOURCE_ROOT, "commands/task/task-centric-external-result.ts"),
+      "utf8",
+    );
+    expect(actorAdapter).not.toMatch(/\.lifecycle\s*=|current_plan\s*:/u);
+    expect(actorAdapter).not.toContain("writeTask(");
   });
 });

@@ -1,4 +1,4 @@
-import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+import { parseTaskStatus } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage, unknownEntityMessage, warnMessage } from "../../cli/output.js";
@@ -42,11 +42,15 @@ export async function cmdReady(opts: {
     }
 
     if (task) {
-      const status = normalizeTaskStatus(task.status);
+      const status = parseTaskStatus(task.status);
+      if (!status)
+        warnings.push(
+          `${task.id}: invalid status ${JSON.stringify(task.status)}; quarantine or migrate the record`,
+        );
       const title = task.title?.trim() || "(untitled task)";
       const owner = task.owner?.trim() || "-";
       const dependsOn = dep?.dependsOn ?? [];
-      process.stdout.write(`Task: ${task.id} [${status}] ${title}\n`);
+      process.stdout.write(`Task: ${task.id} [${status ?? "INVALID"}] ${title}\n`);
       process.stdout.write(`Owner: ${owner}\n`);
       process.stdout.write(`Depends on: ${dependsOn.length > 0 ? dependsOn.join(", ") : "-"}\n`);
       const missing = dep?.missing ?? [];

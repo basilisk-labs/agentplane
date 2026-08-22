@@ -5,7 +5,7 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
-  mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
@@ -17,8 +17,12 @@ import { runCli } from "../../cli/run-cli.js";
 import { hashRecipeTree } from "../../commands/recipes/impl/project-recipe-state.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { assembleRunnerRecipeContext } from "../context/recipe-context.js";
-import { initializeRunnerPolicyFixture } from "./task-run-lifecycle.testkit.js";
+import {
+  initializeRunnerPolicyFixture,
+  materializeRunnerTaskWorkItemFixture,
+} from "./task-run-lifecycle.testkit.js";
 import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 
 installRunCliIntegrationHarness();
 
@@ -84,6 +88,11 @@ async function createDoingCodeTask(root: string, title: string): Promise<string>
     task_kind: "code" satisfies NonNullable<TaskData["task_kind"]>,
     mutation_scope: "code" satisfies NonNullable<TaskData["mutation_scope"]>,
     blueprint_request: "code.direct" satisfies NonNullable<TaskData["blueprint_request"]>,
+  });
+  await materializeRunnerTaskWorkItemFixture({
+    root,
+    task_id: taskId,
+    objective: `Exercise recipe write scope: ${title}.`,
   });
   return taskId;
 }
@@ -217,22 +226,26 @@ async function recipeExecution(ctx: CommandContext, taskId: string) {
 
 describe("recipe task-run actual write scope integration", () => {
   it("carries recipe artifact roots through preparation, policy, and adapter env", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, ["#!/bin/sh", "cat >/dev/null", "exit 0"]);
-    const taskId = await createDoingCodeTask(root, "Prepare recipe report scope");
     await installWriteScopeRecipe(root);
-    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const taskId = await createDoingCodeTask(root, "Prepare recipe report scope");
+    const initialCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const taskCommand = await loadTaskCommandContext({ ctx: initialCtx, taskIds: [taskId] });
+    const ctx = taskCommand.command;
+    const repositoryRoot = ctx.resolvedProject.gitRoot;
     const { recipe, target } = await recipeExecution(ctx, taskId);
 
     const prepared = await prepareTaskRunnerExecution({
       ctx,
-      cwd: root,
-      rootOverride: root,
+      cwd: repositoryRoot,
+      rootOverride: null,
       task_id: taskId,
       mode: "dry_run",
       run_id: "run-recipe-report-scope",
       recipe,
       target,
+      task_execution: taskCommand.execution,
     });
 
     expect(prepared.bundle.target).toEqual(target);
@@ -270,38 +283,41 @@ describe("recipe task-run actual write scope integration", () => {
     expect(await readFile(prepared.invocation.bootstrap_path!, "utf8")).toContain(
       '- writable_roots: ["reports"]',
     );
-  });
+  }, 180_000);
 
   it("rejects an actual custom-runner write outside the recipe artifact root", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const runId = "run-recipe-out-of-scope-write";
     await configureCustomRunner(root, [
       "#!/bin/sh",
       "set -eu",
-      "cat >/dev/null",
-      'mkdir -p "$TEST_REPOSITORY_ROOT/src"',
-      'printf "%s\\n" "outside recipe scope" > "$TEST_REPOSITORY_ROOT/src/out.txt"',
+      'mkdir -p "$PWD/src"',
+      'printf "%s\\n" "outside recipe scope" > "$PWD/src/out.txt"',
       String.raw`printf '%s\n' '{"schema_version":1,"summary":"custom runner completed"}' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
       "exit 0",
     ]);
-    const taskId = await createDoingCodeTask(root, "Reject recipe scope escape");
     await installWriteScopeRecipe(root);
-    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const taskId = await createDoingCodeTask(root, "Reject recipe scope escape");
+    const initialCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const taskCommand = await loadTaskCommandContext({ ctx: initialCtx, taskIds: [taskId] });
+    const ctx = taskCommand.command;
+    const repositoryRoot = ctx.resolvedProject.gitRoot;
     const { recipe, target } = await recipeExecution(ctx, taskId);
 
     const executed = await executeTaskRunnerExecution({
       ctx,
-      cwd: root,
-      rootOverride: root,
+      cwd: repositoryRoot,
+      rootOverride: null,
       task_id: taskId,
       run_id: runId,
       recipe,
       target,
+      task_execution: taskCommand.execution,
     });
 
-    expect(await readFile(path.join(root, "src", "out.txt"), "utf8")).toBe(
-      "outside recipe scope\n",
-    );
+    expect(
+      await readFile(path.join(executed.invocation.repository_root, "src", "out.txt"), "utf8"),
+    ).toBe("outside recipe scope\n");
     expect(executed.bundle.execution.write_scope?.writable_roots).toEqual(["reports"]);
     expect(executed.invocation.env.AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO).toBe(
       JSON.stringify(["reports"]),
@@ -341,5 +357,5 @@ describe("recipe task-run actual write scope integration", () => {
       ]),
     );
     expect(receipt.success_policy?.outcome).toBe("rejected");
-  });
+  }, 180_000);
 });

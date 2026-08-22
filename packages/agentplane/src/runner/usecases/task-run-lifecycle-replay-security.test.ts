@@ -7,7 +7,7 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
-  mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
@@ -16,9 +16,13 @@ import { writeRunnerExecutable } from "@agentplane/testkit/runner";
 import type { TaskRunnerOutcomeStatus, TaskRunnerTarget } from "../../backends/task-backend.js";
 import { runCli } from "../../cli/run-cli.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 
 import { resumeTaskRunnerExecution, retryTaskRunnerExecution } from "./task-run-lifecycle.js";
-import { initializeRunnerPolicyFixture } from "./task-run-lifecycle.testkit.js";
+import {
+  initializeRunnerPolicyFixture,
+  materializeRunnerTaskWorkItemFixture,
+} from "./task-run-lifecycle.testkit.js";
 import { prepareTaskRunnerExecution } from "./task-run.js";
 import { resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
 
@@ -28,6 +32,10 @@ const REPLAY_ACTIONS = ["resume", "retry"] as const;
 
 type ReplayAction = (typeof REPLAY_ACTIONS)[number];
 type CommandContext = Awaited<ReturnType<typeof loadCommandContext>>;
+
+async function authoritativeContext(ctx: CommandContext, taskId: string) {
+  return await loadTaskCommandContext({ ctx, taskIds: [taskId] });
+}
 
 afterEach(() => {
   process.env.PATH = originalPath;
@@ -87,6 +95,11 @@ async function createDoingTask(root: string, title: string): Promise<string> {
     verify: task?.verify ?? [],
     status: "DOING",
   });
+  await materializeRunnerTaskWorkItemFixture({
+    root,
+    task_id: taskId,
+    objective: `Execute lifecycle test task: ${title}.`,
+  });
   return taskId;
 }
 
@@ -110,10 +123,12 @@ async function recordExternalSource(opts: {
   adapterId?: string;
   mode?: "execute" | "dry_run";
 }): Promise<void> {
-  const task = await opts.ctx.taskBackend.getTask(opts.taskId);
+  const taskCommand = await authoritativeContext(opts.ctx, opts.taskId);
+  const ctx = taskCommand.command;
+  const task = await ctx.taskBackend.getTask(opts.taskId);
   expect(task).toBeTruthy();
   const status = opts.status ?? "failed";
-  await opts.ctx.taskBackend.writeTask({
+  await ctx.taskBackend.writeTask({
     ...task!,
     runner: {
       run_id: opts.runId,
@@ -137,16 +152,19 @@ async function prepareAnchoredSource(opts: {
   runId: string;
   status?: TaskRunnerOutcomeStatus;
 }) {
+  const taskCommand = await authoritativeContext(opts.ctx, opts.taskId);
+  const ctx = taskCommand.command;
+  const root = ctx.resolvedProject.gitRoot;
   const prepared = await prepareTaskRunnerExecution({
-    ctx: opts.ctx,
-    cwd: opts.root,
-    rootOverride: opts.root,
+    ctx,
+    cwd: root,
+    rootOverride: null,
     task_id: opts.taskId,
     mode: "execute",
     run_id: opts.runId,
   });
   await recordExternalSource({
-    ctx: opts.ctx,
+    ctx,
     taskId: opts.taskId,
     runId: prepared.invocation.run_id,
     status: opts.status,
@@ -156,7 +174,7 @@ async function prepareAnchoredSource(opts: {
   return prepared;
 }
 
-function runFreshReplay(
+async function runFreshReplay(
   action: ReplayAction,
   opts: {
     ctx: CommandContext;
@@ -166,10 +184,13 @@ function runFreshReplay(
     destinationRunId: string;
   },
 ) {
+  const taskCommand = await authoritativeContext(opts.ctx, opts.taskId);
+  const ctx = taskCommand.command;
+  const root = ctx.resolvedProject.gitRoot;
   const request = {
-    ctx: opts.ctx,
-    cwd: opts.root,
-    rootOverride: opts.root,
+    ctx,
+    cwd: root,
+    rootOverride: null,
     task_id: opts.taskId,
     run_id: opts.sourceRunId,
     new_run_id: opts.destinationRunId,
@@ -183,7 +204,7 @@ describe("task-run fresh replay security", () => {
   it.each(REPLAY_ACTIONS)(
     "%s ignores missing and tampered source artifacts",
     async (action) => {
-      const root = await mkGitRepoRoot();
+      const root = await mkGitRepoRootWithCommit();
       await configureCustomRunner(root);
       const taskId = await createDoingTask(root, `${action} ignores source artifacts`);
       const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -269,7 +290,7 @@ describe("task-run fresh replay security", () => {
   );
 
   it("re-derives current role, sandbox, and write scope for both replay actions", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root);
     const taskId = await createDoingTask(root, "Fresh replay current authority");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -283,8 +304,13 @@ describe("task-run fresh replay security", () => {
       requested: "workspace-write",
       role: "CODER",
     });
-    const task = await ctx.taskBackend.getTask(taskId);
-    await ctx.taskBackend.writeTask({
+    const workspaceRoot = source.invocation.repository_root;
+    const workspaceCtx = await loadCommandContext({
+      cwd: workspaceRoot,
+      rootOverride: workspaceRoot,
+    });
+    const task = await workspaceCtx.taskBackend.getTask(taskId);
+    await workspaceCtx.taskBackend.writeTask({
       ...task!,
       owner: "REVIEWER",
       task_kind: "analysis",
@@ -293,15 +319,15 @@ describe("task-run fresh replay security", () => {
 
     for (const action of REPLAY_ACTIONS) {
       await recordExternalSource({
-        ctx,
+        ctx: workspaceCtx,
         taskId,
         runId: source.invocation.run_id,
         target: structuredClone(source.bundle.target),
         adapterId: source.invocation.adapter_id,
       });
       const replayed = await runFreshReplay(action, {
-        ctx,
-        root,
+        ctx: workspaceCtx,
+        root: workspaceRoot,
         taskId,
         sourceRunId: source.invocation.run_id,
         destinationRunId: `run-${action}-current-authority`,
@@ -319,7 +345,7 @@ describe("task-run fresh replay security", () => {
   }, 90_000);
 
   it("rejects the source run id as destination for both replay actions", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root);
     const taskId = await createDoingTask(root, "Fresh replay distinct destination");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -362,7 +388,7 @@ describe("task-run fresh replay security", () => {
   it.each(REPLAY_ACTIONS)(
     "%s refuses a historical source while another external run is active",
     async (action) => {
-      const root = await mkGitRepoRoot();
+      const root = await mkGitRepoRootWithCommit();
       await configureCustomRunner(root);
       const taskId = await createDoingTask(root, `${action} competing active run`);
       const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -372,10 +398,14 @@ describe("task-run fresh replay security", () => {
         taskId,
         runId: `run-${action}-historical-source`,
       });
-      const task = await ctx.taskBackend.getTask(taskId);
+      const workspaceCtx = await loadCommandContext({
+        cwd: source.invocation.repository_root,
+        rootOverride: source.invocation.repository_root,
+      });
+      const task = await workspaceCtx.taskBackend.getTask(taskId);
       expect(task?.runner).toBeTruthy();
       const { history: _history, ...sourceAnchor } = task!.runner!;
-      await ctx.taskBackend.writeTask({
+      await workspaceCtx.taskBackend.writeTask({
         ...task!,
         runner: {
           ...sourceAnchor,
@@ -389,8 +419,8 @@ describe("task-run fresh replay security", () => {
 
       await expect(
         runFreshReplay(action, {
-          ctx,
-          root,
+          ctx: workspaceCtx,
+          root: source.invocation.repository_root,
           taskId,
           sourceRunId: source.invocation.run_id,
           destinationRunId: `run-${action}-blocked-destination`,
@@ -408,7 +438,7 @@ describe("task-run fresh replay security", () => {
   );
 
   it("rejects prepared, running, and successful external sources", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root);
     const taskId = await createDoingTask(root, "Fresh replay terminal sources only");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -444,7 +474,7 @@ describe("task-run fresh replay security", () => {
   });
 
   it("fails closed on recipe sources with exact scenario guidance", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root);
     const taskId = await createDoingTask(root, "Fresh replay recipe guidance");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -484,7 +514,7 @@ describe("task-run fresh replay security", () => {
   });
 
   it("protects symlink, existing, and traversal destinations for both replay actions", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root);
     const taskId = await createDoingTask(root, "Fresh replay destination boundaries");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -570,7 +600,7 @@ describe("task-run fresh replay security", () => {
   });
 
   it("writes external-anchor provenance only to each fresh destination", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root);
     const taskId = await createDoingTask(root, "Fresh replay provenance");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });

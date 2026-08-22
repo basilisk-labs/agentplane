@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+import { createHumanDecisionTicket, type HumanDecisionTicket } from "@agentplaneorg/core/tasks";
 
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { userApprovalReceiptRequestForStep } from "./user-approval-receipt.js";
@@ -40,6 +41,7 @@ export type AgentActionPacket = {
     reference: string | null;
   };
   context_refs: AgentContextRef[];
+  human_decision_ticket?: HumanDecisionTicket;
   operator_action?: {
     kind: "approve_plan" | "grant_side_effect_authority" | "approve_provider_merge";
     required_role: "USER";
@@ -115,13 +117,13 @@ function semanticInstruction(
 ): string {
   switch (purpose) {
     case "planning": {
-      return "Prepare a task-specific semantic plan and, when intent is unknown, return result.task_intent with result.task_intent.execution. Select direct or branch_pr semantically and declare scope roots, repository effects, external effects, requirements uncertainty, implementation uncertainty, reversibility, and rationale; do not infer them from title keywords.";
+      return "Prepare a task-specific structured TaskPlanProposal in result.task_plan_proposal. Copy work_order.planning_context.repository_snapshot exactly into planning_baseline. Decompose the one user Task into internal WorkItems with dependencies, typed outputs, scope, acceptance, validation, context, risk, capabilities, and resource claims; do not create top-level tasks. Use the supported validation capability from the work order and bind deterministic checks to the declared Task checks. Keep material questions unresolved rather than guessing. Also, when intent is unknown, return result.task_intent with result.task_intent.execution. Select direct or branch_pr semantically and declare scope roots, repository effects, external effects, requirements uncertainty, implementation uncertainty, reversibility, and rationale; do not infer them from title keywords.";
     }
     case "implementation": {
-      return "Perform the scoped implementation from the prepared context and report a semantic outcome.";
+      return "Perform the scoped implementation from the prepared context and report a semantic outcome. If the approved plan needs refinement, return result.plan_refinement with the exact scope, output, acceptance, risk, effect, dependency, architecture, and local-operation deltas.";
     }
     case "implementation_rework": {
-      return "Address the scoped evaluator findings from the prepared context and report a semantic outcome.";
+      return "Address the scoped evaluator findings from the prepared context and report a semantic outcome. If the approved plan needs refinement, return result.plan_refinement with the exact deltas.";
     }
     case "quality_review": {
       return "Assess the scoped result against the prepared acceptance evidence and report a verdict.";
@@ -326,6 +328,25 @@ function actionFor(decision: TaskRouteDecision): Pick<AgentActionPacket, "action
   };
 }
 
+function humanDecisionTicketFor(decision: TaskRouteDecision): HumanDecisionTicket | undefined {
+  const step = decision.workflowStep;
+  if (step.kind !== "human_input") return undefined;
+  return createHumanDecisionTicket({
+    kind: "semantic",
+    question: step.request.question,
+    alternatives: [
+      {
+        id: "provide_answer",
+        consequence: "Record a free-form USER answer and resume from a fresh state packet.",
+      },
+    ],
+    required_authority: "USER",
+    state_fingerprint: step.preconditionFingerprint
+      .digest as HumanDecisionTicket["state_fingerprint"],
+    expires_at: null,
+  });
+}
+
 function compactContextRefs(workOrder: AgentWorkOrderV2): AgentContextRef[] {
   const refs: AgentContextRef[] = [];
   for (const input of workOrder.required_inputs) {
@@ -394,6 +415,7 @@ export function buildAgentActionPacket(opts: {
     planApprovalTransport: opts.plan_approval_transport ?? "host_user_decision",
     planDigest: opts.plan_digest,
   });
+  const humanDecisionTicket = humanDecisionTicketFor(opts.decision);
   const packet: AgentActionPacket = {
     schema_version: 1,
     task_id: opts.decision.task.id,
@@ -411,6 +433,7 @@ export function buildAgentActionPacket(opts: {
           : null,
     },
     context_refs: compactContextRefs(opts.work_order),
+    ...(humanDecisionTicket ? { human_decision_ticket: humanDecisionTicket } : {}),
     ...(operatorAction ? { operator_action: operatorAction } : {}),
     ...(projected.action.kind === "agent_episode" && opts.exchange
       ? { exchange: opts.exchange }

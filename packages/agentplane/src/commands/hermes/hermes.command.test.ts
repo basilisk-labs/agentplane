@@ -1,6 +1,16 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
+import {
+  approveTaskPlan,
+  createLegacyTaskAggregate,
+  createRepositorySnapshot,
+  createTaskPlanRevision,
+  materializeApprovedWorkItems,
+  taskCentricDigest,
+  withTaskCentricAggregate,
+  type ValidationPlan,
+} from "@agentplaneorg/core/tasks";
 
 import { runCli } from "../../cli/run-cli.js";
 import {
@@ -8,13 +18,19 @@ import {
   recordCodexProviderUsageForResult,
 } from "../../runner/adapters/codex-result-transport.js";
 import * as taskRunUsecases from "../../runner/usecases/task-run.js";
+import { loadCommandContext } from "../shared/task-backend.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
+import {
+  allocateTaskWorkspace,
+  releaseWorkspaceLease,
+} from "../../runtime/workspace-allocation/index.js";
 import {
   buildHermesTerminalAttestation,
   executeHermesWorkflowOperation,
   routeNeedsRunnerProjection,
 } from "./hermes-runtime.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
-import { captureStdIO, mkGitRepoRoot, runCliSilent } from "@agentplane/testkit";
+import { captureStdIO, mkGitRepoRootWithCommit, runCliSilent } from "@agentplane/testkit";
 import { chmod, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -88,7 +104,110 @@ async function createRunnableDirectTask(root: string): Promise<string> {
     "--root",
     root,
   ]);
-  expect(await runCliSilent(["task", "run", taskId, "--dry-run", "--root", root])).toBe(0);
+  const command = await loadCommandContext({ cwd: root, rootOverride: root });
+  const taskCommand = await loadTaskCommandContext({ ctx: command, taskIds: [taskId] });
+  const rawTask = await command.taskBackend.getTask(taskId);
+  if (!rawTask) throw new Error(`Task not found: ${taskId}`);
+  const now = "2026-08-22T00:00:00.000Z";
+  const validation: ValidationPlan = {
+    schema_version: 1,
+    criteria: [
+      {
+        id: "runner-fixture-ready",
+        description: "The runner fixture can execute one bounded WorkItem.",
+        required: true,
+        check_ids: ["runner-fixture-check"],
+      },
+    ],
+    checks: [
+      {
+        id: "runner-fixture-check",
+        kind: "structural",
+        required: true,
+        capability: "task.run",
+      },
+    ],
+    evidence_fingerprint: taskCentricDigest("hermes-runner-fixture"),
+  };
+  const baseline = createRepositorySnapshot({
+    git: { kind: "commit", sha: taskCommand.execution.base_sha, ref: "main" },
+    dirty_paths: [],
+    policy_digest: null,
+    config_digest: null,
+    context_digest: null,
+    task_history_cursor: null,
+    captured_at: now,
+  });
+  const proposal = {
+    schema_version: 1 as const,
+    task_id: taskId,
+    planning_baseline: baseline,
+    work_items: {
+      schema_version: 1 as const,
+      work_items: [
+        {
+          id: "runner-fixture",
+          objective: "Exercise the typed runner route.",
+          depends_on: [],
+          required_inputs: [],
+          expected_outputs: ["runner-fixture-output"],
+          scope_roots: ["."],
+          acceptance_criteria: validation.criteria,
+          validation,
+          context: {
+            required_sources: ["repository"],
+            optional_sources: [],
+            symbol_hints: [],
+            max_bytes: 16_384,
+          },
+          risk: "low" as const,
+          capabilities: ["task.run"],
+          resource_claims: [{ kind: "workspace" as const, resource: ".", mode: "write" as const }],
+          optional: false,
+          priority: 1,
+        },
+      ],
+    },
+    assumptions: [],
+    unresolved_questions: [],
+    top_level_validation: validation,
+  };
+  const pendingPlan = createTaskPlanRevision({ proposal, revision: 1, created_at: now });
+  const plan = approveTaskPlan({
+    plan: pendingPlan,
+    expected_digest: pendingPlan.digest,
+    actor: "ORCHESTRATOR",
+    approved_at: now,
+  });
+  const legacy = createLegacyTaskAggregate({
+    id: taskId,
+    revision: rawTask.revision ?? 1,
+    title: rawTask.title,
+    description: rawTask.description,
+    status: "DOING",
+    acceptance_criteria: rawTask.verify ?? [],
+    captured_at: now,
+    updated_at: now,
+  });
+  const aggregate = materializeApprovedWorkItems({
+    task: { ...legacy, current_plan: plan },
+    plan,
+    now,
+  });
+  await command.taskBackend.writeTask(
+    {
+      ...rawTask,
+      status: "DOING",
+      extensions: withTaskCentricAggregate(rawTask.extensions, aggregate),
+    },
+    { expectedRevision: rawTask.revision ?? 1 },
+  );
+  const refreshed = await loadTaskCommandContext({ ctx: command, taskIds: [taskId] });
+  const allocation = await allocateTaskWorkspace({
+    ctx: refreshed.command,
+    execution: refreshed.execution,
+  });
+  await releaseWorkspaceLease(allocation.lease);
   return taskId;
 }
 
@@ -203,7 +322,7 @@ describe("hermes adapter commands", () => {
   });
 
   it("renders a provider-safe enqueue projection", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createApprovedTask(root);
 
     const io = captureStdIO();
@@ -222,7 +341,7 @@ describe("hermes adapter commands", () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
+      expect(code, io.stderr).toBe(0);
       const payload = JSON.parse(io.stdout) as {
         idempotency_key: string;
         board: string;
@@ -259,7 +378,7 @@ describe("hermes adapter commands", () => {
       );
       expect(
         payload.metadata.agentplane.comment_projection.execution_packet.returnControlWhen,
-      ).toContain("recompute task next-action");
+      ).toContain("request a fresh action packet");
       expect(payload.metadata.agentplane.comment_projection.execution_packet.mustNot).toContain(
         "do not reconstruct branch/worktree/PR state from prose",
       );
@@ -278,7 +397,7 @@ describe("hermes adapter commands", () => {
   });
 
   it("supervise returns a route-gated packet without allowing raw route shell execution", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createTask(root);
 
     const io = captureStdIO();
@@ -329,7 +448,7 @@ describe("hermes adapter commands", () => {
   });
 
   it("supervise dry-runs one allowlisted typed route step", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createRunnableDirectTask(root);
 
     const io = captureStdIO();
@@ -344,7 +463,7 @@ describe("hermes adapter commands", () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
+      expect(code, io.stderr).toBe(0);
       const payload = JSON.parse(io.stdout) as {
         supervisor_policy: { execute_raw_shell_from_route: boolean };
         execution: {
@@ -426,7 +545,7 @@ describe("hermes adapter commands", () => {
   });
 
   it("emits the shared supervisor classification from task next-action", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createRunnableDirectTask(root);
     const io = captureStdIO();
     try {
@@ -568,7 +687,7 @@ describe("hermes adapter commands", () => {
   });
 
   it("doctor fails closed when the native plugin contract is not proven", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await runCliSilent(["init", "--yes", "--root", root]);
 
     const io = captureStdIO();
@@ -591,7 +710,7 @@ describe("hermes adapter commands", () => {
   });
 
   it("doctor accepts a complete protocol-v2 installation contract", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await runCliSilent(["init", "--workflow", "branch_pr", "--yes", "--root", root]);
     const registryPath = path.join(root, "registry", "lane-registry.json");
     const binPath = path.join(root, "bin", "hermes-agentplane-test-bin");
@@ -656,7 +775,7 @@ describe("hermes adapter commands", () => {
   });
 
   it("doctor reports the Agentplane Hermes lane registry state when configured", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await runCliSilent(["init", "--yes", "--root", root]);
     const registryPath = path.join(root, "registry", "lane-registry.json");
     await mkdir(path.dirname(registryPath), { recursive: true });
@@ -705,7 +824,7 @@ describe("hermes adapter commands", () => {
   });
 
   it("reconcile includes the local Agentplane projection when task id is provided", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createApprovedTask(root);
 
     const io = captureStdIO();
@@ -744,7 +863,7 @@ describe("hermes adapter commands", () => {
   });
 
   it("reconcile compares a Hermes card state snapshot with Agentplane task truth", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createApprovedTask(root);
     const statePath = path.join(root, "hermes-state.json");
     await writeFile(
@@ -800,7 +919,7 @@ describe("hermes adapter commands", () => {
   });
 
   it("reconcile does not flag all-board snapshots with distinct Agentplane task ids as duplicates", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await runCliSilent(["init", "--yes", "--root", root]);
     const statePath = path.join(root, "hermes-state.json");
     await writeFile(
@@ -851,7 +970,7 @@ describe("hermes adapter commands", () => {
   });
 
   it("reconcile flags duplicate Hermes cards for the same Agentplane task id", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await runCliSilent(["init", "--yes", "--root", root]);
     const statePath = path.join(root, "hermes-state.json");
     await writeFile(

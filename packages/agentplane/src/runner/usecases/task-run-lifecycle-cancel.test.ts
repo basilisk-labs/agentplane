@@ -4,7 +4,7 @@ import path from "node:path";
 import { defaultConfig } from "@agentplaneorg/core/config";
 import {
   installRunCliIntegrationHarness,
-  mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   waitForCondition,
   writeConfig,
 } from "@agentplane/testkit";
@@ -69,7 +69,7 @@ describe("task-run lifecycle cancellation", () => {
   });
 
   it("terminalizes a spawned child error instead of leaving running state wedged", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.runner.default_adapter = "custom";
     config.runner.custom = {
@@ -96,7 +96,7 @@ describe("task-run lifecycle cancellation", () => {
   });
 
   it("terminates a running execute-mode run via persisted supervision metadata", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, [
       "#!/bin/sh",
       "trap 'exit 0' TERM",
@@ -168,7 +168,7 @@ describe("task-run lifecycle cancellation", () => {
   });
 
   it("keeps cancel_signal and exit_signal semantics distinct during TERM cancellation", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, [
       "#!/bin/sh",
       "trap 'exit 0' TERM",
@@ -230,7 +230,7 @@ describe("task-run lifecycle cancellation", () => {
   });
 
   it("cooperatively cancels a supervisor run when process identity is unavailable", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, [
       "#!/bin/sh",
       "trap 'exit 0' TERM",
@@ -287,7 +287,7 @@ describe("task-run lifecycle cancellation", () => {
   });
 
   it("does not signal or overwrite success when the finalizer wins cancellation", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, [
       "#!/bin/sh",
       'while [ ! -f "$AGENTPLANE_RUNNER_RUN_DIR/release-finalizer" ]; do sleep 0.05; done',
@@ -349,7 +349,7 @@ describe("task-run lifecycle cancellation", () => {
   });
 
   it("keeps a failed terminal state immutable when cancellation arrives later", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, ["#!/bin/sh", "cat >/dev/null", "exit 9"]);
     const taskId = await createDoingTask(root, "Keep failed terminal run immutable");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -387,7 +387,7 @@ describe("task-run lifecycle cancellation", () => {
   });
 
   it("does not let a delayed terminal reconciliation override a newer active run", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, ["#!/bin/sh", "cat >/dev/null", "exit 0"]);
     const taskId = await createDoingTask(root, "Keep newer active run authoritative");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -498,7 +498,7 @@ describe("task-run lifecycle cancellation", () => {
   });
 
   it("recovers a stale running claim only after its child is confirmed absent", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
     const taskId = await createDoingTask(root, "Recover dead running child");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -570,7 +570,7 @@ describe("task-run lifecycle cancellation", () => {
   });
 
   it("finalizes an orphaned prepared start after its owner lease expires", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
     const taskId = await createDoingTask(root, "Cancel orphaned prepared start");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -641,7 +641,7 @@ describe("task-run lifecycle cancellation", () => {
   });
 
   it("fails closed when a dead start owner had already authorized child spawn", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, [
       "#!/bin/sh",
       'touch "$AGENTPLANE_RUNNER_RUN_DIR/provider-started"',
@@ -737,7 +737,7 @@ describe("task-run lifecycle cancellation", () => {
   });
 
   it("fails closed without signaling even when a historical run has exact process identity", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, ["#!/bin/sh", "cat >/dev/null", "exit 0"]);
     const taskId = await createDoingTask(root, "Refuse unsafe historical running cancel");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -822,7 +822,7 @@ describe("task-run lifecycle cancellation", () => {
   });
 
   it("recovers a prepared run when the pre-spawn cancel publisher died after publication", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, [
       "#!/bin/sh",
       'touch "$AGENTPLANE_RUNNER_RUN_DIR/provider-started"',
@@ -857,7 +857,7 @@ describe("task-run lifecycle cancellation", () => {
   });
 
   it("does not spawn after cancellation wins while pre-spawn observation is delayed", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, [
       "#!/bin/sh",
       'touch "$AGENTPLANE_RUNNER_RUN_DIR/executable-started"',

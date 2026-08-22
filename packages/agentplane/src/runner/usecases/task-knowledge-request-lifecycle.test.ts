@@ -2,11 +2,13 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { mkGitRepoRoot, writeConfig } from "@agentplane/testkit";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { mkGitRepoRootWithCommit, writeConfig } from "@agentplane/testkit";
 import { writeRunnerExecutable } from "@agentplane/testkit/runner";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 import { cmdContextReindex } from "../../context/reindex.js";
 import type { RunnerResult } from "../types.js";
 import {
@@ -79,7 +81,7 @@ async function configureNeedsContextRunner(root: string): Promise<void> {
 
 describe("runner knowledge-request lifecycle", () => {
   it("serves and persists a bounded response after a real needs_context runner result", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureNeedsContextRunner(root);
     await mkdir(path.join(root, "context", "wiki"), { recursive: true });
     await writeFile(
@@ -87,6 +89,10 @@ describe("runner knowledge-request lifecycle", () => {
       "# Bounded retrieval continuation\n\nCLI owns the canonical bounded retrieval response.\n",
       "utf8",
     );
+    await execFileAsync("git", ["add", "-f", "context/wiki/retrieval.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed bounded retrieval context"], {
+      cwd: root,
+    });
     await cmdContextReindex({
       cwd: root,
       parsed: { includeTasks: false, includeRaw: false, reset: false },
@@ -94,17 +100,25 @@ describe("runner knowledge-request lifecycle", () => {
     const taskId = await createDoingRunnerTask({
       root,
       title: "Bounded retrieval continuation",
-      plan_text: "Return bounded context to the executor.",
+      plan_text: "Return context/wiki/retrieval.md as bounded context to the executor.",
+      structured_work_item: true,
     });
-    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const initialCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const taskCommand = await loadTaskCommandContext({ ctx: initialCtx, taskIds: [taskId] });
+    const ctx = taskCommand.command;
+    const repositoryRoot = ctx.resolvedProject.gitRoot;
+    await cmdContextReindex({
+      cwd: repositoryRoot,
+      parsed: { includeTasks: false, includeRaw: false, reset: false },
+    });
     const executed = await executeTaskRunnerExecution({
       ctx,
-      cwd: root,
-      rootOverride: root,
+      cwd: repositoryRoot,
+      rootOverride: null,
       task_id: taskId,
       run_id: "run-knowledge-lifecycle-001",
+      task_execution: taskCommand.execution,
     });
-
     expect(executed.result.knowledge_response).toMatchObject({
       outcome: "served",
       run: { run_id: "run-knowledge-lifecycle-001" },
@@ -139,7 +153,7 @@ describe("runner knowledge-request lifecycle", () => {
     ).resolves.toEqual([executed.result.knowledge_response]);
 
     const continuation = await serveRunnerKnowledgeRequest({
-      repository_root: root,
+      repository_root: repositoryRoot,
       invocation: {
         run_id: "run-knowledge-lifecycle-002",
         run_dir: path.join(
@@ -178,7 +192,7 @@ describe("runner knowledge-request lifecycle", () => {
       concurrentInvocations.map(
         async (invocation) =>
           await serveRunnerKnowledgeRequest({
-            repository_root: root,
+            repository_root: repositoryRoot,
             invocation,
             work_order: concurrentWorkOrder,
             result: needsContextRunnerResult(concurrentWorkOrder.work_order_id),
@@ -211,7 +225,7 @@ describe("runner knowledge-request lifecycle", () => {
       unresolvedInvocations.map(
         async (invocation) =>
           await serveRunnerKnowledgeRequest({
-            repository_root: root,
+            repository_root: repositoryRoot,
             invocation,
             work_order: unresolvedWorkOrder,
             result: needsContextRunnerResult(
@@ -231,7 +245,7 @@ describe("runner knowledge-request lifecycle", () => {
   });
 
   it("keeps a held reservation exclusive and returns a bounded typed escalation on timeout", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await configureNeedsContextRunner(root);
     await mkdir(path.join(root, "context", "wiki"), { recursive: true });
     await writeFile(
@@ -239,6 +253,10 @@ describe("runner knowledge-request lifecycle", () => {
       "# Bounded retrieval continuation\n\nCLI owns the canonical bounded retrieval response.\n",
       "utf8",
     );
+    await execFileAsync("git", ["add", "-f", "context/wiki/retrieval.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed reserved retrieval context"], {
+      cwd: root,
+    });
     await cmdContextReindex({
       cwd: root,
       parsed: { includeTasks: false, includeRaw: false, reset: false },
@@ -246,15 +264,24 @@ describe("runner knowledge-request lifecycle", () => {
     const taskId = await createDoingRunnerTask({
       root,
       title: "Bounded retrieval continuation",
-      plan_text: "Keep a knowledge request reservation exclusive.",
+      plan_text: "Keep the context/wiki/retrieval.md knowledge request reservation exclusive.",
+      structured_work_item: true,
     });
-    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const initialCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const taskCommand = await loadTaskCommandContext({ ctx: initialCtx, taskIds: [taskId] });
+    const ctx = taskCommand.command;
+    const repositoryRoot = ctx.resolvedProject.gitRoot;
+    await cmdContextReindex({
+      cwd: repositoryRoot,
+      parsed: { includeTasks: false, includeRaw: false, reset: false },
+    });
     const executed = await executeTaskRunnerExecution({
       ctx,
-      cwd: root,
-      rootOverride: root,
+      cwd: repositoryRoot,
+      rootOverride: null,
       task_id: taskId,
       run_id: "run-knowledge-reservation-base",
+      task_execution: taskCommand.execution,
     });
     const workOrder = executed.bundle.work_order!;
     const runsDir = path.dirname(executed.invocation.run_dir);
@@ -272,7 +299,7 @@ describe("runner knowledge-request lifecycle", () => {
       release = resolve;
     });
     const holder = withTaskKnowledgeRequestAuditReservation({
-      repository_root: root,
+      repository_root: repositoryRoot,
       invocation: {
         run_id: invocation.run_id,
         work_order_id: invocation.work_order_id,
@@ -288,7 +315,7 @@ describe("runner knowledge-request lifecycle", () => {
     await held;
 
     const contended = await serveRunnerKnowledgeRequest({
-      repository_root: root,
+      repository_root: repositoryRoot,
       invocation: {
         ...invocation,
         run_id: "run-knowledge-reservation-contended",
@@ -311,7 +338,7 @@ describe("runner knowledge-request lifecycle", () => {
     release();
     await expect(holder).resolves.toMatchObject({ status: "reserved", value: "released" });
     const recovered = await serveRunnerKnowledgeRequest({
-      repository_root: root,
+      repository_root: repositoryRoot,
       invocation,
       reservation_wait_ms: 25,
       work_order: workOrder,

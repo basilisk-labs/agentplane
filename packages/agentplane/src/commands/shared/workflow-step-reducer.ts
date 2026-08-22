@@ -1,6 +1,7 @@
 import { getHumanInputState, humanInputAnswerCommand } from "../task/human-input.js";
 import { isPlannerSemanticPlanRequired } from "../task/doc-template.js";
 import { extractDocSection } from "../task/shared.js";
+import { taskCentricReplanRequiredFromExtensions } from "@agentplaneorg/core/tasks";
 import { branchStep, doneBranchStep } from "./workflow-step-branch.js";
 import {
   approvalStep,
@@ -83,7 +84,10 @@ export function reduceRouteState(state: WorkflowRouteState): WorkflowStep {
       execution: commonExecution({ actionKind: "provider_action", role: "USER" }),
     };
   }
-  if (isPlannerSemanticPlanRequired(extractDocSection(String(state.task.doc ?? ""), "Plan"))) {
+  if (
+    taskCentricReplanRequiredFromExtensions(state.task.extensions) ||
+    isPlannerSemanticPlanRequired(extractDocSection(String(state.task.doc ?? ""), "Plan"))
+  ) {
     return agentEpisodeStep({
       state,
       id: "agent.planning",

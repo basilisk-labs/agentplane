@@ -46,7 +46,12 @@ export type ReceiptOmission = {
     | "not_materializable"
     | "query_term_budget_exhausted"
     | "reference_budget_exhausted"
-    | "excerpt_not_included";
+    | "excerpt_not_included"
+    | "source_missing"
+    | "source_malformed"
+    | "source_denied"
+    | "source_unavailable"
+    | "source_oversize";
   detail: string;
 };
 

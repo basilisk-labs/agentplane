@@ -93,6 +93,18 @@
             "required": ["id", "question", "blocking"],
             "additionalProperties": false
           }
+        },
+        "work_item_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": ["id", "revision", "objective", "acceptance_criteria", "unresolved_questions"],
@@ -718,6 +730,207 @@
         }
       },
       "required": ["purpose", "required_knowledge_ref_digests", "require_prepared_evidence"],
+      "additionalProperties": false
+    },
+    "planning_context": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "number",
+          "const": 1
+        },
+        "repository_snapshot": {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "type": "number",
+              "const": 1
+            },
+            "digest": {},
+            "git": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "commit"
+                    },
+                    "sha": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{40}$|^[0-9a-f]{64}$"
+                    },
+                    "ref": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": ["kind", "sha", "ref"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "unborn"
+                    },
+                    "ref": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": ["kind", "ref"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "unavailable"
+                    },
+                    "reason_code": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["kind", "reason_code"],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "dirty_paths": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "policy_digest": {
+              "anyOf": [
+                {},
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "config_digest": {
+              "anyOf": [
+                {},
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "context_digest": {
+              "anyOf": [
+                {},
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "task_history_cursor": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "captured_at": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+            }
+          },
+          "required": [
+            "schema_version",
+            "digest",
+            "git",
+            "dirty_paths",
+            "policy_digest",
+            "config_digest",
+            "context_digest",
+            "task_history_cursor",
+            "captured_at"
+          ],
+          "additionalProperties": false
+        },
+        "retrievals": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "const": "available"
+                  },
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096
+                  },
+                  "digest": {
+                    "type": "string",
+                    "pattern": "^sha256:[0-9a-f]{64}$"
+                  }
+                },
+                "required": ["status", "ref", "digest"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["omitted", "malformed", "denied", "unavailable"]
+                  },
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096
+                  },
+                  "reason_code": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "required": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["status", "ref", "reason_code", "required"],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "required": ["schema_version", "repository_snapshot", "retrievals", "digest"],
       "additionalProperties": false
     },
     "knowledge_refs": {

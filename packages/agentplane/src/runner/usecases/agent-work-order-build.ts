@@ -13,6 +13,14 @@ import {
 } from "@agentplaneorg/core/schemas";
 
 import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
+import {
+  createRepositorySnapshot,
+  taskCentricAggregateFromExtensions,
+  taskCentricDigest,
+  WorkItemScheduler,
+  type WorkItem,
+} from "@agentplaneorg/core/tasks";
+import { readTaskRouteGitSnapshot } from "../../commands/shared/route-decision.js";
 import { checkTaskBlueprintSnapshotDrift } from "../../commands/blueprint/snapshot-artifact.js";
 import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
@@ -204,7 +212,15 @@ export function buildAgentWorkOrderSourceManifest(opts: {
 function acceptanceCriteria(opts: {
   task_envelope: RunnerTaskContextEnvelope;
   source_manifest: AgentWorkOrderSourceManifest;
+  work_item?: WorkItem | null;
 }): AgentWorkOrderV2["task"]["acceptance_criteria"] {
+  if (opts.work_item) {
+    return opts.work_item.acceptance_criteria.slice(0, 64).map((criterion) => ({
+      id: criterion.id,
+      description: compactText(criterion.description, "Complete the work-item criterion."),
+      required: criterion.required,
+    }));
+  }
   const candidates = uniqueSorted([
     ...opts.source_manifest.verification_context.task_verify,
     ...opts.source_manifest.verification_context.verify_steps,
@@ -224,7 +240,19 @@ function acceptanceCriteria(opts: {
 function verificationIntent(opts: {
   source_manifest: AgentWorkOrderSourceManifest;
   execution_contract?: RunnerTaskContextEnvelope["task"]["metadata"]["execution_contract"];
+  work_item?: WorkItem | null;
 }): AgentWorkOrderV2["verification_intent"] {
+  if (opts.work_item) {
+    return {
+      requirements: opts.work_item.validation.criteria.slice(0, 64).map((criterion) => ({
+        id: criterion.id,
+        description: compactText(criterion.description, "Record work-item verification evidence."),
+        required: criterion.required,
+        observed_by: "agentplane",
+      })),
+      require_execution_receipt: true,
+    };
+  }
   const candidates = uniqueSorted([
     ...opts.source_manifest.verification_context.task_verify,
     ...opts.source_manifest.verification_context.verify_steps,
@@ -263,6 +291,7 @@ function requiredInputs(opts: {
   task_envelope: RunnerTaskContextEnvelope;
   source_manifest: AgentWorkOrderSourceManifest;
   knowledge_retrieval: TaskKnowledgeRetrieval;
+  work_item?: WorkItem | null;
 }): AgentWorkOrderV2["required_inputs"] {
   const taskReadme = opts.source_manifest.source_paths.find((source) =>
     source.endsWith("/README.md"),
@@ -282,6 +311,14 @@ function requiredInputs(opts: {
       required: true,
     },
   ];
+  if (opts.work_item) {
+    inputs.push({
+      id: `work-item-${opts.work_item.id}`,
+      kind: "source_artifact",
+      description: `Approved internal WorkItem ${opts.work_item.id}: ${opts.work_item.objective}`,
+      required: true,
+    });
+  }
   for (const [index, modulePath] of opts.source_manifest.policy_modules.entries()) {
     inputs.push({
       id: `policy-module-${index + 1}`,
@@ -334,9 +371,72 @@ export function buildCanonicalAgentWorkOrder(opts: {
     opts.prepared.semantic_role ??
     workOrderRole(decision.executionPacket.recommendedRole ?? task.metadata.owner ?? "");
   const stateFingerprint = structuredClone(decision.workflowStep.preconditionFingerprint);
+  const routeGit = readTaskRouteGitSnapshot(decision);
+  const repositorySnapshot = createRepositorySnapshot({
+    git:
+      stateFingerprint.git_head !== null
+        ? { kind: "commit", sha: stateFingerprint.git_head, ref: null }
+        : routeGit?.state === "available"
+          ? { kind: "unborn", ref: null }
+          : {
+              kind: "unavailable",
+              reason_code: routeGit?.errors[0]?.operation ?? "git_observation_unavailable",
+              detail: routeGit?.errors[0]?.message,
+            },
+    dirty_paths: routeGit?.dirty_paths ?? [],
+    policy_digest:
+      stateFingerprint.components.policy.state === "present"
+        ? (stateFingerprint.components.policy.digest as `sha256:${string}`)
+        : null,
+    config_digest: null,
+    context_digest:
+      stateFingerprint.components.knowledge.state === "present"
+        ? (stateFingerprint.components.knowledge.digest as `sha256:${string}`)
+        : null,
+    task_history_cursor:
+      task.metadata.revision === null ? null : `task-revision:${String(task.metadata.revision)}`,
+    captured_at: routeGit?.captured_at ?? new Date().toISOString(),
+  });
+  const planningRetrievals: NonNullable<AgentWorkOrderV2["planning_context"]>["retrievals"] = [
+    ...opts.knowledge_retrieval.knowledge_refs.map((knowledge) => ({
+      status: "available" as const,
+      ref: knowledge.ref,
+      digest: knowledge.digest,
+    })),
+    ...opts.knowledge_retrieval.receipt.omissions.map((omission) => ({
+      status:
+        omission.reason_code === "source_malformed"
+          ? ("malformed" as const)
+          : omission.reason_code === "source_denied"
+            ? ("denied" as const)
+            : omission.reason_code === "source_unavailable"
+              ? ("unavailable" as const)
+              : ("omitted" as const),
+      ref: omission.query ?? `retrieval:${omission.adapter}`,
+      reason_code: omission.reason_code,
+      required: false,
+    })),
+  ];
+  const planningContextIdentity = {
+    schema_version: 1 as const,
+    repository_snapshot: repositorySnapshot,
+    retrievals: planningRetrievals,
+  };
   const mutationPath = decision.oracle.mutationPathHint;
   const executionContract = task.metadata.execution_contract;
-  const declaredScopeRoots = executionContract?.authority.writable_roots;
+  const taskCentric = taskCentricAggregateFromExtensions(taskEnvelope.source_task.extensions);
+  const selectedWorkItem =
+    role === "EXECUTOR" &&
+    taskCentric?.current_plan?.approval.state === "approved" &&
+    taskCentric.current_plan.approval.approved_digest === taskCentric.current_plan.digest
+      ? (new WorkItemScheduler(1).select({
+          graph: taskCentric.current_plan.proposal.work_items,
+          runtime: taskCentric.work_items,
+          active_leases: [],
+        })[0] ?? null)
+      : null;
+  const declaredScopeRoots =
+    selectedWorkItem?.scope_roots ?? executionContract?.authority.writable_roots;
   const hasExplicitEmptyScope =
     executionContract?.source === "agent_declared" && declaredScopeRoots?.length === 0;
   const canMutate =
@@ -376,6 +476,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
   const verification = verificationIntent({
     source_manifest: opts.source_manifest,
     execution_contract: task.metadata.execution_contract,
+    work_item: selectedWorkItem,
   });
   const stopRules = uniqueSorted([
     ...decision.executionPacket.mustNot,
@@ -395,12 +496,14 @@ export function buildCanonicalAgentWorkOrder(opts: {
     task: {
       id: task.metadata.task_id,
       revision: task.metadata.revision,
-      objective: compactText(summary, task.narrative.title),
+      objective: compactText(selectedWorkItem?.objective ?? summary, task.narrative.title),
       acceptance_criteria: acceptanceCriteria({
         task_envelope: taskEnvelope,
         source_manifest: opts.source_manifest,
+        work_item: selectedWorkItem,
       }),
-      unresolved_questions: [],
+      unresolved_questions: [...(taskCentric?.current_plan?.proposal.unresolved_questions ?? [])],
+      work_item_id: selectedWorkItem?.id ?? null,
     },
     state_fingerprint: stateFingerprint,
     state_fingerprint_policy: AGENT_WORK_ORDER_STATE_FINGERPRINT_POLICY,
@@ -426,6 +529,10 @@ export function buildCanonicalAgentWorkOrder(opts: {
         (excerpt) => excerpt.status === "included",
       ),
     },
+    planning_context: {
+      ...planningContextIdentity,
+      digest: taskCentricDigest(planningContextIdentity),
+    },
     knowledge_refs: opts.knowledge_retrieval.knowledge_refs,
     prepared_evidence: opts.knowledge_retrieval.prepared_evidence.map((excerpt) => ({
       role,
@@ -435,6 +542,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
       task_envelope: taskEnvelope,
       source_manifest: opts.source_manifest,
       knowledge_retrieval: opts.knowledge_retrieval,
+      work_item: selectedWorkItem,
     }),
     required_outputs: [
       {
@@ -443,6 +551,12 @@ export function buildCanonicalAgentWorkOrder(opts: {
         description: "Agent-reported semantic outcome; observed facts remain supervisor-owned.",
         required: true,
       },
+      ...(selectedWorkItem?.expected_outputs.map((output) => ({
+        id: output,
+        kind: "report" as const,
+        description: `Typed output required by WorkItem ${selectedWorkItem.id}.`,
+        required: true,
+      })) ?? []),
     ],
     verification_intent: verification,
     semantic_result_schema: AGENT_WORK_ORDER_SEMANTIC_RESULT_SCHEMA,

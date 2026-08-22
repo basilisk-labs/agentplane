@@ -11,6 +11,7 @@ import {
 import { execFileAsync } from "@agentplaneorg/core/process";
 import {
   taskExecutionBaseFromExtensions,
+  isGitObjectId,
   type TaskExecutionRouteMode,
   type TaskExecutionRouteRequest,
 } from "@agentplaneorg/core/tasks";
@@ -33,6 +34,30 @@ import type {
 import { findRelocatableWorktreeForBranch } from "../workspace-allocation/rediscover.js";
 
 type FrozenBaseIdentity = Readonly<{ base_ref: string; base_sha: string }>;
+
+export class TaskExecutionBaseResolutionError extends Error {
+  readonly reason_code: "git_base_identity_unavailable" | "git_base_identity_invalid";
+
+  constructor(
+    reasonCode: TaskExecutionBaseResolutionError["reason_code"],
+    message: string,
+    options?: ErrorOptions,
+  ) {
+    super(message, options);
+    this.name = "TaskExecutionBaseResolutionError";
+    this.reason_code = reasonCode;
+  }
+}
+
+function requireGitBaseSha(value: string, source: string): string {
+  if (!isGitObjectId(value)) {
+    throw new TaskExecutionBaseResolutionError(
+      "git_base_identity_invalid",
+      `${source} must be a non-zero Git object id.`,
+    );
+  }
+  return value;
+}
 
 function repositoryMode(ctx: CommandContext): TaskExecutionRouteMode {
   return ctx.config.workflow_mode === "branch_pr" ? "branch_pr" : "direct";
@@ -178,11 +203,18 @@ async function resolveFrozenBaseIdentity(opts: {
   if ((explicitRef && !explicitSha) || (!explicitRef && explicitSha)) {
     throw new Error("Task execution base override requires both base_ref and base_sha.");
   }
-  if (explicitRef && explicitSha) return { base_ref: explicitRef, base_sha: explicitSha };
+  if (explicitRef && explicitSha) {
+    return { base_ref: explicitRef, base_sha: requireGitBaseSha(explicitSha, "Task base_sha") };
+  }
 
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const stored = frozenBaseFromTask(opts.task);
-  if (stored && "base_ref" in stored) return stored;
+  if (stored && "base_ref" in stored) {
+    return {
+      ...stored,
+      base_sha: requireGitBaseSha(stored.base_sha, "Stored task execution base_sha"),
+    };
+  }
   const configuredBase = await resolveBaseBranch({ cwd: gitRoot, mode: opts.selectedMode });
   const currentBranch = await gitCurrentBranch(gitRoot);
   const base_ref = stored?.base_sha
@@ -197,11 +229,20 @@ async function resolveFrozenBaseIdentity(opts: {
         currentBranch.startsWith("agentplane/workspace/")
       ? (configuredBase ?? currentBranch)
       : currentBranch;
-  return {
-    base_ref,
-    base_sha:
-      stored?.base_sha ?? (await gitRevParse(gitRoot, [base_ref]).catch(() => "0".repeat(40))),
-  };
+  const storedSha = stored?.base_sha
+    ? requireGitBaseSha(stored.base_sha, "Legacy task execution base_sha")
+    : null;
+  let resolvedSha: string;
+  try {
+    resolvedSha = storedSha ?? (await gitRevParse(gitRoot, [base_ref]));
+  } catch (error) {
+    throw new TaskExecutionBaseResolutionError(
+      "git_base_identity_unavailable",
+      `Cannot resolve task execution base ${base_ref}; repository preparation is blocked.`,
+      { cause: error },
+    );
+  }
+  return { base_ref, base_sha: requireGitBaseSha(resolvedSha, "Resolved task execution base") };
 }
 
 function assertBatchCompatible(contexts: readonly TaskExecutionContext[]): void {

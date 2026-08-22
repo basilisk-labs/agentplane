@@ -4,6 +4,7 @@ import {
   computePlanDigest,
   hostUserDecisionDigest,
   parseHostUserDecision,
+  taskCentricAggregateFromExtensions,
 } from "@agentplaneorg/core/tasks";
 import {
   prepareAgentWorkOrder,
@@ -100,6 +101,7 @@ export function makeRunTaskPlanApproveHandler(getCtx: (cmd: string) => Promise<C
     let by = p.by;
     let note = p.note;
     let expectedTaskRevision: number | undefined;
+    let expectedPlanDigest: string | undefined;
     let approvalEvidence: Parameters<typeof cmdTaskPlanApprove>[0]["approvalEvidence"] = {
       kind: "manual_operator",
       digest: null,
@@ -154,7 +156,9 @@ export function makeRunTaskPlanApproveHandler(getCtx: (cmd: string) => Promise<C
       }
       const decision = parseHostUserDecision(p.hostUserDecision);
       const task = await loadTaskFromContext({ ctx: commandCtx, taskId: p.taskId });
-      const planDigest = computePlanDigest(task.sections?.Plan ?? "");
+      const planDigest =
+        taskCentricAggregateFromExtensions(task.extensions)?.current_plan?.digest ??
+        computePlanDigest(task.sections?.Plan ?? "");
       if (
         decision.task_id !== p.taskId ||
         decision.plan_digest !== planDigest ||
@@ -172,6 +176,7 @@ export function makeRunTaskPlanApproveHandler(getCtx: (cmd: string) => Promise<C
         });
       }
       const digest = hostUserDecisionDigest(decision);
+      expectedPlanDigest = decision.plan_digest;
       by = `HOST:${decision.host_id}:USER`;
       expectedTaskRevision = step.preconditionFingerprint.task_revision;
       note = [p.note?.trim(), `host_user_decision=${digest}`].filter(Boolean).join("; ");
@@ -185,6 +190,7 @@ export function makeRunTaskPlanApproveHandler(getCtx: (cmd: string) => Promise<C
       by: by ?? "",
       note,
       expectedTaskRevision,
+      expectedPlanDigest,
       approvalEvidence,
     });
   };

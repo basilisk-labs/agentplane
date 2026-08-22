@@ -1,4 +1,4 @@
-import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+import { normalizeTaskStatus, parseTaskStatus } from "@agentplaneorg/core/tasks";
 
 import {
   toTaskSummary,
@@ -109,7 +109,7 @@ export async function resolveTaskDependencyState(
       missing.push(depId);
       continue;
     }
-    const status = normalizeTaskStatus(dep.status);
+    const status = parseTaskStatus(dep.status);
     if (status !== "DONE") incomplete.push(depId);
   }
 
@@ -156,7 +156,7 @@ export function buildDependencyState(tasks: TaskSummary[]): Map<string, Dependen
         missing.push(depId);
         continue;
       }
-      const status = normalizeTaskStatus(dep.status);
+      const status = parseTaskStatus(dep.status);
       if (status !== "DONE") {
         incomplete.push(depId);
       }
