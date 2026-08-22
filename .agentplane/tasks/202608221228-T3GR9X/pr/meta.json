@@ -1,0 +1,22 @@
+{
+  "base": "main",
+  "branch": "task/202608221228-T3GR9X/prepare-and-publish-v0-7-8-from-exact-main-ee460",
+  "created_at": "2026-08-22T12:32:07.817Z",
+  "diffstat_sha256": "sha256:a50ed4b4c0cb61d5eba43cad1f061c9200bb165cb1cc0756386e513a6f559831",
+  "last_verified_at": "2026-08-22T12:34:56.262Z",
+  "last_verified_diffstat_sha256": "sha256:a50ed4b4c0cb61d5eba43cad1f061c9200bb165cb1cc0756386e513a6f559831",
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608221228-T3GR9X",
+  "updated_at": "2026-08-22T12:32:07.817Z",
+  "verify": {
+    "status": "pass"
+  }
+}
