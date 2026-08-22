@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 15d876aa0086935ba883ad2fde99368125bd280e..c651ebc5c1bfea5e9a7ba0eb66dab528eb9b5482",
+      "command": "git diff --check e5b25698cb3ac1ec3d0242e8ad4a5c253ca176c9..1f5e97a7198380b8f7b2190ffebcbc71daed4b38",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 15d876aa0086935ba883ad2fde99368125bd280e..c651ebc5c1bfea5e9a7ba0eb66dab528eb9b5482",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB e5b25698cb3ac1ec3d0242e8ad4a5c253ca176c9..1f5e97a7198380b8f7b2190ffebcbc71daed4b38",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,28 +21,7 @@
         "M\t.agentplane/tasks/202608212244-6XZAYD/pr/github-body.md",
         "M\t.agentplane/tasks/202608212244-6XZAYD/pr/meta.json",
         "M\t.agentplane/tasks/202608212244-6XZAYD/pr/review.md",
-        "M\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts",
-        "M\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.critical.task-centric.test.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
-        "M\tpackages/agentplane/src/commands/task/finish-closeout-journal.ts",
-        "M\tpackages/agentplane/src/commands/task/finish-shared.ts",
-        "M\tpackages/agentplane/src/commands/task/plan.unit.test.ts",
-        "M\tpackages/agentplane/src/commands/task/shared/dependencies.ts",
-        "M\tpackages/agentplane/src/commands/task/supervision-outcome-disposition.test.ts",
-        "M\tpackages/agentplane/src/commands/task/supervision-outcome-disposition.ts",
-        "M\tpackages/agentplane/src/commands/task/task-centric-external-result.test.ts",
-        "M\tpackages/agentplane/src/commands/task/task-centric-external-result.ts",
-        "M\tpackages/agentplane/src/commands/workflow.verify-hooks.test.ts",
-        "M\tpackages/agentplane/src/runner/usecases/agent-work-order-build.ts",
-        "M\tpackages/agentplane/src/runner/usecases/task-run-recipe-context.ts",
-        "M\tpackages/core/src/tasks/task-centric/compatibility.ts",
-        "M\tpackages/core/src/tasks/task-centric/graph.ts",
-        "M\tpackages/core/src/tasks/task-centric/lifecycle.ts",
-        "M\tpackages/core/src/tasks/task-centric/orchestrator.test.ts",
-        "M\tpackages/core/src/tasks/task-centric/orchestrator.ts",
-        "M\tpackages/core/src/tasks/task-centric/policy.ts",
-        "M\tpackages/core/src/tasks/task-centric/task-centric.test.ts"
+        "M\tscripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
       ]
     },
     {
@@ -52,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "15d876aa0086935ba883ad2fde99368125bd280e",
-  "implementation_commit": "c651ebc5c1bfea5e9a7ba0eb66dab528eb9b5482",
+  "execution_base_commit": "e5b25698cb3ac1ec3d0242e8ad4a5c253ca176c9",
+  "implementation_commit": "1f5e97a7198380b8f7b2190ffebcbc71daed4b38",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
