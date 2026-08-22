@@ -15,13 +15,8 @@ Fix the proven task-centric Core regression in null-ID external result handling:
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Hosted P1 review found ambiguous null-ID routing when multiple WorkItems are CLAIMED; fail closed
-before scheduler fallback and add focused coverage.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
