@@ -14,6 +14,7 @@ import {
   parseHostUserDecision,
   parseOperationLease,
   parsePlanProposal,
+  rebaseExecutionGrantScope,
 } from "./plan-execution-grant.js";
 
 const REPOSITORY_IDENTITY = `sha256:${"f".repeat(64)}`;
@@ -212,6 +213,41 @@ describe("task-scoped execution grants", () => {
         repository_identity: REPOSITORY_IDENTITY,
       }),
     ).toBe(false);
+
+    const rebased = rebaseExecutionGrantScope({
+      grant,
+      previous_execution_contract: initial,
+      next_execution_contract: materiallyExpanded,
+    });
+    expect(rebased).toMatchObject({
+      grant_id: grant.grant_id,
+      actor: grant.actor,
+      approval_kind: grant.approval_kind,
+      approval_evidence_digest: grant.approval_evidence_digest,
+      issued_at: grant.issued_at,
+    });
+    expect(rebased.digest).not.toBe(grant.digest);
+    expect(
+      isExecutionGrantActive({
+        grant: rebased,
+        task_id: "task-1",
+        plan: "Implement the approved repository change",
+        execution_contract: materiallyExpanded,
+        repository_identity: REPOSITORY_IDENTITY,
+      }),
+    ).toBe(true);
+
+    const completionDrift = {
+      ...materiallyExpanded,
+      verification: { required_evidence: ["task_outcome", "hosted_integration"] },
+    } satisfies TaskExecutionContract;
+    expect(() =>
+      rebaseExecutionGrantScope({
+        grant,
+        previous_execution_contract: initial,
+        next_execution_contract: completionDrift,
+      }),
+    ).toThrow(/logical completion contract/u);
   });
 
   it("deterministically upgrades a valid legacy grant without changing historical evidence", () => {

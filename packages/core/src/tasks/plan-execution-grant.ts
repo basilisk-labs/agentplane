@@ -377,6 +377,43 @@ export function isExecutionGrantActive(opts: {
   );
 }
 
+export function rebaseExecutionGrantScope(opts: {
+  grant: ExecutionGrant;
+  previous_execution_contract: TaskExecutionContract;
+  next_execution_contract: TaskExecutionContract;
+}): ExecutionGrant {
+  const previousScopeDigest = computeExecutionScopeDigest(opts.previous_execution_contract);
+  const previousCompletionDigest = computeLogicalCompletionContractDigest(
+    opts.previous_execution_contract,
+  );
+  if (
+    opts.grant.scope_digest !== previousScopeDigest ||
+    opts.grant.completion_contract_digest !== previousCompletionDigest
+  ) {
+    throw new Error("Execution grant is not active for the previous execution contract.");
+  }
+
+  const nextCompletionDigest = computeLogicalCompletionContractDigest(opts.next_execution_contract);
+  if (nextCompletionDigest !== previousCompletionDigest) {
+    throw new Error(
+      "Execution scope rebase cannot change the logical completion contract " +
+        `(previous=${previousCompletionDigest} next=${nextCompletionDigest}).`,
+    );
+  }
+
+  const { digest: _digest, ...current } = opts.grant;
+  const unsigned = {
+    ...current,
+    scope_digest: computeExecutionScopeDigest(opts.next_execution_contract),
+  };
+  const rebased = parseExecutionGrant({
+    ...unsigned,
+    digest: executionGrantDigest(unsigned),
+  });
+  if (!rebased) throw new Error("Execution scope rebase produced an invalid grant.");
+  return rebased;
+}
+
 function removeValidBase64UrlPadding(encoded: string): string | null {
   let paddingStart = encoded.length;
   while (paddingStart > 0 && encoded.codePointAt(paddingStart - 1) === 61) {

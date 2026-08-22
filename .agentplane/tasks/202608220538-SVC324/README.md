@@ -4,7 +4,7 @@ title: "Resolve task autonomy and evaluator rework incidents"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -96,10 +96,33 @@ execution_contract:
       - "packages/core/src/tasks"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - ".agentplane"
+      - "docs"
+      - "packages/agentplane"
+      - "packages/core"
+    changed_paths:
+      - ".agentplane/policy/incidents.md"
+      - "docs/developer/incident-archive.mdx"
+      - "packages/agentplane/assets/policy/incidents.md"
+      - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-verification.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+      - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+      - "packages/agentplane/src/commands/task/scope-extend.ts"
+      - "packages/agentplane/src/commands/task/supervision-outcome-disposition.test.ts"
+      - "packages/agentplane/src/commands/task/supervision-outcome-disposition.ts"
+      - "packages/core/src/tasks/index.ts"
+      - "packages/core/src/tasks/plan-execution-grant.test.ts"
+      - "packages/core/src/tasks/plan-execution-grant.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -145,9 +168,17 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:41f9fa1f91041121bf7786d3a782975787e1f4378d46036980c363e3b4005cf9"
+      digest: "sha256:c9282fc95d4168a413ddde11186a8c7c9520641dd5d28d18bd2ff20830aee850"
       escalation_reasons:
         - "central_component:packages/core/src/tasks"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-verification.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+        - "central_path:packages/core/src/tasks/index.ts"
+        - "central_path:packages/core/src/tasks/plan-execution-grant.test.ts"
+        - "central_path:packages/core/src/tasks/plan-execution-grant.ts"
         - "effect_public_api"
         - "effect_security_boundary"
       execution_groups:
@@ -156,10 +187,33 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - ".agentplane"
+          - "docs"
+          - "packages/agentplane"
+          - "packages/core"
+        changed_files:
+          - ".agentplane/policy/incidents.md"
+          - "docs/developer/incident-archive.mdx"
+          - "packages/agentplane/assets/policy/incidents.md"
+          - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-verification.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+          - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+          - "packages/agentplane/src/commands/task/scope-extend.ts"
+          - "packages/agentplane/src/commands/task/supervision-outcome-disposition.test.ts"
+          - "packages/agentplane/src/commands/task/supervision-outcome-disposition.ts"
+          - "packages/core/src/tasks/index.ts"
+          - "packages/core/src/tasks/plan-execution-grant.test.ts"
+          - "packages/core/src/tasks/plan-execution-grant.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -195,7 +249,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "2c0c9c4fabdf7dd0e68b8bf5c5c4d12373b52cd1"
+  message: "🚧 SVC324 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -206,6 +262,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: .agentplane/policy/incidents.md, docs/developer/incident-archive.mdx, packages/agentplane/assets/policy/incidents.md, packages/agentplane/src/commands/shared, packages/agentplane/src/commands/task, packages/core/src/tasks; repository effects: documentation, public_api, security_boundary, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 2c0c9c4fabdf. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -221,8 +280,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The issued execution contract is narrower than the approved plan and must be extended before implementation can satisfy its required tests, public API, documentation, and incident-policy outputs. Recommended action: Approve the exact structured scope extension, derive a scope-rebased execution grant, and issue a fresh EXECUTOR packet. Requested scope: roots=.agentplane/policy/incidents.md,docs/developer/incident-archive.mdx,packages/agentplane/assets/policy/incidents.md,packages/agentplane/src/commands/shared,packages/agentplane/src/commands/task,packages/core/src/tasks; repository effects=documentation,public_api,security_boundary,tests; request digest=sha256:1baafcb9e58c2e99e9d50028bddcdd8d74a3b4d5b791ceed89b19c9208da33bd. Agentplane receipt: external-agent-blocker/tr_5fa7a6ec27b081d4a596594955e7531b/sha256:eb7e3e6cefa452d7220b4e819973a94a99f1542ac4024d8c9883bacdc688d4a9/sha256:1baafcb9e58c2e99e9d50028bddcdd8d74a3b4d5b791ceed89b19c9208da33bd."
+  -
+    type: "status"
+    at: "2026-08-22T06:17:00.832Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 2c0c9c4fabdf. CLI accepted one state-bound external-agent semantic result."
+    commit: "2c0c9c4fabdf7dd0e68b8bf5c5c4d12373b52cd1"
 doc_version: 3
-doc_updated_at: "2026-08-22T05:50:15.823Z"
+doc_updated_at: "2026-08-22T06:17:00.832Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, archive both incidents with exact evidence, and unblock the approved patch release."
 sections:
@@ -656,6 +723,8 @@ extensions:
         revision: 1
         state: "READY"
         validation_result: null
+  implementation_commit:
+    hash: "2c0c9c4fabdf7dd0e68b8bf5c5c4d12373b52cd1"
   task_execution_context:
     base_ref: "main"
     base_sha: "258015fbf8be6e888dae88d12ad78f2dbcaaf89f"

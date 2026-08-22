@@ -15,6 +15,7 @@ const DIRECT_PAUSES = [
   "human_input_required",
   "wait_required",
   "evaluator_rework",
+  "evaluator_blocked",
   "evaluator_human_review",
 ] as const satisfies readonly DirectTaskSupervisorStopCode[];
 
@@ -32,6 +33,7 @@ const BRANCH_PAUSES = [
   "human_input_required",
   "wait_required",
   "evaluator_rework",
+  "evaluator_blocked",
   "evaluator_human_review",
 ] as const satisfies readonly BranchTaskSupervisorStopCode[];
 

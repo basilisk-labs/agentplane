@@ -1,5 +1,11 @@
-import type { TaskRepositoryEffect } from "@agentplaneorg/core/tasks";
+import {
+  EXECUTION_GRANT_EXTENSION_KEY,
+  executionGrantFromExtensions,
+  rebaseExecutionGrantScope,
+  type TaskRepositoryEffect,
+} from "@agentplaneorg/core/tasks";
 
+import type { TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { createCliEmitter, emitCommandResult } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
@@ -133,6 +139,25 @@ export function extendBlockedTaskExecutionContract(opts: {
   }).contract;
 }
 
+export function taskWithRebasedExecutionGrant(opts: {
+  task: TaskData;
+  execution_contract: NonNullable<TaskData["execution_contract"]>;
+}) {
+  const executionGrant = executionGrantFromExtensions(opts.task.extensions);
+  if (!executionGrant) return opts.task;
+  return {
+    ...opts.task,
+    extensions: {
+      ...(opts.task.extensions ?? {}),
+      [EXECUTION_GRANT_EXTENSION_KEY]: rebaseExecutionGrantScope({
+        grant: executionGrant,
+        previous_execution_contract: opts.task.execution_contract!,
+        next_execution_contract: opts.execution_contract,
+      }),
+    },
+  };
+}
+
 export async function cmdTaskScopeExtend(opts: {
   ctx: CommandContext;
   cwd: string;
@@ -204,9 +229,13 @@ export async function cmdTaskScopeExtend(opts: {
       });
     }
     const now = new Date().toISOString();
+    const taskWithRebasedGrant = taskWithRebasedExecutionGrant({
+      task,
+      execution_contract: executionContract,
+    });
     await command.taskBackend.writeTask(
       applyApprovedTaskScopeExtension({
-        task,
+        task: taskWithRebasedGrant,
         executionContract,
         pending,
         scopeRoots: opts.scopeRoots,

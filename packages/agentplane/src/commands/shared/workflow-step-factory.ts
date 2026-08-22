@@ -1,6 +1,10 @@
 import type { TaskData } from "../../backends/task-backend.js";
 import { isRecord } from "../../shared/guards.js";
 import type { RouteBlocker } from "./route-oracle.js";
+import {
+  qualityReviewRequiresImplementationRework,
+  qualityReworkHasNewVerification,
+} from "./route-decision-verification.js";
 import { cliOperationStep } from "./workflow-step-authority.js";
 import {
   authorityRef,
@@ -182,6 +186,32 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
     state.task.verification?.state === "ok" &&
     String(state.task.status).toUpperCase() === "DOING"
   ) {
+    if (
+      qualityReviewRequiresImplementationRework(state.task) &&
+      !qualityReworkHasNewVerification(state.task)
+    ) {
+      return agentEpisodeStep({
+        state,
+        id: "agent.direct_implementation_rework",
+        code: "implementation_rework_required",
+        phase: "implementation_rework_required",
+        checkout: "current_checkout",
+        role: "CODER",
+        purpose: "implementation_rework",
+        summary: "apply the repository-fixable EVALUATOR findings before reverification",
+        objective:
+          "Implement the bounded evaluator recovery context, then return control for fresh deterministic verification.",
+        semanticMutationAllowed: true,
+        mustNot: [
+          "do not rerun the unchanged quality-review episode before implementation changes",
+          "do not preserve stale verification as evidence for the revised implementation",
+        ],
+        returnControlWhen:
+          "after CODER records the revised implementation; then recompute the route for TESTER verification",
+        evidenceMissing: ["verified_implementation_rework"],
+        selectedBlocker: routeBlockerFor(state, "implementation_rework_required"),
+      });
+    }
     if (state.task.quality_review?.state !== "pass") {
       return agentEpisodeStep({
         state,

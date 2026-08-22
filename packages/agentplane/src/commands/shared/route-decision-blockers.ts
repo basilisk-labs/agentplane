@@ -24,6 +24,7 @@ import {
 import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
 import {
   hasAcceptedVerificationForCurrentImplementation,
+  qualityReviewRequiresImplementationRework,
   qualityReworkHasNewVerification,
   verificationReworkHasNewImplementation,
 } from "./route-decision-verification.js";
@@ -166,7 +167,7 @@ async function qualityReviewIsFreshForHead(opts: {
   task: TaskData;
   headSha: string | null;
   batchOwnership: RouteBatchOwnership;
-  expectedState: "pass" | "rework";
+  expectedState: "pass" | "rework" | "blocked";
   workflowMode: "direct" | "branch_pr";
 }): Promise<boolean> {
   const review = opts.task.quality_review;
@@ -399,7 +400,7 @@ export async function deriveBlockers(opts: {
     }
   }
   if (opts.task.status === "DONE") {
-    if (opts.workflowMode === "branch_pr" && opts.task.quality_review?.state === "rework") {
+    if (opts.workflowMode === "branch_pr" && qualityReviewRequiresImplementationRework(opts.task)) {
       addBlocker(
         blockers,
         "implementation_rework_required",
@@ -460,7 +461,7 @@ export async function deriveBlockers(opts: {
       !implementationReworkRequired &&
       taskIsDoing &&
       opts.task.verification?.state === "ok" &&
-      opts.task.quality_review?.state === "rework" &&
+      qualityReviewRequiresImplementationRework(opts.task) &&
       !qualityReworkHasNewVerification(opts.task)
     ) {
       implementationReworkRequired = await qualityReviewIsFreshForHead({
@@ -468,7 +469,7 @@ export async function deriveBlockers(opts: {
         task: opts.task,
         headSha: opts.prFlow?.branch.headSha ?? opts.resume.head_sha,
         batchOwnership: opts.batchOwnership,
-        expectedState: "rework",
+        expectedState: opts.task.quality_review?.state === "blocked" ? "blocked" : "rework",
         workflowMode: opts.workflowMode,
       });
     }

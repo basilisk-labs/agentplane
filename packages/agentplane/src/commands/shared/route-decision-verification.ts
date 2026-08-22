@@ -24,11 +24,19 @@ function hostedCloseVerificationTarget(
     : null;
 }
 
+export function qualityReviewRequiresImplementationRework(task: TaskData): boolean {
+  return (
+    task.quality_review?.state === "rework" ||
+    (task.quality_review?.state === "blocked" &&
+      task.quality_review.recovery_reason !== "deterministic_evidence_gap")
+  );
+}
+
 export function qualityReworkHasNewVerification(task: TaskData): boolean {
   const reviewUpdatedAt = task.quality_review?.updated_at;
   const verificationUpdatedAt = task.verification?.updated_at;
   if (
-    task.quality_review?.state !== "rework" ||
+    !qualityReviewRequiresImplementationRework(task) ||
     task.verification?.state !== "ok" ||
     !reviewUpdatedAt ||
     !verificationUpdatedAt
