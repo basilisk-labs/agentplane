@@ -2,10 +2,10 @@
 id: "202608212244-6XZAYD"
 title: "Implement the task-centric refactoring roadmap v2 and publish the next patch release"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 76
+revision: 77
 origin:
   system: "manual"
 depends_on: []
@@ -66,9 +66,9 @@ quality_review:
     - "Residual risk: Hosted checks must pass against the published exact PR head before integration."
     - "Residual risk: Release publication remains gated by a dedicated review and closure of active incidents."
 token_usage:
-  agent_runs: 26
+  agent_runs: 33
   input_tokens: null
-  journal_digest: "sha256:92c2a2fd1cdfc5c4b53ec49f0aa0a5f616470d45e3ec01b417458301a171387f"
+  journal_digest: "sha256:276581a31d311735ac50607236fc2801e2a314cdbb0a1467923ff371dd348370"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -78,7 +78,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-22T03:49:47.290Z"
+  updated_at: "2026-08-22T04:16:51.882Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -629,8 +629,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "2bfa2c162a9ee70580ba00e2f76ae072f084152e"
-  message: "🚧 6XZAYD task: pre-merge closure"
+  hash: "cd6e0dfd1464de7964c2c19661fdc95b646287fc"
+  message: "🚧 6XZAYD task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -683,6 +683,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 1f5e97a71983. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -1013,8 +1016,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-22T04:16:51.882Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "cd6e0dfd1464de7964c2c19661fdc95b646287fc"
 doc_version: 3
-doc_updated_at: "2026-08-22T04:15:23.139Z"
+doc_updated_at: "2026-08-22T04:16:51.917Z"
 doc_updated_by: "CODER"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:
@@ -3066,6 +3077,9 @@ extensions:
     schema_version: 1
     status: "applied"
     transition_id: "tr_45dea0a7848952c5e2fd67ace7a71701"
+  implementation_commit:
+    hash: "2bfa2c162a9ee70580ba00e2f76ae072f084152e"
+    message: "🚧 6XZAYD task: pre-merge closure"
   task_execution_context:
     base_ref: "main"
     base_sha: "134c95fd629d5ebcf0e17196ccb4b44f60c993fd"
@@ -5098,12 +5112,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/26` agent runs
+- Completeness: `0/33` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:92c2a2fd1cdfc5c4b53ec49f0aa0a5f616470d45e3ec01b417458301a171387f`
+- Journal digest: `sha256:276581a31d311735ac50607236fc2801e2a314cdbb0a1467923ff371dd348370`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-22T03:49:47.290Z`
+- Updated at: `2026-08-22T04:16:51.882Z`
