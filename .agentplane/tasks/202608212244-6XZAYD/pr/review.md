@@ -31,14 +31,19 @@ Created: 2026-08-21T22:50:57.507Z
 ```text
  depcruise.config.cjs                               |   25 +
  .../task-centric-backend-adapter.test.ts           |  500 ++++++
- .../task-backend/task-centric-backend-adapter.ts   |  689 ++++++++
+ .../task-backend/task-centric-backend-adapter.ts   |  550 +++++++
+ .../task-backend/task-centric-backend-runtime.ts   |  163 ++
+ .../src/cli/run-cli.core.task-run.test.ts          |   12 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |    6 +-
  .../src/cli/run-cli.critical.task-centric.test.ts  |  393 +++++
  .../evaluator-episode.calibration.test.ts          |    8 +-
+ .../hermes/hermes-lifecycle.command.test.ts        |   93 ++
+ .../hermes-reconcile-duplicates.command.test.ts    |   57 +
  .../src/commands/hermes/hermes-runtime.ts          |   20 +-
- .../src/commands/hermes/hermes.command.test.ts     |  151 +-
+ .../src/commands/hermes/hermes.command.test.ts     |  293 ++--
  .../src/commands/shared/workflow-step-reducer.ts   |    6 +-
- .../src/commands/shared/workflow-step.test.ts      |   32 +
+ .../src/commands/shared/workflow-step.test.ts      |  181 +--
+ .../src/commands/shared/workflow-step.testkit.ts   |  142 ++
  .../src/commands/task/advance.command.ts           |    6 +-
  .../src/commands/task/agent-action-packet.test.ts  |   12 +
  .../src/commands/task/agent-action-packet.ts       |   29 +-
@@ -66,7 +71,8 @@ Created: 2026-08-21T22:50:57.507Z
  .../commands/task/task-centric-external-result.ts  |  218 +++
  .../src/commands/task/verify-record-execute.ts     |   24 +-
  .../task/verify-record.durability.unit.test.ts     |    4 +-
- .../src/commands/task/verify-record.unit.test.ts   |   13 +-
+ .../src/commands/task/verify-record.testkit.ts     |   18 +
+ .../src/commands/task/verify-record.unit.test.ts   |   62 +-
  packages/agentplane/src/commands/workflow.test.ts  |    1 +
  .../src/commands/workflow.verify-hooks.test.ts     |   11 +-
  .../src/runner/context/task-context.test.ts        |   16 +-
@@ -88,8 +94,9 @@ Created: 2026-08-21T22:50:57.507Z
  .../src/runner/usecases/task-run-lifecycle.test.ts |  151 +-
  .../runner/usecases/task-run-lifecycle.testkit.ts  |  148 ++
  ...task-run-process-identity-serialization.test.ts |    4 +-
+ .../src/runner/usecases/task-run-recipe-context.ts |   28 +
  ...task-run-recipe-write-scope.integration.test.ts |   56 +-
- .../agentplane/src/runner/usecases/task-run.ts     |   29 +-
+ .../agentplane/src/runner/usecases/task-run.ts     |   17 +-
  .../architecture-guard.test.ts                     |   19 +
  .../runtime/task-execution-context/resolve.test.ts |   18 +
  .../src/runtime/task-execution-context/resolve.ts  |   55 +-
@@ -120,7 +127,7 @@ Created: 2026-08-21T22:50:57.507Z
  schemas/agent-work-order-v2.schema.json            |  213 +++
  .../baselines/v0.7-compatibility-candidate.json    |   25 +-
  .../check-compatibility-contract-baseline.mjs      |   15 +-
- 91 files changed, 10455 insertions(+), 432 deletions(-)
+ 98 files changed, 10833 insertions(+), 756 deletions(-)
 ```
 
 </details>

@@ -11,6 +11,24 @@ export function makeVerifyRecordTask(overrides: Partial<TaskData>): TaskData {
   return makeTaskFixture({ status: "DONE", owner: "me", ...overrides });
 }
 
+export function makeVerifyRecordDoc(opts: {
+  summary: string;
+  verifySteps: string;
+  verificationLines?: readonly string[];
+}): string {
+  return [
+    "## Summary",
+    opts.summary,
+    "",
+    "## Verify Steps",
+    opts.verifySteps,
+    "",
+    "## Verification",
+    ...(opts.verificationLines ?? []),
+    "",
+  ].join("\n");
+}
+
 export function makeVerifyRecordContext(overrides?: Partial<CommandContext>): CommandContext {
   return makeTaskCommandContext({
     taskBackend: makeTaskBackendDouble(),

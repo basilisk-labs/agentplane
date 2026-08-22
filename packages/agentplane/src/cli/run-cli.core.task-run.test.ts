@@ -7,7 +7,7 @@ import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
-  mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   runCliSilent,
   writeDefaultConfig,
 } from "@agentplane/testkit";
@@ -170,7 +170,7 @@ describe("runCli task run", () => {
   });
 
   it("prepares a codex /goal bootstrap in dry-run mode", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
     const taskId = await createStartedRunnerTask(root, "Run task through Codex goal");
 
@@ -231,9 +231,9 @@ describe("runCli task run", () => {
       expect(payload.adapter_id).toBe("codex");
       expect(payload.result_path).toContain(`/runs/`);
       expect(payload.execution_preview.route).toEqual({
-        requested_mode: "repository",
+        requested_mode: "auto",
         selected_mode: "direct",
-        reason_codes: ["repository_mode_selected"],
+        reason_codes: ["agent_preferred_direct_compatible"],
       });
       expect(payload.execution_preview.context.blueprint_id).toBe("analysis.light");
       expect(Number.isFinite(payload.execution_preview.context.task_sections)).toBe(true);
@@ -386,7 +386,7 @@ describe("runCli task run", () => {
   });
 
   it("keeps historical task-local runs visible through public status, inspect, and logs", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
     const taskId = await createStartedRunnerTask(root, "Inspect a historical task-local run");
     const runId = "run-legacy-public";
@@ -486,7 +486,7 @@ describe("runCli task run", () => {
   });
 
   it("pins status, inspect, and logs to run authority before timestamp ordering", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
     const taskId = await createStartedRunnerTask(root, "Select runner truth before wall clock");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
