@@ -1,10 +1,11 @@
 ---
 id: "202608221335-6DSF3R"
 title: "Fix idempotent null-WorkItem external result acceptance"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -59,6 +60,20 @@ quality_review:
     - "CLI-owned verification passed the declared test with 5 tests, 27 assertions, and no failures."
     - "Residual risk: The PR head still requires exact-SHA hosted checks before integration."
     - "Residual risk: The separate context.maximum_assimilation compatibility E2E remains a release gate after this Core repair merges."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:31987222af5bd03ce1982147ec9a7ab02075033caf7f74998fbfdbc38b34c80e"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-22T13:44:40.779Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -214,8 +229,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "497e1f510d9bfee1cb55cfc21002f6442af26690"
-  message: "🚧 6DSF3R task: apply external agent result"
+  hash: "14be5496bbc51ca4d291b5f2702865934d7ae2ca"
+  message: "🚧 6DSF3R task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -223,6 +238,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 497e1f510d9b. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -245,9 +263,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-22T13:44:40.779Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "14be5496bbc51ca4d291b5f2702865934d7ae2ca"
 doc_version: 3
-doc_updated_at: "2026-08-22T13:42:40.923Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-22T13:44:40.789Z"
+doc_updated_by: "CODER"
 description: "Fix the proven task-centric Core regression in null-ID external result handling: first acceptance must resolve a single claimed or ready WorkItem, and an exact replay after evidence persistence must use the mutation receipt before scheduler selection. Add focused unit coverage. Do not modify context code. This replaces unpublished Task 202608221325-NQJQ5K whose WorkItemGraph incorrectly declared repository sources as upstream required_inputs."
 sections:
   Summary: |-
@@ -495,7 +521,23 @@ extensions:
       schema_version: 1
       task_id: "202608221335-6DSF3R"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608221335-6DSF3R"
+            - "git:497e1f510d9bfee1cb55cfc21002f6442af26690"
+          check_id: "check-null-workitem-core-regression"
+          command_identity: "bun test packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-22T13:42:38.704Z"
+          repository_snapshot_digest: "sha256:a127ad80d571e1832da3bdd57b9016e8674a266dc187723fc4223362b6f67874"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608221335-6DSF3R"
     intent:
       acceptance_criteria:
@@ -511,12 +553,12 @@ extensions:
 
         Fix the proven task-centric Core regression in null-ID external result handling: first acceptance must resolve a single claimed or ready WorkItem, and an exact replay after evidence persistence must use the mutation receipt before scheduler selection. Add focused unit coverage. Do not modify context code. This replaces unpublished Task 202608221325-NQJQ5K whose WorkItemGraph incorrectly declared repository sources as upstream required_inputs.
       task_id: "202608221335-6DSF3R"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 11
     schema_version: 1
-    updated_at: "2026-08-22T13:42:42.297Z"
+    updated_at: "2026-08-22T13:44:40.779Z"
     work_items:
       fix-null-workitem-external-result-replay:
         attempt: 1
@@ -599,11 +641,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608221335-6DSF3R"
+      legacy-finish:202608221335-6DSF3R:2026-08-22T13:42:38.704Z:497e1f510d9bfee1cb55cfc21002f6442af26690:
+        aggregate_digest: "sha256:ddf186d7fbde72f0932291dc9b1d5a2ae0211d1fa4edf045747a68281a7aa8f1"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-22T13:44:40.779Z"
+          cause_refs:
+            - "task-verification:202608221335-6DSF3R"
+            - "git:497e1f510d9bfee1cb55cfc21002f6442af26690"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_53e4a4a3a22538624743dac4"
+          mutation_id: "legacy-finish:202608221335-6DSF3R:2026-08-22T13:42:38.704Z:497e1f510d9bfee1cb55cfc21002f6442af26690"
+          plan_digest: "sha256:2b566e48e9e6c5b64c188c70b923c0fef03c5c7b2fd6ff73e5d4f2dcc28238ec"
+          plan_revision: 1
+          repository_fingerprint: "sha256:a127ad80d571e1832da3bdd57b9016e8674a266dc187723fc4223362b6f67874"
+          schema_version: 1
+          task_id: "202608221335-6DSF3R"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608221335-6DSF3R:2026-08-22T13:42:38.704Z:497e1f510d9bfee1cb55cfc21002f6442af26690"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202608221335-6DSF3R"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "497e1f510d9bfee1cb55cfc21002f6442af26690"
+    message: "🚧 6DSF3R task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ee460292f9d253a5ba6fe2ca95a6d0fd5e7a7088"
@@ -702,3 +770,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:31987222af5bd03ce1982147ec9a7ab02075033caf7f74998fbfdbc38b34c80e`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-22T13:44:40.779Z`
