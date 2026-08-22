@@ -13,7 +13,7 @@ Created: 2026-08-22T05:45:29.328Z
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: blueprint snapshot refreshed after authorized pre-merge closure preparation; local, evaluator, and hosted evidence pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
