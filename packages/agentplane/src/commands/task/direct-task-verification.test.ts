@@ -504,6 +504,16 @@ describe("direct task verification", () => {
         },
       ],
     });
+    const artifact = JSON.parse(
+      await readFile(path.join(cwd, result.artifact_path), "utf8"),
+    ) as { status: string; checks: Array<{ check_ids: string[] }> };
+    expect(artifact).toMatchObject({
+      status: "unsupported",
+      checks: [{ check_ids: ["task_outcome"] }],
+    });
+    expect(artifact.checks.flatMap((check) => check.check_ids)).not.toContain(
+      "full_regression",
+    );
     expect(mocks.runProcess).toHaveBeenCalledOnce();
   });
 
