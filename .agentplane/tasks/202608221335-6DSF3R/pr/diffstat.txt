@@ -1,3 +1,5 @@
+ .agentplane/policy/incidents.md                    |   1 +
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  .../task/task-centric-external-result.test.ts      | 143 +++++++++++++++++++--
  .../commands/task/task-centric-external-result.ts  |  39 +++++-
- 2 files changed, 165 insertions(+), 17 deletions(-)
+ 4 files changed, 167 insertions(+), 17 deletions(-)

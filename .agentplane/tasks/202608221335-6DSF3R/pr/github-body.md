@@ -16,7 +16,7 @@ Fix the proven task-centric Core regression in null-ID external result handling:
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,9 +27,11 @@ Fix the proven task-centric Core regression in null-ID external result handling:
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |   1 +
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  .../task/task-centric-external-result.test.ts      | 143 +++++++++++++++++++--
  .../commands/task/task-centric-external-result.ts  |  39 +++++-
- 2 files changed, 165 insertions(+), 17 deletions(-)
+ 4 files changed, 167 insertions(+), 17 deletions(-)
 ```
 
 </details>
