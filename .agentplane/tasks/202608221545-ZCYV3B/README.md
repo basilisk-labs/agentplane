@@ -4,7 +4,7 @@ title: "Stop verification receipts from overstating check coverage"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -28,6 +28,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-22T17:57:15.746Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "e6c2c2e7babc19179e3eb05c4f47ef22af50e665"
+  blueprint_digest: "0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb"
+  evidence_refs:
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-175639471-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-175639471-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/8d2ae778655d8878d5b99644c5230fdb24399026307865b7637cd2f628cb1b37.md"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-175639471-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-175639471-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/20260822-175639471-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608221545-ZCYV3B/README.md"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/130a62c3128d2c65183b6576050702be8ebbbaa3f1f715523a6e65f99f9839fd.patch"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/f6b451504b0430cb04b88210974364309cf97ee7099a552c58b6651a3b3d37e9.json"
+    - ".agentplane/tasks/202608221545-ZCYV3B/verification/20260822175534688-794758a12d1689dc.json"
+    - ".agentplane/tasks/202608221545-ZCYV3B/quality/objects/sha256/eb2f6a7db5a1ae1b7674b0c9b39598156fc79e8ec4033253b2c966f8bc40ec73.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Local evidence binds each selected check to an executed command."
+    - "hosted_integration is excluded from local receipts and remains a hosted-provider gate."
+    - "full_regression is backed only by the distinct successful bun run ci:local:full command."
+    - "The only scope extension is the proven task-centric E2E fixture correction; context and Knowledge Assimilation behavior are unchanged."
+    - "Residual risk: Hosted integration still must pass on the exact PR SHA before merge."
 execution_route:
   frozen: true
   reason_codes:
