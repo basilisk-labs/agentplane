@@ -117,9 +117,7 @@ describe("external verification result", () => {
     mocks.readFile.mockResolvedValue(
       JSON.stringify({
         status: "passed",
-        checks: [
-          { command: "bun run test:fast", check_ids: ["task_outcome"], exit_code: 0 },
-        ],
+        checks: [{ command: "bun run test:fast", check_ids: ["task_outcome"], exit_code: 0 }],
       }),
     );
 
