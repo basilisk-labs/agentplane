@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "command": "bun run check:types-files",
+      "duration_ms": 47,
+      "exit_code": 0,
+      "script": "check:types-files",
+      "stderr_tail": "$ node scripts/checks/check-types-files.mjs\n",
+      "stdout_tail": "types.ts guardrail OK (count=10, max=10)\n"
+    },
+    {
+      "command": "bun run typecheck",
+      "duration_ms": 90,
+      "exit_code": 0,
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202608221115-2H0QP2"
+}
