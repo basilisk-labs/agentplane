@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 879045238ae72898ceb83d675e669e8549951468..8bd682c6f586c4e86bfce1465bca2b31d922a568",
+      "command": "git diff --check f38b78470982b1c8342dba0eb6596129b7371686..3c73f754e85f8525c528232643b7faa00a2bfa63",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,11 +13,26 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 879045238ae72898ceb83d675e669e8549951468..8bd682c6f586c4e86bfce1465bca2b31d922a568",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB f38b78470982b1c8342dba0eb6596129b7371686..3c73f754e85f8525c528232643b7faa00a2bfa63",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\tpackages/agentplane/src/commands/task/finish-closeout-journal.ts"
+        "M\t.agentplane/tasks/202608212244-6XZAYD/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608212244-6XZAYD/pr/github-body.md",
+        "M\t.agentplane/tasks/202608212244-6XZAYD/pr/meta.json",
+        "M\t.agentplane/tasks/202608212244-6XZAYD/pr/review.md",
+        "M\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-run.test.ts",
+        "A\tpackages/agentplane/src/commands/hermes/hermes-lifecycle.command.test.ts",
+        "A\tpackages/agentplane/src/commands/hermes/hermes-reconcile-duplicates.command.test.ts",
+        "M\tpackages/agentplane/src/commands/hermes/hermes.command.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step.test.ts",
+        "A\tpackages/agentplane/src/commands/shared/workflow-step.testkit.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.testkit.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.unit.test.ts",
+        "A\tpackages/agentplane/src/runner/usecases/task-run-recipe-context.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run.ts"
       ]
     },
     {
@@ -27,8 +42,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "879045238ae72898ceb83d675e669e8549951468",
-  "implementation_commit": "8bd682c6f586c4e86bfce1465bca2b31d922a568",
+  "execution_base_commit": "f38b78470982b1c8342dba0eb6596129b7371686",
+  "implementation_commit": "3c73f754e85f8525c528232643b7faa00a2bfa63",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
