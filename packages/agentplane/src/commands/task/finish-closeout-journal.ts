@@ -95,7 +95,7 @@ export async function openFinishCloseoutJournal(opts: {
     !replacesPreparedRecovery
   ) {
     throw new Error(
-      `Finish closeout for ${primaryTaskId} requires recovery before a different request can run (${filePath}).`,
+      `Finish closeout for ${primaryTaskId} requires recovery before a different request can run (${filePath}); repeat the original request, or use --force to replace it only when previous_state=prepared.`,
     );
   }
   if (existing && existing.state !== "completed" && !replacesPreparedRecovery) {
