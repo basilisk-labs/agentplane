@@ -2,10 +2,10 @@
 id: "202608212244-6XZAYD"
 title: "Implement the task-centric refactoring roadmap v2 and publish the next patch release"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 51
+revision: 54
 origin:
   system: "manual"
 depends_on: []
@@ -28,41 +28,22 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "User confirmed exact plan digest in Codex task; host_user_decision=sha256:f5d9083511651b29dd00284b298bcaf85d49e76762063fbd26008ffa0d2aae09"
 verification:
-  state: "ok"
-  updated_at: "2026-08-22T03:35:35.047Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
-quality_review:
-  state: "blocked"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-22T03:42:02.977Z"
+  state: "needs_rework"
+  updated_at: "2026-08-22T03:42:30.856Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 4 typed finding(s)."
+  note: "Rework: packaged mixed-scope qualification lacks the required baseline-bound task_plan_proposal; hosted verify-real-e2e remains release-blocking."
+  attempts: 1
+quality_review:
+  state: "rework"
+  updated_at: "2026-08-22T03:42:30.856Z"
+  updated_by: "EVALUATOR"
+  note: "Rework: packaged mixed-scope qualification lacks the required baseline-bound task_plan_proposal; hosted verify-real-e2e remains release-blocking."
   evaluated_sha: "c651ebc5c1bfea5e9a7ba0eb66dab528eb9b5482"
   blueprint_digest: "d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306"
   evidence_refs:
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033942903-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033942903-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/c34af2f9103df51f801c58d8da4fbdf7cd87562261cc3eb57d2957a115010b1d.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033942903-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033942903-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033942903-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033942903-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608212244-6XZAYD/README.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2cd6e402ad6c2deaaad07bbd8edbbc019e412de34cf5db4586379236477439f7.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/verification/20260822033535047-d6077a96e11e0a56.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/0f9e0c0f8b0f85b8effd9074a1316c56971aceb5da4a5fce5935f4726c154946.json"
-    - ".agentplane/policy/dod.code.md"
-    - ".agentplane/policy/dod.core.md"
-    - ".agentplane/policy/security.must.md"
-    - ".agentplane/policy/workflow.release.md"
-  findings:
-    - "Static analysis passes."
-    - "The implementation diff contains no baseline-bound task_plan_proposal update for the packaged mixed-scope fixture."
-    - "Hosted verify-real-e2e remains release-blocking."
-    - "Residual risk: Current hosted verify-real-e2e remains release-blocking."
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212244-6XZAYD-implement-the-task-centric-refactoring-roadmap-v/.agentplane/tasks/202608212244-6XZAYD/blueprint/resolved-snapshot.json"
+  findings: []
 token_usage:
   agent_runs: 18
   input_tokens: null
@@ -185,7 +166,8 @@ execution_contract:
       - "vitest.config.ts"
       - "vitest.workspace.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "depcruise.config.cjs"
       - "packages/agentplane"
@@ -322,6 +304,9 @@ execution_contract:
       -
         id: "recorded-check-7"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -607,9 +592,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "c651ebc5c1bfea5e9a7ba0eb66dab528eb9b5482"
-  message: "🚧 6XZAYD task: apply external agent result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -653,6 +637,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: c651ebc5c1bf. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The required packaged mixed-scope qualification rework is outside the current EXECUTOR writable roots. Recommended action: Apply the pending scripts/qualification scope extension as USER and issue a fresh EXECUTOR packet. Requested scope: roots=scripts/qualification; repository effects=ci,repository_write,tests; request digest=sha256:3a33a97a5a7ae578c2b682475692d3815c8a3a756171c1b29fe35ead73d68f09. Agentplane receipt: external-agent-blocker/tr_45dea0a7848952c5e2fd67ace7a71701/sha256:1bb12e44c6427cbacbb07c178a4fe186074f74763b387b871644a996e661edb6/sha256:3a33a97a5a7ae578c2b682475692d3815c8a3a756171c1b29fe35ead73d68f09."
 events:
   -
     type: "status"
@@ -852,8 +839,21 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "verify"
+    at: "2026-08-22T03:42:30.856Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Rework: packaged mixed-scope qualification lacks the required baseline-bound task_plan_proposal; hosted verify-real-e2e remains release-blocking."
+  -
+    type: "status"
+    at: "2026-08-22T03:43:32.058Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The required packaged mixed-scope qualification rework is outside the current EXECUTOR writable roots. Recommended action: Apply the pending scripts/qualification scope extension as USER and issue a fresh EXECUTOR packet. Requested scope: roots=scripts/qualification; repository effects=ci,repository_write,tests; request digest=sha256:3a33a97a5a7ae578c2b682475692d3815c8a3a756171c1b29fe35ead73d68f09. Agentplane receipt: external-agent-blocker/tr_45dea0a7848952c5e2fd67ace7a71701/sha256:1bb12e44c6427cbacbb07c178a4fe186074f74763b387b871644a996e661edb6/sha256:3a33a97a5a7ae578c2b682475692d3815c8a3a756171c1b29fe35ead73d68f09."
 doc_version: 3
-doc_updated_at: "2026-08-22T03:42:03.009Z"
+doc_updated_at: "2026-08-22T03:43:32.097Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:
@@ -1926,11 +1926,48 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-22T03:42:30.856Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Rework: packaged mixed-scope qualification lacks the required baseline-bound task_plan_proposal; hosted verify-real-e2e remains release-blocking.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6, input_digest=sha256:7b606747014d87e0395d2109e275f4c82b83d6de1928656e20115b052d1fc9be
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212244-6XZAYD-implement-the-task-centric-refactoring-roadmap-v/.agentplane/tasks/202608212244-6XZAYD/blueprint/resolved-snapshot.json
+    - old_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+    - current_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608212244-6XZAYD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Blocked quality review did not route to implementation rework and repeatedly re-issued evaluator episodes after task-only evidence commits.
+      Impact: The missing qualification fixture update cannot receive a state-bound EXECUTOR scope extension while the task remains in quality_review_needed.
+      Resolution: Record verification rework, issue a fresh EXECUTOR packet, and return a structured scripts/qualification scope-extension blocker before applying the fixture update.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
+      IncidentScope: scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs
+      IncidentTags: qualification, task-centric
 extensions:
   agentplane.execution_grant:
     actor: "HOST:codex-desktop:USER"
@@ -1957,27 +1994,21 @@ extensions:
     status: "active"
     task_id: "202608212244-6XZAYD"
   agentplane.scope_extension_request:
-    applied_at: "2026-08-22T01:48:34.262Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:d9234d4014f53a935e869ddca66e4f9ad563a3bf1309ba72a9c84342a5c785b7"
+    blocker_state_fingerprint: "sha256:1bb12e44c6427cbacbb07c178a4fe186074f74763b387b871644a996e661edb6"
     kind: "task_scope_extension_request"
     request:
-      rationale: "The evaluator requires exact compatibility candidate and validator updates for the approved public AgentWorkOrder schema delta."
+      rationale: "Hosted verify-real-e2e requires the packaged mixed-scope planner fixture to submit a baseline-bound task_plan_proposal under scripts/qualification."
       repository_effects:
-        - "public_api"
+        - "ci"
         - "repository_write"
-        - "schema"
         - "tests"
       schema_version: 1
       scope_roots:
-        - "scripts/baselines"
-        - "scripts/checks"
-    request_digest: "sha256:6cfd07c80c92c4c6e3ba4988c6be669b5da339aeb27078b50a3386d957e6e402"
+        - "scripts/qualification"
+    request_digest: "sha256:3a33a97a5a7ae578c2b682475692d3815c8a3a756171c1b29fe35ead73d68f09"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_3204c895f463179e16a5e6a3069462f5"
-  implementation_commit:
-    hash: "c651ebc5c1bfea5e9a7ba0eb66dab528eb9b5482"
+    status: "pending"
+    transition_id: "tr_45dea0a7848952c5e2fd67ace7a71701"
   task_execution_context:
     base_ref: "main"
     base_sha: "134c95fd629d5ebcf0e17196ccb4b44f60c993fd"
@@ -3066,6 +3097,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-22T03:42:30.856Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Rework: packaged mixed-scope qualification lacks the required baseline-bound task_plan_proposal; hosted verify-real-e2e remains release-blocking.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6, input_digest=sha256:7b606747014d87e0395d2109e275f4c82b83d6de1928656e20115b052d1fc9be
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212244-6XZAYD-implement-the-task-centric-refactoring-roadmap-v/.agentplane/tasks/202608212244-6XZAYD/blueprint/resolved-snapshot.json
+- old_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+- current_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608212244-6XZAYD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -3074,6 +3135,14 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Blocked quality review did not route to implementation rework and repeatedly re-issued evaluator episodes after task-only evidence commits.
+  Impact: The missing qualification fixture update cannot receive a state-bound EXECUTOR scope extension while the task remains in quality_review_needed.
+  Resolution: Record verification rework, issue a fresh EXECUTOR packet, and return a structured scripts/qualification scope-extension blocker before applying the fixture update.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
+  IncidentScope: scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs
+  IncidentTags: qualification, task-centric
 
 ## Token Usage
 
