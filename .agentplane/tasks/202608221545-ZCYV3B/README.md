@@ -4,7 +4,7 @@ title: "Stop verification receipts from overstating check coverage"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -24,10 +24,10 @@ plan_approval:
   note: "host_user_decision=sha256:defee467b01eefa8d1131fcd66aa9f6b83c7e5a46f97ab5b6eae0014070d57a4"
 verification:
   state: "needs_rework"
-  updated_at: "2026-08-22T16:00:18.823Z"
+  updated_at: "2026-08-22T16:16:05.729Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 2
+  attempts: 3
 execution_route:
   frozen: true
   reason_codes:
@@ -222,6 +222,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 8d55415e4b51. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -272,9 +275,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-22T16:14:02.123Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 8d55415e4b51. CLI accepted one state-bound external-agent semantic result."
+    commit: "8d55415e4b51317db8c6f8e3a0554887f6696d35"
+  -
+    type: "verify"
+    at: "2026-08-22T16:16:05.729Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-08-22T16:00:24.042Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-22T16:16:08.889Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix only the proven task-centric verification regression from PR #4873: one focused declared command must not be recorded as full_regression or hosted_integration evidence. Preserve separate hosted-provider gating, run a real repository full-regression command when the contract requires it, and bind each recorded check to concrete executed evidence. Add regression tests. Do not change context or Knowledge Assimilation behavior."
 sections:
   Summary: |-
@@ -336,6 +353,46 @@ sections:
     Attempts: 2
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e53c419db3d564888ffad6f61c6eb347c5fdeb5fbcad08289828f74178742ef3, input_digest=sha256:e6ace6b536e88b055c7f0c1882b4d4bc91d0930a3929168b3a124ef604d9aee5
+
+    Details:
+
+    Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-verification-result.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608221545-ZCYV3B declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608221545-ZCYV3B declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221545-ZCYV3B-stop-verification-receipts-from-overstating-chec/.agentplane/tasks/202608221545-ZCYV3B/blueprint/resolved-snapshot.json
+    - old_digest: 0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb
+    - current_digest: 0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221545-ZCYV3B
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T16:16:05.729Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 3
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e53c419db3d564888ffad6f61c6eb347c5fdeb5fbcad08289828f74178742ef3, input_digest=sha256:27d4e4b02276b901431ba5d518168b28dd835a1195ef1052519ee0eda3ba4ed9
 
     Details:
 
@@ -755,6 +812,46 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 2
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e53c419db3d564888ffad6f61c6eb347c5fdeb5fbcad08289828f74178742ef3, input_digest=sha256:e6ace6b536e88b055c7f0c1882b4d4bc91d0930a3929168b3a124ef604d9aee5
+
+Details:
+
+Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-verification-result.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608221545-ZCYV3B declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608221545-ZCYV3B declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221545-ZCYV3B-stop-verification-receipts-from-overstating-chec/.agentplane/tasks/202608221545-ZCYV3B/blueprint/resolved-snapshot.json
+- old_digest: 0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb
+- current_digest: 0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221545-ZCYV3B
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T16:16:05.729Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 3
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e53c419db3d564888ffad6f61c6eb347c5fdeb5fbcad08289828f74178742ef3, input_digest=sha256:27d4e4b02276b901431ba5d518168b28dd835a1195ef1052519ee0eda3ba4ed9
 
 Details:
 
