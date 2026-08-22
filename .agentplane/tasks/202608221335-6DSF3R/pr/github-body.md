@@ -15,8 +15,13 @@ Fix the proven task-centric Core regression in null-ID external result handling:
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note:
+
+```text
+Verification is blocked because a lifecycle operation changed two global policy files outside the
+approved WorkItem scope after the implementation commit.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -6,14 +6,14 @@ Created: 2026-08-22T13:40:02.178Z
 
 - Task: `202608221335-6DSF3R`
 - Title: Fix idempotent null-WorkItem external result acceptance
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608221335-6DSF3R/fix-idempotent-null-workitem-external-result-acc`
 - Canonical task record: `.agentplane/tasks/202608221335-6DSF3R/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Verification is blocked because a lifecycle operation changed two global policy files outside the approved WorkItem scope after the implementation commit.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
