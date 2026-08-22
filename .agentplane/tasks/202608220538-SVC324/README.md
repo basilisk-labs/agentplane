@@ -1,10 +1,11 @@
 ---
 id: "202608220538-SVC324"
 title: "Resolve task autonomy and evaluator rework incidents"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +27,9 @@ plan_approval:
   note: "Approved under the user's confirmed implementation-and-patch-release goal; host_user_decision packet omitted required host identifiers."
 verification:
   state: "ok"
-  updated_at: "2026-08-22T06:19:55.488Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  updated_at: "2026-08-22T06:28:48.448Z"
+  updated_by: "TESTER"
+  note: "Verified: blueprint snapshot refreshed after authorized pre-merge closure preparation; local, evaluator, and hosted evidence pass."
   attempts: 0
 quality_review:
   state: "pass"
@@ -60,6 +61,20 @@ quality_review:
     - "Branch and direct routing now send non-evidence-gap blocked quality reviews to CODER implementation_rework; deterministic_evidence_gap remains a TESTER refresh and human_review remains a USER boundary."
     - "Both active registries are synchronized and the two incident records are preserved in the historical archive with source-task, enforcement, and closure evidence."
     - "Residual risk: Hosted CI and exact-SHA integration remain lifecycle gates after this semantic verdict."
+token_usage:
+  agent_runs: 4
+  input_tokens: null
+  journal_digest: "sha256:a7abd97b64e9f93d73f2ad53c7d70e2bae6eef185e91ec0a13934e6a3f0bef9f"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-22T06:29:40.973Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -298,8 +313,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "2c0c9c4fabdf7dd0e68b8bf5c5c4d12373b52cd1"
-  message: "🚧 SVC324 task: apply external agent result"
+  hash: "47ab9fb0eee1b408018a989a873495230fb7677f"
+  message: "🚧 SVC324 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -313,6 +328,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 2c0c9c4fabdf. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -342,9 +360,23 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "verify"
+    at: "2026-08-22T06:28:48.448Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: blueprint snapshot refreshed after authorized pre-merge closure preparation; local, evaluator, and hosted evidence pass."
+  -
+    type: "status"
+    at: "2026-08-22T06:29:40.973Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "47ab9fb0eee1b408018a989a873495230fb7677f"
 doc_version: 3
-doc_updated_at: "2026-08-22T06:20:05.113Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-22T06:29:40.986Z"
+doc_updated_by: "CODER"
 description: "Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, archive both incidents with exact evidence, and unblock the approved patch release."
 sections:
   Summary: |-
@@ -425,6 +457,72 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608220538-SVC324
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T06:28:48.448Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: blueprint snapshot refreshed after authorized pre-merge closure preparation; local, evaluator, and hosted evidence pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a93c86c8d22c7479bf47b8dcac7f7d2518f86ec47e654b2591646268bf070bfd, input_digest=sha256:f3e56cbe949f219dbc8010b5aff3788abfc9af0b2bca6d9845e6a17520a24caf
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: focused task autonomy and evaluator tests
+    Result: pass
+    Evidence: 80 tests passed across 7 files after the final authority-compliant test adjustment
+    Scope: grant rebasing, scope extension, evaluator rework, deterministic evidence gap, and human review routing
+
+    Check: critical_paths
+    Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && bun run arch:check
+    Result: pass
+    Evidence: every command exited 0 in the authoritative task worktree
+    Scope: core source, TypeScript contracts, policy routing budgets, and architecture boundaries
+
+    Check: docs_contract
+    Command: GitHub Core CI verify-contract
+    Result: pass
+    Evidence: run 32556637787 verify-contract completed success for head 858e6503aef9fe92dc73c95346d20da23af39090, including generated CLI docs and docs site contract
+    Scope: generated references, policy registry parity, and documentation contract
+
+    Check: full_regression
+    Command: bun run test:fast
+    Result: pass
+    Evidence: 602 test files; 4360 passed; 1 skipped
+    Scope: full fast repository regression suite
+
+    Check: hosted_integration
+    Command: GitHub Core CI
+    Result: pass
+    Evidence: run 32556637787 completed success for exact published head 858e6503aef9fe92dc73c95346d20da23af39090; required Linux, Windows, contract, static, security, and package-runtime jobs passed
+    Scope: hosted pull-request integration gates
+
+    Check: task_outcome
+    Command: AgentPlane EVALUATOR episode plus declared checks
+    Result: pass
+    Evidence: evaluator result accepted under transition tr_3b9ee8f473eae387e108e58c10af51af; scope extension and evaluator blocked routing behaviors are covered and active incidents are archived
+    Scope: approved SVC324 outcome and acceptance criteria
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220538-SVC324-resolve-task-autonomy-and-evaluator-rework-incid/.agentplane/tasks/202608220538-SVC324/blueprint/resolved-snapshot.json
+    - old_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+    - current_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608220538-SVC324
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -844,7 +942,8 @@ extensions:
         state: "READY"
         validation_result: null
   implementation_commit:
-    hash: "2c0c9c4fabdf7dd0e68b8bf5c5c4d12373b52cd1"
+    hash: "858e6503aef9fe92dc73c95346d20da23af39090"
+    message: "🚧 SVC324 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "258015fbf8be6e888dae88d12ad78f2dbcaaf89f"
@@ -949,6 +1048,72 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-22T06:28:48.448Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: blueprint snapshot refreshed after authorized pre-merge closure preparation; local, evaluator, and hosted evidence pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a93c86c8d22c7479bf47b8dcac7f7d2518f86ec47e654b2591646268bf070bfd, input_digest=sha256:f3e56cbe949f219dbc8010b5aff3788abfc9af0b2bca6d9845e6a17520a24caf
+
+Details:
+
+Check: affected_unit_integration
+Command: focused task autonomy and evaluator tests
+Result: pass
+Evidence: 80 tests passed across 7 files after the final authority-compliant test adjustment
+Scope: grant rebasing, scope extension, evaluator rework, deterministic evidence gap, and human review routing
+
+Check: critical_paths
+Command: bun run lint:core && bun run typecheck && node .agentplane/policy/check-routing.mjs && bun run arch:check
+Result: pass
+Evidence: every command exited 0 in the authoritative task worktree
+Scope: core source, TypeScript contracts, policy routing budgets, and architecture boundaries
+
+Check: docs_contract
+Command: GitHub Core CI verify-contract
+Result: pass
+Evidence: run 32556637787 verify-contract completed success for head 858e6503aef9fe92dc73c95346d20da23af39090, including generated CLI docs and docs site contract
+Scope: generated references, policy registry parity, and documentation contract
+
+Check: full_regression
+Command: bun run test:fast
+Result: pass
+Evidence: 602 test files; 4360 passed; 1 skipped
+Scope: full fast repository regression suite
+
+Check: hosted_integration
+Command: GitHub Core CI
+Result: pass
+Evidence: run 32556637787 completed success for exact published head 858e6503aef9fe92dc73c95346d20da23af39090; required Linux, Windows, contract, static, security, and package-runtime jobs passed
+Scope: hosted pull-request integration gates
+
+Check: task_outcome
+Command: AgentPlane EVALUATOR episode plus declared checks
+Result: pass
+Evidence: evaluator result accepted under transition tr_3b9ee8f473eae387e108e58c10af51af; scope extension and evaluator blocked routing behaviors are covered and active incidents are archived
+Scope: approved SVC324 outcome and acceptance criteria
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608220538-SVC324-resolve-task-autonomy-and-evaluator-rework-incid/.agentplane/tasks/202608220538-SVC324/blueprint/resolved-snapshot.json
+- old_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+- current_digest: bbea57535cec083dbe8adf6bbb2c2257002c3258ea317e5d500ba943c5ff4eeb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608220538-SVC324
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -957,3 +1122,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:a7abd97b64e9f93d73f2ad53c7d70e2bae6eef185e91ec0a13934e6a3f0bef9f`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-22T06:29:40.973Z`
