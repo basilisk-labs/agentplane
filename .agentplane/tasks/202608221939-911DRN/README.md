@@ -2,10 +2,10 @@
 id: "202608221939-911DRN"
 title: "Archive resolved task-centric external result routing incident before v0.7.8"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -61,9 +61,9 @@ quality_review:
     - "The pre-existing archived identifier collision remains explicitly documented without rewriting the older record."
     - "Residual risk: Hosted integration must pass on the exact final PR head before merge."
 token_usage:
-  agent_runs: 3
+  agent_runs: 5
   input_tokens: null
-  journal_digest: "sha256:00cac021b458f9f65eaae0d7b602ada249125f20a59ce1b15e8d70b3a899fb38"
+  journal_digest: "sha256:27b7c3cd72a00801f1dab2d2c29f51ab8a5bfd58f2fa43bd71d4595a7b51950f"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -73,7 +73,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-22T19:57:53.590Z"
+  updated_at: "2026-08-22T20:09:25.399Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -274,8 +274,8 @@ execution_contract:
       - "repository_effect:repository_write"
       - "task_outcome"
 commit:
-  hash: "3ccbf74b7715b65d2e0a38270242b5abd5c87101"
-  message: "🚧 911DRN task: apply external agent result"
+  hash: "954c2503e9ab7cda75235627f4de9b330063b931"
+  message: "🚧 911DRN task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -295,6 +295,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 3ccbf74b7715. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -354,9 +357,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-22T20:09:25.399Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "954c2503e9ab7cda75235627f4de9b330063b931"
 doc_version: 3
-doc_updated_at: "2026-08-22T20:08:50.453Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-22T20:09:25.429Z"
+doc_updated_by: "CODER"
 description: "Dedicated release prerequisite for active INC-20260822-01. Preserve the incident in docs/developer/incident-archive.mdx with exact evidence from task 202608221335-6DSF3R and merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, then remove only that resolved entry from .agentplane/policy/incidents.md and its packaged mirror. Do not change implementation, context, task-centric architecture, or any other incident. Record the existing archive identifier collision explicitly instead of rewriting historical evidence."
 sections:
   Summary: |-
@@ -773,7 +784,34 @@ extensions:
       schema_version: 1
       task_id: "202608221939-911DRN"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608221939-911DRN"
+            - "git:3ccbf74b7715b65d2e0a38270242b5abd5c87101"
+          check_id: "check-routing-policy"
+          command_identity: "node .agentplane/policy/check-routing.mjs"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-22T20:07:20.032Z"
+          repository_snapshot_digest: "sha256:841521d3503e07cfd14cbcdb21a90b2db057aaca64a7d64b03511b9322b1a865"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608221939-911DRN"
+            - "git:3ccbf74b7715b65d2e0a38270242b5abd5c87101"
+          check_id: "check-release-incidents"
+          command_identity: "bun run release:incidents:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-22T20:07:20.032Z"
+          repository_snapshot_digest: "sha256:841521d3503e07cfd14cbcdb21a90b2db057aaca64a7d64b03511b9322b1a865"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608221939-911DRN"
     intent:
       acceptance_criteria:
@@ -794,12 +832,12 @@ extensions:
 
         Dedicated release prerequisite for active INC-20260822-01. Preserve the incident in docs/developer/incident-archive.mdx with exact evidence from task 202608221335-6DSF3R and merged main commit 1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a, then remove only that resolved entry from .agentplane/policy/incidents.md and its packaged mirror. Do not change implementation, context, task-centric architecture, or any other incident. Record the existing archive identifier collision explicitly instead of rewriting historical evidence.
       task_id: "202608221939-911DRN"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 16
+    revision: 19
     schema_version: 1
-    updated_at: "2026-08-22T20:07:26.831Z"
+    updated_at: "2026-08-22T20:09:25.399Z"
     work_items:
       archive-resolved-routing-incident:
         attempt: 1
@@ -892,11 +930,37 @@ extensions:
         previous_revision: 15
         schema_version: 1
         task_id: "202608221939-911DRN"
+      legacy-finish:202608221939-911DRN:2026-08-22T20:07:20.032Z:3ccbf74b7715b65d2e0a38270242b5abd5c87101:
+        aggregate_digest: "sha256:4d505db521fbf917e3e3e08105829073b6515dd81837e2419bfc4e2fd7df1f3f"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-22T20:09:25.399Z"
+          cause_refs:
+            - "task-verification:202608221939-911DRN"
+            - "git:3ccbf74b7715b65d2e0a38270242b5abd5c87101"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3a38fe43dc1b5bc1feebaecd"
+          mutation_id: "legacy-finish:202608221939-911DRN:2026-08-22T20:07:20.032Z:3ccbf74b7715b65d2e0a38270242b5abd5c87101"
+          plan_digest: "sha256:8f8a7e52fc22fadabf1996a14889aa6b5427c6c70aed7de795f5eefc726fef56"
+          plan_revision: 1
+          repository_fingerprint: "sha256:841521d3503e07cfd14cbcdb21a90b2db057aaca64a7d64b03511b9322b1a865"
+          schema_version: 1
+          task_id: "202608221939-911DRN"
+          task_revision: 16
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608221939-911DRN:2026-08-22T20:07:20.032Z:3ccbf74b7715b65d2e0a38270242b5abd5c87101"
+        next_revision: 19
+        previous_revision: 18
+        schema_version: 1
+        task_id: "202608221939-911DRN"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "3ccbf74b7715b65d2e0a38270242b5abd5c87101"
+    message: "🚧 911DRN task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "81279b3b18a7d08881d57dce0f8dd1abdd5910b4"
@@ -1161,12 +1225,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/3` agent runs
+- Completeness: `0/5` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:00cac021b458f9f65eaae0d7b602ada249125f20a59ce1b15e8d70b3a899fb38`
+- Journal digest: `sha256:27b7c3cd72a00801f1dab2d2c29f51ab8a5bfd58f2fa43bd71d4595a7b51950f`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-22T19:57:53.590Z`
+- Updated at: `2026-08-22T20:09:25.399Z`

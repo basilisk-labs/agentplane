@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:f321e4480a111f75749d641c5051c5e4884da96ef2ec42b713cc98b6144659db",
   "pr_number": 4875,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4875",
+  "pre_merge_closure": {
+    "basis_commit": "954c2503e9ab7cda75235627f4de9b330063b931",
+    "branch": "task/202608221939-911DRN/archive-resolved-task-centric-external-result-ro",
+    "pr_number": 4875,
+    "recorded_at": "2026-08-22T20:09:25.537Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
