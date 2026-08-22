@@ -12,8 +12,8 @@ Created: 2026-08-21T22:50:57.507Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Verification is blocked by a stale implementation receipt that targets the pre-incident implementation commit.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
