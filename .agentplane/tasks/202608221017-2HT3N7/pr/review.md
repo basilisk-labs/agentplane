@@ -12,8 +12,8 @@ Created: 2026-08-22T10:19:00.838Z
 
 ## Verification
 
-- State: needs_rework
-- Note: P1 review requires linked batch task IDs in the reviewed descendant check; implementation updated in commit 13310d16d225.
+- State: ok
+- Note: Verified P1 linked-batch rework after explicit needs-rework transition; hosted exact-SHA gate remains pending publication.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
