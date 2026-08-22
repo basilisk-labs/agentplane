@@ -2,10 +2,10 @@
 id: "202608212244-6XZAYD"
 title: "Implement the task-centric refactoring roadmap v2 and publish the next patch release"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 78
+revision: 79
 origin:
   system: "manual"
 depends_on: []
@@ -629,8 +629,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "cd6e0dfd1464de7964c2c19661fdc95b646287fc"
-  message: "🚧 6XZAYD task: record external evaluator result"
+  hash: "255f2752039df64c87b5f59969913df15ea8cb02"
+  message: "🐛 6XZAYD task: remove unused internal exports"
 comments:
   -
     author: "CODER"
@@ -1032,8 +1032,15 @@ events:
     at: "2026-08-22T04:33:32.095Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The two uncommitted source edits are intentional implementation rework for the hosted verify-static Knip failure."
+  -
+    type: "status"
+    at: "2026-08-22T04:36:30.084Z"
+    author: "SUPERVISOR"
+    from: "DONE"
+    to: "DOING"
+    commit: "255f2752039df64c87b5f59969913df15ea8cb02"
 doc_version: 3
-doc_updated_at: "2026-08-22T04:33:32.140Z"
+doc_updated_at: "2026-08-22T04:36:30.165Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:
