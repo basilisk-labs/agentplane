@@ -1,10 +1,10 @@
 ---
 id: "202608220538-SVC324"
 title: "Resolve task autonomy and evaluator rework incidents"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -26,13 +26,16 @@ plan_approval:
   note: "Approved under the user's confirmed implementation-and-patch-release goal; host_user_decision packet omitted required host identifiers."
 verification:
   state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  updated_at: "2026-08-22T05:50:58.789Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 execution_route:
   frozen: true
   reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_public_api"
+    - "effect_security_boundary"
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
   requested_mode: "branch_pr"
@@ -42,8 +45,12 @@ execution_contract:
   authority:
     allowed_external_effects: []
     allowed_repository_effects:
+      - "documentation"
+      - "public_api"
       - "repository_write"
+      - "security_boundary"
       - "source_code"
+      - "tests"
     forbidden_external_effects:
       - "network_read"
       - "external_write"
@@ -52,28 +59,41 @@ execution_contract:
       - "deploy"
       - "destructive_git"
     forbidden_repository_effects:
-      - "documentation"
-      - "tests"
-      - "public_api"
       - "schema"
       - "dependencies"
       - "ci"
       - "release_metadata"
-      - "security_boundary"
-    writable_roots: []
+    writable_roots:
+      - ".agentplane/policy/incidents.md"
+      - "docs/developer/incident-archive.mdx"
+      - "packages/agentplane/assets/policy/incidents.md"
+      - "packages/agentplane/src/commands/shared"
+      - "packages/agentplane/src/commands/task"
+      - "packages/core/src/tasks"
   declaration:
     external_effects: []
     implementation_uncertainty: "bounded"
     preferred_mode: "branch_pr"
     rationale:
+      - "USER-approved blocked-result scope extension: roots=.agentplane/policy/incidents.md,docs/developer/incident-archive.mdx,packages/agentplane/assets/policy/incidents.md,packages/agentplane/src/commands/shared,packages/agentplane/src/commands/task,packages/core/src/tasks; repository_effects=documentation,public_api,security_boundary,tests"
       - "legacy structured task fields mapped to the execution contract"
     repository_effects:
+      - "documentation"
+      - "public_api"
       - "repository_write"
+      - "security_boundary"
       - "source_code"
+      - "tests"
     requirements_uncertainty: "bounded"
     reversibility: "reversible"
     schema_version: 2
-    scope_roots: []
+    scope_roots:
+      - ".agentplane/policy/incidents.md"
+      - "docs/developer/incident-archive.mdx"
+      - "packages/agentplane/assets/policy/incidents.md"
+      - "packages/agentplane/src/commands/shared"
+      - "packages/agentplane/src/commands/task"
+      - "packages/core/src/tasks"
   observed:
     authority_violations: []
     changed_components: []
@@ -83,6 +103,8 @@ execution_contract:
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
+    - "effect_public_api"
+    - "effect_security_boundary"
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
   safety:
@@ -91,28 +113,47 @@ execution_contract:
     requires_worktree: true
   schema_version: 1
   selected_mode: "branch_pr"
-  source: "legacy_compatibility"
+  source: "agent_declared"
   verification:
     contract:
       declared:
-        components: []
+        components:
+          - ".agentplane/policy/incidents.md"
+          - "docs/developer/incident-archive.mdx"
+          - "packages/agentplane/assets/policy/incidents.md"
+          - "packages/agentplane/src/commands/shared"
+          - "packages/agentplane/src/commands/task"
+          - "packages/core/src/tasks"
         evidence_requirements:
           - "hosted_integration"
+          - "repository_effect:documentation"
+          - "repository_effect:public_api"
           - "repository_effect:repository_write"
+          - "repository_effect:security_boundary"
           - "repository_effect:source_code"
+          - "repository_effect:tests"
           - "task_outcome"
         external_effects: []
         repository_effects:
+          - "documentation"
+          - "public_api"
           - "repository_write"
+          - "security_boundary"
           - "source_code"
+          - "tests"
         risk:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:5cce438a0252ecd96091bc582c42af2d777ee0f2a627b7930089252831afd436"
-      escalation_reasons: []
+      digest: "sha256:41f9fa1f91041121bf7786d3a782975787e1f4378d46036980c363e3b4005cf9"
+      escalation_reasons:
+        - "central_component:packages/core/src/tasks"
+        - "effect_public_api"
+        - "effect_security_boundary"
       execution_groups:
+        - "docs-schema"
         - "core"
+        - "runtime"
         - "cli"
       observed:
         changed_components: []
@@ -124,12 +165,14 @@ execution_contract:
         monotonic_strengthening: true
         pr_full_regression: true
         unknown_or_central_full_regression: true
-      requires_full_regression: false
+      requires_full_regression: true
       requires_real_e2e: false
       schema_version: 2
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "docs_contract"
+        - "full_regression"
         - "hosted_integration"
         - "task_outcome"
       selector:
@@ -145,8 +188,12 @@ execution_contract:
       source: "execution_contract"
     required_evidence:
       - "hosted_integration"
+      - "repository_effect:documentation"
+      - "repository_effect:public_api"
       - "repository_effect:repository_write"
+      - "repository_effect:security_boundary"
       - "repository_effect:source_code"
+      - "repository_effect:tests"
       - "task_outcome"
 commit: null
 comments:
@@ -156,6 +203,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The issued execution contract is narrower than the approved plan and must be extended before implementation can satisfy its required tests, public API, documentation, and incident-policy outputs. Recommended action: Approve the exact structured scope extension, derive a scope-rebased execution grant, and issue a fresh EXECUTOR packet. Requested scope: roots=.agentplane/policy/incidents.md,docs/developer/incident-archive.mdx,packages/agentplane/assets/policy/incidents.md,packages/agentplane/src/commands/shared,packages/agentplane/src/commands/task,packages/core/src/tasks; repository effects=documentation,public_api,security_boundary,tests; request digest=sha256:1baafcb9e58c2e99e9d50028bddcdd8d74a3b4d5b791ceed89b19c9208da33bd. Agentplane receipt: external-agent-blocker/tr_5fa7a6ec27b081d4a596594955e7531b/sha256:eb7e3e6cefa452d7220b4e819973a94a99f1542ac4024d8c9883bacdc688d4a9/sha256:1baafcb9e58c2e99e9d50028bddcdd8d74a3b4d5b791ceed89b19c9208da33bd."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: .agentplane/policy/incidents.md, docs/developer/incident-archive.mdx, packages/agentplane/assets/policy/incidents.md, packages/agentplane/src/commands/shared, packages/agentplane/src/commands/task, packages/core/src/tasks; repository effects: documentation, public_api, security_boundary, tests."
 events:
   -
     type: "status"
@@ -224,6 +274,8 @@ extensions:
     status: "active"
     task_id: "202608220538-SVC324"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-22T05:50:58.789Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:eb7e3e6cefa452d7220b4e819973a94a99f1542ac4024d8c9883bacdc688d4a9"
     kind: "task_scope_extension_request"
     request:
@@ -243,7 +295,7 @@ extensions:
         - "packages/core/src/tasks"
     request_digest: "sha256:1baafcb9e58c2e99e9d50028bddcdd8d74a3b4d5b791ceed89b19c9208da33bd"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_5fa7a6ec27b081d4a596594955e7531b"
   agentplane.task_centric:
     current_plan:
