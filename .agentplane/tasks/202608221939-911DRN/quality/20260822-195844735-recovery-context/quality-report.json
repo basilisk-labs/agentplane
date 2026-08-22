@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202608221939-911DRN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-22T19:58:45.577Z",
+  "provenance": "human_supplied",
+  "verdict": "rework",
+  "summary": "Control-plane rework only: the approved source diff is complete, but required WorkItem archive-resolved-routing-incident remains READY because the original protected-path result acceptance failed before recording it.",
+  "evaluated_sha": "3a1756b3130116996a4043d92d8b678d4ad97af4",
+  "blueprint_digest": "d631740d9732f4866e388192d53d5436b3aa926ae4d4f977ead7aa5b52e05595",
+  "findings": [
+    "No repository implementation change is requested."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608221939-911DRN/README.md#extensions.task_aggregate.work_items.archive-resolved-routing-incident.state"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
