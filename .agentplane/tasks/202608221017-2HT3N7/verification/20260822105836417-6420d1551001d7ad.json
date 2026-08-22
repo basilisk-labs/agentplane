@@ -1,0 +1,101 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run test:project -- agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts && bun run typecheck\nResult: pass\nEvidence: 2 files / 28 tests passed; TypeScript build exited 0\nScope: task 202608221017-2HT3N7 implementation commit 13310d16d225\n\nCheck: critical_paths\nCommand: bunx eslint packages/agentplane/src/commands/shared/quality-review-target.ts packages/agentplane/src/commands/task/finish-blueprint-evidence.ts packages/agentplane/src/commands/task/finish-execute-commit.ts packages/agentplane/src/commands/task/finish-shared.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/plan.ts packages/agentplane/src/commands/task/plan.unit.test.ts && git diff --check\nResult: pass\nEvidence: ESLint and diff validation exited 0\nScope: touched lifecycle gate paths\n\nCheck: full_regression\nCommand: bun run test:fast\nResult: pass\nEvidence: 602 files passed; 4369 tests passed and 1 skipped\nScope: agentplane, core, recipes, and testkit projects\n\nCheck: hosted_integration\nCommand: provider Core CI after exact head publication\nResult: pass\nEvidence: local pre-hosted qualification complete; provider exact-SHA gate remains mandatory before integration\nScope: branch_pr hosted gate\n\nCheck: task_outcome\nCommand: inspect batch descendant selection and regression assertions\nResult: pass\nEvidence: linked batch IDs route through isTaskSetLocalOnlyAdvance; semantic and unrelated drift rejection remains covered\nScope: approved lifecycle rework",
+  "digest": "sha256:6420d1551001d7adfa0b140e0992e86948943c8e3f99fa8c99598d56318693fa",
+  "implementation_sha": "13310d16d22523346f108bb14a064f9447bf8334",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:a6e8837290f59be52b8d27df475c1732834e45a2d62c31f6804e5a6a40e604ec",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:5d6f6c21cdb722a305abe2554aab1240499f08a3e3260a32720210a6e3fd145f",
+      "digest": "sha256:f7f2330aa316488146350eb1240f9ee59b05004d757a802c5c0065cdff693d80",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "49a18763cb42144bc5279ddb129c51c63acd9244",
+      "digest": "sha256:585b0d836d4bfbc3568d88c91dea0086108269606a98e0ab308b2a0567ceb015",
+      "primary_task_id": "202608221017-2HT3N7",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608221017-2HT3N7"
+      ]
+    },
+    "implementation": {
+      "base_sha": "49a18763cb42144bc5279ddb129c51c63acd9244",
+      "digest": "sha256:41259507d061189e75341e777135e1e360ccd2badb26246fa4fc152df0539ca9",
+      "strategy": "branch_diff",
+      "target_sha": "13310d16d22523346f108bb14a064f9447bf8334"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:aa2812416f84b792308968b2977ab0e8cee3353792436c07030bf5d7c6bb9a12",
+    "verify_steps_digest": "sha256:26dd3a31aaf3763020301924d517a4a5b502aa094f75b76e490f126a2efc955e"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified P1 linked-batch rework after explicit needs-rework transition; hosted exact-SHA gate remains pending publication.",
+  "recorded_at": "2026-08-22T10:58:36.417Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Port the complete pre-merge quality-review lifecycle fix from blocked task 202608220851-XN5YNK into a clean branch_pr task: accept only proven task-artifact-only reviewed descendants, normalize closure-owned token_usage and implementation commit message while preserving the implementation hash, and clear task_centric_replan_required when a replacement canonical plan is supplied. Include the focused regression tests already proven in the blocked task.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Port the complete pre-merge quality-review lifecycle fix from blocked task 202608220851-XN5YNK into a clean branch_pr task: accept only proven task-artifact-only reviewed descendants, normalize closure-owned token_usage and implementation commit message while preserving the implementation hash, and clear task_centric_replan_required when a replacement canonical plan is supplied. Include the focused regression tests already proven in the blocked task.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:26dd3a31aaf3763020301924d517a4a5b502aa094f75b76e490f126a2efc955e",
+  "task_id": "202608221017-2HT3N7",
+  "verification_command": "agentplane verify 202608221017-2HT3N7 --ok --by TESTER",
+  "verifier": "TESTER"
+}
