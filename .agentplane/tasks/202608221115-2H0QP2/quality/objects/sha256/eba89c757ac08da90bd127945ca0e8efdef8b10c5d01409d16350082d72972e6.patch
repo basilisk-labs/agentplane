@@ -1,0 +1,203 @@
+diff --git a/packages/agentplane/src/runtime/task-execution-context/index.ts b/packages/agentplane/src/runtime/task-execution-context/index.ts
+index 5a1d0917b..d103c03ce 100644
+--- a/packages/agentplane/src/runtime/task-execution-context/index.ts
++++ b/packages/agentplane/src/runtime/task-execution-context/index.ts
+@@ -1,2 +1,2 @@
+ export { loadTaskCommandContext, resolveTaskExecutionContext } from "./resolve.js";
+-export type { TaskExecutionContext } from "./types.js";
++export type { TaskExecutionContext } from "./model.js";
+diff --git a/packages/agentplane/src/runtime/task-execution-context/model.ts b/packages/agentplane/src/runtime/task-execution-context/model.ts
+new file mode 100644
+index 000000000..95d768346
+--- /dev/null
++++ b/packages/agentplane/src/runtime/task-execution-context/model.ts
+@@ -0,0 +1,39 @@
++import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import type { CommandContext } from "../../commands/shared/task-backend.js";
++
++export type AuthoritativeTaskSource =
++  | "base_checkout"
++  | "backend_projection"
++  | "task_branch_snapshot"
++  | "task_worktree";
++
++export type TaskExecutionRouteSource =
++  | "execution_contract"
++  | "execution_route"
++  | "legacy_migration"
++  | "repository_floor";
++
++export type TaskExecutionRequestedMode = TaskExecutionRouteMode | "auto";
++
++export type TaskExecutionContext = {
++  readonly schema_version: 1;
++  readonly primary_task_id: string;
++  readonly task_ids: readonly string[];
++  readonly repository_mode: TaskExecutionRouteMode;
++  readonly selected_mode: TaskExecutionRouteMode;
++  readonly requested_mode: TaskExecutionRequestedMode;
++  readonly route_source: TaskExecutionRouteSource;
++  readonly reason_codes: readonly string[];
++  readonly base_ref: string;
++  readonly base_sha: string;
++  readonly authoritative_task_source: AuthoritativeTaskSource;
++};
++
++export type TaskCommandContext = {
++  readonly command: CommandContext;
++  readonly execution: TaskExecutionContext;
++  readonly primary_task: TaskData;
++  readonly tasks: readonly TaskData[];
++};
+diff --git a/packages/agentplane/src/runtime/task-execution-context/resolve.ts b/packages/agentplane/src/runtime/task-execution-context/resolve.ts
+index cd6d3bd2b..ef0994020 100644
+--- a/packages/agentplane/src/runtime/task-execution-context/resolve.ts
++++ b/packages/agentplane/src/runtime/task-execution-context/resolve.ts
+@@ -30,7 +30,7 @@ import type {
+   TaskExecutionContext,
+   TaskExecutionRequestedMode,
+   TaskExecutionRouteSource,
+-} from "./types.js";
++} from "./model.js";
+ import { findRelocatableWorktreeForBranch } from "../workspace-allocation/rediscover.js";
+ 
+ type FrozenBaseIdentity = Readonly<{ base_ref: string; base_sha: string }>;
+diff --git a/packages/agentplane/src/runtime/task-execution-context/types.ts b/packages/agentplane/src/runtime/task-execution-context/types.ts
+deleted file mode 100644
+index bffb19254..000000000
+--- a/packages/agentplane/src/runtime/task-execution-context/types.ts
++++ /dev/null
+@@ -1,39 +0,0 @@
+-import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
+-
+-import type { TaskData } from "../../backends/task-backend.js";
+-import type { CommandContext } from "../../commands/shared/task-backend.js";
+-
+-export type TaskExecutionRequestedMode = "auto" | TaskExecutionRouteMode;
+-
+-export type TaskExecutionRouteSource =
+-  | "execution_contract"
+-  | "execution_route"
+-  | "repository_floor"
+-  | "legacy_migration";
+-
+-export type AuthoritativeTaskSource =
+-  | "base_checkout"
+-  | "task_worktree"
+-  | "task_branch_snapshot"
+-  | "backend_projection";
+-
+-export type TaskExecutionContext = Readonly<{
+-  schema_version: 1;
+-  primary_task_id: string;
+-  task_ids: readonly string[];
+-  repository_mode: TaskExecutionRouteMode;
+-  selected_mode: TaskExecutionRouteMode;
+-  requested_mode: TaskExecutionRequestedMode;
+-  route_source: TaskExecutionRouteSource;
+-  reason_codes: readonly string[];
+-  base_ref: string;
+-  base_sha: string;
+-  authoritative_task_source: AuthoritativeTaskSource;
+-}>;
+-
+-export type TaskCommandContext = Readonly<{
+-  command: CommandContext;
+-  execution: TaskExecutionContext;
+-  primary_task: TaskData;
+-  tasks: readonly TaskData[];
+-}>;
+diff --git a/packages/agentplane/src/runtime/workspace-allocation/allocate.ts b/packages/agentplane/src/runtime/workspace-allocation/allocate.ts
+index 1891d3bd6..264a38a01 100644
+--- a/packages/agentplane/src/runtime/workspace-allocation/allocate.ts
++++ b/packages/agentplane/src/runtime/workspace-allocation/allocate.ts
+@@ -17,7 +17,7 @@ import {
+   assertWorkspaceLeaseOwned,
+   releaseWorkspaceLease,
+ } from "./lease.js";
+-import type { WorkspaceAllocationContext } from "./types.js";
++import type { WorkspaceAllocationContext } from "./model.js";
+ import { findRelocatableWorktreeForBranch } from "./rediscover.js";
+ 
+ function sha256(value: string): `sha256:${string}` {
+diff --git a/packages/agentplane/src/runtime/workspace-allocation/lease.ts b/packages/agentplane/src/runtime/workspace-allocation/lease.ts
+index bc2c1fecf..35f96bde1 100644
+--- a/packages/agentplane/src/runtime/workspace-allocation/lease.ts
++++ b/packages/agentplane/src/runtime/workspace-allocation/lease.ts
+@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
+ import { mkdir, open, readFile, rename, unlink } from "node:fs/promises";
+ import path from "node:path";
+ 
+-import type { WorkspaceLease } from "./types.js";
++import type { WorkspaceLease } from "./model.js";
+ 
+ function leaseDirectory(commonGitDir: string): string {
+   return path.join(commonGitDir, "agentplane", "workspace-leases");
+diff --git a/packages/agentplane/src/runtime/workspace-allocation/model.ts b/packages/agentplane/src/runtime/workspace-allocation/model.ts
+new file mode 100644
+index 000000000..3473b4aec
+--- /dev/null
++++ b/packages/agentplane/src/runtime/workspace-allocation/model.ts
+@@ -0,0 +1,27 @@
++import type { TaskExecutionContext } from "../task-execution-context/index.js";
++
++export type WorkspaceLease = {
++  readonly schema_version: 1;
++  readonly task_id: string;
++  readonly generation: string;
++  readonly owner_pid: number;
++  readonly acquired_at: string;
++  readonly allocation_identity: `sha256:${string}`;
++  readonly workspace_root: string;
++  readonly lease_path: string;
++};
++
++export type WorkspaceAllocationContext = {
++  readonly schema_version: 1;
++  readonly task_id: string;
++  readonly task_ids: readonly string[];
++  readonly allocation_kind: "direct_workspace" | "existing_task_worktree";
++  readonly repository_root: string;
++  readonly workspace_root: string;
++  readonly branch: string;
++  readonly base_ref: string;
++  readonly base_sha: string;
++  readonly identity: `sha256:${string}`;
++  readonly execution: TaskExecutionContext;
++  readonly lease: WorkspaceLease;
++};
+diff --git a/packages/agentplane/src/runtime/workspace-allocation/types.ts b/packages/agentplane/src/runtime/workspace-allocation/types.ts
+deleted file mode 100644
+index b7e36ac16..000000000
+--- a/packages/agentplane/src/runtime/workspace-allocation/types.ts
++++ /dev/null
+@@ -1,27 +0,0 @@
+-import type { TaskExecutionContext } from "../task-execution-context/index.js";
+-
+-export type WorkspaceLease = Readonly<{
+-  schema_version: 1;
+-  task_id: string;
+-  generation: string;
+-  owner_pid: number;
+-  acquired_at: string;
+-  allocation_identity: `sha256:${string}`;
+-  workspace_root: string;
+-  lease_path: string;
+-}>;
+-
+-export type WorkspaceAllocationContext = Readonly<{
+-  schema_version: 1;
+-  task_id: string;
+-  task_ids: readonly string[];
+-  allocation_kind: "direct_workspace" | "existing_task_worktree";
+-  repository_root: string;
+-  workspace_root: string;
+-  branch: string;
+-  base_ref: string;
+-  base_sha: string;
+-  identity: `sha256:${string}`;
+-  execution: TaskExecutionContext;
+-  lease: WorkspaceLease;
+-}>;
