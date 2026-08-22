@@ -1,10 +1,10 @@
 ---
 id: "202608212244-6XZAYD"
 title: "Implement the task-centric refactoring roadmap v2 and publish the next patch release"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -27,10 +27,10 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "User confirmed exact plan digest in Codex task; host_user_decision=sha256:f5d9083511651b29dd00284b298bcaf85d49e76762063fbd26008ffa0d2aae09"
 verification:
-  state: "ok"
-  updated_at: "2026-08-22T01:43:52.903Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  state: "pending"
+  updated_at: "2026-08-22T01:48:34.262Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 quality_review:
   state: "rework"
@@ -118,6 +118,8 @@ execution_contract:
       - "package.json"
       - "packages"
       - "schemas"
+      - "scripts/baselines"
+      - "scripts/checks"
       - "skills"
       - "tsconfig.depcruise.json"
       - "vitest.config.ts"
@@ -133,6 +135,7 @@ execution_contract:
       - "Protected main and publication require branch_pr integration, hosted checks, provider writes, and registry publication."
       - "The roadmap changes the central task lifecycle, public CLI and schemas, tests, generated assets, architecture rules, and release metadata."
       - "The user explicitly approved the complete roadmap and patch release; new approval is reserved for material scope, security, acceptance, or version drift."
+      - "USER-approved blocked-result scope extension: roots=scripts/baselines,scripts/checks; repository_effects=public_api,repository_write,schema,tests"
     repository_effects:
       - "ci"
       - "dependencies"
@@ -161,6 +164,8 @@ execution_contract:
       - "package.json"
       - "packages"
       - "schemas"
+      - "scripts/baselines"
+      - "scripts/checks"
       - "skills"
       - "tsconfig.depcruise.json"
       - "vitest.config.ts"
@@ -265,28 +270,7 @@ execution_contract:
       - "schema"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -327,6 +311,8 @@ execution_contract:
           - "package.json"
           - "packages"
           - "schemas"
+          - "scripts/baselines"
+          - "scripts/checks"
           - "skills"
           - "tsconfig.depcruise.json"
           - "vitest.config.ts"
@@ -365,7 +351,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:340b15931a9c93b7a9a4d69a6522a4460f590cdfc98451d897ccc2b2dac9355b"
+      digest: "sha256:02baf470b4772384875b3fce1eaf4173f81eeb6714b74b3f27d508eb758534df"
       escalation_reasons:
         - "central_component:bun.lock"
         - "central_component:package.json"
@@ -549,9 +535,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "8ae1df8b06aa992a90d7b678bf5d2c34f7455969"
-  message: "🚧 6XZAYD task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -562,6 +546,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Evaluator rework cannot be applied because both required compatibility ratchet roots remain outside this EXECUTOR packet's writable scope. Recommended action: Apply the pending scope extension as USER and issue a fresh EXECUTOR packet. Requested scope: roots=scripts/baselines,scripts/checks; repository effects=public_api,repository_write,schema,tests; request digest=sha256:6cfd07c80c92c4c6e3ba4988c6be669b5da339aeb27078b50a3386d957e6e402. Agentplane receipt: external-agent-blocker/tr_3204c895f463179e16a5e6a3069462f5/sha256:d9234d4014f53a935e869ddca66e4f9ad563a3bf1309ba72a9c84342a5c785b7/sha256:6cfd07c80c92c4c6e3ba4988c6be669b5da339aeb27078b50a3386d957e6e402."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: scripts/baselines, scripts/checks; repository effects: public_api, repository_write, schema, tests."
 events:
   -
     type: "status"
@@ -727,6 +714,8 @@ extensions:
     status: "active"
     task_id: "202608212244-6XZAYD"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-22T01:48:34.262Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:d9234d4014f53a935e869ddca66e4f9ad563a3bf1309ba72a9c84342a5c785b7"
     kind: "task_scope_extension_request"
     request:
@@ -742,7 +731,7 @@ extensions:
         - "scripts/checks"
     request_digest: "sha256:6cfd07c80c92c4c6e3ba4988c6be669b5da339aeb27078b50a3386d957e6e402"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_3204c895f463179e16a5e6a3069462f5"
   implementation_commit:
     hash: "8ae1df8b06aa992a90d7b678bf5d2c34f7455969"
