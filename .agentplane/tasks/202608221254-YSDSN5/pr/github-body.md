@@ -22,7 +22,7 @@ Add one compatibility E2E proving the existing context.maximum_assimilation flow
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-22T12:59:09.522Z
+- Updated: 2026-08-22T13:09:01.289Z
 - Branch: task/202608221254-YSDSN5/add-one-compatibility-e2e-proving-the-existing-c
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

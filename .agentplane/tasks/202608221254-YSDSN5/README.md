@@ -1,10 +1,11 @@
 ---
 id: "202608221254-YSDSN5"
 title: "Add one compatibility E2E proving the existing context.maximum_assimilation flow operates through the new task-centric core before v0.7.8 publication. Preserve existing context contracts, prompts, and artifacts. If the E2E exposes a regression, fix only that regression and do not redesign the context subsystem."
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -32,21 +33,21 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-22T13:10:25.294Z"
+  updated_at: "2026-08-22T13:13:27.956Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 7 typed finding(s)."
-  evaluated_sha: "ff5674191fac5ae70048b7825983bea73eebb3c2"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "27be626daa9ee9e379a5ce6d7b6fe0dcfab7c890"
   blueprint_digest: "5be5fc58b425343e6cc7c0c8bdbccea2ca157599b8ae12649ac48d1e6c64f8f8"
   evidence_refs:
-    - ".agentplane/tasks/202608221254-YSDSN5/quality/20260822-130905607-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608221254-YSDSN5/quality/20260822-130905607-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608221254-YSDSN5/quality/objects/sha256/082336463bd36dca9698b3a5b1d9409cb468e0273d49b5a8250d53b02c786721.md"
-    - ".agentplane/tasks/202608221254-YSDSN5/quality/20260822-130905607-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608221254-YSDSN5/quality/20260822-130905607-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608221254-YSDSN5/quality/20260822-130905607-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608221254-YSDSN5/quality/20260822-131327340-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608221254-YSDSN5/quality/20260822-131327340-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608221254-YSDSN5/quality/objects/sha256/34d14069c5d429540972200b8a657d6cb5916fe1c224c64eff3898821d4d8caf.md"
+    - ".agentplane/tasks/202608221254-YSDSN5/quality/20260822-131327340-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608221254-YSDSN5/quality/20260822-131327340-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608221254-YSDSN5/quality/20260822-131327340-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608221254-YSDSN5/README.md"
     - ".agentplane/tasks/202608221254-YSDSN5/quality/objects/sha256/2e13a7d00c8eb22a9db3328055e437ea1c142ff719c6c42177b537aa44cfdf71.patch"
-    - ".agentplane/tasks/202608221254-YSDSN5/quality/objects/sha256/50b18e7cfb24cdd70ca37061a0652e5ee92611b6ffc8eff106c5257079c7086c.json"
+    - ".agentplane/tasks/202608221254-YSDSN5/quality/objects/sha256/6d72d2e8444e2608067fad1d47c2c325316c50d04c5c3f2fb08f231e36742a3e.json"
     - ".agentplane/tasks/202608221254-YSDSN5/verification/20260822130816636-5801cfd574414ae0.json"
     - ".agentplane/tasks/202608221254-YSDSN5/quality/objects/sha256/5c9f8f7ca3b07956dd7f442dfdbc46d529aec6a2f99ea05c46486095f0186229.json"
     - ".agentplane/policy/dod.code.md"
@@ -54,13 +55,23 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The only non-supervisor implementation path in the diff is the new compatibility E2E."
-    - "The E2E proves the existing context.maximum_assimilation blueprint, typed prompt, allowed outputs, and nine task-bound artifacts are retained."
-    - "The E2E proves task advance routes the same Task through the task-centric exact-plan approval request with no premature execution exchange."
-    - "The declared E2E check passes and task verification is recorded as ok."
-    - "No regression was demonstrated, so leaving production context code unchanged satisfies the explicit release boundary."
-    - "Hosted integration remains a post-PR gate and is not part of this semantic verdict."
-    - "Residual risk: Hosted CI and integration evidence must still pass for the exact PR head before merge."
+    - "The only implementation path is packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts."
+    - "Existing blueprint, prompt, allowed outputs, and task-bound context artifacts are asserted without modifying production context code."
+    - "The exact-plan approval request proves the context Task uses the task-centric route and emits no premature execution exchange."
+token_usage:
+  agent_runs: 5
+  input_tokens: null
+  journal_digest: "sha256:158b907c0a810b2eea03a366ec1ad91fa9b8ef4a2242de10a46ab2f7ac842d4e"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-22T13:11:11.173Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -231,8 +242,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "aad2bf7db0f364c48023d4577232c7bf9e9b5e95"
-  message: "🚧 YSDSN5 task: apply external agent result"
+  hash: "babc3f29cf4c488807c54c5ce5e8b689c7786bb0"
+  message: "🚧 YSDSN5 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -246,6 +257,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: aad2bf7db0f3. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -296,9 +310,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-22T13:11:11.173Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "babc3f29cf4c488807c54c5ce5e8b689c7786bb0"
 doc_version: 3
-doc_updated_at: "2026-08-22T13:08:18.566Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-22T13:13:27.980Z"
+doc_updated_by: "CODER"
 description: "Add one compatibility E2E proving the existing context.maximum_assimilation flow operates through the new task-centric core before v0.7.8 publication. Preserve existing context contracts, prompts, and artifacts. If the E2E exposes a regression, fix only that regression and do not redesign the context subsystem."
 sections:
   Summary: |-
@@ -639,7 +661,8 @@ extensions:
         state: "READY"
         validation_result: null
   implementation_commit:
-    hash: "aad2bf7db0f364c48023d4577232c7bf9e9b5e95"
+    hash: "ff5674191fac5ae70048b7825983bea73eebb3c2"
+    message: "🚧 YSDSN5 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ee460292f9d253a5ba6fe2ca95a6d0fd5e7a7088"
@@ -804,3 +827,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/5` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:158b907c0a810b2eea03a366ec1ad91fa9b8ef4a2242de10a46ab2f7ac842d4e`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-22T13:11:11.173Z`
