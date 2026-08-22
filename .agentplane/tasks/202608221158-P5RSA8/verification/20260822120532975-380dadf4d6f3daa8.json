@@ -1,0 +1,109 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:contract && bun run clone:check\nResult: pass\nEvidence: .agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks\nScope: branch_pr task 202608221158-P5RSA8 Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bun run ci:contract && bun run clone:check\nResult: pass\nEvidence: .agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks\nScope: branch_pr task 202608221158-P5RSA8 Verification Contract check critical_paths\n\nCheck: full_regression\nCommand: bun run ci:contract && bun run clone:check\nResult: pass\nEvidence: .agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks\nScope: branch_pr task 202608221158-P5RSA8 Verification Contract check full_regression\n\nCheck: hosted_integration\nCommand: bun run ci:contract && bun run clone:check\nResult: pass\nEvidence: .agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks\nScope: branch_pr task 202608221158-P5RSA8 Verification Contract check hosted_integration\n\nCheck: task_outcome\nCommand: bun run ci:contract && bun run clone:check\nResult: pass\nEvidence: .agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks\nScope: branch_pr task 202608221158-P5RSA8 Verification Contract check task_outcome",
+  "digest": "sha256:380dadf4d6f3daa83c5c0b77909f1c5bdf0da641f71b5c66c503bf67821ce1c8",
+  "implementation_sha": "67ab5811f56da356041febc60f57eb1c575263e3",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:fd39626b76a70f6d938fba026ab46ca5a72671b0830c50aeb983af55248ce1bc",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:38c980abc9c10267a77136d622e27ca4eaadbc3b341dc3db181de082a8f08ee6",
+      "digest": "sha256:3f4482275bc80d25638c8cd0d947779dfaac0c03632c54e1f4707c42e832097e",
+      "references": [
+        {
+          "digest": "sha256:c3e8b0cc3740bf988296d91919926e1d4cf6e8d9ce7ffd855196aaba4ecf51e4",
+          "fragment": "checks",
+          "path": ".agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608221158-P5RSA8/supervision/declared-checks.json#checks",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "5fd1963ef2f73adae882539030f5086767a973be",
+      "digest": "sha256:7acd09b4fd307728f8aa82e2f73856c970f30ece436db0f58697fa3bc83cc303",
+      "primary_task_id": "202608221158-P5RSA8",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608221158-P5RSA8"
+      ]
+    },
+    "implementation": {
+      "base_sha": "5fd1963ef2f73adae882539030f5086767a973be",
+      "digest": "sha256:2538170c517fed07ff050eb4ef90819302f48351bb76af41e9b928b2e9113382",
+      "strategy": "branch_diff",
+      "target_sha": "67ab5811f56da356041febc60f57eb1c575263e3"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:30edc6cad61113d07e2c1645fde62323a6e57214837dc5c86998235089820221",
+    "verify_steps_digest": "sha256:4124a41ec448a2ad6e32d06ef88dc5b282ded43f9b3d7d1e709486a1ae0300ec"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-22T12:05:32.975Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Refresh the clone baseline after the completed task-centric roadmap\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Refresh the clone baseline after the completed task-centric roadmap\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:4124a41ec448a2ad6e32d06ef88dc5b282ded43f9b3d7d1e709486a1ae0300ec",
+  "task_id": "202608221158-P5RSA8",
+  "verification_command": "agentplane verify 202608221158-P5RSA8 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
