@@ -13,7 +13,7 @@ Created: 2026-08-21T22:50:57.507Z
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note: The current clean task head passes the task-centric packaged lifecycle and policy, schema, compatibility, and incident synchronization checks.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

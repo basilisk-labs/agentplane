@@ -16,7 +16,12 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note:
+
+```text
+The current clean task head passes the task-centric packaged lifecycle and policy, schema,
+compatibility, and incident synchronization checks.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
