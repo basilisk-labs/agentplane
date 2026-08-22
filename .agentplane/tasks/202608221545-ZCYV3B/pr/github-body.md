@@ -15,7 +15,7 @@ Fix only the proven task-centric verification regression from PR #4873: one focu
 
 ## Verification
 
-- State: needs_rework
+- State: blocked_external
 - Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 

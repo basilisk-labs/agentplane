@@ -1,1 +1,1 @@
-🚧 ZCYV3B task: Stop verification receipts from overstating check coverage [202608221545-ZCYV3B]
+⛔ ZCYV3B task: Stop verification receipts from overstating check coverage [202608221545-ZCYV3B]

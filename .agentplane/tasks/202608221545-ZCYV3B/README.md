@@ -1,10 +1,10 @@
 ---
 id: "202608221545-ZCYV3B"
 title: "Stop verification receipts from overstating check coverage"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:defee467b01eefa8d1131fcd66aa9f6b83c7e5a46f97ab5b6eae0014070d57a4"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-22T16:16:05.729Z"
+  state: "blocked_external"
+  updated_at: "2026-08-22T16:21:59.289Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 3
+  attempts: 4
 execution_route:
   frozen: true
   reason_codes:
@@ -225,6 +225,15 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 8d55415e4b51. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: fb55e5e3f207. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "USER"
+    body: "Resume after supervisor retry cap to approve the minimal proven test-fixture scope extension."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The real full gate exposed one critical fixture outside the current authority that must declare its canonical full command. Recommended action: Extend authority by exactly one test file, add the deterministic ci:local:full fixture declaration, and rerun verification. Requested scope: roots=packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts; repository effects=repository_write,tests; request digest=sha256:452e60444b0ba06973be96d28dbe1eea24497a5856df476188cad70e875176e1. Agentplane receipt: external-agent-blocker/tr_ce6cfa95becafcc58ce917afefd2d24e/sha256:a9decfa2b9e783aa9b9f0e98103ee420a5bc3c469175f65be2213e81f63dd07a/sha256:452e60444b0ba06973be96d28dbe1eea24497a5856df476188cad70e875176e1."
 events:
   -
     type: "status"
@@ -289,8 +298,36 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-22T16:20:00.393Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: fb55e5e3f207. CLI accepted one state-bound external-agent semantic result."
+    commit: "fb55e5e3f2072f5ff5b43998367dd628c5dfb195"
+  -
+    type: "verify"
+    at: "2026-08-22T16:21:59.289Z"
+    author: "SUPERVISOR"
+    state: "blocked_external"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-22T16:23:00.602Z"
+    author: "USER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume after supervisor retry cap to approve the minimal proven test-fixture scope extension."
+  -
+    type: "status"
+    at: "2026-08-22T16:23:35.066Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The real full gate exposed one critical fixture outside the current authority that must declare its canonical full command. Recommended action: Extend authority by exactly one test file, add the deterministic ci:local:full fixture declaration, and rerun verification. Requested scope: roots=packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts; repository effects=repository_write,tests; request digest=sha256:452e60444b0ba06973be96d28dbe1eea24497a5856df476188cad70e875176e1. Agentplane receipt: external-agent-blocker/tr_ce6cfa95becafcc58ce917afefd2d24e/sha256:a9decfa2b9e783aa9b9f0e98103ee420a5bc3c469175f65be2213e81f63dd07a/sha256:452e60444b0ba06973be96d28dbe1eea24497a5856df476188cad70e875176e1."
 doc_version: 3
-doc_updated_at: "2026-08-22T16:16:08.889Z"
+doc_updated_at: "2026-08-22T16:23:35.066Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix only the proven task-centric verification regression from PR #4873: one focused declared command must not be recorded as full_regression or hosted_integration evidence. Preserve separate hosted-provider gating, run a real repository full-regression command when the contract requires it, and bind each recorded check to concrete executed evidence. Add regression tests. Do not change context or Knowledge Assimilation behavior."
 sections:
@@ -425,6 +462,46 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-22T16:21:59.289Z — VERIFY — blocked_external
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 4
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e53c419db3d564888ffad6f61c6eb347c5fdeb5fbcad08289828f74178742ef3, input_digest=sha256:287430b2ef00a453a90a34f8641c3110450acae7b779776fc4f9fdb5701b7d22
+
+    Details:
+
+    Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-verification-result.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608221545-ZCYV3B declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608221545-ZCYV3B declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221545-ZCYV3B-stop-verification-receipts-from-overstating-chec/.agentplane/tasks/202608221545-ZCYV3B/blueprint/resolved-snapshot.json
+    - old_digest: 0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb
+    - current_digest: 0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221545-ZCYV3B
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -454,6 +531,21 @@ extensions:
     scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
     status: "active"
     task_id: "202608221545-ZCYV3B"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:a9decfa2b9e783aa9b9f0e98103ee420a5bc3c469175f65be2213e81f63dd07a"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "The critical task-centric fixture triggers full_regression but does not define the canonical repository full command; adding this test file is the smallest fix and changes no production behavior."
+      repository_effects:
+        - "repository_write"
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
+    request_digest: "sha256:452e60444b0ba06973be96d28dbe1eea24497a5856df476188cad70e875176e1"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_ce6cfa95becafcc58ce917afefd2d24e"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -852,6 +944,46 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 3
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e53c419db3d564888ffad6f61c6eb347c5fdeb5fbcad08289828f74178742ef3, input_digest=sha256:27d4e4b02276b901431ba5d518168b28dd835a1195ef1052519ee0eda3ba4ed9
+
+Details:
+
+Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-verification-result.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608221545-ZCYV3B declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608221545-ZCYV3B/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608221545-ZCYV3B declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221545-ZCYV3B-stop-verification-receipts-from-overstating-chec/.agentplane/tasks/202608221545-ZCYV3B/blueprint/resolved-snapshot.json
+- old_digest: 0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb
+- current_digest: 0908521a4bb6f372401ef4b654d1664ba9b376aa40d7435924e69f415ea9dddb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221545-ZCYV3B
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T16:21:59.289Z — VERIFY — blocked_external
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 4
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e53c419db3d564888ffad6f61c6eb347c5fdeb5fbcad08289828f74178742ef3, input_digest=sha256:287430b2ef00a453a90a34f8641c3110450acae7b779776fc4f9fdb5701b7d22
 
 Details:
 
