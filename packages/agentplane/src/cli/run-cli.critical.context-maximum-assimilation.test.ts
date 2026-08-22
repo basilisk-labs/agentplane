@@ -110,6 +110,7 @@ describe("maximum-assimilation task-centric compatibility", { timeout: 180_000 }
     expect(planning).toMatchObject({
       task_id: taskId,
       action: { kind: "approval_required" },
+      authority: { role: "EXECUTOR" },
       operator_action: {
         kind: "approve_plan",
         host_user_decision: {

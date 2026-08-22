@@ -4,7 +4,7 @@ title: "Add one compatibility E2E proving the existing context.maximum_assimilat
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:27d6d37beebedd56d595b635d91d4126c9dcba5466e70eaa2afbb12448a41ba5"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-22T13:04:21.724Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: No executable declared verification checks are configured for this task."
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -84,12 +84,20 @@ execution_contract:
       - "packages/agentplane/src/context/ingest-task.ts"
       - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "verification:verification-record:fail"
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "tests"
+    verification_results:
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -124,19 +132,24 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:e05217b94cb985afa7e77bb06b9f9064c3879f9680c496326c381aa14f3d4a89"
+      digest: "sha256:345423c32f7396fc7db34af4286ffd67506cdd99fd1fe541746b77ab7a258fb4"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -168,11 +181,15 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 6291d20e8cf2. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -181,9 +198,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-22T13:04:21.401Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 6291d20e8cf2. CLI accepted one state-bound external-agent semantic result."
+    commit: "6291d20e8cf264ecd545ed7833b60a296c614928"
+  -
+    type: "verify"
+    at: "2026-08-22T13:04:21.724Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: No executable declared verification checks are configured for this task."
 doc_version: 3
-doc_updated_at: "2026-08-22T12:59:08.786Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-22T13:04:23.659Z"
+doc_updated_by: "SUPERVISOR"
 description: "Add one compatibility E2E proving the existing context.maximum_assimilation flow operates through the new task-centric core before v0.7.8 publication. Preserve existing context contracts, prompts, and artifacts. If the E2E exposes a regression, fix only that regression and do not redesign the context subsystem."
 sections:
   Summary: |-
@@ -202,6 +233,36 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-22T13:04:21.724Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: No executable declared verification checks are configured for this task.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:62b80a44da7229cc3432b97e589db887f54e50abd9e2e6e305781deb3e7c453e, input_digest=sha256:1824508483607700fb9bfdc14722e7c79f9d19852883a072ee88fdac028f0b00
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221254-YSDSN5-add-one-compatibility-e2e-proving-the-existing-c/.agentplane/tasks/202608221254-YSDSN5/blueprint/resolved-snapshot.json
+    - old_digest: 5be5fc58b425343e6cc7c0c8bdbccea2ca157599b8ae12649ac48d1e6c64f8f8
+    - current_digest: 5be5fc58b425343e6cc7c0c8bdbccea2ca157599b8ae12649ac48d1e6c64f8f8
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608221254-YSDSN5
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -408,7 +469,6 @@ extensions:
     base_sha: "ee460292f9d253a5ba6fe2ca95a6d0fd5e7a7088"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "ee460292f9d253a5ba6fe2ca95a6d0fd5e7a7088"
     version: 1
@@ -440,6 +500,36 @@ PLANNER fallback scaffold for "Add one compatibility E2E proving the existing co
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-22T13:04:21.724Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: No executable declared verification checks are configured for this task.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:62b80a44da7229cc3432b97e589db887f54e50abd9e2e6e305781deb3e7c453e, input_digest=sha256:1824508483607700fb9bfdc14722e7c79f9d19852883a072ee88fdac028f0b00
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221254-YSDSN5-add-one-compatibility-e2e-proving-the-existing-c/.agentplane/tasks/202608221254-YSDSN5/blueprint/resolved-snapshot.json
+- old_digest: 5be5fc58b425343e6cc7c0c8bdbccea2ca157599b8ae12649ac48d1e6c64f8f8
+- current_digest: 5be5fc58b425343e6cc7c0c8bdbccea2ca157599b8ae12649ac48d1e6c64f8f8
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608221254-YSDSN5
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

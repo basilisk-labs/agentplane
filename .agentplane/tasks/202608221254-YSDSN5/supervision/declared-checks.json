@@ -1,0 +1,8 @@
+{
+  "checks": [],
+  "kind": "direct_task_declared_checks",
+  "reason": "No executable declared verification checks are configured for this task.",
+  "schema_version": 1,
+  "status": "unsupported",
+  "task_id": "202608221254-YSDSN5"
+}

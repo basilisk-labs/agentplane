@@ -12,8 +12,8 @@ Created: 2026-08-22T12:59:09.522Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: No executable declared verification checks are configured for this task.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,8 +29,8 @@ Created: 2026-08-22T12:59:09.522Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...i.critical.context-maximum-assimilation.test.ts | 125 +++++++++++++++++++++
- 1 file changed, 125 insertions(+)
+ ...i.critical.context-maximum-assimilation.test.ts | 126 +++++++++++++++++++++
+ 1 file changed, 126 insertions(+)
 ```
 
 </details>
