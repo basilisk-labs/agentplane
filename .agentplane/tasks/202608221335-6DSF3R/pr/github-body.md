@@ -22,7 +22,7 @@ Fix the proven task-centric Core regression in null-ID external result handling:
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-22T13:40:02.178Z
+- Updated: 2026-08-22T13:42:54.186Z
 - Branch: task/202608221335-6DSF3R/fix-idempotent-null-workitem-external-result-acc
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
