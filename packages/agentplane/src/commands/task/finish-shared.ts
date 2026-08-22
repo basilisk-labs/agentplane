@@ -10,6 +10,7 @@ import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
 import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import { isRecord } from "../../shared/guards.js";
 import { emitTraceEvent } from "../../shared/trace-events.js";
 import { generateAcr, writeAcrFile } from "../acr/acr.command.js";
 import { cmdCommit } from "../guard/impl/commit.js";
@@ -39,6 +40,23 @@ export type LoadedFinishTask = {
   taskId: string;
   task: TaskData;
 };
+
+export function resolveBatchArtifactTaskIds(loaded: LoadedFinishTask): string[] {
+  const batch = isRecord(loaded.task.extensions?.branch_pr_batch)
+    ? loaded.task.extensions.branch_pr_batch
+    : null;
+  if (
+    batch?.role !== "primary" ||
+    batch.primary_task_id !== loaded.taskId ||
+    !Array.isArray(batch.included_task_ids)
+  ) {
+    return [loaded.taskId];
+  }
+  const includedTaskIds = batch.included_task_ids.filter(
+    (value): value is string => typeof value === "string" && value.length > 0,
+  );
+  return [...new Set([loaded.taskId, ...includedTaskIds])];
+}
 
 function normalizeCommentBody(value: string | null | undefined): string {
   return typeof value === "string" ? value.trim() : "";

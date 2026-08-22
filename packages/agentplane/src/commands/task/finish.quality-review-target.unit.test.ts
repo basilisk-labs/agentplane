@@ -199,6 +199,39 @@ extensions:
     );
   });
 
+  it("accepts a reviewed descendant containing linked batch task artifacts", async () => {
+    const loaded = mkLoadedTask("batch-artifact-review-sha");
+    loaded.task.extensions = {
+      branch_pr_batch: {
+        role: "primary",
+        primary_task_id: "T-1",
+        included_task_ids: ["T-2"],
+      },
+    };
+    mocks.isTaskSetLocalOnlyAdvance.mockResolvedValue(true);
+    const { assertQualityReviewBeforeFinish } = await import("./finish-blueprint-evidence.js");
+
+    await expect(
+      assertQualityReviewBeforeFinish({
+        ctx: mkCtx(),
+        loadedTasks: [loaded],
+        taskCommitInfo: { hash: "artifact-head-sha", message: "task: record evidence" },
+        implementationCommitInfo: { hash: "impl-sha", message: "feat: implementation" },
+        execution: mkExecution(),
+      }),
+    ).resolves.toBeUndefined();
+
+    expect(mocks.isTaskSetLocalOnlyAdvance).toHaveBeenCalledWith({
+      gitRoot: "/repo",
+      workflowDir: ".agentplane/tasks",
+      taskIds: ["T-1", "T-2"],
+      tasksPath: ".agentplane/tasks.json",
+      fromRef: "impl-sha",
+      toRef: "batch-artifact-review-sha",
+    });
+    expect(mocks.isTaskLocalOnlyAdvance).not.toHaveBeenCalled();
+  });
+
   it("rejects an EVALUATOR pass when the reviewed descendant contains semantic drift", async () => {
     const loaded = mkLoadedTask("semantic-drift-sha");
     mocks.isTaskLocalOnlyAdvance.mockResolvedValue(false);
