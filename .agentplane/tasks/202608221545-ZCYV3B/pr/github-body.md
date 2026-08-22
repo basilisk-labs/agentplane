@@ -15,8 +15,8 @@ Fix only the proven task-centric verification regression from PR #4873: one focu
 
 ## Verification
 
-- State: blocked_external
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,13 +27,14 @@ Fix only the proven task-centric verification regression from PR #4873: one focu
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../src/cli/run-cli.critical.task-centric.test.ts  |   9 +-
  .../shared/task-verification-records.test.ts       |  32 ++++--
  .../commands/shared/task-verification-records.ts   |   4 +-
  .../commands/task/direct-task-verification.test.ts | 116 +++++++++++++++++++++
  .../src/commands/task/direct-task-verification.ts  |  72 ++++++++++---
  .../external-agent-verification-result.test.ts     |  39 ++++++-
  .../task/external-agent-verification-result.ts     |  38 ++++---
- 6 files changed, 264 insertions(+), 37 deletions(-)
+ 7 files changed, 272 insertions(+), 38 deletions(-)
 ```
 
 </details>
