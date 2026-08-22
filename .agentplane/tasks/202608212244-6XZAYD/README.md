@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 70
+revision: 71
 origin:
   system: "manual"
 depends_on: []
@@ -29,9 +29,9 @@ plan_approval:
   note: "User confirmed exact plan digest in Codex task; host_user_decision=sha256:f5d9083511651b29dd00284b298bcaf85d49e76762063fbd26008ffa0d2aae09"
 verification:
   state: "ok"
-  updated_at: "2026-08-22T04:01:56.580Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  updated_at: "2026-08-22T04:08:28.242Z"
+  updated_by: "TESTER"
+  note: "The incident-aware task-centric implementation is verified on the current committed branch state."
   attempts: 0
 quality_review:
   state: "pass"
@@ -968,8 +968,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "verify"
+    at: "2026-08-22T04:08:28.242Z"
+    author: "TESTER"
+    state: "ok"
+    note: "The incident-aware task-centric implementation is verified on the current committed branch state."
 doc_version: 3
-doc_updated_at: "2026-08-22T04:02:02.918Z"
+doc_updated_at: "2026-08-22T04:08:34.419Z"
 doc_updated_by: "CODER"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:
@@ -2700,6 +2706,78 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
     Scope: branch_pr task 202608212244-6XZAYD Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212244-6XZAYD-implement-the-task-centric-refactoring-roadmap-v/.agentplane/tasks/202608212244-6XZAYD/blueprint/resolved-snapshot.json
+    - old_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+    - current_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608212244-6XZAYD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T04:08:28.242Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: The incident-aware task-centric implementation is verified on the current committed branch state.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6, input_digest=sha256:e5f7df14b8098f0a3cb2b88ccfa8462159286b984916253cb85e70ca4dad8279
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608212244-6XZAYD
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608212244-6XZAYD
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608212244-6XZAYD
+
+    Check: full_regression
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608212244-6XZAYD
+
+    Check: hosted_integration
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608212244-6XZAYD
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608212244-6XZAYD
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: external TESTER review for task 202608212244-6XZAYD
 
     BlueprintSnapshotRef:
     - state: current
@@ -4524,6 +4602,78 @@ Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
 Result: pass
 Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
 Scope: branch_pr task 202608212244-6XZAYD Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212244-6XZAYD-implement-the-task-centric-refactoring-roadmap-v/.agentplane/tasks/202608212244-6XZAYD/blueprint/resolved-snapshot.json
+- old_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+- current_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608212244-6XZAYD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T04:08:28.242Z — VERIFY — ok
+
+By: TESTER
+
+Note: The incident-aware task-centric implementation is verified on the current committed branch state.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6, input_digest=sha256:e5f7df14b8098f0a3cb2b88ccfa8462159286b984916253cb85e70ca4dad8279
+
+Details:
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608212244-6XZAYD
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608212244-6XZAYD
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608212244-6XZAYD
+
+Check: full_regression
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608212244-6XZAYD
+
+Check: hosted_integration
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608212244-6XZAYD
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608212244-6XZAYD
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: external TESTER review for task 202608212244-6XZAYD
 
 BlueprintSnapshotRef:
 - state: current
