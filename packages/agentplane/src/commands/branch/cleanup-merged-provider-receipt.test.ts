@@ -662,6 +662,59 @@ describe("cleanup merged provider receipt type guard", { timeout: TEST_TIMEOUT_M
     );
   });
 
+  it("rejects an unrelated force-pushed provider head despite exact single-parent merge tree identity", async () => {
+    const fixture = await createSingleParentRebaseReceiptFixture({ mergeTree: "provider" });
+    const unrelatedProviderBranch = `unrelated-single-parent/${fixture.taskId}`;
+    await execFileAsync("git", ["checkout", "-b", unrelatedProviderBranch, fixture.providerBase], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    await writeFile(
+      path.join(fixture.root, "single-parent-unrelated-provider.txt"),
+      "force-pushed unrelated provider patch\n",
+      "utf8",
+    );
+    await commitAll(fixture.root, "chore unrelated force-pushed provider head");
+    const unrelatedProviderHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    const unrelatedProviderHead = unrelatedProviderHeadResult.stdout.trim();
+    const unrelatedMergeCommitResult = await execFileAsync(
+      "git",
+      [
+        "commit-tree",
+        `${unrelatedProviderHead}^{tree}`,
+        "-p",
+        fixture.providerBase,
+        "-m",
+        "GitHub unrelated rebase merge receipt",
+      ],
+      { cwd: fixture.root, env: cleanGitEnv() },
+    );
+    const unrelatedMergeCommit = unrelatedMergeCommitResult.stdout.trim();
+
+    const reconciliation = await resolveProviderReconciliation({
+      gitRoot: fixture.root,
+      taskId: fixture.taskId,
+      branch: fixture.localBranch,
+      baseBranch: "main",
+      taskCommitSha: fixture.localHead,
+      branchHead: fixture.localHead,
+      closureBasisCommit: fixture.localHead,
+      receipt: {
+        prNumber: 123,
+        providerHeadSha: unrelatedProviderHead,
+        mergeCommit: unrelatedMergeCommit,
+      },
+    });
+
+    expect(reconciliation.proof).toBeNull();
+    expect(reconciliation.reason).toBe(
+      "provider rebase is not patch-equivalent to the stale local task head",
+    );
+  });
+
   it("rejects annotated tags for every live reconciliation identity before ancestry proof", async () => {
     const fixture = await createTaskCloseReceiptFixture();
     const input = {

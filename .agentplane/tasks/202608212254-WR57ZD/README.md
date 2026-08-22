@@ -2,10 +2,10 @@
 id: "202608212254-WR57ZD"
 title: "Accept exact tree identity for GitHub rebase cleanup"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ verify:
   - "bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-21T22:55:01.360Z"
+  updated_at: "2026-08-22T00:30:47.845Z"
   updated_by: "USER"
-  note: null
+  note: "Approved within the existing fully authorized finalization scope."
 verification:
   state: "ok"
   updated_at: "2026-08-22T00:28:42.735Z"
@@ -269,6 +269,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "USER"
+    body: "Reopen within approved scope to address unresolved P1 review feedback before integration."
 events:
   -
     type: "status"
@@ -343,9 +346,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-22T00:29:40.202Z"
+    author: "USER"
+    from: "DONE"
+    to: "DOING"
+    note: "Reopen within approved scope to address unresolved P1 review feedback before integration."
 doc_version: 3
-doc_updated_at: "2026-08-22T00:28:47.380Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-22T00:30:47.915Z"
+doc_updated_by: "USER"
 description: "Allow cleanup reconciliation to accept an exact provider receipt when the provider head tree equals the single-parent GitHub rebase merge commit tree; preserve existing identity, object, receipt, and negative guards. Add focused regression tests, publish a PR, merge after hosted checks, then retry cleanup for E6CDHP and XEC2NE."
 sections:
   Summary: |-
@@ -356,10 +366,10 @@ sections:
     - In scope: Allow cleanup reconciliation to accept an exact provider receipt when the provider head tree equals the single-parent GitHub rebase merge commit tree; preserve existing identity, object, receipt, and negative guards. Add focused regression tests, publish a PR, merge after hosted checks, then retry cleanup for E6CDHP and XEC2NE.
     - Out of scope: unrelated refactors not required for "Accept exact tree identity for GitHub rebase cleanup".
   Plan: |-
-    1. Inspect cleanup reconciliation and focused rebase/receipt tests.
-    2. Add fail-closed exact tree-identity proof before the ancestry-only path while preserving identity, object, task, and provider receipt validation.
-    3. Add positive single-parent rebase-merge and negative differing-tree regression coverage; run the assigned focused tests.
-    4. Return the semantic result to AgentPlane, then let AgentPlane publish, verify, integrate, hosted-close, and clean the affected task artifacts.
+    1. Inspect cleanup reconciliation, the unresolved P1 review, and focused rebase/receipt tests.
+    2. Require exact single-parent merge/provider tree identity to supplement existing local/provider patch-equivalence, provider-only-patch, and closure-coverage proofs rather than bypass them.
+    3. Add positive single-parent rebase-merge, differing-tree, and force-pushed-unrelated-provider regression coverage; run focused and required validation.
+    4. Resolve the review thread, publish the exact task head, integrate only after hosted checks, then hosted-close and retry cleanup for E6CDHP and XEC2NE.
   Verify Steps: |-
     PLANNER fallback scaffold for "Accept exact tree identity for GitHub rebase cleanup". Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -817,13 +827,13 @@ extensions:
       - "repository.write"
       - "task.lifecycle"
       - "task.scope.extend"
-    completion_contract_digest: "sha256:b6f8eb36251e6460611149cc225e3187e50fc0aec9cefeceff1d6bdee5d082fb"
-    digest: "sha256:4553555060e56415fa6b5d5aeeca3dd4f63b5055fff8458110dee75dad31ed2e"
-    grant_id: "56b9a26e-47cd-4fba-a484-861dca3d8d6c"
-    issued_at: "2026-08-21T22:55:01.360Z"
+    completion_contract_digest: "sha256:9051c09710e69e04ad268d6a081a7117b48ffbb86c365ff64b65adb239a10013"
+    digest: "sha256:ff1c99b4d9fcdd2d9e9cc9670e95830fc855dd6e2c90ca1aa795deeb7793a6e1"
+    grant_id: "b922e209-4d7e-45f7-91fd-b1639f5a41da"
+    issued_at: "2026-08-22T00:30:47.845Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:6a93975b9b1ae14877b6dc95d58d78fab7e885b3320a1a128609684718b36121"
-    plan_revision: 2
+    plan_digest: "sha256:97d526480d92ed598f0d93e71af2c135d66411d6412c0c578bba8e0ce3a042ac"
+    plan_revision: 18
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:9d184cc08e42b27e663e0671350973301ae7755764cebbae4c11086e6175ebcf"
@@ -855,10 +865,10 @@ Allow cleanup reconciliation to accept an exact provider receipt when the provid
 
 ## Plan
 
-1. Inspect cleanup reconciliation and focused rebase/receipt tests.
-2. Add fail-closed exact tree-identity proof before the ancestry-only path while preserving identity, object, task, and provider receipt validation.
-3. Add positive single-parent rebase-merge and negative differing-tree regression coverage; run the assigned focused tests.
-4. Return the semantic result to AgentPlane, then let AgentPlane publish, verify, integrate, hosted-close, and clean the affected task artifacts.
+1. Inspect cleanup reconciliation, the unresolved P1 review, and focused rebase/receipt tests.
+2. Require exact single-parent merge/provider tree identity to supplement existing local/provider patch-equivalence, provider-only-patch, and closure-coverage proofs rather than bypass them.
+3. Add positive single-parent rebase-merge, differing-tree, and force-pushed-unrelated-provider regression coverage; run focused and required validation.
+4. Resolve the review thread, publish the exact task head, integrate only after hosted checks, then hosted-close and retry cleanup for E6CDHP and XEC2NE.
 
 ## Verify Steps
 
