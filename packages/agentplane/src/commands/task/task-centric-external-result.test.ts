@@ -168,7 +168,7 @@ function memoryBackend(
   } as TaskBackend & { current(): TaskData; replace(task: TaskData): void };
 }
 
-function workOrder(workItemId: string, workOrderId: string): AgentWorkOrderV2 {
+function workOrder(workItemId: string | null, workOrderId: string): AgentWorkOrderV2 {
   return {
     work_order_id: workOrderId,
     role: "EXECUTOR",
@@ -192,6 +192,68 @@ const semantic = {
 } as const satisfies AgentSemanticResult;
 
 describe("recordTaskCentricExternalResult", () => {
+  it("replays a null-ID result against its claimed WorkItem instead of the next item", async () => {
+    const initial = initialTask();
+    const aggregate = taskCentricAggregateFromExtensions(initial.extensions)!;
+    const backend = memoryBackend({
+      ...initial,
+      extensions: withTaskCentricAggregate(initial.extensions, {
+        ...aggregate,
+        work_items: {
+          ...aggregate.work_items,
+          a: { ...aggregate.work_items.a!, state: "CLAIMED", claim_id: "claim-a" },
+        },
+      }),
+    });
+    const command = { taskBackend: backend } as unknown as CommandContext;
+    const verification = {
+      status: "passed" as const,
+      artifact_path: ".agentplane/checks.json",
+      checks: [],
+      reason: null,
+    };
+    const issued = workOrder(null, "work-null-id");
+    const result = { ...semantic, work_order_id: "work-null-id" };
+
+    await expect(
+      recordTaskCentricExternalResult({
+        command,
+        work_order: issued,
+        semantic: result,
+        verification,
+        head: HEAD,
+        dirty_paths: [],
+      }),
+    ).resolves.toEqual({
+      state: "work_item_completed",
+      work_item_id: "a",
+      remaining_required_work_items: 1,
+    });
+    expect(
+      taskCentricAggregateFromExtensions(backend.current().extensions)?.work_items,
+    ).toMatchObject({ a: { state: "COMPLETED" }, b: { state: "PLANNED" } });
+    const completedRevision = backend.current().revision;
+
+    await expect(
+      recordTaskCentricExternalResult({
+        command,
+        work_order: issued,
+        semantic: result,
+        verification,
+        head: HEAD,
+        dirty_paths: [],
+      }),
+    ).resolves.toEqual({
+      state: "work_item_completed",
+      work_item_id: "a",
+      remaining_required_work_items: 1,
+    });
+    expect(
+      taskCentricAggregateFromExtensions(backend.current().extensions)?.work_items,
+    ).toMatchObject({ a: { state: "COMPLETED" }, b: { state: "PLANNED" } });
+    expect(backend.current().revision).toBe(completedRevision);
+  });
+
   it("advances internal WorkItems while keeping one top-level Task", async () => {
     const backend = memoryBackend();
     const command = { taskBackend: backend } as unknown as CommandContext;

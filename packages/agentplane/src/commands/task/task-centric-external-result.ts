@@ -12,6 +12,7 @@ import {
 import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 
 import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
+import { runtimeFrom } from "../../adapters/task-backend/task-centric-backend-runtime.js";
 import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { DirectTaskVerificationResult } from "./direct-task-verification.js";
@@ -91,14 +92,34 @@ export async function recordTaskCentricExternalResult(opts: {
       message: "Task-centric WorkItem result requires a valid observed Git HEAD.",
     });
   }
+  const idempotencyKey = `external-result:${opts.work_order.work_order_id}`;
+  const priorReceipt = runtimeFrom(raw).mutation_receipts[idempotencyKey];
+  const priorWorkItemId = priorReceipt?.event.work_item_id ?? null;
+  if (priorReceipt?.event.entity === "work_item" && priorWorkItemId) {
+    const remaining = aggregate.current_plan.proposal.work_items.work_items.filter(
+      (item) => !item.optional && aggregate.work_items[item.id]?.state !== "COMPLETED",
+    ).length;
+    return {
+      state: priorReceipt.event.to === "COMPLETED" ? "work_item_completed" : "work_item_rework",
+      work_item_id: priorWorkItemId,
+      remaining_required_work_items: remaining,
+    };
+  }
   const requestedId = opts.work_order.task.work_item_id ?? null;
+  const claimedIds = Object.values(aggregate.work_items)
+    .filter((item) => item.state === "CLAIMED")
+    .map((item) => item.id);
   const selected = requestedId
     ? aggregate.current_plan.proposal.work_items.work_items.find((item) => item.id === requestedId)
-    : new WorkItemScheduler(1).select({
-        graph: aggregate.current_plan.proposal.work_items,
-        runtime: aggregate.work_items,
-        active_leases: [],
-      })[0];
+    : claimedIds.length === 1
+      ? aggregate.current_plan.proposal.work_items.work_items.find(
+          (item) => item.id === claimedIds[0],
+        )
+      : new WorkItemScheduler(1).select({
+          graph: aggregate.current_plan.proposal.work_items,
+          runtime: aggregate.work_items,
+          active_leases: [],
+        })[0];
   if (!selected) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -202,7 +223,7 @@ export async function recordTaskCentricExternalResult(opts: {
     semantic_result: result,
     outputs,
     validation: evidence,
-    idempotency_key: `external-result:${opts.work_order.work_order_id}`,
+    idempotency_key: idempotencyKey,
   });
   const validation = aggregateValidation(selected.validation, evidence);
   const next = await adapter.readTask(aggregate.id);
