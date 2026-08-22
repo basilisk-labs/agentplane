@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +28,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "User confirmed exact plan digest in Codex task; host_user_decision=sha256:f5d9083511651b29dd00284b298bcaf85d49e76762063fbd26008ffa0d2aae09"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-22T02:24:11.756Z"
+  state: "ok"
+  updated_at: "2026-08-22T02:26:29.867Z"
   updated_by: "TESTER"
-  note: "Lifecycle rework required: verified review-fix commit b5e43fb48 is not registered as the task implementation commit; code checks pass, but formal implementation evidence still points to 5aded5e30."
-  attempts: 1
+  note: "Verified implementation commit b5e43fb48; subsequent commits 241ba8d5a, 25e1e9c98, and 9a583e8ab contain only AgentPlane-owned verification and closeout evidence."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -185,8 +185,7 @@ execution_contract:
       - "vitest.config.ts"
       - "vitest.workspace.ts"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
+    authority_violations: []
     changed_components:
       - "depcruise.config.cjs"
       - "packages/agentplane"
@@ -292,7 +291,7 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
       -
         id: "recorded-check-2"
         result: "pass"
@@ -582,7 +581,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
@@ -684,8 +682,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Lifecycle rework required: verified review-fix commit b5e43fb48 is not registered as the task implementation commit; code checks pass, but formal implementation evidence still points to 5aded5e30."
+  -
+    type: "verify"
+    at: "2026-08-22T02:26:29.867Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified implementation commit b5e43fb48; subsequent commits 241ba8d5a, 25e1e9c98, and 9a583e8ab contain only AgentPlane-owned verification and closeout evidence."
 doc_version: 3
-doc_updated_at: "2026-08-22T02:24:28.632Z"
+doc_updated_at: "2026-08-22T02:26:31.012Z"
 doc_updated_by: "CODER"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:
@@ -1164,6 +1168,78 @@ sections:
     Result: fail
     Evidence: verification record implementation_sha=5aded5e304f1f5cb6871da3e748d96f63b63253b while reviewed fixes are committed at b5e43fb48
     Scope: lifecycle implementation evidence identity
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212244-6XZAYD-implement-the-task-centric-refactoring-roadmap-v/.agentplane/tasks/202608212244-6XZAYD/blueprint/resolved-snapshot.json
+    - old_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+    - current_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608212244-6XZAYD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-22T02:26:29.867Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified implementation commit b5e43fb48; subsequent commits 241ba8d5a, 25e1e9c98, and 9a583e8ab contain only AgentPlane-owned verification and closeout evidence.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6, input_digest=sha256:c376b5f92b82ce15c248506447a4b840b5b21bf18bc33aee1d4136ba183f2275
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/task/plan.unit.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: focused review-fix regression suite
+
+    Check: critical_paths
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: all critical CLI chunks
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: policy routing and documentation contract
+
+    Check: full_regression
+    Command: bun run test:fast
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: 600 files, 4349 passed, 1 skipped
+
+    Check: hosted_integration
+    Command: gh pr checks 4862
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: local implementation is ready for renewed hosted checks after publication
+
+    Check: real_e2e
+    Command: bun run release:acr-example:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: canonical task-centric end-to-end acceptance scenario
+
+    Check: task_outcome
+    Command: bun run bench:compatibility:candidate:check && bun run bench:compatibility:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+    Scope: roadmap compatibility ratchet and task outcome
 
     BlueprintSnapshotRef:
     - state: current
@@ -1731,6 +1807,78 @@ Command: git rev-parse b5e43fb48 && git show -s --format=%H 5aded5e30
 Result: fail
 Evidence: verification record implementation_sha=5aded5e304f1f5cb6871da3e748d96f63b63253b while reviewed fixes are committed at b5e43fb48
 Scope: lifecycle implementation evidence identity
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212244-6XZAYD-implement-the-task-centric-refactoring-roadmap-v/.agentplane/tasks/202608212244-6XZAYD/blueprint/resolved-snapshot.json
+- old_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+- current_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608212244-6XZAYD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T02:26:29.867Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified implementation commit b5e43fb48; subsequent commits 241ba8d5a, 25e1e9c98, and 9a583e8ab contain only AgentPlane-owned verification and closeout evidence.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6, input_digest=sha256:c376b5f92b82ce15c248506447a4b840b5b21bf18bc33aee1d4136ba183f2275
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/task/plan.unit.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: focused review-fix regression suite
+
+Check: critical_paths
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: all critical CLI chunks
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: policy routing and documentation contract
+
+Check: full_regression
+Command: bun run test:fast
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: 600 files, 4349 passed, 1 skipped
+
+Check: hosted_integration
+Command: gh pr checks 4862
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: local implementation is ready for renewed hosted checks after publication
+
+Check: real_e2e
+Command: bun run release:acr-example:check
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: canonical task-centric end-to-end acceptance scenario
+
+Check: task_outcome
+Command: bun run bench:compatibility:candidate:check && bun run bench:compatibility:check
+Result: pass
+Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
+Scope: roadmap compatibility ratchet and task outcome
 
 BlueprintSnapshotRef:
 - state: current
