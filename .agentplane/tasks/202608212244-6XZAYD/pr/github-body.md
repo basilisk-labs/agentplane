@@ -16,7 +16,7 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
 ## Verification
 
 - State: ok
-- Note: The incident-aware task-centric implementation is verified on the current committed branch state.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
