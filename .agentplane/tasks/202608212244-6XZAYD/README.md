@@ -1,10 +1,10 @@
 ---
 id: "202608212244-6XZAYD"
 title: "Implement the task-centric refactoring roadmap v2 and publish the next patch release"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -559,6 +559,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 8ae1df8b06aa. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Evaluator rework cannot be applied because both required compatibility ratchet roots remain outside this EXECUTOR packet's writable scope. Recommended action: Apply the pending scope extension as USER and issue a fresh EXECUTOR packet. Requested scope: roots=scripts/baselines,scripts/checks; repository effects=public_api,repository_write,schema,tests; request digest=sha256:6cfd07c80c92c4c6e3ba4988c6be669b5da339aeb27078b50a3386d957e6e402. Agentplane receipt: external-agent-blocker/tr_3204c895f463179e16a5e6a3069462f5/sha256:d9234d4014f53a935e869ddca66e4f9ad563a3bf1309ba72a9c84342a5c785b7/sha256:6cfd07c80c92c4c6e3ba4988c6be669b5da339aeb27078b50a3386d957e6e402."
 events:
   -
     type: "status"
@@ -581,8 +584,15 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-22T01:47:57.327Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Evaluator rework cannot be applied because both required compatibility ratchet roots remain outside this EXECUTOR packet's writable scope. Recommended action: Apply the pending scope extension as USER and issue a fresh EXECUTOR packet. Requested scope: roots=scripts/baselines,scripts/checks; repository effects=public_api,repository_write,schema,tests; request digest=sha256:6cfd07c80c92c4c6e3ba4988c6be669b5da339aeb27078b50a3386d957e6e402. Agentplane receipt: external-agent-blocker/tr_3204c895f463179e16a5e6a3069462f5/sha256:d9234d4014f53a935e869ddca66e4f9ad563a3bf1309ba72a9c84342a5c785b7/sha256:6cfd07c80c92c4c6e3ba4988c6be669b5da339aeb27078b50a3386d957e6e402."
 doc_version: 3
-doc_updated_at: "2026-08-22T01:44:01.871Z"
+doc_updated_at: "2026-08-22T01:47:57.327Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:
@@ -716,6 +726,24 @@ extensions:
     scope_digest: "sha256:6cfff1cbeea391464fb74ad5762a771f9c6aa60b72a09e7741d3ea236d5c818b"
     status: "active"
     task_id: "202608212244-6XZAYD"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:d9234d4014f53a935e869ddca66e4f9ad563a3bf1309ba72a9c84342a5c785b7"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "The evaluator requires exact compatibility candidate and validator updates for the approved public AgentWorkOrder schema delta."
+      repository_effects:
+        - "public_api"
+        - "repository_write"
+        - "schema"
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "scripts/baselines"
+        - "scripts/checks"
+    request_digest: "sha256:6cfd07c80c92c4c6e3ba4988c6be669b5da339aeb27078b50a3386d957e6e402"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_3204c895f463179e16a5e6a3069462f5"
   implementation_commit:
     hash: "8ae1df8b06aa992a90d7b678bf5d2c34f7455969"
   task_execution_context:
