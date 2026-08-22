@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import type { TaskExecutionContract } from "./task-store.js";
 import {
+  computeExecutionScopeDigest,
+  computeLogicalCompletionContractDigest,
   computePlanDigest,
   createExecutionGrant,
   createOperationLease,
@@ -227,6 +229,10 @@ describe("task-scoped execution grants", () => {
       issued_at: grant.issued_at,
     });
     expect(rebased.digest).not.toBe(grant.digest);
+    expect(rebased.scope_digest).toBe(computeExecutionScopeDigest(materiallyExpanded));
+    expect(rebased.completion_contract_digest).toBe(
+      computeLogicalCompletionContractDigest(initial),
+    );
     expect(
       isExecutionGrantActive({
         grant: rebased,

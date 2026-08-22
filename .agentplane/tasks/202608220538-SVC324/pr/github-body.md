@@ -15,8 +15,13 @@ Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, arc
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note:
+
+```text
+Lifecycle rework: execute and record the approved task-centric work items before pre-merge
+completion; current code verification remains otherwise green.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -40,9 +45,9 @@ Implement and test repository fixes for INC-20260821-01 and INC-20260822-01, arc
  .../task/supervision-outcome-disposition.test.ts   |  2 +
  .../task/supervision-outcome-disposition.ts        | 10 +--
  packages/core/src/tasks/index.ts                   |  1 +
- .../core/src/tasks/plan-execution-grant.test.ts    | 36 ++++++++++
+ .../core/src/tasks/plan-execution-grant.test.ts    | 42 ++++++++++++
  packages/core/src/tasks/plan-execution-grant.ts    | 37 +++++++++++
- 15 files changed, 303 insertions(+), 21 deletions(-)
+ 15 files changed, 309 insertions(+), 21 deletions(-)
 ```
 
 </details>
