@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { generateKeyPairSync, sign } from "node:crypto";
+import { createHash, generateKeyPairSync, sign } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -77,6 +77,12 @@ function canonicalizeJson(value) {
     );
   }
   return value;
+}
+
+function taskCentricDigest(value) {
+  return `sha256:${createHash("sha256")
+    .update(JSON.stringify(canonicalizeJson(value)))
+    .digest("hex")}`;
 }
 
 function createApprovalSigner() {
@@ -267,6 +273,74 @@ function longMixedScopePlan() {
   return text;
 }
 
+function mixedScopeTaskPlanProposal(taskId, planningBaseline) {
+  const criterion = {
+    id: "criterion-mixed-scope",
+    description:
+      "The greeting source, automated tests, user documentation, and repository metadata satisfy the task.",
+    required: true,
+    check_ids: ["check-mixed-scope"],
+  };
+  const command = "node --test test/greeting.test.mjs";
+  const validation = {
+    schema_version: 1,
+    criteria: [criterion],
+    checks: [
+      {
+        id: "check-mixed-scope",
+        kind: "deterministic",
+        required: true,
+        capability: "task.verify",
+        command,
+      },
+    ],
+    evidence_fingerprint: taskCentricDigest({
+      task_id: taskId,
+      criterion,
+      command,
+    }),
+  };
+  return {
+    schema_version: 1,
+    task_id: taskId,
+    planning_baseline: planningBaseline,
+    work_items: {
+      schema_version: 1,
+      work_items: [
+        {
+          id: "mixed-scope-implementation",
+          objective:
+            "Implement the bounded greeting source, test, documentation, and metadata change.",
+          depends_on: [],
+          required_inputs: [],
+          expected_outputs: ["mixed-scope-product-change"],
+          scope_roots: [...PACKAGED_MIXED_SCOPE_REQUIRED_PATHS],
+          acceptance_criteria: [criterion],
+          validation,
+          context: {
+            required_sources: ["repository"],
+            optional_sources: [],
+            symbol_hints: ["greeting"],
+            max_bytes: 16_384,
+          },
+          risk: "low",
+          capabilities: ["task.verify"],
+          resource_claims: PACKAGED_MIXED_SCOPE_REQUIRED_PATHS.map((resource) => ({
+            kind: "path",
+            resource,
+            mode: "write",
+          })),
+          optional: false,
+          priority: 1,
+        },
+      ],
+    },
+    assumptions: [],
+    unresolved_questions: [],
+    top_level_validation: validation,
+  };
+}
+
 function packetExchange(packet, expectedRole) {
   if (packet.action?.kind !== "agent_episode" || packet.authority?.role !== expectedRole) {
     fail(
@@ -280,7 +354,15 @@ function packetExchange(packet, expectedRole) {
   return packet.exchange;
 }
 
-function semanticResultFor({ packet, workOrder, summary, taskIntent, claimedChecks, review }) {
+function semanticResultFor({
+  packet,
+  workOrder,
+  summary,
+  taskIntent,
+  taskPlanProposal,
+  claimedChecks,
+  review,
+}) {
   return {
     schema_version: 1,
     kind: "agent_action_result",
@@ -297,6 +379,7 @@ function semanticResultFor({ packet, workOrder, summary, taskIntent, claimedChec
       findings: review ? ["The public diff and recorded verification satisfy the task."] : [],
       uncertainty: [],
       ...(taskIntent ? { task_intent: taskIntent } : {}),
+      ...(taskPlanProposal ? { task_plan_proposal: taskPlanProposal } : {}),
       ...(claimedChecks ? { claimed_checks: claimedChecks } : {}),
       ...(review ? { review } : {}),
     },
@@ -317,7 +400,18 @@ function writePacketResult(accessLog, packet, role, resultOptions) {
   writeTracked(
     accessLog,
     exchange.result_path,
-    `${JSON.stringify(semanticResultFor({ packet, workOrder, ...resultOptions }), null, 2)}\n`,
+    `${JSON.stringify(
+      semanticResultFor({
+        packet,
+        workOrder,
+        ...resultOptions,
+        ...(resultOptions.taskPlanProposal
+          ? { taskPlanProposal: resultOptions.taskPlanProposal(workOrder) }
+          : {}),
+      }),
+      null,
+      2,
+    )}\n`,
     `${role.toLowerCase()}_result`,
   );
   return exchange;
@@ -616,6 +710,8 @@ function runFixture({ run, cli, packages, tempRoot }) {
   const plan = longMixedScopePlan();
   const plannerExchange = writePacketResult(accessLog, planner, "PLANNER", {
     summary: plan,
+    taskPlanProposal: (workOrder) =>
+      mixedScopeTaskPlanProposal(taskId, workOrder.planning_context.repository_snapshot),
     taskIntent: {
       task_kind: "code",
       mutation_scope: "code",
@@ -644,7 +740,12 @@ function runFixture({ run, cli, packages, tempRoot }) {
     plannerExchange.resume_argv,
     "planner result acceptance",
   );
-  assert.equal(approval.action?.kind, "approval_required");
+  if (approval.action?.kind !== "approval_required") {
+    fail(
+      "missing_plan_approval",
+      `planner result advanced to ${approval.action?.kind ?? "unknown"}/${approval.authority?.role ?? "unknown"}`,
+    );
+  }
   assert.equal(approval.operator_action?.kind, "approve_plan");
 
   const exactReplay = runNodeCliResult(cli, repo, plannerExchange.resume_argv.slice(1));

@@ -96,4 +96,5 @@
  schemas/agent-work-order-v2.schema.json            |  213 +++
  .../baselines/v0.7-compatibility-candidate.json    |   25 +-
  .../check-compatibility-contract-baseline.mjs      |   15 +-
- 98 files changed, 10859 insertions(+), 756 deletions(-)
+ .../check-packaged-mixed-scope-lifecycle.mjs       |  109 +-
+ 99 files changed, 10964 insertions(+), 760 deletions(-)

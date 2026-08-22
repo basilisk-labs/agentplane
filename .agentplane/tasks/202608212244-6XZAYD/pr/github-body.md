@@ -15,13 +15,8 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework: packaged mixed-scope qualification lacks the required baseline-bound task_plan_proposal;
-hosted verify-real-e2e remains release-blocking.
-```
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -130,7 +125,8 @@ hosted verify-real-e2e remains release-blocking.
  schemas/agent-work-order-v2.schema.json            |  213 +++
  .../baselines/v0.7-compatibility-candidate.json    |   25 +-
  .../check-compatibility-contract-baseline.mjs      |   15 +-
- 98 files changed, 10859 insertions(+), 756 deletions(-)
+ .../check-packaged-mixed-scope-lifecycle.mjs       |  109 +-
+ 99 files changed, 10964 insertions(+), 760 deletions(-)
 ```
 
 </details>
