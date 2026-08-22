@@ -15,13 +15,12 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Lifecycle rework required: verified review-fix commit b5e43fb48 is not registered as the task
-implementation commit; code checks pass, but formal implementation evidence still points to
-5aded5e30.
+Verified implementation commit b5e43fb48; subsequent commits 241ba8d5a, 25e1e9c98, and 9a583e8ab
+contain only AgentPlane-owned verification and closeout evidence.
 ```
 - Canonical workflow state lives in the task README.
 
