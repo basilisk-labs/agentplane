@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +28,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "User confirmed exact plan digest in Codex task; host_user_decision=sha256:f5d9083511651b29dd00284b298bcaf85d49e76762063fbd26008ffa0d2aae09"
 verification:
-  state: "ok"
-  updated_at: "2026-08-22T02:30:53.494Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-22T02:41:30.376Z"
+  updated_by: "TESTER"
+  note: "Lifecycle rework required: register finish closeout recovery fix f0327c0de as the current implementation."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -187,7 +187,8 @@ execution_contract:
       - "vitest.config.ts"
       - "vitest.workspace.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
     changed_components:
       - "depcruise.config.cjs"
       - "packages/agentplane"
@@ -296,7 +297,7 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
+        result: "fail"
       -
         id: "recorded-check-2"
         result: "pass"
@@ -589,9 +590,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "d5e3e8aeb175f8a7a5729e14d253b4ab003b9443"
-  message: "🚧 6XZAYD task: apply external agent result"
+      - "verification_recovery:recorded-check-1"
+commit: null
 comments:
   -
     author: "CODER"
@@ -727,8 +727,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "verify"
+    at: "2026-08-22T02:41:30.376Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Lifecycle rework required: register finish closeout recovery fix f0327c0de as the current implementation."
 doc_version: 3
-doc_updated_at: "2026-08-22T02:39:01.117Z"
+doc_updated_at: "2026-08-22T02:41:31.897Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:
@@ -1478,6 +1484,41 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-22T02:41:30.376Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Lifecycle rework required: register finish closeout recovery fix f0327c0de as the current implementation.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6, input_digest=sha256:b5f5fc3146da7c893f251ddaa325e2801ac09126203ee65fb5300f830734c3a8
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/task/finish-closeout-journal.test.ts
+    Result: fail
+    Evidence: current implementation head f0327c0de postdates the prior quality review
+    Scope: finish closeout recovery identity
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212244-6XZAYD-implement-the-task-centric-refactoring-roadmap-v/.agentplane/tasks/202608212244-6XZAYD/blueprint/resolved-snapshot.json
+    - old_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+    - current_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608212244-6XZAYD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608212244-6XZAYD
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1528,8 +1569,6 @@ extensions:
     schema_version: 1
     status: "applied"
     transition_id: "tr_3204c895f463179e16a5e6a3069462f5"
-  implementation_commit:
-    hash: "d5e3e8aeb175f8a7a5729e14d253b4ab003b9443"
   task_execution_context:
     base_ref: "main"
     base_sha: "134c95fd629d5ebcf0e17196ccb4b44f60c993fd"
@@ -2275,6 +2314,41 @@ Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
 Result: pass
 Evidence: .agentplane/tasks/202608212244-6XZAYD/supervision/declared-checks.json#checks
 Scope: branch_pr task 202608212244-6XZAYD Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608212244-6XZAYD-implement-the-task-centric-refactoring-roadmap-v/.agentplane/tasks/202608212244-6XZAYD/blueprint/resolved-snapshot.json
+- old_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+- current_digest: d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608212244-6XZAYD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608212244-6XZAYD
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-22T02:41:30.376Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Lifecycle rework required: register finish closeout recovery fix f0327c0de as the current implementation.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6, input_digest=sha256:b5f5fc3146da7c893f251ddaa325e2801ac09126203ee65fb5300f830734c3a8
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/task/finish-closeout-journal.test.ts
+Result: fail
+Evidence: current implementation head f0327c0de postdates the prior quality review
+Scope: finish closeout recovery identity
 
 BlueprintSnapshotRef:
 - state: current
