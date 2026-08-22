@@ -1,0 +1,22 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-verification-result.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts",
+      "duration_ms": 291,
+      "exit_code": 1,
+      "script": null,
+      "stderr_tail": "\npackages/agentplane/src/commands/shared/task-verification-records.test.ts:\n\n# Unhandled error between tests\n-------------------------------\n 5 | import { canonicalizeJson } from \"@agentplaneorg/core/tasks\";\n 6 | import { afterEach, describe, expect, it, vi } from \"vitest\";\n 7 | \n 8 | import type { TaskData } from \"../../backends/task-backend.js\";\n 9 | \n10 | const gitRevParse = vi.hoisted(() => vi.fn());\n                            ^\nTypeError: vi.hoisted is not a function. (In 'vi.hoisted(() => vi.fn())', 'vi.hoisted' is undefined)\n      at /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221545-ZCYV3B-stop-verification-receipts-from-overstating-chec/packages/agentplane/src/commands/shared/task-verification-records.test.ts:10:24\n      at loadAndEvaluateModule (2:1)\n-------------------------------\n\n\npackages/agentplane/src/commands/task/direct-task-verification.test.ts:\n(pass) direct task verification > replaces a missing package script only for a planner fallback scaffold [8.28ms]\n(pass) direct task verification > accepts project-native repository-bound argv without shell syntax [0.33ms]\n(pass) direct task verification > runs the reported bun test command as structured argv and records it [1.40ms]\n(pass) direct task verification > rejects successful Bun processes that report zero executed tests [4.12ms]\n(pass) direct task verification > runs every declared check without a shell and records durable evidence [1.17ms]\n(pass) direct task verification > keeps passed evidence stable across equivalent reruns but rewrites changed outcomes [2.42ms]\n(pass) direct task verification > binds supervisor evidence to every selected Verification Contract check [0.24ms]\n(pass) direct task verification > runs and binds full regression separately without claiming hosted integration [1.44ms]\n(pass) direct task verification > does not pass a required full regression when the repository has no full script [1.31ms]\n(pass) direct task verification > gives the canonical provider qualification its bounded release window [1.14ms]\n(pass) direct task verification > adds the fixed docs policy checks to a docs task without trusting agent claims [1.19ms]\n(pass) direct task verification > uses declared effects instead of a misleading task kind to select docs policy checks [1.07ms]\n(pass) direct task verification > does not treat an empty code-task check contract as successful verification [1.07ms]\n(pass) direct task verification > stops at the first failed or unsupported check and still writes the evidence artifact [1.44ms]\n\npackages/agentplane/src/commands/task/external-agent-verification-result.test.ts:\n\n# Unhandled error between tests\n-------------------------------\n1 | import { beforeEach, describe, expect, it, vi } from \"vitest\";\n2 | \n3 | const mocks = vi.hoisted(() => ({\n                     ^\nTypeError: vi.hoisted is not a function. (In 'vi.hoisted(() => ({\n  readFile: vi.fn(),\n  loadTask: vi.fn(),\n  verify: vi.fn(),\n  commit: vi.fn(),\n  status: vi.fn()\n}))', 'vi.hoisted' is undefined)\n      at /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608221545-ZCYV3B-stop-verification-receipts-from-overstating-chec/packages/agentplane/src/commands/task/external-agent-verification-result.test.ts:3:18\n      at loadAndEvaluateModule (2:1)\n-------------------------------\n\n\n 14 pass\n 2 fail\n 2 errors\n 62 expect() calls\nRan 16 tests across 3 files. [280.00ms]\n",
+      "stdout_tail": "bun test v1.3.6 (d530ed99)\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-verification-result.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202608221545-ZCYV3B"
+}
