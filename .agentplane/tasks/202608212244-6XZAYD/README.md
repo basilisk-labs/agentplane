@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 77
+revision: 78
 origin:
   system: "manual"
 depends_on: []
@@ -689,6 +689,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The two uncommitted source edits are intentional implementation rework for the hosted verify-static Knip failure."
 events:
   -
     type: "status"
@@ -1024,9 +1027,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "cd6e0dfd1464de7964c2c19661fdc95b646287fc"
+  -
+    type: "comment"
+    at: "2026-08-22T04:33:32.095Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The two uncommitted source edits are intentional implementation rework for the hosted verify-static Knip failure."
 doc_version: 3
-doc_updated_at: "2026-08-22T04:16:51.917Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-22T04:33:32.140Z"
+doc_updated_by: "SUPERVISOR"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:
   Summary: |-
