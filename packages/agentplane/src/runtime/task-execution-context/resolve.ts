@@ -35,6 +35,7 @@ import { findRelocatableWorktreeForBranch } from "../workspace-allocation/redisc
 
 type FrozenBaseIdentity = Readonly<{ base_ref: string; base_sha: string }>;
 
+// Keep the resolution mechanism private; callers consume the normalized context or thrown Error.
 class TaskExecutionBaseResolutionError extends Error {
   readonly reason_code: "git_base_identity_unavailable" | "git_base_identity_invalid";
 

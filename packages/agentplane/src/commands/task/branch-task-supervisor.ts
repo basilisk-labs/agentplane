@@ -47,6 +47,7 @@ export type BranchTaskSupervisorStopCode =
   | "evaluator_blocked"
   | "evaluator_adapter_crash";
 
+// This is an internal supervisor outcome; only its stable stop-code vocabulary is public.
 type BranchTaskSupervisorStop = {
   code: BranchTaskSupervisorStopCode;
   reason: string;

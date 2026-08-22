@@ -47,6 +47,7 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
  .../src/commands/task/advance.command.ts           |    6 +-
  .../src/commands/task/agent-action-packet.test.ts  |   12 +
  .../src/commands/task/agent-action-packet.ts       |   29 +-
+ .../src/commands/task/branch-task-supervisor.ts    |    1 +
  .../external-agent-implementation-authority.ts     |   46 +-
  .../task/external-agent-planning-authority.ts      |  128 +-
  .../task/external-agent-result-application.ts      |    1 +
@@ -98,7 +99,7 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
  .../agentplane/src/runner/usecases/task-run.ts     |   17 +-
  .../architecture-guard.test.ts                     |   19 +
  .../runtime/task-execution-context/resolve.test.ts |   18 +
- .../src/runtime/task-execution-context/resolve.ts  |   55 +-
+ .../src/runtime/task-execution-context/resolve.ts  |   56 +-
  .../src/runtime/workspace-allocation/allocate.ts   |   20 +
  .../core/schemas/agent-work-order-v2.schema.json   |  213 +++
  packages/core/src/index.ts                         |    5 +
@@ -127,7 +128,7 @@ Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-
  .../baselines/v0.7-compatibility-candidate.json    |   25 +-
  .../check-compatibility-contract-baseline.mjs      |   15 +-
  .../check-packaged-mixed-scope-lifecycle.mjs       |  109 +-
- 100 files changed, 10965 insertions(+), 759 deletions(-)
+ 101 files changed, 10967 insertions(+), 759 deletions(-)
 ```
 
 </details>
