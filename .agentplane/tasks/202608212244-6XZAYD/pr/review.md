@@ -12,8 +12,8 @@ Created: 2026-08-21T22:50:57.507Z
 
 ## Verification
 
-- State: needs_rework
-- Note: The current verification record is stale and cannot establish the corrected implementation outcome.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

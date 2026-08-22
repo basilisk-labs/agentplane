@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check e5b25698cb3ac1ec3d0242e8ad4a5c253ca176c9..1f5e97a7198380b8f7b2190ffebcbc71daed4b38",
+      "command": "git diff --check adbf6703af476e86b6b4e785648824d7ca5aa4d5..0889b981d988a5c970125ffd33d8bca8ba1e99d7",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB e5b25698cb3ac1ec3d0242e8ad4a5c253ca176c9..1f5e97a7198380b8f7b2190ffebcbc71daed4b38",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB adbf6703af476e86b6b4e785648824d7ca5aa4d5..0889b981d988a5c970125ffd33d8bca8ba1e99d7",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,8 @@
         "M\t.agentplane/tasks/202608212244-6XZAYD/pr/github-body.md",
         "M\t.agentplane/tasks/202608212244-6XZAYD/pr/meta.json",
         "M\t.agentplane/tasks/202608212244-6XZAYD/pr/review.md",
-        "M\tscripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.ts",
+        "M\tpackages/agentplane/src/runtime/task-execution-context/resolve.ts"
       ]
     },
     {
@@ -31,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "e5b25698cb3ac1ec3d0242e8ad4a5c253ca176c9",
-  "implementation_commit": "1f5e97a7198380b8f7b2190ffebcbc71daed4b38",
+  "execution_base_commit": "adbf6703af476e86b6b4e785648824d7ca5aa4d5",
+  "implementation_commit": "0889b981d988a5c970125ffd33d8bca8ba1e99d7",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
