@@ -1,4 +1,6 @@
+ .agentplane/policy/incidents.md                    |    1 +
  depcruise.config.cjs                               |   25 +
+ packages/agentplane/assets/policy/incidents.md     |    1 +
  .../task-centric-backend-adapter.test.ts           |  505 ++++++
  .../task-backend/task-centric-backend-adapter.ts   |  549 +++++++
  .../task-backend/task-centric-backend-runtime.ts   |  163 ++
@@ -97,4 +99,4 @@
  .../baselines/v0.7-compatibility-candidate.json    |   25 +-
  .../check-compatibility-contract-baseline.mjs      |   15 +-
  .../check-packaged-mixed-scope-lifecycle.mjs       |  109 +-
- 99 files changed, 10964 insertions(+), 760 deletions(-)
+ 101 files changed, 10966 insertions(+), 760 deletions(-)

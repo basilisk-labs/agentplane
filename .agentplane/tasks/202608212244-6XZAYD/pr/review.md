@@ -6,14 +6,14 @@ Created: 2026-08-21T22:50:57.507Z
 
 - Task: `202608212244-6XZAYD`
 - Title: Implement the task-centric refactoring roadmap v2 and publish the next patch release
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608212244-6XZAYD/implement-the-task-centric-refactoring-roadmap-v`
 - Canonical task record: `.agentplane/tasks/202608212244-6XZAYD/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,9 @@ Created: 2026-08-21T22:50:57.507Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |    1 +
  depcruise.config.cjs                               |   25 +
+ packages/agentplane/assets/policy/incidents.md     |    1 +
  .../task-centric-backend-adapter.test.ts           |  505 ++++++
  .../task-backend/task-centric-backend-adapter.ts   |  549 +++++++
  .../task-backend/task-centric-backend-runtime.ts   |  163 ++
@@ -128,7 +130,7 @@ Created: 2026-08-21T22:50:57.507Z
  .../baselines/v0.7-compatibility-candidate.json    |   25 +-
  .../check-compatibility-contract-baseline.mjs      |   15 +-
  .../check-packaged-mixed-scope-lifecycle.mjs       |  109 +-
- 99 files changed, 10964 insertions(+), 760 deletions(-)
+ 101 files changed, 10966 insertions(+), 760 deletions(-)
 ```
 
 </details>
