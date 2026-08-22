@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 48
+revision: 49
 origin:
   system: "manual"
 depends_on: []
@@ -34,36 +34,36 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-22T03:14:46.767Z"
+  updated_at: "2026-08-22T03:38:05.106Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "3c73f754e85f8525c528232643b7faa00a2bfa63"
+  note: "EVALUATOR returned blocked with 5 typed finding(s)."
+  evaluated_sha: "c651ebc5c1bfea5e9a7ba0eb66dab528eb9b5482"
   blueprint_digest: "d702844a9da21d89379b918b38010a985dc6d14d6bcc1ebec4d6d2004959e306"
   evidence_refs:
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-031411410-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-031411410-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/f7d496f7eae094355b7ecc83a19727d49d95b9fd2d1954beb6b0bb050960561a.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-031411410-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-031411410-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-031411410-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033553242-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033553242-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/b500dfba864a3d46f63d0db07229dfbaac4ba302eabb691432fcd6acf12eaa80.md"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033553242-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033553242-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033553242-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/20260822-033553242-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608212244-6XZAYD/README.md"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/242656407e25df953588d970c1569da7b86796bce889a5c0a06260199f647179.patch"
-    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/5cab84664db1b56eab1efc19a3bdae79131edb052e3c199469fc2dd7021a40d5.json"
-    - ".agentplane/tasks/202608212244-6XZAYD/verification/20260822031352989-cb2f85e97e5897f8.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2ec94931cb3cf00f1d786c8fcf7034c51e65ba1dc34d15975d54b4d4b6c87be2.patch"
+    - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/2cd6e402ad6c2deaaad07bbd8edbbc019e412de34cf5db4586379236477439f7.json"
+    - ".agentplane/tasks/202608212244-6XZAYD/verification/20260822033535047-d6077a96e11e0a56.json"
     - ".agentplane/tasks/202608212244-6XZAYD/quality/objects/sha256/0f9e0c0f8b0f85b8effd9074a1316c56971aceb5da4a5fce5935f4726c154946.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.release.md"
   findings:
-    - "Both hosted-reported runtime hotspots are below the enforced 600-line threshold through cohesive helper extraction."
-    - "No temporary oversized allowlist or baseline expansion was introduced."
-    - "New test scenarios are split into focused modules and all 66 directly affected tests pass."
-    - "All 13 critical CLI chunks pass together with format, type, schema, compatibility, routing, and whitespace gates."
-    - "The protected generated AGENTS asset remains untouched."
-    - "Residual risk: Hosted checks must rerun on the newly published exact PR head before integration."
+    - "bun run lint:core passes on the current implementation head."
+    - "The current scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs contains no task_plan_proposal, mixedScopeTaskPlanProposal, or digest helper for a baseline-bound structured plan."
+    - "The hosted verify-real-e2e failure therefore remains reproducible in contract terms: the neutral task returns another PLANNER episode instead of reaching approval_required."
+    - "The required qualification fixture lives under scripts/qualification, which was absent from the EXECUTOR packet writable roots."
+    - "Residual risk: Publishing the current head would retain a known release-blocking verify-real-e2e failure."
 token_usage:
   agent_runs: 18
   input_tokens: null
@@ -854,7 +854,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-22T03:35:38.617Z"
+doc_updated_at: "2026-08-22T03:38:05.146Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the complete roadmap from /Users/densmirnov/Downloads/agentplane-task-centric-refactoring-roadmap-v2.md: RF2-001 through RF2-058, including the exact release acceptance scenario. Preserve the roadmap acceptance criteria, use one traceable AgentPlane Task, and publish the next patch release only after release qualification and exact-SHA hosted verification. The user's /goal request explicitly approves implementation, merge, publish, and required network/provider actions within this scope."
 sections:
