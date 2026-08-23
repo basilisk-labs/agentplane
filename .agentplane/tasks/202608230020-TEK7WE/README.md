@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -33,21 +33,21 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-23T02:25:47.795Z"
+  updated_at: "2026-08-23T02:31:35.623Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 2 typed finding(s)."
-  evaluated_sha: "6fb7e346ad633e779c20ea216a39a8410a84d1f3"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "c9d217cd8f0ff0fe16de1d0d8ce4c4d19e3d7b81"
   blueprint_digest: "6c639ae7631ead50ecfbfac60147eb609157b723ba9a67488ee37677848c0840"
   evidence_refs:
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-022442442-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-022442442-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/7b5df79836882545c0151cac90c9eb93d18ac9de81de8969ba40c9908052b151.md"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-022442442-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-022442442-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-022442442-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-023134853-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-023134853-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/a9c521d5d4f571e878070798b7fd2d630cbe1b7d3e30dc9e4f33b3408ed03be8.md"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-023134853-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-023134853-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-023134853-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608230020-TEK7WE/README.md"
     - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/b790a11768514d72b717d4d356336ffa7d078ae0eee531af2ca32912708d8c53.patch"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/923f0fad6ed7e9105efa0b15de92704413565a0de8bc403c484132343cc9304f.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/3ede57cc7c47943874235d2ff2582dc6885639c889bb7c25c9c95fc4cadc756f.json"
     - ".agentplane/tasks/202608230020-TEK7WE/verification/20260823022404725-deb411eb622d069a.json"
     - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/83294e42708c64286a2d6665d2b2cfa43757427e3fff2922959690fd4f5c8d5a.json"
     - ".agentplane/policy/dod.code.md"
@@ -55,8 +55,7 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No blocking defect was found: the implementation diff is limited to the scheduler and active-claim testkit files, and both declared checks pass."
-    - "Residual risk: Hosted integration remains pending until the branch PR is merged and its exact hosted checks are green."
+    - "No blocking defect was found: the scheduler and active-claim testkit are the only implementation files changed, and both declared checks pass."
 token_usage:
   agent_runs: 7
   input_tokens: null
@@ -270,6 +269,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The untracked quality files are intended immutable preparation evidence from the failed read-only evaluator operation and should be preserved as task audit artifacts."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The current uncommitted files are the intended structured evaluator review and its immutable evidence objects; preserve and commit them as Task quality artifacts."
 events:
   -
     type: "status"
@@ -394,8 +396,13 @@ events:
     at: "2026-08-23T02:30:14.329Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The untracked quality files are intended immutable preparation evidence from the failed read-only evaluator operation and should be preserved as task audit artifacts."
+  -
+    type: "comment"
+    at: "2026-08-23T02:32:22.591Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The current uncommitted files are the intended structured evaluator review and its immutable evidence objects; preserve and commit them as Task quality artifacts."
 doc_version: 3
-doc_updated_at: "2026-08-23T02:30:14.372Z"
+doc_updated_at: "2026-08-23T02:32:22.625Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI."
 sections:
