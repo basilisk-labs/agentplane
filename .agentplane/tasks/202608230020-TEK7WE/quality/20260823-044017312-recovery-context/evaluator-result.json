@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "scheduler-waves-preserve-full-gate",
+      "severity": "low",
+      "summary": "No blocking defect was found: the exact diff preserves every selected CI group and fail aggregation while isolating runtime, core, and CLI into ordered waves; the test-only settlement window is widened to 5000 ms.",
+      "broken_invariant": "No approved invariant is broken; the reviewed change remains confined to the scheduler and active-claim test harness stated in the approved scope.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/b790a11768514d72b717d4d356336ffa7d078ae0eee531af2ca32912708d8c53.patch",
+          "sha256": "sha256:b790a11768514d72b717d4d356336ffa7d078ae0eee531af2ca32912708d8c53"
+        },
+        {
+          "path": ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/3ede57cc7c47943874235d2ff2582dc6885639c889bb7c25c9c95fc4cadc756f.json",
+          "sha256": "sha256:3ede57cc7c47943874235d2ff2582dc6885639c889bb7c25c9c95fc4cadc756f",
+          "section": "declared_checks"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

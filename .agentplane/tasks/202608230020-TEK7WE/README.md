@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 38
 origin:
   system: "manual"
 depends_on: []
@@ -33,18 +33,18 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-23T02:31:35.623Z"
+  updated_at: "2026-08-23T04:41:14.974Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "c9d217cd8f0ff0fe16de1d0d8ce4c4d19e3d7b81"
+  evaluated_sha: "282b907e485f8e8ffbefb72bba53fa8ea60d9562"
   blueprint_digest: "6c639ae7631ead50ecfbfac60147eb609157b723ba9a67488ee37677848c0840"
   evidence_refs:
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-023134853-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-023134853-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/a9c521d5d4f571e878070798b7fd2d630cbe1b7d3e30dc9e4f33b3408ed03be8.md"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-023134853-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-023134853-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-023134853-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044017312-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044017312-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/a52de8e948d7e6cdd1f9a449d7385633d48f69e1381e071919522662312a2d1b.md"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044017312-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044017312-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044017312-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608230020-TEK7WE/README.md"
     - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/b790a11768514d72b717d4d356336ffa7d078ae0eee531af2ca32912708d8c53.patch"
     - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/3ede57cc7c47943874235d2ff2582dc6885639c889bb7c25c9c95fc4cadc756f.json"
@@ -55,7 +55,7 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No blocking defect was found: the scheduler and active-claim testkit are the only implementation files changed, and both declared checks pass."
+    - "No blocking defect was found: the exact diff preserves every selected CI group and fail aggregation while isolating runtime, core, and CLI into ordered waves; the test-only settlement window is widened to 5000 ms."
 token_usage:
   agent_runs: 11
   input_tokens: null
@@ -278,6 +278,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): Preserve the sole README mutation as audit evidence of the failed pre-merge close attempt; it does not establish a valid closure marker."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The uncommitted paths are intended CLI-owned artifacts from the freshly prepared and applied EVALUATOR review for the exact current implementation head."
 events:
   -
     type: "status"
@@ -420,8 +423,13 @@ events:
     at: "2026-08-23T02:42:58.325Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): Preserve the sole README mutation as audit evidence of the failed pre-merge close attempt; it does not establish a valid closure marker."
+  -
+    type: "comment"
+    at: "2026-08-23T04:42:05.670Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The uncommitted paths are intended CLI-owned artifacts from the freshly prepared and applied EVALUATOR review for the exact current implementation head."
 doc_version: 3
-doc_updated_at: "2026-08-23T02:42:58.355Z"
+doc_updated_at: "2026-08-23T04:42:05.699Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI."
 sections:
