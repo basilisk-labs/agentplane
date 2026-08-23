@@ -478,21 +478,28 @@ async function runFullFastPath() {
     timeoutMs: LOCAL_VITEST_SUITE_TIMEOUT_MS,
   }));
   const runtimeWave = groups.filter(({ id }) => id === "runtime");
-  const remainingWave = groups.filter(({ id }) => id !== "runtime");
+  const coreWave = groups.filter(({ id }) => id !== "runtime" && id !== "cli");
+  const cliWave = groups.filter(({ id }) => id === "cli");
   const runtimeConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, runtimeWave.length);
-  const remainingConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, remainingWave.length);
+  const coreConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, coreWave.length);
+  const cliConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, cliWave.length);
   const runtimeResult = await runVerificationGroups(runtimeWave, {
     concurrency: runtimeConcurrency,
     cwd: process.cwd(),
     env: baseEnv,
   });
-  const remainingResult = await runVerificationGroups(remainingWave, {
-    concurrency: remainingConcurrency,
+  const coreResult = await runVerificationGroups(coreWave, {
+    concurrency: coreConcurrency,
     cwd: process.cwd(),
     env: baseEnv,
   });
-  const results = [...runtimeResult.results, ...remainingResult.results];
-  const ok = runtimeResult.ok && remainingResult.ok;
+  const cliResult = await runVerificationGroups(cliWave, {
+    concurrency: cliConcurrency,
+    cwd: process.cwd(),
+    env: baseEnv,
+  });
+  const results = [...runtimeResult.results, ...coreResult.results, ...cliResult.results];
+  const ok = runtimeResult.ok && coreResult.ok && cliResult.ok;
   renderVerificationGroupResults(results);
   process.stdout.write(
     `${JSON.stringify({
@@ -502,7 +509,7 @@ async function runFullFastPath() {
       wall_clock_ms: Math.round(performance.now() - startedAt),
       selected_groups: groups.length + 1,
       executed_groups: results.length + buildResult.results.length,
-      parallel_group_concurrency: Math.max(runtimeConcurrency, remainingConcurrency),
+      parallel_group_concurrency: Math.max(runtimeConcurrency, coreConcurrency, cliConcurrency),
       build_invocations: 1,
       ok,
     })}\n`,

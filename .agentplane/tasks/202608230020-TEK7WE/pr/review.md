@@ -30,8 +30,8 @@ Created: 2026-08-23T00:24:36.251Z
 
 ```text
  .../usecases/task-run-active-claim.testkit.ts      |  2 +-
- scripts/checks/run-local-ci.mjs                    | 26 +++++++++++++++-------
- 2 files changed, 19 insertions(+), 9 deletions(-)
+ scripts/checks/run-local-ci.mjs                    | 33 ++++++++++++++++------
+ 2 files changed, 26 insertions(+), 9 deletions(-)
 ```
 
 </details>
