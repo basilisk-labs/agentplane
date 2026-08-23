@@ -2,10 +2,10 @@
 id: "202608230020-TEK7WE"
 title: "Stabilize full CI runtime claims under supervisor load"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 50
+revision: 52
 origin:
   system: "manual"
 depends_on: []
@@ -61,9 +61,9 @@ quality_review:
     - "No blocking defect, missing deterministic test, or implicit scope extension remains."
     - "Residual risk: Hosted integration is intentionally deferred to the PR lifecycle gate."
 token_usage:
-  agent_runs: 13
+  agent_runs: 18
   input_tokens: null
-  journal_digest: "sha256:8f696ac1a1992463d2472102d90712b0379a00e5073f43527c66199c328b98ce"
+  journal_digest: "sha256:544d7274c067f301893acf279ef48c87accd794e07662dfaf60b42094d6107c9"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -73,7 +73,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-23T04:42:56.547Z"
+  updated_at: "2026-08-23T05:06:19.996Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -231,8 +231,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "task_outcome"
 commit:
-  hash: "c99fd04ea52e2fee63be0bd74160b51b36fcf44a"
-  message: "🚧 TEK7WE task: apply external agent result"
+  hash: "0a9b4b0592126aa3609c9be229fb0a39ec9f4db6"
+  message: "🚧 TEK7WE task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -297,6 +297,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: c99fd04ea52e. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -478,9 +481,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-23T05:06:19.996Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "0a9b4b0592126aa3609c9be229fb0a39ec9f4db6"
 doc_version: 3
-doc_updated_at: "2026-08-23T05:04:45.282Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-23T05:06:20.027Z"
+doc_updated_by: "CODER"
 description: "Fix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI."
 sections:
   Summary: |-
@@ -970,7 +981,34 @@ extensions:
       schema_version: 1
       task_id: "202608230020-TEK7WE"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608230020-TEK7WE"
+            - "git:c99fd04ea52e2fee63be0bd74160b51b36fcf44a"
+          check_id: "check-focused"
+          command_identity: "bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-23T05:01:49.198Z"
+          repository_snapshot_digest: "sha256:046c28218b0617b8578f356ce95f70fdcb23a281e6e465f4d58b46a72e686827"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608230020-TEK7WE"
+            - "git:c99fd04ea52e2fee63be0bd74160b51b36fcf44a"
+          check_id: "check-full"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-23T05:01:49.198Z"
+          repository_snapshot_digest: "sha256:046c28218b0617b8578f356ce95f70fdcb23a281e6e465f4d58b46a72e686827"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608230020-TEK7WE"
     intent:
       acceptance_criteria:
@@ -991,7 +1029,7 @@ extensions:
 
         Fix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI.
       task_id: "202608230020-TEK7WE"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1150,9 +1188,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608230020-TEK7WE"
-    revision: 49
+    revision: 52
     schema_version: 1
-    updated_at: "2026-08-23T05:01:56.135Z"
+    updated_at: "2026-08-23T05:06:19.996Z"
     work_items:
       stabilize-runtime-full-ci:
         attempt: 1
@@ -1251,6 +1289,31 @@ extensions:
         mutation_id: "external-result:work-order-202608230020-TEK7WE-executor-efc883aaf818772dd09d4102"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202608230020-TEK7WE"
+      legacy-finish:202608230020-TEK7WE:2026-08-23T05:01:49.198Z:c99fd04ea52e2fee63be0bd74160b51b36fcf44a:
+        aggregate_digest: "sha256:154d8a79362b2eae056663b1810a83c43f8be4a172e9aa942f904020bdaae27c"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-23T05:06:19.996Z"
+          cause_refs:
+            - "task-verification:202608230020-TEK7WE"
+            - "git:c99fd04ea52e2fee63be0bd74160b51b36fcf44a"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3d0652356dd89001afccbd25"
+          mutation_id: "legacy-finish:202608230020-TEK7WE:2026-08-23T05:01:49.198Z:c99fd04ea52e2fee63be0bd74160b51b36fcf44a"
+          plan_digest: "sha256:cc9f0ffa446112eb5a1b2ccf6d97046a273732e3cccb4d896c94955e6e9a14e0"
+          plan_revision: 2
+          repository_fingerprint: "sha256:046c28218b0617b8578f356ce95f70fdcb23a281e6e465f4d58b46a72e686827"
+          schema_version: 1
+          task_id: "202608230020-TEK7WE"
+          task_revision: 49
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608230020-TEK7WE:2026-08-23T05:01:49.198Z:c99fd04ea52e2fee63be0bd74160b51b36fcf44a"
+        next_revision: 52
+        previous_revision: 51
         schema_version: 1
         task_id: "202608230020-TEK7WE"
       plan-refinement:work-order-202608230020-TEK7WE-executor-0d8af81421a876961aa9efa9:
@@ -1358,6 +1421,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "c99fd04ea52e2fee63be0bd74160b51b36fcf44a"
+    message: "🚧 TEK7WE task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d93e42ccaedd59e77fc17c495a01dc7cde049d0f"
@@ -1690,12 +1754,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/13` agent runs
+- Completeness: `0/18` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:8f696ac1a1992463d2472102d90712b0379a00e5073f43527c66199c328b98ce`
+- Journal digest: `sha256:544d7274c067f301893acf279ef48c87accd794e07662dfaf60b42094d6107c9`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-23T04:42:56.547Z`
+- Updated at: `2026-08-23T05:06:19.996Z`
