@@ -6,7 +6,7 @@ Created: 2026-08-22T21:05:41.629Z
 
 - Task: `202608222055-1DKNTY`
 - Title: Fix task scope extend state-binding option parsing
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608222055-1DKNTY/fix-task-scope-extend-state-binding-option-parsi`
 - Canonical task record: `.agentplane/tasks/202608222055-1DKNTY/README.md`
 
