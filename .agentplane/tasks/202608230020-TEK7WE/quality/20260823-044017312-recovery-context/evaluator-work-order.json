@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608230020-TEK7WE-1319f31a78b5448133233f9a",
+  "prepared_at": "2026-08-23T04:40:17.312Z",
+  "task": {
+    "id": "202608230020-TEK7WE",
+    "revision": 36,
+    "objective": "Stabilize full CI runtime claims under supervisor load\n\nFix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000",
+      "- In scope: Fix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI.\n- Out of scope: unrelated refactors not required for \"Stabilize full CI runtime claims under supervisor load\".",
+      "Apply the two coupled, proven regression corrections atomically: isolate runtime before the remaining CI groups and widen only the test settlement observation window.",
+      "PLANNER fallback scaffold for \"Stabilize full CI runtime claims under supervisor load\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Stabilize full CI runtime claims under supervisor load\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "282b907e485f8e8ffbefb72bba53fa8ea60d9562",
+  "diff_base_sha": "d93e42ccaedd59e77fc17c495a01dc7cde049d0f",
+  "blueprint_digest": "6c639ae7631ead50ecfbfac60147eb609157b723ba9a67488ee37677848c0840",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044017312-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:e4e356f3c4625d487002980d4a5e9b5cee310186d8188d0862ddbae1948b6d72",
+    "prompt_path": ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/a52de8e948d7e6cdd1f9a449d7385633d48f69e1381e071919522662312a2d1b.md",
+    "result_schema_path": ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608230020-TEK7WE/README.md",
+      "sha256": "sha256:855fa52671336b0d151d36d3134327e07b134b354109ada368118afd7c5fedfd",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/b790a11768514d72b717d4d356336ffa7d078ae0eee531af2ca32912708d8c53.patch",
+      "sha256": "sha256:b790a11768514d72b717d4d356336ffa7d078ae0eee531af2ca32912708d8c53",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/3ede57cc7c47943874235d2ff2582dc6885639c889bb7c25c9c95fc4cadc756f.json",
+      "sha256": "sha256:3ede57cc7c47943874235d2ff2582dc6885639c889bb7c25c9c95fc4cadc756f",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608230020-TEK7WE/verification/20260823022404725-deb411eb622d069a.json",
+      "sha256": "sha256:2a4f8e8558beeded1ee76b890e8bdc3b881fbea5fa2f2ea966798cb59a45f163",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/83294e42708c64286a2d6665d2b2cfa43757427e3fff2922959690fd4f5c8d5a.json",
+      "sha256": "sha256:83294e42708c64286a2d6665d2b2cfa43757427e3fff2922959690fd4f5c8d5a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

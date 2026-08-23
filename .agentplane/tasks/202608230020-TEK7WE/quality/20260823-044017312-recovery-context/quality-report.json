@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608230020-TEK7WE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-23T04:41:14.974Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "282b907e485f8e8ffbefb72bba53fa8ea60d9562",
+  "blueprint_digest": "6c639ae7631ead50ecfbfac60147eb609157b723ba9a67488ee37677848c0840",
+  "findings": [
+    "No blocking defect was found: the exact diff preserves every selected CI group and fail aggregation while isolating runtime, core, and CLI into ordered waves; the test-only settlement window is widened to 5000 ms."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/b790a11768514d72b717d4d356336ffa7d078ae0eee531af2ca32912708d8c53.patch",
+    ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/3ede57cc7c47943874235d2ff2582dc6885639c889bb7c25c9c95fc4cadc756f.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
