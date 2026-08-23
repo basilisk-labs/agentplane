@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608230020-TEK7WE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-23T05:04:45.246Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "c99fd04ea52e2fee63be0bd74160b51b36fcf44a",
+  "blueprint_digest": "6c639ae7631ead50ecfbfac60147eb609157b723ba9a67488ee37677848c0840",
+  "findings": [
+    "Required WorkItem stabilize-runtime-full-ci is COMPLETED with a semantic output manifest and no remaining failure.",
+    "The exact focused active-claim suite and full local CI both have fresh CLI-owned pass records for implementation SHA c99fd04ea52e2fee63be0bd74160b51b36fcf44a.",
+    "The implementation remains confined to scripts/checks/run-local-ci.mjs and the active-claim testkit; the latest change documents the preserved wave and failure-aggregation invariant without altering behavior.",
+    "No blocking defect, missing deterministic test, or implicit scope extension remains.",
+    "Residual risk: Hosted integration is intentionally deferred to the PR lifecycle gate."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/8de3eb5c5b0d4394236cb2f2f4b1d1d956e0b187a515e2a2d98ad7ee4b77e4c3.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
