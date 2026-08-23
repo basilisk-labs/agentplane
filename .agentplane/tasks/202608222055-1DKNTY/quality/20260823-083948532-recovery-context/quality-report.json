@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608222055-1DKNTY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-23T08:40:25.902Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "2c8cb5903f51f08e4903cdfdea33e279d894e626",
+  "blueprint_digest": "9574336aa378a5944fc535219edf746b66f9d84d41afb3d4ed0582e4977fffd4",
+  "findings": [
+    "The new commit changes only task-owned lifecycle metadata and adds the full branch_pr verification command.",
+    "The parser implementation remains confined to optionalStringOption and focused tests.",
+    "The complete local CI evidence already demonstrates the newly declared full regression check."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/9fabfe99dccec1d1d448a92821e6824d82607b1745fa79e4f2f1b3927494812d.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

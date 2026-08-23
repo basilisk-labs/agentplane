@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608222055-1DKNTY-9652efacad892379282522c2",
+  "prepared_at": "2026-08-23T08:39:48.532Z",
+  "task": {
+    "id": "202608222055-1DKNTY",
+    "revision": 27,
+    "objective": "Fix task scope extend state-binding option parsing\n\nRepair the release-blocking control-plane regression where task scope extend receives scalar --state-scope-digest or --state-fingerprint options but optionalStringOption reads only arrays, so the command always rejects the required binding as missing. Change only the parser helper and focused tests. Do not alter scope-extension authority, digest validation, release semantics, context behavior, or Knowledge Assimilation scope.",
+    "acceptance_criteria": [
+      "bun run lint:core",
+      "bun run typecheck",
+      "bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts",
+      "bun run ci:local:full",
+      "- In scope: Repair the release-blocking control-plane regression where task scope extend receives scalar --state-scope-digest or --state-fingerprint options but optionalStringOption reads only arrays, so the command always rejects the required binding as missing. Change only the parser helper and focused tests. Do not alter scope-extension authority, digest validation, release semantics, context behavior, or Knowledge Assimilation scope.\n- Out of scope: unrelated refactors not required for \"Fix task scope extend state-binding option parsing\".",
+      "Preserve scalar state-binding options in task scope extend and prove both supported bindings through focused parser tests.",
+      "PLANNER fallback scaffold for \"Fix task scope extend state-binding option parsing\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Fix task scope extend state-binding option parsing\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "2c8cb5903f51f08e4903cdfdea33e279d894e626",
+  "diff_base_sha": "d93e42ccaedd59e77fc17c495a01dc7cde049d0f",
+  "blueprint_digest": "9574336aa378a5944fc535219edf746b66f9d84d41afb3d4ed0582e4977fffd4",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083948532-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:affa811f2a71875e389be70eb25823f4a8ef9ddfb145420d38208edec91f9c77",
+    "prompt_path": ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/855f44a304ad1e31d47e74f97ce46dc73f973e4831972f7fa5e188aab2d28ecd.md",
+    "result_schema_path": ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608222055-1DKNTY/README.md",
+      "sha256": "sha256:3d9394e8582129186f3c559d7419094659955f47188033a136f770e30ea2951c",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/9fabfe99dccec1d1d448a92821e6824d82607b1745fa79e4f2f1b3927494812d.patch",
+      "sha256": "sha256:9fabfe99dccec1d1d448a92821e6824d82607b1745fa79e4f2f1b3927494812d",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/852c38645aea9a7a7d5dba9965b320c0c805756285dd54506e35769a7306c69a.json",
+      "sha256": "sha256:852c38645aea9a7a7d5dba9965b320c0c805756285dd54506e35769a7306c69a",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608222055-1DKNTY/verification/20260823083111785-d28f377ed16e7070.json",
+      "sha256": "sha256:57dfd9eae9153c8c0edb50aad8f589e418d9836972195b22f3f9f9205e042fe8",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/9b44eac91bc7565b6e17b1e4d45aff1367240d80b61957fcbbec03e8f26456d0.json",
+      "sha256": "sha256:9b44eac91bc7565b6e17b1e4d45aff1367240d80b61957fcbbec03e8f26456d0",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
