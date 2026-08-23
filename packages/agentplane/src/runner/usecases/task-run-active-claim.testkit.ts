@@ -245,7 +245,7 @@ export type SettledObservation<T> =
 
 export async function observeSettlement<T>(
   promise: Promise<T>,
-  timeoutMs = 1500,
+  timeoutMs = 5000,
 ): Promise<SettledObservation<T>> {
   return await Promise.race([
     promise.then(

@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608230020-TEK7WE/stabilize-full-ci-runtime-claims-under-superviso",
+  "created_at": "2026-08-23T00:24:36.251Z",
+  "diffstat_sha256": "sha256:652318d5cd1571533d74769e937eb9b887a308498cdf55337f93ab5ace6c4db0",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608230020-TEK7WE",
+  "updated_at": "2026-08-23T00:24:36.251Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
