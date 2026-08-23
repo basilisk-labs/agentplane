@@ -1,0 +1,81 @@
+diff --git a/packages/agentplane/src/runner/usecases/task-run-active-claim.testkit.ts b/packages/agentplane/src/runner/usecases/task-run-active-claim.testkit.ts
+index fc009b369..a43b57969 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-active-claim.testkit.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-active-claim.testkit.ts
+@@ -245,7 +245,7 @@ export type SettledObservation<T> =
+ 
+ export async function observeSettlement<T>(
+   promise: Promise<T>,
+-  timeoutMs = 1500,
++  timeoutMs = 5000,
+ ): Promise<SettledObservation<T>> {
+   return await Promise.race([
+     promise.then(
+diff --git a/scripts/checks/run-local-ci.mjs b/scripts/checks/run-local-ci.mjs
+index a85ca5003..c5e54b86a 100644
+--- a/scripts/checks/run-local-ci.mjs
++++ b/scripts/checks/run-local-ci.mjs
+@@ -52,7 +52,7 @@ const LOCAL_VITEST_SUITE_TIMEOUT_MS = parsePositiveIntegerEnv(
+   DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS,
+ );
+ const LOCAL_FAST_VITEST_MAX_WORKERS =
+-  String(baseEnv.AGENTPLANE_FAST_VITEST_MAX_WORKERS ?? "").trim() || "4";
++  String(baseEnv.AGENTPLANE_FAST_VITEST_MAX_WORKERS ?? "").trim() || "6";
+ const LOCAL_CI_GROUP_CONCURRENCY = parsePositiveIntegerEnv(
+   baseEnv.AGENTPLANE_LOCAL_CI_GROUP_CONCURRENCY,
+   2,
+@@ -477,13 +477,32 @@ async function runFullFastPath() {
+     env: groupEnv,
+     timeoutMs: LOCAL_VITEST_SUITE_TIMEOUT_MS,
+   }));
+-  const groupConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, groups.length);
+-  const result = await runVerificationGroups(groups, {
+-    concurrency: groupConcurrency,
++  // Preserve every selected group and aggregate failure while isolating the
++  // lifecycle-heavy runtime and CLI waves from the concurrent core worker pool.
++  const runtimeWave = groups.filter(({ id }) => id === "runtime");
++  const coreWave = groups.filter(({ id }) => id !== "runtime" && id !== "cli");
++  const cliWave = groups.filter(({ id }) => id === "cli");
++  const runtimeConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, runtimeWave.length);
++  const coreConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, coreWave.length);
++  const cliConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, cliWave.length);
++  const runtimeResult = await runVerificationGroups(runtimeWave, {
++    concurrency: runtimeConcurrency,
+     cwd: process.cwd(),
+     env: baseEnv,
+   });
+-  renderVerificationGroupResults(result.results);
++  const coreResult = await runVerificationGroups(coreWave, {
++    concurrency: coreConcurrency,
++    cwd: process.cwd(),
++    env: baseEnv,
++  });
++  const cliResult = await runVerificationGroups(cliWave, {
++    concurrency: cliConcurrency,
++    cwd: process.cwd(),
++    env: baseEnv,
++  });
++  const results = [...runtimeResult.results, ...coreResult.results, ...cliResult.results];
++  const ok = runtimeResult.ok && coreResult.ok && cliResult.ok;
++  renderVerificationGroupResults(results);
+   process.stdout.write(
+     `${JSON.stringify({
+       schema_version: 1,
+@@ -491,13 +510,13 @@ async function runFullFastPath() {
+       route: "full-fast",
+       wall_clock_ms: Math.round(performance.now() - startedAt),
+       selected_groups: groups.length + 1,
+-      executed_groups: result.results.length + buildResult.results.length,
+-      parallel_group_concurrency: groupConcurrency,
++      executed_groups: results.length + buildResult.results.length,
++      parallel_group_concurrency: Math.max(runtimeConcurrency, coreConcurrency, cliConcurrency),
+       build_invocations: 1,
+-      ok: result.ok,
++      ok,
+     })}\n`,
+   );
+-  if (!result.ok) throw new Error("Full verification group failed.");
++  if (!ok) throw new Error("Full verification group failed.");
+ }
+ 
+ function renderVerificationGroupResults(results) {

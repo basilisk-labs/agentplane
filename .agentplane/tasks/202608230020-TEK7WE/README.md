@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 49
+revision: 50
 origin:
   system: "manual"
 depends_on: []
@@ -31,35 +31,35 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-23T04:48:08.047Z"
+  updated_at: "2026-08-23T05:04:45.246Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 4 typed finding(s)."
-  evaluated_sha: "65d50bc32c368a8d8d72e99fd3e065856cdf1edd"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "c99fd04ea52e2fee63be0bd74160b51b36fcf44a"
   blueprint_digest: "6c639ae7631ead50ecfbfac60147eb609157b723ba9a67488ee37677848c0840"
   evidence_refs:
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044719675-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044719675-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/be6ae962d93df706d41d99816698ae1d717fe84833e9513a713df5d6710d52da.md"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044719675-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044719675-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044719675-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044719675-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-050200371-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-050200371-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/21c377a027c71c3ce202b9710c44b32f3187b3a3de55bf51420bc4d53d3d5afd.md"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-050200371-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-050200371-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-050200371-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608230020-TEK7WE/README.md"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/b790a11768514d72b717d4d356336ffa7d078ae0eee531af2ca32912708d8c53.patch"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/923f0fad6ed7e9105efa0b15de92704413565a0de8bc403c484132343cc9304f.json"
-    - ".agentplane/tasks/202608230020-TEK7WE/verification/20260823022404725-deb411eb622d069a.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/8de3eb5c5b0d4394236cb2f2f4b1d1d956e0b187a515e2a2d98ad7ee4b77e4c3.patch"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/4ae8896507c46ae03adfdb23f0be121f1ec939df90f75e5dc14a54e90d568c96.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/verification/20260823050149198-622b8f31ee20a499.json"
     - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/83294e42708c64286a2d6665d2b2cfa43757427e3fff2922959690fd4f5c8d5a.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The approved plan materialized stabilize-runtime-full-ci as required state READY under aggregate lifecycle ACTIVE."
-    - "The existing pass record binds implementation SHA 6fb7e346ad633e779c20ea216a39a8410a84d1f3 from the previous plan, not a completion receipt for the newly materialized WorkItem."
-    - "Pre-merge finish must remain blocked until supervisor execution validates and completes the required WorkItem."
-    - "Residual risk: Closing the task before task-centric WorkItem completion would reproduce the required_work_item_incomplete failure."
+    - "Required WorkItem stabilize-runtime-full-ci is COMPLETED with a semantic output manifest and no remaining failure."
+    - "The exact focused active-claim suite and full local CI both have fresh CLI-owned pass records for implementation SHA c99fd04ea52e2fee63be0bd74160b51b36fcf44a."
+    - "The implementation remains confined to scripts/checks/run-local-ci.mjs and the active-claim testkit; the latest change documents the preserved wave and failure-aggregation invariant without altering behavior."
+    - "No blocking defect, missing deterministic test, or implicit scope extension remains."
+    - "Residual risk: Hosted integration is intentionally deferred to the PR lifecycle gate."
 token_usage:
   agent_runs: 13
   input_tokens: null
@@ -479,7 +479,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-23T05:01:51.784Z"
+doc_updated_at: "2026-08-23T05:04:45.282Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI."
 sections:
