@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +28,11 @@ plan_approval:
   updated_by: "USER"
   note: "Approved under the user's autonomous release authorization; exact plan digest sha256:83f2ec2944acc0a2b74903e1a6aa7f2dc43f2c937ec1e3edc483997efb525013."
 verification:
-  state: "ok"
-  updated_at: "2026-08-23T08:31:11.785Z"
+  state: "needs_rework"
+  updated_at: "2026-08-23T08:41:10.669Z"
   updated_by: "SUPERVISOR"
-  note: "Synchronized implementation passes the focused parser gate and the complete branch_pr local regression contract."
-  attempts: 0
+  note: "Rework lifecycle evidence: the task-centric WorkItem still carries the superseded failed validation receipt and must be recomputed with the strengthened full verification contract."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -129,6 +129,7 @@ execution_contract:
   observed:
     authority_violations:
       - "repository_effect:documentation"
+      - "verification:recorded-check-1:fail"
       - "writable_scope:.agentplane/tasks/202608222117-HQ5AA4/README.md"
       - "writable_scope:.agentplane/tasks/202608222117-HQ5AA4/blueprint/resolved-snapshot.json"
       - "writable_scope:.agentplane/tasks/202608222117-HQ5AA4/pr/diffstat.txt"
@@ -391,7 +392,7 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
+        result: "fail"
       -
         id: "recorded-check-2"
         result: "pass"
@@ -830,9 +831,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "b197e1c530842814422457349050a24198ab6b13"
-  message: "🧩 1DKNTY task: record final evaluator review"
+      - "verification_recovery:recorded-check-1"
+commit: null
 comments:
   -
     author: "CODER"
@@ -965,8 +965,14 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Recovery: rerun the task-centric WorkItem with the full branch_pr verification contract so the successful validation is recorded in the aggregate."
+  -
+    type: "verify"
+    at: "2026-08-23T08:41:10.669Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework lifecycle evidence: the task-centric WorkItem still carries the superseded failed validation receipt and must be recomputed with the strengthened full verification contract."
 doc_version: 3
-doc_updated_at: "2026-08-23T08:40:25.940Z"
+doc_updated_at: "2026-08-23T08:41:12.116Z"
 doc_updated_by: "CODER"
 description: "Repair the release-blocking control-plane regression where task scope extend receives scalar --state-scope-digest or --state-fingerprint options but optionalStringOption reads only arrays, so the command always rejects the required binding as missing. Change only the parser helper and focused tests. Do not alter scope-extension authority, digest validation, release semantics, context behavior, or Knowledge Assimilation scope."
 sections:
@@ -1161,6 +1167,41 @@ sections:
     Result: pass
     Evidence: scalar state bindings are preserved and validated; combined declared suite passed 25/25.
     Scope: approved 1DKNTY acceptance criteria
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222055-1DKNTY-fix-task-scope-extend-state-binding-option-parsi/.agentplane/tasks/202608222055-1DKNTY/blueprint/resolved-snapshot.json
+    - old_digest: 9574336aa378a5944fc535219edf746b66f9d84d41afb3d4ed0582e4977fffd4
+    - current_digest: 9574336aa378a5944fc535219edf746b66f9d84d41afb3d4ed0582e4977fffd4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608222055-1DKNTY
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-23T08:41:10.669Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework lifecycle evidence: the task-centric WorkItem still carries the superseded failed validation receipt and must be recomputed with the strengthened full verification contract.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:795ca33800839419991d74106a30222aeb3b8cfbb90bce1b9bb2b7648ac43155, input_digest=sha256:20ad2b2c0807b78008f5d63c1a451566e43b476bf94d791e374051a243d433e2
+
+    Details:
+
+    Command: agentplane finish 202608222055-1DKNTY --pre-merge-closure
+    Result: fail
+    Evidence: required_work_item_incomplete:fix-scope-extend-state-binding-parser
+    Scope: task-centric WorkItem completion receipt only; code and executed tests remain passing.
 
     BlueprintSnapshotRef:
     - state: current
@@ -1510,9 +1551,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "e739baf50acbf346cecd0beb430071ed74d88322"
-    message: "🚧 1DKNTY task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d93e42ccaedd59e77fc17c495a01dc7cde049d0f"
@@ -1724,6 +1762,41 @@ Command: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test
 Result: pass
 Evidence: scalar state bindings are preserved and validated; combined declared suite passed 25/25.
 Scope: approved 1DKNTY acceptance criteria
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222055-1DKNTY-fix-task-scope-extend-state-binding-option-parsi/.agentplane/tasks/202608222055-1DKNTY/blueprint/resolved-snapshot.json
+- old_digest: 9574336aa378a5944fc535219edf746b66f9d84d41afb3d4ed0582e4977fffd4
+- current_digest: 9574336aa378a5944fc535219edf746b66f9d84d41afb3d4ed0582e4977fffd4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608222055-1DKNTY
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-23T08:41:10.669Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework lifecycle evidence: the task-centric WorkItem still carries the superseded failed validation receipt and must be recomputed with the strengthened full verification contract.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:795ca33800839419991d74106a30222aeb3b8cfbb90bce1b9bb2b7648ac43155, input_digest=sha256:20ad2b2c0807b78008f5d63c1a451566e43b476bf94d791e374051a243d433e2
+
+Details:
+
+Command: agentplane finish 202608222055-1DKNTY --pre-merge-closure
+Result: fail
+Evidence: required_work_item_incomplete:fix-scope-extend-state-binding-parser
+Scope: task-centric WorkItem completion receipt only; code and executed tests remain passing.
 
 BlueprintSnapshotRef:
 - state: current
