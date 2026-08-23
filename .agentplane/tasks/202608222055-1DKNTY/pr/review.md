@@ -12,8 +12,8 @@ Created: 2026-08-22T21:05:41.629Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+- State: ok
+- Note: Synchronized implementation passes the focused parser gate and the complete branch_pr local regression contract.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,8 +30,8 @@ Created: 2026-08-22T21:05:41.629Z
 
 ```text
  .../src/commands/task/scope-extend.command.ts      |  3 +
- .../src/commands/task/scope-extend.test.ts         | 87 ++++++++++++++++++++++
- 2 files changed, 90 insertions(+)
+ .../src/commands/task/scope-extend.test.ts         | 99 ++++++++++++++++++++++
+ 2 files changed, 102 insertions(+)
 ```
 
 </details>
