@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608222117-HQ5AA4/migrate-blocked-result-cli-fixture-to-structured",
+  "created_at": "2026-08-22T21:19:32.900Z",
+  "diffstat_sha256": "sha256:b58b8d7da5cf79fde1470aa0125c0468972d9e22db9e085525a536ae64b571db",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608222117-HQ5AA4",
+  "updated_at": "2026-08-22T21:19:32.900Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
