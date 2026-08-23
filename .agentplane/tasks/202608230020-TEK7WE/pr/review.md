@@ -6,7 +6,7 @@ Created: 2026-08-23T00:24:36.251Z
 
 - Task: `202608230020-TEK7WE`
 - Title: Stabilize full CI runtime claims under supervisor load
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608230020-TEK7WE/stabilize-full-ci-runtime-claims-under-superviso`
 - Canonical task record: `.agentplane/tasks/202608230020-TEK7WE/README.md`
 
