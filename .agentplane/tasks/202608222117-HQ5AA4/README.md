@@ -4,7 +4,7 @@ title: "Migrate blocked-result CLI fixture to structured task plan"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -31,6 +31,32 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-23T07:52:39.591Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "371b25cff122dfa322adee23ee677be3e71c53da"
+  blueprint_digest: "a9c8bab8a5dcc4767fb2769b57e335385abc0d8d6bbf3d1fd3e2d2cade2c3ad6"
+  evidence_refs:
+    - ".agentplane/tasks/202608222117-HQ5AA4/quality/20260823-075159957-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608222117-HQ5AA4/quality/20260823-075159957-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608222117-HQ5AA4/quality/objects/sha256/6c6f02bad23007adb3d14fb0944b1d0a69da78591dd4ac4f1dec0a4ab7641ff7.md"
+    - ".agentplane/tasks/202608222117-HQ5AA4/quality/20260823-075159957-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608222117-HQ5AA4/quality/20260823-075159957-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608222117-HQ5AA4/quality/20260823-075159957-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608222117-HQ5AA4/README.md"
+    - ".agentplane/tasks/202608222117-HQ5AA4/quality/objects/sha256/03b9fa591584e72cfa17e5a0cb0356776b07262d7802dcae6bf15458069fdaf6.patch"
+    - ".agentplane/tasks/202608222117-HQ5AA4/quality/objects/sha256/3e71053bf654f61eb72c55ccc653a40770bd2e42c4c20d69c3854f92c302c95b.json"
+    - ".agentplane/tasks/202608222117-HQ5AA4/verification/20260823075100003-999e679a30c13b3f.json"
+    - ".agentplane/tasks/202608222117-HQ5AA4/quality/objects/sha256/2889b4efad533c15448bf00de5f00fcba3d451c577b3cb3d54ffb074070da2e6.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "No acceptance gap was found: planner role and commit baseline are validated, USER approval is exercised, dirty-worktree resolution remains explicit, exact scope propagation is asserted, and out-of-authority tampering still fails closed."
 execution_route:
   frozen: true
   reason_codes:
