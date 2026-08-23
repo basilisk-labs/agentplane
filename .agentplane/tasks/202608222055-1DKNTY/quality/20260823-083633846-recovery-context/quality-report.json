@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608222055-1DKNTY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-23T08:36:34.561Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "61184d6c1c4123db5d627fffd568a61d4ff0bfe6",
+  "blueprint_digest": "9574336aa378a5944fc535219edf746b66f9d84d41afb3d4ed0582e4977fffd4",
+  "findings": [
+    "The production and focused-test diff against current main is unchanged from the passing evaluator review.",
+    "The final additional commit changes only the task-owned README to record DONE closure and token-usage provenance."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/9fabfe99dccec1d1d448a92821e6824d82607b1745fa79e4f2f1b3927494812d.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
