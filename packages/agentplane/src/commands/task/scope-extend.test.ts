@@ -75,6 +75,24 @@ describe("task scope extend command parsing", () => {
     });
   });
 
+  it("normalizes a scalar state binding before digest validation", () => {
+    expect(
+      parseCommandArgv(taskScopeExtendSpec, [
+        "T-1",
+        "--scope-root",
+        "packages/agentplane",
+        "--request-digest",
+        REQUEST_DIGEST,
+        "--state-scope-digest",
+        `  ${STATE_SCOPE_DIGEST}  `,
+        "--by",
+        "USER",
+      ]),
+    ).toMatchObject({
+      parsed: { stateScopeDigest: STATE_SCOPE_DIGEST },
+    });
+  });
+
   it("continues to reject missing and malformed state bindings", () => {
     const base = [
       "T-1",
