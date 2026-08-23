@@ -12,8 +12,8 @@ Created: 2026-08-22T21:31:27.901Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,7 +31,8 @@ Created: 2026-08-22T21:31:27.901Z
 ```text
  .../shared/task-scope-extension-request.ts         |  91 ++++++++++-
  .../src/commands/task/scope-extend.test.ts         | 177 +++++++++++++++++++++
- 2 files changed, 266 insertions(+), 2 deletions(-)
+ scripts/checks/run-local-ci.mjs                    |  37 +++--
+ 3 files changed, 294 insertions(+), 11 deletions(-)
 ```
 
 </details>
