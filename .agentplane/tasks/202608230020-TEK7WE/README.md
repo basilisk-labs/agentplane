@@ -2,10 +2,10 @@
 id: "202608230020-TEK7WE"
 title: "Stabilize full CI runtime claims under supervisor load"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 45
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,10 @@ verify:
   - "bun run ci:local:full"
   - "bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-08-23T04:47:13.027Z"
+  updated_by: "USER"
+  note: "Approved under the user-authorized v0.7.8 regression-only boundary for exact recovery plan digest sha256:cc9f0ffa446112eb5a1b2ccf6d97046a273732e3cccb4d896c94955e6e9a14e0."
 verification:
   state: "ok"
   updated_at: "2026-08-23T02:24:04.725Z"
@@ -31,23 +31,24 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-23T04:41:14.974Z"
+  updated_at: "2026-08-23T04:48:08.047Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "282b907e485f8e8ffbefb72bba53fa8ea60d9562"
+  note: "EVALUATOR returned rework with 4 typed finding(s)."
+  evaluated_sha: "65d50bc32c368a8d8d72e99fd3e065856cdf1edd"
   blueprint_digest: "6c639ae7631ead50ecfbfac60147eb609157b723ba9a67488ee37677848c0840"
   evidence_refs:
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044017312-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044017312-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/a52de8e948d7e6cdd1f9a449d7385633d48f69e1381e071919522662312a2d1b.md"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044017312-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044017312-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044017312-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044719675-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044719675-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/be6ae962d93df706d41d99816698ae1d717fe84833e9513a713df5d6710d52da.md"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044719675-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044719675-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044719675-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/20260823-044719675-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608230020-TEK7WE/README.md"
     - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/b790a11768514d72b717d4d356336ffa7d078ae0eee531af2ca32912708d8c53.patch"
-    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/3ede57cc7c47943874235d2ff2582dc6885639c889bb7c25c9c95fc4cadc756f.json"
+    - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/923f0fad6ed7e9105efa0b15de92704413565a0de8bc403c484132343cc9304f.json"
     - ".agentplane/tasks/202608230020-TEK7WE/verification/20260823022404725-deb411eb622d069a.json"
     - ".agentplane/tasks/202608230020-TEK7WE/quality/objects/sha256/83294e42708c64286a2d6665d2b2cfa43757427e3fff2922959690fd4f5c8d5a.json"
     - ".agentplane/policy/dod.code.md"
@@ -55,7 +56,10 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No blocking defect was found: the exact diff preserves every selected CI group and fail aggregation while isolating runtime, core, and CLI into ordered waves; the test-only settlement window is widened to 5000 ms."
+    - "The approved plan materialized stabilize-runtime-full-ci as required state READY under aggregate lifecycle ACTIVE."
+    - "The existing pass record binds implementation SHA 6fb7e346ad633e779c20ea216a39a8410a84d1f3 from the previous plan, not a completion receipt for the newly materialized WorkItem."
+    - "Pre-merge finish must remain blocked until supervisor execution validates and completes the required WorkItem."
+    - "Residual risk: Closing the task before task-centric WorkItem completion would reproduce the required_work_item_incomplete failure."
 token_usage:
   agent_runs: 13
   input_tokens: null
@@ -287,6 +291,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The sole uncommitted README mutation is intended CLI-owned recovery state: it records the failed pre-merge attempt, the same-scope revised plan, pending approval, and the task-centric replan-required marker."
+  -
+    author: "CODER"
+    body: "Recovery: reopen legacy status to match task-centric lifecycle PLANNING and required WorkItem stabilize-runtime-full-ci=REWORK_READY after the pre-merge completion gate rejected the stale aggregate."
 events:
   -
     type: "status"
@@ -447,9 +454,16 @@ events:
     at: "2026-08-23T04:44:24.764Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The sole uncommitted README mutation is intended CLI-owned recovery state: it records the failed pre-merge attempt, the same-scope revised plan, pending approval, and the task-centric replan-required marker."
+  -
+    type: "status"
+    at: "2026-08-23T04:45:44.140Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Recovery: reopen legacy status to match task-centric lifecycle PLANNING and required WorkItem stabilize-runtime-full-ci=REWORK_READY after the pre-merge completion gate rejected the stale aggregate."
 doc_version: 3
-doc_updated_at: "2026-08-23T04:44:24.798Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-23T04:48:08.078Z"
+doc_updated_by: "CODER"
 description: "Fix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI."
 sections:
   Summary: |-
@@ -459,10 +473,7 @@ sections:
   Scope: |-
     - In scope: Fix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI.
     - Out of scope: unrelated refactors not required for "Stabilize full CI runtime claims under supervisor load".
-  Plan: |-
-    1. Preserve the existing two-file implementation: isolate runtime, then run core and CLI waves with the configured concurrency and keep the active-claim settlement window at 5000 ms.
-    2. Reuse the already recorded focused and full-CI pass evidence to complete WorkItem stabilize-runtime-full-ci through task-centric validation.
-    3. Record fresh evaluator and pre-merge closure evidence for the exact resulting head; do not change implementation scope.
+  Plan: "Replanned the existing scheduler regression fix as one same-scope WorkItem against the final recovery snapshot, retaining the exact focused and full-CI checks."
   Verify Steps: |-
     PLANNER fallback scaffold for "Stabilize full CI runtime claims under supervisor load". Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -689,38 +700,57 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.execution_grant:
+    actor: "USER"
+    approval_evidence_digest: null
+    approval_kind: "manual_operator"
+    capabilities:
+      - "provider.merge"
+      - "provider.pr"
+      - "repository.integrate"
+      - "repository.write"
+      - "task.lifecycle"
+      - "task.scope.extend"
+    completion_contract_digest: "sha256:fba971ef6a121384c40c5fc93d8592325723d6d58911d7f1df7633db663de72c"
+    digest: "sha256:0b1e6cdb5764e159ab4b49d8b1c3ac1efb6168863b3a21a2ba075cbb7563a70f"
+    grant_id: "30b1f64d-ab4f-4322-9131-36f0d4f99640"
+    issued_at: "2026-08-23T04:47:13.027Z"
+    kind: "agentplane.execution_grant"
+    plan_digest: "sha256:78aabf5e3d61533738a28d405af363e63bbf5dbcbfc7d8638d2f9c9ddc291473"
+    plan_revision: 43
+    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+    schema_version: 1
+    scope_digest: "sha256:f2597e379e84d7b1cabc5d1fe65f4cdc98cc2387e3b61c1b60d7ce1c79cf0131"
+    status: "active"
+    task_id: "202608230020-TEK7WE"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-08-23T00:24:25.840Z"
+        approved_at: "2026-08-23T04:47:13.027Z"
         approved_by: "USER"
-        approved_digest: "sha256:4940474adebd93d0fc8c4594d9757cc85c45d919a3220261854743a7e81d4fb7"
+        approved_digest: "sha256:cc9f0ffa446112eb5a1b2ccf6d97046a273732e3cccb4d896c94955e6e9a14e0"
         policy_facts:
           - "manual_operator"
         state: "approved"
-      created_at: "2026-08-23T00:22:00.550Z"
-      digest: "sha256:4940474adebd93d0fc8c4594d9757cc85c45d919a3220261854743a7e81d4fb7"
+      created_at: "2026-08-23T04:47:03.145Z"
+      digest: "sha256:cc9f0ffa446112eb5a1b2ccf6d97046a273732e3cccb4d896c94955e6e9a14e0"
       proposal:
         assumptions:
-          - "Runtime-first isolation removes the proven CPU contention, and 5000 ms covers the remaining supervisor-only settlement variance without hiding a 60-second test hang."
+          - "The recorded successful focused and full-CI evidence remains valid for the unchanged implementation diff; the supervisor may rerun checks if its evidence policy requires a fresh execution receipt."
         planning_baseline:
-          captured_at: "2026-08-23T00:20:48.966Z"
+          captured_at: "2026-08-23T04:45:50.626Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:a542361a9111ec5dcc63b85a23fad5396d3363b3db517b0487ca3a7d230f546a"
+          digest: "sha256:2e980ce1f51085e6cf76cdb05e1b13f6b9d2baea2c6796e644c254e81a40d3ff"
           dirty_paths:
-            - ".agentplane/tasks/202608210955-9SX2C6/README.md"
-            - ".agentplane/tasks/202608212244-Q3QMJR/README.md"
-            - ".agentplane/tasks/202608220034-FPEFRK/README.md"
-            - ".agentplane/tasks/202608220034-FPEFRK/blueprint/resolved-snapshot.json"
             - ".agentplane/tasks/202608230020-TEK7WE/README.md"
           git:
             kind: "commit"
             ref: null
-            sha: "d93e42ccaedd59e77fc17c495a01dc7cde049d0f"
+            sha: "65d50bc32c368a8d8d72e99fd3e065856cdf1edd"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:1"
+          task_history_cursor: "task-revision:42"
         schema_version: 1
         task_id: "202608230020-TEK7WE"
         top_level_validation:
@@ -731,21 +761,23 @@ extensions:
               id: "check-focused"
               kind: "deterministic"
               required: true
+              timeout_ms: 120000
             -
               capability: "task.verify"
               command: "bun run ci:local:full"
               id: "check-full"
               kind: "deterministic"
               required: true
+              timeout_ms: 900000
           criteria:
             -
               check_ids:
                 - "check-focused"
                 - "check-full"
-              description: "The exact active-claim suite and full local CI both pass with only the two approved files changed."
+              description: "The exact active-claim suite and full local CI pass with implementation changes confined to the two approved paths."
               id: "criterion-coupled-regression-fixed"
               required: true
-          evidence_fingerprint: "sha256:5e0f544847debe02623d69c88957d44816ccf44cd5e6df48428bf3a0092801b5"
+          evidence_fingerprint: "sha256:2e980ce1f51085e6cf76cdb05e1b13f6b9d2baea2c6796e644c254e81a40d3ff"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -756,20 +788,20 @@ extensions:
                 -
                   check_ids:
                     - "check-full"
-                  description: "The runtime group completes before any docs-schema, core, or cli group starts; the remaining groups retain configured concurrency."
+                  description: "The runtime group completes before docs-schema and core execute, and CLI executes only after that middle wave while each wave retains configured concurrency."
                   id: "criterion-runtime-isolated"
                   required: true
                 -
                   check_ids:
                     - "check-focused"
                     - "check-full"
-                  description: "The active-claim suite retains existing assertions and uses only a 5000 ms test settlement observation window."
+                  description: "The active-claim suite retains its assertions and uses only a 5000 ms test settlement observation window."
                   id: "criterion-harness-stable"
                   required: true
                 -
                   check_ids:
                     - "check-full"
-                  description: "Selected groups, commands, timeouts, outputs, maximum concurrency metric, and fail aggregation are preserved."
+                  description: "Selected groups, commands, timeouts, outputs, maximum concurrency metric, and fail aggregation remain preserved."
                   id: "criterion-groups-preserved"
                   required: true
               capabilities:
@@ -790,7 +822,7 @@ extensions:
               expected_outputs:
                 - "stable-supervisor-full-ci-runtime-claims"
               id: "stabilize-runtime-full-ci"
-              objective: "Run runtime alone before a concurrency-two wave of all remaining verification groups and set the active-claim test-only settlement observation default to 5000 ms."
+              objective: "Preserve and validate the existing implementation that runs runtime alone, then core and CLI waves with the configured concurrency, and uses a 5000 ms active-claim test settlement window."
               optional: false
               priority: 1
               required_inputs: []
@@ -815,35 +847,37 @@ extensions:
                     id: "check-focused"
                     kind: "deterministic"
                     required: true
+                    timeout_ms: 120000
                   -
                     capability: "task.verify"
                     command: "bun run ci:local:full"
                     id: "check-full"
                     kind: "deterministic"
                     required: true
+                    timeout_ms: 900000
                 criteria:
                   -
                     check_ids:
                       - "check-full"
-                    description: "The runtime group completes before any docs-schema, core, or cli group starts; the remaining groups retain configured concurrency."
+                    description: "The runtime group completes before docs-schema and core execute, and CLI executes only after that middle wave while each wave retains configured concurrency."
                     id: "criterion-runtime-isolated"
                     required: true
                   -
                     check_ids:
                       - "check-focused"
                       - "check-full"
-                    description: "The active-claim suite retains existing assertions and uses only a 5000 ms test settlement observation window."
+                    description: "The active-claim suite retains its assertions and uses only a 5000 ms test settlement observation window."
                     id: "criterion-harness-stable"
                     required: true
                   -
                     check_ids:
                       - "check-full"
-                    description: "Selected groups, commands, timeouts, outputs, maximum concurrency metric, and fail aggregation are preserved."
+                    description: "Selected groups, commands, timeouts, outputs, maximum concurrency metric, and fail aggregation remain preserved."
                     id: "criterion-groups-preserved"
                     required: true
-                evidence_fingerprint: "sha256:27f12d4e2de7e175102e193927ff201d8af01546f77a48304fd5a5e419d0d045"
+                evidence_fingerprint: "sha256:2e980ce1f51085e6cf76cdb05e1b13f6b9d2baea2c6796e644c254e81a40d3ff"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202608230020-TEK7WE"
     event_cursor: 0
@@ -868,76 +902,178 @@ extensions:
 
         Fix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI.
       task_id: "202608230020-TEK7WE"
-    lifecycle: "PLANNING"
+    lifecycle: "ACTIVE"
     plan_amendments: []
-    plan_history: []
-    revision: 27
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-08-23T00:24:25.840Z"
+          approved_by: "USER"
+          approved_digest: "sha256:4940474adebd93d0fc8c4594d9757cc85c45d919a3220261854743a7e81d4fb7"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-08-23T00:22:00.550Z"
+        digest: "sha256:4940474adebd93d0fc8c4594d9757cc85c45d919a3220261854743a7e81d4fb7"
+        proposal:
+          assumptions:
+            - "Runtime-first isolation removes the proven CPU contention, and 5000 ms covers the remaining supervisor-only settlement variance without hiding a 60-second test hang."
+          planning_baseline:
+            captured_at: "2026-08-23T00:20:48.966Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:a542361a9111ec5dcc63b85a23fad5396d3363b3db517b0487ca3a7d230f546a"
+            dirty_paths:
+              - ".agentplane/tasks/202608210955-9SX2C6/README.md"
+              - ".agentplane/tasks/202608212244-Q3QMJR/README.md"
+              - ".agentplane/tasks/202608220034-FPEFRK/README.md"
+              - ".agentplane/tasks/202608220034-FPEFRK/blueprint/resolved-snapshot.json"
+              - ".agentplane/tasks/202608230020-TEK7WE/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "d93e42ccaedd59e77fc17c495a01dc7cde049d0f"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202608230020-TEK7WE"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000"
+                id: "check-focused"
+                kind: "deterministic"
+                required: true
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "check-full"
+                kind: "deterministic"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "check-focused"
+                  - "check-full"
+                description: "The exact active-claim suite and full local CI both pass with only the two approved files changed."
+                id: "criterion-coupled-regression-fixed"
+                required: true
+            evidence_fingerprint: "sha256:5e0f544847debe02623d69c88957d44816ccf44cd5e6df48428bf3a0092801b5"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-full"
+                    description: "The runtime group completes before any docs-schema, core, or cli group starts; the remaining groups retain configured concurrency."
+                    id: "criterion-runtime-isolated"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-focused"
+                      - "check-full"
+                    description: "The active-claim suite retains existing assertions and uses only a 5000 ms test settlement observation window."
+                    id: "criterion-harness-stable"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-full"
+                    description: "Selected groups, commands, timeouts, outputs, maximum concurrency metric, and fail aggregation are preserved."
+                    id: "criterion-groups-preserved"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 196608
+                  optional_sources:
+                    - "scripts/checks/run-local-ci-group.mjs"
+                  required_sources:
+                    - "scripts/checks/run-local-ci.mjs"
+                    - "packages/agentplane/src/runner/usecases/task-run-active-claim.testkit.ts"
+                    - "packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts"
+                  symbol_hints:
+                    - "runFullFastPath"
+                    - "observeSettlement"
+                    - "waitForStartedRun"
+                depends_on: []
+                expected_outputs:
+                  - "stable-supervisor-full-ci-runtime-claims"
+                id: "stabilize-runtime-full-ci"
+                objective: "Run runtime alone before a concurrency-two wave of all remaining verification groups and set the active-claim test-only settlement observation default to 5000 ms."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/checks/run-local-ci.mjs"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner/usecases/task-run-active-claim.testkit.ts"
+                risk: "medium"
+                scope_roots:
+                  - "scripts/checks/run-local-ci.mjs"
+                  - "packages/agentplane/src/runner/usecases/task-run-active-claim.testkit.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000"
+                      id: "check-focused"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "check-full"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-full"
+                      description: "The runtime group completes before any docs-schema, core, or cli group starts; the remaining groups retain configured concurrency."
+                      id: "criterion-runtime-isolated"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-focused"
+                        - "check-full"
+                      description: "The active-claim suite retains existing assertions and uses only a 5000 ms test settlement observation window."
+                      id: "criterion-harness-stable"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-full"
+                      description: "Selected groups, commands, timeouts, outputs, maximum concurrency metric, and fail aggregation are preserved."
+                      id: "criterion-groups-preserved"
+                      required: true
+                  evidence_fingerprint: "sha256:27f12d4e2de7e175102e193927ff201d8af01546f77a48304fd5a5e419d0d045"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202608230020-TEK7WE"
+    revision: 28
     schema_version: 1
-    updated_at: "2026-08-23T02:24:08.243Z"
+    updated_at: "2026-08-23T04:47:13.027Z"
     work_items:
       stabilize-runtime-full-ci:
-        attempt: 1
+        attempt: 0
         claim_id: null
         id: "stabilize-runtime-full-ci"
-        last_failure:
-          cause_refs:
-            - "criterion-runtime-isolated"
-            - "criterion-harness-stable"
-            - "criterion-groups-preserved"
-          code: "validation_failed"
-          kind: "validation"
-          message: "Isolated runtime as the first full-CI wave and widened only the active-claim test settlement observation to 5000 ms."
-          retryable: true
-        output_manifests:
-          -
-            digest: "sha256:64e58fb42bd0d4c64fe464eb360c4f932be25f6aed93ebcd51e020be6c76662b"
-            id: "stable-supervisor-full-ci-runtime-claims"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 1
-              task_id: "202608230020-TEK7WE"
-              work_item_id: "stabilize-runtime-full-ci"
-            provenance:
-              - "sha256:ef08e0f058d0a5db60f1e8f6c307ac4c46fda9bb304f1222e6161705a76744fa"
-              - ".agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:60a170660c34fe9f54ecaed08c1228149c6e49e1375fb190c0f366dcbcd3b842"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "REWORK_READY"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json"
-              check_id: "check-focused"
-              command_identity: "bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000"
-              detail: "Declared validation command bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000 was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-08-23T00:52:15.569Z"
-              repository_snapshot_digest: "sha256:60a170660c34fe9f54ecaed08c1228149c6e49e1375fb190c0f366dcbcd3b842"
-              status: "unsupported"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json"
-              check_id: "check-full"
-              command_identity: "bun run ci:local:full"
-              detail: "Declared check failed: bun run ci:local:full"
-              exit_code: 1
-              observed_at: "2026-08-23T00:52:15.569Z"
-              repository_snapshot_digest: "sha256:60a170660c34fe9f54ecaed08c1228149c6e49e1375fb190c0f366dcbcd3b842"
-              status: "failed"
-          schema_version: 1
-          stale_evidence: []
-          status: "blocked"
-          unsatisfied_criteria:
-            - "criterion-runtime-isolated"
-            - "criterion-harness-stable"
-            - "criterion-groups-preserved"
-  agentplane.task_centric_replan_required:
-    reason_code: "plan_changed"
-    schema_version: 1
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
@@ -1094,9 +1230,7 @@ Fix the proven coupled full-CI regression with one atomic change: run the runtim
 
 ## Plan
 
-1. Preserve the existing two-file implementation: isolate runtime, then run core and CLI waves with the configured concurrency and keep the active-claim settlement window at 5000 ms.
-2. Reuse the already recorded focused and full-CI pass evidence to complete WorkItem stabilize-runtime-full-ci through task-centric validation.
-3. Record fresh evaluator and pre-merge closure evidence for the exact resulting head; do not change implementation scope.
+Replanned the existing scheduler regression fix as one same-scope WorkItem against the final recovery snapshot, retaining the exact focused and full-CI checks.
 
 ## Verify Steps
 
