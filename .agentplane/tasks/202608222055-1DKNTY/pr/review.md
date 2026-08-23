@@ -30,8 +30,8 @@ Created: 2026-08-22T21:05:41.629Z
 
 ```text
  .../src/commands/task/scope-extend.command.ts      |  3 +
- .../src/commands/task/scope-extend.test.ts         | 84 ++++++++++++++++++++++
- 2 files changed, 87 insertions(+)
+ .../src/commands/task/scope-extend.test.ts         | 87 ++++++++++++++++++++++
+ 2 files changed, 90 insertions(+)
 ```
 
 </details>

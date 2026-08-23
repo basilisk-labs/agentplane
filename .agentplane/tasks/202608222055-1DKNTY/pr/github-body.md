@@ -28,8 +28,8 @@ Repair the release-blocking control-plane regression where task scope extend rec
 
 ```text
  .../src/commands/task/scope-extend.command.ts      |  3 +
- .../src/commands/task/scope-extend.test.ts         | 84 ++++++++++++++++++++++
- 2 files changed, 87 insertions(+)
+ .../src/commands/task/scope-extend.test.ts         | 87 ++++++++++++++++++++++
+ 2 files changed, 90 insertions(+)
 ```
 
 </details>
