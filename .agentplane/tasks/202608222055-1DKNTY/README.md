@@ -1,10 +1,11 @@
 ---
 id: "202608222055-1DKNTY"
 title: "Fix task scope extend state-binding option parsing"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -59,6 +60,20 @@ quality_review:
     - "The implementation adds only the scalar-string branch required by the defect and retains the existing array fallback."
     - "Tests cover both supported options for scalar preservation, whitespace normalization, missing-binding rejection, and malformed-digest rejection."
     - "Supervisor verification is green on the synchronized implementation, including focused 25/25, full local CI, docs contracts, critical maximum-assimilation compatibility, Windows 98/98, and significant coverage 101/101."
+token_usage:
+  agent_runs: 7
+  input_tokens: null
+  journal_digest: "sha256:8384525499e9e23dec31b42a9ceaa59772b98ce3de130a9aeba69b52d06799ff"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-23T08:33:45.878Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -815,8 +830,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "8e1cbb202720988526d2f35184edd2599fbb814b"
-  message: "🚧 1DKNTY task: apply external agent result"
+  hash: "c03df2f9c39225c5e1072ee6a805efa9709aebce"
+  message: "🚧 1DKNTY task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -839,6 +854,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 8e1cbb202720. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -917,9 +935,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Synchronized implementation passes the focused parser gate and the complete branch_pr local regression contract."
+  -
+    type: "status"
+    at: "2026-08-23T08:33:45.878Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "c03df2f9c39225c5e1072ee6a805efa9709aebce"
 doc_version: 3
-doc_updated_at: "2026-08-23T08:31:12.807Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-23T08:33:45.887Z"
+doc_updated_by: "CODER"
 description: "Repair the release-blocking control-plane regression where task scope extend receives scalar --state-scope-digest or --state-fingerprint options but optionalStringOption reads only arrays, so the command always rejects the required binding as missing. Change only the parser helper and focused tests. Do not alter scope-extension authority, digest validation, release semantics, context behavior, or Knowledge Assimilation scope."
 sections:
   Summary: |-
@@ -1463,7 +1489,8 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "8e1cbb202720988526d2f35184edd2599fbb814b"
+    hash: "e739baf50acbf346cecd0beb430071ed74d88322"
+    message: "🚧 1DKNTY task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d93e42ccaedd59e77fc17c495a01dc7cde049d0f"
@@ -1703,3 +1730,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/7` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:8384525499e9e23dec31b42a9ceaa59772b98ce3de130a9aeba69b52d06799ff`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-23T08:33:45.878Z`
