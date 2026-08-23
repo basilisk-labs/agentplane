@@ -113,6 +113,25 @@ describe("task scope extend command parsing", () => {
   });
 
   it.each(["--state-scope-digest", "--state-fingerprint"] as const)(
+    "treats whitespace-only %s as missing",
+    (option) => {
+      expect(() =>
+        parseCommandArgv(taskScopeExtendSpec, [
+          "T-1",
+          "--scope-root",
+          "packages/agentplane",
+          "--request-digest",
+          REQUEST_DIGEST,
+          option,
+          "   ",
+          "--by",
+          "USER",
+        ]),
+      ).toThrow("One of --state-scope-digest or --state-fingerprint is required.");
+    },
+  );
+
+  it.each(["--state-scope-digest", "--state-fingerprint"] as const)(
     "continues to reject malformed %s",
     (option) => {
       const base = [

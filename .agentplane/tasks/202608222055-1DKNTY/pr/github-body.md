@@ -15,26 +15,26 @@ Repair the release-blocking control-plane regression where task scope extend rec
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Synchronized implementation passes the focused parser gate and the complete branch_pr local
-regression contract.
+Rework lifecycle evidence: the task-centric WorkItem still carries the superseded failed validation
+receipt and must be recomputed with the strengthened full verification contract.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-22T21:05:41.629Z
+- Updated: 2026-08-23T08:32:00.826Z
 - Branch: task/202608222055-1DKNTY/fix-task-scope-extend-state-binding-option-parsi
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/task/scope-extend.command.ts      |  3 +
- .../src/commands/task/scope-extend.test.ts         | 99 ++++++++++++++++++++++
- 2 files changed, 102 insertions(+)
+ .../src/commands/task/scope-extend.command.ts      |   3 +
+ .../src/commands/task/scope-extend.test.ts         | 118 +++++++++++++++++++++
+ 2 files changed, 121 insertions(+)
 ```
 
 </details>
