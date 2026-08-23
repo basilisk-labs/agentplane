@@ -159,6 +159,7 @@ async function writeStructuredPlanningResult(
   const workOrder = JSON.parse(
     await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
   ) as AgentWorkOrder;
+  if (workOrder.role !== "PLANNER") throw new Error("expected a planner work order");
   const baseline = workOrder.planning_context?.repository_snapshot;
   if (!baseline) throw new Error("expected a planning repository snapshot");
   const criterion = {

@@ -29,8 +29,8 @@ Created: 2026-08-22T21:19:32.900Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...un-cli.core.task-advance.blocked-result.test.ts | 212 +++++++++++++++++++--
- 1 file changed, 192 insertions(+), 20 deletions(-)
+ ...un-cli.core.task-advance.blocked-result.test.ts | 213 +++++++++++++++++++--
+ 1 file changed, 193 insertions(+), 20 deletions(-)
 ```
 
 </details>

@@ -1,0 +1,101 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check d93e42ccaedd59e77fc17c495a01dc7cde049d0f..87b699240f1320337b68be21e0339c3ab7c2651c",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d93e42ccaedd59e77fc17c495a01dc7cde049d0f..87b699240f1320337b68be21e0339c3ab7c2651c",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202608222117-HQ5AA4/README.md",
+        "A\t.agentplane/tasks/202608222117-HQ5AA4/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202608222117-HQ5AA4/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202608222117-HQ5AA4/pr/github-body.md",
+        "A\t.agentplane/tasks/202608222117-HQ5AA4/pr/github-title.txt",
+        "A\t.agentplane/tasks/202608222117-HQ5AA4/pr/meta.json",
+        "A\t.agentplane/tasks/202608222117-HQ5AA4/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "d93e42ccaedd59e77fc17c495a01dc7cde049d0f",
+  "implementation_commit": "87b699240f1320337b68be21e0339c3ab7c2651c",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts",
+      "?? .agentplane/tasks/202608222117-HQ5AA4/README.md",
+      "?? .agentplane/tasks/202608222117-HQ5AA4/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202608222117-HQ5AA4/pr/diffstat.txt",
+      "?? .agentplane/tasks/202608222117-HQ5AA4/pr/github-body.md",
+      "?? .agentplane/tasks/202608222117-HQ5AA4/pr/github-title.txt",
+      "?? .agentplane/tasks/202608222117-HQ5AA4/pr/meta.json",
+      "?? .agentplane/tasks/202608222117-HQ5AA4/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608222117-HQ5AA4/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608222117-HQ5AA4/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608222117-HQ5AA4/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608222117-HQ5AA4/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608222117-HQ5AA4/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608222117-HQ5AA4/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608222117-HQ5AA4/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts",
+      "?? .agentplane/tasks/202608222117-HQ5AA4/README.md",
+      "?? .agentplane/tasks/202608222117-HQ5AA4/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202608222117-HQ5AA4/pr/diffstat.txt",
+      "?? .agentplane/tasks/202608222117-HQ5AA4/pr/github-body.md",
+      "?? .agentplane/tasks/202608222117-HQ5AA4/pr/github-title.txt",
+      "?? .agentplane/tasks/202608222117-HQ5AA4/pr/meta.json",
+      "?? .agentplane/tasks/202608222117-HQ5AA4/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608222117-HQ5AA4"
+}
