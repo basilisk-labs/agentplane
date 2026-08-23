@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:cd8d26e02e0d5c342874b95629040e37a9fdde72bb62a59f6ac21b09849d35fb",
   "pr_number": 4878,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4878",
+  "pre_merge_closure": {
+    "basis_commit": "a379c9c3a0a8fd71e62c865b32d475330e67a07b",
+    "branch": "task/202608230243-BCEYJ9/honor-task-centric-planning-after-material-plan",
+    "pr_number": 4878,
+    "recorded_at": "2026-08-23T04:20:13.215Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
