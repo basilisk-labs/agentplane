@@ -477,7 +477,8 @@ async function runFullFastPath() {
     env: groupEnv,
     timeoutMs: LOCAL_VITEST_SUITE_TIMEOUT_MS,
   }));
-  // Isolate lifecycle-heavy runtime and CLI checks from the core worker pool.
+  // Preserve every selected group and aggregate failure while isolating the
+  // lifecycle-heavy runtime and CLI waves from the concurrent core worker pool.
   const runtimeWave = groups.filter(({ id }) => id === "runtime");
   const coreWave = groups.filter(({ id }) => id !== "runtime" && id !== "cli");
   const cliWave = groups.filter(({ id }) => id === "cli");
