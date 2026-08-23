@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:1a8a016181a8d0007b9b510ffb60f786c0d50619b83580efba936add24a44294",
   "pr_number": 4877,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4877",
+  "pre_merge_closure": {
+    "basis_commit": "0a9b4b0592126aa3609c9be229fb0a39ec9f4db6",
+    "branch": "task/202608230020-TEK7WE/stabilize-full-ci-runtime-claims-under-superviso",
+    "pr_number": 4877,
+    "recorded_at": "2026-08-23T05:06:20.146Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
