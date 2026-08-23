@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check b0acdc09c42a2cc7c2cae676d44dc435fc78e3f3..e98c605f94fe73c797ff3f5e5f9a40b49109211f",
+      "command": "git diff --check e98c605f94fe73c797ff3f5e5f9a40b49109211f..f03aa6a19d188bed8380f6e7862b2e52916317eb",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB b0acdc09c42a2cc7c2cae676d44dc435fc78e3f3..e98c605f94fe73c797ff3f5e5f9a40b49109211f",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB e98c605f94fe73c797ff3f5e5f9a40b49109211f..f03aa6a19d188bed8380f6e7862b2e52916317eb",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,9 +22,9 @@
         "M\t.agentplane/tasks/202608230020-TEK7WE/pr/github-body.md",
         "M\t.agentplane/tasks/202608230020-TEK7WE/pr/meta.json",
         "M\t.agentplane/tasks/202608230020-TEK7WE/pr/review.md",
-        "A\t.agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json",
-        "A\t.agentplane/tasks/202608230020-TEK7WE/supervision/implementation-evidence.json",
-        "A\t.agentplane/tasks/202608230020-TEK7WE/verification/20260823005206045-77d937665c8e467e.json",
+        "M\t.agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json",
+        "M\t.agentplane/tasks/202608230020-TEK7WE/supervision/implementation-evidence.json",
+        "A\t.agentplane/tasks/202608230020-TEK7WE/verification/20260823010402989-021ab2f1cb714180.json",
         "M\tscripts/checks/run-local-ci.mjs"
       ]
     },
@@ -35,8 +35,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "b0acdc09c42a2cc7c2cae676d44dc435fc78e3f3",
-  "implementation_commit": "e98c605f94fe73c797ff3f5e5f9a40b49109211f",
+  "execution_base_commit": "e98c605f94fe73c797ff3f5e5f9a40b49109211f",
+  "implementation_commit": "f03aa6a19d188bed8380f6e7862b2e52916317eb",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
@@ -44,9 +44,9 @@
       " M .agentplane/tasks/202608230020-TEK7WE/pr/github-body.md",
       " M .agentplane/tasks/202608230020-TEK7WE/pr/meta.json",
       " M .agentplane/tasks/202608230020-TEK7WE/pr/review.md",
-      "?? .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202608230020-TEK7WE/supervision/implementation-evidence.json",
-      "?? .agentplane/tasks/202608230020-TEK7WE/verification/20260823005206045-77d937665c8e467e.json"
+      " M .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json",
+      " M .agentplane/tasks/202608230020-TEK7WE/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202608230020-TEK7WE/verification/20260823010402989-021ab2f1cb714180.json"
     ],
     "classification": [
       {
@@ -67,15 +67,15 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json"
+        "line": " M .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608230020-TEK7WE/supervision/implementation-evidence.json"
+        "line": " M .agentplane/tasks/202608230020-TEK7WE/supervision/implementation-evidence.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608230020-TEK7WE/verification/20260823005206045-77d937665c8e467e.json"
+        "line": "?? .agentplane/tasks/202608230020-TEK7WE/verification/20260823010402989-021ab2f1cb714180.json"
       }
     ],
     "final": [],
@@ -85,9 +85,9 @@
       " M .agentplane/tasks/202608230020-TEK7WE/pr/github-body.md",
       " M .agentplane/tasks/202608230020-TEK7WE/pr/meta.json",
       " M .agentplane/tasks/202608230020-TEK7WE/pr/review.md",
-      "?? .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202608230020-TEK7WE/supervision/implementation-evidence.json",
-      "?? .agentplane/tasks/202608230020-TEK7WE/verification/20260823005206045-77d937665c8e467e.json"
+      " M .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json",
+      " M .agentplane/tasks/202608230020-TEK7WE/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202608230020-TEK7WE/verification/20260823010402989-021ab2f1cb714180.json"
     ],
     "unchanged_from_execution_baseline": []
   },
