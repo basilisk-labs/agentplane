@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -267,6 +267,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The sole uncommitted README change is intended supervisor-owned pre-merge closure state and should be preserved and committed by AgentPlane."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The untracked quality files are intended immutable preparation evidence from the failed read-only evaluator operation and should be preserved as task audit artifacts."
 events:
   -
     type: "status"
@@ -386,8 +389,13 @@ events:
     at: "2026-08-23T02:27:06.367Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The sole uncommitted README change is intended supervisor-owned pre-merge closure state and should be preserved and committed by AgentPlane."
+  -
+    type: "comment"
+    at: "2026-08-23T02:30:14.329Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The untracked quality files are intended immutable preparation evidence from the failed read-only evaluator operation and should be preserved as task audit artifacts."
 doc_version: 3
-doc_updated_at: "2026-08-23T02:27:06.400Z"
+doc_updated_at: "2026-08-23T02:30:14.372Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI."
 sections:

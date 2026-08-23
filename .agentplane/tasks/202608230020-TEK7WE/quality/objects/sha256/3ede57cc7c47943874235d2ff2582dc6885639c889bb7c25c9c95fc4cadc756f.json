@@ -1,0 +1,183 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run ci:local:full",
+    "bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "source_code"
+      ],
+      "external_effects": [],
+      "components": [],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane",
+        "scripts"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/runner/usecases/task-run-active-claim.testkit.ts",
+        "scripts/checks/run-local-ci.mjs"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_path:scripts/checks/run-local-ci.mjs"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:208bb1dda376be8336aadebec50ab6fbe7aee21179f8475773a71151ef55d784"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-23T02:24:04.725Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608230020-TEK7WE/verification/20260823022404725-deb411eb622d069a.json",
+      "sha256": "sha256:2a4f8e8558beeded1ee76b890e8bdc3b881fbea5fa2f2ea966798cb59a45f163"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 6fbfb8a7e12ff933542cdaf6902fc7db5dacc1d5..6fb7e346ad633e779c20ea216a39a8410a84d1f3",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 6fbfb8a7e12ff933542cdaf6902fc7db5dacc1d5..6fb7e346ad633e779c20ea216a39a8410a84d1f3",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608230020-TEK7WE/README.md",
+          "M\t.agentplane/tasks/202608230020-TEK7WE/pr/meta.json",
+          "M\t.agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json",
+          "M\t.agentplane/tasks/202608230020-TEK7WE/supervision/implementation-evidence.json",
+          "A\t.agentplane/tasks/202608230020-TEK7WE/verification/20260823020126189-9fb4b1e2f7287807.json",
+          "M\tscripts/checks/run-local-ci.mjs"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "6fbfb8a7e12ff933542cdaf6902fc7db5dacc1d5",
+    "implementation_commit": "6fb7e346ad633e779c20ea216a39a8410a84d1f3",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M .agentplane/tasks/202608230020-TEK7WE/README.md",
+        " M .agentplane/tasks/202608230020-TEK7WE/pr/meta.json",
+        " M .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json",
+        " M .agentplane/tasks/202608230020-TEK7WE/supervision/implementation-evidence.json",
+        "?? .agentplane/tasks/202608230020-TEK7WE/verification/20260823020126189-9fb4b1e2f7287807.json"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608230020-TEK7WE/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608230020-TEK7WE/pr/meta.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608230020-TEK7WE/supervision/implementation-evidence.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608230020-TEK7WE/verification/20260823020126189-9fb4b1e2f7287807.json"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M .agentplane/tasks/202608230020-TEK7WE/README.md",
+        " M .agentplane/tasks/202608230020-TEK7WE/pr/meta.json",
+        " M .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json",
+        " M .agentplane/tasks/202608230020-TEK7WE/supervision/implementation-evidence.json",
+        "?? .agentplane/tasks/202608230020-TEK7WE/verification/20260823020126189-9fb4b1e2f7287807.json"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608230020-TEK7WE",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608230020-TEK7WE/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
