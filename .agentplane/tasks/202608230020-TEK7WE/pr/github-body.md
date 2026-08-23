@@ -22,14 +22,14 @@ Fix the proven coupled full-CI regression with one atomic change: run the runtim
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-23T00:24:36.251Z
+- Updated: 2026-08-23T02:24:37.779Z
 - Branch: task/202608230020-TEK7WE/stabilize-full-ci-runtime-claims-under-superviso
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
  .../usecases/task-run-active-claim.testkit.ts      |  2 +-
- scripts/checks/run-local-ci.mjs                    | 36 ++++++++++++++++------
- 2 files changed, 28 insertions(+), 10 deletions(-)
+ scripts/checks/run-local-ci.mjs                    | 37 ++++++++++++++++------
+ 2 files changed, 29 insertions(+), 10 deletions(-)
 ```
 
 </details>
