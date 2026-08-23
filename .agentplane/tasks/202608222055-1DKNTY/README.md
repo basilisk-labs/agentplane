@@ -4,7 +4,7 @@ title: "Fix task scope extend state-binding option parsing"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -31,6 +31,34 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Synchronized implementation passes the focused parser gate and the complete branch_pr local regression contract."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-23T08:33:16.931Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "e739baf50acbf346cecd0beb430071ed74d88322"
+  blueprint_digest: "9574336aa378a5944fc535219edf746b66f9d84d41afb3d4ed0582e4977fffd4"
+  evidence_refs:
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083204374-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083204374-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/27ab38f809998f96c013c99bef740c809cfd9763e85e03bc3cc7c97756fa011b.md"
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083204374-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083204374-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083204374-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608222055-1DKNTY/README.md"
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/9fabfe99dccec1d1d448a92821e6824d82607b1745fa79e4f2f1b3927494812d.patch"
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/a21d9ed925375205174c6509137b442bc2555379854e5f48eb94db0d67dee8ce.json"
+    - ".agentplane/tasks/202608222055-1DKNTY/verification/20260823083111785-d28f377ed16e7070.json"
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/9b44eac91bc7565b6e17b1e4d45aff1367240d80b61957fcbbec03e8f26456d0.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The implementation adds only the scalar-string branch required by the defect and retains the existing array fallback."
+    - "Tests cover both supported options for scalar preservation, whitespace normalization, missing-binding rejection, and malformed-digest rejection."
+    - "Supervisor verification is green on the synchronized implementation, including focused 25/25, full local CI, docs contracts, critical maximum-assimilation compatibility, Windows 98/98, and significant coverage 101/101."
 execution_route:
   frozen: true
   reason_codes:
