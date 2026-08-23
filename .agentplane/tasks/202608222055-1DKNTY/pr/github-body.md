@@ -15,13 +15,8 @@ Repair the release-blocking control-plane regression where task scope extend rec
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework lifecycle evidence: the task-centric WorkItem still carries the superseded failed validation
-receipt and must be recomputed with the strengthened full verification contract.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
