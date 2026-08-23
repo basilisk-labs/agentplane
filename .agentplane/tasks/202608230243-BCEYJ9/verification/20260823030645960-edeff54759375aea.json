@@ -1,0 +1,116 @@
+{
+  "details": "Command: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608230243-BCEYJ9/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608230243-BCEYJ9 declared verification\n\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000\nResult: fail\nEvidence: .agentplane/tasks/202608230243-BCEYJ9/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608230243-BCEYJ9 declared verification",
+  "digest": "sha256:edeff54759375aea8bbaff8e24dae64e559841b3ae8fe02acda2df9f5cae4cba",
+  "implementation_sha": "3b6d0d1b65b9df4f631874c9953119d2c66534fb",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:9ff2fec34be0124ba0aefbd0f8f1996057548c40d401a0095d51cc4d079de2ca",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:34c8827872b20d1ca81f62824b047dff948d415714c7b55294085d9090476a03",
+      "digest": "sha256:0cc26b21c75d790e2fe19c30974d5088913a9a22191f08f72541c8e31df2feb3",
+      "references": [
+        {
+          "digest": "sha256:2849fd4e00aef3b233c4d584d20c94fd86939e8e6c4456f8e2cf2e104767bd48",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608230243-BCEYJ9/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608230243-BCEYJ9/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:2849fd4e00aef3b233c4d584d20c94fd86939e8e6c4456f8e2cf2e104767bd48",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608230243-BCEYJ9/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608230243-BCEYJ9/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "d93e42ccaedd59e77fc17c495a01dc7cde049d0f",
+      "digest": "sha256:b292ca8a9d01ad3d5b3d1efb9dfbd0a6b0a5f29a8381336a82f31c809c9ad23b",
+      "primary_task_id": "202608230243-BCEYJ9",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608230243-BCEYJ9"
+      ]
+    },
+    "implementation": {
+      "base_sha": "d93e42ccaedd59e77fc17c495a01dc7cde049d0f",
+      "digest": "sha256:dd1176fd6b0136e11fb14ba643c5d49712fc20ee476443325ce60d1175589d3d",
+      "strategy": "branch_diff",
+      "target_sha": "3b6d0d1b65b9df4f631874c9953119d2c66534fb"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:cfcfeed5398c6b5190b073bf6560875503176f518aea1e4f86530865ce21b294",
+    "verify_steps_digest": "sha256:c75fdc21aa15f507992b2352892020ae52b172799d53533a3b96cd21f2f59050"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000",
+  "recorded_at": "2026-08-23T03:06:45.960Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Honor task-centric PLANNING after material plan refinement\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Honor task-centric PLANNING after material plan refinement\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:c75fdc21aa15f507992b2352892020ae52b172799d53533a3b96cd21f2f59050",
+  "task_id": "202608230243-BCEYJ9",
+  "verification_command": "agentplane verify 202608230243-BCEYJ9 --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
