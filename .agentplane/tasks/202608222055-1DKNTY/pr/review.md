@@ -12,8 +12,8 @@ Created: 2026-08-22T21:05:41.629Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework lifecycle evidence: the task-centric WorkItem still carries the superseded failed validation receipt and must be recomputed with the strengthened full verification contract.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
