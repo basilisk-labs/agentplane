@@ -29,9 +29,10 @@ Created: 2026-08-23T02:47:36.459Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../adapters/task-backend/task-centric-backend-adapter.ts | 15 ++++++++++++++-
- .../commands/task/task-centric-external-result.test.ts    |  5 +++++
- 2 files changed, 19 insertions(+), 1 deletion(-)
+ .../task-backend/task-centric-backend-adapter.ts   |  15 +-
+ .../src/cli/run-cli.core.task-advance.test.ts      | 371 +++++++++++++--------
+ .../task/task-centric-external-result.test.ts      |   5 +
+ 3 files changed, 250 insertions(+), 141 deletions(-)
 ```
 
 </details>

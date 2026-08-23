@@ -15,11 +15,12 @@ import {
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
-  mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   mkGitRepoRootWithBranch,
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
+import type { TaskPlanProposal } from "@agentplaneorg/core/tasks";
 
 import {
   agentTransitionId,
@@ -40,6 +41,7 @@ import {
   type ExternalAgentExchange,
   validateExternalAgentResultEnvelope,
 } from "../commands/task/external-agent-exchange.js";
+import { applyExternalPlanningResult } from "../commands/task/external-agent-planning-authority.js";
 
 installRunCliIntegrationHarness();
 
@@ -135,11 +137,98 @@ async function writeCompletedResult(
     residual_risks: string[];
   },
   taskIntent?: AgentSemanticResultTaskIntent,
+  structuredPlan = false,
 ): Promise<string> {
   if (!packet.exchange) throw new Error("expected an external-agent exchange");
   const workOrder = JSON.parse(
     await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
-  ) as { work_order_id: string; role: string };
+  ) as AgentWorkOrderV2;
+  const taskPlanProposal: TaskPlanProposal | undefined = structuredPlan
+    ? {
+        schema_version: 1,
+        task_id: packet.task_id,
+        planning_baseline: workOrder.planning_context!.repository_snapshot,
+        work_items: {
+          schema_version: 1,
+          work_items: [
+            {
+              id: "exercise-external-agent-route",
+              objective: "Exercise the compact external-agent route under the approved test plan.",
+              depends_on: [],
+              required_inputs: [],
+              expected_outputs: ["external-agent-route-result"],
+              scope_roots: ["."],
+              acceptance_criteria: [
+                {
+                  id: "route-converges",
+                  description:
+                    "The requested external-agent route converges through its expected boundary.",
+                  required: true,
+                  check_ids: ["task-check"],
+                },
+              ],
+              validation: {
+                schema_version: 1,
+                criteria: [
+                  {
+                    id: "route-converges",
+                    description:
+                      "The requested external-agent route converges through its expected boundary.",
+                    required: true,
+                    check_ids: ["task-check"],
+                  },
+                ],
+                checks: [
+                  {
+                    id: "task-check",
+                    kind: "deterministic",
+                    required: true,
+                    capability: "task.verify",
+                  },
+                ],
+                evidence_fingerprint:
+                  "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+              },
+              context: {
+                required_sources: [],
+                optional_sources: [],
+                symbol_hints: [],
+                max_bytes: 65_536,
+              },
+              risk: "low",
+              capabilities: ["task.verify"],
+              resource_claims: [{ kind: "workspace", resource: ".", mode: "write" }],
+              optional: false,
+              priority: 1,
+            },
+          ],
+        },
+        assumptions: [],
+        unresolved_questions: [],
+        top_level_validation: {
+          schema_version: 1,
+          criteria: [
+            {
+              id: "route-converges",
+              description:
+                "The requested external-agent route converges through its expected boundary.",
+              required: true,
+              check_ids: ["task-check"],
+            },
+          ],
+          checks: [
+            {
+              id: "task-check",
+              kind: "deterministic",
+              required: true,
+              capability: "task.verify",
+            },
+          ],
+          evidence_fingerprint:
+            "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        },
+      }
+    : undefined;
   const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
   await writeFile(
     resultPath,
@@ -160,6 +249,7 @@ async function writeCompletedResult(
           findings: review ? ["The frozen diff satisfies the approved task intent."] : [],
           uncertainty: [],
           ...(taskIntent ? { task_intent: taskIntent } : {}),
+          ...(taskPlanProposal ? { task_plan_proposal: taskPlanProposal } : {}),
           ...(review ? { review } : {}),
         },
       },
@@ -169,6 +259,47 @@ async function writeCompletedResult(
     "utf8",
   );
   return resultPath;
+}
+
+async function planAndApproveTask(root: string, taskId: string, plan: string): Promise<void> {
+  const command = await loadCommandContext({ cwd: root, rootOverride: root });
+  const task = await command.taskBackend.getTask(taskId);
+  if (!task) throw new Error(`missing fixture task ${taskId}`);
+  const headResult = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+  const head = headResult.stdout.trim();
+  const currentExecutionContext = task.extensions?.task_execution_context as
+    | { base_ref?: string; repository_identity?: string | null }
+    | undefined;
+  await command.taskBackend.writeTask(
+    {
+      ...task,
+      extensions: {
+        ...task.extensions,
+        task_execution_context: {
+          schema_version: 1,
+          base_ref: currentExecutionContext?.base_ref ?? "main",
+          base_sha: head,
+          repository_identity: currentExecutionContext?.repository_identity ?? null,
+        },
+      },
+    },
+    task.revision ? { expectedRevision: task.revision } : undefined,
+  );
+  const planningPacket = await readAgentPacket(root, taskId);
+  expect(planningPacket.authority.role).toBe("PLANNER");
+  const resultPath = await writeCompletedResult(planningPacket, plan, undefined, undefined, true);
+  const planned = await returnAgentResult(root, taskId, resultPath);
+  expect(planned.code, planned.stderr).toBe(0);
+  expect((JSON.parse(planned.stdout) as AgentPacket).action.kind).toBe("approval_required");
+  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+}
+
+async function mkGitRepoRootWithMainCommit(): Promise<string> {
+  const root = await mkGitRepoRootWithBranch("main");
+  await execFileAsync("git", ["commit", "--allow-empty", "-m", "test: seed repository"], {
+    cwd: root,
+  });
+  return root;
 }
 
 async function returnAgentResult(
@@ -196,7 +327,7 @@ async function returnAgentResult(
 
 describe("runCli task advance", { timeout: 180_000 }, () => {
   it("returns one compact planning action without changing repository state", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithMainCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -246,14 +377,14 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
   });
 
   it("accepts one bound planning result and makes an identical replay idempotent", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithMainCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     const taskId = await createTask(root, "Planning result round trip");
     const issued = await readAgentPacket(root, taskId);
     const plan = "1. Update the scoped implementation. 2. Run the declared verification.";
-    const resultPath = await writeCompletedResult(issued, plan);
+    const resultPath = await writeCompletedResult(issued, plan, undefined, undefined, true);
 
     const accepted = await returnAgentResult(root, taskId, resultPath);
     expect(accepted.code, accepted.stderr).toBe(0);
@@ -270,8 +401,8 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
         "plan",
         "approve",
         taskId,
-        "--approval-receipt",
-        "<base64url-receipt>",
+        "--host-user-decision",
+        "<base64url-host-user-decision>",
       ],
     });
     expect(
@@ -287,7 +418,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
   });
 
   it("returns an external wait instead of advertising start-ready for incomplete dependencies", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithMainCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -320,19 +451,11 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     } finally {
       io.restore();
     }
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Implement only after the declared prerequisite is complete.",
-      "--updated-by",
-      "PLANNER",
-      "--root",
+    await planAndApproveTask(
       root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]);
+      taskId,
+      "Implement only after the declared prerequisite is complete.",
+    );
 
     const packet = await readAgentPacket(root, taskId);
 
@@ -350,13 +473,19 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
   });
 
   it("rejects a tampered exchange checkout before applying semantic task state", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithMainCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     const taskId = await createTask(root, "Tampered exchange boundary");
     const packet = await readAgentPacket(root, taskId);
-    const resultPath = await writeCompletedResult(packet, "This plan must not be applied.");
+    const resultPath = await writeCompletedResult(
+      packet,
+      "This plan must not be applied.",
+      undefined,
+      undefined,
+      true,
+    );
     if (!packet.exchange) throw new Error("expected external-agent exchange");
     const exchangePath = path.join(packet.exchange.directory, "exchange.json");
     const exchange = JSON.parse(await readFile(exchangePath, "utf8")) as ExternalAgentExchange;
@@ -377,11 +506,17 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
   });
 
   it("finalizes an accepted result after its effect and supervisor completion were persisted", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const taskId = await createTask(root, "Accepted external result recovery");
     const packet = await readAgentPacket(root, taskId);
     const recoveredPlan = "Use the recovered semantic plan.";
-    const resultPath = await writeCompletedResult(packet, recoveredPlan);
+    const resultPath = await writeCompletedResult(
+      packet,
+      recoveredPlan,
+      undefined,
+      undefined,
+      true,
+    );
     const packetExchange = packet.exchange;
     if (!packetExchange) throw new Error("expected external-agent exchange");
     const envelope = JSON.parse(await readFile(resultPath, "utf8")) as unknown;
@@ -411,19 +546,13 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
       )}\n`,
       "utf8",
     );
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      recoveredPlan,
-      "--updated-by",
-      "PLANNER",
-      "--root",
-      root,
-    ]);
     const command = await loadCommandContext({ cwd: root, rootOverride: root });
+    await applyExternalPlanningResult({
+      command,
+      exchange,
+      envelope: validatedEnvelope,
+      work_order: workOrder,
+    });
     const decision = await buildTaskRouteDecision({
       ctx: command,
       cwd: root,
@@ -504,13 +633,19 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
   });
 
   it("rejects a stale planning result before applying semantic task state", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithMainCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     const taskId = await createTask(root, "Stale planning result");
     const issued = await readAgentPacket(root, taskId);
-    const resultPath = await writeCompletedResult(issued, "This stale plan must not be applied.");
+    const resultPath = await writeCompletedResult(
+      issued,
+      "This stale plan must not be applied.",
+      undefined,
+      undefined,
+      true,
+    );
     await runCliSilent([
       "task",
       "comment",
@@ -534,7 +669,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
   });
 
   it("rejects a read-only evaluator result after a concurrent commit transition", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await cp(
       path.join(process.cwd(), ".agentplane", "policy"),
       path.join(root, ".agentplane", "policy"),
@@ -545,25 +680,19 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     await writeConfig(root, config);
     await writeFile(
       path.join(root, "package.json"),
-      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"' } }, null, 2)}\n`,
+      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"', "ci:local:full": "bun run check" } }, null, 2)}\n`,
       "utf8",
     );
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed evaluator fixture"], { cwd: root });
     const taskId = await createTask(root, "Commit-stale evaluator result", "bun run check");
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Create the scoped implementation before quality review.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed evaluator freshness"], { cwd: root });
+    await planAndApproveTask(
+      root,
+      taskId,
+      "Create the scoped implementation before quality review.",
+    );
     const implementationPacket = await readAgentPacket(root, taskId);
     await writeFile(path.join(root, "implemented.txt"), "implemented\n", "utf8");
     const implementationResult = await writeCompletedResult(
@@ -595,7 +724,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
   }, 30_000);
 
   it("projects the direct runner boundary as the same semantic agent episode", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
@@ -607,19 +736,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
       },
     );
     const taskId = await createTask(root, "Direct semantic packet");
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Implement the scoped change and report evidence.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await planAndApproveTask(root, taskId, "Implement the scoped change and report evidence.");
     const packet = await readAgentPacket(root, taskId);
     expect(packet.action.kind).toBe("agent_episode");
     expect(packet.stop).toEqual({
@@ -637,7 +754,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
   });
 
   it("converges a direct external-agent implementation and evaluator through CLI-owned closeout", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await cp(
       path.join(process.cwd(), ".agentplane", "policy"),
       path.join(root, ".agentplane", "policy"),
@@ -650,25 +767,15 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     await writeConfig(root, config);
     await writeFile(
       path.join(root, "package.json"),
-      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"' } }, null, 2)}\n`,
+      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"', "ci:local:full": "bun run check" } }, null, 2)}\n`,
       "utf8",
     );
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed direct fixture"], { cwd: root });
     const taskId = await createTask(root, "Direct external round trip", "bun run check");
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Create one scoped implementation file and verify it.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed direct external task"], { cwd: root });
+    await planAndApproveTask(root, taskId, "Create one scoped implementation file and verify it.");
 
     const implementationPacket = await readAgentPacket(root, taskId);
     expect(implementationPacket.authority.role).toBe("EXECUTOR");
@@ -704,7 +811,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
   }, 30_000);
 
   it("recovers an accepted implementation after the CLI-owned commit was already created", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await cp(
       path.join(process.cwd(), ".agentplane", "policy"),
       path.join(root, ".agentplane", "policy"),
@@ -717,27 +824,17 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     await writeConfig(root, config);
     await writeFile(
       path.join(root, "package.json"),
-      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"' } }, null, 2)}\n`,
+      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"', "ci:local:full": "bun run check" } }, null, 2)}\n`,
       "utf8",
     );
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed recovery fixture"], { cwd: root });
     const taskId = await createTask(root, "Implementation commit recovery", "bun run check");
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Create one scoped recovery file and verify it.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed implementation recovery"], {
       cwd: root,
     });
+    await planAndApproveTask(root, taskId, "Create one scoped recovery file and verify it.");
 
     const packet = await readAgentPacket(root, taskId);
     await writeFile(path.join(root, "recovered-result.txt"), "implemented\n", "utf8");
@@ -752,12 +849,14 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const recovered = await returnAgentResult(root, taskId, resultPath);
     expect(recovered.code, recovered.stderr).toBe(0);
     const evaluatorPacket = JSON.parse(recovered.stdout) as AgentPacket;
-    expect(evaluatorPacket.authority.role).toBe("EVALUATOR");
+    expect(evaluatorPacket.authority.role, JSON.stringify(evaluatorPacket, null, 2)).toBe(
+      "EVALUATOR",
+    );
     expect(evaluatorPacket.stop.reason).toBe("semantic_boundary");
   }, 30_000);
 
   it("converges branch implementation and evaluator to the protected publication boundary", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithMainCommit();
     await cp(
       path.join(process.cwd(), ".agentplane", "policy"),
       path.join(root, ".agentplane", "policy"),
@@ -770,24 +869,16 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     await writeConfig(root, config);
     await writeFile(
       path.join(root, "package.json"),
-      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"' } }, null, 2)}\n`,
+      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"', "ci:local:full": "bun run check" } }, null, 2)}\n`,
       "utf8",
     );
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     const taskId = await createTask(root, "Branch external round trip", "bun run check");
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Create one scoped branch implementation file and verify it.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
+    await planAndApproveTask(
       root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+      taskId,
+      "Create one scoped branch implementation file and verify it.",
+    );
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed branch external task"], {
       cwd: root,
@@ -859,7 +950,9 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const afterImplementation = await returnAgentResult(taskWorktree, taskId, implementationResult);
     expect(afterImplementation.code, afterImplementation.stderr).toBe(0);
     const evaluatorPacket = JSON.parse(afterImplementation.stdout) as AgentPacket;
-    expect(evaluatorPacket.authority.role).toBe("EVALUATOR");
+    expect(evaluatorPacket.authority.role, JSON.stringify(evaluatorPacket, null, 2)).toBe(
+      "EVALUATOR",
+    );
 
     const evaluatorResult = await writeCompletedResult(
       evaluatorPacket,
@@ -879,24 +972,16 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
   }, 60_000);
 
   it("matches the managed direct-run preview fingerprint and preserves task evidence", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
     const taskId = await createTask(root, "Managed and external direct parity");
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Compare the managed and external supervisor entry from one persisted task state.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
+    await planAndApproveTask(
       root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+      taskId,
+      "Compare the managed and external supervisor entry from one persisted task state.",
+    );
 
     const packet = await readAgentPacket(root, taskId);
     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
@@ -924,30 +1009,36 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
   });
 
   it("fails closed when a branch control-plane path is not authoritative", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithMainCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     const taskId = await createTask(root, "Branch semantic packet");
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Implement the scoped branch change and report evidence.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
+    await planAndApproveTask(
       root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
-    const packet = await readAgentPacket(root, taskId);
+      taskId,
+      "Implement the scoped branch change and report evidence.",
+    );
     const route = await readRoute(root, taskId);
-    expect(packet.action.kind).toBe("framework_transition");
-    expect(packet.stop.reason).toBe("control_plane_boundary");
+    const packet = await readAgentPacket(root, taskId);
+    expect(packet.action.kind).toBe("agent_episode");
+    expect(packet.stop.reason).toBe("semantic_boundary");
     expect(packet.authority.required).toBe(false);
-    expect(packet.state_fingerprint).toBe(route.workflow_step.preconditionFingerprint.digest);
-    expect(route.workflow_step.kind).toBe("cli_operation");
+    expect(packet.authority).toMatchObject({ role: "EXECUTOR", mutation: "scoped_write" });
+    const issuedWorkOrder = JSON.parse(
+      await readFile(
+        path.join(packet.exchange!.directory, packet.exchange!.work_order_ref),
+        "utf8",
+      ),
+    ) as AgentWorkOrderV2;
+    expect(packet.state_fingerprint).toBe(issuedWorkOrder.state_fingerprint.digest);
+    expect(issuedWorkOrder.state_fingerprint.worktree).toContain(
+      path.join(".agentplane", "worktrees", taskId),
+    );
+    expect(route.workflow_step).toMatchObject({
+      id: "worktree.prepare",
+      kind: "cli_operation",
+      authoritativeCheckout: "base_checkout",
+    });
   });
 });
