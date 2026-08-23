@@ -4,7 +4,7 @@ title: "Honor task-centric PLANNING after material plan refinement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -29,6 +29,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-23T04:20:04.712Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "847ca0f9eb0418fa0de00e19480a4293e5c06c83"
+  blueprint_digest: "889b5d6f1dab7d0cdcf260f041861bd2e8afdf9d612d8f19135e4e40102a7489"
+  evidence_refs:
+    - ".agentplane/tasks/202608230243-BCEYJ9/quality/20260823-041411951-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608230243-BCEYJ9/quality/20260823-041411951-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608230243-BCEYJ9/quality/objects/sha256/cdebba926466754e0e6e6e7ad166dd1e4c5fc727c71a8f6915d1ad45075ed7a8.md"
+    - ".agentplane/tasks/202608230243-BCEYJ9/quality/20260823-041411951-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608230243-BCEYJ9/quality/20260823-041411951-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608230243-BCEYJ9/quality/20260823-041411951-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608230243-BCEYJ9/README.md"
+    - ".agentplane/tasks/202608230243-BCEYJ9/quality/objects/sha256/0b1468d8012eedac15d926c6e6190a7ea623f899bde488e94ccd29e0a887778f.patch"
+    - ".agentplane/tasks/202608230243-BCEYJ9/quality/objects/sha256/50b9441994b3b9fa337f23d0c503b5d6764a60cd9ff4c420cc4e315b5870728b.json"
+    - ".agentplane/tasks/202608230243-BCEYJ9/verification/20260823041400739-0eb99e28a787cc75.json"
+    - ".agentplane/tasks/202608230243-BCEYJ9/quality/objects/sha256/e3c28977b57b3b3e037404731df625acd318b66593abe7d9fe31b7cf2e4611ae.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Material plan refinement now persists the compatibility marker in the same backend write as the PLANNING aggregate."
+    - "Focused tests distinguish local amendment from material replan and prove the PLANNER route; committed fixture repositories preserve the existing assertions."
+    - "The CLI-owned full regression gate and focused 19-test gate both passed for implementation SHA 847ca0f9eb0418fa0de00e19480a4293e5c06c83."
+    - "The production diff is confined to task-centric backend reconciliation; the remaining changes are scoped regression-fixture and task evidence updates."
+    - "Residual risk: Hosted integration remains a later PR lifecycle gate and is not yet evidenced by this local semantic review."
 execution_route:
   frozen: true
   reason_codes:
