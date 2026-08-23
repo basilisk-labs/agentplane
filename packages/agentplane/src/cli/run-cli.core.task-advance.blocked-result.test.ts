@@ -151,10 +151,7 @@ async function writeBlockedResult(
   return resultPath;
 }
 
-async function writeStructuredPlanningResult(
-  packet: AgentPacket,
-  plan: string,
-): Promise<string> {
+async function writeStructuredPlanningResult(packet: AgentPacket, plan: string): Promise<string> {
   if (!packet.exchange) throw new Error("expected a planner exchange");
   const workOrder = JSON.parse(
     await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
