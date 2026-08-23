@@ -6,7 +6,7 @@ Created: 2026-08-22T21:19:32.900Z
 
 - Task: `202608222117-HQ5AA4`
 - Title: Migrate blocked-result CLI fixture to structured task plan
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608222117-HQ5AA4/migrate-blocked-result-cli-fixture-to-structured`
 - Canonical task record: `.agentplane/tasks/202608222117-HQ5AA4/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-22T21:19:32.900Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-22T21:19:32.900Z
+- Updated: 2026-08-23T07:51:56.204Z
 - Branch: task/202608222117-HQ5AA4/migrate-blocked-result-cli-fixture-to-structured
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
