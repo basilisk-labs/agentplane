@@ -96,7 +96,7 @@ describe("task scope extend command parsing", () => {
     });
   });
 
-  it("continues to reject missing and malformed state bindings", () => {
+  it("continues to reject a missing state binding", () => {
     const base = [
       "T-1",
       "--scope-root",
@@ -110,14 +110,26 @@ describe("task scope extend command parsing", () => {
     expect(() => parseCommandArgv(taskScopeExtendSpec, base)).toThrow(
       "One of --state-scope-digest or --state-fingerprint is required.",
     );
-    expect(() =>
-      parseCommandArgv(taskScopeExtendSpec, [
-        ...base,
-        "--state-scope-digest",
-        "sha256:not-a-digest",
-      ]),
-    ).toThrow("--state-scope-digest must be an exact sha256:<64 lowercase hex> digest.");
   });
+
+  it.each(["--state-scope-digest", "--state-fingerprint"] as const)(
+    "continues to reject malformed %s",
+    (option) => {
+      const base = [
+        "T-1",
+        "--scope-root",
+        "packages/agentplane",
+        "--request-digest",
+        REQUEST_DIGEST,
+        "--by",
+        "USER",
+      ];
+
+      expect(() =>
+        parseCommandArgv(taskScopeExtendSpec, [...base, option, "sha256:not-a-digest"]),
+      ).toThrow(`${option} must be an exact sha256:<64 lowercase hex> digest.`);
+    },
+  );
 });
 
 const NOW = "2026-08-18T01:00:00.000Z";
