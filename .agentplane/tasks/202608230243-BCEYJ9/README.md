@@ -1,10 +1,11 @@
 ---
 id: "202608230243-BCEYJ9"
 title: "Honor task-centric PLANNING after material plan refinement"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -59,6 +60,20 @@ quality_review:
     - "The CLI-owned full regression gate and focused 19-test gate both passed for implementation SHA 847ca0f9eb0418fa0de00e19480a4293e5c06c83."
     - "The production diff is confined to task-centric backend reconciliation; the remaining changes are scoped regression-fixture and task evidence updates."
     - "Residual risk: Hosted integration remains a later PR lifecycle gate and is not yet evidenced by this local semantic review."
+token_usage:
+  agent_runs: 7
+  input_tokens: null
+  journal_digest: "sha256:6e5848ff48b5d2852b47bd81123bee66f5b42f41f60ebe567be59fb9c69f0793"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-23T04:20:13.087Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -233,8 +248,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "847ca0f9eb0418fa0de00e19480a4293e5c06c83"
-  message: "🚧 BCEYJ9 task: apply external agent result"
+  hash: "a379c9c3a0a8fd71e62c865b32d475330e67a07b"
+  message: "🚧 BCEYJ9 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -251,6 +266,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 847ca0f9eb04. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -315,9 +333,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-23T04:20:13.087Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "a379c9c3a0a8fd71e62c865b32d475330e67a07b"
 doc_version: 3
-doc_updated_at: "2026-08-23T04:14:02.895Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-23T04:20:13.096Z"
+doc_updated_by: "CODER"
 description: "Fix the proven branch supervisor regression where a material external result.plan_refinement moves the task-centric aggregate to PLANNING but the legacy branch route continues through verification, quality review, and finish. After refinement, the next packet must be PLANNER for a revised plan; no closeout may run while a required WorkItem is REWORK_READY. Keep the correction generic and limited to route/supervisor reconciliation plus focused regression tests. Evidence: Task 202608230020-TEK7WE failed pre-merge finish with required_work_item_incomplete:stabilize-runtime-full-ci while aggregate lifecycle=PLANNING and WorkItem state=REWORK_READY."
 sections:
   Summary: |-
@@ -728,7 +754,34 @@ extensions:
       schema_version: 1
       task_id: "202608230243-BCEYJ9"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608230243-BCEYJ9"
+            - "git:847ca0f9eb0418fa0de00e19480a4293e5c06c83"
+          check_id: "check-focused"
+          command_identity: "bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-23T04:14:00.739Z"
+          repository_snapshot_digest: "sha256:8816a800428c50682f92e9ee8847e6d75e66bc4b855c5d257b29b063df4b96e1"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608230243-BCEYJ9"
+            - "git:847ca0f9eb0418fa0de00e19480a4293e5c06c83"
+          check_id: "check-full"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-23T04:14:00.739Z"
+          repository_snapshot_digest: "sha256:8816a800428c50682f92e9ee8847e6d75e66bc4b855c5d257b29b063df4b96e1"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608230243-BCEYJ9"
     intent:
       acceptance_criteria:
@@ -749,7 +802,7 @@ extensions:
 
         Fix the proven branch supervisor regression where a material external result.plan_refinement moves the task-centric aggregate to PLANNING but the legacy branch route continues through verification, quality review, and finish. After refinement, the next packet must be PLANNER for a revised plan; no closeout may run while a required WorkItem is REWORK_READY. Keep the correction generic and limited to route/supervisor reconciliation plus focused regression tests. Evidence: Task 202608230020-TEK7WE failed pre-merge finish with required_work_item_incomplete:stabilize-runtime-full-ci while aggregate lifecycle=PLANNING and WorkItem state=REWORK_READY.
       task_id: "202608230243-BCEYJ9"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -914,9 +967,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608230243-BCEYJ9"
-    revision: 22
+    revision: 25
     schema_version: 1
-    updated_at: "2026-08-23T04:14:06.961Z"
+    updated_at: "2026-08-23T04:20:13.087Z"
     work_items:
       preserve-material-replan-route:
         attempt: 3
@@ -1055,11 +1108,37 @@ extensions:
         previous_revision: 21
         schema_version: 1
         task_id: "202608230243-BCEYJ9"
+      legacy-finish:202608230243-BCEYJ9:2026-08-23T04:14:00.739Z:847ca0f9eb0418fa0de00e19480a4293e5c06c83:
+        aggregate_digest: "sha256:e540522465aabbfe138094801f913ada33fda9b9cd775a1d66f9ecc994eadd2b"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-23T04:20:13.087Z"
+          cause_refs:
+            - "task-verification:202608230243-BCEYJ9"
+            - "git:847ca0f9eb0418fa0de00e19480a4293e5c06c83"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_946bbccdc8b84ab97b1854b9"
+          mutation_id: "legacy-finish:202608230243-BCEYJ9:2026-08-23T04:14:00.739Z:847ca0f9eb0418fa0de00e19480a4293e5c06c83"
+          plan_digest: "sha256:9e3372d1ae56e5d4bb75ba445914751cb302bd040acbef132359d3c0ca0076e4"
+          plan_revision: 2
+          repository_fingerprint: "sha256:8816a800428c50682f92e9ee8847e6d75e66bc4b855c5d257b29b063df4b96e1"
+          schema_version: 1
+          task_id: "202608230243-BCEYJ9"
+          task_revision: 22
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608230243-BCEYJ9:2026-08-23T04:14:00.739Z:847ca0f9eb0418fa0de00e19480a4293e5c06c83"
+        next_revision: 25
+        previous_revision: 24
+        schema_version: 1
+        task_id: "202608230243-BCEYJ9"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "847ca0f9eb0418fa0de00e19480a4293e5c06c83"
+    message: "🚧 BCEYJ9 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d93e42ccaedd59e77fc17c495a01dc7cde049d0f"
@@ -1286,3 +1365,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/7` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:6e5848ff48b5d2852b47bd81123bee66f5b42f41f60ebe567be59fb9c69f0793`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-23T04:20:13.087Z`
