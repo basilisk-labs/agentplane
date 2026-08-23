@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -36,21 +36,21 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-23T08:36:34.561Z"
+  updated_at: "2026-08-23T08:40:25.902Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 2 typed finding(s)."
-  evaluated_sha: "61184d6c1c4123db5d627fffd568a61d4ff0bfe6"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "2c8cb5903f51f08e4903cdfdea33e279d894e626"
   blueprint_digest: "9574336aa378a5944fc535219edf746b66f9d84d41afb3d4ed0582e4977fffd4"
   evidence_refs:
-    - ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083633846-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083633846-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/f979a066a88b66961f98449e087f230f5119b2fb4c4731e1d91a80482e8d2029.md"
-    - ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083633846-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083633846-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083633846-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083948532-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083948532-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/855f44a304ad1e31d47e74f97ce46dc73f973e4831972f7fa5e188aab2d28ecd.md"
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083948532-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083948532-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/20260823-083948532-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608222055-1DKNTY/README.md"
     - ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/9fabfe99dccec1d1d448a92821e6824d82607b1745fa79e4f2f1b3927494812d.patch"
-    - ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/0552d3328cf3e4ec8323f7925b546714dce306ed6589275c29d32afd68ff7146.json"
+    - ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/852c38645aea9a7a7d5dba9965b320c0c805756285dd54506e35769a7306c69a.json"
     - ".agentplane/tasks/202608222055-1DKNTY/verification/20260823083111785-d28f377ed16e7070.json"
     - ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/9b44eac91bc7565b6e17b1e4d45aff1367240d80b61957fcbbec03e8f26456d0.json"
     - ".agentplane/policy/dod.code.md"
@@ -58,8 +58,9 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The production and focused-test diff against current main is unchanged from the passing evaluator review."
-    - "The final additional commit changes only the task-owned README to record DONE closure and token-usage provenance."
+    - "The new commit changes only task-owned lifecycle metadata and adds the full branch_pr verification command."
+    - "The parser implementation remains confined to optionalStringOption and focused tests."
+    - "The complete local CI evidence already demonstrates the newly declared full regression check."
 token_usage:
   agent_runs: 7
   input_tokens: null
@@ -965,7 +966,7 @@ events:
     to: "DOING"
     note: "Recovery: rerun the task-centric WorkItem with the full branch_pr verification contract so the successful validation is recorded in the aggregate."
 doc_version: 3
-doc_updated_at: "2026-08-23T08:39:28.803Z"
+doc_updated_at: "2026-08-23T08:40:25.940Z"
 doc_updated_by: "CODER"
 description: "Repair the release-blocking control-plane regression where task scope extend receives scalar --state-scope-digest or --state-fingerprint options but optionalStringOption reads only arrays, so the command always rejects the required binding as missing. Change only the parser helper and focused tests. Do not alter scope-extension authority, digest validation, release semantics, context behavior, or Knowledge Assimilation scope."
 sections:
