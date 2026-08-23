@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:e2f7fb08cbfb8ca7e1d046127fc7af4436a6bb0004effa1ef7722048c06e0d51",
   "pr_number": 4882,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4882",
+  "pre_merge_closure": {
+    "basis_commit": "479876ac7e57ad1f634464d7f5e741f436d0f44d",
+    "branch": "task/202608222055-1DKNTY/fix-task-scope-extend-state-binding-option-parsi",
+    "pr_number": 4882,
+    "recorded_at": "2026-08-23T08:54:28.330Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

@@ -2,10 +2,10 @@
 id: "202608222055-1DKNTY"
 title: "Fix task scope extend state-binding option parsing"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -62,9 +62,9 @@ quality_review:
     - "The final test addition confirms whitespace-only scalar values for both binding options preserve the existing missing-binding rejection."
     - "Supervisor verification 20260823085159809-031cbd0dc869f87c covers focused checks, critical paths, docs contracts, full regression, and the task outcome."
 token_usage:
-  agent_runs: 7
+  agent_runs: 10
   input_tokens: null
-  journal_digest: "sha256:04d1581810cfbf353e55aa9833f57a67ad50c29c77682875bce655114b8ad3f9"
+  journal_digest: "sha256:00c4290283d4e17b969d1bc888f2248e0b80f513860d5e26733b738242aa06cf"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -74,7 +74,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-23T08:37:58.863Z"
+  updated_at: "2026-08-23T08:54:28.157Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -990,8 +990,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "0b301b5d5ea7180788a57ad15292f448be852d77"
-  message: "🚧 1DKNTY task: apply external agent result"
+  hash: "479876ac7e57ad1f634464d7f5e741f436d0f44d"
+  message: "🚧 1DKNTY task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -1026,6 +1026,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 0b301b5d5ea7. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -1147,9 +1150,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-23T08:54:28.157Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "479876ac7e57ad1f634464d7f5e741f436d0f44d"
 doc_version: 3
-doc_updated_at: "2026-08-23T08:53:38.497Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-23T08:54:28.186Z"
+doc_updated_by: "CODER"
 description: "Repair the release-blocking control-plane regression where task scope extend receives scalar --state-scope-digest or --state-fingerprint options but optionalStringOption reads only arrays, so the command always rejects the required binding as missing. Change only the parser helper and focused tests. Do not alter scope-extension authority, digest validation, release semantics, context behavior, or Knowledge Assimilation scope."
 sections:
   Summary: |-
@@ -1702,7 +1713,45 @@ extensions:
       schema_version: 1
       task_id: "202608222055-1DKNTY"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608222055-1DKNTY"
+            - "git:0b301b5d5ea7180788a57ad15292f448be852d77"
+          check_id: "check-focused"
+          command_identity: "bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-23T08:51:59.809Z"
+          repository_snapshot_digest: "sha256:d2477e856f93d0bffdb052493449ec9e1d9188cac1955fe94b677f0f21dcc0f1"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608222055-1DKNTY"
+            - "git:0b301b5d5ea7180788a57ad15292f448be852d77"
+          check_id: "check-lint"
+          command_identity: "bun run lint:core"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-23T08:51:59.809Z"
+          repository_snapshot_digest: "sha256:d2477e856f93d0bffdb052493449ec9e1d9188cac1955fe94b677f0f21dcc0f1"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608222055-1DKNTY"
+            - "git:0b301b5d5ea7180788a57ad15292f448be852d77"
+          check_id: "check-typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-23T08:51:59.809Z"
+          repository_snapshot_digest: "sha256:d2477e856f93d0bffdb052493449ec9e1d9188cac1955fe94b677f0f21dcc0f1"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608222055-1DKNTY"
     intent:
       acceptance_criteria:
@@ -1728,12 +1777,12 @@ extensions:
 
         Repair the release-blocking control-plane regression where task scope extend receives scalar --state-scope-digest or --state-fingerprint options but optionalStringOption reads only arrays, so the command always rejects the required binding as missing. Change only the parser helper and focused tests. Do not alter scope-extension authority, digest validation, release semantics, context behavior, or Knowledge Assimilation scope.
       task_id: "202608222055-1DKNTY"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 33
+    revision: 36
     schema_version: 1
-    updated_at: "2026-08-23T08:52:06.002Z"
+    updated_at: "2026-08-23T08:54:28.157Z"
     work_items:
       fix-scope-extend-state-binding-parser:
         attempt: 4
@@ -1870,11 +1919,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608222055-1DKNTY"
+      legacy-finish:202608222055-1DKNTY:2026-08-23T08:51:59.809Z:0b301b5d5ea7180788a57ad15292f448be852d77:
+        aggregate_digest: "sha256:a6132ec5eaca18c8f7bacb6e2ee97776ccf0bbac1df1d1853b68743d13f9e13b"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-23T08:54:28.157Z"
+          cause_refs:
+            - "task-verification:202608222055-1DKNTY"
+            - "git:0b301b5d5ea7180788a57ad15292f448be852d77"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e92ee8c810ddfba9921d941e"
+          mutation_id: "legacy-finish:202608222055-1DKNTY:2026-08-23T08:51:59.809Z:0b301b5d5ea7180788a57ad15292f448be852d77"
+          plan_digest: "sha256:83f2ec2944acc0a2b74903e1a6aa7f2dc43f2c937ec1e3edc483997efb525013"
+          plan_revision: 1
+          repository_fingerprint: "sha256:d2477e856f93d0bffdb052493449ec9e1d9188cac1955fe94b677f0f21dcc0f1"
+          schema_version: 1
+          task_id: "202608222055-1DKNTY"
+          task_revision: 33
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608222055-1DKNTY:2026-08-23T08:51:59.809Z:0b301b5d5ea7180788a57ad15292f448be852d77"
+        next_revision: 36
+        previous_revision: 35
+        schema_version: 1
+        task_id: "202608222055-1DKNTY"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "0b301b5d5ea7180788a57ad15292f448be852d77"
+    message: "🚧 1DKNTY task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d93e42ccaedd59e77fc17c495a01dc7cde049d0f"
@@ -2285,12 +2360,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/7` agent runs
+- Completeness: `0/10` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:04d1581810cfbf353e55aa9833f57a67ad50c29c77682875bce655114b8ad3f9`
+- Journal digest: `sha256:00c4290283d4e17b969d1bc888f2248e0b80f513860d5e26733b738242aa06cf`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-23T08:37:58.863Z`
+- Updated at: `2026-08-23T08:54:28.157Z`
