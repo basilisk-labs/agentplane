@@ -75,7 +75,10 @@ describe("task scope extend command parsing", () => {
     });
   });
 
-  it("normalizes a scalar state binding before digest validation", () => {
+  it.each([
+    { option: "--state-scope-digest", value: STATE_SCOPE_DIGEST, key: "stateScopeDigest" },
+    { option: "--state-fingerprint", value: STATE_FINGERPRINT, key: "stateFingerprint" },
+  ] as const)("normalizes scalar $option before digest validation", ({ option, value, key }) => {
     expect(
       parseCommandArgv(taskScopeExtendSpec, [
         "T-1",
@@ -83,13 +86,13 @@ describe("task scope extend command parsing", () => {
         "packages/agentplane",
         "--request-digest",
         REQUEST_DIGEST,
-        "--state-scope-digest",
-        `  ${STATE_SCOPE_DIGEST}  `,
+        option,
+        `  ${value}  `,
         "--by",
         "USER",
       ]),
     ).toMatchObject({
-      parsed: { stateScopeDigest: STATE_SCOPE_DIGEST },
+      parsed: { [key]: value },
     });
   });
 

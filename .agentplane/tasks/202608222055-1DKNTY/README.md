@@ -4,7 +4,7 @@ title: "Fix task scope extend state-binding option parsing"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -192,6 +192,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b254d378910b. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 5f62051f7b62. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -214,8 +217,22 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+  -
+    type: "status"
+    at: "2026-08-23T06:10:35.764Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 5f62051f7b62. CLI accepted one state-bound external-agent semantic result."
+    commit: "5f62051f7b62645eef66ffe804399f247dde27b1"
+  -
+    type: "verify"
+    at: "2026-08-23T06:11:37.909Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
 doc_version: 3
-doc_updated_at: "2026-08-22T21:16:06.612Z"
+doc_updated_at: "2026-08-23T06:11:40.057Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the release-blocking control-plane regression where task scope extend receives scalar --state-scope-digest or --state-fingerprint options but optionalStringOption reads only arrays, so the command always rejects the required binding as missing. Change only the parser helper and focused tests. Do not alter scope-extension authority, digest validation, release semantics, context behavior, or Knowledge Assimilation scope."
 sections:
@@ -243,6 +260,51 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:795ca33800839419991d74106a30222aeb3b8cfbb90bce1b9bb2b7648ac43155, input_digest=sha256:7c1871f8b682a0c063ce8c178dc4d1235c253ecea06f2b8c48a519a1a3324e3a
+
+    Details:
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202608222055-1DKNTY/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608222055-1DKNTY declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608222055-1DKNTY/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608222055-1DKNTY declared verification
+
+    Command: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+    Result: fail
+    Evidence: .agentplane/tasks/202608222055-1DKNTY/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608222055-1DKNTY declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222055-1DKNTY-fix-task-scope-extend-state-binding-option-parsi/.agentplane/tasks/202608222055-1DKNTY/blueprint/resolved-snapshot.json
+    - old_digest: 9574336aa378a5944fc535219edf746b66f9d84d41afb3d4ed0582e4977fffd4
+    - current_digest: 9574336aa378a5944fc535219edf746b66f9d84d41afb3d4ed0582e4977fffd4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608222055-1DKNTY
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-23T06:11:37.909Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:795ca33800839419991d74106a30222aeb3b8cfbb90bce1b9bb2b7648ac43155, input_digest=sha256:e63e5062357655482c500082c59b61023ea941f5e758e6af179d1e4b333f1d67
 
     Details:
 
@@ -481,12 +543,12 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 12
     schema_version: 1
-    updated_at: "2026-08-22T21:16:09.590Z"
+    updated_at: "2026-08-23T06:11:41.163Z"
     work_items:
       fix-scope-extend-state-binding-parser:
-        attempt: 1
+        attempt: 2
         claim_id: null
         id: "fix-scope-extend-state-binding-parser"
         last_failure:
@@ -495,25 +557,25 @@ extensions:
             - "criterion-validation-preserved"
           code: "validation_failed"
           kind: "validation"
-          message: "Fixed task scope extend scalar state-binding parsing and added focused coverage for both supported bindings plus unchanged rejection behavior."
+          message: "The scoped parser implementation is committed at b254d3789; scalar state bindings are preserved and focused regression coverage passes."
           retryable: true
         output_manifests:
           -
-            digest: "sha256:66f48f931c713e003ce6ada3ec6ac303d59799f756187d4f32ae7e13922e9833"
+            digest: "sha256:cb3f7b18913fc6343ea725e7c98c6055ecb628e551bbae79ba0969232f1a898b"
             id: "scope-extend-state-binding-parser-regression-fix"
             kind: "semantic_output"
             producer:
-              attempt: 1
+              attempt: 2
               plan_revision: 1
               task_id: "202608222055-1DKNTY"
               work_item_id: "fix-scope-extend-state-binding-parser"
             provenance:
-              - "sha256:fa632c5be0900c5b34d637448fd6e20071c126c9bf5a1bfefd1bfb9cb1b9c9d4"
+              - "sha256:1589a648f2ddda508ee487b3195b6853ed019409c295d140efeb08a6d9e24e81"
               - ".agentplane/tasks/202608222055-1DKNTY/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:54d74b58a2c055bd248025bd5d687ad6b267af604c7e7ac7dc059db8cdeb3c0c"
+            repository_snapshot_digest: "sha256:07a3ccd5578a238c47d255739cb22529c23de882d332531222781123c1d6649d"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
-        revision: 2
+        revision: 3
         state: "REWORK_READY"
         validation_result:
           evidence:
@@ -524,8 +586,8 @@ extensions:
               command_identity: "bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
               detail: "Declared check failed: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
               exit_code: 1
-              observed_at: "2026-08-22T21:16:09.586Z"
-              repository_snapshot_digest: "sha256:54d74b58a2c055bd248025bd5d687ad6b267af604c7e7ac7dc059db8cdeb3c0c"
+              observed_at: "2026-08-23T06:11:41.159Z"
+              repository_snapshot_digest: "sha256:07a3ccd5578a238c47d255739cb22529c23de882d332531222781123c1d6649d"
               status: "failed"
           schema_version: 1
           stale_evidence: []
@@ -537,6 +599,29 @@ extensions:
     checkpoints: []
     leases: []
     mutation_receipts:
+      external-result:work-order-202608222055-1DKNTY-executor-047f8ec2efb6340c6d1da824:
+        aggregate_digest: "sha256:47fb0e3d1073ac36b697cc16b424026b5e9ac4baee500afde4956288502107e4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-23T06:11:41.163Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_42af8ce5eea44328cc93ab9b"
+          mutation_id: "external-result:work-order-202608222055-1DKNTY-executor-047f8ec2efb6340c6d1da824"
+          plan_digest: "sha256:83f2ec2944acc0a2b74903e1a6aa7f2dc43f2c937ec1e3edc483997efb525013"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608222055-1DKNTY"
+          task_revision: 11
+          to: "REWORK_READY"
+          work_item_id: "fix-scope-extend-state-binding-parser"
+        mutation_id: "external-result:work-order-202608222055-1DKNTY-executor-047f8ec2efb6340c6d1da824"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202608222055-1DKNTY"
       external-result:work-order-202608222055-1DKNTY-executor-aac43a375ebe6cb3a40b5c8c:
         aggregate_digest: "sha256:98f1f2493b4a6a698b77e1a581944b6c69c7337e1c514469ca00df036be41f6e"
         event:
@@ -607,6 +692,51 @@ Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/com
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:795ca33800839419991d74106a30222aeb3b8cfbb90bce1b9bb2b7648ac43155, input_digest=sha256:7c1871f8b682a0c063ce8c178dc4d1235c253ecea06f2b8c48a519a1a3324e3a
+
+Details:
+
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202608222055-1DKNTY/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608222055-1DKNTY declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608222055-1DKNTY/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608222055-1DKNTY declared verification
+
+Command: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+Result: fail
+Evidence: .agentplane/tasks/202608222055-1DKNTY/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608222055-1DKNTY declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222055-1DKNTY-fix-task-scope-extend-state-binding-option-parsi/.agentplane/tasks/202608222055-1DKNTY/blueprint/resolved-snapshot.json
+- old_digest: 9574336aa378a5944fc535219edf746b66f9d84d41afb3d4ed0582e4977fffd4
+- current_digest: 9574336aa378a5944fc535219edf746b66f9d84d41afb3d4ed0582e4977fffd4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608222055-1DKNTY
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-23T06:11:37.909Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:795ca33800839419991d74106a30222aeb3b8cfbb90bce1b9bb2b7648ac43155, input_digest=sha256:e63e5062357655482c500082c59b61023ea941f5e758e6af179d1e4b333f1d67
 
 Details:
 
