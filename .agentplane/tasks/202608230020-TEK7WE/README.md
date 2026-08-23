@@ -4,7 +4,7 @@ title: "Stabilize full CI runtime claims under supervisor load"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -25,10 +25,10 @@ plan_approval:
   note: "Approved under the user-authorized v0.7.8 regression-fix boundary for exact plan digest sha256:4940474adebd93d0fc8c4594d9757cc85c45d919a3220261854743a7e81d4fb7."
 verification:
   state: "needs_rework"
-  updated_at: "2026-08-23T01:32:21.385Z"
+  updated_at: "2026-08-23T02:01:26.189Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 2
+  attempts: 3
 execution_route:
   frozen: true
   reason_codes:
@@ -189,6 +189,12 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 6fbfb8a7e12f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
 events:
   -
     type: "status"
@@ -253,8 +259,29 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-23T01:34:48.233Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 6fbfb8a7e12f. CLI accepted one state-bound external-agent semantic result."
+    commit: "6fbfb8a7e12ff933542cdaf6902fc7db5dacc1d5"
+  -
+    type: "verify"
+    at: "2026-08-23T02:01:26.189Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-23T02:01:40.476Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-08-23T01:32:35.721Z"
+doc_updated_at: "2026-08-23T02:01:40.476Z"
 doc_updated_by: "CODER"
 description: "Fix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI."
 sections:
@@ -352,6 +379,41 @@ sections:
     Attempts: 2
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:bee5cc01f6b0252c159aca7dafd5328867d1ccb1dbd2ac9f2fb7d1a8c2feff00, input_digest=sha256:f834f5c235eb1b5690055692bfee8cce8b3ab1af3d07cf4bdc254f460f33906c
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608230020-TEK7WE declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608230020-TEK7WE-stabilize-full-ci-runtime-claims-under-superviso/.agentplane/tasks/202608230020-TEK7WE/blueprint/resolved-snapshot.json
+    - old_digest: 6c639ae7631ead50ecfbfac60147eb609157b723ba9a67488ee37677848c0840
+    - current_digest: 6c639ae7631ead50ecfbfac60147eb609157b723ba9a67488ee37677848c0840
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608230020-TEK7WE
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-23T02:01:26.189Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 3
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:bee5cc01f6b0252c159aca7dafd5328867d1ccb1dbd2ac9f2fb7d1a8c2feff00, input_digest=sha256:4d32f1cb809dac8767134b2a19b7593cd8192559e53184b2ca2109ea302d64d6
 
     Details:
 
@@ -590,9 +652,9 @@ extensions:
     lifecycle: "PLANNING"
     plan_amendments: []
     plan_history: []
-    revision: 17
+    revision: 22
     schema_version: 1
-    updated_at: "2026-08-23T01:32:30.296Z"
+    updated_at: "2026-08-23T02:01:35.049Z"
     work_items:
       stabilize-runtime-full-ci:
         attempt: 1
@@ -731,6 +793,31 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202608230020-TEK7WE"
+      plan-refinement:work-order-202608230020-TEK7WE-executor-e324ee9957a8968e13124193:
+        aggregate_digest: "sha256:a8915e15d3d0b758ec944675bd200e4e8d5c5ee01bc2a3ac64872d2f49c54619"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-08-23T02:01:35.049Z"
+          cause_refs:
+            - "acceptance_changed"
+            - "architecture_changed"
+          entity: "task"
+          from: "PLANNING"
+          id: "event_9f5409a0507792a20f15c8f7"
+          mutation_id: "plan-refinement:work-order-202608230020-TEK7WE-executor-e324ee9957a8968e13124193"
+          plan_digest: "sha256:4940474adebd93d0fc8c4594d9757cc85c45d919a3220261854743a7e81d4fb7"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608230020-TEK7WE"
+          task_revision: 21
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202608230020-TEK7WE-executor-e324ee9957a8968e13124193"
+        next_revision: 22
+        previous_revision: 21
+        schema_version: 1
+        task_id: "202608230020-TEK7WE"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
@@ -848,6 +935,41 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 2
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:bee5cc01f6b0252c159aca7dafd5328867d1ccb1dbd2ac9f2fb7d1a8c2feff00, input_digest=sha256:f834f5c235eb1b5690055692bfee8cce8b3ab1af3d07cf4bdc254f460f33906c
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608230020-TEK7WE declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608230020-TEK7WE-stabilize-full-ci-runtime-claims-under-superviso/.agentplane/tasks/202608230020-TEK7WE/blueprint/resolved-snapshot.json
+- old_digest: 6c639ae7631ead50ecfbfac60147eb609157b723ba9a67488ee37677848c0840
+- current_digest: 6c639ae7631ead50ecfbfac60147eb609157b723ba9a67488ee37677848c0840
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608230020-TEK7WE
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-23T02:01:26.189Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 3
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:bee5cc01f6b0252c159aca7dafd5328867d1ccb1dbd2ac9f2fb7d1a8c2feff00, input_digest=sha256:4d32f1cb809dac8767134b2a19b7593cd8192559e53184b2ca2109ea302d64d6
 
 Details:
 
