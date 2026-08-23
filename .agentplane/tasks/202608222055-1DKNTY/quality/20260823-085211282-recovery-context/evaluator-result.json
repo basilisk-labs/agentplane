@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The WorkItem validation evidence records the focused combined command with exit_code 0 and no unsatisfied criteria.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/a3adbf6b0d9cff8cf781fb030f4f3ea9642cd2000a22c4a8f8169cff873716a7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The final test addition confirms whitespace-only scalar values for both binding options preserve the existing missing-binding rejection.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/a3adbf6b0d9cff8cf781fb030f4f3ea9642cd2000a22c4a8f8169cff873716a7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Supervisor verification 20260823085159809-031cbd0dc869f87c covers focused checks, critical paths, docs contracts, full regression, and the task outcome.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608222055-1DKNTY/quality/objects/sha256/a3adbf6b0d9cff8cf781fb030f4f3ea9642cd2000a22c4a8f8169cff873716a7.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
