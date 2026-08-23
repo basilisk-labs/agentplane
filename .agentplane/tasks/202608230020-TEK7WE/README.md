@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 38
+revision: 41
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,10 @@ verify:
   - "bun run ci:local:full"
   - "bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000"
 plan_approval:
-  state: "approved"
-  updated_at: "2026-08-23T00:24:25.840Z"
-  updated_by: "USER"
-  note: "Approved under the user-authorized v0.7.8 regression-fix boundary for exact plan digest sha256:4940474adebd93d0fc8c4594d9757cc85c45d919a3220261854743a7e81d4fb7."
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
 verification:
   state: "ok"
   updated_at: "2026-08-23T02:24:04.725Z"
@@ -57,9 +57,9 @@ quality_review:
   findings:
     - "No blocking defect was found: the exact diff preserves every selected CI group and fail aggregation while isolating runtime, core, and CLI into ordered waves; the test-only settlement window is widened to 5000 ms."
 token_usage:
-  agent_runs: 11
+  agent_runs: 13
   input_tokens: null
-  journal_digest: "sha256:6b9b9f0e6d47ae89ec3e53bfdc10721d5a5303480b96ee373cdbf55f0668e0cb"
+  journal_digest: "sha256:8f696ac1a1992463d2472102d90712b0379a00e5073f43527c66199c328b98ce"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -69,7 +69,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-23T02:33:39.277Z"
+  updated_at: "2026-08-23T04:42:56.547Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -227,7 +227,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "task_outcome"
 commit:
-  hash: "d31b68ca4b56e65bc85c68aca45eb91081323348"
+  hash: "a810224e496ecf6a7a75850edc640dfdabc74994"
   message: "🚧 TEK7WE task: record worktree observation"
 comments:
   -
@@ -281,6 +281,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The uncommitted paths are intended CLI-owned artifacts from the freshly prepared and applied EVALUATOR review for the exact current implementation head."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The sole uncommitted README mutation is intended CLI-owned recovery state: it records the failed pre-merge attempt, the same-scope revised plan, pending approval, and the task-centric replan-required marker."
 events:
   -
     type: "status"
@@ -428,8 +434,21 @@ events:
     at: "2026-08-23T04:42:05.670Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The uncommitted paths are intended CLI-owned artifacts from the freshly prepared and applied EVALUATOR review for the exact current implementation head."
+  -
+    type: "status"
+    at: "2026-08-23T04:42:56.547Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "a810224e496ecf6a7a75850edc640dfdabc74994"
+  -
+    type: "comment"
+    at: "2026-08-23T04:44:24.764Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The sole uncommitted README mutation is intended CLI-owned recovery state: it records the failed pre-merge attempt, the same-scope revised plan, pending approval, and the task-centric replan-required marker."
 doc_version: 3
-doc_updated_at: "2026-08-23T04:42:05.699Z"
+doc_updated_at: "2026-08-23T04:44:24.798Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI."
 sections:
@@ -440,7 +459,10 @@ sections:
   Scope: |-
     - In scope: Fix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI.
     - Out of scope: unrelated refactors not required for "Stabilize full CI runtime claims under supervisor load".
-  Plan: "Apply the two coupled, proven regression corrections atomically: isolate runtime before the remaining CI groups and widen only the test settlement observation window."
+  Plan: |-
+    1. Preserve the existing two-file implementation: isolate runtime, then run core and CLI waves with the configured concurrency and keep the active-claim settlement window at 5000 ms.
+    2. Reuse the already recorded focused and full-CI pass evidence to complete WorkItem stabilize-runtime-full-ci through task-centric validation.
+    3. Record fresh evaluator and pre-merge closure evidence for the exact resulting head; do not change implementation scope.
   Verify Steps: |-
     PLANNER fallback scaffold for "Stabilize full CI runtime claims under supervisor load". Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -667,29 +689,6 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
-  agentplane.execution_grant:
-    actor: "USER"
-    approval_evidence_digest: null
-    approval_kind: "manual_operator"
-    capabilities:
-      - "provider.merge"
-      - "provider.pr"
-      - "repository.integrate"
-      - "repository.write"
-      - "task.lifecycle"
-      - "task.scope.extend"
-    completion_contract_digest: "sha256:fba971ef6a121384c40c5fc93d8592325723d6d58911d7f1df7633db663de72c"
-    digest: "sha256:7f2433f7567a947d85e699b99142fb874111cd361fbc31dc71f66510e2605196"
-    grant_id: "d7f091ed-3102-46a3-abb6-cb5f8a1d0257"
-    issued_at: "2026-08-23T00:24:25.840Z"
-    kind: "agentplane.execution_grant"
-    plan_digest: "sha256:e060a1e40eaf3b2f42148aca069e0f6f98b0727f8cb7393f0dbcab2135cd5243"
-    plan_revision: 2
-    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
-    schema_version: 1
-    scope_digest: "sha256:f2597e379e84d7b1cabc5d1fe65f4cdc98cc2387e3b61c1b60d7ce1c79cf0131"
-    status: "active"
-    task_id: "202608230020-TEK7WE"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -936,6 +935,9 @@ extensions:
             - "criterion-runtime-isolated"
             - "criterion-harness-stable"
             - "criterion-groups-preserved"
+  agentplane.task_centric_replan_required:
+    reason_code: "plan_changed"
+    schema_version: 1
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
@@ -1092,7 +1094,9 @@ Fix the proven coupled full-CI regression with one atomic change: run the runtim
 
 ## Plan
 
-Apply the two coupled, proven regression corrections atomically: isolate runtime before the remaining CI groups and widen only the test settlement observation window.
+1. Preserve the existing two-file implementation: isolate runtime, then run core and CLI waves with the configured concurrency and keep the active-claim settlement window at 5000 ms.
+2. Reuse the already recorded focused and full-CI pass evidence to complete WorkItem stabilize-runtime-full-ci through task-centric validation.
+3. Record fresh evaluator and pre-merge closure evidence for the exact resulting head; do not change implementation scope.
 
 ## Verify Steps
 
@@ -1329,12 +1333,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/11` agent runs
+- Completeness: `0/13` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:6b9b9f0e6d47ae89ec3e53bfdc10721d5a5303480b96ee373cdbf55f0668e0cb`
+- Journal digest: `sha256:8f696ac1a1992463d2472102d90712b0379a00e5073f43527c66199c328b98ce`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-23T02:33:39.277Z`
+- Updated at: `2026-08-23T04:42:56.547Z`
