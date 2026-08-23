@@ -1,10 +1,11 @@
 ---
 id: "202608222117-HQ5AA4"
 title: "Migrate blocked-result CLI fixture to structured task plan"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,20 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "No acceptance gap was found: planner role and commit baseline are validated, USER approval is exercised, dirty-worktree resolution remains explicit, exact scope propagation is asserted, and out-of-authority tampering still fails closed."
+token_usage:
+  agent_runs: 8
+  input_tokens: null
+  journal_digest: "sha256:83ff0775f9cb01685a777d1798a6bf52e88909136a6c18e41657b56fde0da6fb"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-23T07:53:10.371Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -834,8 +849,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "565ac9c5e2d3ad5aa87790e8e053d2cdfddc05db"
-  message: "🚧 HQ5AA4 task: apply external agent result"
+  hash: "8d93cb90843d169d8f2d782d7919c2042c5498d8"
+  message: "🚧 HQ5AA4 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -858,6 +873,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 565ac9c5e2d3. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -936,9 +954,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-23T07:53:10.371Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "8d93cb90843d169d8f2d782d7919c2042c5498d8"
 doc_version: 3
-doc_updated_at: "2026-08-23T07:51:02.405Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-23T07:53:10.380Z"
+doc_updated_by: "CODER"
 description: "Repair the proven task-centric regression in packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts: prepareBlockedResultTask seeds and approves only legacy plan text, so task advance re-enters PLANNER and all nine blocked-result cases fail before exercising their intended behavior. Change only this test fixture to install a schema-valid baseline-bound TaskPlanProposal before approval. Do not change production lifecycle, scope-extension semantics, context behavior, release behavior, or Knowledge Assimilation."
 sections:
   Summary: |-
@@ -1396,7 +1422,45 @@ extensions:
       schema_version: 1
       task_id: "202608222117-HQ5AA4"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608222117-HQ5AA4"
+            - "git:371b25cff122dfa322adee23ee677be3e71c53da"
+          check_id: "check-suite"
+          command_identity: "bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-23T07:51:00.003Z"
+          repository_snapshot_digest: "sha256:014d43c0c609d766233be06a8e6245bfddc34dd5a110c0539709b6854f167338"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608222117-HQ5AA4"
+            - "git:371b25cff122dfa322adee23ee677be3e71c53da"
+          check_id: "check-lint"
+          command_identity: "bun run lint:core"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-23T07:51:00.003Z"
+          repository_snapshot_digest: "sha256:014d43c0c609d766233be06a8e6245bfddc34dd5a110c0539709b6854f167338"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608222117-HQ5AA4"
+            - "git:371b25cff122dfa322adee23ee677be3e71c53da"
+          check_id: "check-typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-23T07:51:00.003Z"
+          repository_snapshot_digest: "sha256:014d43c0c609d766233be06a8e6245bfddc34dd5a110c0539709b6854f167338"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608222117-HQ5AA4"
     intent:
       acceptance_criteria:
@@ -1422,12 +1486,12 @@ extensions:
 
         Repair the proven task-centric regression in packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts: prepareBlockedResultTask seeds and approves only legacy plan text, so task advance re-enters PLANNER and all nine blocked-result cases fail before exercising their intended behavior. Change only this test fixture to install a schema-valid baseline-bound TaskPlanProposal before approval. Do not change production lifecycle, scope-extension semantics, context behavior, release behavior, or Knowledge Assimilation.
       task_id: "202608222117-HQ5AA4"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 18
+    revision: 24
     schema_version: 1
-    updated_at: "2026-08-23T07:22:27.472Z"
+    updated_at: "2026-08-23T07:53:10.371Z"
     work_items:
       migrate-blocked-result-plan-fixture:
         attempt: 3
@@ -1541,11 +1605,37 @@ extensions:
         previous_revision: 17
         schema_version: 1
         task_id: "202608222117-HQ5AA4"
+      legacy-finish:202608222117-HQ5AA4:2026-08-23T07:51:00.003Z:371b25cff122dfa322adee23ee677be3e71c53da:
+        aggregate_digest: "sha256:8cd8027b53cdf1861c85848dfc617b4f890883a51406e007c8cfbcdee94dc65c"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-23T07:53:10.371Z"
+          cause_refs:
+            - "task-verification:202608222117-HQ5AA4"
+            - "git:371b25cff122dfa322adee23ee677be3e71c53da"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3af43a4aa055c6b34eaa8c7c"
+          mutation_id: "legacy-finish:202608222117-HQ5AA4:2026-08-23T07:51:00.003Z:371b25cff122dfa322adee23ee677be3e71c53da"
+          plan_digest: "sha256:a5680b8d99a69febdb2fa547ec5cd76cc81c098e70d9b581e29baf972f1b1a77"
+          plan_revision: 1
+          repository_fingerprint: "sha256:014d43c0c609d766233be06a8e6245bfddc34dd5a110c0539709b6854f167338"
+          schema_version: 1
+          task_id: "202608222117-HQ5AA4"
+          task_revision: 18
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608222117-HQ5AA4:2026-08-23T07:51:00.003Z:371b25cff122dfa322adee23ee677be3e71c53da"
+        next_revision: 24
+        previous_revision: 23
+        schema_version: 1
+        task_id: "202608222117-HQ5AA4"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "565ac9c5e2d3ad5aa87790e8e053d2cdfddc05db"
+    hash: "371b25cff122dfa322adee23ee677be3e71c53da"
+    message: "🚧 HQ5AA4 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d93e42ccaedd59e77fc17c495a01dc7cde049d0f"
@@ -1862,3 +1952,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/8` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:83ff0775f9cb01685a777d1798a6bf52e88909136a6c18e41657b56fde0da6fb`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-23T07:53:10.371Z`
