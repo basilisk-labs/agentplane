@@ -1,0 +1,130 @@
+{
+  "details": "Command: bun run lint:core\nResult: pass\nEvidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608222129-K0TGS4 declared verification\n\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608222129-K0TGS4 declared verification\n\nCommand: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-3\nScope: branch_pr task 202608222129-K0TGS4 declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4\nScope: branch_pr task 202608222129-K0TGS4 declared verification",
+  "digest": "sha256:ffa6004086281a750967eed60fd322c14dc3c2450720467ed322252862bcd4f7",
+  "implementation_sha": "0e5a9f2fb5b9eccd5589374159c1122f07e20f24",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:3c84aead3d20f2f0872fda49a1ab833fd3915f47ae95630d09d9e71ef30c28e1",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:810e46f73fd791392b8a8ad339d256c4a0eb661fc811a1a291d944509a895c46",
+      "digest": "sha256:a2eff1257a000585cac9c70fd752b9c82067aa6d39df2a50beeb425bdcf1e35c",
+      "references": [
+        {
+          "digest": "sha256:7c08d2366cad55c4aff58cd40ad45ee385dbc8b4524983f3b8ceb9b7af017bb0",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:7c08d2366cad55c4aff58cd40ad45ee385dbc8b4524983f3b8ceb9b7af017bb0",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:7c08d2366cad55c4aff58cd40ad45ee385dbc8b4524983f3b8ceb9b7af017bb0",
+          "fragment": "check-3",
+          "path": ".agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-3",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:7c08d2366cad55c4aff58cd40ad45ee385dbc8b4524983f3b8ceb9b7af017bb0",
+          "fragment": "check-4",
+          "path": ".agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "d93e42ccaedd59e77fc17c495a01dc7cde049d0f",
+      "digest": "sha256:8bc7dba4afa3a0951f2247879a2cbf95a969df20655e019c7fb8d23a79b4c940",
+      "primary_task_id": "202608222129-K0TGS4",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608222129-K0TGS4"
+      ]
+    },
+    "implementation": {
+      "base_sha": "d93e42ccaedd59e77fc17c495a01dc7cde049d0f",
+      "digest": "sha256:13c367d41f3a96504e8f74df0863e41fa9734027bb833cf322ab01db7c11b10f",
+      "strategy": "branch_diff",
+      "target_sha": "0e5a9f2fb5b9eccd5589374159c1122f07e20f24"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:c29d3d0aaf7c78182ba3b366512ff848a1e51438861f4a858e7fed98d254b24e",
+    "verify_steps_digest": "sha256:6f77b1b0129bfc574a95ac951d0f5ee37724e88534039e4c968157b107b76e2a"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-08-22T22:14:52.144Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Propagate approved scope extension into task-centric WorkItem plan\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Propagate approved scope extension into task-centric WorkItem plan\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:6f77b1b0129bfc574a95ac951d0f5ee37724e88534039e4c968157b107b76e2a",
+  "task_id": "202608222129-K0TGS4",
+  "verification_command": "agentplane verify 202608222129-K0TGS4 --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
