@@ -477,13 +477,23 @@ async function runFullFastPath() {
     env: groupEnv,
     timeoutMs: LOCAL_VITEST_SUITE_TIMEOUT_MS,
   }));
-  const groupConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, groups.length);
-  const result = await runVerificationGroups(groups, {
-    concurrency: groupConcurrency,
+  const runtimeWave = groups.filter(({ id }) => id === "runtime");
+  const remainingWave = groups.filter(({ id }) => id !== "runtime");
+  const runtimeConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, runtimeWave.length);
+  const remainingConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, remainingWave.length);
+  const runtimeResult = await runVerificationGroups(runtimeWave, {
+    concurrency: runtimeConcurrency,
     cwd: process.cwd(),
     env: baseEnv,
   });
-  renderVerificationGroupResults(result.results);
+  const remainingResult = await runVerificationGroups(remainingWave, {
+    concurrency: remainingConcurrency,
+    cwd: process.cwd(),
+    env: baseEnv,
+  });
+  const results = [...runtimeResult.results, ...remainingResult.results];
+  const ok = runtimeResult.ok && remainingResult.ok;
+  renderVerificationGroupResults(results);
   process.stdout.write(
     `${JSON.stringify({
       schema_version: 1,
@@ -491,13 +501,13 @@ async function runFullFastPath() {
       route: "full-fast",
       wall_clock_ms: Math.round(performance.now() - startedAt),
       selected_groups: groups.length + 1,
-      executed_groups: result.results.length + buildResult.results.length,
-      parallel_group_concurrency: groupConcurrency,
+      executed_groups: results.length + buildResult.results.length,
+      parallel_group_concurrency: Math.max(runtimeConcurrency, remainingConcurrency),
       build_invocations: 1,
-      ok: result.ok,
+      ok,
     })}\n`,
   );
-  if (!result.ok) throw new Error("Full verification group failed.");
+  if (!ok) throw new Error("Full verification group failed.");
 }
 
 function renderVerificationGroupResults(results) {
