@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 739745da57bf8dbd87412ac81eb4df55b4114810..2123d51f75ab6eb4745702227d9bf95edf645c23",
+      "command": "git diff --check 2123d51f75ab6eb4745702227d9bf95edf645c23..847ca0f9eb0418fa0de00e19480a4293e5c06c83",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 739745da57bf8dbd87412ac81eb4df55b4114810..2123d51f75ab6eb4745702227d9bf95edf645c23",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2123d51f75ab6eb4745702227d9bf95edf645c23..847ca0f9eb0418fa0de00e19480a4293e5c06c83",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,7 +24,7 @@
         "M\t.agentplane/tasks/202608230243-BCEYJ9/pr/review.md",
         "M\t.agentplane/tasks/202608230243-BCEYJ9/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202608230243-BCEYJ9/supervision/implementation-evidence.json",
-        "A\t.agentplane/tasks/202608230243-BCEYJ9/verification/20260823033703554-aee95c74d36d3a32.json",
+        "A\t.agentplane/tasks/202608230243-BCEYJ9/verification/20260823035419332-e43dd9ad69de8aca.json",
         "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
       ]
     },
@@ -35,8 +35,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "739745da57bf8dbd87412ac81eb4df55b4114810",
-  "implementation_commit": "2123d51f75ab6eb4745702227d9bf95edf645c23",
+  "execution_base_commit": "2123d51f75ab6eb4745702227d9bf95edf645c23",
+  "implementation_commit": "847ca0f9eb0418fa0de00e19480a4293e5c06c83",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
@@ -46,7 +46,7 @@
       " M .agentplane/tasks/202608230243-BCEYJ9/pr/review.md",
       " M .agentplane/tasks/202608230243-BCEYJ9/supervision/declared-checks.json",
       " M .agentplane/tasks/202608230243-BCEYJ9/supervision/implementation-evidence.json",
-      "?? .agentplane/tasks/202608230243-BCEYJ9/verification/20260823033703554-aee95c74d36d3a32.json"
+      "?? .agentplane/tasks/202608230243-BCEYJ9/verification/20260823035419332-e43dd9ad69de8aca.json"
     ],
     "classification": [
       {
@@ -75,7 +75,7 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608230243-BCEYJ9/verification/20260823033703554-aee95c74d36d3a32.json"
+        "line": "?? .agentplane/tasks/202608230243-BCEYJ9/verification/20260823035419332-e43dd9ad69de8aca.json"
       }
     ],
     "final": [],
@@ -87,7 +87,7 @@
       " M .agentplane/tasks/202608230243-BCEYJ9/pr/review.md",
       " M .agentplane/tasks/202608230243-BCEYJ9/supervision/declared-checks.json",
       " M .agentplane/tasks/202608230243-BCEYJ9/supervision/implementation-evidence.json",
-      "?? .agentplane/tasks/202608230243-BCEYJ9/verification/20260823033703554-aee95c74d36d3a32.json"
+      "?? .agentplane/tasks/202608230243-BCEYJ9/verification/20260823035419332-e43dd9ad69de8aca.json"
     ],
     "unchanged_from_execution_baseline": []
   },
