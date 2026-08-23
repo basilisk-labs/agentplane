@@ -1,10 +1,11 @@
 ---
 id: "202608222129-K0TGS4"
 title: "Propagate approved scope extension into task-centric WorkItem plan"
-status: "DOING"
+result_summary: "Merged via PR #4879."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -59,6 +60,20 @@ quality_review:
     - "The approved revision is bound to the exact scope-extension request digest and archives the prior revision."
     - "Only the uniquely schedulable WorkItem receives added scope roots and write claims; ambiguity throws E_VALIDATION."
     - "The unselected WorkItem and aggregate runtime are preserved, with focused regression coverage and a passing full CI record."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-23T06:55:16.559Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -263,7 +278,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "35ab4a6e540f1e85c77144f1812d2de5155db25c"
+  hash: "3a161c2c9c9a3c5b56d4fdf589db576a98d59daf"
   message: "🚧 K0TGS4 task: apply external agent result"
 comments:
   -
@@ -299,6 +314,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 35ab4a6e540f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #4879 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -401,9 +419,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-23T06:55:16.559Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #4879 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+    commit: "3a161c2c9c9a3c5b56d4fdf589db576a98d59daf"
 doc_version: 3
-doc_updated_at: "2026-08-23T06:37:33.035Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-23T06:55:16.584Z"
+doc_updated_by: "INTEGRATOR"
 description: "Repair the proven task-centric regression where task scope extend updates the legacy execution contract but the next executor work order still uses the old current_plan WorkItem scope_roots. On exact state-bound USER approval, create and approve a new TaskPlanRevision that monotonically extends only the uniquely selected WorkItem scope, preserves all other WorkItems and runtime state, archives the prior revision, and leaves production behavior unchanged otherwise. Add focused unit coverage. Do not redesign planning, authority, context, release, or Knowledge Assimilation."
 sections:
   Summary: |-
@@ -898,7 +924,45 @@ extensions:
       schema_version: 1
       task_id: "202608222129-K0TGS4"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608222129-K0TGS4"
+            - "git:3a161c2c9c9a3c5b56d4fdf589db576a98d59daf"
+          check_id: "check-focused"
+          command_identity: "bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-23T06:37:30.978Z"
+          repository_snapshot_digest: "sha256:fb40f417bc5035600766c227df3f021c9fff5e4867c5fad1b13ce2bafaafcde0"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608222129-K0TGS4"
+            - "git:3a161c2c9c9a3c5b56d4fdf589db576a98d59daf"
+          check_id: "check-lint"
+          command_identity: "bun run lint:core"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-23T06:37:30.978Z"
+          repository_snapshot_digest: "sha256:fb40f417bc5035600766c227df3f021c9fff5e4867c5fad1b13ce2bafaafcde0"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608222129-K0TGS4"
+            - "git:3a161c2c9c9a3c5b56d4fdf589db576a98d59daf"
+          check_id: "check-typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-23T06:37:30.978Z"
+          repository_snapshot_digest: "sha256:fb40f417bc5035600766c227df3f021c9fff5e4867c5fad1b13ce2bafaafcde0"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608222129-K0TGS4"
     intent:
       acceptance_criteria:
@@ -924,12 +988,12 @@ extensions:
 
         Repair the proven task-centric regression where task scope extend updates the legacy execution contract but the next executor work order still uses the old current_plan WorkItem scope_roots. On exact state-bound USER approval, create and approve a new TaskPlanRevision that monotonically extends only the uniquely selected WorkItem scope, preserves all other WorkItems and runtime state, archives the prior revision, and leaves production behavior unchanged otherwise. Add focused unit coverage. Do not redesign planning, authority, context, release, or Knowledge Assimilation.
       task_id: "202608222129-K0TGS4"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 29
     schema_version: 1
-    updated_at: "2026-08-22T21:55:18.719Z"
+    updated_at: "2026-08-23T06:55:16.559Z"
     work_items:
       propagate-scope-to-workitem-plan:
         attempt: 1
@@ -995,6 +1059,31 @@ extensions:
         mutation_id: "external-result:work-order-202608222129-K0TGS4-executor-ff8d165a7988281fb19d4d99"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202608222129-K0TGS4"
+      legacy-finish:202608222129-K0TGS4:2026-08-23T06:37:30.978Z:3a161c2c9c9a3c5b56d4fdf589db576a98d59daf:
+        aggregate_digest: "sha256:e429f14d0d6749b353af432986cf8219ea55a3e18100f32aedbe127d30f63063"
+        event:
+          actor_id: "INTEGRATOR"
+          at: "2026-08-23T06:55:16.559Z"
+          cause_refs:
+            - "task-verification:202608222129-K0TGS4"
+            - "git:3a161c2c9c9a3c5b56d4fdf589db576a98d59daf"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_dc5f0297d69b9fa389cadc68"
+          mutation_id: "legacy-finish:202608222129-K0TGS4:2026-08-23T06:37:30.978Z:3a161c2c9c9a3c5b56d4fdf589db576a98d59daf"
+          plan_digest: "sha256:351e69e3ef67b67702ce9037394f34a08eeeb6a8dfbf1e5e1aaa30e6ea8c6636"
+          plan_revision: 1
+          repository_fingerprint: "sha256:fb40f417bc5035600766c227df3f021c9fff5e4867c5fad1b13ce2bafaafcde0"
+          schema_version: 1
+          task_id: "202608222129-K0TGS4"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608222129-K0TGS4:2026-08-23T06:37:30.978Z:3a161c2c9c9a3c5b56d4fdf589db576a98d59daf"
+        next_revision: 29
+        previous_revision: 28
         schema_version: 1
         task_id: "202608222129-K0TGS4"
     pending_effects: []
@@ -1354,3 +1443,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-23T06:55:16.559Z`

@@ -1,10 +1,15 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-08-23T06:54:31Z",
   "base": "main",
   "branch": "task/202608222129-K0TGS4/propagate-approved-scope-extension-into-task-cen",
   "created_at": "2026-08-22T21:31:27.901Z",
   "diffstat_sha256": "sha256:c47235a1bfb89da2ba340198d48edc81e29c53cfc439ae19889b8de129562b73",
   "last_verified_at": "2026-08-23T06:37:30.978Z",
   "last_verified_diffstat_sha256": "sha256:c47235a1bfb89da2ba340198d48edc81e29c53cfc439ae19889b8de129562b73",
+  "merge_commit": "3a161c2c9c9a3c5b56d4fdf589db576a98d59daf",
+  "merge_strategy": "merge",
+  "merged_at": "2026-08-23T06:54:31Z",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -14,8 +19,9 @@
     "target_project": "basilisk-labs/agentplane"
   },
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202608222129-K0TGS4",
-  "updated_at": "2026-08-22T21:31:27.901Z",
+  "updated_at": "2026-08-23T06:54:31Z",
   "verify": {
     "status": "pass"
   }
