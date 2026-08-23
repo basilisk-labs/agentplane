@@ -1,0 +1,116 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608230020-TEK7WE Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608230020-TEK7WE Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608230020-TEK7WE Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608230020-TEK7WE Verification Contract check critical_paths (2/2)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608230020-TEK7WE Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608230020-TEK7WE Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608230020-TEK7WE Verification Contract check task_outcome (2/2)",
+  "digest": "sha256:798d1c35df0e1bc17391b01c2fe541e12b9c28ef73799fc3477a23c63b69c724",
+  "implementation_sha": "6fb7e346ad633e779c20ea216a39a8410a84d1f3",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:2a47ba8cdb820becdc61359adb2c201b52405871e7b4b1a20a16811953389e8a",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:465d4865cb12ca2943a88f31e92823c2d5ee84743e7f011f8a42293e65b7cad1",
+      "digest": "sha256:7fe08e68b18b037b5ff44e1f219c194b9084f3f137bca2802f195fdb7e6a42eb",
+      "references": [
+        {
+          "digest": "sha256:9c5d126938bc0824b6aa739434283a70aae11ded11dab61ed258f79a5159b5a9",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:9c5d126938bc0824b6aa739434283a70aae11ded11dab61ed258f79a5159b5a9",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "d93e42ccaedd59e77fc17c495a01dc7cde049d0f",
+      "digest": "sha256:ff9c3891eb9f8d1e946613cbc06e770fbfc76ebd593ad501cf9106842eefaca1",
+      "primary_task_id": "202608230020-TEK7WE",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608230020-TEK7WE"
+      ]
+    },
+    "implementation": {
+      "base_sha": "d93e42ccaedd59e77fc17c495a01dc7cde049d0f",
+      "digest": "sha256:91fce4080b9a02f10252b74b6c37b14316f8a92203b0861bf944c97f97437e44",
+      "strategy": "branch_diff",
+      "target_sha": "6fb7e346ad633e779c20ea216a39a8410a84d1f3"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:208bb1dda376be8336aadebec50ab6fbe7aee21179f8475773a71151ef55d784",
+    "verify_steps_digest": "sha256:bee5cc01f6b0252c159aca7dafd5328867d1ccb1dbd2ac9f2fb7d1a8c2feff00"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-23T05:01:49.198Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Stabilize full CI runtime claims under supervisor load\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Stabilize full CI runtime claims under supervisor load\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:bee5cc01f6b0252c159aca7dafd5328867d1ccb1dbd2ac9f2fb7d1a8c2feff00",
+  "task_id": "202608230020-TEK7WE",
+  "verification_command": "agentplane verify 202608230020-TEK7WE --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

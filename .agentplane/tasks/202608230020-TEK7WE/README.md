@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 45
+revision: 49
 origin:
   system: "manual"
 depends_on: []
@@ -26,7 +26,7 @@ plan_approval:
   note: "Approved under the user-authorized v0.7.8 regression-only boundary for exact recovery plan digest sha256:cc9f0ffa446112eb5a1b2ccf6d97046a273732e3cccb4d896c94955e6e9a14e0."
 verification:
   state: "ok"
-  updated_at: "2026-08-23T02:24:04.725Z"
+  updated_at: "2026-08-23T05:01:49.198Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
@@ -231,8 +231,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "task_outcome"
 commit:
-  hash: "a810224e496ecf6a7a75850edc640dfdabc74994"
-  message: "🚧 TEK7WE task: record worktree observation"
+  hash: "c99fd04ea52e2fee63be0bd74160b51b36fcf44a"
+  message: "🚧 TEK7WE task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -294,6 +294,9 @@ comments:
   -
     author: "CODER"
     body: "Recovery: reopen legacy status to match task-centric lifecycle PLANNING and required WorkItem stabilize-runtime-full-ci=REWORK_READY after the pre-merge completion gate rejected the stale aggregate."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: c99fd04ea52e. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -461,9 +464,23 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Recovery: reopen legacy status to match task-centric lifecycle PLANNING and required WorkItem stabilize-runtime-full-ci=REWORK_READY after the pre-merge completion gate rejected the stale aggregate."
+  -
+    type: "status"
+    at: "2026-08-23T04:54:48.011Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: c99fd04ea52e. CLI accepted one state-bound external-agent semantic result."
+    commit: "c99fd04ea52e2fee63be0bd74160b51b36fcf44a"
+  -
+    type: "verify"
+    at: "2026-08-23T05:01:49.198Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-23T04:48:08.078Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-23T05:01:51.784Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI."
 sections:
   Summary: |-
@@ -688,6 +705,78 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-23T05:01:49.198Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:bee5cc01f6b0252c159aca7dafd5328867d1ccb1dbd2ac9f2fb7d1a8c2feff00, input_digest=sha256:5baba36a9d4780cf8b4d6a99022e40800460ad4132fe881d04eb8d55310dcf1b
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608230020-TEK7WE Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+    Result: pass
+    Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608230020-TEK7WE Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608230020-TEK7WE Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+    Result: pass
+    Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608230020-TEK7WE Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608230020-TEK7WE Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608230020-TEK7WE Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+    Result: pass
+    Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608230020-TEK7WE Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608230020-TEK7WE-stabilize-full-ci-runtime-claims-under-superviso/.agentplane/tasks/202608230020-TEK7WE/blueprint/resolved-snapshot.json
+    - old_digest: 6c639ae7631ead50ecfbfac60147eb609157b723ba9a67488ee37677848c0840
+    - current_digest: 6c639ae7631ead50ecfbfac60147eb609157b723ba9a67488ee37677848c0840
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608230020-TEK7WE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608230020-TEK7WE
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1061,23 +1150,86 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608230020-TEK7WE"
-    revision: 28
+    revision: 49
     schema_version: 1
-    updated_at: "2026-08-23T04:47:13.027Z"
+    updated_at: "2026-08-23T05:01:56.135Z"
     work_items:
       stabilize-runtime-full-ci:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "stabilize-runtime-full-ci"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:3f1cd861e900174bf557e40f25cac33d31076fd5a627d5afca4cc3dbc8d9e28c"
+            id: "stable-supervisor-full-ci-runtime-claims"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608230020-TEK7WE"
+              work_item_id: "stabilize-runtime-full-ci"
+            provenance:
+              - "sha256:1d23a3cf75e9a3e9528f54dd58a2d2285b8eecfd8f923119e7fa7bc79ff730ab"
+              - ".agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:475c6baa7db93196142be8796814a2d8158f5be13b1e9a214370b8af9dfdf299"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json"
+              check_id: "check-focused"
+              command_identity: "bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000"
+              detail: "Observed by bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000."
+              exit_code: 0
+              observed_at: "2026-08-23T05:01:56.129Z"
+              repository_snapshot_digest: "sha256:475c6baa7db93196142be8796814a2d8158f5be13b1e9a214370b8af9dfdf299"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json"
+              check_id: "check-full"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-23T05:01:56.129Z"
+              repository_snapshot_digest: "sha256:475c6baa7db93196142be8796814a2d8158f5be13b1e9a214370b8af9dfdf299"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
     mutation_receipts:
+      external-result:work-order-202608230020-TEK7WE-executor-8d203516852ab0e8e211afa8:
+        aggregate_digest: "sha256:82f94ae2c3bbbb34ecc5479ad89690cf1afff3682c9c21b753855043d9ac4ee3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-23T05:01:56.135Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_91fc6b7666231ede8c6ae1c0"
+          mutation_id: "external-result:work-order-202608230020-TEK7WE-executor-8d203516852ab0e8e211afa8"
+          plan_digest: "sha256:cc9f0ffa446112eb5a1b2ccf6d97046a273732e3cccb4d896c94955e6e9a14e0"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608230020-TEK7WE"
+          task_revision: 48
+          to: "COMPLETED"
+          work_item_id: "stabilize-runtime-full-ci"
+        mutation_id: "external-result:work-order-202608230020-TEK7WE-executor-8d203516852ab0e8e211afa8"
+        next_revision: 49
+        previous_revision: 48
+        schema_version: 1
+        task_id: "202608230020-TEK7WE"
       external-result:work-order-202608230020-TEK7WE-executor-efc883aaf818772dd09d4102:
         aggregate_digest: "sha256:13ec1e344bc96c5d24258dd97d413f2f70a1df2ef99b1526558156679c492002"
         event:
@@ -1205,8 +1357,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "6fb7e346ad633e779c20ea216a39a8410a84d1f3"
-    message: "🚧 TEK7WE task: apply external agent result"
+    hash: "c99fd04ea52e2fee63be0bd74160b51b36fcf44a"
   task_execution_context:
     base_ref: "main"
     base_sha: "d93e42ccaedd59e77fc17c495a01dc7cde049d0f"
@@ -1449,6 +1600,78 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-23T05:01:49.198Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:bee5cc01f6b0252c159aca7dafd5328867d1ccb1dbd2ac9f2fb7d1a8c2feff00, input_digest=sha256:5baba36a9d4780cf8b4d6a99022e40800460ad4132fe881d04eb8d55310dcf1b
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608230020-TEK7WE Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+Result: pass
+Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608230020-TEK7WE Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608230020-TEK7WE Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+Result: pass
+Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608230020-TEK7WE Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608230020-TEK7WE Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608230020-TEK7WE Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+Result: pass
+Evidence: .agentplane/tasks/202608230020-TEK7WE/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608230020-TEK7WE Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608230020-TEK7WE-stabilize-full-ci-runtime-claims-under-superviso/.agentplane/tasks/202608230020-TEK7WE/blueprint/resolved-snapshot.json
+- old_digest: 6c639ae7631ead50ecfbfac60147eb609157b723ba9a67488ee37677848c0840
+- current_digest: 6c639ae7631ead50ecfbfac60147eb609157b723ba9a67488ee37677848c0840
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608230020-TEK7WE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608230020-TEK7WE
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
