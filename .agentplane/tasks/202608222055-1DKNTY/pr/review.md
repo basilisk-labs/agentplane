@@ -29,7 +29,9 @@ Created: 2026-08-22T21:05:41.629Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/task/scope-extend.command.ts      |  3 +
+ .../src/commands/task/scope-extend.test.ts         | 84 ++++++++++++++++++++++
+ 2 files changed, 87 insertions(+)
 ```
 
 </details>

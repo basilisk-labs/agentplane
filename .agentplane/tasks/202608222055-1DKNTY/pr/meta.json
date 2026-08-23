@@ -2,8 +2,9 @@
   "base": "main",
   "branch": "task/202608222055-1DKNTY/fix-task-scope-extend-state-binding-option-parsi",
   "created_at": "2026-08-22T21:05:41.629Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:fd89bcc0b1394e0df5590fb6547951a21662dba2d2404cde8b9ac7a3d35f06fd",
+  "last_verified_at": "2026-08-22T21:16:00.053Z",
+  "last_verified_diffstat_sha256": "sha256:d7831eb1e13e612f81cf4e699598f239b705d6eaff1e468d0709bc397c27018a",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202608222055-1DKNTY",
   "updated_at": "2026-08-22T21:05:41.629Z",
   "verify": {
-    "status": "skipped"
+    "status": "fail"
   }
 }

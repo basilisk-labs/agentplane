@@ -1,0 +1,3 @@
+ .../src/commands/task/scope-extend.command.ts      |  3 +
+ .../src/commands/task/scope-extend.test.ts         | 84 ++++++++++++++++++++++
+ 2 files changed, 87 insertions(+)
