@@ -4,6 +4,11 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 import { validateSupervisorExecutionEpisodeJournal } from "@agentplaneorg/core/schemas";
+import {
+  taskCentricDigest,
+  type RepositorySnapshot,
+  type TaskPlanProposal,
+} from "@agentplaneorg/core/tasks";
 
 import {
   captureStdIO,
@@ -44,6 +49,12 @@ type AgentPacket = {
   };
   stop: { reason: string; resume: string };
   operator_action?: { argv: string[] };
+};
+
+type AgentWorkOrder = {
+  work_order_id: string;
+  role: string;
+  planning_context?: { repository_snapshot: RepositorySnapshot };
 };
 
 async function createTask(root: string, title: string): Promise<string> {
@@ -96,7 +107,7 @@ async function writeBlockedResult(
   if (!packet.exchange) throw new Error("expected an external-agent exchange");
   const workOrder = JSON.parse(
     await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
-  ) as { work_order_id: string; role: string };
+  ) as AgentWorkOrder;
   const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
   await writeFile(
     resultPath,
@@ -130,6 +141,153 @@ async function writeBlockedResult(
                 }
               : {}),
           },
+        },
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+  return resultPath;
+}
+
+async function writeStructuredPlanningResult(
+  packet: AgentPacket,
+  plan: string,
+): Promise<string> {
+  if (!packet.exchange) throw new Error("expected a planner exchange");
+  const workOrder = JSON.parse(
+    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
+  ) as AgentWorkOrder;
+  const baseline = workOrder.planning_context?.repository_snapshot;
+  if (!baseline) throw new Error("expected a planning repository snapshot");
+  const criterion = {
+    id: "criterion-blocked-result-fixture",
+    description: "The blocked-result lifecycle fixture reaches its declared verification.",
+    required: true,
+    check_ids: ["check-blocked-result-fixture"],
+  };
+  const validation = {
+    schema_version: 1 as const,
+    criteria: [criterion],
+    checks: [
+      {
+        id: "check-blocked-result-fixture",
+        kind: "deterministic" as const,
+        required: true,
+        capability: "task.verify",
+        command: "bun run test:critical",
+      },
+    ],
+    evidence_fingerprint: taskCentricDigest({ task_id: packet.task_id, plan }),
+  };
+  const proposal: TaskPlanProposal = {
+    schema_version: 1,
+    task_id: packet.task_id,
+    planning_baseline: baseline,
+    work_items: {
+      schema_version: 1,
+      work_items: [
+        {
+          id: "exercise-blocked-result",
+          objective: plan,
+          depends_on: [],
+          required_inputs: [],
+          expected_outputs: ["blocked-result-lifecycle-evidence"],
+          scope_roots: ["src/blocked-result-fixture.ts"],
+          acceptance_criteria: [criterion],
+          validation,
+          context: {
+            required_sources: ["repository"],
+            optional_sources: [],
+            symbol_hints: [],
+            max_bytes: 16_384,
+          },
+          risk: "low",
+          capabilities: ["task.verify"],
+          resource_claims: [
+            { kind: "path", resource: "src/blocked-result-fixture.ts", mode: "write" },
+          ],
+          optional: false,
+          priority: 1,
+        },
+      ],
+    },
+    assumptions: [],
+    unresolved_questions: [],
+    top_level_validation: validation,
+  };
+  const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
+  await writeFile(
+    resultPath,
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        kind: "agent_action_result",
+        task_id: packet.task_id,
+        transition_id: packet.transition_id,
+        state_fingerprint: packet.state_fingerprint,
+        role: workOrder.role,
+        result: {
+          schema_version: 2,
+          kind: "agent_semantic_result",
+          work_order_id: workOrder.work_order_id,
+          status: "completed",
+          summary: plan,
+          findings: [],
+          uncertainty: [],
+          task_intent: {
+            task_kind: "code",
+            mutation_scope: "code",
+            risk_flags: [],
+            tags: ["code"],
+            execution: {
+              schema_version: 2,
+              preferred_mode: "branch_pr",
+              scope_roots: ["src/blocked-result-fixture.ts"],
+              repository_effects: ["repository_write", "source_code", "tests"],
+              external_effects: [],
+              requirements_uncertainty: "bounded",
+              implementation_uncertainty: "bounded",
+              reversibility: "reversible",
+              rationale: ["The fixture exercises a blocked branch implementation."],
+            },
+          },
+          task_plan_proposal: proposal,
+        },
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+  return resultPath;
+}
+
+async function writeCompletedResult(packet: AgentPacket, summary: string): Promise<string> {
+  if (!packet.exchange) throw new Error("expected an external-agent exchange");
+  const workOrder = JSON.parse(
+    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
+  ) as AgentWorkOrder;
+  const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
+  await writeFile(
+    resultPath,
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        kind: "agent_action_result",
+        task_id: packet.task_id,
+        transition_id: packet.transition_id,
+        state_fingerprint: packet.state_fingerprint,
+        role: workOrder.role,
+        result: {
+          schema_version: 2,
+          kind: "agent_semantic_result",
+          work_order_id: workOrder.work_order_id,
+          status: "completed",
+          summary,
+          findings: [],
+          uncertainty: [],
         },
       },
       null,
@@ -207,19 +365,17 @@ async function prepareBlockedResultTask(opts: {
   await writeConfig(root, config);
   await runCliSilent(["branch", "base", "set", "main", "--root", root]);
   const taskId = await createTask(root, opts.title);
-  await runCliSilent([
-    "task",
-    "plan",
-    "set",
-    taskId,
-    "--text",
-    opts.plan,
-    "--updated-by",
-    "ORCHESTRATOR",
-    "--root",
-    root,
-  ]);
-  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+  await execFileAsync("git", ["add", "."], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", `test: create ${opts.slug} task`], { cwd: root });
+  const planning = await readAgentPacket(root, taskId);
+  expect(planning.action.kind).toBe("agent_episode");
+  const planningResult = await writeStructuredPlanningResult(planning, opts.plan);
+  const prepared = await returnAgentResult(root, taskId, planningResult);
+  expect(prepared.code, prepared.stderr).toBe(0);
+  expect(JSON.parse(prepared.stdout)).toMatchObject({
+    action: { kind: "approval_required" },
+  });
+  await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]);
   await execFileAsync("git", ["add", "."], { cwd: root });
   await execFileAsync("git", ["commit", "-m", `test: seed ${opts.slug} task`], { cwd: root });
 
@@ -237,10 +393,23 @@ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
       plan: "Preserve pre-existing work while requesting the exact missing scope.",
       slug: "dirty-baseline-scope-extension",
     });
-    const missingScopePath = path.join(taskWorktree, "scripts", "generated-scheduler.mjs");
-    await mkdir(path.dirname(missingScopePath), { recursive: true });
-    await writeFile(missingScopePath, "export const concurrency = 1;\n", "utf8");
-    const issued = await readAgentPacket(taskWorktree, taskId);
+    const dirtyBaselinePath = path.join(taskWorktree, "src", "blocked-result-fixture.ts");
+    await mkdir(path.dirname(dirtyBaselinePath), { recursive: true });
+    await writeFile(dirtyBaselinePath, "export const concurrency = 1;\n", "utf8");
+    let issued = await readAgentPacket(taskWorktree, taskId);
+    if (!issued.exchange) throw new Error("expected a task-worktree exchange");
+    const exchange = JSON.parse(
+      await readFile(path.join(issued.exchange.directory, "exchange.json"), "utf8"),
+    ) as { purpose: string };
+    if (exchange.purpose === "task_worktree_resolution") {
+      const resolutionResult = await writeCompletedResult(
+        issued,
+        "The pre-existing dirty baseline is intentional and ready for the scoped episode.",
+      );
+      const resolved = await returnAgentResult(taskWorktree, taskId, resolutionResult);
+      expect(resolved.code, resolved.stderr).toBe(0);
+      issued = JSON.parse(resolved.stdout) as AgentPacket;
+    }
     const resultPath = await writeBlockedResult(
       issued,
       "The preserved scheduler change needs one exact writable root.",
@@ -252,7 +421,7 @@ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
     expect(JSON.parse(returned.stdout)).toMatchObject({
       action: { kind: "approval_required" },
     });
-    await expect(readFile(missingScopePath, "utf8")).resolves.toBe(
+    await expect(readFile(dirtyBaselinePath, "utf8")).resolves.toBe(
       "export const concurrency = 1;\n",
     );
   });
@@ -306,6 +475,7 @@ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
       workOrder.authority.writable_roots.some((root) =>
         root.endsWith("/website/static/img/social"),
       ),
+      JSON.stringify({ resumed, workOrder }, null, 2),
     ).toBe(true);
 
     const readme = await readFile(
@@ -478,7 +648,9 @@ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
 
     const rejected = await returnAgentResult(taskWorktree, taskId, resultPath);
     expect(rejected.code).not.toBe(0);
-    expect(rejected.stderr).toContain("Blocked implementation result produced workspace changes");
+    expect(rejected.stderr).toContain(
+      "External-agent changes escaped semantic authority: src/blocked-tamper.txt.",
+    );
     const readme = await readFile(
       path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
       "utf8",
