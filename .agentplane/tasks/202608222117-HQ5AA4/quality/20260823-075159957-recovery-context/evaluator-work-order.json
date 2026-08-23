@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608222117-HQ5AA4-1c2c4cc329f4730b3e09976a",
+  "prepared_at": "2026-08-23T07:51:59.957Z",
+  "task": {
+    "id": "202608222117-HQ5AA4",
+    "revision": 21,
+    "objective": "Migrate blocked-result CLI fixture to structured task plan\n\nRepair the proven task-centric regression in packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts: prepareBlockedResultTask seeds and approves only legacy plan text, so task advance re-enters PLANNER and all nine blocked-result cases fail before exercising their intended behavior. Change only this test fixture to install a schema-valid baseline-bound TaskPlanProposal before approval. Do not change production lifecycle, scope-extension semantics, context behavior, release behavior, or Knowledge Assimilation.",
+    "acceptance_criteria": [
+      "bun run lint:core",
+      "bun run typecheck",
+      "bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts",
+      "- In scope: Repair the proven task-centric regression in packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts: prepareBlockedResultTask seeds and approves only legacy plan text, so task advance re-enters PLANNER and all nine blocked-result cases fail before exercising their intended behavior. Change only this test fixture to install a schema-valid baseline-bound TaskPlanProposal before approval. Do not change production lifecycle, scope-extension semantics, context behavior, release behavior, or Knowledge Assimilation.\n- Out of scope: unrelated refactors not required for \"Migrate blocked-result CLI fixture to structured task plan\".",
+      "Migrate only the blocked-result integration fixture from legacy plan text to a baseline-bound structured TaskPlanProposal.",
+      "PLANNER fallback scaffold for \"Migrate blocked-result CLI fixture to structured task plan\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Migrate blocked-result CLI fixture to structured task plan\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "371b25cff122dfa322adee23ee677be3e71c53da",
+  "diff_base_sha": "d93e42ccaedd59e77fc17c495a01dc7cde049d0f",
+  "blueprint_digest": "a9c8bab8a5dcc4767fb2769b57e335385abc0d8d6bbf3d1fd3e2d2cade2c3ad6",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608222117-HQ5AA4/quality/20260823-075159957-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:12975e8a2b0ac192f783dcfd3e96590394bd548df1eef4d4d18642de9ee0a006",
+    "prompt_path": ".agentplane/tasks/202608222117-HQ5AA4/quality/objects/sha256/6c6f02bad23007adb3d14fb0944b1d0a69da78591dd4ac4f1dec0a4ab7641ff7.md",
+    "result_schema_path": ".agentplane/tasks/202608222117-HQ5AA4/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608222117-HQ5AA4/README.md",
+      "sha256": "sha256:59f5cf266165c0fedf9a2990b7ad162a2c15fdd6a1a78f3f2ddd46a689ea554a",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608222117-HQ5AA4/quality/objects/sha256/03b9fa591584e72cfa17e5a0cb0356776b07262d7802dcae6bf15458069fdaf6.patch",
+      "sha256": "sha256:03b9fa591584e72cfa17e5a0cb0356776b07262d7802dcae6bf15458069fdaf6",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608222117-HQ5AA4/quality/objects/sha256/3e71053bf654f61eb72c55ccc653a40770bd2e42c4c20d69c3854f92c302c95b.json",
+      "sha256": "sha256:3e71053bf654f61eb72c55ccc653a40770bd2e42c4c20d69c3854f92c302c95b",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608222117-HQ5AA4/verification/20260823075100003-999e679a30c13b3f.json",
+      "sha256": "sha256:24e72a7ea76a8e27d8c0ba5e2ac28dcddf9269f90bbb4817a02dcc2e0685c0dc",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608222117-HQ5AA4/quality/objects/sha256/2889b4efad533c15448bf00de5f00fcba3d451c577b3cb3d54ffb074070da2e6.json",
+      "sha256": "sha256:2889b4efad533c15448bf00de5f00fcba3d451c577b3cb3d54ffb074070da2e6",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

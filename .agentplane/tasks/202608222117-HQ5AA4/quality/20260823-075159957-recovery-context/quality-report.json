@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202608222117-HQ5AA4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-23T07:52:39.591Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "371b25cff122dfa322adee23ee677be3e71c53da",
+  "blueprint_digest": "a9c8bab8a5dcc4767fb2769b57e335385abc0d8d6bbf3d1fd3e2d2cade2c3ad6",
+  "findings": [
+    "No acceptance gap was found: planner role and commit baseline are validated, USER approval is exercised, dirty-worktree resolution remains explicit, exact scope propagation is asserted, and out-of-authority tampering still fails closed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608222117-HQ5AA4/quality/objects/sha256/03b9fa591584e72cfa17e5a0cb0356776b07262d7802dcae6bf15458069fdaf6.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

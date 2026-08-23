@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "No acceptance gap was found: planner role and commit baseline are validated, USER approval is exercised, dirty-worktree resolution remains explicit, exact scope propagation is asserted, and out-of-authority tampering still fails closed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608222117-HQ5AA4/quality/objects/sha256/03b9fa591584e72cfa17e5a0cb0356776b07262d7802dcae6bf15458069fdaf6.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
