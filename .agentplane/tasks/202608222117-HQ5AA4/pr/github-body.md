@@ -15,13 +15,8 @@ Repair the proven task-centric regression in packages/agentplane/src/cli/run-cli
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework: Declared check failed: bunx vitest run
-packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
-```
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -32,8 +27,8 @@ packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...un-cli.core.task-advance.blocked-result.test.ts | 213 +++++++++++++++++++--
- 1 file changed, 193 insertions(+), 20 deletions(-)
+ ...un-cli.core.task-advance.blocked-result.test.ts | 214 +++++++++++++++++++--
+ 1 file changed, 194 insertions(+), 20 deletions(-)
 ```
 
 </details>

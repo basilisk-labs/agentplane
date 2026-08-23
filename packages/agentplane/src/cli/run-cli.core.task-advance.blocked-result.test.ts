@@ -162,6 +162,7 @@ async function writeStructuredPlanningResult(
   if (workOrder.role !== "PLANNER") throw new Error("expected a planner work order");
   const baseline = workOrder.planning_context?.repository_snapshot;
   if (!baseline) throw new Error("expected a planning repository snapshot");
+  if (baseline.git.kind !== "commit") throw new Error("expected a commit planning baseline");
   const criterion = {
     id: "criterion-blocked-result-fixture",
     description: "The blocked-result lifecycle fixture reaches its declared verification.",
