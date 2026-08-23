@@ -2,10 +2,10 @@
 id: "202608222055-1DKNTY"
 title: "Fix task scope extend state-binding option parsing"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -21,6 +21,7 @@ verify:
   - "bun run lint:core"
   - "bun run typecheck"
   - "bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+  - "bun run ci:local:full"
 plan_approval:
   state: "approved"
   updated_at: "2026-08-22T21:05:25.053Z"
@@ -62,7 +63,7 @@ quality_review:
 token_usage:
   agent_runs: 7
   input_tokens: null
-  journal_digest: "sha256:8384525499e9e23dec31b42a9ceaa59772b98ce3de130a9aeba69b52d06799ff"
+  journal_digest: "sha256:04d1581810cfbf353e55aa9833f57a67ad50c29c77682875bce655114b8ad3f9"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -72,7 +73,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-23T08:33:45.878Z"
+  updated_at: "2026-08-23T08:37:58.863Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -829,8 +830,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "c03df2f9c39225c5e1072ee6a805efa9709aebce"
-  message: "🚧 1DKNTY task: record external evaluator result"
+  hash: "b197e1c530842814422457349050a24198ab6b13"
+  message: "🧩 1DKNTY task: record final evaluator review"
 comments:
   -
     author: "CODER"
@@ -856,6 +857,12 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Recovery: rerun the task-centric WorkItem with the full branch_pr verification contract so the successful validation is recorded in the aggregate."
 events:
   -
     type: "status"
@@ -942,8 +949,23 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "c03df2f9c39225c5e1072ee6a805efa9709aebce"
+  -
+    type: "status"
+    at: "2026-08-23T08:37:58.863Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "b197e1c530842814422457349050a24198ab6b13"
+  -
+    type: "status"
+    at: "2026-08-23T08:39:28.750Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Recovery: rerun the task-centric WorkItem with the full branch_pr verification contract so the successful validation is recorded in the aggregate."
 doc_version: 3
-doc_updated_at: "2026-08-23T08:36:34.590Z"
+doc_updated_at: "2026-08-23T08:39:28.803Z"
 doc_updated_by: "CODER"
 description: "Repair the release-blocking control-plane regression where task scope extend receives scalar --state-scope-digest or --state-fingerprint options but optionalStringOption reads only arrays, so the command always rejects the required binding as missing. Change only the parser helper and focused tests. Do not alter scope-extension authority, digest validation, release semantics, context behavior, or Knowledge Assimilation scope."
 sections:
@@ -1739,6 +1761,6 @@ DecisionContextRef:
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:8384525499e9e23dec31b42a9ceaa59772b98ce3de130a9aeba69b52d06799ff`
+- Journal digest: `sha256:04d1581810cfbf353e55aa9833f57a67ad50c29c77682875bce655114b8ad3f9`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-23T08:33:45.878Z`
+- Updated at: `2026-08-23T08:37:58.863Z`
