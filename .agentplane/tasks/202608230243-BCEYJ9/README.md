@@ -4,7 +4,7 @@ title: "Honor task-centric PLANNING after material plan refinement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,11 @@ plan_approval:
   updated_by: "USER"
   note: "User blanket-approved the exact revised plan digest sha256:9e3372d1ae56e5d4bb75ba445914751cb302bd040acbef132359d3c0ca0076e4 for autonomous v0.7.8 release completion."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-23T03:06:45.960Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -83,12 +83,25 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
       - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "verification:recorded-check-2:fail"
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
+      - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -122,7 +135,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:3f6677e275fec298cc1ced9d20b53c813daa9d49d7200106ca0cb8c9d18c7b38"
+      digest: "sha256:cfcfeed5398c6b5190b073bf6560875503176f518aea1e4f86530865ce21b294"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
       execution_groups:
@@ -131,10 +144,16 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
+          - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -166,9 +185,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "3b6d0d1b65b9df4f631874c9953119d2c66534fb"
-  message: "🚧 BCEYJ9 task: apply external agent result"
+      - "verification_recovery:recorded-check-2"
+commit: null
 comments:
   -
     author: "CODER"
@@ -192,8 +210,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 3b6d0d1b65b9. CLI accepted one state-bound external-agent semantic result."
     commit: "3b6d0d1b65b9df4f631874c9953119d2c66534fb"
+  -
+    type: "verify"
+    at: "2026-08-23T03:06:45.960Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000"
 doc_version: 3
-doc_updated_at: "2026-08-23T03:00:09.456Z"
+doc_updated_at: "2026-08-23T03:06:47.000Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the proven branch supervisor regression where a material external result.plan_refinement moves the task-centric aggregate to PLANNING but the legacy branch route continues through verification, quality review, and finish. After refinement, the next packet must be PLANNER for a revised plan; no closeout may run while a required WorkItem is REWORK_READY. Keep the correction generic and limited to route/supervisor reconciliation plus focused regression tests. Evidence: Task 202608230020-TEK7WE failed pre-merge finish with required_work_item_incomplete:stabilize-runtime-full-ci while aggregate lifecycle=PLANNING and WorkItem state=REWORK_READY."
 sections:
@@ -213,6 +237,46 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-23T03:06:45.960Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c75fdc21aa15f507992b2352892020ae52b172799d53533a3b96cd21f2f59050, input_digest=sha256:9ff2fec34be0124ba0aefbd0f8f1996057548c40d401a0095d51cc4d079de2ca
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608230243-BCEYJ9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608230243-BCEYJ9 declared verification
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+    Result: fail
+    Evidence: .agentplane/tasks/202608230243-BCEYJ9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608230243-BCEYJ9 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608230243-BCEYJ9-honor-task-centric-planning-after-material-plan/.agentplane/tasks/202608230243-BCEYJ9/blueprint/resolved-snapshot.json
+    - old_digest: 889b5d6f1dab7d0cdcf260f041861bd2e8afdf9d612d8f19135e4e40102a7489
+    - current_digest: 889b5d6f1dab7d0cdcf260f041861bd2e8afdf9d612d8f19135e4e40102a7489
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608230243-BCEYJ9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608230243-BCEYJ9
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -622,14 +686,11 @@ extensions:
         revision: 1
         state: "READY"
         validation_result: null
-  implementation_commit:
-    hash: "3b6d0d1b65b9df4f631874c9953119d2c66534fb"
   task_execution_context:
     base_ref: "main"
     base_sha: "d93e42ccaedd59e77fc17c495a01dc7cde049d0f"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "explicit"
   workflow_route_baseline:
     start_head_sha: "d93e42ccaedd59e77fc17c495a01dc7cde049d0f"
     version: 1
@@ -661,6 +722,46 @@ PLANNER fallback scaffold for "Honor task-centric PLANNING after material plan r
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-23T03:06:45.960Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c75fdc21aa15f507992b2352892020ae52b172799d53533a3b96cd21f2f59050, input_digest=sha256:9ff2fec34be0124ba0aefbd0f8f1996057548c40d401a0095d51cc4d079de2ca
+
+Details:
+
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608230243-BCEYJ9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608230243-BCEYJ9 declared verification
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+Result: fail
+Evidence: .agentplane/tasks/202608230243-BCEYJ9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608230243-BCEYJ9 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608230243-BCEYJ9-honor-task-centric-planning-after-material-plan/.agentplane/tasks/202608230243-BCEYJ9/blueprint/resolved-snapshot.json
+- old_digest: 889b5d6f1dab7d0cdcf260f041861bd2e8afdf9d612d8f19135e4e40102a7489
+- current_digest: 889b5d6f1dab7d0cdcf260f041861bd2e8afdf9d612d8f19135e4e40102a7489
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608230243-BCEYJ9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608230243-BCEYJ9
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

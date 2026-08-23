@@ -15,14 +15,21 @@ Fix the proven branch supervisor regression where a material external result.pla
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Rework: Declared check failed: bunx vitest run
+packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers
+1 --testTimeout 60000 --hookTimeout 60000
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-23T02:47:36.459Z
+- Updated: 2026-08-23T03:00:37.293Z
 - Branch: task/202608230243-BCEYJ9/honor-task-centric-planning-after-material-plan
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
