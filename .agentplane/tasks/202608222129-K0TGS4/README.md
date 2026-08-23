@@ -4,7 +4,7 @@ title: "Propagate approved scope extension into task-centric WorkItem plan"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +26,39 @@ plan_approval:
   updated_by: "USER"
   note: "Approved under autonomous regression-fix and v0.7.8 release authorization; exact plan digest sha256:351e69e3ef67b67702ce9037394f34a08eeeb6a8dfbf1e5e1aaa30e6ea8c6636."
 verification:
-  state: "pending"
-  updated_at: "2026-08-23T06:13:08.436Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 3
+  state: "ok"
+  updated_at: "2026-08-23T06:37:30.978Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-23T06:40:17.968Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "35ab4a6e540f1e85c77144f1812d2de5155db25c"
+  blueprint_digest: "4aacdcc2f9ae15fb1e2b18c78d13881fb1b49dd6ca7df5449edf7ad889f6871b"
+  evidence_refs:
+    - ".agentplane/tasks/202608222129-K0TGS4/quality/20260823-064017729-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608222129-K0TGS4/quality/20260823-064017729-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608222129-K0TGS4/quality/objects/sha256/b3530242d06e4d3b08b2cb42af9cd8fe36145d57a0f1749058fbaad6667537dd.md"
+    - ".agentplane/tasks/202608222129-K0TGS4/quality/20260823-064017729-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608222129-K0TGS4/quality/20260823-064017729-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608222129-K0TGS4/quality/20260823-064017729-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608222129-K0TGS4/README.md"
+    - ".agentplane/tasks/202608222129-K0TGS4/quality/objects/sha256/f64856cc2c74a1154d81ae732435b6c1c6847f399823cd04e884c68499c990f5.patch"
+    - ".agentplane/tasks/202608222129-K0TGS4/quality/objects/sha256/d960789194714e535c082e753f2c63e82b35bda3f6f21eaa1e8adbfea578f59e.json"
+    - ".agentplane/tasks/202608222129-K0TGS4/verification/20260823063730978-3bc083c9cfa295bb.json"
+    - ".agentplane/tasks/202608222129-K0TGS4/quality/objects/sha256/ffff4ef39551f48a286ab9ea0ddb3bb24e394b60cc00f5e9161a61b5b775a460.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The approved revision is bound to the exact scope-extension request digest and archives the prior revision."
+    - "Only the uniquely schedulable WorkItem receives added scope roots and write claims; ambiguity throws E_VALIDATION."
+    - "The unselected WorkItem and aggregate runtime are preserved, with focused regression coverage and a passing full CI record."
 execution_route:
   frozen: true
   reason_codes:
@@ -91,15 +119,56 @@ execution_contract:
     authority_violations: []
     changed_components:
       - "packages/agentplane"
+      - "scripts"
     changed_paths:
       - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
       - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+      - "scripts/checks/run-local-ci.mjs"
     external_effects: []
     repository_effects:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -136,11 +205,12 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:c5599c5c1b6e0874fa50842ee835159e7ff1326ae25be59e9d5d7408f1e0880f"
+      digest: "sha256:2164646e43e8029ca26cc5cef52bed4260e5e09ef456d1aa1580083220bca0f6"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
         - "central_component:scripts/checks/run-local-ci.mjs"
         - "central_path:packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+        - "central_path:scripts/checks/run-local-ci.mjs"
         - "effect_ci"
       execution_groups:
         - "docs-schema"
@@ -150,9 +220,11 @@ execution_contract:
       observed:
         changed_components:
           - "packages/agentplane"
+          - "scripts"
         changed_files:
           - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
           - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+          - "scripts/checks/run-local-ci.mjs"
         external_effects: []
         repository_effects:
           - "repository_write"
@@ -190,7 +262,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "35ab4a6e540f1e85c77144f1812d2de5155db25c"
+  message: "🚧 K0TGS4 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -216,6 +290,15 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: scripts/checks/run-local-ci.mjs; repository effects: ci."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 4b4bcea4dbea. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "USER"
+    body: "Resolved the recorded blocker: exact scope authority now includes the merged scheduler state, and the only remaining full-gate failure was corrected mechanical formatting in the approved roots."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 35ab4a6e540f. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -283,8 +366,43 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Full verification is blocked until the old task worktree can use the exact already-merged CI scheduler state from main. Recommended action: Approve the exact state-bound scope extension, align scripts/checks/run-local-ci.mjs with main, and rerun verification. Requested scope: roots=scripts/checks/run-local-ci.mjs; repository effects=ci; request digest=sha256:ec57ccfc366cdcb89be25d69a46fe7fa530176e43f8ebba418f7bd706d81daa5. Agentplane receipt: external-agent-blocker/tr_458c8d1401add46a59bafd0e54863ac4/sha256:027fa18e12be96cc52313f59911717e297a9fba4b366b69d66e5c5d0403bf8c0/sha256:ec57ccfc366cdcb89be25d69a46fe7fa530176e43f8ebba418f7bd706d81daa5."
+  -
+    type: "status"
+    at: "2026-08-23T06:14:35.252Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 4b4bcea4dbea. CLI accepted one state-bound external-agent semantic result."
+    commit: "4b4bcea4dbea8756093969300720ffe3ff0aae44"
+  -
+    type: "verify"
+    at: "2026-08-23T06:22:13.733Z"
+    author: "SUPERVISOR"
+    state: "blocked_external"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-23T06:26:34.122Z"
+    author: "USER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resolved the recorded blocker: exact scope authority now includes the merged scheduler state, and the only remaining full-gate failure was corrected mechanical formatting in the approved roots."
+  -
+    type: "status"
+    at: "2026-08-23T06:29:14.118Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 35ab4a6e540f. CLI accepted one state-bound external-agent semantic result."
+    commit: "35ab4a6e540f1e85c77144f1812d2de5155db25c"
+  -
+    type: "verify"
+    at: "2026-08-23T06:37:30.978Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-23T06:04:35.946Z"
+doc_updated_at: "2026-08-23T06:37:33.035Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the proven task-centric regression where task scope extend updates the legacy execution contract but the next executor work order still uses the old current_plan WorkItem scope_roots. On exact state-bound USER approval, create and approve a new TaskPlanRevision that monotonically extends only the uniquely selected WorkItem scope, preserves all other WorkItems and runtime state, archives the prior revision, and leaves production behavior unchanged otherwise. Add focused unit coverage. Do not redesign planning, authority, context, release, or Knowledge Assimilation."
 sections:
@@ -434,6 +552,164 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4
     Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222129-K0TGS4-propagate-approved-scope-extension-into-task-cen/.agentplane/tasks/202608222129-K0TGS4/blueprint/resolved-snapshot.json
+    - old_digest: 4aacdcc2f9ae15fb1e2b18c78d13881fb1b49dd6ca7df5449edf7ad889f6871b
+    - current_digest: 4aacdcc2f9ae15fb1e2b18c78d13881fb1b49dd6ca7df5449edf7ad889f6871b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608222129-K0TGS4
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-23T06:22:13.733Z — VERIFY — blocked_external
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 4
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6f77b1b0129bfc574a95ac951d0f5ee37724e88534039e4c968157b107b76e2a, input_digest=sha256:5bd3b20ff7b18d52460e587750525dc78bdc2519e622524c40c41542dc17a258
+
+    Details:
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+    Command: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222129-K0TGS4-propagate-approved-scope-extension-into-task-cen/.agentplane/tasks/202608222129-K0TGS4/blueprint/resolved-snapshot.json
+    - old_digest: 4aacdcc2f9ae15fb1e2b18c78d13881fb1b49dd6ca7df5449edf7ad889f6871b
+    - current_digest: 4aacdcc2f9ae15fb1e2b18c78d13881fb1b49dd6ca7df5449edf7ad889f6871b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608222129-K0TGS4
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-23T06:37:30.978Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6f77b1b0129bfc574a95ac951d0f5ee37724e88534039e4c968157b107b76e2a, input_digest=sha256:0407117bb776df3ccd2ebdd43220919f80c4e632b936217096ce4c844f349141
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check affected_unit_integration (1/4)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check affected_unit_integration (2/4)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check affected_unit_integration (3/4)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check affected_unit_integration (4/4)
+
+    Check: critical_paths
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check critical_paths (1/4)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check critical_paths (2/4)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check critical_paths (3/4)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check critical_paths (4/4)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check task_outcome (4/4)
 
     BlueprintSnapshotRef:
     - state: current
@@ -724,6 +1000,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "35ab4a6e540f1e85c77144f1812d2de5155db25c"
   task_execution_context:
     base_ref: "main"
     base_sha: "d93e42ccaedd59e77fc17c495a01dc7cde049d0f"
@@ -890,6 +1168,164 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4
 Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222129-K0TGS4-propagate-approved-scope-extension-into-task-cen/.agentplane/tasks/202608222129-K0TGS4/blueprint/resolved-snapshot.json
+- old_digest: 4aacdcc2f9ae15fb1e2b18c78d13881fb1b49dd6ca7df5449edf7ad889f6871b
+- current_digest: 4aacdcc2f9ae15fb1e2b18c78d13881fb1b49dd6ca7df5449edf7ad889f6871b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608222129-K0TGS4
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-23T06:22:13.733Z — VERIFY — blocked_external
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 4
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6f77b1b0129bfc574a95ac951d0f5ee37724e88534039e4c968157b107b76e2a, input_digest=sha256:5bd3b20ff7b18d52460e587750525dc78bdc2519e622524c40c41542dc17a258
+
+Details:
+
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+Command: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222129-K0TGS4-propagate-approved-scope-extension-into-task-cen/.agentplane/tasks/202608222129-K0TGS4/blueprint/resolved-snapshot.json
+- old_digest: 4aacdcc2f9ae15fb1e2b18c78d13881fb1b49dd6ca7df5449edf7ad889f6871b
+- current_digest: 4aacdcc2f9ae15fb1e2b18c78d13881fb1b49dd6ca7df5449edf7ad889f6871b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608222129-K0TGS4
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-23T06:37:30.978Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6f77b1b0129bfc574a95ac951d0f5ee37724e88534039e4c968157b107b76e2a, input_digest=sha256:0407117bb776df3ccd2ebdd43220919f80c4e632b936217096ce4c844f349141
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check affected_unit_integration (1/4)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check affected_unit_integration (2/4)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check affected_unit_integration (3/4)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check affected_unit_integration (4/4)
+
+Check: critical_paths
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check critical_paths (1/4)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check critical_paths (2/4)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check critical_paths (3/4)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check critical_paths (4/4)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608222129-K0TGS4 Verification Contract check task_outcome (4/4)
 
 BlueprintSnapshotRef:
 - state: current

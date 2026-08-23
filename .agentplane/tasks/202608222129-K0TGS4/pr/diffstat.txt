@@ -1,4 +1,4 @@
- .../shared/task-scope-extension-request.ts         |  91 ++++++++++-
- .../src/commands/task/scope-extend.test.ts         | 177 +++++++++++++++++++++
- scripts/checks/run-local-ci.mjs                    |  37 +++--
- 3 files changed, 294 insertions(+), 11 deletions(-)
+ .../shared/task-scope-extension-request.ts         |  88 +++++++++-
+ .../src/commands/task/scope-extend.test.ts         | 183 +++++++++++++++++++++
+ scripts/checks/run-local-ci.mjs                    |  37 ++++-
+ 3 files changed, 297 insertions(+), 11 deletions(-)

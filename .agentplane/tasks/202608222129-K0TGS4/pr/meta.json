@@ -2,9 +2,9 @@
   "base": "main",
   "branch": "task/202608222129-K0TGS4/propagate-approved-scope-extension-into-task-cen",
   "created_at": "2026-08-22T21:31:27.901Z",
-  "diffstat_sha256": "sha256:9aa2d48e084970b624a93f8f77e76cd76f91ab674453372d26dbf7cfe6064161",
-  "last_verified_at": "2026-08-23T05:56:49.105Z",
-  "last_verified_diffstat_sha256": "sha256:55ce2b21ce62ae18827e1553216666f97bca68beb3525163763b8e5f27a575c4",
+  "diffstat_sha256": "sha256:c47235a1bfb89da2ba340198d48edc81e29c53cfc439ae19889b8de129562b73",
+  "last_verified_at": "2026-08-23T06:37:30.978Z",
+  "last_verified_diffstat_sha256": "sha256:c47235a1bfb89da2ba340198d48edc81e29c53cfc439ae19889b8de129562b73",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -17,6 +17,6 @@
   "task_id": "202608222129-K0TGS4",
   "updated_at": "2026-08-22T21:31:27.901Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }

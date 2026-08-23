@@ -12,8 +12,8 @@ Created: 2026-08-22T21:31:27.901Z
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,10 +29,10 @@ Created: 2026-08-22T21:31:27.901Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../shared/task-scope-extension-request.ts         |  91 ++++++++++-
- .../src/commands/task/scope-extend.test.ts         | 177 +++++++++++++++++++++
- scripts/checks/run-local-ci.mjs                    |  37 +++--
- 3 files changed, 294 insertions(+), 11 deletions(-)
+ .../shared/task-scope-extension-request.ts         |  88 +++++++++-
+ .../src/commands/task/scope-extend.test.ts         | 183 +++++++++++++++++++++
+ scripts/checks/run-local-ci.mjs                    |  37 ++++-
+ 3 files changed, 297 insertions(+), 11 deletions(-)
 ```
 
 </details>

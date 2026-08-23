@@ -66,7 +66,12 @@ function taskCentricAggregate(taskId: string, parallel = false) {
     scope_roots: [scopeRoot],
     acceptance_criteria: validation.criteria,
     validation,
-    context: { required_sources: ["repository"], optional_sources: [], symbol_hints: [], max_bytes: 16_384 },
+    context: {
+      required_sources: ["repository"],
+      optional_sources: [],
+      symbol_hints: [],
+      max_bytes: 16_384,
+    },
     risk: "low",
     capabilities: ["task.verify"],
     resource_claims: [{ kind: "path", resource: scopeRoot, mode: "write" }],
@@ -260,6 +265,7 @@ describe("blocked task execution scope extension", () => {
       resource: "website",
       mode: "write",
     });
+    expect(nextItems?.[1]).toEqual(aggregate.current_plan?.proposal.work_items.work_items[1]);
     expect(next?.plan_history).toEqual([aggregate.current_plan]);
     expect(next?.work_items).toEqual(aggregate.work_items);
   });

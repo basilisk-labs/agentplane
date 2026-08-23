@@ -218,10 +218,7 @@ function extendTaskCentricWorkItemScope(opts: {
     if (item.id !== selectedId) return item;
     const scopeRoots = uniqueSorted([...item.scope_roots, ...addedRoots]);
     const claimsByIdentity = new Map(
-      item.resource_claims.map((claim) => [
-        `${claim.kind}:${claim.resource}:${claim.mode}`,
-        claim,
-      ]),
+      item.resource_claims.map((claim) => [`${claim.kind}:${claim.resource}:${claim.mode}`, claim]),
     );
     for (const root of addedRoots) {
       const claim: ResourceClaimSpec = { kind: "path", resource: root, mode: "write" };
