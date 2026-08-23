@@ -143,6 +143,20 @@ async function writeCompletedResult(
   const workOrder = JSON.parse(
     await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
   ) as AgentWorkOrderV2;
+  const routeCriterion = {
+    id: "route-converges",
+    description: "The requested external-agent route converges through its expected boundary.",
+    required: true,
+    check_ids: ["task-check"],
+  } as const;
+  const routeValidation = {
+    schema_version: 1,
+    criteria: [routeCriterion],
+    checks: [
+      { id: "task-check", kind: "deterministic", required: true, capability: "task.verify" },
+    ],
+    evidence_fingerprint: "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  } as const;
   const taskPlanProposal: TaskPlanProposal | undefined = structuredPlan
     ? {
         schema_version: 1,
@@ -158,37 +172,8 @@ async function writeCompletedResult(
               required_inputs: [],
               expected_outputs: ["external-agent-route-result"],
               scope_roots: ["."],
-              acceptance_criteria: [
-                {
-                  id: "route-converges",
-                  description:
-                    "The requested external-agent route converges through its expected boundary.",
-                  required: true,
-                  check_ids: ["task-check"],
-                },
-              ],
-              validation: {
-                schema_version: 1,
-                criteria: [
-                  {
-                    id: "route-converges",
-                    description:
-                      "The requested external-agent route converges through its expected boundary.",
-                    required: true,
-                    check_ids: ["task-check"],
-                  },
-                ],
-                checks: [
-                  {
-                    id: "task-check",
-                    kind: "deterministic",
-                    required: true,
-                    capability: "task.verify",
-                  },
-                ],
-                evidence_fingerprint:
-                  "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-              },
+              acceptance_criteria: [routeCriterion],
+              validation: routeValidation,
               context: {
                 required_sources: [],
                 optional_sources: [],
@@ -205,28 +190,7 @@ async function writeCompletedResult(
         },
         assumptions: [],
         unresolved_questions: [],
-        top_level_validation: {
-          schema_version: 1,
-          criteria: [
-            {
-              id: "route-converges",
-              description:
-                "The requested external-agent route converges through its expected boundary.",
-              required: true,
-              check_ids: ["task-check"],
-            },
-          ],
-          checks: [
-            {
-              id: "task-check",
-              kind: "deterministic",
-              required: true,
-              capability: "task.verify",
-            },
-          ],
-          evidence_fingerprint:
-            "sha256:1111111111111111111111111111111111111111111111111111111111111111",
-        },
+        top_level_validation: routeValidation,
       }
     : undefined;
   const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
@@ -302,18 +266,8 @@ async function mkGitRepoRootWithMainCommit(): Promise<string> {
   return root;
 }
 
-function successfulCheckPackageJson(): string {
-  return `${JSON.stringify(
-    {
-      scripts: {
-        check: 'node -e "process.exit(0)"',
-        "ci:local:full": "bun run check",
-      },
-    },
-    null,
-    2,
-  )}\n`;
-}
+const SUCCESSFUL_CHECK_PACKAGE_JSON =
+  '{"scripts":{"check":"node -e \\"process.exit(0)\\"","ci:local:full":"bun run check"}}\n';
 
 async function returnAgentResult(
   root: string,
@@ -691,7 +645,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
-    await writeFile(path.join(root, "package.json"), successfulCheckPackageJson(), "utf8");
+    await writeFile(path.join(root, "package.json"), SUCCESSFUL_CHECK_PACKAGE_JSON, "utf8");
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed evaluator fixture"], { cwd: root });
     const taskId = await createTask(root, "Commit-stale evaluator result", "bun run check");
@@ -774,7 +728,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
-    await writeFile(path.join(root, "package.json"), successfulCheckPackageJson(), "utf8");
+    await writeFile(path.join(root, "package.json"), SUCCESSFUL_CHECK_PACKAGE_JSON, "utf8");
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed direct fixture"], { cwd: root });
     const taskId = await createTask(root, "Direct external round trip", "bun run check");
@@ -827,7 +781,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
-    await writeFile(path.join(root, "package.json"), successfulCheckPackageJson(), "utf8");
+    await writeFile(path.join(root, "package.json"), SUCCESSFUL_CHECK_PACKAGE_JSON, "utf8");
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed recovery fixture"], { cwd: root });
     const taskId = await createTask(root, "Implementation commit recovery", "bun run check");
@@ -868,7 +822,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
-    await writeFile(path.join(root, "package.json"), successfulCheckPackageJson(), "utf8");
+    await writeFile(path.join(root, "package.json"), SUCCESSFUL_CHECK_PACKAGE_JSON, "utf8");
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     const taskId = await createTask(root, "Branch external round trip", "bun run check");
     await planAndApproveTask(

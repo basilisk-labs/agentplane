@@ -28,9 +28,9 @@ Fix the proven branch supervisor regression where a material external result.pla
 
 ```text
  .../task-backend/task-centric-backend-adapter.ts   |  15 +-
- .../src/cli/run-cli.core.task-advance.test.ts      | 400 +++++++++++++--------
+ .../src/cli/run-cli.core.task-advance.test.ts      | 354 ++++++++++++---------
  .../task/task-centric-external-result.test.ts      |   5 +
- 3 files changed, 263 insertions(+), 157 deletions(-)
+ 3 files changed, 217 insertions(+), 157 deletions(-)
 ```
 
 </details>
