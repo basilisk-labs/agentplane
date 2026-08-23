@@ -1,10 +1,10 @@
 ---
 id: "202608222129-K0TGS4"
 title: "Propagate approved scope extension into task-centric WorkItem plan"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -27,10 +27,10 @@ plan_approval:
   note: "Approved under autonomous regression-fix and v0.7.8 release authorization; exact plan digest sha256:351e69e3ef67b67702ce9037394f34a08eeeb6a8dfbf1e5e1aaa30e6ea8c6636."
 verification:
   state: "needs_rework"
-  updated_at: "2026-08-22T22:14:52.144Z"
+  updated_at: "2026-08-23T05:56:49.105Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 2
+  attempts: 3
 execution_route:
   frozen: true
   reason_codes:
@@ -203,6 +203,18 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 0e5a9f2fb5b9. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 3cf13d4495f9. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The scoped implementation is complete, but full verification is blocked by the branch baseline predating the merged CI scheduler fix."
+  -
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: Full verification requires the exact already-merged CI scheduler state from main in this older task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Full verification is blocked until the old task worktree can use the exact already-merged CI scheduler state from main. Recommended action: Approve the exact state-bound scope extension, align scripts/checks/run-local-ci.mjs with main, and rerun verification. Requested scope: roots=scripts/checks/run-local-ci.mjs; repository effects=ci; request digest=sha256:ec57ccfc366cdcb89be25d69a46fe7fa530176e43f8ebba418f7bd706d81daa5. Agentplane receipt: external-agent-blocker/tr_458c8d1401add46a59bafd0e54863ac4/sha256:027fa18e12be96cc52313f59911717e297a9fba4b366b69d66e5c5d0403bf8c0/sha256:ec57ccfc366cdcb89be25d69a46fe7fa530176e43f8ebba418f7bd706d81daa5."
 events:
   -
     type: "status"
@@ -239,8 +251,39 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-23T05:49:44.024Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 3cf13d4495f9. CLI accepted one state-bound external-agent semantic result."
+    commit: "3cf13d4495f9d14da0457b584627bca854e208e1"
+  -
+    type: "verify"
+    at: "2026-08-23T05:56:49.105Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "comment"
+    at: "2026-08-23T06:02:03.420Z"
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The scoped implementation is complete, but full verification is blocked by the branch baseline predating the merged CI scheduler fix."
+  -
+    type: "comment"
+    at: "2026-08-23T06:03:38.199Z"
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: Full verification requires the exact already-merged CI scheduler state from main in this older task worktree."
+  -
+    type: "status"
+    at: "2026-08-23T06:04:35.946Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Full verification is blocked until the old task worktree can use the exact already-merged CI scheduler state from main. Recommended action: Approve the exact state-bound scope extension, align scripts/checks/run-local-ci.mjs with main, and rerun verification. Requested scope: roots=scripts/checks/run-local-ci.mjs; repository effects=ci; request digest=sha256:ec57ccfc366cdcb89be25d69a46fe7fa530176e43f8ebba418f7bd706d81daa5. Agentplane receipt: external-agent-blocker/tr_458c8d1401add46a59bafd0e54863ac4/sha256:027fa18e12be96cc52313f59911717e297a9fba4b366b69d66e5c5d0403bf8c0/sha256:ec57ccfc366cdcb89be25d69a46fe7fa530176e43f8ebba418f7bd706d81daa5."
 doc_version: 3
-doc_updated_at: "2026-08-22T22:14:58.583Z"
+doc_updated_at: "2026-08-23T06:04:35.946Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the proven task-centric regression where task scope extend updates the legacy execution contract but the next executor work order still uses the old current_plan WorkItem scope_roots. On exact state-bound USER approval, create and approve a new TaskPlanRevision that monotonically extends only the uniquely selected WorkItem scope, preserves all other WorkItems and runtime state, archives the prior revision, and leaves production behavior unchanged otherwise. Add focused unit coverage. Do not redesign planning, authority, context, release, or Knowledge Assimilation."
 sections:
@@ -360,6 +403,56 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-23T05:56:49.105Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 3
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6f77b1b0129bfc574a95ac951d0f5ee37724e88534039e4c968157b107b76e2a, input_digest=sha256:2413848e7dd6727ab95ca9d5f1e0067b601a504148f69361351b53ab71e832cd
+
+    Details:
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+    Command: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222129-K0TGS4-propagate-approved-scope-extension-into-task-cen/.agentplane/tasks/202608222129-K0TGS4/blueprint/resolved-snapshot.json
+    - old_digest: 4aacdcc2f9ae15fb1e2b18c78d13881fb1b49dd6ca7df5449edf7ad889f6871b
+    - current_digest: 4aacdcc2f9ae15fb1e2b18c78d13881fb1b49dd6ca7df5449edf7ad889f6871b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608222129-K0TGS4
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -389,6 +482,20 @@ extensions:
     scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
     status: "active"
     task_id: "202608222129-K0TGS4"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:027fa18e12be96cc52313f59911717e297a9fba4b366b69d66e5c5d0403bf8c0"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "Bring the old task worktree to the exact merged scheduler state needed to run its mandatory full verification without duplicating or redesigning scheduler behavior."
+      repository_effects:
+        - "ci"
+      schema_version: 1
+      scope_roots:
+        - "scripts/checks/run-local-ci.mjs"
+    request_digest: "sha256:ec57ccfc366cdcb89be25d69a46fe7fa530176e43f8ebba418f7bd706d81daa5"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_458c8d1401add46a59bafd0e54863ac4"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -731,6 +838,56 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 2
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6f77b1b0129bfc574a95ac951d0f5ee37724e88534039e4c968157b107b76e2a, input_digest=sha256:3c84aead3d20f2f0872fda49a1ab833fd3915f47ae95630d09d9e71ef30c28e1
+
+Details:
+
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+Command: bunx vitest run packages/agentplane/src/commands/task/scope-extend.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608222129-K0TGS4/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608222129-K0TGS4 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222129-K0TGS4-propagate-approved-scope-extension-into-task-cen/.agentplane/tasks/202608222129-K0TGS4/blueprint/resolved-snapshot.json
+- old_digest: 4aacdcc2f9ae15fb1e2b18c78d13881fb1b49dd6ca7df5449edf7ad889f6871b
+- current_digest: 4aacdcc2f9ae15fb1e2b18c78d13881fb1b49dd6ca7df5449edf7ad889f6871b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608222129-K0TGS4
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-23T05:56:49.105Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 3
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6f77b1b0129bfc574a95ac951d0f5ee37724e88534039e4c968157b107b76e2a, input_digest=sha256:2413848e7dd6727ab95ca9d5f1e0067b601a504148f69361351b53ab71e832cd
 
 Details:
 
