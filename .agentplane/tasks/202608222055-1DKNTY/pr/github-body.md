@@ -15,8 +15,14 @@ Repair the release-blocking control-plane regression where task scope extend rec
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Rework: Declared check failed: bunx vitest run
+packages/agentplane/src/commands/task/scope-extend.test.ts
+packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+```
 - Canonical workflow state lives in the task README.
 
 <details>
