@@ -6,6 +6,7 @@ import {
   materializeApprovedWorkItems,
   taskCentricAggregateFromExtensions,
   taskCentricDigest,
+  taskCentricReplanRequiredFromExtensions,
   withTaskCentricAggregate,
   type TaskPlanProposal,
 } from "@agentplaneorg/core/tasks";
@@ -466,6 +467,7 @@ describe("recordTaskCentricExternalResult", () => {
     const locallyAmended = taskCentricAggregateFromExtensions(localBackend.current().extensions)!;
     expect(locallyAmended.current_plan?.approval.state).toBe("approved");
     expect(locallyAmended.plan_amendments).toHaveLength(1);
+    expect(taskCentricReplanRequiredFromExtensions(localBackend.current().extensions)).toBe(false);
 
     const materialBackend = memoryBackend();
     await expect(
@@ -495,5 +497,8 @@ describe("recordTaskCentricExternalResult", () => {
     const material = taskCentricAggregateFromExtensions(materialBackend.current().extensions)!;
     expect(material.lifecycle).toBe("PLANNING");
     expect(material.work_items.a?.state).toBe("READY");
+    expect(taskCentricReplanRequiredFromExtensions(materialBackend.current().extensions)).toBe(
+      true,
+    );
   });
 });
