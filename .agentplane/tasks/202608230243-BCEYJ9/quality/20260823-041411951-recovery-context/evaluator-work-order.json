@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608230243-BCEYJ9-10db240ec2a1447e0600ec0e",
+  "prepared_at": "2026-08-23T04:14:11.951Z",
+  "task": {
+    "id": "202608230243-BCEYJ9",
+    "revision": 22,
+    "objective": "Honor task-centric PLANNING after material plan refinement\n\nFix the proven branch supervisor regression where a material external result.plan_refinement moves the task-centric aggregate to PLANNING but the legacy branch route continues through verification, quality review, and finish. After refinement, the next packet must be PLANNER for a revised plan; no closeout may run while a required WorkItem is REWORK_READY. Keep the correction generic and limited to route/supervisor reconciliation plus focused regression tests. Evidence: Task 202608230020-TEK7WE failed pre-merge finish with required_work_item_incomplete:stabilize-runtime-full-ci while aggregate lifecycle=PLANNING and WorkItem state=REWORK_READY.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000",
+      "- In scope: Fix the proven branch supervisor regression where a material external result.plan_refinement moves the task-centric aggregate to PLANNING but the legacy branch route continues through verification, quality review, and finish. After refinement, the next packet must be PLANNER for a revised plan; no closeout may run while a required WorkItem is REWORK_READY. Keep the correction generic and limited to route/supervisor reconciliation plus focused regression tests. Evidence: Task 202608230020-TEK7WE failed pre-merge finish with required_work_item_incomplete:stabilize-runtime-full-ci while aggregate lifecycle=PLANNING and WorkItem state=REWORK_READY.\n- Out of scope: unrelated refactors not required for \"Honor task-centric PLANNING after material plan refinement\".",
+      "Revised the bounded plan to persist the material-replan compatibility marker and repair only the unborn Git fixtures exposed by the declared route test.",
+      "PLANNER fallback scaffold for \"Honor task-centric PLANNING after material plan refinement\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Honor task-centric PLANNING after material plan refinement\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "847ca0f9eb0418fa0de00e19480a4293e5c06c83",
+  "diff_base_sha": "d93e42ccaedd59e77fc17c495a01dc7cde049d0f",
+  "blueprint_digest": "889b5d6f1dab7d0cdcf260f041861bd2e8afdf9d612d8f19135e4e40102a7489",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608230243-BCEYJ9/quality/20260823-041411951-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:c563fa9b5fec0679d4e2f5ede6a51f0cc5055b89cc84f6295d6495bdfc546f86",
+    "prompt_path": ".agentplane/tasks/202608230243-BCEYJ9/quality/objects/sha256/cdebba926466754e0e6e6e7ad166dd1e4c5fc727c71a8f6915d1ad45075ed7a8.md",
+    "result_schema_path": ".agentplane/tasks/202608230243-BCEYJ9/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608230243-BCEYJ9/README.md",
+      "sha256": "sha256:465e71df5ab05cc56e6c15d8ff321687b643b20c9f79b8ae70c9fbca093a6b73",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608230243-BCEYJ9/quality/objects/sha256/0b1468d8012eedac15d926c6e6190a7ea623f899bde488e94ccd29e0a887778f.patch",
+      "sha256": "sha256:0b1468d8012eedac15d926c6e6190a7ea623f899bde488e94ccd29e0a887778f",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608230243-BCEYJ9/quality/objects/sha256/50b9441994b3b9fa337f23d0c503b5d6764a60cd9ff4c420cc4e315b5870728b.json",
+      "sha256": "sha256:50b9441994b3b9fa337f23d0c503b5d6764a60cd9ff4c420cc4e315b5870728b",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608230243-BCEYJ9/verification/20260823041400739-0eb99e28a787cc75.json",
+      "sha256": "sha256:4325896f807c71b9c91278144678ac0171c774a3aaa07d3baa5c73a1f8b415b4",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608230243-BCEYJ9/quality/objects/sha256/e3c28977b57b3b3e037404731df625acd318b66593abe7d9fe31b7cf2e4611ae.json",
+      "sha256": "sha256:e3c28977b57b3b3e037404731df625acd318b66593abe7d9fe31b7cf2e4611ae",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
