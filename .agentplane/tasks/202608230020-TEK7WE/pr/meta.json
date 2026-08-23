@@ -2,9 +2,9 @@
   "base": "main",
   "branch": "task/202608230020-TEK7WE/stabilize-full-ci-runtime-claims-under-superviso",
   "created_at": "2026-08-23T00:24:36.251Z",
-  "diffstat_sha256": "sha256:7152b1f00c0e46b32230f34763fc203b701ff042143ec5a9d087c0d6581af865",
-  "last_verified_at": "2026-08-23T00:52:06.045Z",
-  "last_verified_diffstat_sha256": "sha256:652318d5cd1571533d74769e937eb9b887a308498cdf55337f93ab5ace6c4db0",
+  "diffstat_sha256": "sha256:b90e4c94b2c9a495df1dfdefece59a86ce1e9710f8f135e561cb116a252455b7",
+  "last_verified_at": "2026-08-23T01:04:02.989Z",
+  "last_verified_diffstat_sha256": "sha256:7152b1f00c0e46b32230f34763fc203b701ff042143ec5a9d087c0d6581af865",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
