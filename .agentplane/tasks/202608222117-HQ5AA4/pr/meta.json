@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:281f8934dcb7d50b5fc8ad03b5fac09f97514fc901609be2c0f55a27359c7cc0",
   "pr_number": 4881,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4881",
+  "pre_merge_closure": {
+    "basis_commit": "8d93cb90843d169d8f2d782d7919c2042c5498d8",
+    "branch": "task/202608222117-HQ5AA4/migrate-blocked-result-cli-fixture-to-structured",
+    "pr_number": 4881,
+    "recorded_at": "2026-08-23T07:53:10.530Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
