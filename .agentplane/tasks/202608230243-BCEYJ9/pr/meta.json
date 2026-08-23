@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608230243-BCEYJ9/honor-task-centric-planning-after-material-plan",
+  "created_at": "2026-08-23T02:47:36.459Z",
+  "diffstat_sha256": "sha256:0007ba369077f5a1e38bb5da5c90ef1a45969082d1e544af8fa967ed87a62505",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608230243-BCEYJ9",
+  "updated_at": "2026-08-23T02:47:36.459Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

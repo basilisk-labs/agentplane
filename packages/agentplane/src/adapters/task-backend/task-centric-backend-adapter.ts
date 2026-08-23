@@ -4,6 +4,7 @@ import {
   evaluateTaskCompletion,
   materializeApprovedWorkItems,
   projectTaskLifecycleToLegacyStatus,
+  TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY,
   taskCentricAggregateFromExtensions,
   withTaskCentricAggregate,
   type DomainEvent,
@@ -65,6 +66,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
     event: DomainEvent;
     mutation_id: string;
     runtime?: TaskCentricRuntimeProjection;
+    replan_required_reason_code?: string | null;
   }): Promise<TransitionReceipt> {
     const current = await this.backend.getTask(opts.task_id);
     if (!current) throw new Error(`Task not found: ${opts.task_id}`);
@@ -97,6 +99,13 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
       normalizedNext.current_plan?.proposal.work_items.work_items.some(
         (item) => !item.optional && normalizedNext.work_items[item.id]?.state !== "COMPLETED",
       ) === true;
+    const extensions = withTaskCentricAggregate(current.extensions, normalizedNext);
+    if (opts.replan_required_reason_code) {
+      extensions[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY] = {
+        schema_version: 1,
+        reason_code: opts.replan_required_reason_code,
+      };
+    }
     await this.backend.writeTask(
       {
         ...current,
@@ -116,7 +125,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
             }
           : {}),
         extensions: {
-          ...withTaskCentricAggregate(current.extensions, normalizedNext),
+          ...extensions,
           [TASK_CENTRIC_RUNTIME_EXTENSION_KEY]: nextRuntime,
         },
       },
@@ -261,6 +270,10 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
       mutation_id: opts.idempotency_key,
       event,
       next,
+      replan_required_reason_code:
+        applied.action === "replan_required"
+          ? applied.classification.reason_codes.join("+") || "material_plan_refinement"
+          : null,
     });
     return Object.freeze({ action: applied.action, receipt: persisted });
   }
