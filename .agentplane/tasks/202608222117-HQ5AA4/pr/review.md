@@ -12,8 +12,8 @@ Created: 2026-08-22T21:19:32.900Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

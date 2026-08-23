@@ -1,10 +1,10 @@
 ---
 id: "202608222117-HQ5AA4"
 title: "Migrate blocked-result CLI fixture to structured task plan"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -186,6 +186,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 87b699240f13. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 50abbf85117b. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The scoped fixture implementation is committed, but its task worktree is still based on d93e42c and cannot satisfy the exact-scope assertion until it is synchronized with the already merged K0 dependency on main. Recommended action: Synchronize this task branch with current main through the branch_pr recovery route, then rerun the focused nine-case suite without changing the fixture scope. Agentplane receipt: external-agent-blocker/tr_3089fa06e518728e9142012f3d5278f9/sha256:ecb1e48c57ea314745c80f2754940a61d1020b3bad52c61e26238316f9855f0d."
 events:
   -
     type: "status"
@@ -208,8 +214,29 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+  -
+    type: "status"
+    at: "2026-08-23T07:07:47.408Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 50abbf85117b. CLI accepted one state-bound external-agent semantic result."
+    commit: "50abbf85117b27f4d89c7885014dd1b8f059a85a"
+  -
+    type: "verify"
+    at: "2026-08-23T07:09:10.313Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+  -
+    type: "status"
+    at: "2026-08-23T07:10:27.779Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The scoped fixture implementation is committed, but its task worktree is still based on d93e42c and cannot satisfy the exact-scope assertion until it is synchronized with the already merged K0 dependency on main. Recommended action: Synchronize this task branch with current main through the branch_pr recovery route, then rerun the focused nine-case suite without changing the fixture scope. Agentplane receipt: external-agent-blocker/tr_3089fa06e518728e9142012f3d5278f9/sha256:ecb1e48c57ea314745c80f2754940a61d1020b3bad52c61e26238316f9855f0d."
 doc_version: 3
-doc_updated_at: "2026-08-23T07:05:43.775Z"
+doc_updated_at: "2026-08-23T07:10:27.779Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the proven task-centric regression in packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts: prepareBlockedResultTask seeds and approves only legacy plan text, so task advance re-enters PLANNER and all nine blocked-result cases fail before exercising their intended behavior. Change only this test fixture to install a schema-valid baseline-bound TaskPlanProposal before approval. Do not change production lifecycle, scope-extension semantics, context behavior, release behavior, or Knowledge Assimilation."
 sections:
@@ -237,6 +264,51 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9cc780db964b3beb8fa827a03129e041edf1255f1784b8ce01bb045acb7ab944, input_digest=sha256:2fe68d49ab7c6b342f959ad45dfd3b9da81f0399d052090122ececee433bd33c
+
+    Details:
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202608222117-HQ5AA4/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608222117-HQ5AA4 declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608222117-HQ5AA4/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608222117-HQ5AA4 declared verification
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+    Result: fail
+    Evidence: .agentplane/tasks/202608222117-HQ5AA4/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608222117-HQ5AA4 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222117-HQ5AA4-migrate-blocked-result-cli-fixture-to-structured/.agentplane/tasks/202608222117-HQ5AA4/blueprint/resolved-snapshot.json
+    - old_digest: a9c8bab8a5dcc4767fb2769b57e335385abc0d8d6bbf3d1fd3e2d2cade2c3ad6
+    - current_digest: a9c8bab8a5dcc4767fb2769b57e335385abc0d8d6bbf3d1fd3e2d2cade2c3ad6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608222117-HQ5AA4
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-23T07:09:10.313Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9cc780db964b3beb8fa827a03129e041edf1255f1784b8ce01bb045acb7ab944, input_digest=sha256:ec41e8766d3823a409d11d96761153640f5c8a7a04e07eefd93b60c38733a6d1
 
     Details:
 
@@ -470,12 +542,12 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 12
     schema_version: 1
-    updated_at: "2026-08-23T07:05:45.292Z"
+    updated_at: "2026-08-23T07:09:13.763Z"
     work_items:
       migrate-blocked-result-plan-fixture:
-        attempt: 1
+        attempt: 2
         claim_id: null
         id: "migrate-blocked-result-plan-fixture"
         last_failure:
@@ -484,25 +556,25 @@ extensions:
             - "criterion-existing-behavior"
           code: "validation_failed"
           kind: "validation"
-          message: "The existing dirty task workspace is intentional: it contains only the scoped blocked-result fixture modernization and task-owned artifacts, so the implementation episode can proceed without discarding work."
+          message: "Modernized prepareBlockedResultTask to obtain the live RepositorySnapshot from the planner work order, submit a schema-valid baseline-bound single-WorkItem TaskPlanProposal, approve it as USER, and preserve the blocked-result lifecycle assertions."
           retryable: true
         output_manifests:
           -
-            digest: "sha256:4d13aed1afa556576c8f7e54c5c7895fc6c8f46651b37812fc83965589e2dc6c"
+            digest: "sha256:6d6d902751278370a8497ae023da6e48be5b3ed69b82a14205e23d245a4a81ca"
             id: "task-centric-blocked-result-fixture"
             kind: "semantic_output"
             producer:
-              attempt: 1
+              attempt: 2
               plan_revision: 1
               task_id: "202608222117-HQ5AA4"
               work_item_id: "migrate-blocked-result-plan-fixture"
             provenance:
-              - "sha256:5b2416e9cf09a4b7002bd5b2dd6c2144dc42d5233483f9db971843671db7329c"
+              - "sha256:d07a50408fa997924cdaea60ce9a76ea2dd0560dd7ba8ffb1895cd3660c64f22"
               - ".agentplane/tasks/202608222117-HQ5AA4/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:c468bdf38c584f58bdac47ce7f99deaef0303d11966fa0f27bf1765a39c8ecf1"
+            repository_snapshot_digest: "sha256:183bb4cecf448e9b3ee6af6948fbd37a03c8b6b98827f620ff924253cfed3c97"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
-        revision: 2
+        revision: 3
         state: "REWORK_READY"
         validation_result:
           evidence:
@@ -513,8 +585,8 @@ extensions:
               command_identity: "bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
               detail: "Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
               exit_code: 1
-              observed_at: "2026-08-23T07:05:45.289Z"
-              repository_snapshot_digest: "sha256:c468bdf38c584f58bdac47ce7f99deaef0303d11966fa0f27bf1765a39c8ecf1"
+              observed_at: "2026-08-23T07:09:13.757Z"
+              repository_snapshot_digest: "sha256:183bb4cecf448e9b3ee6af6948fbd37a03c8b6b98827f620ff924253cfed3c97"
               status: "failed"
           schema_version: 1
           stale_evidence: []
@@ -547,6 +619,29 @@ extensions:
         mutation_id: "external-result:work-order-202608222117-HQ5AA4-executor-2d18cd4643c7c80779f45f91"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202608222117-HQ5AA4"
+      external-result:work-order-202608222117-HQ5AA4-executor-406f300c833590e1149eae80:
+        aggregate_digest: "sha256:3b3faf378725cf69182b0db8f452133b9660cde2e466c25917e3593f06d544e8"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-23T07:09:13.763Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_283422ecf1e31541499f9096"
+          mutation_id: "external-result:work-order-202608222117-HQ5AA4-executor-406f300c833590e1149eae80"
+          plan_digest: "sha256:a5680b8d99a69febdb2fa547ec5cd76cc81c098e70d9b581e29baf972f1b1a77"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608222117-HQ5AA4"
+          task_revision: 11
+          to: "REWORK_READY"
+          work_item_id: "migrate-blocked-result-plan-fixture"
+        mutation_id: "external-result:work-order-202608222117-HQ5AA4-executor-406f300c833590e1149eae80"
+        next_revision: 12
+        previous_revision: 11
         schema_version: 1
         task_id: "202608222117-HQ5AA4"
     pending_effects: []
@@ -596,6 +691,51 @@ Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9cc780db964b3beb8fa827a03129e041edf1255f1784b8ce01bb045acb7ab944, input_digest=sha256:2fe68d49ab7c6b342f959ad45dfd3b9da81f0399d052090122ececee433bd33c
+
+Details:
+
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202608222117-HQ5AA4/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608222117-HQ5AA4 declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608222117-HQ5AA4/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608222117-HQ5AA4 declared verification
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+Result: fail
+Evidence: .agentplane/tasks/202608222117-HQ5AA4/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608222117-HQ5AA4 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608222117-HQ5AA4-migrate-blocked-result-cli-fixture-to-structured/.agentplane/tasks/202608222117-HQ5AA4/blueprint/resolved-snapshot.json
+- old_digest: a9c8bab8a5dcc4767fb2769b57e335385abc0d8d6bbf3d1fd3e2d2cade2c3ad6
+- current_digest: a9c8bab8a5dcc4767fb2769b57e335385abc0d8d6bbf3d1fd3e2d2cade2c3ad6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608222117-HQ5AA4
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-23T07:09:10.313Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9cc780db964b3beb8fa827a03129e041edf1255f1784b8ce01bb045acb7ab944, input_digest=sha256:ec41e8766d3823a409d11d96761153640f5c8a7a04e07eefd93b60c38733a6d1
 
 Details:
 
