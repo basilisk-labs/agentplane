@@ -302,6 +302,19 @@ async function mkGitRepoRootWithMainCommit(): Promise<string> {
   return root;
 }
 
+function successfulCheckPackageJson(): string {
+  return `${JSON.stringify(
+    {
+      scripts: {
+        check: 'node -e "process.exit(0)"',
+        "ci:local:full": "bun run check",
+      },
+    },
+    null,
+    2,
+  )}\n`;
+}
+
 async function returnAgentResult(
   root: string,
   taskId: string,
@@ -678,11 +691,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
-    await writeFile(
-      path.join(root, "package.json"),
-      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"', "ci:local:full": "bun run check" } }, null, 2)}\n`,
-      "utf8",
-    );
+    await writeFile(path.join(root, "package.json"), successfulCheckPackageJson(), "utf8");
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed evaluator fixture"], { cwd: root });
     const taskId = await createTask(root, "Commit-stale evaluator result", "bun run check");
@@ -765,11 +774,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
-    await writeFile(
-      path.join(root, "package.json"),
-      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"', "ci:local:full": "bun run check" } }, null, 2)}\n`,
-      "utf8",
-    );
+    await writeFile(path.join(root, "package.json"), successfulCheckPackageJson(), "utf8");
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed direct fixture"], { cwd: root });
     const taskId = await createTask(root, "Direct external round trip", "bun run check");
@@ -822,11 +827,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
-    await writeFile(
-      path.join(root, "package.json"),
-      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"', "ci:local:full": "bun run check" } }, null, 2)}\n`,
-      "utf8",
-    );
+    await writeFile(path.join(root, "package.json"), successfulCheckPackageJson(), "utf8");
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed recovery fixture"], { cwd: root });
     const taskId = await createTask(root, "Implementation commit recovery", "bun run check");
@@ -867,11 +868,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
-    await writeFile(
-      path.join(root, "package.json"),
-      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"', "ci:local:full": "bun run check" } }, null, 2)}\n`,
-      "utf8",
-    );
+    await writeFile(path.join(root, "package.json"), successfulCheckPackageJson(), "utf8");
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     const taskId = await createTask(root, "Branch external round trip", "bun run check");
     await planAndApproveTask(
