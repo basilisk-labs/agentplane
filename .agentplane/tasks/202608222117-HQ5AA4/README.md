@@ -1,10 +1,10 @@
 ---
 id: "202608222117-HQ5AA4"
 title: "Migrate blocked-result CLI fixture to structured task plan"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -192,6 +192,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The scoped fixture implementation is committed, but its task worktree is still based on d93e42c and cannot satisfy the exact-scope assertion until it is synchronized with the already merged K0 dependency on main. Recommended action: Synchronize this task branch with current main through the branch_pr recovery route, then rerun the focused nine-case suite without changing the fixture scope. Agentplane receipt: external-agent-blocker/tr_3089fa06e518728e9142012f3d5278f9/sha256:ecb1e48c57ea314745c80f2754940a61d1020b3bad52c61e26238316f9855f0d."
+  -
+    author: "CODER"
+    body: "Resolved the recorded blocker by rebasing the clean task branch onto current main; the focused blocked-result suite now passes all 9 cases."
 events:
   -
     type: "status"
@@ -235,9 +238,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The scoped fixture implementation is committed, but its task worktree is still based on d93e42c and cannot satisfy the exact-scope assertion until it is synchronized with the already merged K0 dependency on main. Recommended action: Synchronize this task branch with current main through the branch_pr recovery route, then rerun the focused nine-case suite without changing the fixture scope. Agentplane receipt: external-agent-blocker/tr_3089fa06e518728e9142012f3d5278f9/sha256:ecb1e48c57ea314745c80f2754940a61d1020b3bad52c61e26238316f9855f0d."
+  -
+    type: "status"
+    at: "2026-08-23T07:12:37.080Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resolved the recorded blocker by rebasing the clean task branch onto current main; the focused blocked-result suite now passes all 9 cases."
 doc_version: 3
-doc_updated_at: "2026-08-23T07:10:27.779Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-23T07:12:37.080Z"
+doc_updated_by: "CODER"
 description: "Repair the proven task-centric regression in packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts: prepareBlockedResultTask seeds and approves only legacy plan text, so task advance re-enters PLANNER and all nine blocked-result cases fail before exercising their intended behavior. Change only this test fixture to install a schema-valid baseline-bound TaskPlanProposal before approval. Do not change production lifecycle, scope-extension semantics, context behavior, release behavior, or Knowledge Assimilation."
 sections:
   Summary: |-

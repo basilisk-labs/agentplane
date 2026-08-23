@@ -12,8 +12,8 @@ Created: 2026-08-22T21:19:32.900Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,8 +29,8 @@ Created: 2026-08-22T21:19:32.900Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...un-cli.core.task-advance.blocked-result.test.ts | 213 +++++++++++++++++++--
- 1 file changed, 193 insertions(+), 20 deletions(-)
+ ...un-cli.core.task-advance.blocked-result.test.ts | 214 +++++++++++++++++++--
+ 1 file changed, 194 insertions(+), 20 deletions(-)
 ```
 
 </details>
