@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -57,9 +57,9 @@ quality_review:
   findings:
     - "No blocking defect was found: the scheduler and active-claim testkit are the only implementation files changed, and both declared checks pass."
 token_usage:
-  agent_runs: 7
+  agent_runs: 11
   input_tokens: null
-  journal_digest: "sha256:5cfcf4f12e2996f99d921cbea5b90e1b55db41dc25fac83d6301ddd044e3d4be"
+  journal_digest: "sha256:6b9b9f0e6d47ae89ec3e53bfdc10721d5a5303480b96ee373cdbf55f0668e0cb"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -69,7 +69,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-23T02:25:56.690Z"
+  updated_at: "2026-08-23T02:33:39.277Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -227,8 +227,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "task_outcome"
 commit:
-  hash: "008f45d344b00cc80ed4cb8dd4a6b0c02970f3ea"
-  message: "🚧 TEK7WE task: record external evaluator result"
+  hash: "d31b68ca4b56e65bc85c68aca45eb91081323348"
+  message: "🚧 TEK7WE task: record worktree observation"
 comments:
   -
     author: "CODER"
@@ -272,6 +272,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The current uncommitted files are the intended structured evaluator review and its immutable evidence objects; preserve and commit them as Task quality artifacts."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Preserve the sole README mutation as audit evidence of the failed pre-merge close attempt; it does not establish a valid closure marker."
 events:
   -
     type: "status"
@@ -401,8 +407,21 @@ events:
     at: "2026-08-23T02:32:22.591Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The current uncommitted files are the intended structured evaluator review and its immutable evidence objects; preserve and commit them as Task quality artifacts."
+  -
+    type: "status"
+    at: "2026-08-23T02:33:39.277Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "d31b68ca4b56e65bc85c68aca45eb91081323348"
+  -
+    type: "comment"
+    at: "2026-08-23T02:42:58.325Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Preserve the sole README mutation as audit evidence of the failed pre-merge close attempt; it does not establish a valid closure marker."
 doc_version: 3
-doc_updated_at: "2026-08-23T02:32:22.625Z"
+doc_updated_at: "2026-08-23T02:42:58.355Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the proven coupled full-CI regression with one atomic change: run the runtime verification group alone before the remaining groups, and increase only the active-claim test harness settlement observation from 1500 ms to 5000 ms. Preserve all selected groups, commands, production behavior, max concurrency for the remaining wave, metrics, and fail aggregation. Prove the exact active-claim suite and full local CI."
 sections:
@@ -1302,12 +1321,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/7` agent runs
+- Completeness: `0/11` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:5cfcf4f12e2996f99d921cbea5b90e1b55db41dc25fac83d6301ddd044e3d4be`
+- Journal digest: `sha256:6b9b9f0e6d47ae89ec3e53bfdc10721d5a5303480b96ee373cdbf55f0668e0cb`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-23T02:25:56.690Z`
+- Updated at: `2026-08-23T02:33:39.277Z`
