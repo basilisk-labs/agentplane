@@ -6,7 +6,7 @@ Created: 2026-08-23T02:47:36.459Z
 
 - Task: `202608230243-BCEYJ9`
 - Title: Honor task-centric PLANNING after material plan refinement
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608230243-BCEYJ9/honor-task-centric-planning-after-material-plan`
 - Canonical task record: `.agentplane/tasks/202608230243-BCEYJ9/README.md`
 
