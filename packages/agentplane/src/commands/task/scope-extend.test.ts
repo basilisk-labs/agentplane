@@ -241,9 +241,15 @@ describe("blocked task execution scope extension", () => {
 
     expect(next?.current_plan).toMatchObject({
       revision: 2,
-      approval: { state: "approved", approved_by: "USER" },
+      approval: {
+        state: "approved",
+        approved_by: "USER",
+        policy_facts: [`state_bound_scope_extension:${pending.request_digest}`],
+      },
     });
     expect(next?.current_plan?.digest).not.toBe(aggregate.current_plan?.digest);
+    expect(next?.revision).toBe(aggregate.revision + 1);
+    expect(next?.event_cursor).toBe(aggregate.event_cursor + 1);
     const nextItems = next?.current_plan?.proposal.work_items.work_items;
     expect(nextItems?.map((item) => ({ id: item.id, scope_roots: item.scope_roots }))).toEqual([
       { id: "active", scope_roots: ["docs/releases", "website"] },

@@ -30,8 +30,8 @@ Created: 2026-08-22T21:31:27.901Z
 
 ```text
  .../shared/task-scope-extension-request.ts         |  91 ++++++++++-
- .../src/commands/task/scope-extend.test.ts         | 171 +++++++++++++++++++++
- 2 files changed, 260 insertions(+), 2 deletions(-)
+ .../src/commands/task/scope-extend.test.ts         | 177 +++++++++++++++++++++
+ 2 files changed, 266 insertions(+), 2 deletions(-)
 ```
 
 </details>
