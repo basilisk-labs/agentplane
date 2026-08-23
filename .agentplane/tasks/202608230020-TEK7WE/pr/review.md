@@ -12,8 +12,8 @@ Created: 2026-08-23T00:24:36.251Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,8 +30,8 @@ Created: 2026-08-23T00:24:36.251Z
 
 ```text
  .../usecases/task-run-active-claim.testkit.ts      |  2 +-
- scripts/checks/run-local-ci.mjs                    | 33 ++++++++++++++++------
- 2 files changed, 26 insertions(+), 9 deletions(-)
+ scripts/checks/run-local-ci.mjs                    | 34 +++++++++++++++++-----
+ 2 files changed, 27 insertions(+), 9 deletions(-)
 ```
 
 </details>
