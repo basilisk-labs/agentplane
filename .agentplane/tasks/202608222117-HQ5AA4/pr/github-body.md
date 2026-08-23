@@ -15,8 +15,8 @@ Repair the proven task-centric regression in packages/agentplane/src/cli/run-cli
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,8 +27,8 @@ Repair the proven task-centric regression in packages/agentplane/src/cli/run-cli
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...un-cli.core.task-advance.blocked-result.test.ts | 214 +++++++++++++++++++--
- 1 file changed, 194 insertions(+), 20 deletions(-)
+ ...un-cli.core.task-advance.blocked-result.test.ts | 211 +++++++++++++++++++--
+ 1 file changed, 191 insertions(+), 20 deletions(-)
 ```
 
 </details>

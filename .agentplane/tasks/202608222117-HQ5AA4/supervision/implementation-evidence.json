@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 87b699240f1320337b68be21e0339c3ab7c2651c..50abbf85117b27f4d89c7885014dd1b8f059a85a",
+      "command": "git diff --check fbcf1a2dbeee2762d0251b1cd57d4743c4d39996..91ee73fe8488a7611f2223ec9c520ac5d0bec6ae",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 87b699240f1320337b68be21e0339c3ab7c2651c..50abbf85117b27f4d89c7885014dd1b8f059a85a",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB fbcf1a2dbeee2762d0251b1cd57d4743c4d39996..91ee73fe8488a7611f2223ec9c520ac5d0bec6ae",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,9 +22,6 @@
         "M\t.agentplane/tasks/202608222117-HQ5AA4/pr/github-body.md",
         "M\t.agentplane/tasks/202608222117-HQ5AA4/pr/meta.json",
         "M\t.agentplane/tasks/202608222117-HQ5AA4/pr/review.md",
-        "A\t.agentplane/tasks/202608222117-HQ5AA4/supervision/declared-checks.json",
-        "A\t.agentplane/tasks/202608222117-HQ5AA4/supervision/implementation-evidence.json",
-        "A\t.agentplane/tasks/202608222117-HQ5AA4/verification/20260823070541546-709334df93589f16.json",
         "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
       ]
     },
@@ -35,59 +32,23 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "87b699240f1320337b68be21e0339c3ab7c2651c",
-  "implementation_commit": "50abbf85117b27f4d89c7885014dd1b8f059a85a",
+  "execution_base_commit": "fbcf1a2dbeee2762d0251b1cd57d4743c4d39996",
+  "implementation_commit": "91ee73fe8488a7611f2223ec9c520ac5d0bec6ae",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M .agentplane/tasks/202608222117-HQ5AA4/README.md",
-      " M .agentplane/tasks/202608222117-HQ5AA4/pr/github-body.md",
-      " M .agentplane/tasks/202608222117-HQ5AA4/pr/meta.json",
-      " M .agentplane/tasks/202608222117-HQ5AA4/pr/review.md",
-      "?? .agentplane/tasks/202608222117-HQ5AA4/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202608222117-HQ5AA4/supervision/implementation-evidence.json",
-      "?? .agentplane/tasks/202608222117-HQ5AA4/verification/20260823070541546-709334df93589f16.json"
+      " M .agentplane/tasks/202608222117-HQ5AA4/README.md"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202608222117-HQ5AA4/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608222117-HQ5AA4/pr/github-body.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608222117-HQ5AA4/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608222117-HQ5AA4/pr/review.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608222117-HQ5AA4/supervision/declared-checks.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608222117-HQ5AA4/supervision/implementation-evidence.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608222117-HQ5AA4/verification/20260823070541546-709334df93589f16.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202608222117-HQ5AA4/README.md",
-      " M .agentplane/tasks/202608222117-HQ5AA4/pr/github-body.md",
-      " M .agentplane/tasks/202608222117-HQ5AA4/pr/meta.json",
-      " M .agentplane/tasks/202608222117-HQ5AA4/pr/review.md",
-      "?? .agentplane/tasks/202608222117-HQ5AA4/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202608222117-HQ5AA4/supervision/implementation-evidence.json",
-      "?? .agentplane/tasks/202608222117-HQ5AA4/verification/20260823070541546-709334df93589f16.json"
+      " M .agentplane/tasks/202608222117-HQ5AA4/README.md"
     ],
     "unchanged_from_execution_baseline": []
   },

@@ -2,9 +2,9 @@
   "base": "main",
   "branch": "task/202608222117-HQ5AA4/migrate-blocked-result-cli-fixture-to-structured",
   "created_at": "2026-08-22T21:19:32.900Z",
-  "diffstat_sha256": "sha256:fe5eafaed186bb2c9220a48037889c1e39a59b9044bfcae99c509eb04f864611",
-  "last_verified_at": "2026-08-23T07:09:10.313Z",
-  "last_verified_diffstat_sha256": "sha256:55ba7157ca74f5857cf02bf9d651401f7d71d8932bd192e1795c8867547892fe",
+  "diffstat_sha256": "sha256:281f8934dcb7d50b5fc8ad03b5fac09f97514fc901609be2c0f55a27359c7cc0",
+  "last_verified_at": "2026-08-23T07:51:00.003Z",
+  "last_verified_diffstat_sha256": "sha256:281f8934dcb7d50b5fc8ad03b5fac09f97514fc901609be2c0f55a27359c7cc0",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -17,6 +17,6 @@
   "task_id": "202608222117-HQ5AA4",
   "updated_at": "2026-08-22T21:19:32.900Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }
