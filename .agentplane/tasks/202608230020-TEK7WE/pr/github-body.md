@@ -28,8 +28,8 @@ Fix the proven coupled full-CI regression with one atomic change: run the runtim
 
 ```text
  .../usecases/task-run-active-claim.testkit.ts      |  2 +-
- scripts/checks/run-local-ci.mjs                    | 34 +++++++++++++++++-----
- 2 files changed, 27 insertions(+), 9 deletions(-)
+ scripts/checks/run-local-ci.mjs                    | 36 ++++++++++++++++------
+ 2 files changed, 28 insertions(+), 10 deletions(-)
 ```
 
 </details>
