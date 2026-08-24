@@ -27,11 +27,11 @@ Release self-hosting blocker. Symptom: task 202608242156-A8Q1W1 has implementati
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.task-advance.test.ts      | 196 ++++++++++++++++++++-
- .../commands/task/direct-task-verification.test.ts |  23 +++
+ .../src/cli/run-cli.core.task-advance.test.ts      | 299 ++++++++++++++++++++-
+ .../commands/task/direct-task-verification.test.ts |  23 ++
  .../src/commands/task/direct-task-verification.ts  |   7 +-
- .../external-agent-implementation-authority.ts     | 132 +++++++++++---
- 4 files changed, 332 insertions(+), 26 deletions(-)
+ .../external-agent-implementation-authority.ts     | 183 ++++++++++---
+ 4 files changed, 472 insertions(+), 40 deletions(-)
 ```
 
 </details>

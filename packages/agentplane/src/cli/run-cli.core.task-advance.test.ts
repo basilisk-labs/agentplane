@@ -113,10 +113,22 @@ async function createTask(
   }
 }
 
-async function readAgentPacket(root: string, taskId: string): Promise<AgentPacket> {
+async function readAgentPacket(
+  root: string,
+  taskId: string,
+  replacement = false,
+): Promise<AgentPacket> {
   const io = captureStdIO();
   try {
-    const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", root]);
+    const code = await runCli([
+      "task",
+      "advance",
+      taskId,
+      ...(replacement ? ["--replacement"] : []),
+      "--agent-json",
+      "--root",
+      root,
+    ]);
     expect(code, io.stderr).toBe(0);
     expect(Buffer.byteLength(io.stdout.trim(), "utf8")).toBeLessThanOrEqual(
       MAX_AGENT_ACTION_PACKET_BYTES,
@@ -892,6 +904,93 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     );
     expect(taskReadme).toContain(`commit: "${implementationHead}"`);
     expect(taskReadme).toContain('state: "COMPLETED"');
+    const implementationCommits = await execFileAsync(
+      "git",
+      ["log", "--format=%s", `--grep=apply external agent result`],
+      { cwd: root },
+    );
+    expect(implementationCommits.stdout.trim().split("\n").filter(Boolean)).toHaveLength(1);
+  }, 45_000);
+
+  it("completes task-level verification rework after all WorkItems are already complete", async () => {
+    const root = await mkGitRepoRootWithCommit();
+    await cp(
+      path.join(process.cwd(), ".agentplane", "policy"),
+      path.join(root, ".agentplane", "policy"),
+      { recursive: true },
+    );
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    const taskId = await createTask(root, "Task-level implementation rework", "bun run check");
+    await writeFile(path.join(root, "package.json"), SUCCESSFUL_CHECK_PACKAGE_JSON, "utf8");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed task-level rework"], {
+      cwd: root,
+    });
+    await planAndApproveTask(
+      root,
+      taskId,
+      "Reuse the committed implementation after a task-level regression retry.",
+    );
+
+    const implementationPacket = await readAgentPacket(root, taskId);
+    await writeFile(path.join(root, "task-level-rework.txt"), "implemented\n", "utf8");
+    const implementationResult = await writeCompletedResult(
+      implementationPacket,
+      "Created the implementation before the task-level regression retry.",
+    );
+    const afterImplementation = await returnAgentResult(root, taskId, implementationResult);
+    expect(afterImplementation.code, afterImplementation.stderr).toBe(0);
+    const evaluatorPacket = JSON.parse(afterImplementation.stdout) as AgentPacket;
+    expect(evaluatorPacket.authority.role).toBe("EVALUATOR");
+    const implementationHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const implementationHead = implementationHeadResult.stdout.trim();
+    await runCliSilent([
+      "task",
+      "verify",
+      "rework",
+      taskId,
+      "--by",
+      "SUPERVISOR",
+      "--note",
+      "Retry task-level verification without changing the implementation.",
+      "--root",
+      root,
+    ]);
+
+    const stale = captureStdIO();
+    try {
+      expect(await runCli(["task", "advance", taskId, "--agent-json", "--root", root])).not.toBe(0);
+      expect(stale.stderr).toContain("--replacement");
+    } finally {
+      stale.restore();
+    }
+    const reworkPacket = await readAgentPacket(root, taskId, true);
+    expect(reworkPacket.authority.role).toBe("EXECUTOR");
+    if (!reworkPacket.exchange) throw new Error("expected task-level rework exchange");
+    const reworkOrder = JSON.parse(
+      await readFile(
+        path.join(reworkPacket.exchange.directory, reworkPacket.exchange.work_order_ref),
+        "utf8",
+      ),
+    ) as AgentWorkOrderV2;
+    expect(reworkOrder.task.work_item_id).toBeNull();
+
+    const reworkResult = await writeCompletedResult(
+      reworkPacket,
+      "Reused the unchanged implementation after the full regression passed.",
+    );
+    const afterRework = await returnAgentResult(root, taskId, reworkResult);
+    expect(afterRework.code, afterRework.stderr).toBe(0);
+    expect((JSON.parse(afterRework.stdout) as AgentPacket).authority.role).toBe("EVALUATOR");
+    const taskReadme = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(taskReadme).toContain(`commit: "${implementationHead}"`);
     const implementationCommits = await execFileAsync(
       "git",
       ["log", "--format=%s", `--grep=apply external agent result`],
