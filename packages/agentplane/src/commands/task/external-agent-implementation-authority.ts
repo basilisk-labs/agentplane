@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { runProcess } from "@agentplaneorg/core/process";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 
@@ -184,10 +184,31 @@ function recordedEvidenceOnlyReworkCommit(opts: {
   ) {
     return null;
   }
-  const workItemId = opts.work_order.task.work_item_id;
-  if (!workItemId) return null;
   const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
-  return aggregate?.work_items[workItemId]?.state === "REWORK_READY" ? recordedCommit : null;
+  if (!aggregate?.current_plan) return null;
+  const workItemId = opts.work_order.task.work_item_id;
+  if (workItemId) {
+    return aggregate.work_items[workItemId]?.state === "REWORK_READY" ? recordedCommit : null;
+  }
+  const allRequiredWorkItemsCompleted = aggregate.current_plan.proposal.work_items.work_items
+    .filter((item) => !item.optional)
+    .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
+  return opts.task.verification?.state === "needs_rework" && allRequiredWorkItemsCompleted
+    ? recordedCommit
+    : null;
+}
+
+function isTaskLevelVerificationRework(opts: {
+  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+  work_order: AgentWorkOrderV2;
+  semantic: AgentSemanticResult;
+}): boolean {
+  if (opts.work_order.task.work_item_id || opts.semantic.plan_refinement) return false;
+  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
+  if (!aggregate?.current_plan || opts.task.verification?.state !== "needs_rework") return false;
+  return aggregate.current_plan.proposal.work_items.work_items
+    .filter((item) => !item.optional)
+    .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
 }
 
 function assertExternalImplementationReturnState(opts: {
@@ -565,25 +586,31 @@ export async function applyExternalImplementationResult(opts: {
   });
   const postVerificationHead = await readDirectTaskHead(opts.exchange.checkout);
   const postVerificationStatus = await readDirectRepositoryStatus(opts.exchange.checkout);
-  const canonicalProjection: TaskCentricExternalResultProjection =
-    await recordTaskCentricExternalResult({
-      command: opts.command,
+  const canonicalProjection: TaskCentricExternalResultProjection | null =
+    isTaskLevelVerificationRework({
+      task: reconciliation.task,
       work_order: opts.work_order,
       semantic,
-      verification,
-      head: postVerificationHead,
-      dirty_paths: (postVerificationStatus?.lines ?? [])
-        .map((line) => pathFromStatusLine(line))
-        .filter(Boolean),
-    });
+    })
+      ? null
+      : await recordTaskCentricExternalResult({
+          command: opts.command,
+          work_order: opts.work_order,
+          semantic,
+          verification,
+          head: postVerificationHead,
+          dirty_paths: (postVerificationStatus?.lines ?? [])
+            .map((line) => pathFromStatusLine(line))
+            .filter(Boolean),
+        });
   if (verification.status !== "passed") {
-    if (canonicalProjection.state !== "legacy_task") return;
+    if (canonicalProjection?.state !== "legacy_task") return;
     throw new CliError({
       code: "E_VALIDATION",
       message: verification.reason ?? "Declared implementation verification did not pass.",
     });
   }
-  if (canonicalProjection.state === "work_item_rework") return;
+  if (canonicalProjection?.state === "work_item_rework") return;
   if (opts.decision.workflowMode === "branch_pr") {
     opts.command.git.invalidateStatus();
     const currentStatus = await readDirectRepositoryStatus(opts.exchange.checkout);
