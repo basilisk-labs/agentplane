@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608242233-KTFFN7/allow-evidence-only-rework-after-an-already-comm",
+  "created_at": "2026-08-24T22:59:26.702Z",
+  "diffstat_sha256": "sha256:e6bef4127d24803905684a5e110823df5dfd0cf4d63439eb940a86e7f72fd445",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608242233-KTFFN7",
+  "updated_at": "2026-08-24T22:59:26.702Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
