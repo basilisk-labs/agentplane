@@ -117,8 +117,12 @@ function directTaskVerificationCommands(
     TaskData,
     "verify" | "task_kind" | "mutation_scope" | "execution_contract" | "sections"
   >,
+  additionalCommands: readonly string[] = [],
 ): string[] {
   const commands = [...(task.verify ?? [])];
+  for (const command of additionalCommands) {
+    if (!commands.includes(command)) commands.push(command);
+  }
   const declaresDocs = task.execution_contract
     ? task.execution_contract.authority.allowed_repository_effects.includes("documentation")
     : task.task_kind === "docs" || task.mutation_scope === "docs";
@@ -303,10 +307,11 @@ export async function runDirectTaskVerification(opts: {
   >;
   task_id: string;
   cwd: string;
+  additional_commands?: readonly string[];
   run_process?: typeof runProcess;
 }): Promise<DirectTaskVerificationResult> {
   const checks: DirectTaskCheck[] = [];
-  const commands = directTaskVerificationCommands(opts.task);
+  const commands = directTaskVerificationCommands(opts.task, opts.additional_commands);
   const selectedChecks = selectedLocalChecks(opts.task);
   const requiresFullRegression = selectedChecks.includes("full_regression");
   const rootPackage =

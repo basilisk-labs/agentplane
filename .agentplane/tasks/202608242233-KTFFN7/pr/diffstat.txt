@@ -1,0 +1,5 @@
+ .../src/cli/run-cli.core.task-advance.test.ts      | 196 ++++++++++++++++++++-
+ .../commands/task/direct-task-verification.test.ts |  26 +++
+ .../src/commands/task/direct-task-verification.ts  |   7 +-
+ .../external-agent-implementation-authority.ts     | 133 +++++++++++---
+ 4 files changed, 336 insertions(+), 26 deletions(-)

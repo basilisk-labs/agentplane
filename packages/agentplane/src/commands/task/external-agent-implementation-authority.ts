@@ -2,6 +2,7 @@ import path from "node:path";
 
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { runProcess } from "@agentplaneorg/core/process";
+import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 
 import { CliError } from "../../shared/errors.js";
 import { cmdCommit } from "../guard/impl/commit.js";
@@ -106,13 +107,22 @@ async function recordExternalImplementationVerification(opts: {
   command: CommandContext;
   checkout: string;
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+  work_order: AgentWorkOrderV2;
   workflow: "direct" | "branch_pr";
 }): Promise<DirectTaskVerificationResult> {
+  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
+  const selectedWorkItem = aggregate?.current_plan?.proposal.work_items.work_items.find(
+    (item) => item.id === opts.work_order.task.work_item_id,
+  );
+  const additionalCommands = (selectedWorkItem?.validation.checks ?? [])
+    .map((check) => check.command)
+    .filter((command): command is string => typeof command === "string");
   const checks = await runDirectTaskVerification({
     command: opts.command,
     task: opts.task,
     task_id: opts.task.id,
     cwd: opts.checkout,
+    additional_commands: additionalCommands,
   });
   const exitCode = await cmdVerifyParsed({
     ctx: opts.command,
@@ -144,6 +154,42 @@ async function recordExternalImplementationVerification(opts: {
     });
   }
   return checks;
+}
+
+function recordedEvidenceOnlyReworkCommit(opts: {
+  exchange: ExternalAgentExchange;
+  work_order: AgentWorkOrderV2;
+  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+  route_commit: string | null;
+  head: string | null;
+  changed_paths: readonly string[];
+}): string | null {
+  const extensionCommit = opts.task.extensions?.implementation_commit as
+    | { hash?: unknown }
+    | undefined;
+  const eventCommit = (opts.task.events ?? [])
+    .toReversed()
+    .map((event) => (event as unknown as { commit?: unknown }).commit)
+    .find((commit): commit is string => typeof commit === "string" && commit.trim().length > 0);
+  const recordedCommit =
+    opts.route_commit ??
+    (typeof extensionCommit?.hash === "string" ? extensionCommit.hash.trim() : null) ??
+    eventCommit?.trim() ??
+    null;
+  if (
+    !["implementation", "implementation_rework"].includes(opts.exchange.purpose) ||
+    opts.changed_paths.length > 0 ||
+    !recordedCommit ||
+    recordedCommit !== opts.head
+  ) {
+    return null;
+  }
+  const workItemId = opts.work_order.task.work_item_id;
+  if (!workItemId) return null;
+  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
+  return aggregate?.work_items[workItemId]?.state === "REWORK_READY"
+    ? recordedCommit
+    : null;
 }
 
 function assertExternalImplementationReturnState(opts: {
@@ -346,9 +392,14 @@ export async function applyExternalImplementationResult(opts: {
     readDirectTaskHead(opts.exchange.checkout),
     readDirectRepositoryStatus(opts.exchange.checkout),
   ]);
+  const taskAtReturn = await loadTaskFromContext({
+    ctx: opts.command,
+    taskId: opts.exchange.task_id,
+  });
   let implementationCommit = recoversRecordedImplementationCommit(opts.exchange.purpose)
     ? opts.decision.task.commit
     : null;
+  let reusedRecordedImplementation = false;
   let observedChangedPaths: string[] | null = null;
   if (implementationCommit) {
     await assertRecoverableImplementationCommit({
@@ -372,35 +423,72 @@ export async function applyExternalImplementationResult(opts: {
       current: opts.decision,
       current_head: head,
       current_status_lines: status?.lines ?? [],
-      require_changes: true,
+      require_changes: false,
     });
-    if (observedChangedPaths.length === 0) return;
-    const exitCode = await cmdCommit({
-      ctx: opts.command,
-      cwd: opts.exchange.checkout,
-      taskId: opts.exchange.task_id,
-      message: implementationSubject(opts.exchange.task_id),
-      close: false,
-      allow: observedChangedPaths,
-      autoAllow: false,
-      allowTasks: true,
-      allowBase: false,
-      allowPolicy: false,
-      allowConfig: false,
-      allowHooks: false,
-      allowCI: false,
-      requireClean: false,
-      quiet: true,
-      closeUnstageOthers: false,
-      closeCheckOnly: false,
+    implementationCommit = recordedEvidenceOnlyReworkCommit({
+      exchange: opts.exchange,
+      work_order: opts.work_order,
+      task: taskAtReturn,
+      route_commit: opts.decision.task.commit,
+      head,
+      changed_paths: observedChangedPaths,
     });
-    if (exitCode !== 0) throw new Error(`External-agent implementation commit exited ${exitCode}.`);
+    if (implementationCommit) {
+      reusedRecordedImplementation = true;
+      await assertRecoverableImplementationCommit({
+        cwd: opts.exchange.checkout,
+        baseline: opts.exchange.baseline.head,
+        commit: implementationCommit,
+        task_id: opts.exchange.task_id,
+      });
+    } else {
+      if (observedChangedPaths.length === 0) {
+        throw new CliError({
+          code: "E_VALIDATION",
+          message: "Completed implementation result produced no supervisor-observed workspace change.",
+        });
+      }
+      const exitCode = await cmdCommit({
+        ctx: opts.command,
+        cwd: opts.exchange.checkout,
+        taskId: opts.exchange.task_id,
+        message: implementationSubject(opts.exchange.task_id),
+        close: false,
+        allow: observedChangedPaths,
+        autoAllow: false,
+        allowTasks: true,
+        allowBase: false,
+        allowPolicy: false,
+        allowConfig: false,
+        allowHooks: false,
+        allowCI: false,
+        requireClean: false,
+        quiet: true,
+        closeUnstageOthers: false,
+        closeCheckOnly: false,
+      });
+      if (exitCode !== 0)
+        throw new Error(`External-agent implementation commit exited ${exitCode}.`);
+    }
+  }
+  const executionContext = taskAtReturn.extensions?.task_execution_context as
+    | { base_sha?: unknown }
+    | undefined;
+  const recordedExecutionBase =
+    typeof executionContext?.base_sha === "string" ? executionContext.base_sha.trim() : null;
+  if (reusedRecordedImplementation && !recordedExecutionBase) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Evidence-only implementation rework is missing its recorded execution base.",
+    });
   }
   const implementation = await prepareDirectImplementationEvidence({
     command: opts.command,
     cwd: opts.exchange.checkout,
     task_id: opts.exchange.task_id,
-    execution_base_commit: opts.exchange.baseline.head,
+    execution_base_commit: reusedRecordedImplementation
+      ? recordedExecutionBase
+      : opts.exchange.baseline.head,
     execution_baseline_status: {
       command: "git status --short --untracked-files=all",
       lines: opts.exchange.baseline.changed_paths,
@@ -473,6 +561,7 @@ export async function applyExternalImplementationResult(opts: {
     command: opts.command,
     checkout: opts.exchange.checkout,
     task: reconciliation.task,
+    work_order: opts.work_order,
     workflow: opts.decision.workflowMode === "branch_pr" ? "branch_pr" : "direct",
   });
   const postVerificationHead = await readDirectTaskHead(opts.exchange.checkout);

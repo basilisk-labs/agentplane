@@ -315,6 +315,32 @@ describe("direct task verification", () => {
     });
   });
 
+  it("runs canonical WorkItem checks in addition to legacy task checks and deduplicates them", async () => {
+    const cwd = await root();
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "ok", stderr: "" });
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { verify: ["bun run test:critical"] },
+      task_id: TASK_ID,
+      cwd,
+      additional_commands: [
+        "bun run test:critical",
+        "bun run lifecycle:invariants",
+      ],
+      run_process: mocks.runProcess,
+    });
+
+    expect(result).toMatchObject({
+      status: "passed",
+      checks: [
+        { command: "bun run test:critical", exit_code: 0 },
+        { command: "bun run lifecycle:invariants", exit_code: 0 },
+      ],
+    });
+    expect(mocks.runProcess).toHaveBeenCalledTimes(2);
+  });
+
   it("keeps passed evidence stable across equivalent reruns but rewrites changed outcomes", async () => {
     const cwd = await root();
     mocks.runProcess

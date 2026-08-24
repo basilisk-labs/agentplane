@@ -138,6 +138,7 @@ async function writeCompletedResult(
   },
   taskIntent?: AgentSemanticResultTaskIntent,
   structuredPlan = false,
+  structuredValidationCommand?: string,
 ): Promise<string> {
   if (!packet.exchange) throw new Error("expected an external-agent exchange");
   const workOrder = JSON.parse(
@@ -153,7 +154,13 @@ async function writeCompletedResult(
     schema_version: 1,
     criteria: [routeCriterion],
     checks: [
-      { id: "task-check", kind: "deterministic", required: true, capability: "task.verify" },
+      {
+        id: "task-check",
+        kind: "deterministic",
+        required: true,
+        capability: "task.verify",
+        ...(structuredValidationCommand ? { command: structuredValidationCommand } : {}),
+      },
     ],
     evidence_fingerprint: "sha256:0000000000000000000000000000000000000000000000000000000000000000",
   } as const;
@@ -225,7 +232,12 @@ async function writeCompletedResult(
   return resultPath;
 }
 
-async function planAndApproveTask(root: string, taskId: string, plan: string): Promise<void> {
+async function planAndApproveTask(
+  root: string,
+  taskId: string,
+  plan: string,
+  structuredValidationCommand?: string,
+): Promise<void> {
   const command = await loadCommandContext({ cwd: root, rootOverride: root });
   const task = await command.taskBackend.getTask(taskId);
   if (!task) throw new Error(`missing fixture task ${taskId}`);
@@ -251,7 +263,14 @@ async function planAndApproveTask(root: string, taskId: string, plan: string): P
   );
   const planningPacket = await readAgentPacket(root, taskId);
   expect(planningPacket.authority.role).toBe("PLANNER");
-  const resultPath = await writeCompletedResult(planningPacket, plan, undefined, undefined, true);
+  const resultPath = await writeCompletedResult(
+    planningPacket,
+    plan,
+    undefined,
+    undefined,
+    true,
+    structuredValidationCommand,
+  );
   const planned = await returnAgentResult(root, taskId, resultPath);
   expect(planned.code, planned.stderr).toBe(0);
   expect((JSON.parse(planned.stdout) as AgentPacket).action.kind).toBe("approval_required");
@@ -768,6 +787,177 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     );
     expect(taskReadme).toContain('status: "DONE"');
   }, 30_000);
+
+  it("rejects an initial completed implementation with no workspace change", async () => {
+    const root = await mkGitRepoRootWithCommit();
+    await cp(
+      path.join(process.cwd(), ".agentplane", "policy"),
+      path.join(root, ".agentplane", "policy"),
+      { recursive: true },
+    );
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    await writeFile(path.join(root, "package.json"), SUCCESSFUL_CHECK_PACKAGE_JSON, "utf8");
+    const taskId = await createTask(root, "Reject initial no-op implementation", "bun run check");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed no-op rejection"], { cwd: root });
+    await planAndApproveTask(root, taskId, "Require one real implementation change.");
+
+    const implementationPacket = await readAgentPacket(root, taskId);
+    const noOpResult = await writeCompletedResult(
+      implementationPacket,
+      "Incorrectly claimed completion without a workspace change.",
+    );
+    const rejected = await returnAgentResult(root, taskId, noOpResult);
+
+    expect(rejected.code).not.toBe(0);
+    expect(rejected.stderr).toContain(
+      "Completed implementation result produced no supervisor-observed workspace change.",
+    );
+  });
+
+  it("completes evidence-only rework against the recorded implementation commit", async () => {
+    const root = await mkGitRepoRootWithCommit();
+    await cp(
+      path.join(process.cwd(), ".agentplane", "policy"),
+      path.join(root, ".agentplane", "policy"),
+      { recursive: true },
+    );
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    const taskId = await createTask(root, "Evidence-only implementation rework", "bun run check");
+    const evidencePath = `.agentplane/tasks/${taskId}/supervision/declared-checks.json`;
+    await writeFile(
+      path.join(root, "package.json"),
+      `${JSON.stringify({
+        scripts: {
+          check: 'node -e "process.exit(0)"',
+          canonical: `node -e "process.exit(require('fs').existsSync('${evidencePath}') ? 0 : 1)"`,
+          "ci:local:full": "bun run check",
+        },
+      })}\n`,
+      "utf8",
+    );
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed evidence-only rework"], {
+      cwd: root,
+    });
+    await planAndApproveTask(
+      root,
+      taskId,
+      "Complete an unchanged implementation after fresh canonical validation evidence.",
+      "bun run canonical",
+    );
+
+    const implementationPacket = await readAgentPacket(root, taskId);
+    await writeFile(path.join(root, "evidence-rework.txt"), "implemented\n", "utf8");
+    const implementationResult = await writeCompletedResult(
+      implementationPacket,
+      "Created the implementation before validation rework.",
+    );
+    const afterImplementation = await returnAgentResult(root, taskId, implementationResult);
+    expect(afterImplementation.code, afterImplementation.stderr).toBe(0);
+    const reworkPacket = JSON.parse(afterImplementation.stdout) as AgentPacket;
+    expect(reworkPacket.authority.role).toBe("EXECUTOR");
+    if (!reworkPacket.exchange) throw new Error("expected implementation rework exchange");
+    expect(
+      JSON.parse(
+        await readFile(path.join(reworkPacket.exchange.directory, "exchange.json"), "utf8"),
+      ),
+    ).toMatchObject({ purpose: "implementation" });
+    const implementationHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const implementationHead = implementationHeadResult.stdout.trim();
+    const reworkReadme = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(reworkReadme).toContain('state: "REWORK_READY"');
+    expect(reworkReadme).toContain(`commit: "${implementationHead}"`);
+
+    const reworkResult = await writeCompletedResult(
+      reworkPacket,
+      "Reused the unchanged implementation with fresh passing validation evidence.",
+    );
+    const afterRework = await returnAgentResult(root, taskId, reworkResult);
+    expect(afterRework.code, afterRework.stderr).toBe(0);
+    const evaluatorPacket = JSON.parse(afterRework.stdout) as AgentPacket;
+    expect(evaluatorPacket.authority.role).toBe("EVALUATOR");
+    const taskReadme = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(taskReadme).toContain(`commit: "${implementationHead}"`);
+    expect(taskReadme).toContain('state: "COMPLETED"');
+    const implementationCommits = await execFileAsync(
+      "git",
+      ["log", "--format=%s", `--grep=apply external agent result`],
+      { cwd: root },
+    );
+    expect(implementationCommits.stdout.trim().split("\n").filter(Boolean)).toHaveLength(1);
+  }, 45_000);
+
+  it("commits a new implementation identity when rework changes the workspace", async () => {
+    const root = await mkGitRepoRootWithCommit();
+    await cp(
+      path.join(process.cwd(), ".agentplane", "policy"),
+      path.join(root, ".agentplane", "policy"),
+      { recursive: true },
+    );
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    const taskId = await createTask(root, "Changed implementation rework", "bun run check");
+    const evidencePath = `.agentplane/tasks/${taskId}/supervision/declared-checks.json`;
+    await writeFile(
+      path.join(root, "package.json"),
+      `${JSON.stringify({
+        scripts: {
+          check: 'node -e "process.exit(0)"',
+          canonical: `node -e "process.exit(require('fs').existsSync('${evidencePath}') ? 0 : 1)"`,
+          "ci:local:full": "bun run check",
+        },
+      })}\n`,
+      "utf8",
+    );
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed changed rework"], { cwd: root });
+    await planAndApproveTask(
+      root,
+      taskId,
+      "Commit changed repair work after the first validation failure.",
+      "bun run canonical",
+    );
+
+    const implementationPacket = await readAgentPacket(root, taskId);
+    await writeFile(path.join(root, "changed-rework.txt"), "initial\n", "utf8");
+    const implementationResult = await writeCompletedResult(
+      implementationPacket,
+      "Created the initial implementation.",
+    );
+    const afterImplementation = await returnAgentResult(root, taskId, implementationResult);
+    expect(afterImplementation.code, afterImplementation.stderr).toBe(0);
+    const reworkPacket = JSON.parse(afterImplementation.stdout) as AgentPacket;
+    expect(reworkPacket.authority.role).toBe("EXECUTOR");
+
+    await writeFile(path.join(root, "changed-rework.txt"), "initial\nrepair\n", "utf8");
+    const repairResult = await writeCompletedResult(
+      reworkPacket,
+      "Applied a scoped workspace repair before retrying validation.",
+    );
+    const afterRepair = await returnAgentResult(root, taskId, repairResult);
+    expect(afterRepair.code, afterRepair.stderr).toBe(0);
+    expect((JSON.parse(afterRepair.stdout) as AgentPacket).authority.role).toBe("EVALUATOR");
+    const implementationCommits = await execFileAsync(
+      "git",
+      ["log", "--format=%s", `--grep=apply external agent result`],
+      { cwd: root },
+    );
+    expect(implementationCommits.stdout.trim().split("\n").filter(Boolean)).toHaveLength(2);
+  }, 45_000);
 
   it("recovers an accepted implementation after the CLI-owned commit was already created", async () => {
     const root = await mkGitRepoRootWithCommit();
