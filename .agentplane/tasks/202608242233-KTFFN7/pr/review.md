@@ -12,8 +12,8 @@ Created: 2026-08-24T22:59:26.702Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,10 +30,10 @@ Created: 2026-08-24T22:59:26.702Z
 
 ```text
  .../src/cli/run-cli.core.task-advance.test.ts      | 196 ++++++++++++++++++++-
- .../commands/task/direct-task-verification.test.ts |  26 +++
+ .../commands/task/direct-task-verification.test.ts |  23 +++
  .../src/commands/task/direct-task-verification.ts  |   7 +-
- .../external-agent-implementation-authority.ts     | 133 +++++++++++---
- 4 files changed, 336 insertions(+), 26 deletions(-)
+ .../external-agent-implementation-authority.ts     | 132 +++++++++++---
+ 4 files changed, 332 insertions(+), 26 deletions(-)
 ```
 
 </details>

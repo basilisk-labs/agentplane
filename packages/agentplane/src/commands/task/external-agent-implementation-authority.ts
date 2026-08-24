@@ -187,9 +187,7 @@ function recordedEvidenceOnlyReworkCommit(opts: {
   const workItemId = opts.work_order.task.work_item_id;
   if (!workItemId) return null;
   const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
-  return aggregate?.work_items[workItemId]?.state === "REWORK_READY"
-    ? recordedCommit
-    : null;
+  return aggregate?.work_items[workItemId]?.state === "REWORK_READY" ? recordedCommit : null;
 }
 
 function assertExternalImplementationReturnState(opts: {
@@ -445,7 +443,8 @@ export async function applyExternalImplementationResult(opts: {
       if (observedChangedPaths.length === 0) {
         throw new CliError({
           code: "E_VALIDATION",
-          message: "Completed implementation result produced no supervisor-observed workspace change.",
+          message:
+            "Completed implementation result produced no supervisor-observed workspace change.",
         });
       }
       const exitCode = await cmdCommit({
