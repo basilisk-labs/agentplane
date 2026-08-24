@@ -324,10 +324,7 @@ describe("direct task verification", () => {
       task: { verify: ["bun run test:critical"] },
       task_id: TASK_ID,
       cwd,
-      additional_commands: [
-        "bun run test:critical",
-        "bun run lifecycle:invariants",
-      ],
+      additional_commands: ["bun run test:critical", "bun run lifecycle:invariants"],
       run_process: mocks.runProcess,
     });
 

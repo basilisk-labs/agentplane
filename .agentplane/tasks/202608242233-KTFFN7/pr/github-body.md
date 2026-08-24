@@ -15,8 +15,8 @@ Release self-hosting blocker. Symptom: task 202608242156-A8Q1W1 has implementati
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,10 +28,10 @@ Release self-hosting blocker. Symptom: task 202608242156-A8Q1W1 has implementati
 
 ```text
  .../src/cli/run-cli.core.task-advance.test.ts      | 196 ++++++++++++++++++++-
- .../commands/task/direct-task-verification.test.ts |  26 +++
+ .../commands/task/direct-task-verification.test.ts |  23 +++
  .../src/commands/task/direct-task-verification.ts  |   7 +-
- .../external-agent-implementation-authority.ts     | 133 +++++++++++---
- 4 files changed, 336 insertions(+), 26 deletions(-)
+ .../external-agent-implementation-authority.ts     | 132 +++++++++++---
+ 4 files changed, 332 insertions(+), 26 deletions(-)
 ```
 
 </details>
