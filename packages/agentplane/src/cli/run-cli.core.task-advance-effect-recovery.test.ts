@@ -58,6 +58,9 @@ type AgentPacket = {
 };
 
 async function createTask(root: string): Promise<string> {
+  await execFileAsync("git", ["commit", "--allow-empty", "-m", "test: initialize repository"], {
+    cwd: root,
+  });
   const io = captureStdIO();
   try {
     const code = await runCli([
@@ -714,7 +717,16 @@ describe("task advance effect recovery", () => {
     try {
       const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", root]);
       expect(code, io.stderr).toBe(0);
-      expect(JSON.parse(io.stdout)).toMatchObject({ action: { kind: "approval_required" } });
+      const recoveredPacket = JSON.parse(io.stdout) as AgentPacket & {
+        action: { kind: string; instruction: string };
+        stop: { reason: string };
+      };
+      expect(recoveredPacket, JSON.stringify(recoveredPacket, null, 2)).toMatchObject({
+        action: { kind: "agent_episode" },
+        stop: { reason: "semantic_boundary" },
+      });
+      expect(recoveredPacket.action.instruction).toContain("TaskPlanProposal");
+      expect(recoveredPacket.exchange?.directory).not.toBe(packet.exchange?.directory);
     } finally {
       io.restore();
     }
@@ -823,23 +835,33 @@ describe("task advance effect recovery", () => {
         root,
       ]);
       expect(code, io.stderr).toBe(0);
-      expect(JSON.parse(io.stdout)).toMatchObject({
-        action: { kind: "framework_transition" },
-        stop: { reason: "control_plane_boundary" },
+      const recoveredPacket = JSON.parse(io.stdout) as AgentPacket & {
+        action: { kind: string; instruction: string };
+        stop: { reason: string };
+      };
+      expect(recoveredPacket, JSON.stringify(recoveredPacket, null, 2)).toMatchObject({
+        action: { kind: "agent_episode" },
+        stop: { reason: "semantic_boundary" },
       });
+      expect(recoveredPacket.action.instruction).toContain("TaskPlanProposal");
+      expect(recoveredPacket.exchange?.directory).not.toBe(issued.exchange?.directory);
     } finally {
       io.restore();
     }
     expect(
       await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
     ).toContain(plan);
-    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
+    const recoveredJournal = validateSupervisorExecutionEpisodeJournal(await store.read());
+    expect(recoveredJournal).toMatchObject({
       status: "running",
       stop: null,
-      cursor: { phase: "ready", operation_key: null },
-      usage: journal.usage,
-      operations: [{ role: "PLANNER", status: "completed" }],
+      cursor: { phase: "intent_recorded" },
     });
+    expect(recoveredJournal.operations.slice(-2)).toMatchObject([
+      { role: "PLANNER", status: "completed" },
+      { role: "PLANNER", status: "intent" },
+    ]);
+    expect(recoveredJournal.usage.agent_runs).toBe(journal.usage.agent_runs + 1);
   });
 
   it("rejects a late planning result when a different plan awaits approval", async () => {
