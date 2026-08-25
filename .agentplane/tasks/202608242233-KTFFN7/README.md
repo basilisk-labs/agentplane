@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "USER"
   note: "Explicit user approval: plan_digest=sha256:0054c3f93c6a2766a32c513344d00506983feb15cca6d698f099fb5a0d4eea3d state_fingerprint=sha256:47c2bc7816b499e67e1867c1b7ed0cd356c268fe54375a92808ea6f968a034f1"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-25T02:30:43.531Z"
-  updated_by: "EVALUATOR"
-  note: "Hosted review rework: preserve KTFFN7 intent and address both unresolved PR #4885 threads before reintegration."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-25T03:28:51.423Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 quality_review:
   state: "rework"
   updated_at: "2026-08-25T02:30:43.531Z"
@@ -227,7 +227,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "e5beb6f44a7f29e15130c2ba664f6e97bfa31e4b"
+  message: "🚧 KTFFN7 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -253,6 +255,15 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: e5beb6f44a7f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: e5beb6f44a7f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: e5beb6f44a7f. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -352,9 +363,51 @@ events:
     author: "EVALUATOR"
     state: "needs_rework"
     note: "Hosted review rework: preserve KTFFN7 intent and address both unresolved PR #4885 threads before reintegration."
+  -
+    type: "status"
+    at: "2026-08-25T02:48:49.455Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: e5beb6f44a7f. CLI accepted one state-bound external-agent semantic result."
+    commit: "e5beb6f44a7f29e15130c2ba664f6e97bfa31e4b"
+  -
+    type: "verify"
+    at: "2026-08-25T03:11:14.442Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-25T03:14:17.077Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: e5beb6f44a7f. CLI accepted one state-bound external-agent semantic result."
+    commit: "e5beb6f44a7f29e15130c2ba664f6e97bfa31e4b"
+  -
+    type: "verify"
+    at: "2026-08-25T03:20:38.240Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-25T03:21:34.541Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: e5beb6f44a7f. CLI accepted one state-bound external-agent semantic result."
+    commit: "e5beb6f44a7f29e15130c2ba664f6e97bfa31e4b"
+  -
+    type: "verify"
+    at: "2026-08-25T03:28:51.423Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-25T02:30:53.993Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-25T03:28:53.603Z"
+doc_updated_by: "SUPERVISOR"
 description: "Release self-hosting blocker. Symptom: task 202608242156-A8Q1W1 has implementation commit 655f72d307962addfe932c4f8b6f2c7ff83ade82 and successful Supervisor checks, but one approved plan check is unsupported because the declared-check runner did not execute its exact command. The WorkItem becomes REWORK_READY. A fresh EXECUTOR result cannot complete it because external result application requires a new workspace change, producing E_VALIDATION after the implementation is already committed. Violated invariant: retryable validation rework must permit new trusted evidence against the unchanged implementation identity without requiring semantic source drift. Root cause: the validation/rework route issues another implementation episode while result application rejects evidence-only completion when no workspace delta exists. Temporary recovery: integrate a minimal framework fix and resume A8Q1W1 without altering its SVG commit. Permanent fix: accept and persist exact-command validation evidence for the current implementation identity, or provide an explicit evidence-only rework transition, while keeping ordinary no-change implementation results fail-closed. Regression: reproduce READY -> committed implementation -> unsupported required check -> REWORK_READY -> evidence-only successful retry, prove single application, preserved implementation commit, satisfied WorkItem, and no no-progress loop."
 sections:
   Summary: |-
@@ -608,6 +661,130 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-25T03:11:14.442Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:06688da95fee77730196745baa87be27b8a0e8900b661b1f3c8aa295bb04f370, input_digest=sha256:331d8487b521279bbf4afbd5b094d1077d33cd4ba4737f7aab0774737d93174a
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608242233-KTFFN7 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608242233-KTFFN7-allow-evidence-only-rework-after-an-already-comm/.agentplane/tasks/202608242233-KTFFN7/blueprint/resolved-snapshot.json
+    - old_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+    - current_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608242233-KTFFN7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608242233-KTFFN7
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-25T03:20:38.240Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 3
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:06688da95fee77730196745baa87be27b8a0e8900b661b1f3c8aa295bb04f370, input_digest=sha256:e76ad3f0e972edb480961422c9cd73c3c9a37be6dfbb8ca4b6874dfb8087d4e0
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608242233-KTFFN7 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608242233-KTFFN7-allow-evidence-only-rework-after-an-already-comm/.agentplane/tasks/202608242233-KTFFN7/blueprint/resolved-snapshot.json
+    - old_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+    - current_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608242233-KTFFN7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608242233-KTFFN7
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-25T03:28:51.423Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:06688da95fee77730196745baa87be27b8a0e8900b661b1f3c8aa295bb04f370, input_digest=sha256:6013a3d1b6e8e6e827d2d3fa8ce58e66f12c5a0b1411830ba0a72b8619a97824
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608242233-KTFFN7 Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608242233-KTFFN7 Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608242233-KTFFN7 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608242233-KTFFN7 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608242233-KTFFN7-allow-evidence-only-rework-after-an-already-comm/.agentplane/tasks/202608242233-KTFFN7/blueprint/resolved-snapshot.json
+    - old_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+    - current_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608242233-KTFFN7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608242233-KTFFN7
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1079,6 +1256,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "e5beb6f44a7f29e15130c2ba664f6e97bfa31e4b"
   task_execution_context:
     base_ref: "main"
     base_sha: "a788399c9ccc27ae290ddbfd6244fcb3196cf643"
@@ -1350,6 +1529,130 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-25T03:11:14.442Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:06688da95fee77730196745baa87be27b8a0e8900b661b1f3c8aa295bb04f370, input_digest=sha256:331d8487b521279bbf4afbd5b094d1077d33cd4ba4737f7aab0774737d93174a
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608242233-KTFFN7 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608242233-KTFFN7-allow-evidence-only-rework-after-an-already-comm/.agentplane/tasks/202608242233-KTFFN7/blueprint/resolved-snapshot.json
+- old_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+- current_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608242233-KTFFN7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608242233-KTFFN7
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-25T03:20:38.240Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 3
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:06688da95fee77730196745baa87be27b8a0e8900b661b1f3c8aa295bb04f370, input_digest=sha256:e76ad3f0e972edb480961422c9cd73c3c9a37be6dfbb8ca4b6874dfb8087d4e0
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608242233-KTFFN7 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608242233-KTFFN7-allow-evidence-only-rework-after-an-already-comm/.agentplane/tasks/202608242233-KTFFN7/blueprint/resolved-snapshot.json
+- old_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+- current_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608242233-KTFFN7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608242233-KTFFN7
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-25T03:28:51.423Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:06688da95fee77730196745baa87be27b8a0e8900b661b1f3c8aa295bb04f370, input_digest=sha256:6013a3d1b6e8e6e827d2d3fa8ce58e66f12c5a0b1411830ba0a72b8619a97824
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608242233-KTFFN7 Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608242233-KTFFN7 Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608242233-KTFFN7 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608242233-KTFFN7 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608242233-KTFFN7-allow-evidence-only-rework-after-an-already-comm/.agentplane/tasks/202608242233-KTFFN7/blueprint/resolved-snapshot.json
+- old_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+- current_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608242233-KTFFN7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608242233-KTFFN7
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

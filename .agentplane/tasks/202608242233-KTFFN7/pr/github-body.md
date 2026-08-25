@@ -15,8 +15,8 @@ Release self-hosting blocker. Symptom: task 202608242156-A8Q1W1 has implementati
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted review rework: preserve KTFFN7 intent and address both unresolved PR #4885 threads before reintegration.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
