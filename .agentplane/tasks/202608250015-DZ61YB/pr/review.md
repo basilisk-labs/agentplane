@@ -6,7 +6,7 @@ Created: 2026-08-25T00:39:56.067Z
 
 - Task: `202608250015-DZ61YB`
 - Title: Make aggregate local CI deterministic and preserve failing-group evidence
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608250015-DZ61YB/make-aggregate-local-ci-deterministic-and-preser`
 - Canonical task record: `.agentplane/tasks/202608250015-DZ61YB/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-25T00:39:56.067Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-25T00:39:56.067Z
+- Updated: 2026-08-25T01:03:55.711Z
 - Branch: task/202608250015-DZ61YB/make-aggregate-local-ci-deterministic-and-preser
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

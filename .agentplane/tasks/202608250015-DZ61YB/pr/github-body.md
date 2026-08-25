@@ -22,7 +22,7 @@ Release self-hosting blocker discovered while verifying 202608242233-KTFFN7. Sym
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-25T00:39:56.067Z
+- Updated: 2026-08-25T01:03:55.711Z
 - Branch: task/202608250015-DZ61YB/make-aggregate-local-ci-deterministic-and-preser
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

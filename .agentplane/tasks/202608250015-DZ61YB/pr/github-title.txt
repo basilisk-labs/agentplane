@@ -1,1 +1,1 @@
-🚧 DZ61YB task: Make aggregate local CI deterministic and preserve failing-group evidence [202608250015-DZ61YB]
+✅ DZ61YB task: Make aggregate local CI deterministic and preserve failing-group evidence [202608250015-DZ61YB]
