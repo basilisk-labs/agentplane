@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:729f61dccb11c5de271369e9a09907902dfcb579dbc86d6fa2af8461224ea02c",
   "pr_number": 4884,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4884",
+  "pre_merge_closure": {
+    "basis_commit": "5170f79f2c8cc3990d3af10211a1625dae621399",
+    "branch": "task/202608250015-DZ61YB/make-aggregate-local-ci-deterministic-and-preser",
+    "pr_number": 4884,
+    "recorded_at": "2026-08-25T01:06:09.709Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
