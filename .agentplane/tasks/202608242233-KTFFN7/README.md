@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -28,17 +28,36 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
-  updated_at: "2026-08-25T02:30:43.531Z"
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-25T03:29:55.014Z"
   updated_by: "EVALUATOR"
-  note: "Hosted review rework: preserve KTFFN7 intent and address both unresolved PR #4885 threads before reintegration."
-  evaluated_sha: "6d078038f42391d1ed6bb4b1fb406b1a4c27f6ba"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "e5beb6f44a7f29e15130c2ba664f6e97bfa31e4b"
   blueprint_digest: "a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe"
   evidence_refs:
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-032902775-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-032902775-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/72646d034cebf071ea9affc53c9267c2d4ec7ed621c8a0005aa132c8e4354c8c.md"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-032902775-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-032902775-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-032902775-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608242233-KTFFN7/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608242233-KTFFN7-allow-evidence-only-rework-after-an-already-comm/.agentplane/tasks/202608242233-KTFFN7/blueprint/resolved-snapshot.json"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/6fe8b5355c9d2df13c97647593c843edc49cc1a9d8b69e0723ea65bd9053c84a.patch"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/019ea0b6c2bd68b21061d8ff0352ea89cea6f5dee0b27544d2c8571730552dfe.json"
+    - ".agentplane/tasks/202608242233-KTFFN7/verification/20260825032851423-9de8017b887e1974.json"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/5c98af0d762cf398813d61740cd325223f30595e9bdc699be111fc15c13c7f2f.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "PR #4885 review found two task-owned gaps in canonical WorkItem check projection: optional checks can incorrectly fail the task, and per-check timeout_ms is discarded. Repair both within the approved source/test roots, add regressions, rerun focused and full verification, then republish the exact reviewed head."
+    - "Optional-only canonical WorkItem checks are omitted from blocking Supervisor execution, while checks that are required or referenced by required criteria remain enforced."
+    - "Canonical timeout_ms reaches runProcess, and duplicate exact commands use the smallest configured timeout so the approved upper bound is never widened."
+    - "The focused regression covers required checks, required-criterion checks, optional-only omission, deduplication, and strict timeout selection; all 32 focused tests passed."
+    - "The final implementation commit is e5beb6f44a7f29e15130c2ba664f6e97bfa31e4b. The subsequent 9f25819d7 commit contains only AgentPlane-owned evidence artifacts, proving no duplicate semantic implementation commit was created during successful evidence-only recovery."
+    - "Supervisor persisted bun run ci:local:full as passed in 433639 ms with the deterministic single-concurrency recovery setting; prior concurrency=2 failures remain attributable to the stale worktree scheduler already fixed and integrated on main."
+    - "Residual risk: The task worktree still contains the pre-integrated aggregate scheduler and therefore requires the supported concurrency=1 setting until this PR is rebased or merged onto current main."
 token_usage:
   agent_runs: 7
   input_tokens: null
@@ -406,7 +425,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-25T03:28:53.603Z"
+doc_updated_at: "2026-08-25T03:29:55.046Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release self-hosting blocker. Symptom: task 202608242156-A8Q1W1 has implementation commit 655f72d307962addfe932c4f8b6f2c7ff83ade82 and successful Supervisor checks, but one approved plan check is unsupported because the declared-check runner did not execute its exact command. The WorkItem becomes REWORK_READY. A fresh EXECUTOR result cannot complete it because external result application requires a new workspace change, producing E_VALIDATION after the implementation is already committed. Violated invariant: retryable validation rework must permit new trusted evidence against the unchanged implementation identity without requiring semantic source drift. Root cause: the validation/rework route issues another implementation episode while result application rejects evidence-only completion when no workspace delta exists. Temporary recovery: integrate a minimal framework fix and resume A8Q1W1 without altering its SVG commit. Permanent fix: accept and persist exact-command validation evidence for the current implementation identity, or provide an explicit evidence-only rework transition, while keeping ordinary no-change implementation results fail-closed. Regression: reproduce READY -> committed implementation -> unsupported required check -> REWORK_READY -> evidence-only successful retry, prove single application, preserved implementation commit, satisfied WorkItem, and no no-progress loop."
 sections:
