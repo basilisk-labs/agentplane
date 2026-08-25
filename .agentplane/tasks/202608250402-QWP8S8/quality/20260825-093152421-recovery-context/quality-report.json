@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608250402-QWP8S8",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-25T09:33:11.686Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "a057e66401599ed9187032edd839b6e1511eca52",
+  "blueprint_digest": "d95071e9049d08e3cf857c1e7f10034eee2c5ad99680b75f8826fb2052c45015",
+  "findings": [
+    "The implementation validates every top-level whitespace-delimited literal && segment through the existing declared-check parser before starting any process; malformed segments and other shell operators remain unsupported.",
+    "Sequence segments execute as structured argv in declaration order, stop on the first nonzero or zero-test result, and share one declared timeout budget.",
+    "The focused tests cover successful ordering, fail-fast behavior, remaining-time propagation, rejection before execution, and quoted ampersands.",
+    "Supervisor-owned evidence records passing critical tests, lint, focused tests, committed-diff checks, and a clean implementation snapshot for evaluated SHA a057e66401599ed9187032edd839b6e1511eca52.",
+    "Residual risk: Hosted integration must still pass for the published exact SHA before merge."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608250402-QWP8S8/quality/objects/sha256/dba8ecb35875fe04c5d372a1adab993149aa045b0140a31043a28f2b29ab8ea8.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

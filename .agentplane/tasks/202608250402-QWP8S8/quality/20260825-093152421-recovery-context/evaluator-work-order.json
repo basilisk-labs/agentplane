@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608250402-QWP8S8-1eeb1c0c1ba4ceeaef7868c3",
+  "prepared_at": "2026-08-25T09:31:52.421Z",
+  "task": {
+    "id": "202608250402-QWP8S8",
+    "revision": 8,
+    "objective": "Execute safe fail-fast declared-check sequences in the direct verifier\n\nBlocker for 202608242156-A8Q1W1. Symptom: the approved required check 'bun run docs:readme-header:generate && bun run docs:readme-header:check' is classified unsupported after all other checks pass, so evidence-only recovery loops forever. Violated invariant: every planner-approved deterministic verification command must either be safely executable by the CLI or rejected before approval, not become an unrecoverable runtime criterion. Root cause: parseDirectTaskCheck accepts one argv command and runDirectTaskVerification rejects the whole command at the first && token. Temporary recovery: keep A8Q1W1 and implementation commit 655f72d307962addfe932c4f8b6f2c7ff83ade82 unchanged until this blocker lands. Permanent fix: support only a fail-fast sequence of individually safe declared commands separated by literal &&, parse every segment through the existing structured grammar, execute without a shell, stop after the first failure, preserve the declared check timeout as the sequence budget, and reject empty segments or every other shell operator. Add regression tests for successful sequencing, fail-fast behavior, timeout propagation, and unsafe syntax rejection. After hosted integration, resume A8Q1W1 through a fresh supervisor packet.",
+    "acceptance_criteria": [
+      "bun run --filter=agentplane build",
+      "bun run lint:core",
+      "bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      "- In scope: Blocker for 202608242156-A8Q1W1. Symptom: the approved required check 'bun run docs:readme-header:generate && bun run docs:readme-header:check' is classified unsupported after all other checks pass, so evidence-only recovery loops forever. Violated invariant: every planner-approved deterministic verification command must either be safely executable by the CLI or rejected before approval, not become an unrecoverable runtime criterion. Root cause: parseDirectTaskCheck accepts one argv command and runDirectTaskVerification rejects the whole command at the first && token. Temporary recovery: keep A8Q1W1 and implementation commit 655f72d307962addfe932c4f8b6f2c7ff83ade82 unchanged until this blocker lands. Permanent fix: support only a fail-fast sequence of individually safe declared commands separated by literal &&, parse every segment through the existing structured grammar, execute without a shell, stop after the first failure, preserve the declared check timeout as the sequence budget, and reject empty segments or every other shell operator. Add regression tests for successful sequencing, fail-fast behavior, timeout propagation, and unsafe syntax rejection. After hosted integration, resume A8Q1W1 through a fresh supervisor packet.\n- Out of scope: unrelated refactors not required for \"Execute safe fail-fast declared-check sequences in the direct verifier\".",
+      "Extend the direct verifier with a narrow structured sequence grammar for literal &&, execute each already-safe argv segment in order without a shell, share the declared timeout across the sequence, and cover success, fail-fast, timeout, and rejection behavior in the focused test.",
+      "PLANNER fallback scaffold for \"Execute safe fail-fast declared-check sequences in the direct verifier\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Execute safe fail-fast declared-check sequences in the direct verifier\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "a057e66401599ed9187032edd839b6e1511eca52",
+  "diff_base_sha": "8ea1cefbbc96a8da5595fce36325ec0c1194a360",
+  "blueprint_digest": "d95071e9049d08e3cf857c1e7f10034eee2c5ad99680b75f8826fb2052c45015",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608250402-QWP8S8/quality/20260825-093152421-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:83595c20ec7707e60215e689058551b1eeb67fa6e170da616c6d151d71ec211a",
+    "prompt_path": ".agentplane/tasks/202608250402-QWP8S8/quality/objects/sha256/bf8da80535240c9e96ba34dcc022b46f2050f19cb994048755f8d0d33c825c86.md",
+    "result_schema_path": ".agentplane/tasks/202608250402-QWP8S8/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608250402-QWP8S8/README.md",
+      "sha256": "sha256:c100ecd13f752f0e155da6c3122909bcf64bbdf020da604c3d3f5edfca86949e",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608250402-QWP8S8/quality/objects/sha256/dba8ecb35875fe04c5d372a1adab993149aa045b0140a31043a28f2b29ab8ea8.patch",
+      "sha256": "sha256:dba8ecb35875fe04c5d372a1adab993149aa045b0140a31043a28f2b29ab8ea8",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608250402-QWP8S8/quality/objects/sha256/355b028b5dbc90fc542f24e582f55afc43e5b07b97055c833b588f89cbfc21ea.json",
+      "sha256": "sha256:355b028b5dbc90fc542f24e582f55afc43e5b07b97055c833b588f89cbfc21ea",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608250402-QWP8S8/verification/20260825093113445-7728d07d1e9beadc.json",
+      "sha256": "sha256:ce1d2df10717b2d6079ea6969f76cd53564b598d4146f690848a15dbae7d198a",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608250402-QWP8S8/quality/objects/sha256/859fdeca4d99f728f59d083d72f0f9ddc70d43c96e92d96768abc38f3144f666.json",
+      "sha256": "sha256:859fdeca4d99f728f59d083d72f0f9ddc70d43c96e92d96768abc38f3144f666",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
