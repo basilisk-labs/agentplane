@@ -1,0 +1,549 @@
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.test.ts b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+index b211457b7..cff670188 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+@@ -11,8 +11,10 @@ const ORIGINAL_AGENT_MODE = process.env.AGENTPLANE_AGENT_MODE;
+ const ORIGINAL_RUNTIME_ACTIVE_BIN = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
+ 
+ import {
++  isTaskLevelVerificationReworkState,
+   parseDirectTaskCheck,
+   renderDirectTaskVerificationDetails,
++  resolveEvidenceOnlyReworkCommit,
+   runDirectTaskVerification,
+ } from "./direct-task-verification.js";
+ 
+@@ -94,6 +96,51 @@ afterEach(async () => {
+ });
+ 
+ describe("direct task verification", () => {
++  it("reuses only the exact unchanged implementation identity at a rework boundary", () => {
++    const eligible = {
++      purpose: "implementation" as const,
++      changed_paths: [],
++      recorded_commit: "abc123",
++      head: "abc123",
++      work_item_id: "work-item",
++      work_item_state: "REWORK_READY",
++      task_verification_state: undefined,
++      all_required_work_items_completed: false,
++    };
++
++    expect(resolveEvidenceOnlyReworkCommit(eligible)).toBe("abc123");
++    expect(
++      resolveEvidenceOnlyReworkCommit({ ...eligible, changed_paths: ["repair.ts"] }),
++    ).toBeNull();
++    expect(resolveEvidenceOnlyReworkCommit({ ...eligible, head: "different" })).toBeNull();
++    expect(resolveEvidenceOnlyReworkCommit({ ...eligible, work_item_state: "READY" })).toBeNull();
++    expect(resolveEvidenceOnlyReworkCommit({ ...eligible, purpose: "evaluation" })).toBeNull();
++  });
++
++  it("recognizes task-level evidence rework only after every required WorkItem completed", () => {
++    const eligible = {
++      work_item_id: null,
++      has_plan_refinement: false,
++      task_verification_state: "needs_rework",
++      has_current_plan: true,
++      all_required_work_items_completed: true,
++    };
++
++    expect(isTaskLevelVerificationReworkState(eligible)).toBe(true);
++    expect(isTaskLevelVerificationReworkState({ ...eligible, has_plan_refinement: true })).toBe(
++      false,
++    );
++    expect(isTaskLevelVerificationReworkState({ ...eligible, work_item_id: "work-item" })).toBe(
++      false,
++    );
++    expect(
++      isTaskLevelVerificationReworkState({
++        ...eligible,
++        all_required_work_items_completed: false,
++      }),
++    ).toBe(false);
++  });
++
+   it("replaces a missing package script only for a planner fallback scaffold", async () => {
+     const repo = await root();
+     await writeFile(
+@@ -315,6 +362,29 @@ describe("direct task verification", () => {
+     });
+   });
+ 
++  it("runs canonical WorkItem checks in addition to legacy task checks and deduplicates them", async () => {
++    const cwd = await root();
++    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "ok", stderr: "" });
++
++    const result = await runDirectTaskVerification({
++      command: command(cwd),
++      task: { verify: ["bun run test:critical"] },
++      task_id: TASK_ID,
++      cwd,
++      additional_commands: ["bun run test:critical", "bun run lifecycle:invariants"],
++      run_process: mocks.runProcess,
++    });
++
++    expect(result).toMatchObject({
++      status: "passed",
++      checks: [
++        { command: "bun run test:critical", exit_code: 0 },
++        { command: "bun run lifecycle:invariants", exit_code: 0 },
++      ],
++    });
++    expect(mocks.runProcess).toHaveBeenCalledTimes(2);
++  });
++
+   it("keeps passed evidence stable across equivalent reruns but rewrites changed outcomes", async () => {
+     const cwd = await root();
+     mocks.runProcess
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.ts b/packages/agentplane/src/commands/task/direct-task-verification.ts
+index 36cdce4c5..3f9bcc314 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.ts
+@@ -1,4 +1,6 @@
+ import { runProcess } from "@agentplaneorg/core/process";
++import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+ import { mkdir, readFile } from "node:fs/promises";
+ import path from "node:path";
+ 
+@@ -6,7 +8,10 @@ import type { TaskData } from "../../backends/task-backend.js";
+ import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
+ import { parseDeclaredTaskCheck } from "../shared/declared-check.js";
+ import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
+-import type { CommandContext } from "../shared/task-backend.js";
++import type { CommandContext, loadTaskFromContext } from "../shared/task-backend.js";
++
++import { CliError } from "../../shared/errors.js";
++import { cmdVerifyParsed } from "./verify-record.js";
+ 
+ const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
+ const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
+@@ -43,6 +48,99 @@ export type DirectTaskVerificationResult = {
+   reason: string | null;
+ };
+ 
++export function resolveEvidenceOnlyReworkCommit(opts: {
++  purpose: string;
++  changed_paths: readonly string[];
++  recorded_commit: string | null;
++  head: string | null;
++  work_item_id: string | null;
++  work_item_state: string | null | undefined;
++  task_verification_state: string | undefined;
++  all_required_work_items_completed: boolean;
++}): string | null {
++  if (
++    !["implementation", "implementation_rework"].includes(opts.purpose) ||
++    opts.changed_paths.length > 0 ||
++    !opts.recorded_commit ||
++    opts.recorded_commit !== opts.head
++  ) {
++    return null;
++  }
++  const reworkReady = opts.work_item_id
++    ? opts.work_item_state === "REWORK_READY"
++    : opts.task_verification_state === "needs_rework" && opts.all_required_work_items_completed;
++  return reworkReady ? opts.recorded_commit : null;
++}
++
++export function isTaskLevelVerificationReworkState(opts: {
++  work_item_id: string | null;
++  has_plan_refinement: boolean;
++  task_verification_state: string | undefined;
++  has_current_plan: boolean;
++  all_required_work_items_completed: boolean;
++}): boolean {
++  return (
++    !opts.work_item_id &&
++    !opts.has_plan_refinement &&
++    opts.has_current_plan &&
++    opts.task_verification_state === "needs_rework" &&
++    opts.all_required_work_items_completed
++  );
++}
++
++export async function recordDirectTaskVerification(opts: {
++  command: CommandContext;
++  checkout: string;
++  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
++  work_order: AgentWorkOrderV2;
++  workflow: "direct" | "branch_pr";
++}): Promise<DirectTaskVerificationResult> {
++  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
++  const selectedWorkItem = aggregate?.current_plan?.proposal.work_items.work_items.find(
++    (item) => item.id === opts.work_order.task.work_item_id,
++  );
++  const additionalCommands = (selectedWorkItem?.validation.checks ?? [])
++    .map((check) => check.command)
++    .filter((command): command is string => typeof command === "string");
++  const checks = await runDirectTaskVerification({
++    command: opts.command,
++    task: opts.task,
++    task_id: opts.task.id,
++    cwd: opts.checkout,
++    additional_commands: additionalCommands,
++  });
++  const exitCode = await cmdVerifyParsed({
++    ctx: opts.command,
++    cwd: opts.checkout,
++    rootOverride: undefined,
++    taskId: opts.task.id,
++    state: checks.status === "passed" ? "ok" : "needs_rework",
++    by: "SUPERVISOR",
++    note:
++      checks.status === "passed"
++        ? "Verified: CLI-owned checks passed before independent EVALUATOR review."
++        : `Rework: ${checks.reason ?? "Declared implementation verification did not pass."}`,
++    details: renderDirectTaskVerificationDetails({
++      task: opts.task,
++      taskId: opts.task.id,
++      workflow: opts.workflow,
++      result: checks,
++    }),
++    localOnly: false,
++    repoFixable: checks.status !== "passed",
++    incidentTags: [],
++    incidentMatch: [],
++    quiet: true,
++  });
++  if (exitCode !== 0) {
++    throw new CliError({
++      code: "E_RUNTIME",
++      message: `External-agent implementation verification exited with ${exitCode}.`,
++    });
++  }
++  return checks;
++}
++
+ export function renderDirectTaskVerificationDetails(opts: {
+   task: Pick<TaskData, "execution_contract">;
+   taskId: string;
+@@ -117,8 +215,12 @@ function directTaskVerificationCommands(
+     TaskData,
+     "verify" | "task_kind" | "mutation_scope" | "execution_contract" | "sections"
+   >,
++  additionalCommands: readonly string[] = [],
+ ): string[] {
+   const commands = [...(task.verify ?? [])];
++  for (const command of additionalCommands) {
++    if (!commands.includes(command)) commands.push(command);
++  }
+   const declaresDocs = task.execution_contract
+     ? task.execution_contract.authority.allowed_repository_effects.includes("documentation")
+     : task.task_kind === "docs" || task.mutation_scope === "docs";
+@@ -303,10 +405,11 @@ export async function runDirectTaskVerification(opts: {
+   >;
+   task_id: string;
+   cwd: string;
++  additional_commands?: readonly string[];
+   run_process?: typeof runProcess;
+ }): Promise<DirectTaskVerificationResult> {
+   const checks: DirectTaskCheck[] = [];
+-  const commands = directTaskVerificationCommands(opts.task);
++  const commands = directTaskVerificationCommands(opts.task, opts.additional_commands);
+   const selectedChecks = selectedLocalChecks(opts.task);
+   const requiresFullRegression = selectedChecks.includes("full_regression");
+   const rootPackage =
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+index aa93d3075..9b9c3c91c 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+@@ -1,7 +1,8 @@
+ import path from "node:path";
+ 
+-import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+ import { runProcess } from "@agentplaneorg/core/process";
++import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+ 
+ import { CliError } from "../../shared/errors.js";
+ import { cmdCommit } from "../guard/impl/commit.js";
+@@ -19,21 +20,20 @@ import {
+ import { recoversRecordedImplementationCommit } from "./external-agent-purpose.js";
+ import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
+ import {
+-  renderDirectTaskVerificationDetails,
+-  runDirectTaskVerification,
++  isTaskLevelVerificationReworkState,
++  recordDirectTaskVerification,
++  resolveEvidenceOnlyReworkCommit,
+ } from "./direct-task-verification.js";
+ import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
+ import { cmdTaskComment } from "./comment.js";
+ import { cmdTaskSetStatus } from "./set-status.js";
+ import { recordObservedTaskExecutionContract } from "./task-execution-contract-observation.js";
+-import { cmdVerifyParsed } from "./verify-record.js";
+ import { loadTaskFromContext } from "../shared/task-backend.js";
+ import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+ import {
+   recordTaskCentricExternalResult,
+   type TaskCentricExternalResultProjection,
+ } from "./task-centric-external-result.js";
+-import type { DirectTaskVerificationResult } from "./direct-task-verification.js";
+ 
+ function pathFromStatusLine(line: string): string {
+   const raw = line.length >= 4 ? line.slice(3).trim() : "";
+@@ -102,48 +102,60 @@ export function requiresImplementationReworkReopen(opts: {
+   return opts.purpose === "implementation_rework" && opts.task_status === "DONE";
+ }
+ 
+-async function recordExternalImplementationVerification(opts: {
+-  command: CommandContext;
+-  checkout: string;
++function recordedEvidenceOnlyReworkCommit(opts: {
++  exchange: ExternalAgentExchange;
++  work_order: AgentWorkOrderV2;
+   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+-  workflow: "direct" | "branch_pr";
+-}): Promise<DirectTaskVerificationResult> {
+-  const checks = await runDirectTaskVerification({
+-    command: opts.command,
+-    task: opts.task,
+-    task_id: opts.task.id,
+-    cwd: opts.checkout,
++  route_commit: string | null;
++  head: string | null;
++  changed_paths: readonly string[];
++}): string | null {
++  const extensionCommit = opts.task.extensions?.implementation_commit as
++    | { hash?: unknown }
++    | undefined;
++  const eventCommit = (opts.task.events ?? [])
++    .toReversed()
++    .map((event) => (event as unknown as { commit?: unknown }).commit)
++    .find((commit): commit is string => typeof commit === "string" && commit.trim().length > 0);
++  const recordedCommit =
++    opts.route_commit ??
++    (typeof extensionCommit?.hash === "string" ? extensionCommit.hash.trim() : null) ??
++    eventCommit?.trim() ??
++    null;
++  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
++  if (!aggregate?.current_plan) return null;
++  const workItemId = opts.work_order.task.work_item_id ?? null;
++  const allRequiredWorkItemsCompleted = aggregate.current_plan.proposal.work_items.work_items
++    .filter((item) => !item.optional)
++    .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
++  return resolveEvidenceOnlyReworkCommit({
++    purpose: opts.exchange.purpose,
++    changed_paths: opts.changed_paths,
++    recorded_commit: recordedCommit,
++    head: opts.head,
++    work_item_id: workItemId,
++    work_item_state: workItemId ? aggregate.work_items[workItemId]?.state : null,
++    task_verification_state: opts.task.verification?.state,
++    all_required_work_items_completed: allRequiredWorkItemsCompleted,
+   });
+-  const exitCode = await cmdVerifyParsed({
+-    ctx: opts.command,
+-    cwd: opts.checkout,
+-    rootOverride: undefined,
+-    taskId: opts.task.id,
+-    state: checks.status === "passed" ? "ok" : "needs_rework",
+-    by: "SUPERVISOR",
+-    note:
+-      checks.status === "passed"
+-        ? "Verified: CLI-owned checks passed before independent EVALUATOR review."
+-        : `Rework: ${checks.reason ?? "Declared implementation verification did not pass."}`,
+-    details: renderDirectTaskVerificationDetails({
+-      task: opts.task,
+-      taskId: opts.task.id,
+-      workflow: opts.workflow,
+-      result: checks,
+-    }),
+-    localOnly: false,
+-    repoFixable: checks.status !== "passed",
+-    incidentTags: [],
+-    incidentMatch: [],
+-    quiet: true,
++}
++
++function isTaskLevelVerificationRework(opts: {
++  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
++  work_order: AgentWorkOrderV2;
++  semantic: AgentSemanticResult;
++}): boolean {
++  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
++  return isTaskLevelVerificationReworkState({
++    work_item_id: opts.work_order.task.work_item_id ?? null,
++    has_plan_refinement: Boolean(opts.semantic.plan_refinement),
++    task_verification_state: opts.task.verification?.state,
++    has_current_plan: Boolean(aggregate?.current_plan),
++    all_required_work_items_completed:
++      aggregate?.current_plan?.proposal.work_items.work_items
++        .filter((item) => !item.optional)
++        .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED") ?? false,
+   });
+-  if (exitCode !== 0) {
+-    throw new CliError({
+-      code: "E_RUNTIME",
+-      message: `External-agent implementation verification exited with ${exitCode}.`,
+-    });
+-  }
+-  return checks;
+ }
+ 
+ function assertExternalImplementationReturnState(opts: {
+@@ -346,9 +358,14 @@ export async function applyExternalImplementationResult(opts: {
+     readDirectTaskHead(opts.exchange.checkout),
+     readDirectRepositoryStatus(opts.exchange.checkout),
+   ]);
++  const taskAtReturn = await loadTaskFromContext({
++    ctx: opts.command,
++    taskId: opts.exchange.task_id,
++  });
+   let implementationCommit = recoversRecordedImplementationCommit(opts.exchange.purpose)
+     ? opts.decision.task.commit
+     : null;
++  let reusedRecordedImplementation = false;
+   let observedChangedPaths: string[] | null = null;
+   if (implementationCommit) {
+     await assertRecoverableImplementationCommit({
+@@ -372,35 +389,73 @@ export async function applyExternalImplementationResult(opts: {
+       current: opts.decision,
+       current_head: head,
+       current_status_lines: status?.lines ?? [],
+-      require_changes: true,
++      require_changes: false,
+     });
+-    if (observedChangedPaths.length === 0) return;
+-    const exitCode = await cmdCommit({
+-      ctx: opts.command,
+-      cwd: opts.exchange.checkout,
+-      taskId: opts.exchange.task_id,
+-      message: implementationSubject(opts.exchange.task_id),
+-      close: false,
+-      allow: observedChangedPaths,
+-      autoAllow: false,
+-      allowTasks: true,
+-      allowBase: false,
+-      allowPolicy: false,
+-      allowConfig: false,
+-      allowHooks: false,
+-      allowCI: false,
+-      requireClean: false,
+-      quiet: true,
+-      closeUnstageOthers: false,
+-      closeCheckOnly: false,
++    implementationCommit = recordedEvidenceOnlyReworkCommit({
++      exchange: opts.exchange,
++      work_order: opts.work_order,
++      task: taskAtReturn,
++      route_commit: opts.decision.task.commit,
++      head,
++      changed_paths: observedChangedPaths,
++    });
++    if (implementationCommit) {
++      reusedRecordedImplementation = true;
++      await assertRecoverableImplementationCommit({
++        cwd: opts.exchange.checkout,
++        baseline: opts.exchange.baseline.head,
++        commit: implementationCommit,
++        task_id: opts.exchange.task_id,
++      });
++    } else {
++      if (observedChangedPaths.length === 0) {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message:
++            "Completed implementation result produced no supervisor-observed workspace change.",
++        });
++      }
++      const exitCode = await cmdCommit({
++        ctx: opts.command,
++        cwd: opts.exchange.checkout,
++        taskId: opts.exchange.task_id,
++        message: implementationSubject(opts.exchange.task_id),
++        close: false,
++        allow: observedChangedPaths,
++        autoAllow: false,
++        allowTasks: true,
++        allowBase: false,
++        allowPolicy: false,
++        allowConfig: false,
++        allowHooks: false,
++        allowCI: false,
++        requireClean: false,
++        quiet: true,
++        closeUnstageOthers: false,
++        closeCheckOnly: false,
++      });
++      if (exitCode !== 0)
++        throw new Error(`External-agent implementation commit exited ${exitCode}.`);
++    }
++  }
++  const executionContext = taskAtReturn.extensions?.task_execution_context as
++    | { base_sha?: unknown }
++    | undefined;
++  const recordedExecutionBase =
++    typeof executionContext?.base_sha === "string" ? executionContext.base_sha.trim() : null;
++  if (reusedRecordedImplementation && !recordedExecutionBase) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Evidence-only implementation rework is missing its recorded execution base.",
+     });
+-    if (exitCode !== 0) throw new Error(`External-agent implementation commit exited ${exitCode}.`);
+   }
+   const implementation = await prepareDirectImplementationEvidence({
+     command: opts.command,
+     cwd: opts.exchange.checkout,
+     task_id: opts.exchange.task_id,
+-    execution_base_commit: opts.exchange.baseline.head,
++    execution_base_commit: reusedRecordedImplementation
++      ? recordedExecutionBase
++      : opts.exchange.baseline.head,
+     execution_baseline_status: {
+       command: "git status --short --untracked-files=all",
+       lines: opts.exchange.baseline.changed_paths,
+@@ -469,33 +524,40 @@ export async function applyExternalImplementationResult(opts: {
+         authorityViolations.join(", "),
+     });
+   }
+-  const verification = await recordExternalImplementationVerification({
++  const verification = await recordDirectTaskVerification({
+     command: opts.command,
+     checkout: opts.exchange.checkout,
+     task: reconciliation.task,
++    work_order: opts.work_order,
+     workflow: opts.decision.workflowMode === "branch_pr" ? "branch_pr" : "direct",
+   });
+   const postVerificationHead = await readDirectTaskHead(opts.exchange.checkout);
+   const postVerificationStatus = await readDirectRepositoryStatus(opts.exchange.checkout);
+-  const canonicalProjection: TaskCentricExternalResultProjection =
+-    await recordTaskCentricExternalResult({
+-      command: opts.command,
++  const canonicalProjection: TaskCentricExternalResultProjection | null =
++    isTaskLevelVerificationRework({
++      task: reconciliation.task,
+       work_order: opts.work_order,
+       semantic,
+-      verification,
+-      head: postVerificationHead,
+-      dirty_paths: (postVerificationStatus?.lines ?? [])
+-        .map((line) => pathFromStatusLine(line))
+-        .filter(Boolean),
+-    });
++    })
++      ? null
++      : await recordTaskCentricExternalResult({
++          command: opts.command,
++          work_order: opts.work_order,
++          semantic,
++          verification,
++          head: postVerificationHead,
++          dirty_paths: (postVerificationStatus?.lines ?? [])
++            .map((line) => pathFromStatusLine(line))
++            .filter(Boolean),
++        });
+   if (verification.status !== "passed") {
+-    if (canonicalProjection.state !== "legacy_task") return;
++    if (canonicalProjection?.state !== "legacy_task") return;
+     throw new CliError({
+       code: "E_VALIDATION",
+       message: verification.reason ?? "Declared implementation verification did not pass.",
+     });
+   }
+-  if (canonicalProjection.state === "work_item_rework") return;
++  if (canonicalProjection?.state === "work_item_rework") return;
+   if (opts.decision.workflowMode === "branch_pr") {
+     opts.command.git.invalidateStatus();
+     const currentStatus = await readDirectRepositoryStatus(opts.exchange.checkout);

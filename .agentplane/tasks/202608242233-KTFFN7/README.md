@@ -4,7 +4,7 @@ title: "Allow evidence-only rework after an already committed implementation"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -26,6 +26,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-25T02:14:36.280Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "6d078038f42391d1ed6bb4b1fb406b1a4c27f6ba"
+  blueprint_digest: "a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe"
+  evidence_refs:
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-021102100-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-021102100-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/7df9a6d8842437e3f6fa83e0b5ac7c19115e1de92abd5350359d010210b9ef57.md"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-021102100-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-021102100-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-021102100-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608242233-KTFFN7/README.md"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/b062051fe6ece949aebc9f4222e8612d1a72570570efbe9d8892b79e0d70ce77.patch"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/83f6b8cb210495863d48787f265e8f5b603deceb95faa1634cf0734d0f1b9af1.json"
+    - ".agentplane/tasks/202608242233-KTFFN7/verification/20260825021011037-51172f6a3971bef0.json"
+    - ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/5c98af0d762cf398813d61740cd325223f30595e9bdc699be111fc15c13c7f2f.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "All source changes are confined to the four approved implementation and test paths; the task records no authority violations."
+    - "Evidence-only reuse requires an implementation purpose, zero observed changed paths, exact recorded-commit equality with HEAD, and either the matching REWORK_READY WorkItem or task-level needs_rework after all required WorkItems completed."
+    - "A reused commit is additionally checked as recoverable and must have a recorded execution base, so arbitrary or identity-drifted commits remain rejected."
+    - "Supervisor verification records passed for the full local CI command. Focused tests, core lint, hotspot limits, diff hygiene, runtime, docs-schema, core, CLI, platform-critical, and significant-coverage groups passed with deterministic aggregate concurrency 1."
+    - "The focused regressions cover exact unchanged-identity reuse, rejection for changed paths, mismatched HEAD, non-rework state and wrong purpose, task-level completion gating, and canonical check deduplication. Resuming 202608242156-A8Q1W1 after hosted integration will provide the live self-hosting qualification of the complete no-delta route."
+    - "Residual risk: The complete no-delta route is unit-covered at its authority boundaries; its live end-to-end self-hosting qualification occurs when the blocked A8Q1W1 task resumes after this change is hosted-integrated."
 execution_route:
   frozen: true
   reason_codes:
