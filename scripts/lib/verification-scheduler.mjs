@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { once } from "node:events";
 
 const DEFAULT_OUTPUT_TAIL_BYTES = 256 * 1024;
 const DEFAULT_GROUP_TIMEOUT_MS = 15 * 60_000;
@@ -104,4 +105,38 @@ export async function runVerificationGroups(groups, options = {}) {
     ok: results.every((result) => result.exit_code === 0),
     results,
   };
+}
+
+export function summarizeVerificationGroupResults(results) {
+  return {
+    schema_version: 1,
+    kind: "verification_group_summary",
+    ok: results.every((result) => result.exit_code === 0),
+    groups: results.map((result) => ({
+      id: result.id,
+      exit_code: result.exit_code,
+      timed_out: result.timed_out,
+      duration_ms: result.duration_ms,
+    })),
+  };
+}
+
+async function writeStreamChunk(stream, chunk) {
+  if (!chunk || stream.write(chunk)) return;
+  await once(stream, "drain");
+}
+
+export async function writeVerificationGroupResults(results, options = {}) {
+  const stdout = options.stdout ?? process.stdout;
+  const stderr = options.stderr ?? process.stderr;
+  for (const group of results) {
+    await writeStreamChunk(stdout, `\n== ${group.id} (${group.duration_ms}ms) ==\n`);
+    await writeStreamChunk(stdout, group.stdout);
+    await writeStreamChunk(stderr, group.stderr);
+  }
+  const summary = summarizeVerificationGroupResults(results);
+  const serialized = `${JSON.stringify(summary)}\n`;
+  await writeStreamChunk(stdout, serialized);
+  if (!summary.ok) await writeStreamChunk(stderr, serialized);
+  return summary;
 }
