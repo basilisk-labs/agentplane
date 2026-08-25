@@ -1,0 +1,109 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608242233-KTFFN7 Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608242233-KTFFN7 Verification Contract check critical_paths\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608242233-KTFFN7 Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608242233-KTFFN7 Verification Contract check task_outcome",
+  "digest": "sha256:51172f6a3971bef09cdf0930e220b08e004cf7b210c5451552a39451b1c721b7",
+  "implementation_sha": "f4732e5654922ed462df2aa606985280c3afc7ab",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:ff33d4a286caf60aca51a29ea4645ac30c84e8e3e674c4d66cdfce18638e1c75",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:4042111ab59d40fcf91f109639a36516aab766c0a48b91b0320c14445cb26719",
+      "digest": "sha256:ad64e73787be2d7e75d9f5f0c8508a7bf94712007fbb09e9e105632202826177",
+      "references": [
+        {
+          "digest": "sha256:8c1208ca45dfde495c9d2a4baaf39f3c8b26c809cd95d13d566efb99f80e3c7d",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608242233-KTFFN7/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "a788399c9ccc27ae290ddbfd6244fcb3196cf643",
+      "digest": "sha256:595166510e426a5c5beebcfdde6cddc04d157c7b2eed4ffd62a6367622f09c0e",
+      "primary_task_id": "202608242233-KTFFN7",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608242233-KTFFN7"
+      ]
+    },
+    "implementation": {
+      "base_sha": "a788399c9ccc27ae290ddbfd6244fcb3196cf643",
+      "digest": "sha256:c7c3bf7301547071df6b124fe4102a6c5b99d08253b429bad68382490f0bdbf4",
+      "strategy": "branch_diff",
+      "target_sha": "f4732e5654922ed462df2aa606985280c3afc7ab"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:adc21fb945a07e8d0f3294af556fccde5a091ead06a0c9bd2e7a3fb92f19010d",
+    "verify_steps_digest": "sha256:06688da95fee77730196745baa87be27b8a0e8900b661b1f3c8aa295bb04f370"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-25T02:10:11.037Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Allow evidence-only rework after an already committed implementation\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow evidence-only rework after an already committed implementation\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:06688da95fee77730196745baa87be27b8a0e8900b661b1f3c8aa295bb04f370",
+  "task_id": "202608242233-KTFFN7",
+  "verification_command": "agentplane verify 202608242233-KTFFN7 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

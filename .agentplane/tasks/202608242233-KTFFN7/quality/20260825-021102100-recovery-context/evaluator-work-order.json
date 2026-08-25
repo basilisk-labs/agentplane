@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608242233-KTFFN7-988de16e9744d042ffaa7938",
+  "prepared_at": "2026-08-25T02:11:02.100Z",
+  "task": {
+    "id": "202608242233-KTFFN7",
+    "revision": 21,
+    "objective": "Allow evidence-only rework after an already committed implementation\n\nRelease self-hosting blocker. Symptom: task 202608242156-A8Q1W1 has implementation commit 655f72d307962addfe932c4f8b6f2c7ff83ade82 and successful Supervisor checks, but one approved plan check is unsupported because the declared-check runner did not execute its exact command. The WorkItem becomes REWORK_READY. A fresh EXECUTOR result cannot complete it because external result application requires a new workspace change, producing E_VALIDATION after the implementation is already committed. Violated invariant: retryable validation rework must permit new trusted evidence against the unchanged implementation identity without requiring semantic source drift. Root cause: the validation/rework route issues another implementation episode while result application rejects evidence-only completion when no workspace delta exists. Temporary recovery: integrate a minimal framework fix and resume A8Q1W1 without altering its SVG commit. Permanent fix: accept and persist exact-command validation evidence for the current implementation identity, or provide an explicit evidence-only rework transition, while keeping ordinary no-change implementation results fail-closed. Regression: reproduce READY -> committed implementation -> unsupported required check -> REWORK_READY -> evidence-only successful retry, prove single application, preserved implementation commit, satisfied WorkItem, and no no-progress loop.",
+    "acceptance_criteria": [
+      "- In scope: Release self-hosting blocker. Symptom: task 202608242156-A8Q1W1 has implementation commit 655f72d307962addfe932c4f8b6f2c7ff83ade82 and successful Supervisor checks, but one approved plan check is unsupported because the declared-check runner did not execute its exact command. The WorkItem becomes REWORK_READY. A fresh EXECUTOR result cannot complete it because external result application requires a new workspace change, producing E_VALIDATION after the implementation is already committed. Violated invariant: retryable validation rework must permit new trusted evidence against the unchanged implementation identity without requiring semantic source drift. Root cause: the validation/rework route issues another implementation episode while result application rejects evidence-only completion when no workspace delta exists. Temporary recovery: integrate a minimal framework fix and resume A8Q1W1 without altering its SVG commit. Permanent fix: accept and persist exact-command validation evidence for the current implementation identity, or provide an explicit evidence-only rework transition, while keeping ordinary no-change implementation results fail-closed. Regression: reproduce READY -> committed implementation -> unsupported required check -> REWORK_READY -> evidence-only successful retry, prove single application, preserved implementation commit, satisfied WorkItem, and no no-progress loop.\n- Out of scope: unrelated refactors not required for \"Allow evidence-only rework after an already committed implementation\".",
+      "Add one fail-closed evidence-only implementation-rework path. Supervisor verification must execute the selected canonical WorkItem's deterministic validation commands in addition to legacy task checks, and a no-delta implementation_rework may reuse the exact recorded implementation commit only for the matching REWORK_READY WorkItem. Initial no-op implementation and semantic repair with actual workspace changes retain their existing behavior.",
+      "PLANNER fallback scaffold for \"Allow evidence-only rework after an already committed implementation\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow evidence-only rework after an already committed implementation\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "6d078038f42391d1ed6bb4b1fb406b1a4c27f6ba",
+  "diff_base_sha": "a788399c9ccc27ae290ddbfd6244fcb3196cf643",
+  "blueprint_digest": "a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-021102100-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:0d551da7884cc359c015e7bf9e06e0c6ae8c5e79363f0a933ffe3c549a4a19ac",
+    "prompt_path": ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/7df9a6d8842437e3f6fa83e0b5ac7c19115e1de92abd5350359d010210b9ef57.md",
+    "result_schema_path": ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608242233-KTFFN7/README.md",
+      "sha256": "sha256:ee5a91ee4548dff3abb22e71e4e776264286636de1814c5add484df3737c1981",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/b062051fe6ece949aebc9f4222e8612d1a72570570efbe9d8892b79e0d70ce77.patch",
+      "sha256": "sha256:b062051fe6ece949aebc9f4222e8612d1a72570570efbe9d8892b79e0d70ce77",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/83f6b8cb210495863d48787f265e8f5b603deceb95faa1634cf0734d0f1b9af1.json",
+      "sha256": "sha256:83f6b8cb210495863d48787f265e8f5b603deceb95faa1634cf0734d0f1b9af1",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608242233-KTFFN7/verification/20260825021011037-51172f6a3971bef0.json",
+      "sha256": "sha256:643bc2d8ec2b64eb5233758e790017006634f7fa79ec0fdd7cf30368e883bef0",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/5c98af0d762cf398813d61740cd325223f30595e9bdc699be111fc15c13c7f2f.json",
+      "sha256": "sha256:5c98af0d762cf398813d61740cd325223f30595e9bdc699be111fc15c13c7f2f",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
