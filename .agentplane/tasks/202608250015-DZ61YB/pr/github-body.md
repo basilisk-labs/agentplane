@@ -15,8 +15,8 @@ Release self-hosting blocker discovered while verifying 202608242233-KTFFN7. Sym
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
