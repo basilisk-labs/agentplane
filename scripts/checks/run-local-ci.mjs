@@ -3,7 +3,10 @@ import { existsSync } from "node:fs";
 
 import { buildLocalCiExecutionPlan, parseChangedFilesEnv } from "../lib/local-ci-selection.mjs";
 import { withFrameworkBuildLock } from "../lib/framework-build-lock.mjs";
-import { runVerificationGroups } from "../lib/verification-scheduler.mjs";
+import {
+  runVerificationGroups,
+  writeVerificationGroupResults,
+} from "../lib/verification-scheduler.mjs";
 import { writeLocalVerificationReceipt } from "../lib/local-verification-receipt.mjs";
 import {
   evaluateLifecycleControlBudget,
@@ -55,7 +58,7 @@ const LOCAL_FAST_VITEST_MAX_WORKERS =
   String(baseEnv.AGENTPLANE_FAST_VITEST_MAX_WORKERS ?? "").trim() || "6";
 const LOCAL_CI_GROUP_CONCURRENCY = parsePositiveIntegerEnv(
   baseEnv.AGENTPLANE_LOCAL_CI_GROUP_CONCURRENCY,
-  2,
+  1,
 );
 function parsePositiveIntegerEnv(rawValue, fallback) {
   const value = Number.parseInt(String(rawValue ?? "").trim(), 10);
@@ -461,7 +464,7 @@ async function runFullFastPath() {
     [{ id: "build", command: "bun", args: ["run", "build"] }],
     { concurrency: 1, cwd: process.cwd(), env: baseEnv },
   );
-  renderVerificationGroupResults(buildResult.results);
+  await writeVerificationGroupResults(buildResult.results);
   if (!buildResult.ok) throw new Error("Full verification build prerequisite failed.");
 
   const groupEnv = {
@@ -502,7 +505,7 @@ async function runFullFastPath() {
   });
   const results = [...runtimeResult.results, ...coreResult.results, ...cliResult.results];
   const ok = runtimeResult.ok && coreResult.ok && cliResult.ok;
-  renderVerificationGroupResults(results);
+  await writeVerificationGroupResults(results);
   process.stdout.write(
     `${JSON.stringify({
       schema_version: 1,
@@ -517,14 +520,6 @@ async function runFullFastPath() {
     })}\n`,
   );
   if (!ok) throw new Error("Full verification group failed.");
-}
-
-function renderVerificationGroupResults(results) {
-  for (const group of results) {
-    process.stdout.write(`\n== ${group.id} (${group.duration_ms}ms) ==\n`);
-    if (group.stdout) process.stdout.write(group.stdout);
-    if (group.stderr) process.stderr.write(group.stderr);
-  }
 }
 
 function runTargetedSmokePath(plan) {

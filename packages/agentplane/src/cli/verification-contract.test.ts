@@ -2,13 +2,18 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { PassThrough } from "node:stream";
 import { describe, expect, it } from "vitest";
 
 import {
   computeVerificationContract,
   mergeVerificationContracts,
 } from "../../../../scripts/lib/verification-contract.mjs";
-import { runVerificationGroups } from "../../../../scripts/lib/verification-scheduler.mjs";
+import {
+  runVerificationGroups,
+  summarizeVerificationGroupResults,
+  writeVerificationGroupResults,
+} from "../../../../scripts/lib/verification-scheduler.mjs";
 import { readTaskVerificationEffects } from "../../../../scripts/lib/task-verification-contracts.mjs";
 import {
   LIFECYCLE_CONTROL_EVENT_KIND,
@@ -239,6 +244,68 @@ describe("verification contract", () => {
       ["stalled", 124, true],
       ["failed", 7, false],
     ]);
+    expect(summarizeVerificationGroupResults(result.results)).toEqual({
+      schema_version: 1,
+      kind: "verification_group_summary",
+      ok: false,
+      groups: [
+        {
+          id: "stalled",
+          exit_code: 124,
+          timed_out: true,
+          duration_ms: expect.any(Number),
+        },
+        {
+          id: "failed",
+          exit_code: 7,
+          timed_out: false,
+          duration_ms: expect.any(Number),
+        },
+      ],
+    });
+  });
+
+  it("flushes the final group summary after large captured output applies backpressure", async () => {
+    const stdout = new PassThrough({ highWaterMark: 1 });
+    const stderr = new PassThrough({ highWaterMark: 1 });
+    let stdoutText = "";
+    let stderrText = "";
+    stdout.setEncoding("utf8");
+    stderr.setEncoding("utf8");
+    stdout.on("data", (chunk: string) => (stdoutText += chunk));
+    stderr.on("data", (chunk: string) => (stderrText += chunk));
+    const results = [
+      {
+        id: "passed",
+        exit_code: 0,
+        timed_out: false,
+        duration_ms: 10,
+        started_at_ms: 1,
+        finished_at_ms: 11,
+        stdout: "x".repeat(128 * 1024),
+        stderr: "",
+      },
+      {
+        id: "failed",
+        exit_code: 9,
+        timed_out: false,
+        duration_ms: 20,
+        started_at_ms: 12,
+        finished_at_ms: 32,
+        stdout: "",
+        stderr: "y".repeat(128 * 1024),
+      },
+    ];
+
+    const summary = await writeVerificationGroupResults(results, { stdout, stderr });
+    const serialized = `${JSON.stringify(summary)}\n`;
+
+    expect(summary.groups.map(({ id, exit_code }) => [id, exit_code])).toEqual([
+      ["passed", 0],
+      ["failed", 9],
+    ]);
+    expect(stdoutText.endsWith(serialized)).toBe(true);
+    expect(stderrText.endsWith(serialized)).toBe(true);
   });
 
   it("cannot qualify mandatory verification from planning-only timings", () => {
