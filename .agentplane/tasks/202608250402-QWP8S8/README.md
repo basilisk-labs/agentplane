@@ -1,10 +1,11 @@
 ---
 id: "202608250402-QWP8S8"
 title: "Execute safe fail-fast declared-check sequences in the direct verifier"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -59,6 +60,20 @@ quality_review:
     - "The focused tests cover successful ordering, fail-fast behavior, remaining-time propagation, rejection before execution, and quoted ampersands."
     - "Supervisor-owned evidence records passing critical tests, lint, focused tests, committed-diff checks, and a clean implementation snapshot for evaluated SHA a057e66401599ed9187032edd839b6e1511eca52."
     - "Residual risk: Hosted integration must still pass for the published exact SHA before merge."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:d64b93e39217cdbb633fe0cac669e011b8cc200aee6cabbf9b0885775e529fdd"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-25T09:33:35.065Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -229,8 +244,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "a057e66401599ed9187032edd839b6e1511eca52"
-  message: "🚧 QWP8S8 task: apply external agent result"
+  hash: "1a479eb53b06a72232c1e80210e84c30b5026243"
+  message: "🚧 QWP8S8 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -238,6 +253,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: a057e6640159. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -260,9 +278,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-25T09:33:35.065Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "1a479eb53b06a72232c1e80210e84c30b5026243"
 doc_version: 3
-doc_updated_at: "2026-08-25T09:31:20.438Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-25T09:33:35.148Z"
+doc_updated_by: "CODER"
 description: "Blocker for 202608242156-A8Q1W1. Symptom: the approved required check 'bun run docs:readme-header:generate && bun run docs:readme-header:check' is classified unsupported after all other checks pass, so evidence-only recovery loops forever. Violated invariant: every planner-approved deterministic verification command must either be safely executable by the CLI or rejected before approval, not become an unrecoverable runtime criterion. Root cause: parseDirectTaskCheck accepts one argv command and runDirectTaskVerification rejects the whole command at the first && token. Temporary recovery: keep A8Q1W1 and implementation commit 655f72d307962addfe932c4f8b6f2c7ff83ade82 unchanged until this blocker lands. Permanent fix: support only a fail-fast sequence of individually safe declared commands separated by literal &&, parse every segment through the existing structured grammar, execute without a shell, stop after the first failure, preserve the declared check timeout as the sequence budget, and reject empty segments or every other shell operator. Add regression tests for successful sequencing, fail-fast behavior, timeout propagation, and unsafe syntax rejection. After hosted integration, resume A8Q1W1 through a fresh supervisor packet."
 sections:
   Summary: |-
@@ -616,7 +642,45 @@ extensions:
       schema_version: 1
       task_id: "202608250402-QWP8S8"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608250402-QWP8S8"
+            - "git:a057e66401599ed9187032edd839b6e1511eca52"
+          check_id: "check-focused-tests"
+          command_identity: "bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-25T09:31:13.445Z"
+          repository_snapshot_digest: "sha256:c2ab9687ed2c755505c34bdcad720f942aaa6a94e9e003e9cb6c9e8ef3715569"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608250402-QWP8S8"
+            - "git:a057e66401599ed9187032edd839b6e1511eca52"
+          check_id: "check-build"
+          command_identity: "bun run --filter=agentplane build"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-25T09:31:13.445Z"
+          repository_snapshot_digest: "sha256:c2ab9687ed2c755505c34bdcad720f942aaa6a94e9e003e9cb6c9e8ef3715569"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608250402-QWP8S8"
+            - "git:a057e66401599ed9187032edd839b6e1511eca52"
+          check_id: "check-lint"
+          command_identity: "bun run lint:core"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-25T09:31:13.445Z"
+          repository_snapshot_digest: "sha256:c2ab9687ed2c755505c34bdcad720f942aaa6a94e9e003e9cb6c9e8ef3715569"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608250402-QWP8S8"
     intent:
       acceptance_criteria:
@@ -642,12 +706,12 @@ extensions:
 
         Blocker for 202608242156-A8Q1W1. Symptom: the approved required check 'bun run docs:readme-header:generate && bun run docs:readme-header:check' is classified unsupported after all other checks pass, so evidence-only recovery loops forever. Violated invariant: every planner-approved deterministic verification command must either be safely executable by the CLI or rejected before approval, not become an unrecoverable runtime criterion. Root cause: parseDirectTaskCheck accepts one argv command and runDirectTaskVerification rejects the whole command at the first && token. Temporary recovery: keep A8Q1W1 and implementation commit 655f72d307962addfe932c4f8b6f2c7ff83ade82 unchanged until this blocker lands. Permanent fix: support only a fail-fast sequence of individually safe declared commands separated by literal &&, parse every segment through the existing structured grammar, execute without a shell, stop after the first failure, preserve the declared check timeout as the sequence budget, and reject empty segments or every other shell operator. Add regression tests for successful sequencing, fail-fast behavior, timeout propagation, and unsafe syntax rejection. After hosted integration, resume A8Q1W1 through a fresh supervisor packet.
       task_id: "202608250402-QWP8S8"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 11
     schema_version: 1
-    updated_at: "2026-08-25T09:31:23.361Z"
+    updated_at: "2026-08-25T09:33:35.065Z"
     work_items:
       support-safe-declared-check-sequences:
         attempt: 1
@@ -765,11 +829,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608250402-QWP8S8"
+      legacy-finish:202608250402-QWP8S8:2026-08-25T09:31:13.445Z:a057e66401599ed9187032edd839b6e1511eca52:
+        aggregate_digest: "sha256:185e0d096f408b46f6061e9ba213da9e2d712e3b6da40a96d8d92c3c9e9a43f1"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-25T09:33:35.065Z"
+          cause_refs:
+            - "task-verification:202608250402-QWP8S8"
+            - "git:a057e66401599ed9187032edd839b6e1511eca52"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ef014df0b0739ec2c05e3de6"
+          mutation_id: "legacy-finish:202608250402-QWP8S8:2026-08-25T09:31:13.445Z:a057e66401599ed9187032edd839b6e1511eca52"
+          plan_digest: "sha256:828ac8cd823771bdee918796e3672ee30a15e7ae8175e496b99ba33adc949b47"
+          plan_revision: 1
+          repository_fingerprint: "sha256:c2ab9687ed2c755505c34bdcad720f942aaa6a94e9e003e9cb6c9e8ef3715569"
+          schema_version: 1
+          task_id: "202608250402-QWP8S8"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608250402-QWP8S8:2026-08-25T09:31:13.445Z:a057e66401599ed9187032edd839b6e1511eca52"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202608250402-QWP8S8"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "a057e66401599ed9187032edd839b6e1511eca52"
+    message: "🚧 QWP8S8 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
@@ -898,3 +988,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:d64b93e39217cdbb633fe0cac669e011b8cc200aee6cabbf9b0885775e529fdd`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-25T09:33:35.065Z`
