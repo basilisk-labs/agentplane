@@ -1,3 +1,5 @@
+import { spawn } from "node:child_process";
+import { once } from "node:events";
 import { readFile, writeFile } from "node:fs/promises";
 
 import { describe, expect, it } from "vitest";
@@ -14,6 +16,14 @@ import {
 } from "@agentplane/testkit";
 
 installRunCliIntegrationHarness();
+
+async function exitedProcessPid(): Promise<number> {
+  const child = spawn(process.execPath, ["-e", "process.exit(0)"], { stdio: "ignore" });
+  const pid = child.pid;
+  if (typeof pid !== "number") throw new Error("failed to start process for stale PID fixture");
+  await once(child, "exit");
+  return pid;
+}
 
 describe("runCli task handoff and recovery", () => {
   it("task reclaim records a deterministic handoff for a task awaiting a local agent", async () => {
@@ -144,6 +154,7 @@ describe("runCli task handoff and recovery", () => {
       statusIo.restore();
     }
     const state = JSON.parse(await readFile(statePath, "utf8")) as Record<string, unknown>;
+    const deadPid = await exitedProcessPid();
     await writeFile(
       statePath,
       `${JSON.stringify(
@@ -151,7 +162,7 @@ describe("runCli task handoff and recovery", () => {
           ...state,
           status: "running",
           supervision: {
-            pid: 999_999,
+            pid: deadPid,
             started_at: "2026-05-29T19:14:00.000Z",
             heartbeat_at: "2026-05-29T19:14:01.000Z",
           },

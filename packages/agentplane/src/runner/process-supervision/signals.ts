@@ -72,8 +72,14 @@ export async function readObservedProcessIdentity(
       started_at: parsedStartedAt,
     };
   } catch (err) {
-    const errno = (err as NodeJS.ErrnoException | null)?.code;
-    const exitCode = (err as { code?: number } | null)?.code;
+    const processError = err as (NodeJS.ErrnoException & { exitCode?: number }) | null;
+    const errno = processError?.code;
+    const exitCode =
+      typeof processError?.exitCode === "number"
+        ? processError.exitCode
+        : typeof processError?.code === "number"
+          ? processError.code
+          : null;
     const message = err instanceof Error ? err.message : "";
     if (errno === "ESRCH" || exitCode === 1) return null;
     if (message.includes("process id too large")) return null;
