@@ -17,6 +17,13 @@ export type VerificationGroupResult = {
   stderr: string;
 };
 
+export type VerificationGroupSummary = {
+  schema_version: 1;
+  kind: "verification_group_summary";
+  ok: boolean;
+  groups: Array<Pick<VerificationGroupResult, "id" | "exit_code" | "timed_out" | "duration_ms">>;
+};
+
 export function runVerificationGroups(
   groups: VerificationGroup[],
   options?: {
@@ -33,3 +40,15 @@ export function runVerificationGroups(
   ok: boolean;
   results: VerificationGroupResult[];
 }>;
+
+export function summarizeVerificationGroupResults(
+  results: VerificationGroupResult[],
+): VerificationGroupSummary;
+
+export function writeVerificationGroupResults(
+  results: VerificationGroupResult[],
+  options?: {
+    stdout?: NodeJS.WritableStream;
+    stderr?: NodeJS.WritableStream;
+  },
+): Promise<VerificationGroupSummary>;
