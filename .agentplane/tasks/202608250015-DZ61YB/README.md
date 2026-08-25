@@ -4,7 +4,7 @@ title: "Make aggregate local CI deterministic and preserve failing-group evidenc
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,10 +24,10 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "User approved exact plan digest and state fingerprint.; host_user_decision=sha256:2d33ff3b9e097e3eeb3b52b6822974879bf73455de06fb8232829e1adecddb20"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-25T01:03:40.957Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -86,11 +86,41 @@ execution_contract:
       - "scripts/lib/verification-scheduler.mjs"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+      - "scripts"
+    changed_paths:
+      - "packages/agentplane/src/cli/verification-contract.test.ts"
+      - "scripts/checks/run-local-ci.mjs"
+      - "scripts/lib/verification-scheduler.d.ts"
+      - "scripts/lib/verification-scheduler.mjs"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -125,22 +155,35 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:f66ed8aff04c3c647d0917105b7247fa98147520880947362b000e016beeccde"
+      digest: "sha256:80a906803c2164219c87739d16a1f5cd4fb3d6160eeeaecfe47a713cb769cd08"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/verification-contract.test.ts"
         - "central_component:scripts/checks/run-local-ci.mjs"
         - "central_component:scripts/lib/verification-scheduler.d.ts"
         - "central_component:scripts/lib/verification-scheduler.mjs"
+        - "central_path:packages/agentplane/src/cli/verification-contract.test.ts"
+        - "central_path:scripts/checks/run-local-ci.mjs"
+        - "central_path:scripts/lib/verification-scheduler.d.ts"
+        - "central_path:scripts/lib/verification-scheduler.mjs"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+          - "scripts"
+        changed_files:
+          - "packages/agentplane/src/cli/verification-contract.test.ts"
+          - "scripts/checks/run-local-ci.mjs"
+          - "scripts/lib/verification-scheduler.d.ts"
+          - "scripts/lib/verification-scheduler.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -172,11 +215,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "07ead92308c1a1551e0145265422599d38f98eba"
+  message: "🚧 DZ61YB task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 07ead92308c1. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -185,9 +233,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-25T00:54:48.419Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 07ead92308c1. CLI accepted one state-bound external-agent semantic result."
+    commit: "07ead92308c1a1551e0145265422599d38f98eba"
+  -
+    type: "verify"
+    at: "2026-08-25T01:03:40.957Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-25T00:39:55.300Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-25T01:03:43.049Z"
+doc_updated_by: "SUPERVISOR"
 description: "Release self-hosting blocker discovered while verifying 202608242233-KTFFN7. Symptom: bun run ci:local:full failed four times on implementation c566a26f34699e0d0f779ad19fa4978f712aed66, while docs-schema, core, runtime, and cli each passed independently; the persisted declared-check evidence retained only an aggregate exit 1 and truncated output without the failing group identity. Violated invariant: the aggregate gate must deterministically reflect its constituent groups and must persist the exact failed or timed-out group, exit status, and useful tail so a task cannot exhaust verification retries on an opaque orchestration failure. Root-cause scope: verification scheduler and full local-CI group orchestration, including concurrency/resource isolation and result rendering. Temporary recovery: run constituent groups independently and do not alter the blocked implementation. Permanent fix: make aggregate scheduling deterministic under the repository workload and preserve structured per-group failure evidence in the aggregate output. Regression: reproduce concurrent group failure/timeout, prove exact group attribution and bounded output, then prove the default aggregate gate passes when every group passes. After integration, resume KTFFN7 at c566a26f without source reimplementation."
 sections:
   Summary: |-
@@ -206,6 +268,78 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-25T01:03:40.957Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6f6994a7b57957b059ce117db70547504c7b06e8b0d8c896b6e9a28dd2b8d1d1, input_digest=sha256:97ee6daf551e6dfc00ccbf3df10fd71caf27224a6b5fd08becfbb9e4f0ef2b43
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608250015-DZ61YB Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/cli/verification-contract.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608250015-DZ61YB Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608250015-DZ61YB Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/cli/verification-contract.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608250015-DZ61YB Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608250015-DZ61YB Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608250015-DZ61YB Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/cli/verification-contract.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608250015-DZ61YB Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608250015-DZ61YB-make-aggregate-local-ci-deterministic-and-preser/.agentplane/tasks/202608250015-DZ61YB/blueprint/resolved-snapshot.json
+    - old_digest: 7f0e8b99c667b9519e5d37c299cfa10d26aa36d634a166de572332378cd731bc
+    - current_digest: 7f0e8b99c667b9519e5d37c299cfa10d26aa36d634a166de572332378cd731bc
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608250015-DZ61YB
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -464,25 +598,126 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 8
     schema_version: 1
-    updated_at: "2026-08-25T00:39:17.418Z"
+    updated_at: "2026-08-25T01:03:44.410Z"
     work_items:
       stabilize-and-explain-full-local-ci:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "stabilize-and-explain-full-local-ci"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:3463104548399c9264bb450895a3c93a4c17111414af496ab3018f9ae8a62639"
+            id: "structured-group-failure-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608250015-DZ61YB"
+              work_item_id: "stabilize-and-explain-full-local-ci"
+            provenance:
+              - "sha256:50dc1bcfde74f8e358e31dd523134a7f42c418cf56c159d3835617cf0d7500e0"
+              - ".agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:8e7d8bce5329ea08022e4610058f6c10bdccb9b25502b654b3ad5e2721f1cb54"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:3dc76db1e7927218cb3c69eb4410c8c89c9631ce1dac43e7f5b0f08bebe2f6f1"
+            id: "deterministic-full-ci-scheduling"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608250015-DZ61YB"
+              work_item_id: "stabilize-and-explain-full-local-ci"
+            provenance:
+              - "sha256:50dc1bcfde74f8e358e31dd523134a7f42c418cf56c159d3835617cf0d7500e0"
+              - ".agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:8e7d8bce5329ea08022e4610058f6c10bdccb9b25502b654b3ad5e2721f1cb54"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:b85497ee4a9edf7717cb0de8856534cd6571266a5693b74e5335a30bfaedf79f"
+            id: "aggregate-regression-qualification"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608250015-DZ61YB"
+              work_item_id: "stabilize-and-explain-full-local-ci"
+            provenance:
+              - "sha256:50dc1bcfde74f8e358e31dd523134a7f42c418cf56c159d3835617cf0d7500e0"
+              - ".agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:8e7d8bce5329ea08022e4610058f6c10bdccb9b25502b654b3ad5e2721f1cb54"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json"
+              check_id: "check-focused"
+              command_identity: "bunx vitest run packages/agentplane/src/cli/verification-contract.test.ts --pool=forks --maxWorkers 1"
+              detail: "Observed by bunx vitest run packages/agentplane/src/cli/verification-contract.test.ts --pool=forks --maxWorkers 1."
+              exit_code: 0
+              observed_at: "2026-08-25T01:03:44.402Z"
+              repository_snapshot_digest: "sha256:8e7d8bce5329ea08022e4610058f6c10bdccb9b25502b654b3ad5e2721f1cb54"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json"
+              check_id: "check-full"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-25T01:03:44.402Z"
+              repository_snapshot_digest: "sha256:8e7d8bce5329ea08022e4610058f6c10bdccb9b25502b654b3ad5e2721f1cb54"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608250015-DZ61YB-executor-d4e9b0b482f0cc560ad5d5f0:
+        aggregate_digest: "sha256:212c686fcc4464a773addfd3319f234c78e389880e15a235d331ca83a4bf88f4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-25T01:03:44.410Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_2a4b1b0d2534e207de6f194d"
+          mutation_id: "external-result:work-order-202608250015-DZ61YB-executor-d4e9b0b482f0cc560ad5d5f0"
+          plan_digest: "sha256:6acc1cf2d766e0607c6ca597bd4b88118b227f2aff7cd4f79873fc2c865b4d96"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608250015-DZ61YB"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "stabilize-and-explain-full-local-ci"
+        mutation_id: "external-result:work-order-202608250015-DZ61YB-executor-d4e9b0b482f0cc560ad5d5f0"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202608250015-DZ61YB"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "07ead92308c1a1551e0145265422599d38f98eba"
   task_execution_context:
     base_ref: "main"
     base_sha: "a788399c9ccc27ae290ddbfd6244fcb3196cf643"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "a788399c9ccc27ae290ddbfd6244fcb3196cf643"
     version: 1
@@ -514,6 +749,78 @@ PLANNER fallback scaffold for "Make aggregate local CI deterministic and preserv
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-25T01:03:40.957Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6f6994a7b57957b059ce117db70547504c7b06e8b0d8c896b6e9a28dd2b8d1d1, input_digest=sha256:97ee6daf551e6dfc00ccbf3df10fd71caf27224a6b5fd08becfbb9e4f0ef2b43
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608250015-DZ61YB Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/cli/verification-contract.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608250015-DZ61YB Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608250015-DZ61YB Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/cli/verification-contract.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608250015-DZ61YB Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608250015-DZ61YB Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608250015-DZ61YB Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/cli/verification-contract.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202608250015-DZ61YB/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608250015-DZ61YB Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608250015-DZ61YB-make-aggregate-local-ci-deterministic-and-preser/.agentplane/tasks/202608250015-DZ61YB/blueprint/resolved-snapshot.json
+- old_digest: 7f0e8b99c667b9519e5d37c299cfa10d26aa36d634a166de572332378cd731bc
+- current_digest: 7f0e8b99c667b9519e5d37c299cfa10d26aa36d634a166de572332378cd731bc
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608250015-DZ61YB
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

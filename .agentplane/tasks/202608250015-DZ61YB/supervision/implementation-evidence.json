@@ -1,0 +1,98 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check a788399c9ccc27ae290ddbfd6244fcb3196cf643..07ead92308c1a1551e0145265422599d38f98eba",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB a788399c9ccc27ae290ddbfd6244fcb3196cf643..07ead92308c1a1551e0145265422599d38f98eba",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202608250015-DZ61YB/README.md",
+        "A\t.agentplane/tasks/202608250015-DZ61YB/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202608250015-DZ61YB/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202608250015-DZ61YB/pr/github-body.md",
+        "A\t.agentplane/tasks/202608250015-DZ61YB/pr/github-title.txt",
+        "A\t.agentplane/tasks/202608250015-DZ61YB/pr/meta.json",
+        "A\t.agentplane/tasks/202608250015-DZ61YB/pr/review.md",
+        "M\tpackages/agentplane/src/cli/verification-contract.test.ts",
+        "M\tscripts/checks/run-local-ci.mjs",
+        "M\tscripts/lib/verification-scheduler.d.ts",
+        "M\tscripts/lib/verification-scheduler.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "a788399c9ccc27ae290ddbfd6244fcb3196cf643",
+  "implementation_commit": "07ead92308c1a1551e0145265422599d38f98eba",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202608250015-DZ61YB/README.md",
+      "?? .agentplane/tasks/202608250015-DZ61YB/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202608250015-DZ61YB/pr/diffstat.txt",
+      "?? .agentplane/tasks/202608250015-DZ61YB/pr/github-body.md",
+      "?? .agentplane/tasks/202608250015-DZ61YB/pr/github-title.txt",
+      "?? .agentplane/tasks/202608250015-DZ61YB/pr/meta.json",
+      "?? .agentplane/tasks/202608250015-DZ61YB/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608250015-DZ61YB/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608250015-DZ61YB/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608250015-DZ61YB/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608250015-DZ61YB/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608250015-DZ61YB/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608250015-DZ61YB/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608250015-DZ61YB/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202608250015-DZ61YB/README.md",
+      "?? .agentplane/tasks/202608250015-DZ61YB/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202608250015-DZ61YB/pr/diffstat.txt",
+      "?? .agentplane/tasks/202608250015-DZ61YB/pr/github-body.md",
+      "?? .agentplane/tasks/202608250015-DZ61YB/pr/github-title.txt",
+      "?? .agentplane/tasks/202608250015-DZ61YB/pr/meta.json",
+      "?? .agentplane/tasks/202608250015-DZ61YB/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608250015-DZ61YB"
+}
