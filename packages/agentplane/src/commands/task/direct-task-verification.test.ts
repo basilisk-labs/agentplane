@@ -11,8 +11,10 @@ const ORIGINAL_AGENT_MODE = process.env.AGENTPLANE_AGENT_MODE;
 const ORIGINAL_RUNTIME_ACTIVE_BIN = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
 
 import {
+  isTaskLevelVerificationReworkState,
   parseDirectTaskCheck,
   renderDirectTaskVerificationDetails,
+  resolveEvidenceOnlyReworkCommit,
   runDirectTaskVerification,
 } from "./direct-task-verification.js";
 
@@ -94,6 +96,51 @@ afterEach(async () => {
 });
 
 describe("direct task verification", () => {
+  it("reuses only the exact unchanged implementation identity at a rework boundary", () => {
+    const eligible = {
+      purpose: "implementation" as const,
+      changed_paths: [],
+      recorded_commit: "abc123",
+      head: "abc123",
+      work_item_id: "work-item",
+      work_item_state: "REWORK_READY",
+      task_verification_state: undefined,
+      all_required_work_items_completed: false,
+    };
+
+    expect(resolveEvidenceOnlyReworkCommit(eligible)).toBe("abc123");
+    expect(
+      resolveEvidenceOnlyReworkCommit({ ...eligible, changed_paths: ["repair.ts"] }),
+    ).toBeNull();
+    expect(resolveEvidenceOnlyReworkCommit({ ...eligible, head: "different" })).toBeNull();
+    expect(resolveEvidenceOnlyReworkCommit({ ...eligible, work_item_state: "READY" })).toBeNull();
+    expect(resolveEvidenceOnlyReworkCommit({ ...eligible, purpose: "evaluation" })).toBeNull();
+  });
+
+  it("recognizes task-level evidence rework only after every required WorkItem completed", () => {
+    const eligible = {
+      work_item_id: null,
+      has_plan_refinement: false,
+      task_verification_state: "needs_rework",
+      has_current_plan: true,
+      all_required_work_items_completed: true,
+    };
+
+    expect(isTaskLevelVerificationReworkState(eligible)).toBe(true);
+    expect(isTaskLevelVerificationReworkState({ ...eligible, has_plan_refinement: true })).toBe(
+      false,
+    );
+    expect(isTaskLevelVerificationReworkState({ ...eligible, work_item_id: "work-item" })).toBe(
+      false,
+    );
+    expect(
+      isTaskLevelVerificationReworkState({
+        ...eligible,
+        all_required_work_items_completed: false,
+      }),
+    ).toBe(false);
+  });
+
   it("replaces a missing package script only for a planner fallback scaffold", async () => {
     const repo = await root();
     await writeFile(

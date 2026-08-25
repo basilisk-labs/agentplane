@@ -1,4 +1,6 @@
 import { runProcess } from "@agentplaneorg/core/process";
+import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -6,7 +8,10 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import { parseDeclaredTaskCheck } from "../shared/declared-check.js";
 import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
-import type { CommandContext } from "../shared/task-backend.js";
+import type { CommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+
+import { CliError } from "../../shared/errors.js";
+import { cmdVerifyParsed } from "./verify-record.js";
 
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
 const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
@@ -42,6 +47,99 @@ export type DirectTaskVerificationResult = {
   checks: DirectTaskCheck[];
   reason: string | null;
 };
+
+export function resolveEvidenceOnlyReworkCommit(opts: {
+  purpose: string;
+  changed_paths: readonly string[];
+  recorded_commit: string | null;
+  head: string | null;
+  work_item_id: string | null;
+  work_item_state: string | null | undefined;
+  task_verification_state: string | undefined;
+  all_required_work_items_completed: boolean;
+}): string | null {
+  if (
+    !["implementation", "implementation_rework"].includes(opts.purpose) ||
+    opts.changed_paths.length > 0 ||
+    !opts.recorded_commit ||
+    opts.recorded_commit !== opts.head
+  ) {
+    return null;
+  }
+  const reworkReady = opts.work_item_id
+    ? opts.work_item_state === "REWORK_READY"
+    : opts.task_verification_state === "needs_rework" && opts.all_required_work_items_completed;
+  return reworkReady ? opts.recorded_commit : null;
+}
+
+export function isTaskLevelVerificationReworkState(opts: {
+  work_item_id: string | null;
+  has_plan_refinement: boolean;
+  task_verification_state: string | undefined;
+  has_current_plan: boolean;
+  all_required_work_items_completed: boolean;
+}): boolean {
+  return (
+    !opts.work_item_id &&
+    !opts.has_plan_refinement &&
+    opts.has_current_plan &&
+    opts.task_verification_state === "needs_rework" &&
+    opts.all_required_work_items_completed
+  );
+}
+
+export async function recordDirectTaskVerification(opts: {
+  command: CommandContext;
+  checkout: string;
+  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+  work_order: AgentWorkOrderV2;
+  workflow: "direct" | "branch_pr";
+}): Promise<DirectTaskVerificationResult> {
+  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
+  const selectedWorkItem = aggregate?.current_plan?.proposal.work_items.work_items.find(
+    (item) => item.id === opts.work_order.task.work_item_id,
+  );
+  const additionalCommands = (selectedWorkItem?.validation.checks ?? [])
+    .map((check) => check.command)
+    .filter((command): command is string => typeof command === "string");
+  const checks = await runDirectTaskVerification({
+    command: opts.command,
+    task: opts.task,
+    task_id: opts.task.id,
+    cwd: opts.checkout,
+    additional_commands: additionalCommands,
+  });
+  const exitCode = await cmdVerifyParsed({
+    ctx: opts.command,
+    cwd: opts.checkout,
+    rootOverride: undefined,
+    taskId: opts.task.id,
+    state: checks.status === "passed" ? "ok" : "needs_rework",
+    by: "SUPERVISOR",
+    note:
+      checks.status === "passed"
+        ? "Verified: CLI-owned checks passed before independent EVALUATOR review."
+        : `Rework: ${checks.reason ?? "Declared implementation verification did not pass."}`,
+    details: renderDirectTaskVerificationDetails({
+      task: opts.task,
+      taskId: opts.task.id,
+      workflow: opts.workflow,
+      result: checks,
+    }),
+    localOnly: false,
+    repoFixable: checks.status !== "passed",
+    incidentTags: [],
+    incidentMatch: [],
+    quiet: true,
+  });
+  if (exitCode !== 0) {
+    throw new CliError({
+      code: "E_RUNTIME",
+      message: `External-agent implementation verification exited with ${exitCode}.`,
+    });
+  }
+  return checks;
+}
 
 export function renderDirectTaskVerificationDetails(opts: {
   task: Pick<TaskData, "execution_contract">;

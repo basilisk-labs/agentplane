@@ -20,21 +20,20 @@ import {
 import { recoversRecordedImplementationCommit } from "./external-agent-purpose.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
 import {
-  renderDirectTaskVerificationDetails,
-  runDirectTaskVerification,
+  isTaskLevelVerificationReworkState,
+  recordDirectTaskVerification,
+  resolveEvidenceOnlyReworkCommit,
 } from "./direct-task-verification.js";
 import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
 import { cmdTaskComment } from "./comment.js";
 import { cmdTaskSetStatus } from "./set-status.js";
 import { recordObservedTaskExecutionContract } from "./task-execution-contract-observation.js";
-import { cmdVerifyParsed } from "./verify-record.js";
 import { loadTaskFromContext } from "../shared/task-backend.js";
 import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import {
   recordTaskCentricExternalResult,
   type TaskCentricExternalResultProjection,
 } from "./task-centric-external-result.js";
-import type { DirectTaskVerificationResult } from "./direct-task-verification.js";
 
 function pathFromStatusLine(line: string): string {
   const raw = line.length >= 4 ? line.slice(3).trim() : "";
@@ -103,59 +102,6 @@ export function requiresImplementationReworkReopen(opts: {
   return opts.purpose === "implementation_rework" && opts.task_status === "DONE";
 }
 
-async function recordExternalImplementationVerification(opts: {
-  command: CommandContext;
-  checkout: string;
-  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
-  work_order: AgentWorkOrderV2;
-  workflow: "direct" | "branch_pr";
-}): Promise<DirectTaskVerificationResult> {
-  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
-  const selectedWorkItem = aggregate?.current_plan?.proposal.work_items.work_items.find(
-    (item) => item.id === opts.work_order.task.work_item_id,
-  );
-  const additionalCommands = (selectedWorkItem?.validation.checks ?? [])
-    .map((check) => check.command)
-    .filter((command): command is string => typeof command === "string");
-  const checks = await runDirectTaskVerification({
-    command: opts.command,
-    task: opts.task,
-    task_id: opts.task.id,
-    cwd: opts.checkout,
-    additional_commands: additionalCommands,
-  });
-  const exitCode = await cmdVerifyParsed({
-    ctx: opts.command,
-    cwd: opts.checkout,
-    rootOverride: undefined,
-    taskId: opts.task.id,
-    state: checks.status === "passed" ? "ok" : "needs_rework",
-    by: "SUPERVISOR",
-    note:
-      checks.status === "passed"
-        ? "Verified: CLI-owned checks passed before independent EVALUATOR review."
-        : `Rework: ${checks.reason ?? "Declared implementation verification did not pass."}`,
-    details: renderDirectTaskVerificationDetails({
-      task: opts.task,
-      taskId: opts.task.id,
-      workflow: opts.workflow,
-      result: checks,
-    }),
-    localOnly: false,
-    repoFixable: checks.status !== "passed",
-    incidentTags: [],
-    incidentMatch: [],
-    quiet: true,
-  });
-  if (exitCode !== 0) {
-    throw new CliError({
-      code: "E_RUNTIME",
-      message: `External-agent implementation verification exited with ${exitCode}.`,
-    });
-  }
-  return checks;
-}
-
 function recordedEvidenceOnlyReworkCommit(opts: {
   exchange: ExternalAgentExchange;
   work_order: AgentWorkOrderV2;
@@ -176,26 +122,22 @@ function recordedEvidenceOnlyReworkCommit(opts: {
     (typeof extensionCommit?.hash === "string" ? extensionCommit.hash.trim() : null) ??
     eventCommit?.trim() ??
     null;
-  if (
-    !["implementation", "implementation_rework"].includes(opts.exchange.purpose) ||
-    opts.changed_paths.length > 0 ||
-    !recordedCommit ||
-    recordedCommit !== opts.head
-  ) {
-    return null;
-  }
   const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
   if (!aggregate?.current_plan) return null;
-  const workItemId = opts.work_order.task.work_item_id;
-  if (workItemId) {
-    return aggregate.work_items[workItemId]?.state === "REWORK_READY" ? recordedCommit : null;
-  }
+  const workItemId = opts.work_order.task.work_item_id ?? null;
   const allRequiredWorkItemsCompleted = aggregate.current_plan.proposal.work_items.work_items
     .filter((item) => !item.optional)
     .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
-  return opts.task.verification?.state === "needs_rework" && allRequiredWorkItemsCompleted
-    ? recordedCommit
-    : null;
+  return resolveEvidenceOnlyReworkCommit({
+    purpose: opts.exchange.purpose,
+    changed_paths: opts.changed_paths,
+    recorded_commit: recordedCommit,
+    head: opts.head,
+    work_item_id: workItemId,
+    work_item_state: workItemId ? aggregate.work_items[workItemId]?.state : null,
+    task_verification_state: opts.task.verification?.state,
+    all_required_work_items_completed: allRequiredWorkItemsCompleted,
+  });
 }
 
 function isTaskLevelVerificationRework(opts: {
@@ -203,12 +145,17 @@ function isTaskLevelVerificationRework(opts: {
   work_order: AgentWorkOrderV2;
   semantic: AgentSemanticResult;
 }): boolean {
-  if (opts.work_order.task.work_item_id || opts.semantic.plan_refinement) return false;
   const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
-  if (!aggregate?.current_plan || opts.task.verification?.state !== "needs_rework") return false;
-  return aggregate.current_plan.proposal.work_items.work_items
-    .filter((item) => !item.optional)
-    .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
+  return isTaskLevelVerificationReworkState({
+    work_item_id: opts.work_order.task.work_item_id ?? null,
+    has_plan_refinement: Boolean(opts.semantic.plan_refinement),
+    task_verification_state: opts.task.verification?.state,
+    has_current_plan: Boolean(aggregate?.current_plan),
+    all_required_work_items_completed:
+      aggregate?.current_plan?.proposal.work_items.work_items
+        .filter((item) => !item.optional)
+        .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED") ?? false,
+  });
 }
 
 function assertExternalImplementationReturnState(opts: {
@@ -577,7 +524,7 @@ export async function applyExternalImplementationResult(opts: {
         authorityViolations.join(", "),
     });
   }
-  const verification = await recordExternalImplementationVerification({
+  const verification = await recordDirectTaskVerification({
     command: opts.command,
     checkout: opts.exchange.checkout,
     task: reconciliation.task,
