@@ -6,7 +6,7 @@ Created: 2026-08-25T09:14:06.810Z
 
 - Task: `202608250402-QWP8S8`
 - Title: Execute safe fail-fast declared-check sequences in the direct verifier
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608250402-QWP8S8/execute-safe-fail-fast-declared-check-sequences`
 - Canonical task record: `.agentplane/tasks/202608250402-QWP8S8/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-25T09:14:06.810Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-25T09:14:06.810Z
+- Updated: 2026-08-25T09:31:44.596Z
 - Branch: task/202608250402-QWP8S8/execute-safe-fail-fast-declared-check-sequences
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

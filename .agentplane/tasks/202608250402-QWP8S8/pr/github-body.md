@@ -22,7 +22,7 @@ Blocker for 202608242156-A8Q1W1. Symptom: the approved required check 'bun run d
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-25T09:14:06.810Z
+- Updated: 2026-08-25T09:31:44.596Z
 - Branch: task/202608250402-QWP8S8/execute-safe-fail-fast-declared-check-sequences
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
