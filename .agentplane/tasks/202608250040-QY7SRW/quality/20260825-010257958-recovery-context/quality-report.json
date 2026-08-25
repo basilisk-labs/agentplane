@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608250040-QY7SRW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-25T01:02:57.958Z",
+  "verdict": "pass",
+  "summary": "The v0.6.27 maintenance candidate fixes the actual ExecaError.exitCode shape and adds realistic dead-PID coverage without weakening live-PID identity protection.",
+  "evaluated_sha": "e0e3eda3f42811bf5f5551c5f6a6b4afe1156ebf",
+  "blueprint_digest": "f4424de1bc517bb50522405eedc5ff4c0595d3ca65f2045e64a606b60aa90e19",
+  "findings": [
+    "Absent valid PIDs are now classified from ExecaError.exitCode=1, while live processes still require identity matching."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608250040-QY7SRW/README.md",
+    "packages/agentplane/src/runner/process-supervision/signals.ts",
+    "packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts",
+    "bun run release:prepublish: exit 0"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted exact-SHA CI and npm registry readback remain publication gates."
+  ]
+}

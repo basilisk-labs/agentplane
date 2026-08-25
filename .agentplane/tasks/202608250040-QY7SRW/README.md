@@ -1,10 +1,10 @@
 ---
 id: "202608250040-QY7SRW"
 title: "Release 0.6.27 with dead PID reclaim fix"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -19,16 +19,38 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-25T01:05:30.489Z"
+  updated_by: "REVIEWER"
+  note: "Verified final branch_pr blueprint snapshot: implementation commit e0e3eda3f passed realistic dead-PID regression, direct PID 46382 probe, lint:core, release:parity, git diff --check, and full release:prepublish."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  updated_at: "2026-08-25T01:05:32.962Z"
+  updated_by: "EVALUATOR"
+  note: "The final branch_pr blueprint is satisfied by the scoped dead-PID reclaim fix and complete local release evidence."
+  evaluated_sha: "e0e3eda3f42811bf5f5551c5f6a6b4afe1156ebf"
+  blueprint_digest: "f4424de1bc517bb50522405eedc5ff4c0595d3ca65f2045e64a606b60aa90e19"
+  evidence_refs:
+    - ".agentplane/tasks/202608250040-QY7SRW/README.md"
+    - ".agentplane/tasks/202608250040-QY7SRW/quality/20260825-010532962-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608250040-QY7SRW/quality/20260825-010532962-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608250040-QY7SRW/quality/20260825-010532962-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608250040-QY7SRW/blueprint/resolved-snapshot.json"
+    - "implementation commit e0e3eda3f"
+    - "bun run release:prepublish: exit 0"
+  findings:
+    - "Absent valid PIDs are classified from ExecaError.exitCode=1, while live-process identity safeguards remain unchanged."
+commit:
+  hash: "e0e3eda3f42811bf5f5551c5f6a6b4afe1156ebf"
+  message: "🐛 QY7SRW release: fix dead PID reclaim for v0.6.27"
 comments:
   -
     author: "CODER"
     body: "Start: implement and qualify the isolated v0.6.27 reclaim fix, then publish only the exact maintenance-branch candidate after all release gates pass."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: manual maintenance closeout authorized because branch_pr finish incorrectly requires main or a generated task branch; implementation and release gates passed in the isolated 0.6.27 worktree."
 events:
   -
     type: "status"
@@ -37,9 +59,34 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement and qualify the isolated v0.6.27 reclaim fix, then publish only the exact maintenance-branch candidate after all release gates pass."
+  -
+    type: "verify"
+    at: "2026-08-25T01:02:46.377Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Verified dead-PID reclaim regression with a real exited child PID; direct PID 46382 probe returns alive=false and identity=null; focused tests, prettier, lint:core, release:parity, git diff --check, and full release:prepublish all passed on implementation commit e0e3eda3f."
+  -
+    type: "verify"
+    at: "2026-08-25T01:03:54.610Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Verified after refreshed blueprint snapshot: implementation commit e0e3eda3f passed realistic dead-PID regression, direct PID 46382 probe, lint:core, release:parity, git diff --check, and full release:prepublish."
+  -
+    type: "status"
+    at: "2026-08-25T01:05:03.389Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: manual maintenance closeout authorized because branch_pr finish incorrectly requires main or a generated task branch; implementation and release gates passed in the isolated 0.6.27 worktree."
+  -
+    type: "verify"
+    at: "2026-08-25T01:05:30.489Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Verified final branch_pr blueprint snapshot: implementation commit e0e3eda3f passed realistic dead-PID regression, direct PID 46382 probe, lint:core, release:parity, git diff --check, and full release:prepublish."
 doc_version: 3
-doc_updated_at: "2026-08-25T01:02:23.033Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-25T01:05:32.482Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix valid absent PID handling in task reclaim on the 0.6 maintenance line, add realistic regression coverage, qualify the exact candidate, and publish AgentPlane 0.6.27 without touching main."
 sections:
   Summary: |-
@@ -59,6 +106,96 @@ sections:
     6. Confirm `agentplane@0.6.27` and all participant packages are absent before publication, then verify the exact GitHub release/tag SHA, successful Publish to npm workflow, and npm registry versions after publication.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-25T01:02:46.377Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Verified dead-PID reclaim regression with a real exited child PID; direct PID 46382 probe returns alive=false and identity=null; focused tests, prettier, lint:core, release:parity, git diff --check, and full release:prepublish all passed on implementation commit e0e3eda3f.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-25T01:02:23.033Z, excerpt_hash=sha256:76eafeacd80dcb284c654a9cab539ef7ff39739bfde418eeccabcd8823ba2ca4
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane-v0.6.27-reclaim-fix/.agentplane/tasks/202608250040-QY7SRW/blueprint/resolved-snapshot.json
+    - old_digest: f4424de1bc517bb50522405eedc5ff4c0595d3ca65f2045e64a606b60aa90e19
+    - current_digest: f4424de1bc517bb50522405eedc5ff4c0595d3ca65f2045e64a606b60aa90e19
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608250040-QY7SRW
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane work start 202608250040-QY7SRW --agent CODER --slug release-0-6-27-with-dead-pid-reclaim-fix --worktree
+    - diagnostic_command: agentplane work resume 202608250040-QY7SRW
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: worktree_projection_drift
+
+    ### 2026-08-25T01:03:54.610Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Verified after refreshed blueprint snapshot: implementation commit e0e3eda3f passed realistic dead-PID regression, direct PID 46382 probe, lint:core, release:parity, git diff --check, and full release:prepublish.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-25T01:02:46.612Z, excerpt_hash=sha256:76eafeacd80dcb284c654a9cab539ef7ff39739bfde418eeccabcd8823ba2ca4
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane-v0.6.27-reclaim-fix/.agentplane/tasks/202608250040-QY7SRW/blueprint/resolved-snapshot.json
+    - old_digest: 5c966bb07d9bae45c0e4e173e356d84b6448b4397f53ea651cb323ae2c951383
+    - current_digest: 5c966bb07d9bae45c0e4e173e356d84b6448b4397f53ea651cb323ae2c951383
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608250040-QY7SRW
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task complete 202608250040-QY7SRW --result verified-202608250040-QY7SRW --commit e0e3eda3f42811bf5f5551c5f6a6b4afe1156ebf
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-25T01:05:30.489Z — VERIFY — ok
+
+    By: REVIEWER
+
+    Note: Verified final branch_pr blueprint snapshot: implementation commit e0e3eda3f passed realistic dead-PID regression, direct PID 46382 probe, lint:core, release:parity, git diff --check, and full release:prepublish.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-25T01:05:03.389Z, excerpt_hash=sha256:76eafeacd80dcb284c654a9cab539ef7ff39739bfde418eeccabcd8823ba2ca4
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane-v0.6.27-reclaim-fix/.agentplane/tasks/202608250040-QY7SRW/blueprint/resolved-snapshot.json
+    - old_digest: f4424de1bc517bb50522405eedc5ff4c0595d3ca65f2045e64a606b60aa90e19
+    - current_digest: f4424de1bc517bb50522405eedc5ff4c0595d3ca65f2045e64a606b60aa90e19
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608250040-QY7SRW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -93,6 +230,96 @@ Release plan: version=0.6.27, tag=v0.6.27, base=v0.6.26@3703e0d56a6454b7e76b407a
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-25T01:02:46.377Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Verified dead-PID reclaim regression with a real exited child PID; direct PID 46382 probe returns alive=false and identity=null; focused tests, prettier, lint:core, release:parity, git diff --check, and full release:prepublish all passed on implementation commit e0e3eda3f.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-25T01:02:23.033Z, excerpt_hash=sha256:76eafeacd80dcb284c654a9cab539ef7ff39739bfde418eeccabcd8823ba2ca4
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane-v0.6.27-reclaim-fix/.agentplane/tasks/202608250040-QY7SRW/blueprint/resolved-snapshot.json
+- old_digest: f4424de1bc517bb50522405eedc5ff4c0595d3ca65f2045e64a606b60aa90e19
+- current_digest: f4424de1bc517bb50522405eedc5ff4c0595d3ca65f2045e64a606b60aa90e19
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608250040-QY7SRW
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane work start 202608250040-QY7SRW --agent CODER --slug release-0-6-27-with-dead-pid-reclaim-fix --worktree
+- diagnostic_command: agentplane work resume 202608250040-QY7SRW
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: worktree_projection_drift
+
+### 2026-08-25T01:03:54.610Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Verified after refreshed blueprint snapshot: implementation commit e0e3eda3f passed realistic dead-PID regression, direct PID 46382 probe, lint:core, release:parity, git diff --check, and full release:prepublish.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-25T01:02:46.612Z, excerpt_hash=sha256:76eafeacd80dcb284c654a9cab539ef7ff39739bfde418eeccabcd8823ba2ca4
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane-v0.6.27-reclaim-fix/.agentplane/tasks/202608250040-QY7SRW/blueprint/resolved-snapshot.json
+- old_digest: 5c966bb07d9bae45c0e4e173e356d84b6448b4397f53ea651cb323ae2c951383
+- current_digest: 5c966bb07d9bae45c0e4e173e356d84b6448b4397f53ea651cb323ae2c951383
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608250040-QY7SRW
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task complete 202608250040-QY7SRW --result verified-202608250040-QY7SRW --commit e0e3eda3f42811bf5f5551c5f6a6b4afe1156ebf
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-25T01:05:30.489Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Verified final branch_pr blueprint snapshot: implementation commit e0e3eda3f passed realistic dead-PID regression, direct PID 46382 probe, lint:core, release:parity, git diff --check, and full release:prepublish.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-25T01:05:03.389Z, excerpt_hash=sha256:76eafeacd80dcb284c654a9cab539ef7ff39739bfde418eeccabcd8823ba2ca4
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane-v0.6.27-reclaim-fix/.agentplane/tasks/202608250040-QY7SRW/blueprint/resolved-snapshot.json
+- old_digest: f4424de1bc517bb50522405eedc5ff4c0595d3ca65f2045e64a606b60aa90e19
+- current_digest: f4424de1bc517bb50522405eedc5ff4c0595d3ca65f2045e64a606b60aa90e19
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608250040-QY7SRW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

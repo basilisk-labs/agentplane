@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608250040-QY7SRW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-25T01:05:32.962Z",
+  "verdict": "pass",
+  "summary": "The final branch_pr blueprint is satisfied by the scoped dead-PID reclaim fix and complete local release evidence.",
+  "evaluated_sha": "e0e3eda3f42811bf5f5551c5f6a6b4afe1156ebf",
+  "blueprint_digest": "f4424de1bc517bb50522405eedc5ff4c0595d3ca65f2045e64a606b60aa90e19",
+  "findings": [
+    "Absent valid PIDs are classified from ExecaError.exitCode=1, while live-process identity safeguards remain unchanged."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608250040-QY7SRW/README.md",
+    "implementation commit e0e3eda3f",
+    "bun run release:prepublish: exit 0"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted exact-SHA CI and npm registry readback remain publication gates."
+  ]
+}
