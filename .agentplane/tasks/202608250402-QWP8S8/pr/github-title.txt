@@ -1,0 +1,1 @@
+🚧 QWP8S8 task: Execute safe fail-fast declared-check sequences in the direct verifier [202608250402-QWP8S8]
