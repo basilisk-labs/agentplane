@@ -2,10 +2,10 @@
 id: "202608242233-KTFFN7"
 title: "Allow evidence-only rework after an already committed implementation"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -22,42 +22,23 @@ plan_approval:
   updated_by: "USER"
   note: "Explicit user approval: plan_digest=sha256:0054c3f93c6a2766a32c513344d00506983feb15cca6d698f099fb5a0d4eea3d state_fingerprint=sha256:47c2bc7816b499e67e1867c1b7ed0cd356c268fe54375a92808ea6f968a034f1"
 verification:
-  state: "ok"
-  updated_at: "2026-08-25T02:10:11.037Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
-quality_review:
-  state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-25T02:14:36.280Z"
+  state: "needs_rework"
+  updated_at: "2026-08-25T02:30:43.531Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  note: "Hosted review rework: preserve KTFFN7 intent and address both unresolved PR #4885 threads before reintegration."
+  attempts: 1
+quality_review:
+  state: "rework"
+  updated_at: "2026-08-25T02:30:43.531Z"
+  updated_by: "EVALUATOR"
+  note: "Hosted review rework: preserve KTFFN7 intent and address both unresolved PR #4885 threads before reintegration."
   evaluated_sha: "6d078038f42391d1ed6bb4b1fb406b1a4c27f6ba"
   blueprint_digest: "a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe"
   evidence_refs:
-    - ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-021102100-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-021102100-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/7df9a6d8842437e3f6fa83e0b5ac7c19115e1de92abd5350359d010210b9ef57.md"
-    - ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-021102100-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-021102100-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608242233-KTFFN7/quality/20260825-021102100-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608242233-KTFFN7/README.md"
-    - ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/b062051fe6ece949aebc9f4222e8612d1a72570570efbe9d8892b79e0d70ce77.patch"
-    - ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/83f6b8cb210495863d48787f265e8f5b603deceb95faa1634cf0734d0f1b9af1.json"
-    - ".agentplane/tasks/202608242233-KTFFN7/verification/20260825021011037-51172f6a3971bef0.json"
-    - ".agentplane/tasks/202608242233-KTFFN7/quality/objects/sha256/5c98af0d762cf398813d61740cd325223f30595e9bdc699be111fc15c13c7f2f.json"
-    - ".agentplane/policy/dod.code.md"
-    - ".agentplane/policy/dod.core.md"
-    - ".agentplane/policy/security.must.md"
-    - ".agentplane/policy/workflow.branch_pr.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608242233-KTFFN7-allow-evidence-only-rework-after-an-already-comm/.agentplane/tasks/202608242233-KTFFN7/blueprint/resolved-snapshot.json"
   findings:
-    - "All source changes are confined to the four approved implementation and test paths; the task records no authority violations."
-    - "Evidence-only reuse requires an implementation purpose, zero observed changed paths, exact recorded-commit equality with HEAD, and either the matching REWORK_READY WorkItem or task-level needs_rework after all required WorkItems completed."
-    - "A reused commit is additionally checked as recoverable and must have a recorded execution base, so arbitrary or identity-drifted commits remain rejected."
-    - "Supervisor verification records passed for the full local CI command. Focused tests, core lint, hotspot limits, diff hygiene, runtime, docs-schema, core, CLI, platform-critical, and significant-coverage groups passed with deterministic aggregate concurrency 1."
-    - "The focused regressions cover exact unchanged-identity reuse, rejection for changed paths, mismatched HEAD, non-rework state and wrong purpose, task-level completion gating, and canonical check deduplication. Resuming 202608242156-A8Q1W1 after hosted integration will provide the live self-hosting qualification of the complete no-delta route."
-    - "Residual risk: The complete no-delta route is unit-covered at its authority boundaries; its live end-to-end self-hosting qualification occurs when the blocked A8Q1W1 task resumes after this change is hosted-integrated."
+    - "PR #4885 review found two task-owned gaps in canonical WorkItem check projection: optional checks can incorrectly fail the task, and per-check timeout_ms is discarded. Repair both within the approved source/test roots, add regressions, rerun focused and full verification, then republish the exact reviewed head."
 token_usage:
   agent_runs: 7
   input_tokens: null
@@ -128,7 +109,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task/direct-task-verification.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -154,6 +136,9 @@ execution_contract:
       -
         id: "recorded-check-4"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -241,9 +226,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "4db5179a92d709eeb2adf708fe1ffb520210d9df"
-  message: "🚧 KTFFN7 task: record external evaluator result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -362,8 +346,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "4db5179a92d709eeb2adf708fe1ffb520210d9df"
+  -
+    type: "verify"
+    at: "2026-08-25T02:30:43.531Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Hosted review rework: preserve KTFFN7 intent and address both unresolved PR #4885 threads before reintegration."
 doc_version: 3
-doc_updated_at: "2026-08-25T02:14:58.020Z"
+doc_updated_at: "2026-08-25T02:30:53.993Z"
 doc_updated_by: "CODER"
 description: "Release self-hosting blocker. Symptom: task 202608242156-A8Q1W1 has implementation commit 655f72d307962addfe932c4f8b6f2c7ff83ade82 and successful Supervisor checks, but one approved plan check is unsupported because the declared-check runner did not execute its exact command. The WorkItem becomes REWORK_READY. A fresh EXECUTOR result cannot complete it because external result application requires a new workspace change, producing E_VALIDATION after the implementation is already committed. Violated invariant: retryable validation rework must permit new trusted evidence against the unchanged implementation identity without requiring semantic source drift. Root cause: the validation/rework route issues another implementation episode while result application rejects evidence-only completion when no workspace delta exists. Temporary recovery: integrate a minimal framework fix and resume A8Q1W1 without altering its SVG commit. Permanent fix: accept and persist exact-command validation evidence for the current implementation identity, or provide an explicit evidence-only rework transition, while keeping ordinary no-change implementation results fail-closed. Regression: reproduce READY -> committed implementation -> unsupported required check -> REWORK_READY -> evidence-only successful retry, prove single application, preserved implementation commit, satisfied WorkItem, and no no-progress loop."
 sections:
@@ -583,6 +573,38 @@ sections:
 
     DecisionContextRef:
     - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-25T02:30:43.531Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Hosted review rework: preserve KTFFN7 intent and address both unresolved PR #4885 threads before reintegration.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:06688da95fee77730196745baa87be27b8a0e8900b661b1f3c8aa295bb04f370, input_digest=sha256:ed360358c9744f4b995d6aa923e0402a179c8894c7596783d41d4133117d381f
+
+    Details:
+
+    PR #4885 review found two task-owned gaps in canonical WorkItem check projection: optional checks can incorrectly fail the task, and per-check timeout_ms is discarded. Repair both within the approved source/test roots, add regressions, rerun focused and full verification, then republish the exact reviewed head.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608242233-KTFFN7-allow-evidence-only-rework-after-an-already-comm/.agentplane/tasks/202608242233-KTFFN7/blueprint/resolved-snapshot.json
+    - old_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+    - current_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608242233-KTFFN7
+
+    DecisionContextRef:
+    - operator_action: stop
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
@@ -1057,9 +1079,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "6d078038f42391d1ed6bb4b1fb406b1a4c27f6ba"
-    message: "🚧 KTFFN7 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "a788399c9ccc27ae290ddbfd6244fcb3196cf643"
@@ -1296,6 +1315,38 @@ BlueprintSnapshotRef:
 
 DecisionContextRef:
 - operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-25T02:30:43.531Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Hosted review rework: preserve KTFFN7 intent and address both unresolved PR #4885 threads before reintegration.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:06688da95fee77730196745baa87be27b8a0e8900b661b1f3c8aa295bb04f370, input_digest=sha256:ed360358c9744f4b995d6aa923e0402a179c8894c7596783d41d4133117d381f
+
+Details:
+
+PR #4885 review found two task-owned gaps in canonical WorkItem check projection: optional checks can incorrectly fail the task, and per-check timeout_ms is discarded. Repair both within the approved source/test roots, add regressions, rerun focused and full verification, then republish the exact reviewed head.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608242233-KTFFN7-allow-evidence-only-rework-after-an-already-comm/.agentplane/tasks/202608242233-KTFFN7/blueprint/resolved-snapshot.json
+- old_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+- current_digest: a5aaffc0bb7335d9b87df4bb1c8608cdb7d6d06a1d77387c38012f4c3dfb99fe
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608242233-KTFFN7
+
+DecisionContextRef:
+- operator_action: stop
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none

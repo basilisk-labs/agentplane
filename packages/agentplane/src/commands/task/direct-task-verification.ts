@@ -48,6 +48,34 @@ export type DirectTaskVerificationResult = {
   reason: string | null;
 };
 
+type AdditionalDirectTaskCommand = Readonly<{
+  command: string;
+  timeout_ms?: number;
+}>;
+
+export function blockingWorkItemCommands(validation: {
+  checks: readonly {
+    id: string;
+    required: boolean;
+    command?: string;
+    timeout_ms?: number;
+  }[];
+  criteria: readonly { required: boolean; check_ids: readonly string[] }[];
+}): AdditionalDirectTaskCommand[] {
+  const criterionCheckIds = new Set(
+    validation.criteria.filter((criterion) => criterion.required).flatMap((item) => item.check_ids),
+  );
+  return validation.checks
+    .filter(
+      (check): check is typeof check & { command: string } =>
+        typeof check.command === "string" && (check.required || criterionCheckIds.has(check.id)),
+    )
+    .map(({ command, timeout_ms }) => ({
+      command,
+      ...(timeout_ms === undefined ? {} : { timeout_ms }),
+    }));
+}
+
 export function resolveEvidenceOnlyReworkCommit(opts: {
   purpose: string;
   changed_paths: readonly string[];
@@ -99,15 +127,16 @@ export async function recordDirectTaskVerification(opts: {
   const selectedWorkItem = aggregate?.current_plan?.proposal.work_items.work_items.find(
     (item) => item.id === opts.work_order.task.work_item_id,
   );
-  const additionalCommands = (selectedWorkItem?.validation.checks ?? [])
-    .map((check) => check.command)
-    .filter((command): command is string => typeof command === "string");
+  const additionalCommands = selectedWorkItem
+    ? blockingWorkItemCommands(selectedWorkItem.validation)
+    : [];
   const checks = await runDirectTaskVerification({
     command: opts.command,
     task: opts.task,
     task_id: opts.task.id,
     cwd: opts.checkout,
     additional_commands: additionalCommands,
+    allow_empty: selectedWorkItem !== undefined,
   });
   const exitCode = await cmdVerifyParsed({
     ctx: opts.command,
@@ -215,10 +244,10 @@ function directTaskVerificationCommands(
     TaskData,
     "verify" | "task_kind" | "mutation_scope" | "execution_contract" | "sections"
   >,
-  additionalCommands: readonly string[] = [],
+  additionalCommands: readonly AdditionalDirectTaskCommand[] = [],
 ): string[] {
   const commands = [...(task.verify ?? [])];
-  for (const command of additionalCommands) {
+  for (const { command } of additionalCommands) {
     if (!commands.includes(command)) commands.push(command);
   }
   const declaresDocs = task.execution_contract
@@ -405,11 +434,20 @@ export async function runDirectTaskVerification(opts: {
   >;
   task_id: string;
   cwd: string;
-  additional_commands?: readonly string[];
+  additional_commands?: readonly AdditionalDirectTaskCommand[];
+  allow_empty?: boolean;
   run_process?: typeof runProcess;
 }): Promise<DirectTaskVerificationResult> {
   const checks: DirectTaskCheck[] = [];
   const commands = directTaskVerificationCommands(opts.task, opts.additional_commands);
+  const additionalTimeouts = new Map<string, number>();
+  for (const additional of opts.additional_commands ?? []) {
+    if (additional.timeout_ms === undefined) continue;
+    additionalTimeouts.set(
+      additional.command,
+      Math.min(additionalTimeouts.get(additional.command) ?? Infinity, additional.timeout_ms),
+    );
+  }
   const selectedChecks = selectedLocalChecks(opts.task);
   const requiresFullRegression = selectedChecks.includes("full_regression");
   const rootPackage =
@@ -428,9 +466,11 @@ export async function runDirectTaskVerification(opts: {
   }
   if (commands.length === 0) {
     const result = {
-      status: "unsupported" as const,
+      status: opts.allow_empty ? ("passed" as const) : ("unsupported" as const),
       checks,
-      reason: "No executable declared verification checks are configured for this task.",
+      reason: opts.allow_empty
+        ? null
+        : "No executable declared verification checks are configured for this task.",
     };
     return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
   }
@@ -458,7 +498,8 @@ export async function runDirectTaskVerification(opts: {
         args: parsed.args,
         cwd: opts.cwd,
         env: verificationChildEnv(),
-        timeoutMs: directTaskCheckTimeoutMs(parsed.script),
+        timeoutMs:
+          additionalTimeouts.get(declaredCommand) ?? directTaskCheckTimeoutMs(parsed.script),
         maxBuffer: 1024 * 1024,
         reject: false,
       });

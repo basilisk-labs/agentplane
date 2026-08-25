@@ -1,4 +1,4 @@
- .../commands/task/direct-task-verification.test.ts |  70 +++++++
- .../src/commands/task/direct-task-verification.ts  | 107 +++++++++-
+ .../commands/task/direct-task-verification.test.ts | 106 ++++++++++
+ .../src/commands/task/direct-task-verification.ts  | 154 ++++++++++++++-
  .../external-agent-implementation-authority.ts     | 218 +++++++++++++--------
- 3 files changed, 315 insertions(+), 80 deletions(-)
+ 3 files changed, 395 insertions(+), 83 deletions(-)

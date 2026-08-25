@@ -11,6 +11,7 @@ const ORIGINAL_AGENT_MODE = process.env.AGENTPLANE_AGENT_MODE;
 const ORIGINAL_RUNTIME_ACTIVE_BIN = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
 
 import {
+  blockingWorkItemCommands,
   isTaskLevelVerificationReworkState,
   parseDirectTaskCheck,
   renderDirectTaskVerificationDetails,
@@ -362,16 +363,43 @@ describe("direct task verification", () => {
     });
   });
 
-  it("runs canonical WorkItem checks in addition to legacy task checks and deduplicates them", async () => {
+  it("runs blocking WorkItem checks with their strictest timeout and skips optional-only checks", async () => {
     const cwd = await root();
     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "ok", stderr: "" });
+
+    const additionalCommands = blockingWorkItemCommands({
+      criteria: [{ required: true, check_ids: ["criterion-check"] }],
+      checks: [
+        {
+          id: "required-check",
+          required: true,
+          command: "bun run test:critical",
+          timeout_ms: 5000,
+        },
+        {
+          id: "criterion-check",
+          required: false,
+          command: "bun run lifecycle:invariants",
+          timeout_ms: 3000,
+        },
+        {
+          id: "optional-check",
+          required: false,
+          command: "bun run optional:diagnostic",
+          timeout_ms: 1000,
+        },
+      ],
+    });
 
     const result = await runDirectTaskVerification({
       command: command(cwd),
       task: { verify: ["bun run test:critical"] },
       task_id: TASK_ID,
       cwd,
-      additional_commands: ["bun run test:critical", "bun run lifecycle:invariants"],
+      additional_commands: [
+        ...additionalCommands,
+        { command: "bun run test:critical", timeout_ms: 2000 },
+      ],
       run_process: mocks.runProcess,
     });
 
@@ -383,6 +411,14 @@ describe("direct task verification", () => {
       ],
     });
     expect(mocks.runProcess).toHaveBeenCalledTimes(2);
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ timeoutMs: 2000 }),
+    );
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ timeoutMs: 3000 }),
+    );
   });
 
   it("keeps passed evidence stable across equivalent reruns but rewrites changed outcomes", async () => {

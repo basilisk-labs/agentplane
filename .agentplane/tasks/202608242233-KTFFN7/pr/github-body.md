@@ -15,8 +15,8 @@ Release self-hosting blocker. Symptom: task 202608242156-A8Q1W1 has implementati
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Hosted review rework: preserve KTFFN7 intent and address both unresolved PR #4885 threads before reintegration.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,10 +27,10 @@ Release self-hosting blocker. Symptom: task 202608242156-A8Q1W1 has implementati
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/task/direct-task-verification.test.ts |  70 +++++++
- .../src/commands/task/direct-task-verification.ts  | 107 +++++++++-
+ .../commands/task/direct-task-verification.test.ts | 106 ++++++++++
+ .../src/commands/task/direct-task-verification.ts  | 154 ++++++++++++++-
  .../external-agent-implementation-authority.ts     | 218 +++++++++++++--------
- 3 files changed, 315 insertions(+), 80 deletions(-)
+ 3 files changed, 395 insertions(+), 83 deletions(-)
 ```
 
 </details>
