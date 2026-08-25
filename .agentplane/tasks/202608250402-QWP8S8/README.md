@@ -4,7 +4,7 @@ title: "Execute safe fail-fast declared-check sequences in the direct verifier"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,10 +24,10 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-25T09:31:13.445Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -82,11 +82,44 @@ execution_contract:
       - "packages/agentplane/src/commands/task/direct-task-verification.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -119,16 +152,22 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:eeae0c925ca478956167a79e7d5cff5304474b6241142e8140fc5fc150c1c087"
+      digest: "sha256:cb7a6431cdf76c28b76a00677efa62b683dab54a480bfb6b024873a585111aee"
       escalation_reasons: []
       execution_groups:
         - "core"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -159,11 +198,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "a057e66401599ed9187032edd839b6e1511eca52"
+  message: "🚧 QWP8S8 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a057e6640159. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -172,9 +216,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-25T09:27:08.435Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a057e6640159. CLI accepted one state-bound external-agent semantic result."
+    commit: "a057e66401599ed9187032edd839b6e1511eca52"
+  -
+    type: "verify"
+    at: "2026-08-25T09:31:13.445Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-25T09:14:06.054Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-25T09:31:20.438Z"
+doc_updated_by: "SUPERVISOR"
 description: "Blocker for 202608242156-A8Q1W1. Symptom: the approved required check 'bun run docs:readme-header:generate && bun run docs:readme-header:check' is classified unsupported after all other checks pass, so evidence-only recovery loops forever. Violated invariant: every planner-approved deterministic verification command must either be safely executable by the CLI or rejected before approval, not become an unrecoverable runtime criterion. Root cause: parseDirectTaskCheck accepts one argv command and runDirectTaskVerification rejects the whole command at the first && token. Temporary recovery: keep A8Q1W1 and implementation commit 655f72d307962addfe932c4f8b6f2c7ff83ade82 unchanged until this blocker lands. Permanent fix: support only a fail-fast sequence of individually safe declared commands separated by literal &&, parse every segment through the existing structured grammar, execute without a shell, stop after the first failure, preserve the declared check timeout as the sequence budget, and reject empty segments or every other shell operator. Add regression tests for successful sequencing, fail-fast behavior, timeout propagation, and unsafe syntax rejection. After hosted integration, resume A8Q1W1 through a fresh supervisor packet."
 sections:
   Summary: |-
@@ -193,6 +251,90 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-25T09:31:13.445Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:ddce20bbcc24f04d06e19fff32380c0e2a677cbe70e49afb7cbbb09de47b7b03, input_digest=sha256:ad292deb61667a0ba929555958d2d975c0b4844b83de25bbe627d30f90f7b953
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check critical_paths (3/3)
+
+    Check: task_outcome
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check task_outcome (3/3)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608250402-QWP8S8-execute-safe-fail-fast-declared-check-sequences/.agentplane/tasks/202608250402-QWP8S8/blueprint/resolved-snapshot.json
+    - old_digest: d95071e9049d08e3cf857c1e7f10034eee2c5ad99680b75f8826fb2052c45015
+    - current_digest: d95071e9049d08e3cf857c1e7f10034eee2c5ad99680b75f8826fb2052c45015
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608250402-QWP8S8
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -473,25 +615,136 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 8
     schema_version: 1
-    updated_at: "2026-08-25T09:13:51.579Z"
+    updated_at: "2026-08-25T09:31:23.361Z"
     work_items:
       support-safe-declared-check-sequences:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "support-safe-declared-check-sequences"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:298a0b8dd4ae521cf1ef135cfc62c4978c53e3a50cab26e7fb6088428955e2b2"
+            id: "safe-sequence-execution"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608250402-QWP8S8"
+              work_item_id: "support-safe-declared-check-sequences"
+            provenance:
+              - "sha256:76e1a9e463fc1bc4bb9e2cce7766d8a98dc906774c81ab40f543c2ccce2b603c"
+              - ".agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:05504fca48be50cc709a4f111873ef8a486d215bc91dc15c23759eff4ca6ed9c"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:714ed160038e2d94a0af22f7dedb1bc4576168aa669b77cbefadbb2dcfeba728"
+            id: "fail-fast-and-timeout-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608250402-QWP8S8"
+              work_item_id: "support-safe-declared-check-sequences"
+            provenance:
+              - "sha256:76e1a9e463fc1bc4bb9e2cce7766d8a98dc906774c81ab40f543c2ccce2b603c"
+              - ".agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:05504fca48be50cc709a4f111873ef8a486d215bc91dc15c23759eff4ca6ed9c"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:9e109fa9f6c92d2a3cc86e5219a2c5a4309206a9c6ea3b603c212e3ccdace584"
+            id: "unsafe-sequence-rejection-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608250402-QWP8S8"
+              work_item_id: "support-safe-declared-check-sequences"
+            provenance:
+              - "sha256:76e1a9e463fc1bc4bb9e2cce7766d8a98dc906774c81ab40f543c2ccce2b603c"
+              - ".agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:05504fca48be50cc709a4f111873ef8a486d215bc91dc15c23759eff4ca6ed9c"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json"
+              check_id: "check-focused-tests"
+              command_identity: "bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+              detail: "Observed by bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts."
+              exit_code: 0
+              observed_at: "2026-08-25T09:31:23.358Z"
+              repository_snapshot_digest: "sha256:05504fca48be50cc709a4f111873ef8a486d215bc91dc15c23759eff4ca6ed9c"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json"
+              check_id: "check-build"
+              command_identity: "bun run test:critical"
+              detail: "Observed by bun run test:critical."
+              exit_code: 0
+              observed_at: "2026-08-25T09:31:23.358Z"
+              repository_snapshot_digest: "sha256:05504fca48be50cc709a4f111873ef8a486d215bc91dc15c23759eff4ca6ed9c"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json"
+              check_id: "check-lint"
+              command_identity: "bun run lint:core"
+              detail: "Observed by bun run lint:core."
+              exit_code: 0
+              observed_at: "2026-08-25T09:31:23.358Z"
+              repository_snapshot_digest: "sha256:05504fca48be50cc709a4f111873ef8a486d215bc91dc15c23759eff4ca6ed9c"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608250402-QWP8S8-executor-b3f2ce3b3ea2a613afadac34:
+        aggregate_digest: "sha256:9ad29e52f8f90ddedaa683e599fabe389079eb32bd0defa318123e930643d1ae"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-25T09:31:23.361Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_7a1fd1e2214df0228476f2a6"
+          mutation_id: "external-result:work-order-202608250402-QWP8S8-executor-b3f2ce3b3ea2a613afadac34"
+          plan_digest: "sha256:828ac8cd823771bdee918796e3672ee30a15e7ae8175e496b99ba33adc949b47"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608250402-QWP8S8"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "support-safe-declared-check-sequences"
+        mutation_id: "external-result:work-order-202608250402-QWP8S8-executor-b3f2ce3b3ea2a613afadac34"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202608250402-QWP8S8"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "a057e66401599ed9187032edd839b6e1511eca52"
   task_execution_context:
     base_ref: "main"
     base_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
     version: 1
@@ -523,6 +776,90 @@ PLANNER fallback scaffold for "Execute safe fail-fast declared-check sequences i
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-25T09:31:13.445Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:ddce20bbcc24f04d06e19fff32380c0e2a677cbe70e49afb7cbbb09de47b7b03, input_digest=sha256:ad292deb61667a0ba929555958d2d975c0b4844b83de25bbe627d30f90f7b953
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check critical_paths (3/3)
+
+Check: task_outcome
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608250402-QWP8S8/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608250402-QWP8S8 Verification Contract check task_outcome (3/3)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608250402-QWP8S8-execute-safe-fail-fast-declared-check-sequences/.agentplane/tasks/202608250402-QWP8S8/blueprint/resolved-snapshot.json
+- old_digest: d95071e9049d08e3cf857c1e7f10034eee2c5ad99680b75f8826fb2052c45015
+- current_digest: d95071e9049d08e3cf857c1e7f10034eee2c5ad99680b75f8826fb2052c45015
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608250402-QWP8S8
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

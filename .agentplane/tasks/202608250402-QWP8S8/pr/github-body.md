@@ -15,8 +15,8 @@ Blocker for 202608242156-A8Q1W1. Symptom: the approved required check 'bun run d
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +27,9 @@ Blocker for 202608242156-A8Q1W1. Symptom: the approved required check 'bun run d
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../commands/task/direct-task-verification.test.ts | 118 +++++++++++++++
+ .../src/commands/task/direct-task-verification.ts  | 161 +++++++++++++--------
+ 2 files changed, 217 insertions(+), 62 deletions(-)
 ```
 
 </details>

@@ -1,0 +1,49 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:critical",
+      "declared_command": "bun run --filter=agentplane build",
+      "duration_ms": 178329,
+      "exit_code": 0,
+      "script": "test:critical",
+      "stderr_tail": "$ node scripts/checks/run-vitest-suite.mjs critical-cli\n",
+      "stdout_tail": "e critical-cli: chunk 2/14 passed in 8865ms (Test Files  1 passed (1); Tests  13 passed (13); Duration  8.69s (transform 1.12s, setup 0ms, import 1.39s, tests 7.24s, environment 0ms))\nVitest suite critical-cli: chunk 3/14 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts\nVitest suite critical-cli: chunk 3/14 passed in 1596ms (Test Files  1 passed (1); Tests  17 passed (17); Duration  1.40s (transform 997ms, setup 0ms, import 1.24s, tests 102ms, environment 0ms))\nVitest suite critical-cli: chunk 4/14 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts\nVitest suite critical-cli: chunk 4/14 passed in 17173ms (Test Files  1 passed (1); Tests  11 passed (11); Duration  17.01s (transform 1.01s, setup 0ms, import 1.25s, tests 15.70s, environment 0ms))\nVitest suite critical-cli: chunk 5/14 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts\nVitest suite critical-cli: chunk 5/14 passed in 1946ms (Test Files  1 passed (1); Tests  10 passed (10); Duration  1.77s (transform 1.10s, setup 0ms, import 1.40s, tests 311ms, environment 0ms))\nVitest suite critical-cli: chunk 6/14 (1 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts\nVitest suite critical-cli: chunk 6/14 passed in 15342ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  15.15s (transform 2.04s, setup 0ms, import 1.45s, tests 13.64s, environment 0ms))\nVitest suite critical-cli: chunk 7/14 (1 files): packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 7/14 passed in 2791ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  2.63s (transform 956ms, setup 0ms, import 1.24s, tests 1.33s, environment 0ms))\nVitest suite critical-cli: chunk 8/14 (1 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts\nVitest suite critical-cli: chunk 8/14 passed in 3283ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  3.12s (transform 976ms, setup 0ms, import 1.26s, tests 1.79s, environment 0ms))\nVitest suite critical-cli: chunk 9/14 (1 files): packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 9/14 passed in 4612ms (Test Files  1 passed (1); Tests  3 passed (3); Duration  4.45s (transform 945ms, setup 0ms, import 1.23s, tests 3.16s, environment 0ms))\nVitest suite critical-cli: chunk 10/14 (1 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts\nVitest suite critical-cli: chunk 10/14 passed in 4522ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  4.33s (transform 1.22s, setup 0ms, import 1.59s, tests 2.67s, environment 0ms))\nVitest suite critical-cli: chunk 11/14 (1 files): packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 11/14 passed in 3110ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  2.93s (transform 969ms, setup 0ms, import 1.26s, tests 1.60s, environment 0ms))\nVitest suite critical-cli: chunk 12/14 (1 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts\nVitest suite critical-cli: chunk 12/14 passed in 80767ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  80.58s (transform 1.78s, setup 0ms, import 1.24s, tests 79.27s, environment 0ms))\nVitest suite critical-cli: chunk 13/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 13/14 passed in 2215ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  2.01s (transform 1.33s, setup 0ms, import 1.62s, tests 316ms, environment 0ms))\nVitest suite critical-cli: chunk 14/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 14/14 passed in 9572ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  9.38s (transform 1.41s, setup 0ms, import 1.72s, tests 7.58s, environment 0ms))\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run lint:core",
+      "duration_ms": 62613,
+      "exit_code": 0,
+      "script": "lint:core",
+      "stderr_tail": "$ eslint packages scripts eslint.config.cjs vitest.config.ts\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun test packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      "duration_ms": 195,
+      "exit_code": 0,
+      "script": null,
+      "stderr_tail": "\npackages/agentplane/src/commands/task/direct-task-verification.test.ts:\n(pass) direct task verification > reuses only the exact unchanged implementation identity at a rework boundary [0.33ms]\n(pass) direct task verification > recognizes task-level evidence rework only after every required WorkItem completed [0.51ms]\n(pass) direct task verification > replaces a missing package script only for a planner fallback scaffold [5.97ms]\n(pass) direct task verification > accepts project-native repository-bound argv without shell syntax [0.25ms]\n(pass) direct task verification > runs the reported bun test command as structured argv and records it [1.52ms]\n(pass) direct task verification > rejects successful Bun processes that report zero executed tests [3.02ms]\n(pass) direct task verification > runs every declared check without a shell and records durable evidence [1.20ms]\n(pass) direct task verification > runs a safe declared-check sequence in order without a shell [1.20ms]\n(pass) direct task verification > stops a sequence at its first failure and shares its timeout budget [1.16ms]\n(pass) direct task verification > rejects malformed or unsafe sequences before executing any segment [4.22ms]\n(pass) direct task verification > does not treat quoted ampersands as a sequence separator [1.57ms]\n(pass) direct task verification > runs blocking WorkItem checks with their strictest timeout and skips optional-only checks [1.06ms]\n(pass) direct task verification > keeps passed evidence stable across equivalent reruns but rewrites changed outcomes [1.62ms]\n(pass) direct task verification > binds supervisor evidence to every selected Verification Contract check [0.18ms]\n(pass) direct task verification > runs and binds full regression separately without claiming hosted integration [1.32ms]\n(pass) direct task verification > uses the configured package runner for the canonical full script [1.04ms]\n(pass) direct task verification > recognizes a repository-wide non-JavaScript test command as full evidence [0.98ms]\n(pass) direct task verification > does not pass a required full regression when the repository has no full script [1.24ms]\n(pass) direct task verification > gives the canonical provider qualification its bounded release window [0.92ms]\n(pass) direct task verification > adds the fixed docs policy checks to a docs task without trusting agent claims [1.13ms]\n(pass) direct task verification > uses declared effects instead of a misleading task kind to select docs policy checks [1.06ms]\n(pass) direct task verification > does not treat an empty code-task check contract as successful verification [0.80ms]\n(pass) direct task verification > stops at the first failed or unsupported check and still writes the evidence artifact [1.52ms]\n\n 23 pass\n 0 fail\n 101 expect() calls\nRan 23 tests across 1 file. [186.00ms]\n",
+      "stdout_tail": "bun test v1.3.6 (d530ed99)\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202608250402-QWP8S8"
+}
