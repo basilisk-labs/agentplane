@@ -1,10 +1,11 @@
 ---
 id: "202608250015-DZ61YB"
 title: "Make aggregate local CI deterministic and preserve failing-group evidence"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -61,6 +62,20 @@ quality_review:
     - "The focused regression suite independently passed again with 1 file and 11 tests."
     - "Residual risk: A caller can explicitly raise AGENTPLANE_LOCAL_CI_GROUP_CONCURRENCY and reintroduce resource contention; this is an intentional expert override rather than the repository default."
     - "Residual risk: Hosted integration remains a later AgentPlane-owned branch_pr gate and is not claimed by this read-only evaluator episode."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:92c2fbbe8c9ec2fa16b890c8baf842262b525db5acf94aa39f13f6690942352e"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-25T01:06:09.566Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -248,8 +263,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "07ead92308c1a1551e0145265422599d38f98eba"
-  message: "🚧 DZ61YB task: apply external agent result"
+  hash: "5170f79f2c8cc3990d3af10211a1625dae621399"
+  message: "🚧 DZ61YB task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -257,6 +272,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 07ead92308c1. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -279,9 +297,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-25T01:06:09.566Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "5170f79f2c8cc3990d3af10211a1625dae621399"
 doc_version: 3
-doc_updated_at: "2026-08-25T01:03:43.049Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-25T01:06:09.577Z"
+doc_updated_by: "CODER"
 description: "Release self-hosting blocker discovered while verifying 202608242233-KTFFN7. Symptom: bun run ci:local:full failed four times on implementation c566a26f34699e0d0f779ad19fa4978f712aed66, while docs-schema, core, runtime, and cli each passed independently; the persisted declared-check evidence retained only an aggregate exit 1 and truncated output without the failing group identity. Violated invariant: the aggregate gate must deterministically reflect its constituent groups and must persist the exact failed or timed-out group, exit status, and useful tail so a task cannot exhaust verification retries on an opaque orchestration failure. Root-cause scope: verification scheduler and full local-CI group orchestration, including concurrency/resource isolation and result rendering. Temporary recovery: run constituent groups independently and do not alter the blocked implementation. Permanent fix: make aggregate scheduling deterministic under the repository workload and preserve structured per-group failure evidence in the aggregate output. Regression: reproduce concurrent group failure/timeout, prove exact group attribution and bounded output, then prove the default aggregate gate passes when every group passes. After integration, resume KTFFN7 at c566a26f without source reimplementation."
 sections:
   Summary: |-
@@ -606,7 +632,34 @@ extensions:
       schema_version: 1
       task_id: "202608250015-DZ61YB"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608250015-DZ61YB"
+            - "git:07ead92308c1a1551e0145265422599d38f98eba"
+          check_id: "check-focused"
+          command_identity: "bunx vitest run packages/agentplane/src/cli/verification-contract.test.ts --pool=forks --maxWorkers 1"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-25T01:03:40.957Z"
+          repository_snapshot_digest: "sha256:9940a19b8cd7816d9fa64cc73062ffb7ac9672a65a84a75b16de797b10c187f9"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608250015-DZ61YB"
+            - "git:07ead92308c1a1551e0145265422599d38f98eba"
+          check_id: "check-full"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-25T01:03:40.957Z"
+          repository_snapshot_digest: "sha256:9940a19b8cd7816d9fa64cc73062ffb7ac9672a65a84a75b16de797b10c187f9"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608250015-DZ61YB"
     intent:
       acceptance_criteria:
@@ -627,12 +680,12 @@ extensions:
 
         Release self-hosting blocker discovered while verifying 202608242233-KTFFN7. Symptom: bun run ci:local:full failed four times on implementation c566a26f34699e0d0f779ad19fa4978f712aed66, while docs-schema, core, runtime, and cli each passed independently; the persisted declared-check evidence retained only an aggregate exit 1 and truncated output without the failing group identity. Violated invariant: the aggregate gate must deterministically reflect its constituent groups and must persist the exact failed or timed-out group, exit status, and useful tail so a task cannot exhaust verification retries on an opaque orchestration failure. Root-cause scope: verification scheduler and full local-CI group orchestration, including concurrency/resource isolation and result rendering. Temporary recovery: run constituent groups independently and do not alter the blocked implementation. Permanent fix: make aggregate scheduling deterministic under the repository workload and preserve structured per-group failure evidence in the aggregate output. Regression: reproduce concurrent group failure/timeout, prove exact group attribution and bounded output, then prove the default aggregate gate passes when every group passes. After integration, resume KTFFN7 at c566a26f without source reimplementation.
       task_id: "202608250015-DZ61YB"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 11
     schema_version: 1
-    updated_at: "2026-08-25T01:03:44.410Z"
+    updated_at: "2026-08-25T01:06:09.566Z"
     work_items:
       stabilize-and-explain-full-local-ci:
         attempt: 1
@@ -740,11 +793,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608250015-DZ61YB"
+      legacy-finish:202608250015-DZ61YB:2026-08-25T01:03:40.957Z:07ead92308c1a1551e0145265422599d38f98eba:
+        aggregate_digest: "sha256:2c3ff4dd061ee7e60e142dfc0017d1ef6fe01636ece5c3bf538e6c440bcb8189"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-25T01:06:09.566Z"
+          cause_refs:
+            - "task-verification:202608250015-DZ61YB"
+            - "git:07ead92308c1a1551e0145265422599d38f98eba"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6796bb809d4b121a8beec271"
+          mutation_id: "legacy-finish:202608250015-DZ61YB:2026-08-25T01:03:40.957Z:07ead92308c1a1551e0145265422599d38f98eba"
+          plan_digest: "sha256:6acc1cf2d766e0607c6ca597bd4b88118b227f2aff7cd4f79873fc2c865b4d96"
+          plan_revision: 1
+          repository_fingerprint: "sha256:9940a19b8cd7816d9fa64cc73062ffb7ac9672a65a84a75b16de797b10c187f9"
+          schema_version: 1
+          task_id: "202608250015-DZ61YB"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608250015-DZ61YB:2026-08-25T01:03:40.957Z:07ead92308c1a1551e0145265422599d38f98eba"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202608250015-DZ61YB"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "07ead92308c1a1551e0145265422599d38f98eba"
+    message: "🚧 DZ61YB task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "a788399c9ccc27ae290ddbfd6244fcb3196cf643"
@@ -861,3 +940,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:92c2fbbe8c9ec2fa16b890c8baf842262b525db5acf94aa39f13f6690942352e`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-25T01:06:09.566Z`
