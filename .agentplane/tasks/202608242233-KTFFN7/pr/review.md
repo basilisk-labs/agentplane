@@ -12,8 +12,8 @@ Created: 2026-08-24T22:59:26.702Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,11 +29,10 @@ Created: 2026-08-24T22:59:26.702Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.task-advance.test.ts      | 299 ++++++++++++++++++++-
- .../commands/task/direct-task-verification.test.ts |  23 ++
- .../src/commands/task/direct-task-verification.ts  |   7 +-
- .../external-agent-implementation-authority.ts     | 183 ++++++++++---
- 4 files changed, 472 insertions(+), 40 deletions(-)
+ .../commands/task/direct-task-verification.test.ts |  70 +++++++
+ .../src/commands/task/direct-task-verification.ts  | 107 +++++++++-
+ .../external-agent-implementation-authority.ts     | 218 +++++++++++++--------
+ 3 files changed, 315 insertions(+), 80 deletions(-)
 ```
 
 </details>
