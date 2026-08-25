@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608250015-DZ61YB-aa4d15ef9518c2c99df6f235",
+  "prepared_at": "2026-08-25T01:04:00.130Z",
+  "task": {
+    "id": "202608250015-DZ61YB",
+    "revision": 8,
+    "objective": "Make aggregate local CI deterministic and preserve failing-group evidence\n\nRelease self-hosting blocker discovered while verifying 202608242233-KTFFN7. Symptom: bun run ci:local:full failed four times on implementation c566a26f34699e0d0f779ad19fa4978f712aed66, while docs-schema, core, runtime, and cli each passed independently; the persisted declared-check evidence retained only an aggregate exit 1 and truncated output without the failing group identity. Violated invariant: the aggregate gate must deterministically reflect its constituent groups and must persist the exact failed or timed-out group, exit status, and useful tail so a task cannot exhaust verification retries on an opaque orchestration failure. Root-cause scope: verification scheduler and full local-CI group orchestration, including concurrency/resource isolation and result rendering. Temporary recovery: run constituent groups independently and do not alter the blocked implementation. Permanent fix: make aggregate scheduling deterministic under the repository workload and preserve structured per-group failure evidence in the aggregate output. Regression: reproduce concurrent group failure/timeout, prove exact group attribution and bounded output, then prove the default aggregate gate passes when every group passes. After integration, resume KTFFN7 at c566a26f without source reimplementation.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bunx vitest run packages/agentplane/src/cli/verification-contract.test.ts --pool=forks --maxWorkers 1",
+      "- In scope: Release self-hosting blocker discovered while verifying 202608242233-KTFFN7. Symptom: bun run ci:local:full failed four times on implementation c566a26f34699e0d0f779ad19fa4978f712aed66, while docs-schema, core, runtime, and cli each passed independently; the persisted declared-check evidence retained only an aggregate exit 1 and truncated output without the failing group identity. Violated invariant: the aggregate gate must deterministically reflect its constituent groups and must persist the exact failed or timed-out group, exit status, and useful tail so a task cannot exhaust verification retries on an opaque orchestration failure. Root-cause scope: verification scheduler and full local-CI group orchestration, including concurrency/resource isolation and result rendering. Temporary recovery: run constituent groups independently and do not alter the blocked implementation. Permanent fix: make aggregate scheduling deterministic under the repository workload and preserve structured per-group failure evidence in the aggregate output. Regression: reproduce concurrent group failure/timeout, prove exact group attribution and bounded output, then prove the default aggregate gate passes when every group passes. After integration, resume KTFFN7 at c566a26f without source reimplementation.\n- Out of scope: unrelated refactors not required for \"Make aggregate local CI deterministic and preserve failing-group evidence\".",
+      "Make the existing full local-CI scheduler fail transparently and deterministically without adding a new runtime abstraction. Preserve a concise structured result for every group before aggregate failure, handle output backpressure so the final failure identity reaches Supervisor evidence, and isolate resource-heavy full-mode groups when concurrency is the demonstrated source of nondeterminism. Keep targeted verification routes unchanged.",
+      "PLANNER fallback scaffold for \"Make aggregate local CI deterministic and preserve failing-group evidence\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Make aggregate local CI deterministic and preserve failing-group evidence\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "07ead92308c1a1551e0145265422599d38f98eba",
+  "diff_base_sha": "a788399c9ccc27ae290ddbfd6244fcb3196cf643",
+  "blueprint_digest": "7f0e8b99c667b9519e5d37c299cfa10d26aa36d634a166de572332378cd731bc",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608250015-DZ61YB/quality/20260825-010400130-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:071cec11c16091d2c2f4484bbbe0002492241cda7d1e45a62033bf8a50c8646d",
+    "prompt_path": ".agentplane/tasks/202608250015-DZ61YB/quality/objects/sha256/03d09623364a4b9496b2cfea423c7ebb8103238074f93dcb877b4948ef12de82.md",
+    "result_schema_path": ".agentplane/tasks/202608250015-DZ61YB/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608250015-DZ61YB/README.md",
+      "sha256": "sha256:718b2325f8416f88e976a7dcd819f29aae129e446e929a52ba87f53487f72221",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608250015-DZ61YB/quality/objects/sha256/4f3cb5227ae2d2e7c51801eeaa02ed9205d774f239fa1743973f689f43a0f6b5.patch",
+      "sha256": "sha256:4f3cb5227ae2d2e7c51801eeaa02ed9205d774f239fa1743973f689f43a0f6b5",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608250015-DZ61YB/quality/objects/sha256/754a70426d935698eff53478ab9dda71b210cb2bdd46dcb2287fd93ef21439f0.json",
+      "sha256": "sha256:754a70426d935698eff53478ab9dda71b210cb2bdd46dcb2287fd93ef21439f0",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608250015-DZ61YB/verification/20260825010340957-8d28ea44ae4a8a4f.json",
+      "sha256": "sha256:dff948342543795476425edf052bfb6bde2577abcdb9ef67f90cdba4a47cace0",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608250015-DZ61YB/quality/objects/sha256/2d2727c484fe2b39ba93d007ea75cc5d033c41c9da6dd6729683b3f00e749eaf.json",
+      "sha256": "sha256:2d2727c484fe2b39ba93d007ea75cc5d033c41c9da6dd6729683b3f00e749eaf",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
