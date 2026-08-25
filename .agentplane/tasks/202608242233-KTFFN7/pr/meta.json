@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:c953126d7d412a30f4a2d0803056179a320eeb1306fcf92c7995555e8da1771f",
   "pr_number": 4885,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4885",
+  "pre_merge_closure": {
+    "basis_commit": "4db5179a92d709eeb2adf708fe1ffb520210d9df",
+    "branch": "task/202608242233-KTFFN7/allow-evidence-only-rework-after-an-already-comm",
+    "pr_number": 4885,
+    "recorded_at": "2026-08-25T02:14:58.288Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

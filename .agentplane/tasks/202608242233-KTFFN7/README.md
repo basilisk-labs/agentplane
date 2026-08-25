@@ -1,10 +1,11 @@
 ---
 id: "202608242233-KTFFN7"
 title: "Allow evidence-only rework after an already committed implementation"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,20 @@ quality_review:
     - "Supervisor verification records passed for the full local CI command. Focused tests, core lint, hotspot limits, diff hygiene, runtime, docs-schema, core, CLI, platform-critical, and significant-coverage groups passed with deterministic aggregate concurrency 1."
     - "The focused regressions cover exact unchanged-identity reuse, rejection for changed paths, mismatched HEAD, non-rework state and wrong purpose, task-level completion gating, and canonical check deduplication. Resuming 202608242156-A8Q1W1 after hosted integration will provide the live self-hosting qualification of the complete no-delta route."
     - "Residual risk: The complete no-delta route is unit-covered at its authority boundaries; its live end-to-end self-hosting qualification occurs when the blocked A8Q1W1 task resumes after this change is hosted-integrated."
+token_usage:
+  agent_runs: 7
+  input_tokens: null
+  journal_digest: "sha256:9edaf5ca5f950032c4e257bcf5d1ae701633e78789a2af9f6e5f1743d61573db"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-25T02:14:57.941Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -227,8 +242,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "f4732e5654922ed462df2aa606985280c3afc7ab"
-  message: "🚧 KTFFN7 task: apply external agent result"
+  hash: "4db5179a92d709eeb2adf708fe1ffb520210d9df"
+  message: "🚧 KTFFN7 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -251,6 +266,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: f4732e565492. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -336,9 +354,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-25T02:14:57.941Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "4db5179a92d709eeb2adf708fe1ffb520210d9df"
 doc_version: 3
-doc_updated_at: "2026-08-25T02:10:13.292Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-25T02:14:58.020Z"
+doc_updated_by: "CODER"
 description: "Release self-hosting blocker. Symptom: task 202608242156-A8Q1W1 has implementation commit 655f72d307962addfe932c4f8b6f2c7ff83ade82 and successful Supervisor checks, but one approved plan check is unsupported because the declared-check runner did not execute its exact command. The WorkItem becomes REWORK_READY. A fresh EXECUTOR result cannot complete it because external result application requires a new workspace change, producing E_VALIDATION after the implementation is already committed. Violated invariant: retryable validation rework must permit new trusted evidence against the unchanged implementation identity without requiring semantic source drift. Root cause: the validation/rework route issues another implementation episode while result application rejects evidence-only completion when no workspace delta exists. Temporary recovery: integrate a minimal framework fix and resume A8Q1W1 without altering its SVG commit. Permanent fix: accept and persist exact-command validation evidence for the current implementation identity, or provide an explicit evidence-only rework transition, while keeping ordinary no-change implementation results fail-closed. Regression: reproduce READY -> committed implementation -> unsupported required check -> REWORK_READY -> evidence-only successful retry, prove single application, preserved implementation commit, satisfied WorkItem, and no no-progress loop."
 sections:
   Summary: |-
@@ -831,7 +857,45 @@ extensions:
       schema_version: 1
       task_id: "202608242233-KTFFN7"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608242233-KTFFN7"
+            - "git:6d078038f42391d1ed6bb4b1fb406b1a4c27f6ba"
+          check_id: "check-focused"
+          command_identity: "bunx vitest run packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts --pool=forks --maxWorkers 1"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-25T02:10:11.037Z"
+          repository_snapshot_digest: "sha256:5e090623905fb5758dcf8da3e58fe346d3f736ceb9e692bbc0e826a3dd4a04ad"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608242233-KTFFN7"
+            - "git:6d078038f42391d1ed6bb4b1fb406b1a4c27f6ba"
+          check_id: "check-lint"
+          command_identity: "bun run lint:core"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-25T02:10:11.037Z"
+          repository_snapshot_digest: "sha256:5e090623905fb5758dcf8da3e58fe346d3f736ceb9e692bbc0e826a3dd4a04ad"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608242233-KTFFN7"
+            - "git:6d078038f42391d1ed6bb4b1fb406b1a4c27f6ba"
+          check_id: "check-diff"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-25T02:10:11.037Z"
+          repository_snapshot_digest: "sha256:5e090623905fb5758dcf8da3e58fe346d3f736ceb9e692bbc0e826a3dd4a04ad"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608242233-KTFFN7"
     intent:
       acceptance_criteria: []
@@ -842,12 +906,12 @@ extensions:
 
         Release self-hosting blocker. Symptom: task 202608242156-A8Q1W1 has implementation commit 655f72d307962addfe932c4f8b6f2c7ff83ade82 and successful Supervisor checks, but one approved plan check is unsupported because the declared-check runner did not execute its exact command. The WorkItem becomes REWORK_READY. A fresh EXECUTOR result cannot complete it because external result application requires a new workspace change, producing E_VALIDATION after the implementation is already committed. Violated invariant: retryable validation rework must permit new trusted evidence against the unchanged implementation identity without requiring semantic source drift. Root cause: the validation/rework route issues another implementation episode while result application rejects evidence-only completion when no workspace delta exists. Temporary recovery: integrate a minimal framework fix and resume A8Q1W1 without altering its SVG commit. Permanent fix: accept and persist exact-command validation evidence for the current implementation identity, or provide an explicit evidence-only rework transition, while keeping ordinary no-change implementation results fail-closed. Regression: reproduce READY -> committed implementation -> unsupported required check -> REWORK_READY -> evidence-only successful retry, prove single application, preserved implementation commit, satisfied WorkItem, and no no-progress loop.
       task_id: "202608242233-KTFFN7"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 24
     schema_version: 1
-    updated_at: "2026-08-24T23:20:40.526Z"
+    updated_at: "2026-08-25T02:14:57.941Z"
     work_items:
       recover-evidence-only-implementation-rework:
         attempt: 1
@@ -965,11 +1029,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608242233-KTFFN7"
+      legacy-finish:202608242233-KTFFN7:2026-08-25T02:10:11.037Z:6d078038f42391d1ed6bb4b1fb406b1a4c27f6ba:
+        aggregate_digest: "sha256:b9fab0a58f8bda803677e7e47b2bbb0c46dbfcce7b434fcf110cd54178a4b7c7"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-25T02:14:57.941Z"
+          cause_refs:
+            - "task-verification:202608242233-KTFFN7"
+            - "git:6d078038f42391d1ed6bb4b1fb406b1a4c27f6ba"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_72e1533b6a8d0fcdc39be4c1"
+          mutation_id: "legacy-finish:202608242233-KTFFN7:2026-08-25T02:10:11.037Z:6d078038f42391d1ed6bb4b1fb406b1a4c27f6ba"
+          plan_digest: "sha256:0054c3f93c6a2766a32c513344d00506983feb15cca6d698f099fb5a0d4eea3d"
+          plan_revision: 1
+          repository_fingerprint: "sha256:5e090623905fb5758dcf8da3e58fe346d3f736ceb9e692bbc0e826a3dd4a04ad"
+          schema_version: 1
+          task_id: "202608242233-KTFFN7"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608242233-KTFFN7:2026-08-25T02:10:11.037Z:6d078038f42391d1ed6bb4b1fb406b1a4c27f6ba"
+        next_revision: 24
+        previous_revision: 23
+        schema_version: 1
+        task_id: "202608242233-KTFFN7"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "f4732e5654922ed462df2aa606985280c3afc7ab"
+    hash: "6d078038f42391d1ed6bb4b1fb406b1a4c27f6ba"
+    message: "🚧 KTFFN7 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "a788399c9ccc27ae290ddbfd6244fcb3196cf643"
@@ -1223,3 +1313,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/7` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:9edaf5ca5f950032c4e257bcf5d1ae701633e78789a2af9f6e5f1743d61573db`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-25T02:14:57.941Z`
