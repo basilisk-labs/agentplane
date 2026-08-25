@@ -1,0 +1,21 @@
+{
+  "base": "8ea1cefbbc96a8da5595fce36325ec0c1194a360",
+  "branch": "task/202608252234-4CKSWA/publish-agentplane-0-7-8-exact-main",
+  "created_at": "2026-08-25T23:06:58.624Z",
+  "diffstat_sha256": "sha256:1792d8b5e1e3b251829e5b40dce62328858297791a4e0f5b80851b83e223cfbf",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608252234-4CKSWA",
+  "updated_at": "2026-08-25T23:06:58.624Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
