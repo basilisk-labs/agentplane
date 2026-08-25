@@ -2,10 +2,10 @@
 id: "202608242233-KTFFN7"
 title: "Allow evidence-only rework after an already committed implementation"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -59,9 +59,9 @@ quality_review:
     - "Supervisor persisted bun run ci:local:full as passed in 433639 ms with the deterministic single-concurrency recovery setting; prior concurrency=2 failures remain attributable to the stale worktree scheduler already fixed and integrated on main."
     - "Residual risk: The task worktree still contains the pre-integrated aggregate scheduler and therefore requires the supported concurrency=1 setting until this PR is rebased or merged onto current main."
 token_usage:
-  agent_runs: 7
+  agent_runs: 11
   input_tokens: null
-  journal_digest: "sha256:9edaf5ca5f950032c4e257bcf5d1ae701633e78789a2af9f6e5f1743d61573db"
+  journal_digest: "sha256:cc5b9c84383874bcab421f6b9a160bb1a359d62fd4e7e6a7dd45b3335559de7c"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -71,7 +71,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-25T02:14:57.941Z"
+  updated_at: "2026-08-25T03:30:42.794Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -247,8 +247,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "e5beb6f44a7f29e15130c2ba664f6e97bfa31e4b"
-  message: "🚧 KTFFN7 task: apply external agent result"
+  hash: "3973943fbf16a7f6dffea376a8591c6e0942c55d"
+  message: "🚧 KTFFN7 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -283,6 +283,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: e5beb6f44a7f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -424,9 +427,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-25T03:30:42.794Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "3973943fbf16a7f6dffea376a8591c6e0942c55d"
 doc_version: 3
-doc_updated_at: "2026-08-25T03:29:55.046Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-25T03:30:42.825Z"
+doc_updated_by: "CODER"
 description: "Release self-hosting blocker. Symptom: task 202608242156-A8Q1W1 has implementation commit 655f72d307962addfe932c4f8b6f2c7ff83ade82 and successful Supervisor checks, but one approved plan check is unsupported because the declared-check runner did not execute its exact command. The WorkItem becomes REWORK_READY. A fresh EXECUTOR result cannot complete it because external result application requires a new workspace change, producing E_VALIDATION after the implementation is already committed. Violated invariant: retryable validation rework must permit new trusted evidence against the unchanged implementation identity without requiring semantic source drift. Root cause: the validation/rework route issues another implementation episode while result application rejects evidence-only completion when no workspace delta exists. Temporary recovery: integrate a minimal framework fix and resume A8Q1W1 without altering its SVG commit. Permanent fix: accept and persist exact-command validation evidence for the current implementation identity, or provide an explicit evidence-only rework transition, while keeping ordinary no-change implementation results fail-closed. Regression: reproduce READY -> committed implementation -> unsupported required check -> REWORK_READY -> evidence-only successful retry, prove single application, preserved implementation commit, satisfied WorkItem, and no no-progress loop."
 sections:
   Summary: |-
@@ -1277,6 +1288,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "e5beb6f44a7f29e15130c2ba664f6e97bfa31e4b"
+    message: "🚧 KTFFN7 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "a788399c9ccc27ae290ddbfd6244fcb3196cf643"
@@ -1690,12 +1702,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/7` agent runs
+- Completeness: `0/11` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:9edaf5ca5f950032c4e257bcf5d1ae701633e78789a2af9f6e5f1743d61573db`
+- Journal digest: `sha256:cc5b9c84383874bcab421f6b9a160bb1a359d62fd4e7e6a7dd45b3335559de7c`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-25T02:14:57.941Z`
+- Updated at: `2026-08-25T03:30:42.794Z`
