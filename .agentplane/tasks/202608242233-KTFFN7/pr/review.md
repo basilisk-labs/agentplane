@@ -6,7 +6,7 @@ Created: 2026-08-24T22:59:26.702Z
 
 - Task: `202608242233-KTFFN7`
 - Title: Allow evidence-only rework after an already committed implementation
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608242233-KTFFN7/allow-evidence-only-rework-after-an-already-comm`
 - Canonical task record: `.agentplane/tasks/202608242233-KTFFN7/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-24T22:59:26.702Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-24T22:59:26.702Z
+- Updated: 2026-08-25T02:10:58.448Z
 - Branch: task/202608242233-KTFFN7/allow-evidence-only-rework-after-an-already-comm
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
