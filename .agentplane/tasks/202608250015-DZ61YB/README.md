@@ -4,7 +4,7 @@ title: "Make aggregate local CI deterministic and preserve failing-group evidenc
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -29,6 +29,38 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-25T01:06:00.157Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "07ead92308c1a1551e0145265422599d38f98eba"
+  blueprint_digest: "7f0e8b99c667b9519e5d37c299cfa10d26aa36d634a166de572332378cd731bc"
+  evidence_refs:
+    - ".agentplane/tasks/202608250015-DZ61YB/quality/20260825-010400130-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608250015-DZ61YB/quality/20260825-010400130-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608250015-DZ61YB/quality/objects/sha256/03d09623364a4b9496b2cfea423c7ebb8103238074f93dcb877b4948ef12de82.md"
+    - ".agentplane/tasks/202608250015-DZ61YB/quality/20260825-010400130-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608250015-DZ61YB/quality/20260825-010400130-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608250015-DZ61YB/quality/20260825-010400130-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608250015-DZ61YB/README.md"
+    - ".agentplane/tasks/202608250015-DZ61YB/quality/objects/sha256/4f3cb5227ae2d2e7c51801eeaa02ed9205d774f239fa1743973f689f43a0f6b5.patch"
+    - ".agentplane/tasks/202608250015-DZ61YB/quality/objects/sha256/754a70426d935698eff53478ab9dda71b210cb2bdd46dcb2287fd93ef21439f0.json"
+    - ".agentplane/tasks/202608250015-DZ61YB/verification/20260825010340957-8d28ea44ae4a8a4f.json"
+    - ".agentplane/tasks/202608250015-DZ61YB/quality/objects/sha256/2d2727c484fe2b39ba93d007ea75cc5d033c41c9da6dd6729683b3f00e749eaf.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The implementation changes only the four approved code and test paths; AgentPlane-owned task and PR artifacts are supervisor-generated."
+    - "The default group concurrency is aligned with the repository wrapper at one, while an explicit AGENTPLANE_LOCAL_CI_GROUP_CONCURRENCY override remains available."
+    - "The final structured summary preserves ordered group id, exit code, timeout state, and duration, and failed summaries are emitted on stderr as well as stdout."
+    - "Supervisor-recorded bun run ci:local:full passed in 529874ms and contains the final all-green runtime, docs-schema, core, and cli group summary with parallel_group_concurrency 1."
+    - "The focused regression suite independently passed again with 1 file and 11 tests."
+    - "Residual risk: A caller can explicitly raise AGENTPLANE_LOCAL_CI_GROUP_CONCURRENCY and reintroduce resource contention; this is an intentional expert override rather than the repository default."
+    - "Residual risk: Hosted integration remains a later AgentPlane-owned branch_pr gate and is not claimed by this read-only evaluator episode."
 execution_route:
   frozen: true
   reason_codes:

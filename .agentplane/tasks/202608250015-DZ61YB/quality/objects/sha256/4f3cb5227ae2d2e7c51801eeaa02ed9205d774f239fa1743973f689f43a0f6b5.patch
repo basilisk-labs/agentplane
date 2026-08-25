@@ -1,0 +1,233 @@
+diff --git a/packages/agentplane/src/cli/verification-contract.test.ts b/packages/agentplane/src/cli/verification-contract.test.ts
+index 5db178d20..52e87eeb0 100644
+--- a/packages/agentplane/src/cli/verification-contract.test.ts
++++ b/packages/agentplane/src/cli/verification-contract.test.ts
+@@ -2,13 +2,18 @@
+ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+ import os from "node:os";
+ import path from "node:path";
++import { PassThrough } from "node:stream";
+ import { describe, expect, it } from "vitest";
+ 
+ import {
+   computeVerificationContract,
+   mergeVerificationContracts,
+ } from "../../../../scripts/lib/verification-contract.mjs";
+-import { runVerificationGroups } from "../../../../scripts/lib/verification-scheduler.mjs";
++import {
++  runVerificationGroups,
++  summarizeVerificationGroupResults,
++  writeVerificationGroupResults,
++} from "../../../../scripts/lib/verification-scheduler.mjs";
+ import { readTaskVerificationEffects } from "../../../../scripts/lib/task-verification-contracts.mjs";
+ import {
+   LIFECYCLE_CONTROL_EVENT_KIND,
+@@ -239,6 +244,68 @@ describe("verification contract", () => {
+       ["stalled", 124, true],
+       ["failed", 7, false],
+     ]);
++    expect(summarizeVerificationGroupResults(result.results)).toEqual({
++      schema_version: 1,
++      kind: "verification_group_summary",
++      ok: false,
++      groups: [
++        {
++          id: "stalled",
++          exit_code: 124,
++          timed_out: true,
++          duration_ms: expect.any(Number),
++        },
++        {
++          id: "failed",
++          exit_code: 7,
++          timed_out: false,
++          duration_ms: expect.any(Number),
++        },
++      ],
++    });
++  });
++
++  it("flushes the final group summary after large captured output applies backpressure", async () => {
++    const stdout = new PassThrough({ highWaterMark: 1 });
++    const stderr = new PassThrough({ highWaterMark: 1 });
++    let stdoutText = "";
++    let stderrText = "";
++    stdout.setEncoding("utf8");
++    stderr.setEncoding("utf8");
++    stdout.on("data", (chunk: string) => (stdoutText += chunk));
++    stderr.on("data", (chunk: string) => (stderrText += chunk));
++    const results = [
++      {
++        id: "passed",
++        exit_code: 0,
++        timed_out: false,
++        duration_ms: 10,
++        started_at_ms: 1,
++        finished_at_ms: 11,
++        stdout: "x".repeat(128 * 1024),
++        stderr: "",
++      },
++      {
++        id: "failed",
++        exit_code: 9,
++        timed_out: false,
++        duration_ms: 20,
++        started_at_ms: 12,
++        finished_at_ms: 32,
++        stdout: "",
++        stderr: "y".repeat(128 * 1024),
++      },
++    ];
++
++    const summary = await writeVerificationGroupResults(results, { stdout, stderr });
++    const serialized = `${JSON.stringify(summary)}\n`;
++
++    expect(summary.groups.map(({ id, exit_code }) => [id, exit_code])).toEqual([
++      ["passed", 0],
++      ["failed", 9],
++    ]);
++    expect(stdoutText.endsWith(serialized)).toBe(true);
++    expect(stderrText.endsWith(serialized)).toBe(true);
+   });
+ 
+   it("cannot qualify mandatory verification from planning-only timings", () => {
+diff --git a/scripts/checks/run-local-ci.mjs b/scripts/checks/run-local-ci.mjs
+index c5e54b86a..e0208a647 100644
+--- a/scripts/checks/run-local-ci.mjs
++++ b/scripts/checks/run-local-ci.mjs
+@@ -3,7 +3,10 @@ import { existsSync } from "node:fs";
+ 
+ import { buildLocalCiExecutionPlan, parseChangedFilesEnv } from "../lib/local-ci-selection.mjs";
+ import { withFrameworkBuildLock } from "../lib/framework-build-lock.mjs";
+-import { runVerificationGroups } from "../lib/verification-scheduler.mjs";
++import {
++  runVerificationGroups,
++  writeVerificationGroupResults,
++} from "../lib/verification-scheduler.mjs";
+ import { writeLocalVerificationReceipt } from "../lib/local-verification-receipt.mjs";
+ import {
+   evaluateLifecycleControlBudget,
+@@ -55,7 +58,7 @@ const LOCAL_FAST_VITEST_MAX_WORKERS =
+   String(baseEnv.AGENTPLANE_FAST_VITEST_MAX_WORKERS ?? "").trim() || "6";
+ const LOCAL_CI_GROUP_CONCURRENCY = parsePositiveIntegerEnv(
+   baseEnv.AGENTPLANE_LOCAL_CI_GROUP_CONCURRENCY,
+-  2,
++  1,
+ );
+ function parsePositiveIntegerEnv(rawValue, fallback) {
+   const value = Number.parseInt(String(rawValue ?? "").trim(), 10);
+@@ -461,7 +464,7 @@ async function runFullFastPath() {
+     [{ id: "build", command: "bun", args: ["run", "build"] }],
+     { concurrency: 1, cwd: process.cwd(), env: baseEnv },
+   );
+-  renderVerificationGroupResults(buildResult.results);
++  await writeVerificationGroupResults(buildResult.results);
+   if (!buildResult.ok) throw new Error("Full verification build prerequisite failed.");
+ 
+   const groupEnv = {
+@@ -502,7 +505,7 @@ async function runFullFastPath() {
+   });
+   const results = [...runtimeResult.results, ...coreResult.results, ...cliResult.results];
+   const ok = runtimeResult.ok && coreResult.ok && cliResult.ok;
+-  renderVerificationGroupResults(results);
++  await writeVerificationGroupResults(results);
+   process.stdout.write(
+     `${JSON.stringify({
+       schema_version: 1,
+@@ -519,14 +522,6 @@ async function runFullFastPath() {
+   if (!ok) throw new Error("Full verification group failed.");
+ }
+ 
+-function renderVerificationGroupResults(results) {
+-  for (const group of results) {
+-    process.stdout.write(`\n== ${group.id} (${group.duration_ms}ms) ==\n`);
+-    if (group.stdout) process.stdout.write(group.stdout);
+-    if (group.stderr) process.stderr.write(group.stderr);
+-  }
+-}
+-
+ function runTargetedSmokePath(plan) {
+   runStep("Format (check)", () => runCommand("bun", ["run", "format:check"]));
+   runTargetedPlanSteps(plan);
+diff --git a/scripts/lib/verification-scheduler.d.ts b/scripts/lib/verification-scheduler.d.ts
+index 1a158f2ab..a9571192c 100644
+--- a/scripts/lib/verification-scheduler.d.ts
++++ b/scripts/lib/verification-scheduler.d.ts
+@@ -17,6 +17,13 @@ export type VerificationGroupResult = {
+   stderr: string;
+ };
+ 
++export type VerificationGroupSummary = {
++  schema_version: 1;
++  kind: "verification_group_summary";
++  ok: boolean;
++  groups: Array<Pick<VerificationGroupResult, "id" | "exit_code" | "timed_out" | "duration_ms">>;
++};
++
+ export function runVerificationGroups(
+   groups: VerificationGroup[],
+   options?: {
+@@ -33,3 +40,15 @@ export function runVerificationGroups(
+   ok: boolean;
+   results: VerificationGroupResult[];
+ }>;
++
++export function summarizeVerificationGroupResults(
++  results: VerificationGroupResult[],
++): VerificationGroupSummary;
++
++export function writeVerificationGroupResults(
++  results: VerificationGroupResult[],
++  options?: {
++    stdout?: NodeJS.WritableStream;
++    stderr?: NodeJS.WritableStream;
++  },
++): Promise<VerificationGroupSummary>;
+diff --git a/scripts/lib/verification-scheduler.mjs b/scripts/lib/verification-scheduler.mjs
+index a3f8cc0f4..5a9d0edff 100644
+--- a/scripts/lib/verification-scheduler.mjs
++++ b/scripts/lib/verification-scheduler.mjs
+@@ -1,4 +1,5 @@
+ import { spawn } from "node:child_process";
++import { once } from "node:events";
+ 
+ const DEFAULT_OUTPUT_TAIL_BYTES = 256 * 1024;
+ const DEFAULT_GROUP_TIMEOUT_MS = 15 * 60_000;
+@@ -105,3 +106,37 @@ export async function runVerificationGroups(groups, options = {}) {
+     results,
+   };
+ }
++
++export function summarizeVerificationGroupResults(results) {
++  return {
++    schema_version: 1,
++    kind: "verification_group_summary",
++    ok: results.every((result) => result.exit_code === 0),
++    groups: results.map((result) => ({
++      id: result.id,
++      exit_code: result.exit_code,
++      timed_out: result.timed_out,
++      duration_ms: result.duration_ms,
++    })),
++  };
++}
++
++async function writeStreamChunk(stream, chunk) {
++  if (!chunk || stream.write(chunk)) return;
++  await once(stream, "drain");
++}
++
++export async function writeVerificationGroupResults(results, options = {}) {
++  const stdout = options.stdout ?? process.stdout;
++  const stderr = options.stderr ?? process.stderr;
++  for (const group of results) {
++    await writeStreamChunk(stdout, `\n== ${group.id} (${group.duration_ms}ms) ==\n`);
++    await writeStreamChunk(stdout, group.stdout);
++    await writeStreamChunk(stderr, group.stderr);
++  }
++  const summary = summarizeVerificationGroupResults(results);
++  const serialized = `${JSON.stringify(summary)}\n`;
++  await writeStreamChunk(stdout, serialized);
++  if (!summary.ok) await writeStreamChunk(stderr, serialized);
++  return summary;
++}
