@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 53
+revision: 55
 origin:
   system: "manual"
 depends_on: []
@@ -70,7 +70,7 @@ quality_review:
 token_usage:
   agent_runs: 18
   input_tokens: null
-  journal_digest: "sha256:5578214c9b6211686898a2a4f13d8f55049a7dc4fcbf46bdd9a2257405159109"
+  journal_digest: "sha256:dfc57b2a416a43c2c46d2786c94cbcc9eccee41f40805ee32695d4bff99eac60"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -80,7 +80,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-26T17:22:02.937Z"
+  updated_at: "2026-08-26T17:47:56.575Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -354,8 +354,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "fae4f17cd226df6fb479f6d107d83ccd4ec2c96a"
-  message: "🚧 BXQZ97 task: record external evaluator result"
+  hash: "058d0842e2f94bab0c6e75023d038a0b83cdb482"
+  message: "🧩 BXQZ97 task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -408,6 +408,9 @@ comments:
   -
     author: "CODER"
     body: "Start: resume after recording the complete persisted Verification Contract evidence through the compatibility route."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -622,8 +625,23 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "fae4f17cd226df6fb479f6d107d83ccd4ec2c96a"
+  -
+    type: "status"
+    at: "2026-08-26T17:47:45.662Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    commit: "e209e23a8ed60069d0d2f2ffda30e8c1bb8ffa29"
+  -
+    type: "status"
+    at: "2026-08-26T17:47:56.575Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "058d0842e2f94bab0c6e75023d038a0b83cdb482"
 doc_version: 3
-doc_updated_at: "2026-08-26T17:22:02.968Z"
+doc_updated_at: "2026-08-26T17:47:56.605Z"
 doc_updated_by: "CODER"
 description: "Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPEN, MERGEABLE, and BEHIND; required verify-real-e2e fails on exact head e19eb173c25eb7c6800643bcb87173c857a042fb because that head excludes the already integrated C6WV4T qualification correction on exact main 79bc13ff33358c49e216901f59c8fbc0a17987d2. All other hosted jobs pass. The failure reproduced on multiple clean published heads. Violated invariant: when required hosted checks fail solely on a provider PR head that is behind its protected base, AgentPlane must offer a digest-bound, effectively-once provider update-branch recovery transition before semantic source rework or integration. Root cause: current route classification maps failed hosted checks directly to implementation_rework_required and exposes no normal AgentPlane operation for GitHub's update-branch effect. Temporary recovery: preserve 9RCWZQ and use an approved bootstrap runtime only for control-plane retirement; do not manually merge, rebase, push, or edit state. Permanent fix: add the smallest provider-neutral route/effect contract with GitHub update-branch execution, exact expected-head/base readback, effect-in-doubt reconciliation, authority digests, and fail-closed behavior for conflicts, head drift, ambiguity, or unsupported providers. Regression tests must prove route selection, pre-effect failure safety, effect reconciliation, and that semantic rework remains selected for genuine source failures. Integrate normally, then use the fresh runtime to refresh PR #4889 and resume 9RCWZQ."
 sections:
@@ -3006,6 +3024,6 @@ DecisionContextRef:
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:5578214c9b6211686898a2a4f13d8f55049a7dc4fcbf46bdd9a2257405159109`
+- Journal digest: `sha256:dfc57b2a416a43c2c46d2786c94cbcc9eccee41f40805ee32695d4bff99eac60`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-26T17:22:02.937Z`
+- Updated at: `2026-08-26T17:47:56.575Z`
