@@ -1,5 +1,6 @@
 import { POSTCONDITION } from "./workflow-postconditions.js";
 
+// Keep this leaf free of workflow-step and workflow-step-factory imports to preserve dependency direction.
 export const PROVIDER_UPDATE_BRANCH_OPERATION_SPEC = {
   type: "provider_update_branch",
   phase: "provider_pr_update_branch_required",

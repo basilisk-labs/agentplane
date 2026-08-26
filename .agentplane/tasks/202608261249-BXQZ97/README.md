@@ -2,10 +2,10 @@
 id: "202608261249-BXQZ97"
 title: "Add a digest-bound provider update-branch recovery transition for stale hosted PR heads"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 44
 origin:
   system: "manual"
 depends_on: []
@@ -31,11 +31,11 @@ plan_approval:
   updated_by: "HOST:slingshot:env_e_6a1ef5a7691083289addb82f53997126:USER"
   note: "host_user_decision=sha256:e918dacceec86ebe3ec6f78d30e4c19e04d779c92c70ea9a3bdf6575b4317d33"
 verification:
-  state: "ok"
-  updated_at: "2026-08-26T14:20:31.076Z"
+  state: "blocked_external"
+  updated_at: "2026-08-26T17:01:34.616Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/pr"
+  attempts: 4
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -139,7 +139,8 @@ execution_contract:
       - "packages/agentplane/src/commands/shared"
       - "packages/agentplane/src/commands/task"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -159,6 +160,7 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/workflow-postconditions.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch-spec.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
       - "packages/agentplane/src/commands/shared/workflow-step.ts"
       - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
@@ -172,7 +174,7 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
+        result: "fail"
       -
         id: "recorded-check-10"
         result: "pass"
@@ -261,7 +263,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:0b74adfb04b75cc7d666b06c7b87701781e2364f893c5d9ae4b706059b038f49"
+      digest: "sha256:98bf9819fd40b37f0e82bfb9b6da79f61ee624f1ff3e9e1163930756dd770e7e"
       escalation_reasons:
         - "central_path:packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
         - "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
@@ -277,6 +279,7 @@ execution_contract:
         - "central_path:packages/agentplane/src/commands/shared/workflow-postconditions.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch-spec.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step.ts"
         - "external_effect_requires_real_e2e"
@@ -306,6 +309,7 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/workflow-postconditions.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch-spec.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
           - "packages/agentplane/src/commands/shared/workflow-step.ts"
           - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
@@ -350,9 +354,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "5d609194bcddc137c541b5ffed8b0fe4a8f634c5"
-  message: "🚧 BXQZ97 task: record external evaluator result"
+      - "verification_recovery:recorded-check-1"
+commit: null
 comments:
   -
     author: "CODER"
@@ -381,6 +384,21 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (failed): The sole workspace change is an unintended and stale AgentPlane-owned remote_failed marker produced after PR #4892 had already been created successfully. It is not implementation work and must not be committed as product evidence."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: ccbcbefb6afa. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: ccbcbefb6afa. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: ccbcbefb6afa. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: ccbcbefb6afa. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Start: resume after resolving the bootstrap bun PATH timeout condition."
 events:
   -
     type: "status"
@@ -479,9 +497,72 @@ events:
     at: "2026-08-26T15:50:35.936Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (failed): The sole workspace change is an unintended and stale AgentPlane-owned remote_failed marker produced after PR #4892 had already been created successfully. It is not implementation work and must not be committed as product evidence."
+  -
+    type: "status"
+    at: "2026-08-26T16:46:42.190Z"
+    author: "SUPERVISOR"
+    from: "DONE"
+    to: "DOING"
+    note: "Implementation committed: ccbcbefb6afa. CLI accepted one state-bound external-agent semantic result."
+    commit: "ccbcbefb6afa676b04d1a8d6cb37c16088edac5e"
+  -
+    type: "verify"
+    at: "2026-08-26T16:48:23.835Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/pr"
+  -
+    type: "status"
+    at: "2026-08-26T16:53:33.238Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: ccbcbefb6afa. CLI accepted one state-bound external-agent semantic result."
+    commit: "ccbcbefb6afa676b04d1a8d6cb37c16088edac5e"
+  -
+    type: "verify"
+    at: "2026-08-26T16:55:15.427Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/pr"
+  -
+    type: "status"
+    at: "2026-08-26T16:56:45.214Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: ccbcbefb6afa. CLI accepted one state-bound external-agent semantic result."
+    commit: "ccbcbefb6afa676b04d1a8d6cb37c16088edac5e"
+  -
+    type: "verify"
+    at: "2026-08-26T16:58:27.922Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/pr"
+  -
+    type: "status"
+    at: "2026-08-26T16:59:48.755Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: ccbcbefb6afa. CLI accepted one state-bound external-agent semantic result."
+    commit: "ccbcbefb6afa676b04d1a8d6cb37c16088edac5e"
+  -
+    type: "verify"
+    at: "2026-08-26T17:01:34.616Z"
+    author: "SUPERVISOR"
+    state: "blocked_external"
+    note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/pr"
+  -
+    type: "status"
+    at: "2026-08-26T17:03:13.197Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Start: resume after resolving the bootstrap bun PATH timeout condition."
 doc_version: 3
-doc_updated_at: "2026-08-26T15:50:36.001Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-26T17:03:13.242Z"
+doc_updated_by: "CODER"
 description: "Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPEN, MERGEABLE, and BEHIND; required verify-real-e2e fails on exact head e19eb173c25eb7c6800643bcb87173c857a042fb because that head excludes the already integrated C6WV4T qualification correction on exact main 79bc13ff33358c49e216901f59c8fbc0a17987d2. All other hosted jobs pass. The failure reproduced on multiple clean published heads. Violated invariant: when required hosted checks fail solely on a provider PR head that is behind its protected base, AgentPlane must offer a digest-bound, effectively-once provider update-branch recovery transition before semantic source rework or integration. Root cause: current route classification maps failed hosted checks directly to implementation_rework_required and exposes no normal AgentPlane operation for GitHub's update-branch effect. Temporary recovery: preserve 9RCWZQ and use an approved bootstrap runtime only for control-plane retirement; do not manually merge, rebase, push, or edit state. Permanent fix: add the smallest provider-neutral route/effect contract with GitHub update-branch execution, exact expected-head/base readback, effect-in-doubt reconciliation, authority digests, and fail-closed behavior for conflicts, head drift, ambiguity, or unsupported providers. Regression tests must prove route selection, pre-effect failure safety, effect reconciliation, and that semantic rework remains selected for genuine source failures. Integrate normally, then use the fresh runtime to refresh PR #4889 and resume 9RCWZQ."
 sections:
   Summary: |-
@@ -878,6 +959,146 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-26T16:48:23.835Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/pr
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:0a8c9bfb82ff3659255e5624e9e4409ff89b714af740bc090a311f2a3ece3c75
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/pr
+    Result: fail
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+    - old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608261249-BXQZ97
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-26T16:55:15.427Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/pr
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:f5748410b83597e464b2b5b098c481ea6b1154fb5c7ccd29a338561f472f0189
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/pr
+    Result: fail
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+    - old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608261249-BXQZ97
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-26T16:58:27.922Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/pr
+    Attempts: 3
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:7dcf91e39ca4ca081f5d8dc1253e2a1887f36a1fcc0c228174956bd001d132dd
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/pr
+    Result: fail
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+    - old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608261249-BXQZ97
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-26T17:01:34.616Z — VERIFY — blocked_external
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/pr
+    Attempts: 4
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:13d9ebe433e718376cfcf3ca2d6bc65c5c94aded8ae4e4667fe7699272176b71
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/pr
+    Result: fail
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+    - old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608261249-BXQZ97
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1882,9 +2103,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "bd84e004d5a6695ec8a84291f2b0cf032440790c"
-    message: "🚧 BXQZ97 task: apply external agent result"
   task_execution_context:
     base_ref: "79bc13ff33358c49e216901f59c8fbc0a17987d2"
     base_sha: "79bc13ff33358c49e216901f59c8fbc0a17987d2"
@@ -2299,6 +2517,146 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-26T16:48:23.835Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/pr
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:0a8c9bfb82ff3659255e5624e9e4409ff89b714af740bc090a311f2a3ece3c75
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/pr
+Result: fail
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+- old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608261249-BXQZ97
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-26T16:55:15.427Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/pr
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:f5748410b83597e464b2b5b098c481ea6b1154fb5c7ccd29a338561f472f0189
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/pr
+Result: fail
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+- old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608261249-BXQZ97
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-26T16:58:27.922Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/pr
+Attempts: 3
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:7dcf91e39ca4ca081f5d8dc1253e2a1887f36a1fcc0c228174956bd001d132dd
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/pr
+Result: fail
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+- old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608261249-BXQZ97
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-26T17:01:34.616Z — VERIFY — blocked_external
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/pr
+Attempts: 4
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:13d9ebe433e718376cfcf3ca2d6bc65c5c94aded8ae4e4667fe7699272176b71
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/pr
+Result: fail
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+- old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608261249-BXQZ97
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
