@@ -7,11 +7,10 @@ import { isCanonicalFullCommitOid } from "../../shared/git-ops.js";
 
 async function resolveCommit(gitRoot: string, ref: string): Promise<string | null> {
   try {
-    const { stdout } = await execFileAsync(
-      "git",
-      ["rev-parse", "--verify", `${ref}^{commit}`],
-      { cwd: gitRoot, env: gitEnv() },
-    );
+    const { stdout } = await execFileAsync("git", ["rev-parse", "--verify", `${ref}^{commit}`], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
     const head = stdout.trim();
     return isCanonicalFullCommitOid(head) ? head.toLowerCase() : null;
   } catch {
@@ -53,9 +52,7 @@ export async function resolveProviderBaseBranch(opts: {
   });
   const branch = candidate?.trim() ?? "";
   if (!branch || isCanonicalFullCommitOid(branch)) {
-    return invalidExactBase(
-      "Exact-SHA PR base cannot resolve a configured provider base branch.",
-    );
+    return invalidExactBase("Exact-SHA PR base cannot resolve a configured provider base branch.");
   }
 
   const [localHead, providerTrackingHead] = await Promise.all([

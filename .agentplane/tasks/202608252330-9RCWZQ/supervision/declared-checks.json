@@ -1,0 +1,23 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 2,
+      "script": "ci:local:full",
+      "stderr_tail": "",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: bun run ci:local:full",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202608252330-9RCWZQ"
+}
