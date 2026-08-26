@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608252330-9RCWZQ/allow-exact-sha-release-tasks-to-open-hosted-prs",
   "created_at": "2026-08-26T02:00:01.912Z",
-  "diffstat_sha256": "sha256:85a4b953a7bdb871dbdbf55c8279b9462417b5ecabf525864a89dc28a080c585",
+  "diffstat_sha256": "sha256:64f18847d5f8a95bf7244bc846c05b324124c2c92037be72785a1213717843e0",
   "last_verified_at": "2026-08-26T02:09:59.975Z",
   "last_verified_diffstat_sha256": "sha256:be471958ac13a942ad55c64f0d9636cd01f987ae05f05babb89333ac4962d28b",
   "provider": {

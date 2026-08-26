@@ -910,6 +910,24 @@ describe("exact-SHA provider base resolution", { timeout: PR_FLOW_INTEGRATION_TI
       }),
     ).rejects.toThrow("does not match configured provider base branch main");
 
+    await execFileAsync("git", ["update-ref", "-d", "refs/remotes/origin/main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await expect(
+      resolveProviderBaseBranch({
+        gitRoot: root,
+        cwd: root,
+        workflowMode: "branch_pr",
+        baseRef: baseSha,
+        baseSha,
+      }),
+    ).rejects.toThrow("requires both local main and origin/main evidence");
+    await execFileAsync("git", ["fetch", "origin", "main:refs/remotes/origin/main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
     await execFileAsync("git", ["commit", "--allow-empty", "-m", "local base drift"], {
       cwd: root,
       env: cleanGitEnv(),
