@@ -881,6 +881,7 @@ describe("exact-SHA provider base resolution", { timeout: PR_FLOW_INTEGRATION_TI
         gitRoot: root,
         cwd: root,
         workflowMode: "branch_pr",
+        branch: "main",
         baseRef: "main",
         baseSha: "b".repeat(40),
       }),
@@ -895,6 +896,7 @@ describe("exact-SHA provider base resolution", { timeout: PR_FLOW_INTEGRATION_TI
         gitRoot: root,
         cwd: root,
         workflowMode: "branch_pr",
+        branch: "main",
         baseRef: baseSha,
         baseSha,
       }),
@@ -909,6 +911,7 @@ describe("exact-SHA provider base resolution", { timeout: PR_FLOW_INTEGRATION_TI
         gitRoot: root,
         cwd: root,
         workflowMode: "branch_pr",
+        branch: "main",
         baseRef: baseSha,
         baseSha: "b".repeat(40),
       }),
@@ -919,6 +922,7 @@ describe("exact-SHA provider base resolution", { timeout: PR_FLOW_INTEGRATION_TI
         gitRoot: root,
         cwd: root,
         workflowMode: "branch_pr",
+        branch: "main",
         baseRef: baseSha,
         baseSha,
       }),
@@ -929,6 +933,18 @@ describe("exact-SHA provider base resolution", { timeout: PR_FLOW_INTEGRATION_TI
         gitRoot: root,
         cwd: root,
         workflowMode: "branch_pr",
+        branch: "main",
+        baseRef: baseSha.toUpperCase(),
+        baseSha: baseSha.toUpperCase(),
+      }),
+    ).resolves.toBe("main");
+
+    await expect(
+      resolveProviderBaseBranch({
+        gitRoot: root,
+        cwd: root,
+        workflowMode: "branch_pr",
+        branch: "main",
         baseRef: "a".repeat(40),
         baseSha: "a".repeat(40),
       }),
@@ -943,11 +959,35 @@ describe("exact-SHA provider base resolution", { timeout: PR_FLOW_INTEGRATION_TI
         gitRoot: root,
         cwd: root,
         workflowMode: "branch_pr",
+        branch: "main",
         baseRef: baseSha,
         baseSha,
       }),
-    ).rejects.toThrow("requires both local main and origin/main evidence");
-    await execFileAsync("git", ["fetch", "origin", "main:refs/remotes/origin/main"], {
+    ).resolves.toBe("main");
+
+    await execFileAsync("git", ["remote", "rename", "origin", "upstream"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["config", "branch.main.remote", "upstream"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await expect(
+      resolveProviderBaseBranch({
+        gitRoot: root,
+        cwd: root,
+        workflowMode: "branch_pr",
+        branch: "main",
+        baseRef: baseSha,
+        baseSha,
+      }),
+    ).resolves.toBe("main");
+    await execFileAsync("git", ["remote", "rename", "upstream", "origin"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["config", "branch.main.remote", "origin"], {
       cwd: root,
       env: cleanGitEnv(),
     });
@@ -961,9 +1001,33 @@ describe("exact-SHA provider base resolution", { timeout: PR_FLOW_INTEGRATION_TI
         gitRoot: root,
         cwd: root,
         workflowMode: "branch_pr",
+        branch: "main",
         baseRef: baseSha,
         baseSha,
       }),
     ).rejects.toThrow("ambiguous");
+
+    await execFileAsync("git", ["push", "origin", "HEAD:refs/heads/main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["reset", "--hard", baseSha], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["update-ref", "refs/remotes/origin/main", baseSha], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await expect(
+      resolveProviderBaseBranch({
+        gitRoot: root,
+        cwd: root,
+        workflowMode: "branch_pr",
+        branch: "main",
+        baseRef: baseSha,
+        baseSha,
+      }),
+    ).rejects.toThrow("live origin/main resolve to different commits");
   });
 });

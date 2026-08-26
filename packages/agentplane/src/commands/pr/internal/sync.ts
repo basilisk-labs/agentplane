@@ -291,6 +291,7 @@ export async function syncPrArtifacts(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride ?? null,
         workflowMode,
+        branch,
         baseRef: requestedBase,
         baseSha:
           requestedBase === taskExecutionBase?.base_ref

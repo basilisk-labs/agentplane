@@ -78,7 +78,7 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
       cwd: root,
       env: cleanGitEnv(),
     });
-    await configurePushableOrigin(root);
+    const publishRemotePath = await configurePushableOrigin(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore test setup"], {
       cwd: root,
@@ -162,8 +162,31 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
         base: { ref: "main" },
       },
     });
+    const fakeGitBin = await mkdtemp(path.join(os.tmpdir(), "agentplane-provider-base-git-"));
+    const { stdout: realGitStdout } = await execFileAsync("which", ["git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const fakeGitPath = path.join(fakeGitBin, "git");
+    await writeFile(
+      fakeGitPath,
+      [
+        "#!/usr/bin/env node",
+        "const { spawnSync } = require('node:child_process');",
+        `const realGit = ${JSON.stringify(realGitStdout.trim())};`,
+        `const providerRemote = ${JSON.stringify(publishRemotePath)};`,
+        "const args = process.argv.slice(2);",
+        "if (args[0] === 'ls-remote' && args[1] === '--exit-code' && args[2] === 'origin' && args[3] === 'refs/heads/main') args[2] = providerRemote;",
+        "const result = spawnSync(realGit, args, { stdio: 'inherit', env: process.env });",
+        "if (result.error) throw result.error;",
+        "process.exit(result.status ?? 1);",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeGitPath, 0o755);
     const originalPath = process.env.PATH;
-    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.PATH = `${fakeGitBin}${path.delimiter}${fakeBin}${path.delimiter}${originalPath ?? ""}`;
     process.env.AGENTPLANE_GH_LOG = logPath;
 
     const io = captureStdIO();
