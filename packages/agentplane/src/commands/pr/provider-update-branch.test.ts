@@ -161,6 +161,24 @@ describe("provider update-branch effect", () => {
     ).resolves.toMatchObject({ state: "not_applied", reason: "unsupported_provider" });
   });
 
+  it.each([
+    [
+      "unavailable provider observation",
+      { state: "unavailable", reason: "provider observation timed out" },
+      "observation_unavailable",
+    ],
+    ["missing pull request", { state: "not_found" }, "pr_not_found"],
+  ] as const)("fails closed before effect for %s", async (_label, lookup, reason) => {
+    mocks.observeExistingChangeRequestByNumber.mockResolvedValueOnce(lookup);
+
+    await expect(updateProviderBranch(request())).resolves.toMatchObject({
+      state: "not_applied",
+      reason,
+      observed: null,
+    });
+    expect(mocks.runGhApiJson).not.toHaveBeenCalled();
+  });
+
   it("returns effect-in-doubt after a transport error until exact readback proves success", async () => {
     mocks.observeExistingChangeRequestByNumber
       .mockResolvedValueOnce({ state: "found", pr: observed() })
