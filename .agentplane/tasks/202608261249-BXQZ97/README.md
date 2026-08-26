@@ -4,7 +4,7 @@ title: "Add a digest-bound provider update-branch recovery transition for stale 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -35,6 +35,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-26T15:46:58.638Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "bd84e004d5a6695ec8a84291f2b0cf032440790c"
+  blueprint_digest: "ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374"
+  evidence_refs:
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-154349579-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-154349579-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/2d08ac03d9f2c967e311337b36f1002c301ce46e6179b3197c8735f606d4bd5d.md"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-154349579-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-154349579-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-154349579-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608261249-BXQZ97/README.md"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/6e793f3b5cf384ceae276d6d2daa685a2ea831c2c622aa09bbd54f9e9993ea15.patch"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/ec34965843d7ceaadde82286a6f78ba6336ac4a3d062b6aa9890f9fd67f55ddb.json"
+    - ".agentplane/tasks/202608261249-BXQZ97/verification/20260826142031076-8ac311f53c036691.json"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/e6c20dad3911e302671884f019d9d82e25ccbc8f44d64823eeebfa77db14c513.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The implemented route selects provider.pr.update_branch only for an OPEN GitHub PR whose local, upstream, and hosted heads agree exactly, whose hosted checks fail, whose provider state is behind, and whose base SHA is known."
+    - "The effect binds the mutation to expected_head_sha, verifies exact repository, PR, branch, base, and head identity before mutation, and accepts completion only after provider readback proves both the expected head and exact base are ancestors of the new hosted head."
+    - "Pre-effect conflicts and identity drift fail closed. Ambiguous transport or incomplete ancestry proof returns effect_in_doubt and cannot be retried blindly without fresh reconciliation."
+    - "The focused evaluator run passed 45 test files and 324 tests. Supervisor-owned evidence records successful full regression, task verification, and a clean implementation commit."
+    - "The product source and tests are byte-identical between verified implementation commit bd84e004d5a6695ec8a84291f2b0cf032440790c and current PR head f456aae8e0301300e258423764942cd987c66419; the later commit contains only AgentPlane-owned lifecycle artifacts."
+    - "Residual risk: The real GitHub update-branch external effect remains subject to hosted provider behavior and must be proven by the normal digest-bound operation plus post-effect readback; it is intentionally not executed from this read-only evaluator episode."
 execution_route:
   frozen: true
   reason_codes:
