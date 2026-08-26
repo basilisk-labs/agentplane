@@ -17,7 +17,7 @@ export type ProviderUpdateBranchRequest = Readonly<{
   expectedBaseSha: string;
 }>;
 
-export type ProviderUpdateBranchEvidence = Readonly<{
+type ProviderUpdateBranchEvidence = Readonly<{
   provider: "github";
   targetProject: string;
   prNumber: number;

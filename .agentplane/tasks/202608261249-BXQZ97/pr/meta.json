@@ -3,17 +3,10 @@
   "branch": "task/202608261249-BXQZ97/add-provider-update-branch-recovery",
   "created_at": "2026-08-26T13:12:22.036Z",
   "diffstat_sha256": "sha256:dfe0de89e62315d7bd62014ce738733c0c54c859404df1b07d56b34025b441c9",
-  "last_verified_at": "2026-08-26T17:13:22.652Z",
+  "last_verified_at": "2026-08-26T18:26:31.556Z",
   "last_verified_diffstat_sha256": "sha256:dfe0de89e62315d7bd62014ce738733c0c54c859404df1b07d56b34025b441c9",
   "pr_number": 4892,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4892",
-  "pre_merge_closure": {
-    "basis_commit": "058d0842e2f94bab0c6e75023d038a0b83cdb482",
-    "branch": "task/202608261249-BXQZ97/add-provider-update-branch-recovery",
-    "pr_number": 4892,
-    "recorded_at": "2026-08-26T17:47:56.658Z",
-    "state": "closed_before_merge"
-  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -25,7 +18,7 @@
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608261249-BXQZ97",
-  "updated_at": "2026-08-26T17:37:39.988Z",
+  "updated_at": "2026-08-26T18:49:20.384Z",
   "verify": {
     "status": "pass"
   }

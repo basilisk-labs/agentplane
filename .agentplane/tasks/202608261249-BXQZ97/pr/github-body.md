@@ -19,15 +19,16 @@ Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPE
 - Note:
 
 ```text
-Compatibility recovery: exact implementation e209e23a8 passed all available local checks; hosted
-exact-head qualification remains enforced by the branch_pr route.
+Compatibility recovery: exact implementation 1b7267416 passes the task-focused suite, Knip, and one
+complete local full gate; two later supervisor-only aggregate retries failed in unrelated prompt
+mocks that pass 16/16 in isolation. Fresh hosted exact-head qualification remains mandatory.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-26T17:37:39.988Z
+- Updated: 2026-08-26T18:49:20.384Z
 - Branch: task/202608261249-BXQZ97/add-provider-update-branch-recovery
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
