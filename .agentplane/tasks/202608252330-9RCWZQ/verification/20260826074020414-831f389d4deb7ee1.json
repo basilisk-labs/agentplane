@@ -1,0 +1,118 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608252330-9RCWZQ Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608252330-9RCWZQ Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608252330-9RCWZQ Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608252330-9RCWZQ Verification Contract check critical_paths (2/2)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608252330-9RCWZQ Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608252330-9RCWZQ Verification Contract check real_e2e (1/2)\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608252330-9RCWZQ Verification Contract check real_e2e (2/2)\n\nCheck: task_outcome\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608252330-9RCWZQ Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608252330-9RCWZQ Verification Contract check task_outcome (2/2)",
+  "digest": "sha256:831f389d4deb7ee18b30a2dd9d610bfa2bb51a7c2846dd4c7f5c5a707c226d62",
+  "implementation_sha": "0db1d23aa83bc72acdf22080f0c4843af16da93d",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:940fc122ea1f4c4f6d83b7218d5e29246909472bab2a95901c3fd81d1866be45",
+    "environment": {
+      "digest": "sha256:bd3e1dd33c56a55ada826e76effcfd88c4413ce5d9d5c11c442cb2a94959023c",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": "1",
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e1914ddc7e4211fdbf58b7aaf0bb9ac842e1d6b762f8bc307a20d2a4a6e06c1d",
+      "digest": "sha256:7a64d9ef25b81a4938d11cb0802ce791e28db3c60cdb4320b7fb5baac9f71b61",
+      "references": [
+        {
+          "digest": "sha256:f6bee801ee8233f51ec0e289a4763faacf9c763fcbd40a4bd292ac7d33f3247b",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:f6bee801ee8233f51ec0e289a4763faacf9c763fcbd40a4bd292ac7d33f3247b",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "8ea1cefbbc96a8da5595fce36325ec0c1194a360",
+      "digest": "sha256:27406feca39ac2acd08f651be5b17a9b59987a9baf03f2eedab2353c8a760b67",
+      "primary_task_id": "202608252330-9RCWZQ",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_external_write",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "auto",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608252330-9RCWZQ"
+      ]
+    },
+    "implementation": {
+      "base_sha": "8ea1cefbbc96a8da5595fce36325ec0c1194a360",
+      "digest": "sha256:5446e64ad187951b111ba29cfd18747c4d1986ab4e4d481e0f0996cf253106fb",
+      "strategy": "branch_diff",
+      "target_sha": "0db1d23aa83bc72acdf22080f0c4843af16da93d"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:80ca17cd727aa7c9c05c4f769bbe409998c624d872e548262db65ad793236f63",
+    "verify_steps_digest": "sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-26T07:40:20.414Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a",
+  "task_id": "202608252330-9RCWZQ",
+  "verification_command": "agentplane verify 202608252330-9RCWZQ --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
