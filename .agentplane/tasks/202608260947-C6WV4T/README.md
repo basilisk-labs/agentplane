@@ -1,10 +1,10 @@
 ---
 id: "202608260947-C6WV4T"
 title: "Restore packaged mixed-scope lifecycle qualification on the exact release candidate"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -220,6 +220,12 @@ comments:
   -
     author: "USER"
     body: "Compatibility recovery authorized by the user: replace only the invalid Vitest validation command with node --test, preserve implementation commit 7e2c47bc1fd246e059c55b1bbc8700cc1e99a7cf, and resume the normal AgentPlane route."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: ebdb262225cb. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The replacement implementation and full regression pass, but a stale legacy task.verify command overrides the corrected structured TaskPlan validation command. Recommended action: After returning to operator control, run agentplane task update 202608260947-C6WV4T --replace-verify with the three approved commands, then resume DOING while preserving the current implementation history and request a fresh packet. Agentplane receipt: external-agent-blocker/tr_2dde7d3437f27ef1618c0ce3c083ebd0/sha256:7ad0f5f0374b02cbf1a9b1750fc4676d5ef59f858dba793bc87ec7c6b0c3f89d."
 events:
   -
     type: "status"
@@ -270,9 +276,30 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Compatibility recovery authorized by the user: replace only the invalid Vitest validation command with node --test, preserve implementation commit 7e2c47bc1fd246e059c55b1bbc8700cc1e99a7cf, and resume the normal AgentPlane route."
+  -
+    type: "status"
+    at: "2026-08-26T10:31:42.357Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: ebdb262225cb. CLI accepted one state-bound external-agent semantic result."
+    commit: "ebdb262225cb0506bb3a419e58719a730d06c050"
+  -
+    type: "verify"
+    at: "2026-08-26T10:38:31.301Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bunx vitest run scripts/qualification/release-qualification.test.mjs"
+  -
+    type: "status"
+    at: "2026-08-26T10:40:01.531Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The replacement implementation and full regression pass, but a stale legacy task.verify command overrides the corrected structured TaskPlan validation command. Recommended action: After returning to operator control, run agentplane task update 202608260947-C6WV4T --replace-verify with the three approved commands, then resume DOING while preserving the current implementation history and request a fresh packet. Agentplane receipt: external-agent-blocker/tr_2dde7d3437f27ef1618c0ce3c083ebd0/sha256:7ad0f5f0374b02cbf1a9b1750fc4676d5ef59f858dba793bc87ec7c6b0c3f89d."
 doc_version: 3
-doc_updated_at: "2026-08-26T10:26:36.197Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-08-26T10:40:01.531Z"
+doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: required hosted verify-real-e2e fails reproducibly on clean exact heads c59dad6936fea2b664973d12cfe6ec96d2bc89f5 and 69a4f33f94fbcd46d83d4eb5f40b6654e041dd68 with missing_evaluator_episode: expected EVALUATOR, received EXECUTOR. Violated invariant: packaged-mixed-scope-lifecycle must supply every deterministic verification capability required by its selected code.direct blueprint before expecting evaluator handoff. Root cause: the fixture verification record reports needs_rework because full_regression is required while fixture package.json does not define ci:local:full; all declared commands themselves pass, so AgentPlane correctly returns implementation rework. Temporary recovery: preserve one isolated fixture and read its public verification record; no state edits. Permanent fix: minimally update the qualification fixture to provide a bounded full-regression command consistent with its declared Node test, retain the public lifecycle assertion, and add/adjust regression coverage so a verification rework cannot be misclassified as missing evaluator. Do not weaken hosted gates or production lifecycle invariants. Verify the direct packaged scenario, qualification contract tests, and full local CI. Integrate normally, then refresh 202608252330-9RCWZQ from current main and rerun exact-head hosted qualification."
 sections:
   Summary: |-
@@ -334,6 +361,46 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f1c7611e3fc6744f91ca189752b78afddc6326d9f282a05be030b60d07fd7936, input_digest=sha256:9f508624adef190354e5b29eb71ce9d6b4d61bea02d288265f0cec60f68a5304
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608260947-C6WV4T declared verification
+
+    Command: bunx vitest run scripts/qualification/release-qualification.test.mjs
+    Result: fail
+    Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608260947-C6WV4T declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608260947-C6WV4T-restore-packaged-mixed-scope-lifecycle-qualifica/.agentplane/tasks/202608260947-C6WV4T/blueprint/resolved-snapshot.json
+    - old_digest: eeca0f8e62cbecd222eec0659bf8f7b087806f1348178c9fe0d673e4a47b8695
+    - current_digest: eeca0f8e62cbecd222eec0659bf8f7b087806f1348178c9fe0d673e4a47b8695
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608260947-C6WV4T
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-26T10:38:31.301Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bunx vitest run scripts/qualification/release-qualification.test.mjs
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f1c7611e3fc6744f91ca189752b78afddc6326d9f282a05be030b60d07fd7936, input_digest=sha256:11681ce98cf7e91612fbd05c39551879a215df3a71bc5c4b7af940bca7c12f66
 
     Details:
 
@@ -810,19 +877,78 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608260947-C6WV4T"
-    revision: 14
+    revision: 22
     schema_version: 1
-    updated_at: "2026-08-26T10:27:39.325Z"
+    updated_at: "2026-08-26T10:38:34.559Z"
     work_items:
       restore-packaged-mixed-scope-qualification:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "restore-packaged-mixed-scope-qualification"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "criterion-fixture"
+            - "criterion-contract"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Preserved the original implementation and added one bounded regression assertion proving that only verification needs_rework is classified as verification_rework while unrelated evaluator mismatches remain fail-closed."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:c736dbcaa5a5f3e0694d4484461dc35f4f3eadb882bb14b393aa408bf2dace9b"
+            id: "packaged-mixed-scope-qualification-fix"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608260947-C6WV4T"
+              work_item_id: "restore-packaged-mixed-scope-qualification"
+            provenance:
+              - "sha256:fe6c9e73d5cfb2ec60b9c3ae8a8c0adad0163e45aaab36f39d2b94d8d84107ee"
+              - ".agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:f212b1c7e38ca2ba31c49864df0ddcee98db57c408fb0af81945743dea059465"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json"
+              check_id: "check-packaged"
+              command_identity: "node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+              detail: "Declared validation command node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-08-26T10:38:34.554Z"
+              repository_snapshot_digest: "sha256:f212b1c7e38ca2ba31c49864df0ddcee98db57c408fb0af81945743dea059465"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json"
+              check_id: "check-contract"
+              command_identity: "node --test scripts/qualification/release-qualification.test.mjs"
+              detail: "Declared validation command node --test scripts/qualification/release-qualification.test.mjs was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-08-26T10:38:34.554Z"
+              repository_snapshot_digest: "sha256:f212b1c7e38ca2ba31c49864df0ddcee98db57c408fb0af81945743dea059465"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json"
+              check_id: "check-full"
+              command_identity: "bun run ci:local:full"
+              detail: "Declared check failed: bunx vitest run scripts/qualification/release-qualification.test.mjs"
+              exit_code: 0
+              observed_at: "2026-08-26T10:38:34.554Z"
+              repository_snapshot_digest: "sha256:f212b1c7e38ca2ba31c49864df0ddcee98db57c408fb0af81945743dea059465"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "blocked"
+          unsatisfied_criteria:
+            - "criterion-fixture"
+            - "criterion-contract"
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
@@ -848,6 +974,29 @@ extensions:
         mutation_id: "external-result:work-order-202608260947-C6WV4T-executor-134c0eebf6d70143baa6961f"
         next_revision: 13
         previous_revision: 12
+        schema_version: 1
+        task_id: "202608260947-C6WV4T"
+      external-result:work-order-202608260947-C6WV4T-executor-7490bff35bb888be32019c0c:
+        aggregate_digest: "sha256:1faa403a6539829c792b0023da45aadc3348f76abccaeeae6e8bbc5647d76a81"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-26T10:38:34.559Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_3d907e3895f06d5f865087f9"
+          mutation_id: "external-result:work-order-202608260947-C6WV4T-executor-7490bff35bb888be32019c0c"
+          plan_digest: "sha256:0f76356cccc58587839852726467f6fbe06744dd90484cb1856a69402dfd5a35"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608260947-C6WV4T"
+          task_revision: 21
+          to: "REWORK_READY"
+          work_item_id: "restore-packaged-mixed-scope-qualification"
+        mutation_id: "external-result:work-order-202608260947-C6WV4T-executor-7490bff35bb888be32019c0c"
+        next_revision: 22
+        previous_revision: 21
         schema_version: 1
         task_id: "202608260947-C6WV4T"
       external-result:work-order-202608260947-C6WV4T-executor-92fdbe241dc89e7598bb0ae1:
@@ -978,6 +1127,46 @@ Note: Rework: Declared check failed: bunx vitest run scripts/qualification/relea
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f1c7611e3fc6744f91ca189752b78afddc6326d9f282a05be030b60d07fd7936, input_digest=sha256:9f508624adef190354e5b29eb71ce9d6b4d61bea02d288265f0cec60f68a5304
+
+Details:
+
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608260947-C6WV4T declared verification
+
+Command: bunx vitest run scripts/qualification/release-qualification.test.mjs
+Result: fail
+Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608260947-C6WV4T declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608260947-C6WV4T-restore-packaged-mixed-scope-lifecycle-qualifica/.agentplane/tasks/202608260947-C6WV4T/blueprint/resolved-snapshot.json
+- old_digest: eeca0f8e62cbecd222eec0659bf8f7b087806f1348178c9fe0d673e4a47b8695
+- current_digest: eeca0f8e62cbecd222eec0659bf8f7b087806f1348178c9fe0d673e4a47b8695
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608260947-C6WV4T
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-26T10:38:31.301Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bunx vitest run scripts/qualification/release-qualification.test.mjs
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f1c7611e3fc6744f91ca189752b78afddc6326d9f282a05be030b60d07fd7936, input_digest=sha256:11681ce98cf7e91612fbd05c39551879a215df3a71bc5c4b7af940bca7c12f66
 
 Details:
 
