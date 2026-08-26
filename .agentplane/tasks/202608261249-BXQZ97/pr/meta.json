@@ -1,10 +1,13 @@
 {
-  "base": "79bc13ff33358c49e216901f59c8fbc0a17987d2",
+  "artifact_state": "remote_failed",
+  "artifact_state_reason": "GitHub PR creation failed",
+  "artifact_state_updated_at": "2026-08-26T14:20:47.812Z",
+  "base": "main",
   "branch": "task/202608261249-BXQZ97/add-provider-update-branch-recovery",
   "created_at": "2026-08-26T13:12:22.036Z",
   "diffstat_sha256": "sha256:7061390f48f6d9a0dc43f847789d7ff549efab36260534c493a90a31a820fd54",
-  "last_verified_at": "2026-08-26T14:03:54.671Z",
-  "last_verified_diffstat_sha256": "sha256:331df2c1ac78c9aac6d4c62b5d0d7c5a9ba8364f7e4be1152fb91ad0312470a7",
+  "last_verified_at": "2026-08-26T14:20:31.076Z",
+  "last_verified_diffstat_sha256": "sha256:7061390f48f6d9a0dc43f847789d7ff549efab36260534c493a90a31a820fd54",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -15,8 +18,8 @@
   },
   "schema_version": 1,
   "task_id": "202608261249-BXQZ97",
-  "updated_at": "2026-08-26T13:12:22.036Z",
+  "updated_at": "2026-08-26T15:41:56.311Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }
