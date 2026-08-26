@@ -1,0 +1,1 @@
+🚧 QVVB66 task: Initialize blueprint test projects as real Git repositories for release CI [202608262034-QVVB66]
