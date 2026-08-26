@@ -6,7 +6,7 @@ Created: 2026-08-26T02:00:01.912Z
 
 - Task: `202608252330-9RCWZQ`
 - Title: Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608252330-9RCWZQ/allow-exact-sha-release-tasks-to-open-hosted-prs`
 - Canonical task record: `.agentplane/tasks/202608252330-9RCWZQ/README.md`
 

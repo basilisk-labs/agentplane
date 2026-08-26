@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The evaluated SHA is 07c5f791bee511d779f8eba19fe3031348911654 and the supervisor-observed implementation delta is limited to the existing PR artifacts plus packages/agentplane/src/commands/pr/internal/provider-base.test.ts.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/14f5528a95b1274582c6d6c83466e75ac34acb3b7b2248ef43cee1c5b1fe81d7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The implementation keeps task_execution_context.base_ref and base_sha unchanged while passing the resolved branch name to the provider API.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/14f5528a95b1274582c6d6c83466e75ac34acb3b7b2248ef43cee1c5b1fe81d7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Regression coverage includes exact-SHA success, uppercase OIDs, missing tracking refs, non-origin publication remotes, missing live provider branches, local drift, provider drift, and mismatch or ambiguity failures.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/14f5528a95b1274582c6d6c83466e75ac34acb3b7b2248ef43cee1c5b1fe81d7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Supervisor verification records ci:local:full as passed for the evaluated implementation and records clean committed and staged diff checks.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/14f5528a95b1274582c6d6c83466e75ac34acb3b7b2248ef43cee1c5b1fe81d7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: The hosted provider checks must be rerun after the evaluated head is published against current main; local evaluator evidence is not publication proof.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/14f5528a95b1274582c6d6c83466e75ac34acb3b7b2248ef43cee1c5b1fe81d7.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
