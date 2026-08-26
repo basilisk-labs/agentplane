@@ -15,8 +15,8 @@ Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes t
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -30,8 +30,9 @@ Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes t
  .../cli/run-cli.core.pr-flow.pr-open.git.test.ts   | 165 ++++++++++++++++++---
  .../run-cli.core.pr-flow.pr-open.network.test.ts   |  52 ++++++-
  .../src/commands/pr/internal/provider-base.ts      |  78 ++++++++++
+ .../src/commands/pr/internal/sync-github.test.ts   |  43 ++++++
  .../agentplane/src/commands/pr/internal/sync.ts    |  18 ++-
- 4 files changed, 289 insertions(+), 24 deletions(-)
+ 5 files changed, 332 insertions(+), 24 deletions(-)
 ```
 
 </details>
