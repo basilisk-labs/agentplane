@@ -90,6 +90,7 @@ describe("sync-github", () => {
           head?: string;
         };
         expect(payload).toMatchObject({ base: "main", head: "task/T-1/work" });
+        expect(payload.base).not.toMatch(/^[0-9a-f]{40}$/u);
         return {
           stdout: JSON.stringify({
             number: 123,

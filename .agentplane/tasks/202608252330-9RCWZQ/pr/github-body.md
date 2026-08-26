@@ -15,8 +15,8 @@ Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes t
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: blocked_external
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -30,9 +30,9 @@ Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes t
  .../cli/run-cli.core.pr-flow.pr-open.git.test.ts   | 165 ++++++++++++++++++---
  .../run-cli.core.pr-flow.pr-open.network.test.ts   |  52 ++++++-
  .../src/commands/pr/internal/provider-base.ts      |  78 ++++++++++
- .../src/commands/pr/internal/sync-github.test.ts   |  43 ++++++
+ .../src/commands/pr/internal/sync-github.test.ts   |  44 ++++++
  .../agentplane/src/commands/pr/internal/sync.ts    |  18 ++-
- 5 files changed, 332 insertions(+), 24 deletions(-)
+ 5 files changed, 333 insertions(+), 24 deletions(-)
 ```
 
 </details>
