@@ -159,6 +159,10 @@ describe("side-effect authority", () => {
       class: "external_pre_authorized",
       requiresAuthority: false,
     });
+    expect(WORKFLOW_OPERATION_AUTHORITY_POLICY["provider.pr.update_branch"]).toMatchObject({
+      class: "external_high_risk",
+      requiresAuthority: true,
+    });
     for (const operationId of [
       "pr.artifacts.update",
       "pr.sync_or_verify",

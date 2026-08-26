@@ -3,6 +3,7 @@ import path from "node:path";
 import type { TaskData } from "../../backends/task-backend.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
+import { hasCoherentGithubPrMergeability } from "../pr/internal/sync-github.js";
 import type { ConflictReworkPreparation } from "../pr/conflict-rework.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { RouteBatchOwnership } from "./route-batch-ownership.js";
@@ -33,6 +34,7 @@ import {
   filterTaskWorktreeBlockingPaths,
   isTaskArtifactPath,
 } from "./route-decision-worktree-cleanliness.js";
+import type { WorkflowOperationParams } from "./workflow-step.js";
 
 export { addVerificationRequiredBlocker } from "./route-decision-verification-blocker.js";
 export { routeGatePriority } from "./route-gate-priority.js";
@@ -120,6 +122,15 @@ function addHostedCheckFailureReworkBlocker(
   blockers: RouteBlocker[],
   prFlow: PrFlowStatusReport | null,
 ): void {
+  const updateBranch = providerUpdateBranchParams(prFlow);
+  if (updateBranch) {
+    addBlocker(
+      blockers,
+      "provider_pr_update_branch_required",
+      "current hosted checks are failing on an exact aligned GitHub PR head that is behind its base; update the provider branch through the exact authority-bound recovery operation before semantic rework",
+    );
+    return;
+  }
   if (prFlow?.pr.state !== "OPEN") return;
   const localHeadSha = prFlow.branch.headSha;
   const providerHeadSha = prFlow.pr.headSha;
@@ -142,6 +153,61 @@ function addHostedCheckFailureReworkBlocker(
     "implementation_rework_required",
     "current hosted checks are failing; return the task to CODER implementation rework before PR publication or integration",
   );
+}
+
+const GIT_OBJECT_ID = /^[0-9a-f]{40,64}$/u;
+
+export function providerUpdateBranchParams(
+  prFlow: PrFlowStatusReport | null,
+): WorkflowOperationParams["provider.pr.update_branch"] | null {
+  if (
+    prFlow?.pr.state !== "OPEN" ||
+    prFlow.pr.provider !== "github" ||
+    prFlow.pr.source !== "lookup" ||
+    prFlow.pr.prNumber === null ||
+    !prFlow.branch.name ||
+    !prFlow.branch.headSha ||
+    !prFlow.pr.base ||
+    prFlow.providerObservation?.state !== "found" ||
+    prFlow.publication?.state !== "aligned" ||
+    !prFlow.hostedChecks.checked ||
+    prFlow.hostedChecks.failing <= 0
+  ) {
+    return null;
+  }
+  const observed = prFlow.providerObservation.pr;
+  const localHead = prFlow.branch.headSha;
+  const baseSha = observed.baseSha ?? "";
+  const mergeability = observed.mergeability;
+  if (
+    observed.provider !== "github" ||
+    observed.identity.provider !== "github" ||
+    observed.status !== "OPEN" ||
+    observed.prNumber !== prFlow.pr.prNumber ||
+    observed.headRef !== prFlow.branch.name ||
+    observed.headSha !== localHead ||
+    observed.base !== prFlow.pr.base ||
+    !GIT_OBJECT_ID.test(baseSha) ||
+    !hasCoherentGithubPrMergeability(mergeability) ||
+    mergeability?.state !== "not_conflicting" ||
+    mergeability.mergeable !== true ||
+    mergeability.providerState?.trim().toLowerCase() !== "behind" ||
+    prFlow.pr.headSha !== localHead ||
+    prFlow.publication.localHeadSha !== localHead ||
+    prFlow.publication.upstreamHeadSha !== localHead ||
+    prFlow.publication.hostedHeadSha !== localHead
+  ) {
+    return null;
+  }
+  return {
+    taskId: prFlow.task.id,
+    identity: observed.identity,
+    prNumber: observed.prNumber,
+    branch: prFlow.branch.name,
+    baseBranch: observed.base,
+    expectedHeadSha: localHead,
+    expectedBaseSha: baseSha,
+  };
 }
 
 async function isPrMetaOnlyTaskLocalAdvance(opts: {

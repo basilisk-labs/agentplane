@@ -11,6 +11,7 @@ import {
 import { resolvePrFlowStatus } from "../pr/flow-status.js";
 import { cmdPrOpen } from "../pr/open.js";
 import { cmdPrUpdate } from "../pr/update.js";
+import { updateProviderBranch } from "../pr/provider-update-branch.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { workflowAuthorityStateScopeDigest } from "../shared/side-effect-authority.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
@@ -174,6 +175,38 @@ export async function executeBranchWorkflowOperation(opts: {
         operation,
         `observed provider PR state for ${operation.params.taskId}`,
         exitCode,
+      );
+    }
+    case "provider.pr.update_branch": {
+      const result = await updateProviderBranch({
+        gitRoot: command.resolvedProject.gitRoot,
+        identity: operation.params.identity,
+        prNumber: operation.params.prNumber,
+        branch: operation.params.branch,
+        baseBranch: operation.params.baseBranch,
+        expectedHeadSha: operation.params.expectedHeadSha,
+        expectedBaseSha: operation.params.expectedBaseSha,
+      });
+      if (result.state === "updated") {
+        return succeeded(
+          operation,
+          `provider PR #${operation.params.prNumber} update-branch ${result.effect}; ` +
+            `readback proved ${result.evidence.observedHeadSha} contains the exact expected head and base`,
+        );
+      }
+      if (result.state === "not_applied") {
+        return succeeded(
+          operation,
+          `provider update-branch stopped before a proven effect (${result.reason}: ${result.detail}); ` +
+            "a retry requires a distinct fresh supervisor operation",
+          1,
+        );
+      }
+      return succeeded(
+        operation,
+        `provider update-branch is effect-in-doubt (${result.reason}: ${result.detail}); ` +
+          "reconcile fresh provider ancestry before any replacement and do not repeat the effect blindly",
+        1,
       );
     }
     case "flow.repair.foreign_task_readme": {

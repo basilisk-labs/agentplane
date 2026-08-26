@@ -216,6 +216,7 @@ describe("configured repository authority", () => {
     });
 
     expect(isOperationAuthorizedByExecutionGrant(grant, "pr.open")).toBe(true);
+    expect(isOperationAuthorizedByExecutionGrant(grant, "provider.pr.update_branch")).toBe(true);
     expect(isOperationAuthorizedByExecutionGrant(grant, "integration.enqueue")).toBe(true);
     expect(isOperationAuthorizedByExecutionGrant(grant, "task.scope.extend")).toBe(true);
   });

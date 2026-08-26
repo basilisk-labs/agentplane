@@ -10,6 +10,7 @@ import {
 import { supersededProviderConflictStep } from "./workflow-step-provider-conflict-superseded.js";
 import { needsQualityEvidenceRefresh } from "./workflow-step-quality.js";
 import { integrationQueueStep } from "./workflow-step-integration-queue.js";
+import { providerUpdateBranchParams } from "./route-decision-blockers.js";
 import {
   approvalStep,
   branchImplementationStep,
@@ -29,6 +30,23 @@ import {
   workSlug,
   worktreeResolutionStep,
 } from "./workflow-step-factory.js";
+
+function providerUpdateBranchStep(state: WorkflowRouteState): WorkflowStep | null {
+  if (!state.blockers.some((blocker) => blocker.code === "provider_pr_update_branch_required")) {
+    return null;
+  }
+  const params = providerUpdateBranchParams(state.prFlow);
+  if (params?.taskId !== state.task.id) return null;
+  return cliOperationStep({
+    state,
+    operationId: "provider.pr.update_branch",
+    params,
+    code: "update_provider_pr_branch",
+    summary:
+      "update the exact behind provider PR head from its observed base before classifying hosted failures as semantic rework",
+    selectedBlocker: routeBlockerFor(state, "provider_pr_update_branch_required"),
+  });
+}
 
 function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
   return terminalStep({
@@ -178,6 +196,8 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
   }
   const conflictStep = conflictReworkRouteStep(state);
   if (conflictStep) return conflictStep;
+  const updateBranchStep = providerUpdateBranchStep(state);
+  if (updateBranchStep) return updateBranchStep;
   if (state.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
     return implementationReworkStep(state);
   }
@@ -432,6 +452,8 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   }
   const conflictStep = conflictReworkRouteStep(state);
   if (conflictStep) return conflictStep;
+  const updateBranchStep = providerUpdateBranchStep(state);
+  if (updateBranchStep) return updateBranchStep;
   if (
     state.taskWorktree?.state === "not_present" &&
     state.blockers.some((blocker) => blocker.code === "pr_meta_stale")
