@@ -6,14 +6,14 @@ Created: 2026-08-26T13:12:22.036Z
 
 - Task: `202608261249-BXQZ97`
 - Title: Add a digest-bound provider update-branch recovery transition for stale hosted PR heads
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608261249-BXQZ97/add-provider-update-branch-recovery`
 - Canonical task record: `.agentplane/tasks/202608261249-BXQZ97/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: blocked_external
+- Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/pr
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -45,13 +45,13 @@ Created: 2026-08-26T13:12:22.036Z
  .../src/commands/shared/workflow-postconditions.ts |   6 +
  .../src/commands/shared/workflow-step-branch.ts    |   9 +-
  ...rkflow-step-projections.conflict-rework.test.ts | 112 +++++++
- .../workflow-step-provider-update-branch-spec.ts   |  21 ++
+ .../workflow-step-provider-update-branch-spec.ts   |  22 ++
  .../shared/workflow-step-provider-update-branch.ts |  20 ++
  .../src/commands/shared/workflow-step.ts           |   6 +
  .../task/branch-task-supervisor-operations.test.ts | 107 ++++++
  .../task/branch-task-supervisor-operations.ts      |  33 ++
  .../src/commands/task/configured-authority.test.ts |   1 +
- 22 files changed, 1165 insertions(+), 5 deletions(-)
+ 22 files changed, 1166 insertions(+), 5 deletions(-)
 ```
 
 </details>
