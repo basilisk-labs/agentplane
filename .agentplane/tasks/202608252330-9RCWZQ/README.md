@@ -2,10 +2,10 @@
 id: "202608252330-9RCWZQ"
 title: "Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 48
+revision: 51
 origin:
   system: "manual"
 depends_on: []
@@ -268,7 +268,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "1c53295ba0a1d77eb1d4adc93b8c1776dbad1a08"
+  hash: "0db1d23aa83bc72acdf22080f0c4843af16da93d"
   message: "🚧 9RCWZQ task: apply external agent result"
 comments:
   -
@@ -337,6 +337,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 1c53295ba0a1. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 0db1d23aa83b. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -530,8 +533,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-26T07:07:44.063Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 0db1d23aa83b. CLI accepted one state-bound external-agent semantic result."
+    commit: "0db1d23aa83bc72acdf22080f0c4843af16da93d"
 doc_version: 3
-doc_updated_at: "2026-08-26T07:03:56.502Z"
+doc_updated_at: "2026-08-26T07:07:44.087Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:
@@ -1144,12 +1155,12 @@ extensions:
 
         Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA.
       task_id: "202608252330-9RCWZQ"
-    lifecycle: "ACTIVE"
+    lifecycle: "PLANNING"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 51
     schema_version: 1
-    updated_at: "2026-08-26T01:59:47.289Z"
+    updated_at: "2026-08-26T07:09:13.717Z"
     work_items:
       WI-1:
         attempt: 0
@@ -1169,8 +1180,42 @@ extensions:
         revision: 1
         state: "PLANNED"
         validation_result: null
+  agentplane.task_centric_replan_required:
+    reason_code: "dependencies_changed"
+    schema_version: 1
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      plan-refinement:work-order-202608252330-9RCWZQ-executor-b4dfcf505df05aedb2551b93:
+        aggregate_digest: "sha256:ecba6f31315a6ae2934916df767c7a1c7ecc638aaa87354275fd33b226dde3dc"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-08-26T07:09:13.717Z"
+          cause_refs:
+            - "dependencies_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_86c3845e3afa6ff8d91df595"
+          mutation_id: "plan-refinement:work-order-202608252330-9RCWZQ-executor-b4dfcf505df05aedb2551b93"
+          plan_digest: "sha256:97480e98175921cd396d8c977c65df4147565eb66a61a8473993fe61605bcc0f"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608252330-9RCWZQ"
+          task_revision: 50
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202608252330-9RCWZQ-executor-b4dfcf505df05aedb2551b93"
+        next_revision: 51
+        previous_revision: 50
+        schema_version: 1
+        task_id: "202608252330-9RCWZQ"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
   implementation_commit:
-    hash: "1c53295ba0a1d77eb1d4adc93b8c1776dbad1a08"
+    hash: "0db1d23aa83bc72acdf22080f0c4843af16da93d"
   task_execution_context:
     base_ref: "main"
     base_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
