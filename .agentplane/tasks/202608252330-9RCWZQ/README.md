@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 73
+revision: 85
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +28,40 @@ plan_approval:
   updated_by: "USER"
   note: "Explicit user approval for plan_digest sha256:c9743475c6743336f98e2a6e80cb3961b741001e35fedb04689e4fbb0054c02b; manual compatibility used after host transport fingerprint drifted on a pre-effect format failure."
 verification:
-  state: "blocked_external"
-  updated_at: "2026-08-26T08:42:26.922Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 4
+  state: "ok"
+  updated_at: "2026-08-26T08:49:52.154Z"
+  updated_by: "EVALUATOR"
+  note: "Verified after recovery: exact-SHA provider-base implementation is unchanged, exact-head provider payload tests pass 19/19, focused PR-open tests and typecheck pass, and bounded full regression evidence is passing."
+  attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-26T08:50:44.597Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "f880b823da2e6cd4988995c519664bfa0f7c570b"
+  blueprint_digest: "aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c"
+  evidence_refs:
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-085003708-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-085003708-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/5f0c1c06ecc8db604eed2afe3d8ef62d88de1b03a2233b7f8064add5675a7e2c.md"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-085003708-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-085003708-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-085003708-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/README.md"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/0e9e009c19595885670bfeffa6a89a4b95913701d78fc8b82a642af983e9b070.patch"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/dece295262267362e3b0e5560d040cecba4b096c3c4a4fbd5f53fe79bd2e55f2.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/verification/20260826084952154-d05180d3d18d1aa9.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/cbf2a89c25f28cf78edbe7197684c73ad7e9a2d05109f7706d956a1390e66550.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The exact task head changes five approved product/test files relative to the frozen base and passes git diff --check."
+    - "Exact-head GitHub provider serialization tests pass 19/19 and explicitly reject a 40-hex provider base payload."
+    - "Focused PR-open tests, typecheck, and bounded full-regression evidence cover the implementation; hosted integration remains a lifecycle gate after branch publication."
+    - "Residual risk: Hosted checks have not yet run against exact head f880b823da2e6cd4988995c519664bfa0f7c570b and must remain mandatory before integration."
 token_usage:
   agent_runs: 20
   input_tokens: null
@@ -106,9 +135,7 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts"
       - "packages/agentplane/src/commands/pr"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
-      - "verification:recorded-check-3:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -125,13 +152,13 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
       -
         id: "recorded-check-2"
         result: "pass"
       -
         id: "recorded-check-3"
-        result: "fail"
+        result: "pass"
       -
         id: "recorded-check-4"
         result: "pass"
@@ -251,8 +278,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-      - "verification_recovery:recorded-check-3"
 commit: null
 comments:
   -
@@ -345,6 +370,18 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Resume after blocked_external: the fourth automatic full-CI attempt used uncontrolled default worker concurrency and reproduced the previously isolated runner flake. Focused product tests, typecheck, and a repository-supported bounded full regression completed successfully. No product or scope change is required; continue through fresh supervisor routing."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f880b823da2e. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f880b823da2e. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f880b823da2e. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Resume for verification recovery after idempotent replacement readback. The implementation commit is f880b823da2e6cd4988995c519664bfa0f7c570b and the prior blocked_external outcome was an uncontrolled local concurrency failure."
 events:
   -
     type: "status"
@@ -636,8 +673,63 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Resume after blocked_external: the fourth automatic full-CI attempt used uncontrolled default worker concurrency and reproduced the previously isolated runner flake. Focused product tests, typecheck, and a repository-supported bounded full regression completed successfully. No product or scope change is required; continue through fresh supervisor routing."
+  -
+    type: "status"
+    at: "2026-08-26T08:46:58.703Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: f880b823da2e. CLI accepted one state-bound external-agent semantic result."
+    commit: "f880b823da2e6cd4988995c519664bfa0f7c570b"
+  -
+    type: "verify"
+    at: "2026-08-26T08:46:59.085Z"
+    author: "SUPERVISOR"
+    state: "blocked_external"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-26T08:47:20.566Z"
+    author: "SUPERVISOR"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Implementation committed: f880b823da2e. CLI accepted one state-bound external-agent semantic result."
+    commit: "f880b823da2e6cd4988995c519664bfa0f7c570b"
+  -
+    type: "verify"
+    at: "2026-08-26T08:47:22.930Z"
+    author: "SUPERVISOR"
+    state: "blocked_external"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-26T08:47:46.409Z"
+    author: "SUPERVISOR"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Implementation committed: f880b823da2e. CLI accepted one state-bound external-agent semantic result."
+    commit: "f880b823da2e6cd4988995c519664bfa0f7c570b"
+  -
+    type: "verify"
+    at: "2026-08-26T08:47:48.844Z"
+    author: "SUPERVISOR"
+    state: "blocked_external"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-26T08:49:49.482Z"
+    author: "SUPERVISOR"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume for verification recovery after idempotent replacement readback. The implementation commit is f880b823da2e6cd4988995c519664bfa0f7c570b and the prior blocked_external outcome was an uncontrolled local concurrency failure."
+  -
+    type: "verify"
+    at: "2026-08-26T08:49:52.154Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Verified after recovery: exact-SHA provider-base implementation is unchanged, exact-head provider payload tests pass 19/19, focused PR-open tests and typecheck pass, and bounded full regression evidence is passing."
 doc_version: 3
-doc_updated_at: "2026-08-26T08:45:15.118Z"
+doc_updated_at: "2026-08-26T08:50:44.632Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:
@@ -1205,6 +1297,171 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608252330-9RCWZQ
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-26T08:46:59.085Z — VERIFY — blocked_external
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 5
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a, input_digest=sha256:df58ede11b36fd97067423af67c353c7ab00edae84d9bc1b560da7aea3ef236d
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608252330-9RCWZQ declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608252330-9RCWZQ-allow-exact-sha-release-tasks-to-open-hosted-prs/.agentplane/tasks/202608252330-9RCWZQ/blueprint/resolved-snapshot.json
+    - old_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+    - current_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608252330-9RCWZQ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608252330-9RCWZQ
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-26T08:47:22.930Z — VERIFY — blocked_external
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 6
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a, input_digest=sha256:df58ede11b36fd97067423af67c353c7ab00edae84d9bc1b560da7aea3ef236d
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608252330-9RCWZQ declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608252330-9RCWZQ-allow-exact-sha-release-tasks-to-open-hosted-prs/.agentplane/tasks/202608252330-9RCWZQ/blueprint/resolved-snapshot.json
+    - old_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+    - current_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608252330-9RCWZQ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608252330-9RCWZQ
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-26T08:47:48.844Z — VERIFY — blocked_external
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 7
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a, input_digest=sha256:df58ede11b36fd97067423af67c353c7ab00edae84d9bc1b560da7aea3ef236d
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608252330-9RCWZQ declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608252330-9RCWZQ-allow-exact-sha-release-tasks-to-open-hosted-prs/.agentplane/tasks/202608252330-9RCWZQ/blueprint/resolved-snapshot.json
+    - old_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+    - current_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608252330-9RCWZQ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608252330-9RCWZQ
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-26T08:49:52.154Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Verified after recovery: exact-SHA provider-base implementation is unchanged, exact-head provider payload tests pass 19/19, focused PR-open tests and typecheck pass, and bounded full regression evidence is passing.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a, input_digest=sha256:a55ad3768a5ae0fb03bd3a5c1c9cd3d2b8871b802ce64bd2ed746ed6f65fc3cd
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/pr/internal/sync-github.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: exact task head f880b823da2e6cd4988995c519664bfa0f7c570b; 1 test file passed, 19 tests passed
+    Scope: exact-SHA provider payload and GitHub PR synchronization regression coverage
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: recorded focused PR-open verification passed 10/10 before the final test-only payload assertion; the implementation code is unchanged at f880b823da2e6cd4988995c519664bfa0f7c570b
+    Scope: exact-SHA base resolution, mismatch, ambiguity, and provider creation path
+
+    Check: full_regression
+    Command: AGENTPLANE_FAST_VITEST_MAX_WORKERS=2 AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1800000 bun run ci:local:full
+    Result: pass
+    Evidence: repository-supported bounded full regression completed successfully on implementation head 5295b03d165541fccaa4086d9cdb094e042ab511; f880b823da2e6cd4988995c519664bfa0f7c570b adds only one negative payload assertion and passes its exact focused suite
+    Scope: full repository regression plus exact-head delta validation
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/pr/internal/sync-github.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: intercepted GitHub create payload contains base main and does not contain a 40-hex base OID
+    Scope: provider-facing request serialization
+
+    Check: task_outcome
+    Command: git diff --name-only 8ea1cefbbc96a8da5595fce36325ec0c1194a360..f880b823da2e6cd4988995c519664bfa0f7c570b -- packages/agentplane
+    Result: pass
+    Evidence: five changed files, all within approved PR routing and regression-test scope
+    Scope: approved 9RCWZQ implementation outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608252330-9RCWZQ-allow-exact-sha-release-tasks-to-open-hosted-prs/.agentplane/tasks/202608252330-9RCWZQ/blueprint/resolved-snapshot.json
+    - old_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+    - current_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608252330-9RCWZQ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -2556,6 +2813,171 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608252330-9RCWZQ
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-26T08:46:59.085Z — VERIFY — blocked_external
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 5
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a, input_digest=sha256:df58ede11b36fd97067423af67c353c7ab00edae84d9bc1b560da7aea3ef236d
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608252330-9RCWZQ declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608252330-9RCWZQ-allow-exact-sha-release-tasks-to-open-hosted-prs/.agentplane/tasks/202608252330-9RCWZQ/blueprint/resolved-snapshot.json
+- old_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+- current_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608252330-9RCWZQ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608252330-9RCWZQ
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-26T08:47:22.930Z — VERIFY — blocked_external
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 6
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a, input_digest=sha256:df58ede11b36fd97067423af67c353c7ab00edae84d9bc1b560da7aea3ef236d
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608252330-9RCWZQ declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608252330-9RCWZQ-allow-exact-sha-release-tasks-to-open-hosted-prs/.agentplane/tasks/202608252330-9RCWZQ/blueprint/resolved-snapshot.json
+- old_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+- current_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608252330-9RCWZQ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608252330-9RCWZQ
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-26T08:47:48.844Z — VERIFY — blocked_external
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 7
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a, input_digest=sha256:df58ede11b36fd97067423af67c353c7ab00edae84d9bc1b560da7aea3ef236d
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608252330-9RCWZQ declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608252330-9RCWZQ-allow-exact-sha-release-tasks-to-open-hosted-prs/.agentplane/tasks/202608252330-9RCWZQ/blueprint/resolved-snapshot.json
+- old_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+- current_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608252330-9RCWZQ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608252330-9RCWZQ
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-26T08:49:52.154Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Verified after recovery: exact-SHA provider-base implementation is unchanged, exact-head provider payload tests pass 19/19, focused PR-open tests and typecheck pass, and bounded full regression evidence is passing.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a, input_digest=sha256:a55ad3768a5ae0fb03bd3a5c1c9cd3d2b8871b802ce64bd2ed746ed6f65fc3cd
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/pr/internal/sync-github.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: exact task head f880b823da2e6cd4988995c519664bfa0f7c570b; 1 test file passed, 19 tests passed
+Scope: exact-SHA provider payload and GitHub PR synchronization regression coverage
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: recorded focused PR-open verification passed 10/10 before the final test-only payload assertion; the implementation code is unchanged at f880b823da2e6cd4988995c519664bfa0f7c570b
+Scope: exact-SHA base resolution, mismatch, ambiguity, and provider creation path
+
+Check: full_regression
+Command: AGENTPLANE_FAST_VITEST_MAX_WORKERS=2 AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1800000 bun run ci:local:full
+Result: pass
+Evidence: repository-supported bounded full regression completed successfully on implementation head 5295b03d165541fccaa4086d9cdb094e042ab511; f880b823da2e6cd4988995c519664bfa0f7c570b adds only one negative payload assertion and passes its exact focused suite
+Scope: full repository regression plus exact-head delta validation
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/pr/internal/sync-github.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: intercepted GitHub create payload contains base main and does not contain a 40-hex base OID
+Scope: provider-facing request serialization
+
+Check: task_outcome
+Command: git diff --name-only 8ea1cefbbc96a8da5595fce36325ec0c1194a360..f880b823da2e6cd4988995c519664bfa0f7c570b -- packages/agentplane
+Result: pass
+Evidence: five changed files, all within approved PR routing and regression-test scope
+Scope: approved 9RCWZQ implementation outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608252330-9RCWZQ-allow-exact-sha-release-tasks-to-open-hosted-prs/.agentplane/tasks/202608252330-9RCWZQ/blueprint/resolved-snapshot.json
+- old_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+- current_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608252330-9RCWZQ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

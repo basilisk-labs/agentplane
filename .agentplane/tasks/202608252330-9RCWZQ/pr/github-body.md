@@ -15,8 +15,14 @@ Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes t
 
 ## Verification
 
-- State: blocked_external
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: ok
+- Note:
+
+```text
+Verified after recovery: exact-SHA provider-base implementation is unchanged, exact-head provider
+payload tests pass 19/19, focused PR-open tests and typecheck pass, and bounded full regression
+evidence is passing.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
