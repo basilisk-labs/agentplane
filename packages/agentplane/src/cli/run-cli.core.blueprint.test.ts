@@ -14,7 +14,7 @@ const execFileAsync = promisify(execFile);
 
 async function mkProject(): Promise<string> {
   const root = await mkTempDir();
-  await mkdir(path.join(root, ".git"));
+  await execFileAsync("git", ["init", "--quiet"], { cwd: root });
   await mkdir(path.join(root, ".agentplane"), { recursive: true });
   await writeFile(
     path.join(root, ".agentplane", "config.json"),
