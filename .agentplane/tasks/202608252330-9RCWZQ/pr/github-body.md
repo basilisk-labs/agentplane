@@ -27,10 +27,11 @@ Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes t
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../cli/run-cli.core.pr-flow.pr-open.git.test.ts   | 129 +++++++++++++++++++++
- .../src/commands/pr/internal/provider-base.ts      |  78 +++++++++++++
+ .../cli/run-cli.core.pr-flow.pr-open.git.test.ts   | 165 ++++++++++++++++++---
+ .../run-cli.core.pr-flow.pr-open.network.test.ts   |  52 ++++++-
+ .../src/commands/pr/internal/provider-base.ts      |  78 ++++++++++
  .../agentplane/src/commands/pr/internal/sync.ts    |  18 ++-
- 3 files changed, 223 insertions(+), 2 deletions(-)
+ 4 files changed, 289 insertions(+), 24 deletions(-)
 ```
 
 </details>

@@ -59,6 +59,15 @@ import {
 } from "@agentplane/testkit/cli-core-pr-flow";
 import { resolveProviderBaseBranch } from "../commands/pr/internal/provider-base.js";
 
+async function seedCommittedMain(root: string): Promise<void> {
+  await configureGitUser(root);
+  const execFileAsync = promisify(execFile);
+  await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore base seed"], {
+    cwd: root,
+    env: cleanGitEnv(),
+  });
+}
+
 describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
   it(
     "pr open leaves committed PR artifacts unchanged when task branch publish fails",
@@ -67,7 +76,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
       await writeConfig(root, config);
-      await configureGitUser(root);
+      await seedCommittedMain(root);
       const execFileAsync = promisify(execFile);
       await execFileAsync(
         "git",
@@ -337,13 +346,13 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
-    await configureGitUser(root);
+    await seedCommittedMain(root);
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
       cwd: root,
       env: cleanGitEnv(),
     });
-    await configurePushableOrigin(root);
+    const publishRemotePath = await configurePushableOrigin(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     let taskId = "";
@@ -377,25 +386,12 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
       cwd: root,
       env: cleanGitEnv(),
     });
-    const publishRemotePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-pr-open-publish-"));
-    await execFileAsync("git", ["init", "--bare", publishRemotePath], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
-    await execFileAsync("git", ["remote", "add", "publish", publishRemotePath], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
-    await execFileAsync("git", ["push", "-u", "publish", `HEAD:refs/heads/${branch}`], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
     const packetCommitSubject = `🧩 ${extractTaskSuffix(taskId)} task: refresh task artifacts after commit`;
     const { fakeBin, logPath } = await installFakeGhPrApiRequiringPublishedPacketHead({
       scenarioName: "open-first-pass-final-head",
       branch,
       packetCommitSubject,
-      publishRemote: "publish",
+      publishRemote: publishRemotePath,
     });
     const originalPath = process.env.PATH;
     process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
@@ -451,7 +447,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
-    await configureGitUser(root);
+    await seedCommittedMain(root);
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
       cwd: root,
@@ -564,7 +560,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
-    await configureGitUser(root);
+    await seedCommittedMain(root);
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
       cwd: root,
@@ -691,7 +687,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
       await writeConfig(root, config);
-      await configureGitUser(root);
+      await seedCommittedMain(root);
       const execFileAsync = promisify(execFile);
       await execFileAsync(
         "git",

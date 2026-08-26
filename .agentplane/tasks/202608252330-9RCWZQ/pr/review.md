@@ -6,7 +6,7 @@ Created: 2026-08-26T02:00:01.912Z
 
 - Task: `202608252330-9RCWZQ`
 - Title: Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608252330-9RCWZQ/allow-exact-sha-release-tasks-to-open-hosted-prs`
 - Canonical task record: `.agentplane/tasks/202608252330-9RCWZQ/README.md`
 
@@ -29,10 +29,11 @@ Created: 2026-08-26T02:00:01.912Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../cli/run-cli.core.pr-flow.pr-open.git.test.ts   | 129 +++++++++++++++++++++
- .../src/commands/pr/internal/provider-base.ts      |  78 +++++++++++++
+ .../cli/run-cli.core.pr-flow.pr-open.git.test.ts   | 165 ++++++++++++++++++---
+ .../run-cli.core.pr-flow.pr-open.network.test.ts   |  52 ++++++-
+ .../src/commands/pr/internal/provider-base.ts      |  78 ++++++++++
  .../agentplane/src/commands/pr/internal/sync.ts    |  18 ++-
- 3 files changed, 223 insertions(+), 2 deletions(-)
+ 4 files changed, 289 insertions(+), 24 deletions(-)
 ```
 
 </details>
