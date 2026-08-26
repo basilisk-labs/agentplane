@@ -16,6 +16,8 @@ const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
 const PACKAGES = ["core", "recipes", "agentplane"];
 
+export const PACKAGED_MIXED_SCOPE_FULL_REGRESSION_COMMAND = "node --test test/greeting.test.mjs";
+
 export const PACKAGED_MIXED_SCOPE_REQUIRED_PATHS = [
   ".gitignore",
   "docs/guide.md",
@@ -341,8 +343,19 @@ function mixedScopeTaskPlanProposal(taskId, planningBaseline) {
   };
 }
 
-function packetExchange(packet, expectedRole) {
+export function packetExchange(packet, expectedRole, observedTask = null) {
   if (packet.action?.kind !== "agent_episode" || packet.authority?.role !== expectedRole) {
+    if (
+      expectedRole === "EVALUATOR" &&
+      packet.action?.kind === "agent_episode" &&
+      packet.authority?.role === "EXECUTOR" &&
+      observedTask?.verification?.state === "needs_rework"
+    ) {
+      fail(
+        "verification_rework",
+        "deterministic verification returned needs_rework before the evaluator episode",
+      );
+    }
     fail(
       `missing_${expectedRole.toLowerCase()}_episode`,
       `expected ${expectedRole} agent episode, received ${packet.action?.kind ?? "unknown"}/${packet.authority?.role ?? "unknown"}`,
@@ -558,7 +571,16 @@ function buildFixture(run, repo, accessLog) {
   writeTracked(
     accessLog,
     path.join(repo, "package.json"),
-    `${JSON.stringify({ name: "agentplane-mixed-scope-fixture", private: true, type: "module" }, null, 2)}\n`,
+    `${JSON.stringify(
+      {
+        name: "agentplane-mixed-scope-fixture",
+        private: true,
+        type: "module",
+        scripts: { "ci:local:full": PACKAGED_MIXED_SCOPE_FULL_REGRESSION_COMMAND },
+      },
+      null,
+      2,
+    )}\n`,
     "fixture_seed",
   );
   writeTracked(
@@ -822,7 +844,11 @@ function runFixture({ run, cli, packages, tempRoot }) {
     executorExchange.resume_argv,
     "executor result acceptance",
   );
-  packetExchange(evaluator, "EVALUATOR");
+  const postVerificationTask =
+    evaluator.action?.kind === "agent_episode" && evaluator.authority?.role === "EVALUATOR"
+      ? null
+      : runInstalledJson(run, cli, repo, ["task", "show", taskId], "post-verification task show");
+  packetExchange(evaluator, "EVALUATOR", postVerificationTask);
 
   const changedPaths = git(run, repo, ["diff", "--name-only", executionBase, "HEAD", "--"])
     .split("\n")
