@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 66
+revision: 67
 origin:
   system: "manual"
 depends_on: []
@@ -39,34 +39,35 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-26T17:21:55.894Z"
+  updated_at: "2026-08-26T18:51:25.874Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "e209e23a8ed60069d0d2f2ffda30e8c1bb8ffa29"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "155dd3da49a3cbd48dbcae15809f654f65ff7b73"
   blueprint_digest: "ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374"
   evidence_refs:
-    - ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-171746402-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-171746402-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/f091e58f8e79aefd3d495f1f01552d4326b86c44e0607e070495425e53edbf2a.md"
-    - ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-171746402-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-171746402-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-171746402-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-184958130-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-184958130-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/ca152961094cc816531a9f9428b59e35044108767b0c5ab2b8697f9d41bd5d6e.md"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-184958130-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-184958130-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-184958130-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608261249-BXQZ97/README.md"
-    - ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/081a872247cd011fcd717d8674c5e8435662c78ef4fc15cb726edadffac91f00.patch"
-    - ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/f3348a06497ca3aad892ff85d6f30139a609de8eb281221d422464223991c706.json"
-    - ".agentplane/tasks/202608261249-BXQZ97/verification/20260826171322652-7e41b1cc15cfed88.json"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/1f02efb4b8bab934d1772f143fb49a62c41af32c0dcc88e6d84d63067eb2476a.patch"
+    - ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/49864fc10ebd312c36e5388075629eb27dd999c9531f6456b52708a9955fb1ce.json"
+    - ".agentplane/tasks/202608261249-BXQZ97/verification/20260826182631556-e4632490ec0e3dab.json"
     - ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/e6c20dad3911e302671884f019d9d82e25ccbc8f44d64823eeebfa77db14c513.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The route selects provider.pr.update_branch only for the approved behind-head recovery case and preserves semantic rework for genuine source failures."
-    - "The provider effect remains bound to exact repository, PR, branch, expected head, and expected base identity, with fail-closed pre-effect drift handling and effect-in-doubt reconciliation."
-    - "The delta after the previous evaluator review only moves PROVIDER_UPDATE_BRANCH_OPERATION_SPEC into a leaf module and updates its import; all operation fields and postconditions remain unchanged."
-    - "Fresh verification for implementation e209e23a8 records 279 PR tests, 324 focused critical-path tests, full ci:local:full, replay/readback coverage, and architecture checks as passing."
-    - "A fresh read-only bun run arch:check completed with exit code 0 and no dependency violations, proving the cycle repair against the current implementation."
-    - "Residual risk: The real GitHub update-branch mutation and provider ancestry readback remain unexecuted in this read-only episode and must pass through the normal digest-bound operation and hosted exact-head gates."
+    - "The prior evaluator PASS established that the route is limited to the approved behind-head recovery case, the provider effect is bound to exact PR/head/base identity, and drift, conflicts, ambiguity, or incomplete readback fail closed."
+    - "The complete product-source delta after verified implementation e209e23a8 is one line: ProviderUpdateBranchEvidence is now module-private while ProviderUpdateBranchResult and all runtime branches remain unchanged."
+    - "The change directly removes the Knip issue reproduced on hosted heads 058d0842e and 5b477b69e; a fresh read-only knip:check reports agentplane CLI files=0/0 and total=0/0."
+    - "TESTER evidence for exact implementation 1b7267416 records the PR suite, route/projection/supervisor suites, one complete ci:local:full pass, effect/readback scenarios, and the task outcome as passing."
+    - "There is no product source or test drift between implementation 1b7267416 and current hosted PR head 155dd3da; intervening commits contain AgentPlane-owned lifecycle and PR artifacts."
+    - "Two later supervisor-only full-CI retries failed in unrelated prompt mocks that pass 16/16 in isolation. This is explicitly classified as aggregate verification infrastructure variance, not evidence against the scoped implementation."
+    - "Residual risk: The newly published exact head 155dd3da must still pass all required hosted checks before integration; the read-only evaluator does not treat local evidence as hosted proof."
 token_usage:
   agent_runs: 18
   input_tokens: null
@@ -704,7 +705,7 @@ events:
     state: "ok"
     note: "Compatibility recovery: exact implementation 1b7267416 passes the task-focused suite, Knip, and one complete local full gate; two later supervisor-only aggregate retries failed in unrelated prompt mocks that pass 16/16 in isolation. Fresh hosted exact-head qualification remains mandatory."
 doc_version: 3
-doc_updated_at: "2026-08-26T18:26:32.643Z"
+doc_updated_at: "2026-08-26T18:51:25.917Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPEN, MERGEABLE, and BEHIND; required verify-real-e2e fails on exact head e19eb173c25eb7c6800643bcb87173c857a042fb because that head excludes the already integrated C6WV4T qualification correction on exact main 79bc13ff33358c49e216901f59c8fbc0a17987d2. All other hosted jobs pass. The failure reproduced on multiple clean published heads. Violated invariant: when required hosted checks fail solely on a provider PR head that is behind its protected base, AgentPlane must offer a digest-bound, effectively-once provider update-branch recovery transition before semantic source rework or integration. Root cause: current route classification maps failed hosted checks directly to implementation_rework_required and exposes no normal AgentPlane operation for GitHub's update-branch effect. Temporary recovery: preserve 9RCWZQ and use an approved bootstrap runtime only for control-plane retirement; do not manually merge, rebase, push, or edit state. Permanent fix: add the smallest provider-neutral route/effect contract with GitHub update-branch execution, exact expected-head/base readback, effect-in-doubt reconciliation, authority digests, and fail-closed behavior for conflicts, head drift, ambiguity, or unsupported providers. Regression tests must prove route selection, pre-effect failure safety, effect reconciliation, and that semantic rework remains selected for genuine source failures. Integrate normally, then use the fresh runtime to refresh PR #4889 and resume 9RCWZQ."
 sections:

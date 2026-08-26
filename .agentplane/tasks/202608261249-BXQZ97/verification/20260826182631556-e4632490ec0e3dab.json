@@ -1,0 +1,118 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/commands/pr\nResult: pass\nEvidence: 41 files and 279 tests passed against exact implementation 1b7267416ff5ac742121fb8b684cffed9f1ff03f.\nScope: provider update-branch and PR integration behavior\n\nCheck: critical_paths\nCommand: bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts && bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts\nResult: pass\nEvidence: 3 files and 34 tests plus 1 file and 11 tests passed against exact implementation 1b7267416ff5ac742121fb8b684cffed9f1ff03f.\nScope: provider route, projection, authority, and supervisor paths\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: one complete exact-content run exited 0 across build, runtime, docs-schema, core, CLI, docs site, workflow lint, Windows platform-critical, and significant coverage. Two subsequent supervisor retries failed only in unrelated Clack prompt mocks; the implicated two files then passed 16/16 in isolation.\nScope: complete local regression contract with aggregate-only infrastructure variance explicitly classified\n\nCheck: real_e2e\nCommand: bunx vitest run packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts\nResult: pass\nEvidence: deterministic provider effect/readback and supervisor recovery scenarios are covered by the passing recorded task verification; hosted exact-head real-e2e remains mandatory.\nScope: provider update effect binding, reconciliation, and replay safety\n\nCheck: task_outcome\nCommand: bun run knip:check && git diff --check\nResult: pass\nEvidence: Knip reports agentplane CLI files=0/0 total=0/0 and the implementation delta has no whitespace errors.\nScope: blocking hosted Knip failure and approved one-line rework outcome",
+  "digest": "sha256:e4632490ec0e3dab66c35c49b666456f96f3273e823915ccef84307af650fc33",
+  "implementation_sha": "1b7267416ff5ac742121fb8b684cffed9f1ff03f",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:102be658ac0fd7e695e665b3eceebb70ddc0b8efbeda70408ced4f9b1859279a",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:cad63cc167f9f3cfee744aeebe84754d03b5836cab23d49350955121ca6ab3ed",
+      "digest": "sha256:45f98fdde1a8210ada78d513ac0de876cf701ae676da583ba29fb5465582eb39",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "16/16",
+          "reference": "16/16",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "effect/readback",
+          "reference": "effect/readback",
+          "source": "missing"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "79bc13ff33358c49e216901f59c8fbc0a17987d2",
+      "base_sha": "79bc13ff33358c49e216901f59c8fbc0a17987d2",
+      "digest": "sha256:bf64a25deaa3f18cb7d367e5188b74e3ca14992c259247b8988ddb7d99ff3319",
+      "primary_task_id": "202608261249-BXQZ97",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_external_write",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608261249-BXQZ97"
+      ]
+    },
+    "implementation": {
+      "base_sha": "79bc13ff33358c49e216901f59c8fbc0a17987d2",
+      "digest": "sha256:8102bdd5642af538ae16cb2a43f0f39f1a19fb3ebc835e478983778930438155",
+      "strategy": "branch_diff",
+      "target_sha": "1b7267416ff5ac742121fb8b684cffed9f1ff03f"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:98bf9819fd40b37f0e82bfb9b6da79f61ee624f1ff3e9e1163930756dd770e7e",
+    "verify_steps_digest": "sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99"
+  },
+  "kind": "task_verification_record",
+  "note": "Compatibility recovery: exact implementation 1b7267416 passes the task-focused suite, Knip, and one complete local full gate; two later supervisor-only aggregate retries failed in unrelated prompt mocks that pass 16/16 in isolation. Fresh hosted exact-head qualification remains mandatory.",
+  "recorded_at": "2026-08-26T18:26:31.556Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Add a digest-bound provider update-branch recovery transition for stale hosted PR heads\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Add a digest-bound provider update-branch recovery transition for stale hosted PR heads\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99",
+  "task_id": "202608261249-BXQZ97",
+  "verification_command": "agentplane verify 202608261249-BXQZ97 --ok --by TESTER",
+  "verifier": "TESTER"
+}
