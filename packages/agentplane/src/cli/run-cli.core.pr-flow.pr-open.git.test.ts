@@ -882,7 +882,7 @@ describe("exact-SHA provider base resolution", { timeout: PR_FLOW_INTEGRATION_TI
         cwd: root,
         workflowMode: "branch_pr",
         baseRef: "main",
-        baseSha,
+        baseSha: "b".repeat(40),
       }),
     ).resolves.toBe("main");
 
