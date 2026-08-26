@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -36,21 +36,21 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-26T05:59:26.269Z"
+  updated_at: "2026-08-26T06:05:52.168Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "d550c92fea173fd232be56f7263b298f086a4f7f"
+  evaluated_sha: "93b98c574a28bdc90d00f98e5fbf0792eb613c6d"
   blueprint_digest: "aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c"
   evidence_refs:
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-055740319-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-055740319-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/946654e6c95d9af0c2b56af477487eb9d0e30950c4d14305ad5ef73894bc334c.md"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-055740319-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-055740319-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-055740319-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-060414373-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-060414373-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/9030f6db3ac22b8e375c240eab2a4920201b30cfd445e59db7efa82c94e33859.md"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-060414373-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-060414373-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-060414373-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608252330-9RCWZQ/README.md"
     - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/70744792c7fe045d23e9b810884c837707ab88de1f7342676904940140da6a62.patch"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/f3ea1d8a3475ca7a8c1074e4fe70c59aa2e065a5d4a95e34bb5cd9b4e630d2c5.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/9c66274d02c228f7332938b2f706cb90df485bf39456f592a01aea2181d5d961.json"
     - ".agentplane/tasks/202608252330-9RCWZQ/verification/20260826024303650-f2e563fb6d96c67e.json"
     - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/cbf2a89c25f28cf78edbe7197684c73ad7e9a2d05109f7706d956a1390e66550.json"
     - ".agentplane/policy/dod.code.md"
@@ -58,11 +58,11 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Ordinary non-OID provider base refs pass through unchanged."
-    - "Exact-SHA refs resolve only when frozen base evidence and local and origin-tracking heads agree on one configured provider branch."
-    - "Missing, mismatched, ambiguous, or divergent base evidence fails before provider PR creation."
-    - "Supervisor-owned full regression passed on implementation commit fed82c864bfdc690c735b5dab3dca2e1201c7203."
-    - "The frozen actual product diff remains sha256:70744792c7fe045d23e9b810884c837707ab88de1f7342676904940140da6a62; later commits contain Task-local evidence only."
+    - "The product diff remains limited to provider-base resolution, central PR sync integration, and focused regression coverage."
+    - "Exact-SHA refs resolve only with concordant frozen, local, and origin-tracking evidence."
+    - "Inconsistent or unavailable base evidence fails before provider PR creation."
+    - "Full regression passed on implementation commit fed82c864bfdc690c735b5dab3dca2e1201c7203."
+    - "The DONE-to-DOING recovery commit changes only the Task projection so canonical WI-1 and WI-2 can receive their already-proven result evidence."
 token_usage:
   agent_runs: 13
   input_tokens: null
@@ -429,7 +429,7 @@ events:
     to: "DOING"
     note: "Recovery: project the already verified implementation through canonical WI-1 and WI-2 so TaskAggregate completion matches the legacy DONE evidence."
 doc_version: 3
-doc_updated_at: "2026-08-26T06:03:04.698Z"
+doc_updated_at: "2026-08-26T06:05:52.182Z"
 doc_updated_by: "CODER"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:
