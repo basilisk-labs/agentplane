@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -284,6 +284,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The remaining dirty README is intended AgentPlane-owned supervisor evidence produced after successful full verification and evaluator processing. No implementation path is dirty and no repository mutation is required from the semantic agent."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The four remaining untracked paths are a single internally consistent AgentPlane-generated evaluator evidence packet for the current Task and evaluated head. No product, test, policy, CI, release, or provider artifact path is dirty, so no semantic implementation mutation is required."
 events:
   -
     type: "status"
@@ -347,8 +350,13 @@ events:
     at: "2026-08-26T02:48:47.293Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The remaining dirty README is intended AgentPlane-owned supervisor evidence produced after successful full verification and evaluator processing. No implementation path is dirty and no repository mutation is required from the semantic agent."
+  -
+    type: "comment"
+    at: "2026-08-26T02:55:23.801Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The four remaining untracked paths are a single internally consistent AgentPlane-generated evaluator evidence packet for the current Task and evaluated head. No product, test, policy, CI, release, or provider artifact path is dirty, so no semantic implementation mutation is required."
 doc_version: 3
-doc_updated_at: "2026-08-26T02:48:47.306Z"
+doc_updated_at: "2026-08-26T02:55:23.813Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:
