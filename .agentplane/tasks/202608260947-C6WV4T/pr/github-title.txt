@@ -1,1 +1,1 @@
-🚧 C6WV4T task: Restore packaged mixed-scope lifecycle qualification on the exact release candidate [202608260947-C6WV4T]
+✅ C6WV4T task: Restore packaged mixed-scope lifecycle qualification on the exact release candidate [202608260947-C6WV4T]
