@@ -4,7 +4,7 @@ title: "Add a digest-bound provider update-branch recovery transition for stale 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -30,11 +30,11 @@ plan_approval:
   updated_by: "HOST:slingshot:env_e_6a1ef5a7691083289addb82f53997126:USER"
   note: "host_user_decision=sha256:e918dacceec86ebe3ec6f78d30e4c19e04d779c92c70ea9a3bdf6575b4317d33"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-26T14:03:54.671Z"
+  state: "ok"
+  updated_at: "2026-08-26T14:20:31.076Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -93,13 +93,13 @@ execution_contract:
       - "packages/agentplane/src/commands/shared"
       - "packages/agentplane/src/commands/task"
   observed:
-    authority_violations:
-      - "verification:recorded-check-4:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
       - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
       - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+      - "packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
       - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
       - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
       - "packages/agentplane/src/commands/shared/route-gate-priority.ts"
@@ -113,6 +113,7 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/workflow-postconditions.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
       - "packages/agentplane/src/commands/shared/workflow-step.ts"
       - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
       - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
@@ -158,7 +159,7 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-4"
-        result: "fail"
+        result: "pass"
       -
         id: "recorded-check-5"
         result: "pass"
@@ -214,8 +215,9 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:6c55246ef558944022c7abfe43167a396b03b1717c06e8cc71a5faf196ad7478"
+      digest: "sha256:0b74adfb04b75cc7d666b06c7b87701781e2364f893c5d9ae4b706059b038f49"
       escalation_reasons:
+        - "central_path:packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
         - "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.ts"
         - "central_path:packages/agentplane/src/commands/shared/route-gate-priority.ts"
@@ -229,6 +231,7 @@ execution_contract:
         - "central_path:packages/agentplane/src/commands/shared/workflow-postconditions.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step.ts"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -243,6 +246,7 @@ execution_contract:
         changed_files:
           - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
           - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+          - "packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
           - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
           - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
           - "packages/agentplane/src/commands/shared/route-gate-priority.ts"
@@ -256,6 +260,7 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/workflow-postconditions.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
           - "packages/agentplane/src/commands/shared/workflow-step.ts"
           - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
           - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
@@ -299,8 +304,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-4"
-commit: null
+commit:
+  hash: "bd84e004d5a6695ec8a84291f2b0cf032440790c"
+  message: "🚧 BXQZ97 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -320,6 +326,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: c2138ac88b0d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: bd84e004d5a6. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -391,8 +400,22 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-26T14:10:44.278Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: bd84e004d5a6. CLI accepted one state-bound external-agent semantic result."
+    commit: "bd84e004d5a6695ec8a84291f2b0cf032440790c"
+  -
+    type: "verify"
+    at: "2026-08-26T14:20:31.076Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-26T14:03:58.075Z"
+doc_updated_at: "2026-08-26T14:20:33.864Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPEN, MERGEABLE, and BEHIND; required verify-real-e2e fails on exact head e19eb173c25eb7c6800643bcb87173c857a042fb because that head excludes the already integrated C6WV4T qualification correction on exact main 79bc13ff33358c49e216901f59c8fbc0a17987d2. All other hosted jobs pass. The failure reproduced on multiple clean published heads. Violated invariant: when required hosted checks fail solely on a provider PR head that is behind its protected base, AgentPlane must offer a digest-bound, effectively-once provider update-branch recovery transition before semantic source rework or integration. Root cause: current route classification maps failed hosted checks directly to implementation_rework_required and exposes no normal AgentPlane operation for GitHub's update-branch effect. Temporary recovery: preserve 9RCWZQ and use an approved bootstrap runtime only for control-plane retirement; do not manually merge, rebase, push, or edit state. Permanent fix: add the smallest provider-neutral route/effect contract with GitHub update-branch execution, exact expected-head/base readback, effect-in-doubt reconciliation, authority digests, and fail-closed behavior for conflicts, head drift, ambiguity, or unsupported providers. Regression tests must prove route selection, pre-effect failure safety, effect reconciliation, and that semantic rework remains selected for genuine source failures. Integrate normally, then use the fresh runtime to refresh PR #4889 and resume 9RCWZQ."
 sections:
@@ -644,6 +667,138 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
     Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+    - old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-26T14:20:31.076Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:6d4762233a186e61eff7e40f3a757caf67aa7cbba8ac938f3680f6d602fad147
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/pr
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check affected_unit_integration (1/4)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check affected_unit_integration (2/4)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check affected_unit_integration (3/4)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check affected_unit_integration (4/4)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/pr
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check critical_paths (1/4)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check critical_paths (2/4)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check critical_paths (3/4)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check critical_paths (4/4)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/pr
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check real_e2e (1/4)
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check real_e2e (2/4)
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check real_e2e (3/4)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check real_e2e (4/4)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/pr
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check task_outcome (4/4)
 
     BlueprintSnapshotRef:
     - state: current
@@ -1588,6 +1743,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "bd84e004d5a6695ec8a84291f2b0cf032440790c"
   task_execution_context:
     base_ref: "79bc13ff33358c49e216901f59c8fbc0a17987d2"
     base_sha: "79bc13ff33358c49e216901f59c8fbc0a17987d2"
@@ -1856,6 +2013,138 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
 Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+- old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-26T14:20:31.076Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:6d4762233a186e61eff7e40f3a757caf67aa7cbba8ac938f3680f6d602fad147
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/pr
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check affected_unit_integration (1/4)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check affected_unit_integration (2/4)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check affected_unit_integration (3/4)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check affected_unit_integration (4/4)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/pr
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check critical_paths (1/4)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check critical_paths (2/4)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check critical_paths (3/4)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check critical_paths (4/4)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check full_regression
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/pr
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check real_e2e (1/4)
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check real_e2e (2/4)
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check real_e2e (3/4)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check real_e2e (4/4)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/pr
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check task_outcome (4/4)
 
 BlueprintSnapshotRef:
 - state: current

@@ -15,14 +15,14 @@ Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPE
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-26T13:12:22.036Z
+- Updated: 2026-08-26T15:41:56.311Z
 - Branch: task/202608261249-BXQZ97/add-provider-update-branch-recovery
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
