@@ -4,7 +4,7 @@ title: "Restore packaged mixed-scope lifecycle qualification on the exact releas
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -30,6 +30,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-26T10:55:00.562Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "402e3a4cb939b02a471fba5b28091fdac5560bd0"
+  blueprint_digest: "eeca0f8e62cbecd222eec0659bf8f7b087806f1348178c9fe0d673e4a47b8695"
+  evidence_refs:
+    - ".agentplane/tasks/202608260947-C6WV4T/quality/20260826-105227686-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608260947-C6WV4T/quality/20260826-105227686-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608260947-C6WV4T/quality/objects/sha256/36e8a2a2c1b50ad817232abbdf1c90c83549c46da46de70003fc3d19c5b09703.md"
+    - ".agentplane/tasks/202608260947-C6WV4T/quality/20260826-105227686-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608260947-C6WV4T/quality/20260826-105227686-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608260947-C6WV4T/quality/20260826-105227686-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608260947-C6WV4T/README.md"
+    - ".agentplane/tasks/202608260947-C6WV4T/quality/objects/sha256/ed5ff1bc96ab14843609d69b953efe9aa1d3a4216026cfbf5f6e2c2c67562c10.patch"
+    - ".agentplane/tasks/202608260947-C6WV4T/quality/objects/sha256/28aeeca59baccc008fa96c5a1bba3e1c91e889eb8923ebefbcb1b317c408ece3.json"
+    - ".agentplane/tasks/202608260947-C6WV4T/verification/20260826104850237-742d0ef8d9576f58.json"
+    - ".agentplane/tasks/202608260947-C6WV4T/quality/objects/sha256/a39e66da8555d830d71298b5c64fbb5d3f50103573bc66640d89a196ba0621f8.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The fixture declares ci:local:full as its deterministic Node test, satisfying the full_regression capability required by the selected blueprint."
+    - "The evaluator handoff path still requires a real EVALUATOR episode; only an EXECUTOR packet paired with verification.state=needs_rework is classified as verification_rework."
+    - "Regression coverage proves a valid EVALUATOR exchange, explicit verification rework, and the fail-closed missing_evaluator_episode case for a pending verification state."
+    - "Supervisor-owned verification passed full local CI, all 39 qualification contract tests, and the exact installed packaged mixed-scope lifecycle on implementation SHA 402e3a4cb939b02a471fba5b28091fdac5560bd0."
+    - "Residual risk: Hosted checks and integration must still pass on the exact published PR head before this blocker can be treated as integrated."
 execution_route:
   frozen: true
   reason_codes:

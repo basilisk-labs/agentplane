@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608260947-C6WV4T",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-26T10:55:00.562Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "402e3a4cb939b02a471fba5b28091fdac5560bd0",
+  "blueprint_digest": "eeca0f8e62cbecd222eec0659bf8f7b087806f1348178c9fe0d673e4a47b8695",
+  "findings": [
+    "The fixture declares ci:local:full as its deterministic Node test, satisfying the full_regression capability required by the selected blueprint.",
+    "The evaluator handoff path still requires a real EVALUATOR episode; only an EXECUTOR packet paired with verification.state=needs_rework is classified as verification_rework.",
+    "Regression coverage proves a valid EVALUATOR exchange, explicit verification rework, and the fail-closed missing_evaluator_episode case for a pending verification state.",
+    "Supervisor-owned verification passed full local CI, all 39 qualification contract tests, and the exact installed packaged mixed-scope lifecycle on implementation SHA 402e3a4cb939b02a471fba5b28091fdac5560bd0.",
+    "Residual risk: Hosted checks and integration must still pass on the exact published PR head before this blocker can be treated as integrated."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608260947-C6WV4T/quality/objects/sha256/ed5ff1bc96ab14843609d69b953efe9aa1d3a4216026cfbf5f6e2c2c67562c10.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
