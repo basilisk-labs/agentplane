@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 38
+revision: 40
 origin:
   system: "manual"
 depends_on: []
@@ -64,9 +64,9 @@ quality_review:
     - "Supervisor verification remains result ok with full local CI exit code 0 on implementation commit a375a1f236a6876cd0ad951138019de16fc0f95e."
     - "The remaining missing WI-1/WI-2 receipts are a control-plane projection gap and do not invalidate the reviewed implementation result."
 token_usage:
-  agent_runs: 16
+  agent_runs: 18
   input_tokens: null
-  journal_digest: "sha256:a8f8e0dde9e7731f421586525297717eb21f0768c228c365ffa26c7bcf431a04"
+  journal_digest: "sha256:a5f4a1e5d9b5c02c09da37097027e4b20459d80de740944bdbaf7d5d5e9a335a"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -76,7 +76,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-26T06:31:21.808Z"
+  updated_at: "2026-08-26T06:37:59.644Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -263,7 +263,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "bd453fe55214fdfa442854a88b2ca5245289a388"
+  hash: "22b379d2e62d1f0b72c2aea34a3bd22d0ddee056"
   message: "🚧 9RCWZQ task: record external evaluator result"
 comments:
   -
@@ -317,6 +317,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The sole dirty path is intended AgentPlane-owned pre-merge-close evidence produced by the failed closeout recovery. No product, test, policy, provider, or release-candidate path is dirty."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The only dirty path is an intended AgentPlane-owned refreshed pre-merge closure projection produced after the accepted evaluator result. Product implementation and release-candidate paths remain clean."
 events:
   -
     type: "status"
@@ -470,8 +476,21 @@ events:
     at: "2026-08-26T06:33:05.183Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The sole dirty path is intended AgentPlane-owned pre-merge-close evidence produced by the failed closeout recovery. No product, test, policy, provider, or release-candidate path is dirty."
+  -
+    type: "status"
+    at: "2026-08-26T06:37:59.644Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "22b379d2e62d1f0b72c2aea34a3bd22d0ddee056"
+  -
+    type: "comment"
+    at: "2026-08-26T06:39:06.032Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The only dirty path is an intended AgentPlane-owned refreshed pre-merge closure projection produced after the accepted evaluator result. Product implementation and release-candidate paths remain clean."
 doc_version: 3
-doc_updated_at: "2026-08-26T06:37:42.206Z"
+doc_updated_at: "2026-08-26T06:39:06.047Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:
@@ -1325,12 +1344,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/16` agent runs
+- Completeness: `0/18` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:a8f8e0dde9e7731f421586525297717eb21f0768c228c365ffa26c7bcf431a04`
+- Journal digest: `sha256:a5f4a1e5d9b5c02c09da37097027e4b20459d80de740944bdbaf7d5d5e9a335a`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-26T06:31:21.808Z`
+- Updated at: `2026-08-26T06:37:59.644Z`
