@@ -2,10 +2,10 @@
 id: "202608261249-BXQZ97"
 title: "Add a digest-bound provider update-branch recovery transition for stale hosted PR heads"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 52
+revision: 53
 origin:
   system: "manual"
 depends_on: []
@@ -68,9 +68,9 @@ quality_review:
     - "A fresh read-only bun run arch:check completed with exit code 0 and no dependency violations, proving the cycle repair against the current implementation."
     - "Residual risk: The real GitHub update-branch mutation and provider ancestry readback remain unexecuted in this read-only episode and must pass through the normal digest-bound operation and hosted exact-head gates."
 token_usage:
-  agent_runs: 10
+  agent_runs: 18
   input_tokens: null
-  journal_digest: "sha256:28712d04d3f0666270191e682a074cd7d5f951390ed6bcae469c373fdc2ce546"
+  journal_digest: "sha256:5578214c9b6211686898a2a4f13d8f55049a7dc4fcbf46bdd9a2257405159109"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -80,7 +80,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-26T15:47:24.008Z"
+  updated_at: "2026-08-26T17:22:02.937Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -354,8 +354,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "e209e23a8ed60069d0d2f2ffda30e8c1bb8ffa29"
-  message: "🚧 BXQZ97 task: apply external agent result"
+  hash: "fae4f17cd226df6fb479f6d107d83ccd4ec2c96a"
+  message: "🚧 BXQZ97 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -408,6 +408,9 @@ comments:
   -
     author: "CODER"
     body: "Start: resume after recording the complete persisted Verification Contract evidence through the compatibility route."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -611,8 +614,16 @@ events:
     to: "DOING"
     note: "Start: resume after recording the complete persisted Verification Contract evidence through the compatibility route."
     commit: "e209e23a8ed60069d0d2f2ffda30e8c1bb8ffa29"
+  -
+    type: "status"
+    at: "2026-08-26T17:22:02.937Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "fae4f17cd226df6fb479f6d107d83ccd4ec2c96a"
 doc_version: 3
-doc_updated_at: "2026-08-26T17:21:55.931Z"
+doc_updated_at: "2026-08-26T17:22:02.968Z"
 doc_updated_by: "CODER"
 description: "Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPEN, MERGEABLE, and BEHIND; required verify-real-e2e fails on exact head e19eb173c25eb7c6800643bcb87173c857a042fb because that head excludes the already integrated C6WV4T qualification correction on exact main 79bc13ff33358c49e216901f59c8fbc0a17987d2. All other hosted jobs pass. The failure reproduced on multiple clean published heads. Violated invariant: when required hosted checks fail solely on a provider PR head that is behind its protected base, AgentPlane must offer a digest-bound, effectively-once provider update-branch recovery transition before semantic source rework or integration. Root cause: current route classification maps failed hosted checks directly to implementation_rework_required and exposes no normal AgentPlane operation for GitHub's update-branch effect. Temporary recovery: preserve 9RCWZQ and use an approved bootstrap runtime only for control-plane retirement; do not manually merge, rebase, push, or edit state. Permanent fix: add the smallest provider-neutral route/effect contract with GitHub update-branch execution, exact expected-head/base readback, effect-in-doubt reconciliation, authority digests, and fail-closed behavior for conflicts, head drift, ambiguity, or unsupported providers. Regression tests must prove route selection, pre-effect failure safety, effect reconciliation, and that semantic rework remains selected for genuine source failures. Integrate normally, then use the fresh runtime to refresh PR #4889 and resume 9RCWZQ."
 sections:
@@ -2284,6 +2295,9 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "e209e23a8ed60069d0d2f2ffda30e8c1bb8ffa29"
+    message: "🚧 BXQZ97 task: apply external agent result"
   task_execution_context:
     base_ref: "79bc13ff33358c49e216901f59c8fbc0a17987d2"
     base_sha: "79bc13ff33358c49e216901f59c8fbc0a17987d2"
@@ -2986,12 +3000,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/10` agent runs
+- Completeness: `0/18` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:28712d04d3f0666270191e682a074cd7d5f951390ed6bcae469c373fdc2ce546`
+- Journal digest: `sha256:5578214c9b6211686898a2a4f13d8f55049a7dc4fcbf46bdd9a2257405159109`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-26T15:47:24.008Z`
+- Updated at: `2026-08-26T17:22:02.937Z`
