@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 103
+revision: 105
 origin:
   system: "manual"
 depends_on: []
@@ -410,6 +410,12 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: Implementation rework is not appropriate for the observed hosted failure. The exact task head is based on 8ea1cefbbc96a8da5595fce36325ec0c1194a360, while current main is 79bc13ff33358c49e216901f59c8fbc0a17987d2 and already contains the C6WV4T qualification-fixture correction. The task requires a normal AgentPlane branch refresh onto current main and a fresh hosted run, not a duplicate source change in the provider-base scope."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The scoped workspace change is an intended AgentPlane supervisor projection, not an implementation conflict. Preserve it and let AgentPlane commit the observation through its normal lifecycle route."
 events:
   -
     type: "status"
@@ -836,9 +842,19 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "155bdedcf507d594c67a9a1bafdf16e79b96e387"
+  -
+    type: "comment"
+    at: "2026-08-26T12:05:03.042Z"
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: Implementation rework is not appropriate for the observed hosted failure. The exact task head is based on 8ea1cefbbc96a8da5595fce36325ec0c1194a360, while current main is 79bc13ff33358c49e216901f59c8fbc0a17987d2 and already contains the C6WV4T qualification-fixture correction. The task requires a normal AgentPlane branch refresh onto current main and a fresh hosted run, not a duplicate source change in the provider-base scope."
+  -
+    type: "comment"
+    at: "2026-08-26T12:06:00.981Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The scoped workspace change is an intended AgentPlane supervisor projection, not an implementation conflict. Preserve it and let AgentPlane commit the observation through its normal lifecycle route."
 doc_version: 3
-doc_updated_at: "2026-08-26T11:53:13.168Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-26T12:06:01.018Z"
+doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:
   Summary: |-
