@@ -6,7 +6,7 @@ Created: 2026-08-26T09:54:10.346Z
 
 - Task: `202608260947-C6WV4T`
 - Title: Restore packaged mixed-scope lifecycle qualification on the exact release candidate
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608260947-C6WV4T/restore-packaged-mixed-scope-lifecycle-qualifica`
 - Canonical task record: `.agentplane/tasks/202608260947-C6WV4T/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-26T09:54:10.346Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-26T09:54:10.346Z
+- Updated: 2026-08-26T10:52:23.549Z
 - Branch: task/202608260947-C6WV4T/restore-packaged-mixed-scope-lifecycle-qualifica
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

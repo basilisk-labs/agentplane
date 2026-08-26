@@ -22,7 +22,7 @@ Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: required hosted
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-26T09:54:10.346Z
+- Updated: 2026-08-26T10:52:23.549Z
 - Branch: task/202608260947-C6WV4T/restore-packaged-mixed-scope-lifecycle-qualifica
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
