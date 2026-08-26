@@ -6,7 +6,7 @@ Created: 2026-08-26T13:12:22.036Z
 
 - Task: `202608261249-BXQZ97`
 - Title: Add a digest-bound provider update-branch recovery transition for stale hosted PR heads
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608261249-BXQZ97/add-provider-update-branch-recovery`
 - Canonical task record: `.agentplane/tasks/202608261249-BXQZ97/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-26T13:12:22.036Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-26T15:41:56.311Z
+- Updated: 2026-08-26T15:47:45.942Z
 - Branch: task/202608261249-BXQZ97/add-provider-update-branch-recovery
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
