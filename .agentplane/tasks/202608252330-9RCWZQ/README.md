@@ -2,10 +2,10 @@
 id: "202608252330-9RCWZQ"
 title: "Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 85
+revision: 87
 origin:
   system: "manual"
 depends_on: []
@@ -63,9 +63,9 @@ quality_review:
     - "Focused PR-open tests, typecheck, and bounded full-regression evidence cover the implementation; hosted integration remains a lifecycle gate after branch publication."
     - "Residual risk: Hosted checks have not yet run against exact head f880b823da2e6cd4988995c519664bfa0f7c570b and must remain mandatory before integration."
 token_usage:
-  agent_runs: 20
+  agent_runs: 33
   input_tokens: null
-  journal_digest: "sha256:fcba95c8f75d346e20d11dc6f3d6e5534f1f6dd2e25599da7655e931309451a2"
+  journal_digest: "sha256:f2d586a955b298fd215e2e097c2529226b05b627c1ee854edf52f4ed3d4068d9"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -75,7 +75,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-26T06:40:21.700Z"
+  updated_at: "2026-08-26T08:52:04.137Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -278,7 +278,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "c2547c753008afa4a35a924b0c1b0e6128781bd1"
+  message: "🚧 9RCWZQ task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -382,6 +384,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Resume for verification recovery after idempotent replacement readback. The implementation commit is f880b823da2e6cd4988995c519664bfa0f7c570b and the prior blocked_external outcome was an uncontrolled local concurrency failure."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -728,9 +733,17 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Verified after recovery: exact-SHA provider-base implementation is unchanged, exact-head provider payload tests pass 19/19, focused PR-open tests and typecheck pass, and bounded full regression evidence is passing."
+  -
+    type: "status"
+    at: "2026-08-26T08:52:04.137Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "c2547c753008afa4a35a924b0c1b0e6128781bd1"
 doc_version: 3
-doc_updated_at: "2026-08-26T08:50:44.632Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-26T08:52:04.171Z"
+doc_updated_by: "CODER"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:
   Summary: |-
@@ -1720,7 +1733,34 @@ extensions:
       schema_version: 1
       task_id: "202608252330-9RCWZQ"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608252330-9RCWZQ"
+            - "git:f880b823da2e6cd4988995c519664bfa0f7c570b"
+          check_id: "check-pr-open-focused"
+          command_identity: "bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts --pool=forks --maxWorkers 1"
+          detail: "Verified after recovery: exact-SHA provider-base implementation is unchanged, exact-head provider payload tests pass 19/19, focused PR-open tests and typecheck pass, and bounded full regression evidence is passing."
+          exit_code: 0
+          observed_at: "2026-08-26T08:49:52.154Z"
+          repository_snapshot_digest: "sha256:66f57f6c55143c2ecf5fca4a4a3ec728ae152984d669f0804a9a96effb8797b3"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608252330-9RCWZQ"
+            - "git:f880b823da2e6cd4988995c519664bfa0f7c570b"
+          check_id: "check-typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified after recovery: exact-SHA provider-base implementation is unchanged, exact-head provider payload tests pass 19/19, focused PR-open tests and typecheck pass, and bounded full regression evidence is passing."
+          exit_code: 0
+          observed_at: "2026-08-26T08:49:52.154Z"
+          repository_snapshot_digest: "sha256:66f57f6c55143c2ecf5fca4a4a3ec728ae152984d669f0804a9a96effb8797b3"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608252330-9RCWZQ"
     intent:
       acceptance_criteria: []
@@ -1731,7 +1771,7 @@ extensions:
 
         Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA.
       task_id: "202608252330-9RCWZQ"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -2000,9 +2040,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608252330-9RCWZQ"
-    revision: 63
+    revision: 87
     schema_version: 1
-    updated_at: "2026-08-26T07:50:47.046Z"
+    updated_at: "2026-08-26T08:52:04.137Z"
     work_items:
       WI-1:
         attempt: 1
@@ -2202,6 +2242,31 @@ extensions:
         previous_revision: 62
         schema_version: 1
         task_id: "202608252330-9RCWZQ"
+      legacy-finish:202608252330-9RCWZQ:2026-08-26T08:49:52.154Z:f880b823da2e6cd4988995c519664bfa0f7c570b:
+        aggregate_digest: "sha256:8cb6473dc091fb41dd73a6dbd57c2bc645c93440b50ab9bfc85cfcfe7e8adba5"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-26T08:52:04.137Z"
+          cause_refs:
+            - "task-verification:202608252330-9RCWZQ"
+            - "git:f880b823da2e6cd4988995c519664bfa0f7c570b"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ad3417c3c47a9c4053daa98f"
+          mutation_id: "legacy-finish:202608252330-9RCWZQ:2026-08-26T08:49:52.154Z:f880b823da2e6cd4988995c519664bfa0f7c570b"
+          plan_digest: "sha256:c9743475c6743336f98e2a6e80cb3961b741001e35fedb04689e4fbb0054c02b"
+          plan_revision: 2
+          repository_fingerprint: "sha256:66f57f6c55143c2ecf5fca4a4a3ec728ae152984d669f0804a9a96effb8797b3"
+          schema_version: 1
+          task_id: "202608252330-9RCWZQ"
+          task_revision: 63
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608252330-9RCWZQ:2026-08-26T08:49:52.154Z:f880b823da2e6cd4988995c519664bfa0f7c570b"
+        next_revision: 87
+        previous_revision: 86
+        schema_version: 1
+        task_id: "202608252330-9RCWZQ"
       plan-refinement:work-order-202608252330-9RCWZQ-executor-b4dfcf505df05aedb2551b93:
         aggregate_digest: "sha256:ecba6f31315a6ae2934916df767c7a1c7ecc638aaa87354275fd33b226dde3dc"
         event:
@@ -2229,6 +2294,9 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "f880b823da2e6cd4988995c519664bfa0f7c570b"
+    message: "🚧 9RCWZQ task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
@@ -2996,12 +3064,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/20` agent runs
+- Completeness: `0/33` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:fcba95c8f75d346e20d11dc6f3d6e5534f1f6dd2e25599da7655e931309451a2`
+- Journal digest: `sha256:f2d586a955b298fd215e2e097c2529226b05b627c1ee854edf52f4ed3d4068d9`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-26T06:40:21.700Z`
+- Updated at: `2026-08-26T08:52:04.137Z`

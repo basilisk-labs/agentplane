@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:3f53ba00150f7747b5d09ff30f347357d9f666a06f399202b8bacc626b423d65",
   "pr_number": 4889,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4889",
+  "pre_merge_closure": {
+    "basis_commit": "c2547c753008afa4a35a924b0c1b0e6128781bd1",
+    "branch": "task/202608252330-9RCWZQ/allow-exact-sha-release-tasks-to-open-hosted-prs",
+    "pr_number": 4889,
+    "recorded_at": "2026-08-26T08:52:04.319Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
