@@ -41,6 +41,7 @@ import { runPrOpenSync } from "./sync-open-step.js";
 import { nowIso, readTextIfExists, restoreIncidentRegistryIfNeeded } from "./sync-support.js";
 import { runPrUpdateSync } from "./sync-update-step.js";
 import { assertBranchTaskArtifactOwnership } from "./branch-task-artifact-ownership.js";
+import { resolveProviderBaseBranch } from "./provider-base.js";
 
 type PrSyncMode = "open" | "update";
 export type { PrOpenOutcome, PrRemoteMode } from "./sync-model.js";
@@ -282,11 +283,24 @@ export async function syncPrArtifacts(opts: {
         metaExists && (await fileExists(metaPath))
           ? parsePrMeta(await readFile(metaPath, "utf8"), task.id)
           : null;
-      const taskBase = taskExecutionBaseFromExtensions(task.extensions)?.base_ref;
+      const taskExecutionBase = taskExecutionBaseFromExtensions(task.extensions);
+      const taskBase = taskExecutionBase?.base_ref;
+      const requestedBase = opts.base ?? taskBase ?? null;
+      const providerBase = await resolveProviderBaseBranch({
+        gitRoot: resolved.gitRoot,
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+        workflowMode,
+        baseRef: requestedBase,
+        baseSha:
+          requestedBase === taskExecutionBase?.base_ref
+            ? taskExecutionBase.base_sha
+            : requestedBase,
+      });
       const baseBranch = await resolveBaseBranch({
         cwd: opts.cwd,
         rootOverride: opts.rootOverride ?? null,
-        cliBaseOpt: opts.base ?? taskBase ?? null,
+        cliBaseOpt: providerBase,
         mode: workflowMode,
       });
       const validatedIncludedTaskIds = await validateBranchPrBatchIncludedTasks({

@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608252330-9RCWZQ/allow-exact-sha-release-tasks-to-open-hosted-prs",
+  "created_at": "2026-08-26T02:00:01.912Z",
+  "diffstat_sha256": "sha256:be471958ac13a942ad55c64f0d9636cd01f987ae05f05babb89333ac4962d28b",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608252330-9RCWZQ",
+  "updated_at": "2026-08-26T02:00:01.912Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

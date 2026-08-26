@@ -57,6 +57,7 @@ import {
   installFakeGhPrLookup,
   type ResolvedProject,
 } from "@agentplane/testkit/cli-core-pr-flow";
+import { resolveProviderBaseBranch } from "../commands/pr/internal/provider-base.js";
 
 describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
   it(
@@ -841,4 +842,86 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
     },
     PR_FLOW_INTEGRATION_TIMEOUT_MS,
   );
+});
+
+describe("exact-SHA provider base resolution", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
+  it("resolves only an exact matching local and provider-tracking base branch", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync("git", ["commit", "-m", "seed"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const { stdout: baseStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const baseSha = baseStdout.trim();
+    const remote = await mkdtemp(path.join(os.tmpdir(), "agentplane-exact-base-remote-"));
+    await execFileAsync("git", ["init", "--bare", remote], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync("git", ["remote", "add", "origin", remote], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["push", "-u", "origin", "main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync(
+      "git",
+      ["symbolic-ref", "refs/remotes/origin/HEAD", "refs/remotes/origin/main"],
+      { cwd: root, env: cleanGitEnv() },
+    );
+    await execFileAsync("git", ["config", "agentplane.baseBranch", "main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
+    await expect(
+      resolveProviderBaseBranch({
+        gitRoot: root,
+        cwd: root,
+        workflowMode: "branch_pr",
+        baseRef: "main",
+        baseSha,
+      }),
+    ).resolves.toBe("main");
+
+    await expect(
+      resolveProviderBaseBranch({
+        gitRoot: root,
+        cwd: root,
+        workflowMode: "branch_pr",
+        baseRef: baseSha,
+        baseSha,
+      }),
+    ).resolves.toBe("main");
+
+    await expect(
+      resolveProviderBaseBranch({
+        gitRoot: root,
+        cwd: root,
+        workflowMode: "branch_pr",
+        baseRef: "a".repeat(40),
+        baseSha: "a".repeat(40),
+      }),
+    ).rejects.toThrow("does not match configured provider base branch main");
+
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "local base drift"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await expect(
+      resolveProviderBaseBranch({
+        gitRoot: root,
+        cwd: root,
+        workflowMode: "branch_pr",
+        baseRef: baseSha,
+        baseSha,
+      }),
+    ).rejects.toThrow("ambiguous");
+  });
 });
