@@ -4,7 +4,7 @@ title: "Allow exact-SHA release tasks to open hosted PRs against the matching pr
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -32,6 +32,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-26T02:47:42.568Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "2050d25fa276a6e31b4187d541c81d85e4a51b01"
+  blueprint_digest: "aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c"
+  evidence_refs:
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-024613349-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-024613349-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/1d78e3eb0f19cdec7447671c377870ea78763f51e652c4421667dffc3a3bad86.md"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-024613349-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-024613349-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-024613349-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/README.md"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/70744792c7fe045d23e9b810884c837707ab88de1f7342676904940140da6a62.patch"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/9c66274d02c228f7332938b2f706cb90df485bf39456f592a01aea2181d5d961.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/verification/20260826024303650-f2e563fb6d96c67e.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/cbf2a89c25f28cf78edbe7197684c73ad7e9a2d05109f7706d956a1390e66550.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Ordinary branch base refs retain the existing path without extra resolution."
+    - "Exact-SHA refs require baseRef/baseSha identity and a non-OID configured branch whose local and origin tracking commits both equal the frozen SHA."
+    - "The resolver is used centrally by PR artifact sync before the existing provider-neutral base normalization, so open and update paths share the invariant without changing provider adapters."
+    - "Regression coverage exercises ordinary branch passthrough, exact success, inconsistent frozen evidence, branch mismatch, missing tracking evidence, and local/provider divergence."
+    - "Supervisor-owned full CI passed on implementation commit fed82c864bfdc690c735b5dab3dca2e1201c7203."
 execution_route:
   frozen: true
   reason_codes:
