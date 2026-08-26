@@ -15,8 +15,8 @@ Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: required hosted
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -4,7 +4,7 @@ title: "Restore packaged mixed-scope lifecycle qualification on the exact releas
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -25,10 +25,10 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:a01ca705fb8cbb7bc81398a005d3f4cc2d502329c2c0f6f92fd7d16a06a54ed9"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-26T10:48:50.237Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -86,8 +86,7 @@ execution_contract:
     scope_roots:
       - "scripts/qualification"
   observed:
-    authority_violations:
-      - "verification:recorded-check-2:fail"
+    authority_violations: []
     changed_components:
       - "scripts"
     changed_paths:
@@ -103,8 +102,41 @@ execution_contract:
         id: "recorded-check-1"
         result: "pass"
       -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
         id: "recorded-check-2"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -202,8 +234,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-2"
-commit: null
+commit:
+  hash: "402e3a4cb939b02a471fba5b28091fdac5560bd0"
+  message: "🚧 C6WV4T task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -229,6 +262,9 @@ comments:
   -
     author: "USER"
     body: "Compatibility recovery synchronized the legacy task.verify contract with approved plan revision 2. Preserve implementation commits and continue fresh AgentPlane routing."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 402e3a4cb939. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -307,9 +343,23 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Compatibility recovery synchronized the legacy task.verify contract with approved plan revision 2. Preserve implementation commits and continue fresh AgentPlane routing."
+  -
+    type: "status"
+    at: "2026-08-26T10:41:36.367Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 402e3a4cb939. CLI accepted one state-bound external-agent semantic result."
+    commit: "402e3a4cb939b02a471fba5b28091fdac5560bd0"
+  -
+    type: "verify"
+    at: "2026-08-26T10:48:50.237Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-26T10:40:19.434Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-08-26T10:48:52.300Z"
+doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: required hosted verify-real-e2e fails reproducibly on clean exact heads c59dad6936fea2b664973d12cfe6ec96d2bc89f5 and 69a4f33f94fbcd46d83d4eb5f40b6654e041dd68 with missing_evaluator_episode: expected EVALUATOR, received EXECUTOR. Violated invariant: packaged-mixed-scope-lifecycle must supply every deterministic verification capability required by its selected code.direct blueprint before expecting evaluator handoff. Root cause: the fixture verification record reports needs_rework because full_regression is required while fixture package.json does not define ci:local:full; all declared commands themselves pass, so AgentPlane correctly returns implementation rework. Temporary recovery: preserve one isolated fixture and read its public verification record; no state edits. Permanent fix: minimally update the qualification fixture to provide a bounded full-regression command consistent with its declared Node test, retain the public lifecycle assertion, and add/adjust regression coverage so a verification rework cannot be misclassified as missing evaluator. Do not weaken hosted gates or production lifecycle invariants. Verify the direct packaged scenario, qualification contract tests, and full local CI. Integrate normally, then refresh 202608252330-9RCWZQ from current main and rerun exact-head hosted qualification."
 sections:
   Summary: |-
@@ -423,6 +473,114 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-2
     Scope: branch_pr task 202608260947-C6WV4T declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608260947-C6WV4T-restore-packaged-mixed-scope-lifecycle-qualifica/.agentplane/tasks/202608260947-C6WV4T/blueprint/resolved-snapshot.json
+    - old_digest: eeca0f8e62cbecd222eec0659bf8f7b087806f1348178c9fe0d673e4a47b8695
+    - current_digest: eeca0f8e62cbecd222eec0659bf8f7b087806f1348178c9fe0d673e4a47b8695
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608260947-C6WV4T
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-26T10:48:50.237Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f1c7611e3fc6744f91ca189752b78afddc6326d9f282a05be030b60d07fd7936, input_digest=sha256:1c399358299f6e4cddcdb7150594afd5e7c3c21999f6537b1cb45959186ff87f
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608260947-C6WV4T Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: node --test scripts/qualification/release-qualification.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608260947-C6WV4T Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608260947-C6WV4T Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608260947-C6WV4T Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: node --test scripts/qualification/release-qualification.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608260947-C6WV4T Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608260947-C6WV4T Verification Contract check critical_paths (3/3)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608260947-C6WV4T Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608260947-C6WV4T Verification Contract check real_e2e (1/3)
+
+    Check: real_e2e
+    Command: node --test scripts/qualification/release-qualification.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608260947-C6WV4T Verification Contract check real_e2e (2/3)
+
+    Check: real_e2e
+    Command: node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608260947-C6WV4T Verification Contract check real_e2e (3/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608260947-C6WV4T Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: node --test scripts/qualification/release-qualification.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608260947-C6WV4T Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608260947-C6WV4T Verification Contract check task_outcome (3/3)
 
     BlueprintSnapshotRef:
     - state: current
@@ -887,40 +1045,33 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608260947-C6WV4T"
-    revision: 22
+    revision: 29
     schema_version: 1
-    updated_at: "2026-08-26T10:38:34.559Z"
+    updated_at: "2026-08-26T10:48:53.513Z"
     work_items:
       restore-packaged-mixed-scope-qualification:
-        attempt: 1
+        attempt: 2
         claim_id: null
         id: "restore-packaged-mixed-scope-qualification"
-        last_failure:
-          cause_refs:
-            - "criterion-fixture"
-            - "criterion-contract"
-          code: "validation_failed"
-          kind: "validation"
-          message: "Preserved the original implementation and added one bounded regression assertion proving that only verification needs_rework is classified as verification_rework while unrelated evaluator mismatches remain fail-closed."
-          retryable: true
+        last_failure: null
         output_manifests:
           -
-            digest: "sha256:c736dbcaa5a5f3e0694d4484461dc35f4f3eadb882bb14b393aa408bf2dace9b"
+            digest: "sha256:8e6449843fc9fd5f1e62ef76b366f479fa579d55fd8c3c8dabdbea541f693553"
             id: "packaged-mixed-scope-qualification-fix"
             kind: "semantic_output"
             producer:
-              attempt: 1
+              attempt: 2
               plan_revision: 2
               task_id: "202608260947-C6WV4T"
               work_item_id: "restore-packaged-mixed-scope-qualification"
             provenance:
-              - "sha256:fe6c9e73d5cfb2ec60b9c3ae8a8c0adad0163e45aaab36f39d2b94d8d84107ee"
+              - "sha256:57f3407786cc805a590dea469040e3355bfaac0e47d4e283c38622c7207b64ca"
               - ".agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:f212b1c7e38ca2ba31c49864df0ddcee98db57c408fb0af81945743dea059465"
+            repository_snapshot_digest: "sha256:258dd4de2d0a69fe95e561f53a4d819b45aadaf695bd602e8e4f0458df084285"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
-        revision: 2
-        state: "REWORK_READY"
+        revision: 3
+        state: "COMPLETED"
         validation_result:
           evidence:
             -
@@ -928,37 +1079,35 @@ extensions:
                 - ".agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json"
               check_id: "check-packaged"
               command_identity: "node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
-              detail: "Declared validation command node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-08-26T10:38:34.554Z"
-              repository_snapshot_digest: "sha256:f212b1c7e38ca2ba31c49864df0ddcee98db57c408fb0af81945743dea059465"
-              status: "unsupported"
+              detail: "Observed by node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs."
+              exit_code: 0
+              observed_at: "2026-08-26T10:48:53.503Z"
+              repository_snapshot_digest: "sha256:258dd4de2d0a69fe95e561f53a4d819b45aadaf695bd602e8e4f0458df084285"
+              status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json"
               check_id: "check-contract"
               command_identity: "node --test scripts/qualification/release-qualification.test.mjs"
-              detail: "Declared validation command node --test scripts/qualification/release-qualification.test.mjs was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-08-26T10:38:34.554Z"
-              repository_snapshot_digest: "sha256:f212b1c7e38ca2ba31c49864df0ddcee98db57c408fb0af81945743dea059465"
-              status: "unsupported"
+              detail: "Observed by node --test scripts/qualification/release-qualification.test.mjs."
+              exit_code: 0
+              observed_at: "2026-08-26T10:48:53.503Z"
+              repository_snapshot_digest: "sha256:258dd4de2d0a69fe95e561f53a4d819b45aadaf695bd602e8e4f0458df084285"
+              status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json"
               check_id: "check-full"
               command_identity: "bun run ci:local:full"
-              detail: "Declared check failed: bunx vitest run scripts/qualification/release-qualification.test.mjs"
+              detail: "Observed by bun run ci:local:full."
               exit_code: 0
-              observed_at: "2026-08-26T10:38:34.554Z"
-              repository_snapshot_digest: "sha256:f212b1c7e38ca2ba31c49864df0ddcee98db57c408fb0af81945743dea059465"
+              observed_at: "2026-08-26T10:48:53.503Z"
+              repository_snapshot_digest: "sha256:258dd4de2d0a69fe95e561f53a4d819b45aadaf695bd602e8e4f0458df084285"
               status: "passed"
           schema_version: 1
           stale_evidence: []
-          status: "blocked"
-          unsatisfied_criteria:
-            - "criterion-fixture"
-            - "criterion-contract"
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
@@ -1032,6 +1181,29 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608260947-C6WV4T"
+      external-result:work-order-202608260947-C6WV4T-executor-c7a63d9b82b8fb7338e36082:
+        aggregate_digest: "sha256:8411b5adfa308f55b03199032b96aeded59eaa2dd5d0ca9f49ce822c468231d0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-26T10:48:53.513Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_1f040277b2d08fe1ecdad6d0"
+          mutation_id: "external-result:work-order-202608260947-C6WV4T-executor-c7a63d9b82b8fb7338e36082"
+          plan_digest: "sha256:0f76356cccc58587839852726467f6fbe06744dd90484cb1856a69402dfd5a35"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608260947-C6WV4T"
+          task_revision: 28
+          to: "COMPLETED"
+          work_item_id: "restore-packaged-mixed-scope-qualification"
+        mutation_id: "external-result:work-order-202608260947-C6WV4T-executor-c7a63d9b82b8fb7338e36082"
+        next_revision: 29
+        previous_revision: 28
+        schema_version: 1
+        task_id: "202608260947-C6WV4T"
       plan-refinement:work-order-202608260947-C6WV4T-executor-134c0eebf6d70143baa6961f:
         aggregate_digest: "sha256:470aea798ae4bd7d54b308e3bfacf5482fca0b91aebf1be264563cf29553e4b0"
         event:
@@ -1058,6 +1230,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "402e3a4cb939b02a471fba5b28091fdac5560bd0"
   task_execution_context:
     base_ref: "main"
     base_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
@@ -1189,6 +1363,114 @@ Command: bunx vitest run scripts/qualification/release-qualification.test.mjs
 Result: fail
 Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-2
 Scope: branch_pr task 202608260947-C6WV4T declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608260947-C6WV4T-restore-packaged-mixed-scope-lifecycle-qualifica/.agentplane/tasks/202608260947-C6WV4T/blueprint/resolved-snapshot.json
+- old_digest: eeca0f8e62cbecd222eec0659bf8f7b087806f1348178c9fe0d673e4a47b8695
+- current_digest: eeca0f8e62cbecd222eec0659bf8f7b087806f1348178c9fe0d673e4a47b8695
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608260947-C6WV4T
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-26T10:48:50.237Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f1c7611e3fc6744f91ca189752b78afddc6326d9f282a05be030b60d07fd7936, input_digest=sha256:1c399358299f6e4cddcdb7150594afd5e7c3c21999f6537b1cb45959186ff87f
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608260947-C6WV4T Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: node --test scripts/qualification/release-qualification.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608260947-C6WV4T Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608260947-C6WV4T Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608260947-C6WV4T Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: node --test scripts/qualification/release-qualification.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608260947-C6WV4T Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608260947-C6WV4T Verification Contract check critical_paths (3/3)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608260947-C6WV4T Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608260947-C6WV4T Verification Contract check real_e2e (1/3)
+
+Check: real_e2e
+Command: node --test scripts/qualification/release-qualification.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608260947-C6WV4T Verification Contract check real_e2e (2/3)
+
+Check: real_e2e
+Command: node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608260947-C6WV4T Verification Contract check real_e2e (3/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608260947-C6WV4T Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: node --test scripts/qualification/release-qualification.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608260947-C6WV4T Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608260947-C6WV4T Verification Contract check task_outcome (3/3)
 
 BlueprintSnapshotRef:
 - state: current
