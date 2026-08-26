@@ -134,6 +134,25 @@ describe("exact-SHA provider base resolution", () => {
       }),
     ).resolves.toBe("main");
 
+    await execFileAsync("git", ["--git-dir", remote, "update-ref", "-d", "refs/heads/main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await expect(
+      resolveProviderBaseBranch({
+        gitRoot: root,
+        cwd: root,
+        workflowMode: "branch_pr",
+        branch: "main",
+        baseRef: baseSha,
+        baseSha,
+      }),
+    ).rejects.toThrow("requires both local main and live origin/main evidence");
+    await execFileAsync("git", ["push", "origin", `${baseSha}:refs/heads/main`], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
     await execFileAsync("git", ["remote", "rename", "origin", "upstream"], {
       cwd: root,
       env: cleanGitEnv(),

@@ -30,11 +30,11 @@ Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes t
  .../cli/run-cli.core.pr-flow.pr-open.git.test.ts   |  35 ++--
  .../run-cli.core.pr-flow.pr-open.network.test.ts   |  79 +++++++-
  .../src/commands/pr/internal/git-host-identity.ts  |   2 +-
- .../src/commands/pr/internal/provider-base.test.ts | 202 +++++++++++++++++++++
+ .../src/commands/pr/internal/provider-base.test.ts | 221 +++++++++++++++++++++
  .../src/commands/pr/internal/provider-base.ts      | 111 +++++++++++
- .../src/commands/pr/internal/sync-github.test.ts   |  44 +++++
+ .../src/commands/pr/internal/sync-github.test.ts   |  44 ++++
  .../agentplane/src/commands/pr/internal/sync.ts    |  19 +-
- 7 files changed, 465 insertions(+), 27 deletions(-)
+ 7 files changed, 484 insertions(+), 27 deletions(-)
 ```
 
 </details>
