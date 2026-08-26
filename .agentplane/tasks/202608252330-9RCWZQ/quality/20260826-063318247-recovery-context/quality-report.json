@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608252330-9RCWZQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-26T06:37:42.191Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "b256290750f14d031678a6eac1e6aaa34fb365b6",
+  "blueprint_digest": "aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c",
+  "findings": [
+    "Commit b256290750f14d031678a6eac1e6aaa34fb365b6 records the intended worktree observation and contains no product implementation change.",
+    "The frozen actual product diff remains sha256:e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.",
+    "The exact-SHA resolver remains bounded to central PR sync and focused regression coverage and fails closed on inconsistent or unavailable provider-base evidence.",
+    "Supervisor verification remains result ok with full local CI exit code 0 on implementation commit a375a1f236a6876cd0ad951138019de16fc0f95e.",
+    "The remaining missing WI-1/WI-2 receipts are a control-plane projection gap and do not invalidate the reviewed implementation result."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
