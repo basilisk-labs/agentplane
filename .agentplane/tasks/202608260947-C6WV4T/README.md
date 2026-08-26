@@ -1,10 +1,10 @@
 ---
 id: "202608260947-C6WV4T"
 title: "Restore packaged mixed-scope lifecycle qualification on the exact release candidate"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -17,7 +17,7 @@ mutation_scope: "code"
 blueprint_request: "quality.regression"
 verify:
   - "bun run ci:local:full"
-  - "bunx vitest run scripts/qualification/release-qualification.test.mjs"
+  - "node --test scripts/qualification/release-qualification.test.mjs"
   - "node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
 plan_approval:
   state: "approved"
@@ -226,6 +226,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The replacement implementation and full regression pass, but a stale legacy task.verify command overrides the corrected structured TaskPlan validation command. Recommended action: After returning to operator control, run agentplane task update 202608260947-C6WV4T --replace-verify with the three approved commands, then resume DOING while preserving the current implementation history and request a fresh packet. Agentplane receipt: external-agent-blocker/tr_2dde7d3437f27ef1618c0ce3c083ebd0/sha256:7ad0f5f0374b02cbf1a9b1750fc4676d5ef59f858dba793bc87ec7c6b0c3f89d."
+  -
+    author: "USER"
+    body: "Compatibility recovery synchronized the legacy task.verify contract with approved plan revision 2. Preserve implementation commits and continue fresh AgentPlane routing."
 events:
   -
     type: "status"
@@ -297,9 +300,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The replacement implementation and full regression pass, but a stale legacy task.verify command overrides the corrected structured TaskPlan validation command. Recommended action: After returning to operator control, run agentplane task update 202608260947-C6WV4T --replace-verify with the three approved commands, then resume DOING while preserving the current implementation history and request a fresh packet. Agentplane receipt: external-agent-blocker/tr_2dde7d3437f27ef1618c0ce3c083ebd0/sha256:7ad0f5f0374b02cbf1a9b1750fc4676d5ef59f858dba793bc87ec7c6b0c3f89d."
+  -
+    type: "status"
+    at: "2026-08-26T10:40:19.434Z"
+    author: "USER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Compatibility recovery synchronized the legacy task.verify contract with approved plan revision 2. Preserve implementation commits and continue fresh AgentPlane routing."
 doc_version: 3
-doc_updated_at: "2026-08-26T10:40:01.531Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-26T10:40:19.434Z"
+doc_updated_by: "USER"
 description: "Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: required hosted verify-real-e2e fails reproducibly on clean exact heads c59dad6936fea2b664973d12cfe6ec96d2bc89f5 and 69a4f33f94fbcd46d83d4eb5f40b6654e041dd68 with missing_evaluator_episode: expected EVALUATOR, received EXECUTOR. Violated invariant: packaged-mixed-scope-lifecycle must supply every deterministic verification capability required by its selected code.direct blueprint before expecting evaluator handoff. Root cause: the fixture verification record reports needs_rework because full_regression is required while fixture package.json does not define ci:local:full; all declared commands themselves pass, so AgentPlane correctly returns implementation rework. Temporary recovery: preserve one isolated fixture and read its public verification record; no state edits. Permanent fix: minimally update the qualification fixture to provide a bounded full-regression command consistent with its declared Node test, retain the public lifecycle assertion, and add/adjust regression coverage so a verification rework cannot be misclassified as missing evaluator. Do not weaken hosted gates or production lifecycle invariants. Verify the direct packaged scenario, qualification contract tests, and full local CI. Integrate normally, then refresh 202608252330-9RCWZQ from current main and rerun exact-head hosted qualification."
 sections:
   Summary: |-

@@ -226,6 +226,21 @@ describe("v0.7.1 release qualification contract", () => {
       PACKAGED_MIXED_SCOPE_FULL_REGRESSION_COMMAND,
       "node --test test/greeting.test.mjs",
     );
+    const evaluatorExchange = {
+      result_path: "/tmp/agentplane-evaluator-result.json",
+      work_order_ref: "work-order.json",
+    };
+    assert.equal(
+      packetExchange(
+        {
+          action: { kind: "agent_episode" },
+          authority: { role: "EVALUATOR" },
+          exchange: evaluatorExchange,
+        },
+        "EVALUATOR",
+      ),
+      evaluatorExchange,
+    );
     assert.throws(
       () =>
         packetExchange(
