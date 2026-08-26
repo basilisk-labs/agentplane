@@ -4,7 +4,7 @@ title: "Add a digest-bound provider update-branch recovery transition for stale 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -20,19 +20,21 @@ risk_flags:
   - "external_system"
 blueprint_request: "quality.regression"
 verify:
-  - "bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
   - "bunx vitest run packages/agentplane/src/commands/pr"
+  - "bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+  - "bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+  - "bun run ci:local:full"
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-26T12:55:15.735Z"
-  updated_by: "USER"
-  note: "User approved exact plan_digest sha256:c1b685f68607044283d4d0a5f038180e7da718349464a0bf48c369045633b6b6 at state_fingerprint sha256:75fb185e8d847de3858e544aafb564d7052cf4aff0667435e910e724f61cd2e7"
+  updated_at: "2026-08-26T13:23:27.103Z"
+  updated_by: "HOST:slingshot:env_e_6a1ef5a7691083289addb82f53997126:USER"
+  note: "host_user_decision=sha256:e918dacceec86ebe3ec6f78d30e4c19e04d779c92c70ea9a3bdf6575b4317d33"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-26T13:18:01.504Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -190,6 +192,15 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: c07a2fc6b187. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: c07a2fc6b187. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
 events:
   -
     type: "status"
@@ -198,8 +209,43 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-26T13:12:26.372Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: c07a2fc6b187. CLI accepted one state-bound external-agent semantic result."
+    commit: "c07a2fc6b187230ce3209a4a37abb8b4b63bfd39"
+  -
+    type: "verify"
+    at: "2026-08-26T13:12:31.828Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+  -
+    type: "status"
+    at: "2026-08-26T13:17:52.318Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: c07a2fc6b187. CLI accepted one state-bound external-agent semantic result."
+    commit: "c07a2fc6b187230ce3209a4a37abb8b4b63bfd39"
+  -
+    type: "verify"
+    at: "2026-08-26T13:18:01.504Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+  -
+    type: "status"
+    at: "2026-08-26T13:23:34.164Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-08-26T12:55:24.250Z"
+doc_updated_at: "2026-08-26T13:23:34.164Z"
 doc_updated_by: "CODER"
 description: "Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPEN, MERGEABLE, and BEHIND; required verify-real-e2e fails on exact head e19eb173c25eb7c6800643bcb87173c857a042fb because that head excludes the already integrated C6WV4T qualification correction on exact main 79bc13ff33358c49e216901f59c8fbc0a17987d2. All other hosted jobs pass. The failure reproduced on multiple clean published heads. Violated invariant: when required hosted checks fail solely on a provider PR head that is behind its protected base, AgentPlane must offer a digest-bound, effectively-once provider update-branch recovery transition before semantic source rework or integration. Root cause: current route classification maps failed hosted checks directly to implementation_rework_required and exposes no normal AgentPlane operation for GitHub's update-branch effect. Temporary recovery: preserve 9RCWZQ and use an approved bootstrap runtime only for control-plane retirement; do not manually merge, rebase, push, or edit state. Permanent fix: add the smallest provider-neutral route/effect contract with GitHub update-branch execution, exact expected-head/base readback, effect-in-doubt reconciliation, authority digests, and fail-closed behavior for conflicts, head drift, ambiguity, or unsupported providers. Regression tests must prove route selection, pre-effect failure safety, effect reconciliation, and that semantic rework remains selected for genuine source failures. Integrate normally, then use the fresh runtime to refresh PR #4889 and resume 9RCWZQ."
 sections:
@@ -210,7 +256,7 @@ sections:
   Scope: |-
     - In scope: Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPEN, MERGEABLE, and BEHIND; required verify-real-e2e fails on exact head e19eb173c25eb7c6800643bcb87173c857a042fb because that head excludes the already integrated C6WV4T qualification correction on exact main 79bc13ff33358c49e216901f59c8fbc0a17987d2. All other hosted jobs pass. The failure reproduced on multiple clean published heads. Violated invariant: when required hosted checks fail solely on a provider PR head that is behind its protected base, AgentPlane must offer a digest-bound, effectively-once provider update-branch recovery transition before semantic source rework or integration. Root cause: current route classification maps failed hosted checks directly to implementation_rework_required and exposes no normal AgentPlane operation for GitHub's update-branch effect. Temporary recovery: preserve 9RCWZQ and use an approved bootstrap runtime only for control-plane retirement; do not manually merge, rebase, push, or edit state. Permanent fix: add the smallest provider-neutral route/effect contract with GitHub update-branch execution, exact expected-head/base readback, effect-in-doubt reconciliation, authority digests, and fail-closed behavior for conflicts, head drift, ambiguity, or unsupported providers. Regression tests must prove route selection, pre-effect failure safety, effect reconciliation, and that semantic rework remains selected for genuine source failures. Integrate normally, then use the fresh runtime to refresh PR #4889 and resume 9RCWZQ.
     - Out of scope: unrelated refactors not required for "Add a digest-bound provider update-branch recovery transition for stale hosted PR heads".
-  Plan: "Implement one authority-bound provider update-branch effect and route stale, aligned, behind hosted PR heads through it before classifying failed checks as semantic implementation rework."
+  Plan: "Preserve the completed provider effect commit, implement the remaining digest-bound route and supervisor operation, and validate only the provider, route, projection, supervisor, and full-regression behavior relevant to BXQZ97."
   Verify Steps: |-
     PLANNER fallback scaffold for "Add a digest-bound provider update-branch recovery transition for stale hosted PR heads". Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -219,6 +265,76 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-26T13:12:31.828Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:ec30b70db18e179ded6111afe683ca91fce6ef7d902709e0817fc0d79f735dca
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+    Result: fail
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+    - old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-26T13:18:01.504Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:438a567ae1d9f1e9a4a14bfd7504f3b34ffbd82ab0d242100251eae66bd1bd2e
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+    Result: fail
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+    - old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -226,9 +342,9 @@ sections:
   Findings: ""
 extensions:
   agentplane.execution_grant:
-    actor: "USER"
-    approval_evidence_digest: null
-    approval_kind: "manual_operator"
+    actor: "HOST:slingshot:env_e_6a1ef5a7691083289addb82f53997126:USER"
+    approval_evidence_digest: "sha256:e918dacceec86ebe3ec6f78d30e4c19e04d779c92c70ea9a3bdf6575b4317d33"
+    approval_kind: "host_user_decision"
     capabilities:
       - "provider.merge"
       - "provider.pr"
@@ -237,12 +353,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:eb99fc494c3b962e340ff87de629edc93bafdb74f8bcd7882f7b2048ca5b217c"
-    digest: "sha256:65f8c7d93fd96a24011974c4d9afe3a6385ae71b4cbbdb497bcf3f869e910ea2"
-    grant_id: "9103a1a9-3687-4779-9a66-85ba84d6b5c7"
-    issued_at: "2026-08-26T12:55:15.735Z"
+    digest: "sha256:7961d7e326c0e6d45303acfe30b89053ff02aa24a085ab9645c0ab49365a2534"
+    grant_id: "c6e0c115-fbc8-4823-bb52-49e875073f82"
+    issued_at: "2026-08-26T13:23:27.103Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:aa5a673fc3aee51a53288602e2a3b427c312610c7151d440ce80174bbf9c18a8"
-    plan_revision: 2
+    plan_digest: "sha256:05a050405cdb2263f51e412d474303bfeaacfc1442073b999bdc593e12a62d8f"
+    plan_revision: 13
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:1a8e009a74a6a60da0c9acf5ab642363ce87f6e0c2cfb72131207c1038c3823b"
@@ -251,82 +367,47 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-08-26T12:55:15.735Z"
-        approved_by: "USER"
-        approved_digest: "sha256:c1b685f68607044283d4d0a5f038180e7da718349464a0bf48c369045633b6b6"
+        approved_at: "2026-08-26T13:23:27.103Z"
+        approved_by: "HOST:slingshot:env_e_6a1ef5a7691083289addb82f53997126:USER"
+        approved_digest: "sha256:648d6a7212fbbb7933b2507f3acca6ccd9ab09e364c23cec1dbf9adc8a638acd"
         policy_facts:
-          - "manual_operator"
+          - "host_user_decision"
         state: "approved"
-      created_at: "2026-08-26T12:53:11.441Z"
-      digest: "sha256:c1b685f68607044283d4d0a5f038180e7da718349464a0bf48c369045633b6b6"
+      created_at: "2026-08-26T13:21:02.023Z"
+      digest: "sha256:648d6a7212fbbb7933b2507f3acca6ccd9ab09e364c23cec1dbf9adc8a638acd"
       proposal:
         assumptions:
           - "GitHub update-branch accepts expected_head_sha and produces a provider-generated head whose readback can be bound to the previously observed head and base SHA."
           - "GitLab support may remain explicitly unsupported in this patch if it fails closed before any effect and the provider-neutral operation contract remains extensible without a compatibility layer."
           - "The current provider observation continues to expose mergeability.providerState=behind with exact local, upstream, and hosted head alignment."
         planning_baseline:
-          captured_at: "2026-08-26T12:49:33.774Z"
+          captured_at: "2026-08-26T13:18:07.550Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:c24326b8dfdac527d5b514f7981186d5301d0085b0bc6ecd72fd60079fef1b90"
+          digest: "sha256:40c58e9cc3764917c75d5e653cd067ac14ba59d23f7c3d38f1afc34da78c3260"
           dirty_paths:
-            - ".agentplane/tasks/202608210955-9SX2C6/README.md"
-            - ".agentplane/tasks/202608212244-Q3QMJR/README.md"
-            - ".agentplane/tasks/202608220034-FPEFRK/README.md"
-            - ".agentplane/tasks/202608220034-FPEFRK/blueprint/resolved-snapshot.json"
-            - ".agentplane/tasks/202608241434-129F8R/README.md"
-            - ".agentplane/tasks/202608241434-EH8E74/README.md"
-            - ".agentplane/tasks/202608241434-KCC9K4/README.md"
-            - ".agentplane/tasks/202608241434-QQNDGT/README.md"
-            - ".agentplane/tasks/202608241434-SFPD91/README.md"
-            - ".agentplane/tasks/202608241434-TA84WK/README.md"
-            - ".agentplane/tasks/202608241434-WVYA5T/README.md"
-            - ".agentplane/tasks/202608241435-40YZCE/README.md"
-            - ".agentplane/tasks/202608241435-73DA89/README.md"
-            - ".agentplane/tasks/202608241435-D001ET/README.md"
-            - ".agentplane/tasks/202608241435-HTV4K2/README.md"
-            - ".agentplane/tasks/202608241435-NDR0BX/README.md"
-            - ".agentplane/tasks/202608241435-RJXGHQ/README.md"
-            - ".agentplane/tasks/202608241435-W3DG6V/README.md"
-            - ".agentplane/tasks/202608241435-YSW0E0/README.md"
-            - ".agentplane/tasks/202608241436-2G9DA8/README.md"
-            - ".agentplane/tasks/202608241436-63W678/README.md"
-            - ".agentplane/tasks/202608241436-8PJKJP/README.md"
-            - ".agentplane/tasks/202608241436-99B067/README.md"
-            - ".agentplane/tasks/202608241436-A87Y59/README.md"
-            - ".agentplane/tasks/202608241436-DHPR5E/README.md"
-            - ".agentplane/tasks/202608241436-H60MCY/README.md"
-            - ".agentplane/tasks/202608241436-TX6TRF/README.md"
-            - ".agentplane/tasks/202608241436-W6A113/README.md"
-            - ".agentplane/tasks/202608241437-5YZ0N8/README.md"
-            - ".agentplane/tasks/202608241437-H5418M/README.md"
-            - ".agentplane/tasks/202608241437-SH3CDX/README.md"
-            - ".agentplane/tasks/202608241437-V8BA7Q/README.md"
-            - ".agentplane/tasks/202608241437-XY3950/README.md"
-            - ".agentplane/tasks/202608250007-P5BWP0/README.md"
-            - ".agentplane/tasks/202608250007-P5BWP0/blueprint/resolved-snapshot.json"
-            - ".agentplane/tasks/202608251038-42AC0D/README.md"
-            - ".agentplane/tasks/202608251053-QAZ236/README.md"
-            - ".agentplane/tasks/202608251706-V287W1/README.md"
-            - ".agentplane/tasks/202608251735-ZJ7YZE/README.md"
-            - ".agentplane/tasks/202608252233-JR4T47/README.md"
-            - ".agentplane/tasks/202608252234-4CKSWA/README.md"
-            - ".agentplane/tasks/202608252234-4CKSWA/blueprint/resolved-snapshot.json"
             - ".agentplane/tasks/202608261249-BXQZ97/README.md"
+            - ".agentplane/tasks/202608261249-BXQZ97/pr/github-body.md"
+            - ".agentplane/tasks/202608261249-BXQZ97/pr/meta.json"
+            - ".agentplane/tasks/202608261249-BXQZ97/pr/review.md"
+            - ".agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json"
+            - ".agentplane/tasks/202608261249-BXQZ97/supervision/implementation-evidence.json"
+            - ".agentplane/tasks/202608261249-BXQZ97/verification/20260826131231828-4899fc7776fc3011.json"
+            - ".agentplane/tasks/202608261249-BXQZ97/verification/20260826131801504-414ceddf9264b14a.json"
           git:
             kind: "commit"
             ref: null
-            sha: "79bc13ff33358c49e216901f59c8fbc0a17987d2"
+            sha: "c07a2fc6b187230ce3209a4a37abb8b4b63bfd39"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:1"
+          task_history_cursor: "task-revision:12"
         schema_version: 1
         task_id: "202608261249-BXQZ97"
         top_level_validation:
           checks:
             -
               capability: "task.verify"
-              command: "bunx vitest run packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/internal/change-request-provider.test.ts"
+              command: "bunx vitest run packages/agentplane/src/commands/pr"
               id: "check-provider-update"
               kind: "deterministic"
               required: true
@@ -340,7 +421,7 @@ extensions:
               timeout_ms: 240000
             -
               capability: "task.verify"
-              command: "bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+              command: "bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
               id: "check-supervisor"
               kind: "deterministic"
               required: true
@@ -362,7 +443,7 @@ extensions:
               description: "Focused provider, route, authority, and supervisor regressions pass; full local CI passes; and the resulting operation can safely refresh the preserved 9RCWZQ PR head through a fresh digest-bound AgentPlane packet."
               id: "criterion-release-recovery-route"
               required: true
-          evidence_fingerprint: "sha256:c24326b8dfdac527d5b514f7981186d5301d0085b0bc6ecd72fd60079fef1b90"
+          evidence_fingerprint: "sha256:40c58e9cc3764917c75d5e653cd067ac14ba59d23f7c3d38f1afc34da78c3260"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -427,7 +508,7 @@ extensions:
                 checks:
                   -
                     capability: "task.verify"
-                    command: "bunx vitest run packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/internal/change-request-provider.test.ts"
+                    command: "bunx vitest run packages/agentplane/src/commands/pr"
                     id: "check-provider-update"
                     kind: "deterministic"
                     required: true
@@ -451,7 +532,7 @@ extensions:
                     description: "Head drift, base drift, conflicts, missing evidence, unavailable observations, ambiguity, and unsupported providers stop before effect or return a typed non-success without mutating AgentPlane-owned task or PR identity state."
                     id: "criterion-provider-fail-closed"
                     required: true
-                evidence_fingerprint: "sha256:c24326b8dfdac527d5b514f7981186d5301d0085b0bc6ecd72fd60079fef1b90"
+                evidence_fingerprint: "sha256:40c58e9cc3764917c75d5e653cd067ac14ba59d23f7c3d38f1afc34da78c3260"
                 schema_version: 1
             -
               acceptance_criteria:
@@ -538,7 +619,7 @@ extensions:
                     timeout_ms: 240000
                   -
                     capability: "task.verify"
-                    command: "bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                    command: "bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
                     id: "check-supervisor"
                     kind: "deterministic"
                     required: true
@@ -570,9 +651,9 @@ extensions:
                     description: "Pre-effect failure is retryable only through a distinct supervisor operation, while effect-in-doubt requires readback and never repeats the provider effect blindly."
                     id: "criterion-effect-replay-safe"
                     required: true
-                evidence_fingerprint: "sha256:c24326b8dfdac527d5b514f7981186d5301d0085b0bc6ecd72fd60079fef1b90"
+                evidence_fingerprint: "sha256:40c58e9cc3764917c75d5e653cd067ac14ba59d23f7c3d38f1afc34da78c3260"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202608261249-BXQZ97"
     event_cursor: 0
@@ -599,10 +680,336 @@ extensions:
       task_id: "202608261249-BXQZ97"
     lifecycle: "ACTIVE"
     plan_amendments: []
-    plan_history: []
-    revision: 2
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-08-26T12:55:15.735Z"
+          approved_by: "USER"
+          approved_digest: "sha256:c1b685f68607044283d4d0a5f038180e7da718349464a0bf48c369045633b6b6"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-08-26T12:53:11.441Z"
+        digest: "sha256:c1b685f68607044283d4d0a5f038180e7da718349464a0bf48c369045633b6b6"
+        proposal:
+          assumptions:
+            - "GitHub update-branch accepts expected_head_sha and produces a provider-generated head whose readback can be bound to the previously observed head and base SHA."
+            - "GitLab support may remain explicitly unsupported in this patch if it fails closed before any effect and the provider-neutral operation contract remains extensible without a compatibility layer."
+            - "The current provider observation continues to expose mergeability.providerState=behind with exact local, upstream, and hosted head alignment."
+          planning_baseline:
+            captured_at: "2026-08-26T12:49:33.774Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:c24326b8dfdac527d5b514f7981186d5301d0085b0bc6ecd72fd60079fef1b90"
+            dirty_paths:
+              - ".agentplane/tasks/202608210955-9SX2C6/README.md"
+              - ".agentplane/tasks/202608212244-Q3QMJR/README.md"
+              - ".agentplane/tasks/202608220034-FPEFRK/README.md"
+              - ".agentplane/tasks/202608220034-FPEFRK/blueprint/resolved-snapshot.json"
+              - ".agentplane/tasks/202608241434-129F8R/README.md"
+              - ".agentplane/tasks/202608241434-EH8E74/README.md"
+              - ".agentplane/tasks/202608241434-KCC9K4/README.md"
+              - ".agentplane/tasks/202608241434-QQNDGT/README.md"
+              - ".agentplane/tasks/202608241434-SFPD91/README.md"
+              - ".agentplane/tasks/202608241434-TA84WK/README.md"
+              - ".agentplane/tasks/202608241434-WVYA5T/README.md"
+              - ".agentplane/tasks/202608241435-40YZCE/README.md"
+              - ".agentplane/tasks/202608241435-73DA89/README.md"
+              - ".agentplane/tasks/202608241435-D001ET/README.md"
+              - ".agentplane/tasks/202608241435-HTV4K2/README.md"
+              - ".agentplane/tasks/202608241435-NDR0BX/README.md"
+              - ".agentplane/tasks/202608241435-RJXGHQ/README.md"
+              - ".agentplane/tasks/202608241435-W3DG6V/README.md"
+              - ".agentplane/tasks/202608241435-YSW0E0/README.md"
+              - ".agentplane/tasks/202608241436-2G9DA8/README.md"
+              - ".agentplane/tasks/202608241436-63W678/README.md"
+              - ".agentplane/tasks/202608241436-8PJKJP/README.md"
+              - ".agentplane/tasks/202608241436-99B067/README.md"
+              - ".agentplane/tasks/202608241436-A87Y59/README.md"
+              - ".agentplane/tasks/202608241436-DHPR5E/README.md"
+              - ".agentplane/tasks/202608241436-H60MCY/README.md"
+              - ".agentplane/tasks/202608241436-TX6TRF/README.md"
+              - ".agentplane/tasks/202608241436-W6A113/README.md"
+              - ".agentplane/tasks/202608241437-5YZ0N8/README.md"
+              - ".agentplane/tasks/202608241437-H5418M/README.md"
+              - ".agentplane/tasks/202608241437-SH3CDX/README.md"
+              - ".agentplane/tasks/202608241437-V8BA7Q/README.md"
+              - ".agentplane/tasks/202608241437-XY3950/README.md"
+              - ".agentplane/tasks/202608250007-P5BWP0/README.md"
+              - ".agentplane/tasks/202608250007-P5BWP0/blueprint/resolved-snapshot.json"
+              - ".agentplane/tasks/202608251038-42AC0D/README.md"
+              - ".agentplane/tasks/202608251053-QAZ236/README.md"
+              - ".agentplane/tasks/202608251706-V287W1/README.md"
+              - ".agentplane/tasks/202608251735-ZJ7YZE/README.md"
+              - ".agentplane/tasks/202608252233-JR4T47/README.md"
+              - ".agentplane/tasks/202608252234-4CKSWA/README.md"
+              - ".agentplane/tasks/202608252234-4CKSWA/blueprint/resolved-snapshot.json"
+              - ".agentplane/tasks/202608261249-BXQZ97/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "79bc13ff33358c49e216901f59c8fbc0a17987d2"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202608261249-BXQZ97"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bunx vitest run packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/internal/change-request-provider.test.ts"
+                id: "check-provider-update"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 180000
+              -
+                capability: "task.verify"
+                command: "bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+                id: "check-route"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 240000
+              -
+                capability: "task.verify"
+                command: "bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                id: "check-supervisor"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 240000
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "check-full"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1200000
+            criteria:
+              -
+                check_ids:
+                  - "check-provider-update"
+                  - "check-route"
+                  - "check-supervisor"
+                  - "check-full"
+                description: "Focused provider, route, authority, and supervisor regressions pass; full local CI passes; and the resulting operation can safely refresh the preserved 9RCWZQ PR head through a fresh digest-bound AgentPlane packet."
+                id: "criterion-release-recovery-route"
+                required: true
+            evidence_fingerprint: "sha256:c24326b8dfdac527d5b514f7981186d5301d0085b0bc6ecd72fd60079fef1b90"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-provider-update"
+                    description: "The GitHub update-branch request is issued only for one observed OPEN PR whose head, base branch, base SHA, and provider identity match the operation parameters."
+                    id: "criterion-exact-effect-binding"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-provider-update"
+                    description: "A successful or uncertain transport outcome is reconciled by provider readback, and success is reported only when the new hosted head contains the expected old head and exact base SHA evidence."
+                    id: "criterion-readback-reconciliation"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-provider-update"
+                    description: "Head drift, base drift, conflicts, missing evidence, unavailable observations, ambiguity, and unsupported providers stop before effect or return a typed non-success without mutating AgentPlane-owned task or PR identity state."
+                    id: "criterion-provider-fail-closed"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 196608
+                  optional_sources:
+                    - "packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge.ts"
+                    - "packages/agentplane/src/commands/pr/provider-head.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/pr/internal/change-request-model.ts"
+                    - "packages/agentplane/src/commands/pr/internal/change-request-provider.ts"
+                    - "packages/agentplane/src/commands/pr/internal/gh-api.ts"
+                    - "packages/agentplane/src/commands/pr/internal/sync-github.ts"
+                  symbol_hints:
+                    - "ObservedChangeRequest"
+                    - "observeExistingChangeRequestByNumber"
+                    - "runGhApiJson"
+                    - "hasCoherentGithubPrMergeability"
+                depends_on: []
+                expected_outputs:
+                  - "provider-update-branch-effect-contract"
+                  - "github-expected-head-update-and-readback"
+                  - "fail-closed-provider-regressions"
+                id: "provider-update-branch-effect"
+                objective: "Add a provider-neutral update-branch mutation contract whose GitHub implementation binds the effect to the observed PR number, expected head SHA, target base branch and base SHA, then reconciles success or effect-in-doubt by exact provider readback."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/pr"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/pr"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/internal/change-request-provider.test.ts"
+                      id: "check-provider-update"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 180000
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-provider-update"
+                      description: "The GitHub update-branch request is issued only for one observed OPEN PR whose head, base branch, base SHA, and provider identity match the operation parameters."
+                      id: "criterion-exact-effect-binding"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-provider-update"
+                      description: "A successful or uncertain transport outcome is reconciled by provider readback, and success is reported only when the new hosted head contains the expected old head and exact base SHA evidence."
+                      id: "criterion-readback-reconciliation"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-provider-update"
+                      description: "Head drift, base drift, conflicts, missing evidence, unavailable observations, ambiguity, and unsupported providers stop before effect or return a typed non-success without mutating AgentPlane-owned task or PR identity state."
+                      id: "criterion-provider-fail-closed"
+                      required: true
+                  evidence_fingerprint: "sha256:c24326b8dfdac527d5b514f7981186d5301d0085b0bc6ecd72fd60079fef1b90"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-route"
+                      - "check-supervisor"
+                    description: "An aligned OPEN PR with failing hosted checks, exact provider/local head agreement, coherent mergeability, and providerState=behind emits the provider update-branch approval/effect route before implementation_rework_required."
+                    id: "criterion-route-before-rework"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-route"
+                      - "check-supervisor"
+                    description: "The operation is present in the exhaustive registry, effect policy, projection, command-prefix, and configured-authority surfaces and cannot execute without exact operation, state fingerprint, and state-scope authorization."
+                    id: "criterion-digest-authority"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-route"
+                    description: "Non-behind hosted failures, conflicting or unknown mergeability, stale provider heads, and actual source regressions continue to route to the existing fail-closed or semantic rework paths."
+                    id: "criterion-no-false-recovery"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-supervisor"
+                    description: "Pre-effect failure is retryable only through a distinct supervisor operation, while effect-in-doubt requires readback and never repeats the provider effect blindly."
+                    id: "criterion-effect-replay-safe"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 262144
+                  optional_sources:
+                    - "packages/agentplane/src/commands/shared/workflow-operation-effects.ts"
+                    - "packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
+                    - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+                    - "packages/agentplane/src/commands/task/configured-authority.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/shared/workflow-step.ts"
+                    - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
+                    - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+                    - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+                    - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+                  symbol_hints:
+                    - "WorkflowOperationId"
+                    - "WORKFLOW_OPERATION_REGISTRY"
+                    - "WORKFLOW_OPERATION_AUTHORITY_POLICY"
+                    - "addHostedCheckFailureReworkBlocker"
+                    - "executeBranchWorkflowOperation"
+                depends_on:
+                  - "provider-update-branch-effect"
+                expected_outputs:
+                  - "digest-bound-provider-update-route"
+                  - "supervisor-effect-recovery"
+                  - "route-and-authority-regression-suite"
+                id: "route-digest-bound-update-before-rework"
+                objective: "Register the provider update-branch operation, classify it as approval-bound external recovery, select it for aligned failing hosted heads with providerState=behind, execute it through the branch supervisor, and preserve ordinary implementation rework for genuine source failures."
+                optional: false
+                priority: 2
+                required_inputs:
+                  - "provider-update-branch-effect-contract"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/task"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+                      id: "check-route"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 240000
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                      id: "check-supervisor"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 240000
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-route"
+                        - "check-supervisor"
+                      description: "An aligned OPEN PR with failing hosted checks, exact provider/local head agreement, coherent mergeability, and providerState=behind emits the provider update-branch approval/effect route before implementation_rework_required."
+                      id: "criterion-route-before-rework"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-route"
+                        - "check-supervisor"
+                      description: "The operation is present in the exhaustive registry, effect policy, projection, command-prefix, and configured-authority surfaces and cannot execute without exact operation, state fingerprint, and state-scope authorization."
+                      id: "criterion-digest-authority"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-route"
+                      description: "Non-behind hosted failures, conflicting or unknown mergeability, stale provider heads, and actual source regressions continue to route to the existing fail-closed or semantic rework paths."
+                      id: "criterion-no-false-recovery"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-supervisor"
+                      description: "Pre-effect failure is retryable only through a distinct supervisor operation, while effect-in-doubt requires readback and never repeats the provider effect blindly."
+                      id: "criterion-effect-replay-safe"
+                      required: true
+                  evidence_fingerprint: "sha256:c24326b8dfdac527d5b514f7981186d5301d0085b0bc6ecd72fd60079fef1b90"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202608261249-BXQZ97"
+    revision: 13
     schema_version: 1
-    updated_at: "2026-08-26T12:55:15.735Z"
+    updated_at: "2026-08-26T13:23:27.103Z"
     work_items:
       provider-update-branch-effect:
         attempt: 0
@@ -622,12 +1029,65 @@ extensions:
         revision: 1
         state: "PLANNED"
         validation_result: null
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608261249-BXQZ97-executor-914bf76c8d6dd13a53d51a1e:
+        aggregate_digest: "sha256:da7eba25f566e4a8714fe5e9eac9176cac142c9252d670069a462a005b8645ab"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-26T13:12:35.028Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_463e0e390257c7bae2aa51e9"
+          mutation_id: "external-result:work-order-202608261249-BXQZ97-executor-914bf76c8d6dd13a53d51a1e"
+          plan_digest: "sha256:c1b685f68607044283d4d0a5f038180e7da718349464a0bf48c369045633b6b6"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608261249-BXQZ97"
+          task_revision: 7
+          to: "REWORK_READY"
+          work_item_id: "provider-update-branch-effect"
+        mutation_id: "external-result:work-order-202608261249-BXQZ97-executor-914bf76c8d6dd13a53d51a1e"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202608261249-BXQZ97"
+      plan-refinement:work-order-202608261249-BXQZ97-executor-1c7f9604ad6d5447aa519c4d:
+        aggregate_digest: "sha256:c8fc696914bc3f27f647617cba575b7958973ec917f1cab0f8b2a53eff53fb4b"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-08-26T13:18:05.563Z"
+          cause_refs:
+            - "acceptance_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_60fae36185614c8868bd47dd"
+          mutation_id: "plan-refinement:work-order-202608261249-BXQZ97-executor-1c7f9604ad6d5447aa519c4d"
+          plan_digest: "sha256:c1b685f68607044283d4d0a5f038180e7da718349464a0bf48c369045633b6b6"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608261249-BXQZ97"
+          task_revision: 11
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202608261249-BXQZ97-executor-1c7f9604ad6d5447aa519c4d"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202608261249-BXQZ97"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
   task_execution_context:
     base_ref: "79bc13ff33358c49e216901f59c8fbc0a17987d2"
     base_sha: "79bc13ff33358c49e216901f59c8fbc0a17987d2"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "explicit"
   workflow_route_baseline:
     start_head_sha: "79bc13ff33358c49e216901f59c8fbc0a17987d2"
     version: 1
@@ -646,7 +1106,7 @@ Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPE
 
 ## Plan
 
-Implement one authority-bound provider update-branch effect and route stale, aligned, behind hosted PR heads through it before classifying failed checks as semantic implementation rework.
+Preserve the completed provider effect commit, implement the remaining digest-bound route and supervisor operation, and validate only the provider, route, projection, supervisor, and full-regression behavior relevant to BXQZ97.
 
 ## Verify Steps
 
@@ -659,6 +1119,76 @@ PLANNER fallback scaffold for "Add a digest-bound provider update-branch recover
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-26T13:12:31.828Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:ec30b70db18e179ded6111afe683ca91fce6ef7d902709e0817fc0d79f735dca
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+Result: fail
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+- old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-26T13:18:01.504Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:438a567ae1d9f1e9a4a14bfd7504f3b34ffbd82ab0d242100251eae66bd1bd2e
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+Result: fail
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+- old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

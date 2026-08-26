@@ -12,8 +12,8 @@ Created: 2026-08-26T13:12:22.036Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,9 @@ Created: 2026-08-26T13:12:22.036Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/pr/provider-update-branch.test.ts | 212 ++++++++++++
+ .../src/commands/pr/provider-update-branch.test.ts | 230 +++++++++++++
  .../src/commands/pr/provider-update-branch.ts      | 368 +++++++++++++++++++++
- 2 files changed, 580 insertions(+)
+ 2 files changed, 598 insertions(+)
 ```
 
 </details>

@@ -1,3 +1,3 @@
- .../src/commands/pr/provider-update-branch.test.ts | 212 ++++++++++++
+ .../src/commands/pr/provider-update-branch.test.ts | 230 +++++++++++++
  .../src/commands/pr/provider-update-branch.ts      | 368 +++++++++++++++++++++
- 2 files changed, 580 insertions(+)
+ 2 files changed, 598 insertions(+)
