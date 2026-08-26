@@ -15,13 +15,8 @@ Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPE
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework: Declared check failed: bunx vitest run
-packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
