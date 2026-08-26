@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Commit c0d700867d32f864398b31f0efee971b094715cc records only the intended Task worktree observation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The frozen product diff remains sha256:e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d and contains no release-candidate change.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Exact-SHA base resolution preserves frozen Task execution evidence and fails closed on inconsistent, missing, mismatched, or divergent branch evidence.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Supervisor verification record 20260826062718487-b652f6fb590963d3.json remains result ok, with full local CI exit code 0 on implementation commit a375a1f236a6876cd0ad951138019de16fc0f95e.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Canonical WI-1/WI-2 receipt recovery remains a control-plane concern and is not evidence against the product result.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
