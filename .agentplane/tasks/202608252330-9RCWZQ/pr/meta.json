@@ -3,8 +3,8 @@
   "branch": "task/202608252330-9RCWZQ/allow-exact-sha-release-tasks-to-open-hosted-prs",
   "created_at": "2026-08-26T02:00:01.912Z",
   "diffstat_sha256": "sha256:0b93e957d2fb72e139a072506a9a883ad18627f46b181c322ae7c1e69b607dd0",
-  "last_verified_at": "2026-08-26T06:07:01.268Z",
-  "last_verified_diffstat_sha256": "sha256:ac68cc1131d4fd2dbfbe16ca33f25fe327ce955746d2ef1d9e376c5203f406ef",
+  "last_verified_at": "2026-08-26T06:27:18.487Z",
+  "last_verified_diffstat_sha256": "sha256:0b93e957d2fb72e139a072506a9a883ad18627f46b181c322ae7c1e69b607dd0",
   "pr_number": 4889,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4889",
   "provider": {
@@ -20,6 +20,6 @@
   "task_id": "202608252330-9RCWZQ",
   "updated_at": "2026-08-26T02:46:09.863Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }

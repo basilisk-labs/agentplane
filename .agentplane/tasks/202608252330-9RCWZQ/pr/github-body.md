@@ -15,8 +15,8 @@ Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes t
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: canonical WorkItem completion receipts are missing despite passing product verification.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
