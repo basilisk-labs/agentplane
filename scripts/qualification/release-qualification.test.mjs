@@ -53,7 +53,9 @@ import {
 } from "../bench/internal/agent-efficiency-codex-runtime.mjs";
 import {
   assertPackagedMixedScopeEvidence,
+  PACKAGED_MIXED_SCOPE_FULL_REGRESSION_COMMAND,
   PackagedMixedScopeContractError,
+  packetExchange,
 } from "./check-packaged-mixed-scope-lifecycle.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -216,6 +218,23 @@ describe("v0.7.1 release qualification contract", () => {
         scenarioIds: ["packaged-mixed-scope-lifecycle"],
       }).map((candidate) => candidate.id),
       ["packaged-mixed-scope-lifecycle"],
+    );
+  });
+
+  it("provides the fixture full-regression capability and classifies verification rework", () => {
+    assert.equal(
+      PACKAGED_MIXED_SCOPE_FULL_REGRESSION_COMMAND,
+      "node --test test/greeting.test.mjs",
+    );
+    assert.throws(
+      () =>
+        packetExchange(
+          { action: { kind: "agent_episode" }, authority: { role: "EXECUTOR" } },
+          "EVALUATOR",
+          { verification: { state: "needs_rework" } },
+        ),
+      (error) =>
+        error instanceof PackagedMixedScopeContractError && error.code === "verification_rework",
     );
   });
 
