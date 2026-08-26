@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -378,6 +378,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (failed): The sole workspace change is an unintended and stale AgentPlane-owned remote_failed marker produced after PR #4892 had already been created successfully. It is not implementation work and must not be committed as product evidence."
 events:
   -
     type: "status"
@@ -471,9 +474,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "5d609194bcddc137c541b5ffed8b0fe4a8f634c5"
+  -
+    type: "comment"
+    at: "2026-08-26T15:50:35.936Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (failed): The sole workspace change is an unintended and stale AgentPlane-owned remote_failed marker produced after PR #4892 had already been created successfully. It is not implementation work and must not be committed as product evidence."
 doc_version: 3
-doc_updated_at: "2026-08-26T15:47:24.026Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-26T15:50:36.001Z"
+doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPEN, MERGEABLE, and BEHIND; required verify-real-e2e fails on exact head e19eb173c25eb7c6800643bcb87173c857a042fb because that head excludes the already integrated C6WV4T qualification correction on exact main 79bc13ff33358c49e216901f59c8fbc0a17987d2. All other hosted jobs pass. The failure reproduced on multiple clean published heads. Violated invariant: when required hosted checks fail solely on a provider PR head that is behind its protected base, AgentPlane must offer a digest-bound, effectively-once provider update-branch recovery transition before semantic source rework or integration. Root cause: current route classification maps failed hosted checks directly to implementation_rework_required and exposes no normal AgentPlane operation for GitHub's update-branch effect. Temporary recovery: preserve 9RCWZQ and use an approved bootstrap runtime only for control-plane retirement; do not manually merge, rebase, push, or edit state. Permanent fix: add the smallest provider-neutral route/effect contract with GitHub update-branch execution, exact expected-head/base readback, effect-in-doubt reconciliation, authority digests, and fail-closed behavior for conflicts, head drift, ambiguity, or unsupported providers. Regression tests must prove route selection, pre-effect failure safety, effect reconciliation, and that semantic rework remains selected for genuine source failures. Integrate normally, then use the fresh runtime to refresh PR #4889 and resume 9RCWZQ."
 sections:
   Summary: |-
