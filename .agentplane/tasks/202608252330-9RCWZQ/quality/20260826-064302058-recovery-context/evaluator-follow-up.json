@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608252330-9RCWZQ-9641fcd03a3b3a4fd03978bc",
+  "task_id": "202608252330-9RCWZQ",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Rework. The product implementation and full verification pass, but the required task outcome is not eligible for completion because the canonical TaskAggregate still has WI-1 READY and WI-2 PLANNED without WorkItem result receipts.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "The exact-SHA provider-base implementation remains bounded, fail-closed, and fully verified.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "The frozen product diff remains sha256:e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "Supervisor verification record 20260826062718487-b652f6fb590963d3.json records result ok and full local CI exit code 0.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "TaskAggregate is authoritative for completion and currently records WI-1 state READY and WI-2 state PLANNED with no output manifests or validation results.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "summary": "Three independent pre-merge-close attempts failed with required_work_item_incomplete:WI-1 and required_work_item_incomplete:WI-2; bounded implementation rework must create canonical receipts before another closeout attempt.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "summary": "Residual risk: A pass verdict would immediately repeat a pre-merge closeout that is provably ineligible until canonical WorkItem receipts are recorded.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-064302058-recovery-context/evaluator-result.json"
+}
