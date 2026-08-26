@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -66,7 +66,7 @@ quality_review:
 token_usage:
   agent_runs: 12
   input_tokens: null
-  journal_digest: "sha256:a5505d870336a1884cdc2fe09fbd287c43a5d6cf653a42f4d9ca1e8151012240"
+  journal_digest: "sha256:c0738b30c23bfe3adcd948eed0baefad468a291ae12f697512ca0e6b32d6571a"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -76,7 +76,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-26T05:44:50.967Z"
+  updated_at: "2026-08-26T05:49:18.630Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -263,8 +263,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "c507c80a1bcfe218ce5b6b878538adae060483d6"
-  message: "🚧 9RCWZQ task: record recovered evaluator review"
+  hash: "705d34d2590a73b7383f359bf556b71f3d094454"
+  message: "🚧 9RCWZQ task: record closure-recovery review"
 comments:
   -
     author: "CODER"
@@ -293,6 +293,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The only dirty path is the active Task README, and its diff contains intended AgentPlane-owned evaluator and refreshed pre-merge-closure evidence. No product, test, policy, CI, release, or provider artifact is dirty."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -396,8 +399,16 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "c507c80a1bcfe218ce5b6b878538adae060483d6"
+  -
+    type: "status"
+    at: "2026-08-26T05:49:18.630Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "705d34d2590a73b7383f359bf556b71f3d094454"
 doc_version: 3
-doc_updated_at: "2026-08-26T05:46:14.503Z"
+doc_updated_at: "2026-08-26T05:49:18.648Z"
 doc_updated_by: "CODER"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:
@@ -1067,6 +1078,6 @@ DecisionContextRef:
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:a5505d870336a1884cdc2fe09fbd287c43a5d6cf653a42f4d9ca1e8151012240`
+- Journal digest: `sha256:c0738b30c23bfe3adcd948eed0baefad468a291ae12f697512ca0e6b32d6571a`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-26T05:44:50.967Z`
+- Updated at: `2026-08-26T05:49:18.630Z`
