@@ -12,7 +12,7 @@ import type { RouteBlocker, RouteExecutionPacket, RouteOracle } from "./route-or
 import type { TaskWorktreeCleanliness } from "./task-worktree-cleanliness.js";
 import type { ForeignTaskReadmeReplicaRepair } from "./task-worktree-foreign-artifact-repair.js";
 import { foreignTaskReadmeReplicaRepairOperation } from "./workflow-step-foreign-task-readme-repair.js";
-import { PROVIDER_UPDATE_BRANCH_OPERATION_SPEC } from "./workflow-step-provider-update-branch.js";
+import { PROVIDER_UPDATE_BRANCH_OPERATION_SPEC } from "./workflow-step-provider-update-branch-spec.js";
 import { POSTCONDITION, type WorkflowPostcondition } from "./workflow-postconditions.js";
 
 export type WorkflowRole = RouteExecutionPacket["recommendedRole"];
