@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -64,9 +64,9 @@ quality_review:
     - "Supervisor-owned full regression passed on implementation commit fed82c864bfdc690c735b5dab3dca2e1201c7203."
     - "The frozen actual product diff remains sha256:70744792c7fe045d23e9b810884c837707ab88de1f7342676904940140da6a62; later commits contain Task-local evidence only."
 token_usage:
-  agent_runs: 12
+  agent_runs: 13
   input_tokens: null
-  journal_digest: "sha256:c0738b30c23bfe3adcd948eed0baefad468a291ae12f697512ca0e6b32d6571a"
+  journal_digest: "sha256:c969e311b21482b5de472aca094e0f0d9d0f181cdc693be88d097fc1fe5758b1"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -76,7 +76,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-26T05:49:18.630Z"
+  updated_at: "2026-08-26T05:59:44.110Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -263,8 +263,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "705d34d2590a73b7383f359bf556b71f3d094454"
-  message: "🚧 9RCWZQ task: record closure-recovery review"
+  hash: "3fb2802f533261e10fa29e306d9e5111c736acf4"
+  message: "🚧 9RCWZQ task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -293,6 +293,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The only dirty path is the active Task README, and its diff contains intended AgentPlane-owned evaluator and refreshed pre-merge-closure evidence. No product, test, policy, CI, release, or provider artifact is dirty."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -407,8 +410,16 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "705d34d2590a73b7383f359bf556b71f3d094454"
+  -
+    type: "status"
+    at: "2026-08-26T05:59:44.110Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "3fb2802f533261e10fa29e306d9e5111c736acf4"
 doc_version: 3
-doc_updated_at: "2026-08-26T05:59:26.283Z"
+doc_updated_at: "2026-08-26T05:59:44.124Z"
 doc_updated_by: "CODER"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:
@@ -1072,12 +1083,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/12` agent runs
+- Completeness: `0/13` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:c0738b30c23bfe3adcd948eed0baefad468a291ae12f697512ca0e6b32d6571a`
+- Journal digest: `sha256:c969e311b21482b5de472aca094e0f0d9d0f181cdc693be88d097fc1fe5758b1`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-26T05:49:18.630Z`
+- Updated at: `2026-08-26T05:59:44.110Z`
