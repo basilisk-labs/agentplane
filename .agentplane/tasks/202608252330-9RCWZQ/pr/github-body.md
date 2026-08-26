@@ -15,8 +15,8 @@ Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes t
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
