@@ -12,8 +12,8 @@ Created: 2026-08-26T09:54:10.346Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bunx vitest run scripts/qualification/release-qualification.test.mjs
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,9 @@ Created: 2026-08-26T09:54:10.346Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../check-packaged-mixed-scope-lifecycle.mjs       | 32 ++++++++++++++++++++--
- .../qualification/release-qualification.test.mjs   | 30 ++++++++++++++++++++
- 2 files changed, 59 insertions(+), 3 deletions(-)
+ .../check-packaged-mixed-scope-lifecycle.mjs       | 32 +++++++++++++--
+ .../qualification/release-qualification.test.mjs   | 45 ++++++++++++++++++++++
+ 2 files changed, 74 insertions(+), 3 deletions(-)
 ```
 
 </details>
