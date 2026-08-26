@@ -15,22 +15,22 @@ Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes t
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework: canonical WorkItem completion receipts are missing despite passing product verification.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-26T02:00:01.912Z
+- Updated: 2026-08-26T02:46:09.863Z
 - Branch: task/202608252330-9RCWZQ/allow-exact-sha-release-tasks-to-open-hosted-prs
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../cli/run-cli.core.pr-flow.pr-open.git.test.ts   | 111 +++++++++++++++++++++
- .../src/commands/pr/internal/provider-base.ts      |  78 +++++++++++++++
- .../agentplane/src/commands/pr/internal/sync.ts    |  18 +++-
- 3 files changed, 205 insertions(+), 2 deletions(-)
+ .../cli/run-cli.core.pr-flow.pr-open.git.test.ts   | 129 +++++++++++++++++++++
+ .../src/commands/pr/internal/provider-base.ts      |  78 +++++++++++++
+ .../agentplane/src/commands/pr/internal/sync.ts    |  18 ++-
+ 3 files changed, 223 insertions(+), 2 deletions(-)
 ```
 
 </details>

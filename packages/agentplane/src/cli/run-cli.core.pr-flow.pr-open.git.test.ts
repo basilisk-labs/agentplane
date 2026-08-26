@@ -890,6 +890,24 @@ describe("exact-SHA provider base resolution", { timeout: PR_FLOW_INTEGRATION_TI
       }),
     ).resolves.toBe("main");
 
+    await execFileAsync("git", ["config", "agentplane.baseBranch", baseSha], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await expect(
+      resolveProviderBaseBranch({
+        gitRoot: root,
+        cwd: root,
+        workflowMode: "branch_pr",
+        baseRef: baseSha,
+        baseSha,
+      }),
+    ).rejects.toThrow("cannot resolve a configured provider base branch");
+    await execFileAsync("git", ["config", "agentplane.baseBranch", "main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
     await expect(
       resolveProviderBaseBranch({
         gitRoot: root,

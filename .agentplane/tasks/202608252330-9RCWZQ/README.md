@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +28,11 @@ plan_approval:
   updated_by: "USER"
   note: "User approved plan_digest sha256:97480e98175921cd396d8c977c65df4147565eb66a61a8473993fe61605bcc0f at state_fingerprint sha256:64e3cb82c3cabb6f93db912c4046b8d41545dea67e9d07c28bed53e01c5eca1a"
 verification:
-  state: "ok"
-  updated_at: "2026-08-26T02:43:03.650Z"
+  state: "needs_rework"
+  updated_at: "2026-08-26T06:07:01.268Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  note: "Rework: canonical WorkItem completion receipts are missing despite passing product verification."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -136,7 +136,8 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts"
       - "packages/agentplane/src/commands/pr"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -151,7 +152,7 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
+        result: "fail"
       -
         id: "recorded-check-2"
         result: "pass"
@@ -262,9 +263,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "3fb2802f533261e10fa29e306d9e5111c736acf4"
-  message: "🚧 9RCWZQ task: record external evaluator result"
+      - "verification_recovery:recorded-check-1"
+commit: null
 comments:
   -
     author: "CODER"
@@ -428,8 +428,14 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Recovery: project the already verified implementation through canonical WI-1 and WI-2 so TaskAggregate completion matches the legacy DONE evidence."
+  -
+    type: "verify"
+    at: "2026-08-26T06:07:01.268Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: canonical WorkItem completion receipts are missing despite passing product verification."
 doc_version: 3
-doc_updated_at: "2026-08-26T06:05:52.182Z"
+doc_updated_at: "2026-08-26T06:07:02.679Z"
 doc_updated_by: "CODER"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:
@@ -559,6 +565,41 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-1
     Scope: branch_pr task 202608252330-9RCWZQ Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608252330-9RCWZQ-allow-exact-sha-release-tasks-to-open-hosted-prs/.agentplane/tasks/202608252330-9RCWZQ/blueprint/resolved-snapshot.json
+    - old_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+    - current_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608252330-9RCWZQ
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-26T06:07:01.268Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: canonical WorkItem completion receipts are missing despite passing product verification.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a, input_digest=sha256:bd054e6e75d88ec8025e25f059a6b73efa2f9357947dae38ebfc4bc1a85f7628
+
+    Details:
+
+    Command: agentplane finish 202608252330-9RCWZQ --pre-merge-closure
+    Result: fail
+    Evidence: required_work_item_incomplete:WI-1 and required_work_item_incomplete:WI-2
+    Scope: canonical TaskAggregate projection only; implementation and full regression evidence remain passing.
 
     BlueprintSnapshotRef:
     - state: current
@@ -912,9 +953,6 @@ extensions:
         revision: 1
         state: "PLANNED"
         validation_result: null
-  implementation_commit:
-    hash: "2050d25fa276a6e31b4187d541c81d85e4a51b01"
-    message: "🚧 9RCWZQ task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
@@ -1061,6 +1099,41 @@ Command: bun run ci:local:full
 Result: pass
 Evidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-1
 Scope: branch_pr task 202608252330-9RCWZQ Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608252330-9RCWZQ-allow-exact-sha-release-tasks-to-open-hosted-prs/.agentplane/tasks/202608252330-9RCWZQ/blueprint/resolved-snapshot.json
+- old_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+- current_digest: aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608252330-9RCWZQ
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-26T06:07:01.268Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: canonical WorkItem completion receipts are missing despite passing product verification.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a, input_digest=sha256:bd054e6e75d88ec8025e25f059a6b73efa2f9357947dae38ebfc4bc1a85f7628
+
+Details:
+
+Command: agentplane finish 202608252330-9RCWZQ --pre-merge-closure
+Result: fail
+Evidence: required_work_item_incomplete:WI-1 and required_work_item_incomplete:WI-2
+Scope: canonical TaskAggregate projection only; implementation and full regression evidence remain passing.
 
 BlueprintSnapshotRef:
 - state: current
