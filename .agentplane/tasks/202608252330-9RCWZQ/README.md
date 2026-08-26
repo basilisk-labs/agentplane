@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 105
+revision: 107
 origin:
   system: "manual"
 depends_on: []
@@ -416,6 +416,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The scoped workspace change is an intended AgentPlane supervisor projection, not an implementation conflict. Preserve it and let AgentPlane commit the observation through its normal lifecycle route."
+  -
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The approved plan requires an ordering refinement: refresh the task branch onto current main containing integrated C6WV4T before repeating hosted validation or integration. No provider-base source rework is required."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Preserve the sole dirty task README as an intended AgentPlane supervisor projection of the plan-refinement result and let AgentPlane record it through the normal lifecycle."
 events:
   -
     type: "status"
@@ -852,8 +858,18 @@ events:
     at: "2026-08-26T12:06:00.981Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The scoped workspace change is an intended AgentPlane supervisor projection, not an implementation conflict. Preserve it and let AgentPlane commit the observation through its normal lifecycle route."
+  -
+    type: "comment"
+    at: "2026-08-26T12:12:22.671Z"
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The approved plan requires an ordering refinement: refresh the task branch onto current main containing integrated C6WV4T before repeating hosted validation or integration. No provider-base source rework is required."
+  -
+    type: "comment"
+    at: "2026-08-26T12:13:09.806Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Preserve the sole dirty task README as an intended AgentPlane supervisor projection of the plan-refinement result and let AgentPlane record it through the normal lifecycle."
 doc_version: 3
-doc_updated_at: "2026-08-26T12:06:01.018Z"
+doc_updated_at: "2026-08-26T12:13:09.840Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:
