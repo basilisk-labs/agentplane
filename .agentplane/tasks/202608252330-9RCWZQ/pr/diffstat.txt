@@ -1,4 +1,4 @@
- .../cli/run-cli.core.pr-flow.pr-open.git.test.ts   | 101 +++++++++++++++++++++
- .../src/commands/pr/internal/provider-base.ts      |  78 ++++++++++++++++
+ .../cli/run-cli.core.pr-flow.pr-open.git.test.ts   | 111 +++++++++++++++++++++
+ .../src/commands/pr/internal/provider-base.ts      |  78 +++++++++++++++
  .../agentplane/src/commands/pr/internal/sync.ts    |  18 +++-
- 3 files changed, 195 insertions(+), 2 deletions(-)
+ 3 files changed, 205 insertions(+), 2 deletions(-)

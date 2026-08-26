@@ -12,8 +12,8 @@ Created: 2026-08-26T02:00:01.912Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,10 +29,10 @@ Created: 2026-08-26T02:00:01.912Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../cli/run-cli.core.pr-flow.pr-open.git.test.ts   | 101 +++++++++++++++++++++
- .../src/commands/pr/internal/provider-base.ts      |  78 ++++++++++++++++
+ .../cli/run-cli.core.pr-flow.pr-open.git.test.ts   | 111 +++++++++++++++++++++
+ .../src/commands/pr/internal/provider-base.ts      |  78 +++++++++++++++
  .../agentplane/src/commands/pr/internal/sync.ts    |  18 +++-
- 3 files changed, 195 insertions(+), 2 deletions(-)
+ 3 files changed, 205 insertions(+), 2 deletions(-)
 ```
 
 </details>

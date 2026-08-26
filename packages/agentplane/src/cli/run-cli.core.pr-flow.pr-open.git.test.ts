@@ -896,6 +896,16 @@ describe("exact-SHA provider base resolution", { timeout: PR_FLOW_INTEGRATION_TI
         cwd: root,
         workflowMode: "branch_pr",
         baseRef: baseSha,
+        baseSha: "b".repeat(40),
+      }),
+    ).rejects.toThrow("inconsistent with the frozen Task execution base_sha");
+
+    await expect(
+      resolveProviderBaseBranch({
+        gitRoot: root,
+        cwd: root,
+        workflowMode: "branch_pr",
+        baseRef: baseSha,
         baseSha,
       }),
     ).resolves.toBe("main");
