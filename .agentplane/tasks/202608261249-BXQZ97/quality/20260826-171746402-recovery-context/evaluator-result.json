@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The route selects provider.pr.update_branch only for the approved behind-head recovery case and preserves semantic rework for genuine source failures.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/081a872247cd011fcd717d8674c5e8435662c78ef4fc15cb726edadffac91f00.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The provider effect remains bound to exact repository, PR, branch, expected head, and expected base identity, with fail-closed pre-effect drift handling and effect-in-doubt reconciliation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/081a872247cd011fcd717d8674c5e8435662c78ef4fc15cb726edadffac91f00.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The delta after the previous evaluator review only moves PROVIDER_UPDATE_BRANCH_OPERATION_SPEC into a leaf module and updates its import; all operation fields and postconditions remain unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/081a872247cd011fcd717d8674c5e8435662c78ef4fc15cb726edadffac91f00.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Fresh verification for implementation e209e23a8 records 279 PR tests, 324 focused critical-path tests, full ci:local:full, replay/readback coverage, and architecture checks as passing.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/081a872247cd011fcd717d8674c5e8435662c78ef4fc15cb726edadffac91f00.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "A fresh read-only bun run arch:check completed with exit code 0 and no dependency violations, proving the cycle repair against the current implementation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/081a872247cd011fcd717d8674c5e8435662c78ef4fc15cb726edadffac91f00.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: The real GitHub update-branch mutation and provider ancestry readback remain unexecuted in this read-only episode and must pass through the normal digest-bound operation and hosted exact-head gates.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/081a872247cd011fcd717d8674c5e8435662c78ef4fc15cb726edadffac91f00.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

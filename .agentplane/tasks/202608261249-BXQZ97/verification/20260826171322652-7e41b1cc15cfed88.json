@@ -1,0 +1,111 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/commands/pr\nResult: pass\nEvidence: 41 files and 279 tests passed against e209e23a8ed60069d0d2f2ffda30e8c1bb8ffa29\nScope: provider update-branch and PR integration behavior\n\nCheck: critical_paths\nCommand: bunx vitest run packages/agentplane/src/commands/pr packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts\nResult: pass\nEvidence: 45 files and 324 tests passed against e209e23a8ed60069d0d2f2ffda30e8c1bb8ffa29\nScope: provider effect, route authority, projection, and supervisor paths\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: final exact implementation passed build, runtime, docs-schema, core, CLI, platform-critical, coverage, and architecture gates\nScope: complete local regression contract\n\nCheck: real_e2e\nCommand: bunx vitest run packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts\nResult: pass\nEvidence: deterministic effect/readback and supervisor recovery scenarios passed locally; exact-head hosted real-e2e remains a mandatory later branch_pr gate\nScope: provider update effect binding, reconciliation, and replay safety\n\nCheck: task_outcome\nCommand: bun run arch:check && bun run hotspots:check && git diff --check\nResult: pass\nEvidence: architecture boundaries, hotspot limit, and whitespace checks passed against e209e23a8ed60069d0d2f2ffda30e8c1bb8ffa29\nScope: evaluator-requested cycle repair and approved task outcome",
+  "digest": "sha256:7e41b1cc15cfed883ac69166a0e85b350fe0c503e6442baab0100ebb38ac0255",
+  "implementation_sha": "e209e23a8ed60069d0d2f2ffda30e8c1bb8ffa29",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:36b8cf18f01e272eb5a1104b6e64b9fe51a5ccfc1d333ee07ec46942e6e066b1",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:50f4e2abc509a02964f9867a5a0b73a499057bfa8899cdc3c494af8c862ab143",
+      "digest": "sha256:6bea137a0cce1bd4090b4e4289878814d2c96ded16acd9dc6c253810c11aba33",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "effect/readback",
+          "reference": "effect/readback",
+          "source": "missing"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "79bc13ff33358c49e216901f59c8fbc0a17987d2",
+      "base_sha": "79bc13ff33358c49e216901f59c8fbc0a17987d2",
+      "digest": "sha256:bf64a25deaa3f18cb7d367e5188b74e3ca14992c259247b8988ddb7d99ff3319",
+      "primary_task_id": "202608261249-BXQZ97",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_external_write",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608261249-BXQZ97"
+      ]
+    },
+    "implementation": {
+      "base_sha": "79bc13ff33358c49e216901f59c8fbc0a17987d2",
+      "digest": "sha256:d0724b2acdb6b0c7d73c4552438eeddae655e8294f1e4683b37f28916b2bc435",
+      "strategy": "branch_diff",
+      "target_sha": "e209e23a8ed60069d0d2f2ffda30e8c1bb8ffa29"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:98bf9819fd40b37f0e82bfb9b6da79f61ee624f1ff3e9e1163930756dd770e7e",
+    "verify_steps_digest": "sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99"
+  },
+  "kind": "task_verification_record",
+  "note": "Compatibility recovery: exact implementation e209e23a8 passed all available local checks; hosted exact-head qualification remains enforced by the branch_pr route.",
+  "recorded_at": "2026-08-26T17:13:22.652Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Add a digest-bound provider update-branch recovery transition for stale hosted PR heads\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Add a digest-bound provider update-branch recovery transition for stale hosted PR heads\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99",
+  "task_id": "202608261249-BXQZ97",
+  "verification_command": "agentplane task verify ok 202608261249-BXQZ97 --ok --by TESTER",
+  "verifier": "TESTER"
+}
