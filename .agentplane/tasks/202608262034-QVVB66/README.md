@@ -1,10 +1,11 @@
 ---
 id: "202608262034-QVVB66"
 title: "Initialize blueprint test projects as real Git repositories for release CI"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,20 @@ quality_review:
     - "The focused blueprint suite passes all 23 tests on implementation SHA 63468394f8a4c785e373529d8184705078807a2f."
     - "No actionable defect is present in the scoped implementation; the remaining local full-gate instability is resource-order dependent and outside the 0.7.8 release firewall."
     - "Residual risk: Required hosted checks must pass on the exact published PR head before integration; the local evidence reconciliation is not publication proof."
+token_usage:
+  agent_runs: 11
+  input_tokens: null
+  journal_digest: "sha256:912d4a5921d3b1e167f0f843a774d278f69e08f8bd5d18256a195ae1c4b875ec"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-26T23:26:37.373Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -237,8 +252,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "63468394f8a4c785e373529d8184705078807a2f"
-  message: "🚧 QVVB66 task: apply external agent result"
+  hash: "fb2a8a4b5a2327be8a620175126a94d558edca0d"
+  message: "🚧 QVVB66 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -279,6 +294,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 63468394f8a4. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -427,9 +445,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-26T23:26:37.373Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "fb2a8a4b5a2327be8a620175126a94d558edca0d"
 doc_version: 3
-doc_updated_at: "2026-08-26T23:25:09.393Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-26T23:26:37.382Z"
+doc_updated_by: "CODER"
 description: "Release blocker for 0.7.8. Symptom: required release:prepublish fails in run-cli.core.blueprint.test.ts because task new returns E_IO exit 4. Violated invariant: release fixtures exercising task creation must be valid Git repositories. Root cause: mkProject() creates an empty .git directory while the canonical task-create path now runs git worktree list --porcelain. Recovery: keep the 0.7.8 release Task blocked and clean. Permanent fix: initialize the fixture with git init using the existing test Git helper or an equivalent isolated command. Regression: both blueprint snapshot and drift tests pass in a clean exact-main checkout and the focused suite remains green."
 sections:
   Summary: |-
@@ -1001,7 +1027,23 @@ extensions:
       schema_version: 1
       task_id: "202608262034-QVVB66"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608262034-QVVB66"
+            - "git:63468394f8a4c785e373529d8184705078807a2f"
+          check_id: "check-blueprint-suite"
+          command_identity: "bunx vitest run packages/agentplane/src/cli/run-cli.core.blueprint.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-26T23:25:07.417Z"
+          repository_snapshot_digest: "sha256:601850b3e218e594bbbdf60ea15945ad377cb96f4ad556902e9a4b079dfa6221"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608262034-QVVB66"
     intent:
       acceptance_criteria:
@@ -1017,12 +1059,12 @@ extensions:
 
         Release blocker for 0.7.8. Symptom: required release:prepublish fails in run-cli.core.blueprint.test.ts because task new returns E_IO exit 4. Violated invariant: release fixtures exercising task creation must be valid Git repositories. Root cause: mkProject() creates an empty .git directory while the canonical task-create path now runs git worktree list --porcelain. Recovery: keep the 0.7.8 release Task blocked and clean. Permanent fix: initialize the fixture with git init using the existing test Git helper or an equivalent isolated command. Regression: both blueprint snapshot and drift tests pass in a clean exact-main checkout and the focused suite remains green.
       task_id: "202608262034-QVVB66"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 36
     schema_version: 1
-    updated_at: "2026-08-26T21:09:50.633Z"
+    updated_at: "2026-08-26T23:26:37.373Z"
     work_items:
       repair-blueprint-git-fixture:
         attempt: 1
@@ -1105,11 +1147,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608262034-QVVB66"
+      legacy-finish:202608262034-QVVB66:2026-08-26T23:25:07.417Z:63468394f8a4c785e373529d8184705078807a2f:
+        aggregate_digest: "sha256:ebbaccce9bd7c83fa9e0a30c5861041bbf6842537dae6440f0ffa30a62c0858f"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-26T23:26:37.373Z"
+          cause_refs:
+            - "task-verification:202608262034-QVVB66"
+            - "git:63468394f8a4c785e373529d8184705078807a2f"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e329449484b73d90c03f5e8c"
+          mutation_id: "legacy-finish:202608262034-QVVB66:2026-08-26T23:25:07.417Z:63468394f8a4c785e373529d8184705078807a2f"
+          plan_digest: "sha256:488af2d295d43ab4e862ba6fa38b4c153f1039cce8095570697b1141310e72d9"
+          plan_revision: 1
+          repository_fingerprint: "sha256:601850b3e218e594bbbdf60ea15945ad377cb96f4ad556902e9a4b079dfa6221"
+          schema_version: 1
+          task_id: "202608262034-QVVB66"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608262034-QVVB66:2026-08-26T23:25:07.417Z:63468394f8a4c785e373529d8184705078807a2f"
+        next_revision: 36
+        previous_revision: 35
+        schema_version: 1
+        task_id: "202608262034-QVVB66"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "63468394f8a4c785e373529d8184705078807a2f"
+    message: "🚧 QVVB66 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "c5626485f2bb9097d3cb6f34ef32f26cdd95c940"
@@ -1508,3 +1576,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/11` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:912d4a5921d3b1e167f0f843a774d278f69e08f8bd5d18256a195ae1c4b875ec`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-26T23:26:37.373Z`

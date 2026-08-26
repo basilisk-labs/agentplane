@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:a5404f07f2e28697f4fe2e08d841be83cef7727a01661879d1187aa9e1ae4ee1",
   "pr_number": 4894,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4894",
+  "pre_merge_closure": {
+    "basis_commit": "fb2a8a4b5a2327be8a620175126a94d558edca0d",
+    "branch": "task/202608262034-QVVB66/initialize-blueprint-test-projects-as-real-git-r",
+    "pr_number": 4894,
+    "recorded_at": "2026-08-26T23:26:37.515Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
