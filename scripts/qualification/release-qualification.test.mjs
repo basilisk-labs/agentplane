@@ -236,6 +236,17 @@ describe("v0.7.1 release qualification contract", () => {
       (error) =>
         error instanceof PackagedMixedScopeContractError && error.code === "verification_rework",
     );
+    assert.throws(
+      () =>
+        packetExchange(
+          { action: { kind: "agent_episode" }, authority: { role: "EXECUTOR" } },
+          "EVALUATOR",
+          { verification: { state: "pending" } },
+        ),
+      (error) =>
+        error instanceof PackagedMixedScopeContractError &&
+        error.code === "missing_evaluator_episode",
+    );
   });
 
   it("fails the installed mixed-scope contract for every omitted lifecycle proof", () => {

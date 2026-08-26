@@ -1,3 +1,3 @@
  .../check-packaged-mixed-scope-lifecycle.mjs       | 32 ++++++++++++++++++++--
- .../qualification/release-qualification.test.mjs   | 19 +++++++++++++
- 2 files changed, 48 insertions(+), 3 deletions(-)
+ .../qualification/release-qualification.test.mjs   | 30 ++++++++++++++++++++
+ 2 files changed, 59 insertions(+), 3 deletions(-)

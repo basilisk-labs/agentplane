@@ -15,8 +15,8 @@ Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: required hosted
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bunx vitest run scripts/qualification/release-qualification.test.mjs
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,8 +28,8 @@ Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: required hosted
 
 ```text
  .../check-packaged-mixed-scope-lifecycle.mjs       | 32 ++++++++++++++++++++--
- .../qualification/release-qualification.test.mjs   | 19 +++++++++++++
- 2 files changed, 48 insertions(+), 3 deletions(-)
+ .../qualification/release-qualification.test.mjs   | 30 ++++++++++++++++++++
+ 2 files changed, 59 insertions(+), 3 deletions(-)
 ```
 
 </details>

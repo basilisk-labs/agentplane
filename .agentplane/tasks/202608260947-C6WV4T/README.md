@@ -1,10 +1,10 @@
 ---
 id: "202608260947-C6WV4T"
 title: "Restore packaged mixed-scope lifecycle qualification on the exact release candidate"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ verify:
   - "node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-26T09:53:26.191Z"
+  updated_at: "2026-08-26T10:27:39.325Z"
   updated_by: "HOST:codex:USER"
-  note: "host_user_decision=sha256:c2176a35384697c023f1a02c0dd2f9fd9245b84142e84bcf66902291779801f9"
+  note: "host_user_decision=sha256:a01ca705fb8cbb7bc81398a005d3f4cc2d502329c2c0f6f92fd7d16a06a54ed9"
 verification:
   state: "pending"
   updated_at: null
@@ -217,6 +217,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation is complete and passes the exact packaged lifecycle and full regression, but the approved TaskPlan still contains a validation command that cannot select this node:test file. Recommended action: Use the normal AgentPlane operator/replan transition to apply the already-recorded command-only amendment, preserve implementation commit 7e2c47bc1fd246e059c55b1bbc8700cc1e99a7cf, and then resume supervisor validation with PATH including /Users/densmirnov/.bun/bin. Agentplane receipt: external-agent-blocker/tr_a7ac8e89254c1bd0e7ac733360bc346d/sha256:358aa9e0a586c133a8aab4d1bb6f8758ba721707e404e1262a4f4e8efe58a3b1."
+  -
+    author: "USER"
+    body: "Compatibility recovery authorized by the user: replace only the invalid Vitest validation command with node --test, preserve implementation commit 7e2c47bc1fd246e059c55b1bbc8700cc1e99a7cf, and resume the normal AgentPlane route."
 events:
   -
     type: "status"
@@ -260,9 +263,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation is complete and passes the exact packaged lifecycle and full regression, but the approved TaskPlan still contains a validation command that cannot select this node:test file. Recommended action: Use the normal AgentPlane operator/replan transition to apply the already-recorded command-only amendment, preserve implementation commit 7e2c47bc1fd246e059c55b1bbc8700cc1e99a7cf, and then resume supervisor validation with PATH including /Users/densmirnov/.bun/bin. Agentplane receipt: external-agent-blocker/tr_a7ac8e89254c1bd0e7ac733360bc346d/sha256:358aa9e0a586c133a8aab4d1bb6f8758ba721707e404e1262a4f4e8efe58a3b1."
+  -
+    type: "status"
+    at: "2026-08-26T10:24:53.903Z"
+    author: "USER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Compatibility recovery authorized by the user: replace only the invalid Vitest validation command with node --test, preserve implementation commit 7e2c47bc1fd246e059c55b1bbc8700cc1e99a7cf, and resume the normal AgentPlane route."
 doc_version: 3
-doc_updated_at: "2026-08-26T10:22:05.641Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-26T10:26:36.197Z"
+doc_updated_by: "USER"
 description: "Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: required hosted verify-real-e2e fails reproducibly on clean exact heads c59dad6936fea2b664973d12cfe6ec96d2bc89f5 and 69a4f33f94fbcd46d83d4eb5f40b6654e041dd68 with missing_evaluator_episode: expected EVALUATOR, received EXECUTOR. Violated invariant: packaged-mixed-scope-lifecycle must supply every deterministic verification capability required by its selected code.direct blueprint before expecting evaluator handoff. Root cause: the fixture verification record reports needs_rework because full_regression is required while fixture package.json does not define ci:local:full; all declared commands themselves pass, so AgentPlane correctly returns implementation rework. Temporary recovery: preserve one isolated fixture and read its public verification record; no state edits. Permanent fix: minimally update the qualification fixture to provide a bounded full-regression command consistent with its declared Node test, retain the public lifecycle assertion, and add/adjust regression coverage so a verification rework cannot be misclassified as missing evaluator. Do not weaken hosted gates or production lifecycle invariants. Verify the direct packaged scenario, qualification contract tests, and full local CI. Integrate normally, then refresh 202608252330-9RCWZQ from current main and rerun exact-head hosted qualification."
 sections:
   Summary: |-
@@ -272,7 +282,7 @@ sections:
   Scope: |-
     - In scope: Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: required hosted verify-real-e2e fails reproducibly on clean exact heads c59dad6936fea2b664973d12cfe6ec96d2bc89f5 and 69a4f33f94fbcd46d83d4eb5f40b6654e041dd68 with missing_evaluator_episode: expected EVALUATOR, received EXECUTOR. Violated invariant: packaged-mixed-scope-lifecycle must supply every deterministic verification capability required by its selected code.direct blueprint before expecting evaluator handoff. Root cause: the fixture verification record reports needs_rework because full_regression is required while fixture package.json does not define ci:local:full; all declared commands themselves pass, so AgentPlane correctly returns implementation rework. Temporary recovery: preserve one isolated fixture and read its public verification record; no state edits. Permanent fix: minimally update the qualification fixture to provide a bounded full-regression command consistent with its declared Node test, retain the public lifecycle assertion, and add/adjust regression coverage so a verification rework cannot be misclassified as missing evaluator. Do not weaken hosted gates or production lifecycle invariants. Verify the direct packaged scenario, qualification contract tests, and full local CI. Integrate normally, then refresh 202608252330-9RCWZQ from current main and rerun exact-head hosted qualification.
     - Out of scope: unrelated refactors not required for "Restore packaged mixed-scope lifecycle qualification on the exact release candidate".
-  Plan: "Add the smallest fixture-only full-regression capability required by the selected code.direct blueprint, retain fail-closed evaluator handoff assertions, and prove the installed packaged lifecycle plus qualification contract and full repository regression on the exact implementation."
+  Plan: "Prepared a command-only recovery revision of the approved one-WorkItem plan. It preserves the implementation scope and evidence while using the repository-canonical node:test runner for the qualification contract."
   Verify Steps: |-
     PLANNER fallback scaffold for "Restore packaged mixed-scope lifecycle qualification on the exact release candidate". Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -364,7 +374,7 @@ sections:
 extensions:
   agentplane.execution_grant:
     actor: "HOST:codex:USER"
-    approval_evidence_digest: "sha256:c2176a35384697c023f1a02c0dd2f9fd9245b84142e84bcf66902291779801f9"
+    approval_evidence_digest: "sha256:a01ca705fb8cbb7bc81398a005d3f4cc2d502329c2c0f6f92fd7d16a06a54ed9"
     approval_kind: "host_user_decision"
     capabilities:
       - "provider.merge"
@@ -373,13 +383,13 @@ extensions:
       - "repository.write"
       - "task.lifecycle"
       - "task.scope.extend"
-    completion_contract_digest: "sha256:38d7a02f1426e5e11d97cd5b8fcd217f8ec340c1c7c899de401805cd41d25f49"
-    digest: "sha256:a8c990154bf22cb971916fd4b4f3770bb1974b5c62414267889d9b37ac854948"
-    grant_id: "fc21e715-495a-47d4-bc33-e62a1c617c7c"
-    issued_at: "2026-08-26T09:53:26.191Z"
+    completion_contract_digest: "sha256:bedb81d534c2121fe18dfeac947e9ef15a39bf7b2b8f630d8d23262ff8c2f61d"
+    digest: "sha256:aa7ec79ccd7067ed91b651e2df69ec8f32842ed2c081a8cd267a7ff9a19bf6d6"
+    grant_id: "6f9538f5-afac-4b12-b003-393e2c3b5374"
+    issued_at: "2026-08-26T10:27:39.325Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:41f8bb24cb98879439854fc0d426f8284bdb83662bf1b72ce6f3ae20edcb3fcd"
-    plan_revision: 2
+    plan_digest: "sha256:489a4d7e9b65954b20972f2456528c9323effb5709d3d5c5e111cbab1a67094f"
+    plan_revision: 17
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:922aafbc3665387b677cf22e849c43804c0367f9b710439f234f9bb1e4993c4f"
@@ -388,73 +398,31 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-08-26T09:53:26.191Z"
+        approved_at: "2026-08-26T10:27:39.325Z"
         approved_by: "HOST:codex:USER"
-        approved_digest: "sha256:232817c2eb17d233463bb069aaed73259dc1196935c988e8f3427d66fc5a8165"
+        approved_digest: "sha256:0f76356cccc58587839852726467f6fbe06744dd90484cb1856a69402dfd5a35"
         policy_facts:
           - "host_user_decision"
         state: "approved"
-      created_at: "2026-08-26T09:49:37.238Z"
-      digest: "sha256:232817c2eb17d233463bb069aaed73259dc1196935c988e8f3427d66fc5a8165"
+      created_at: "2026-08-26T10:26:36.159Z"
+      digest: "sha256:0f76356cccc58587839852726467f6fbe06744dd90484cb1856a69402dfd5a35"
       proposal:
         assumptions:
-          - "A fixture-local ci:local:full alias to its deterministic Node test is sufficient to satisfy the blueprint without weakening production verification."
+          - "The recovery preserves the existing implementation commit and changes only the invalid validation runner declaration."
         planning_baseline:
-          captured_at: "2026-08-26T09:47:18.962Z"
+          captured_at: "2026-08-26T10:25:02.632Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:ef7ecbe836b71a18bdc4adb252324972c0628cdc204ee75fce5676801c407e31"
+          digest: "sha256:2ecf333a75fc8b542804c30003068527db10c41640e9323b78ad0410821e4e7e"
           dirty_paths:
-            - ".agentplane/tasks/202608210955-9SX2C6/README.md"
-            - ".agentplane/tasks/202608212244-Q3QMJR/README.md"
-            - ".agentplane/tasks/202608220034-FPEFRK/README.md"
-            - ".agentplane/tasks/202608220034-FPEFRK/blueprint/resolved-snapshot.json"
-            - ".agentplane/tasks/202608241434-129F8R/README.md"
-            - ".agentplane/tasks/202608241434-EH8E74/README.md"
-            - ".agentplane/tasks/202608241434-KCC9K4/README.md"
-            - ".agentplane/tasks/202608241434-QQNDGT/README.md"
-            - ".agentplane/tasks/202608241434-SFPD91/README.md"
-            - ".agentplane/tasks/202608241434-TA84WK/README.md"
-            - ".agentplane/tasks/202608241434-WVYA5T/README.md"
-            - ".agentplane/tasks/202608241435-40YZCE/README.md"
-            - ".agentplane/tasks/202608241435-73DA89/README.md"
-            - ".agentplane/tasks/202608241435-D001ET/README.md"
-            - ".agentplane/tasks/202608241435-HTV4K2/README.md"
-            - ".agentplane/tasks/202608241435-NDR0BX/README.md"
-            - ".agentplane/tasks/202608241435-RJXGHQ/README.md"
-            - ".agentplane/tasks/202608241435-W3DG6V/README.md"
-            - ".agentplane/tasks/202608241435-YSW0E0/README.md"
-            - ".agentplane/tasks/202608241436-2G9DA8/README.md"
-            - ".agentplane/tasks/202608241436-63W678/README.md"
-            - ".agentplane/tasks/202608241436-8PJKJP/README.md"
-            - ".agentplane/tasks/202608241436-99B067/README.md"
-            - ".agentplane/tasks/202608241436-A87Y59/README.md"
-            - ".agentplane/tasks/202608241436-DHPR5E/README.md"
-            - ".agentplane/tasks/202608241436-H60MCY/README.md"
-            - ".agentplane/tasks/202608241436-TX6TRF/README.md"
-            - ".agentplane/tasks/202608241436-W6A113/README.md"
-            - ".agentplane/tasks/202608241437-5YZ0N8/README.md"
-            - ".agentplane/tasks/202608241437-H5418M/README.md"
-            - ".agentplane/tasks/202608241437-SH3CDX/README.md"
-            - ".agentplane/tasks/202608241437-V8BA7Q/README.md"
-            - ".agentplane/tasks/202608241437-XY3950/README.md"
-            - ".agentplane/tasks/202608250007-P5BWP0/README.md"
-            - ".agentplane/tasks/202608250007-P5BWP0/blueprint/resolved-snapshot.json"
-            - ".agentplane/tasks/202608251038-42AC0D/README.md"
-            - ".agentplane/tasks/202608251053-QAZ236/README.md"
-            - ".agentplane/tasks/202608251706-V287W1/README.md"
-            - ".agentplane/tasks/202608251735-ZJ7YZE/README.md"
-            - ".agentplane/tasks/202608252233-JR4T47/README.md"
-            - ".agentplane/tasks/202608252234-4CKSWA/README.md"
-            - ".agentplane/tasks/202608252234-4CKSWA/blueprint/resolved-snapshot.json"
             - ".agentplane/tasks/202608260947-C6WV4T/README.md"
           git:
             kind: "commit"
             ref: null
-            sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
+            sha: "3d4e5bbf5a951415f0ada89e6499dc976fee087c"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:1"
+          task_history_cursor: "task-revision:16"
         schema_version: 1
         task_id: "202608260947-C6WV4T"
         top_level_validation:
@@ -467,7 +435,7 @@ extensions:
               required: true
             -
               capability: "task.verify"
-              command: "bunx vitest run scripts/qualification/release-qualification.test.mjs"
+              command: "node --test scripts/qualification/release-qualification.test.mjs"
               id: "check-contract"
               kind: "deterministic"
               required: true
@@ -496,7 +464,7 @@ extensions:
               description: "The exact implementation passes the repository full regression suite."
               id: "criterion-regression"
               required: true
-          evidence_fingerprint: "sha256:2f2daa5975870018452c7822cc0cea2419797d047c176a437086f445cf0e16af"
+          evidence_fingerprint: "sha256:4d5a45ee4e79b92357276cd1294eac5609eaa8bff820e1009e23fe746d6e0a67"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -565,7 +533,7 @@ extensions:
                     required: true
                   -
                     capability: "task.verify"
-                    command: "bunx vitest run scripts/qualification/release-qualification.test.mjs"
+                    command: "node --test scripts/qualification/release-qualification.test.mjs"
                     id: "check-contract"
                     kind: "deterministic"
                     required: true
@@ -594,9 +562,9 @@ extensions:
                     description: "The exact implementation passes the repository full regression suite."
                     id: "criterion-regression"
                     required: true
-                evidence_fingerprint: "sha256:2f2daa5975870018452c7822cc0cea2419797d047c176a437086f445cf0e16af"
+                evidence_fingerprint: "sha256:4d5a45ee4e79b92357276cd1294eac5609eaa8bff820e1009e23fe746d6e0a67"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202608260947-C6WV4T"
     event_cursor: 1
@@ -627,99 +595,234 @@ extensions:
         Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: required hosted verify-real-e2e fails reproducibly on clean exact heads c59dad6936fea2b664973d12cfe6ec96d2bc89f5 and 69a4f33f94fbcd46d83d4eb5f40b6654e041dd68 with missing_evaluator_episode: expected EVALUATOR, received EXECUTOR. Violated invariant: packaged-mixed-scope-lifecycle must supply every deterministic verification capability required by its selected code.direct blueprint before expecting evaluator handoff. Root cause: the fixture verification record reports needs_rework because full_regression is required while fixture package.json does not define ci:local:full; all declared commands themselves pass, so AgentPlane correctly returns implementation rework. Temporary recovery: preserve one isolated fixture and read its public verification record; no state edits. Permanent fix: minimally update the qualification fixture to provide a bounded full-regression command consistent with its declared Node test, retain the public lifecycle assertion, and add/adjust regression coverage so a verification rework cannot be misclassified as missing evaluator. Do not weaken hosted gates or production lifecycle invariants. Verify the direct packaged scenario, qualification contract tests, and full local CI. Integrate normally, then refresh 202608252330-9RCWZQ from current main and rerun exact-head hosted qualification.
       task_id: "202608260947-C6WV4T"
     lifecycle: "ACTIVE"
-    plan_amendments:
+    plan_amendments: []
+    plan_history:
       -
-        actor_id: "external:EXECUTOR"
-        created_at: "2026-08-26T10:20:54.612Z"
-        digest: "sha256:18ee5c3177f1449e26f42c0ae407a8794325838a5331317029636644e6de7a1d"
-        id: "amendment_18ee5c3177f1449e26f42c0a"
-        plan_digest: "sha256:232817c2eb17d233463bb069aaed73259dc1196935c988e8f3427d66fc5a8165"
-        plan_revision: 1
-        refinement:
-          acceptance_changed: false
-          architecture_constraints_changed: false
-          dependencies_changed: false
-          description: "Replace the contract validation command 'bunx vitest run scripts/qualification/release-qualification.test.mjs' with the repository-canonical 'node --test scripts/qualification/release-qualification.test.mjs'. This changes only the local test runner invocation; scope, outputs, acceptance criteria, risk, effects, dependencies, and architecture remain unchanged."
-          external_effects_added: []
-          operations:
-            - "clarify"
-          outputs_added: []
-          risk_changed: false
-          scope_roots_added: []
+        approval:
+          approved_at: "2026-08-26T09:53:26.191Z"
+          approved_by: "HOST:codex:USER"
+          approved_digest: "sha256:232817c2eb17d233463bb069aaed73259dc1196935c988e8f3427d66fc5a8165"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-08-26T09:49:37.238Z"
+        digest: "sha256:232817c2eb17d233463bb069aaed73259dc1196935c988e8f3427d66fc5a8165"
+        proposal:
+          assumptions:
+            - "A fixture-local ci:local:full alias to its deterministic Node test is sufficient to satisfy the blueprint without weakening production verification."
+          planning_baseline:
+            captured_at: "2026-08-26T09:47:18.962Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:ef7ecbe836b71a18bdc4adb252324972c0628cdc204ee75fce5676801c407e31"
+            dirty_paths:
+              - ".agentplane/tasks/202608210955-9SX2C6/README.md"
+              - ".agentplane/tasks/202608212244-Q3QMJR/README.md"
+              - ".agentplane/tasks/202608220034-FPEFRK/README.md"
+              - ".agentplane/tasks/202608220034-FPEFRK/blueprint/resolved-snapshot.json"
+              - ".agentplane/tasks/202608241434-129F8R/README.md"
+              - ".agentplane/tasks/202608241434-EH8E74/README.md"
+              - ".agentplane/tasks/202608241434-KCC9K4/README.md"
+              - ".agentplane/tasks/202608241434-QQNDGT/README.md"
+              - ".agentplane/tasks/202608241434-SFPD91/README.md"
+              - ".agentplane/tasks/202608241434-TA84WK/README.md"
+              - ".agentplane/tasks/202608241434-WVYA5T/README.md"
+              - ".agentplane/tasks/202608241435-40YZCE/README.md"
+              - ".agentplane/tasks/202608241435-73DA89/README.md"
+              - ".agentplane/tasks/202608241435-D001ET/README.md"
+              - ".agentplane/tasks/202608241435-HTV4K2/README.md"
+              - ".agentplane/tasks/202608241435-NDR0BX/README.md"
+              - ".agentplane/tasks/202608241435-RJXGHQ/README.md"
+              - ".agentplane/tasks/202608241435-W3DG6V/README.md"
+              - ".agentplane/tasks/202608241435-YSW0E0/README.md"
+              - ".agentplane/tasks/202608241436-2G9DA8/README.md"
+              - ".agentplane/tasks/202608241436-63W678/README.md"
+              - ".agentplane/tasks/202608241436-8PJKJP/README.md"
+              - ".agentplane/tasks/202608241436-99B067/README.md"
+              - ".agentplane/tasks/202608241436-A87Y59/README.md"
+              - ".agentplane/tasks/202608241436-DHPR5E/README.md"
+              - ".agentplane/tasks/202608241436-H60MCY/README.md"
+              - ".agentplane/tasks/202608241436-TX6TRF/README.md"
+              - ".agentplane/tasks/202608241436-W6A113/README.md"
+              - ".agentplane/tasks/202608241437-5YZ0N8/README.md"
+              - ".agentplane/tasks/202608241437-H5418M/README.md"
+              - ".agentplane/tasks/202608241437-SH3CDX/README.md"
+              - ".agentplane/tasks/202608241437-V8BA7Q/README.md"
+              - ".agentplane/tasks/202608241437-XY3950/README.md"
+              - ".agentplane/tasks/202608250007-P5BWP0/README.md"
+              - ".agentplane/tasks/202608250007-P5BWP0/blueprint/resolved-snapshot.json"
+              - ".agentplane/tasks/202608251038-42AC0D/README.md"
+              - ".agentplane/tasks/202608251053-QAZ236/README.md"
+              - ".agentplane/tasks/202608251706-V287W1/README.md"
+              - ".agentplane/tasks/202608251735-ZJ7YZE/README.md"
+              - ".agentplane/tasks/202608252233-JR4T47/README.md"
+              - ".agentplane/tasks/202608252234-4CKSWA/README.md"
+              - ".agentplane/tasks/202608252234-4CKSWA/blueprint/resolved-snapshot.json"
+              - ".agentplane/tasks/202608260947-C6WV4T/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202608260947-C6WV4T"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+                id: "check-packaged"
+                kind: "deterministic"
+                required: true
+              -
+                capability: "task.verify"
+                command: "bunx vitest run scripts/qualification/release-qualification.test.mjs"
+                id: "check-contract"
+                kind: "deterministic"
+                required: true
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "check-full"
+                kind: "deterministic"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "check-packaged"
+                description: "The installed mixed-scope fixture supplies the required full-regression capability and reaches an EVALUATOR episode without weakening lifecycle checks."
+                id: "criterion-fixture"
+                required: true
+              -
+                check_ids:
+                  - "check-contract"
+                description: "Qualification contract tests preserve the blocking mixed-scope lifecycle and classify verification rework explicitly."
+                id: "criterion-contract"
+                required: true
+              -
+                check_ids:
+                  - "check-full"
+                description: "The exact implementation passes the repository full regression suite."
+                id: "criterion-regression"
+                required: true
+            evidence_fingerprint: "sha256:2f2daa5975870018452c7822cc0cea2419797d047c176a437086f445cf0e16af"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-packaged"
+                    description: "The installed mixed-scope fixture supplies the required full-regression capability and reaches an EVALUATOR episode without weakening lifecycle checks."
+                    id: "criterion-fixture"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-contract"
+                    description: "Qualification contract tests preserve the blocking mixed-scope lifecycle and classify verification rework explicitly."
+                    id: "criterion-contract"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-full"
+                    description: "The exact implementation passes the repository full regression suite."
+                    id: "criterion-regression"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 32768
+                  optional_sources: []
+                  required_sources:
+                    - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+                    - "scripts/qualification/release-qualification.test.mjs"
+                    - "scripts/qualification/v0.7.1-release-qualification.json"
+                  symbol_hints:
+                    - "buildFixture"
+                    - "runFixture"
+                    - "packaged-mixed-scope-lifecycle"
+                depends_on: []
+                expected_outputs:
+                  - "packaged-mixed-scope-qualification-fix"
+                id: "restore-packaged-mixed-scope-qualification"
+                objective: "Provide the fixture full-regression capability required by its blueprint and retain exact public lifecycle qualification."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/qualification/release-qualification.test.mjs"
+                risk: "low"
+                scope_roots:
+                  - "scripts/qualification"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+                      id: "check-packaged"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run scripts/qualification/release-qualification.test.mjs"
+                      id: "check-contract"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "check-full"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-packaged"
+                      description: "The installed mixed-scope fixture supplies the required full-regression capability and reaches an EVALUATOR episode without weakening lifecycle checks."
+                      id: "criterion-fixture"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-contract"
+                      description: "Qualification contract tests preserve the blocking mixed-scope lifecycle and classify verification rework explicitly."
+                      id: "criterion-contract"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-full"
+                      description: "The exact implementation passes the repository full regression suite."
+                      id: "criterion-regression"
+                      required: true
+                  evidence_fingerprint: "sha256:2f2daa5975870018452c7822cc0cea2419797d047c176a437086f445cf0e16af"
+                  schema_version: 1
+        revision: 1
         schema_version: 1
-    plan_history: []
-    revision: 13
+        task_id: "202608260947-C6WV4T"
+    revision: 14
     schema_version: 1
-    updated_at: "2026-08-26T10:20:54.666Z"
+    updated_at: "2026-08-26T10:27:39.325Z"
     work_items:
       restore-packaged-mixed-scope-qualification:
-        attempt: 2
+        attempt: 0
         claim_id: null
         id: "restore-packaged-mixed-scope-qualification"
-        last_failure:
-          cause_refs:
-            - "criterion-fixture"
-            - "criterion-contract"
-          code: "validation_failed"
-          kind: "validation"
-          message: "Preserved implementation commit 7e2c47bc1fd246e059c55b1bbc8700cc1e99a7cf, proved the packaged mixed-scope lifecycle on that exact implementation, and identified one validation-command refinement required by the approved plan."
-          retryable: true
-        output_manifests:
-          -
-            digest: "sha256:4b535b9e400d065263b1ba33f12a9b5b130fe03767f0c5798ce97a4fcb6c9d3d"
-            id: "packaged-mixed-scope-qualification-fix"
-            kind: "semantic_output"
-            producer:
-              attempt: 2
-              plan_revision: 1
-              task_id: "202608260947-C6WV4T"
-              work_item_id: "restore-packaged-mixed-scope-qualification"
-            provenance:
-              - "sha256:0dfeeaa06264c13493afaaf65eeecaf9c12da4b5da77d48f572283cc884e3441"
-              - ".agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:04820a1c221af8029efdba65fd953c1f001d24c1f6a44323306943bff000c123"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 3
-        state: "REWORK_READY"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json"
-              check_id: "check-packaged"
-              command_identity: "node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
-              detail: "Declared validation command node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-08-26T10:20:54.662Z"
-              repository_snapshot_digest: "sha256:04820a1c221af8029efdba65fd953c1f001d24c1f6a44323306943bff000c123"
-              status: "unsupported"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json"
-              check_id: "check-contract"
-              command_identity: "bunx vitest run scripts/qualification/release-qualification.test.mjs"
-              detail: "Declared check failed: bunx vitest run scripts/qualification/release-qualification.test.mjs"
-              exit_code: 1
-              observed_at: "2026-08-26T10:20:54.662Z"
-              repository_snapshot_digest: "sha256:04820a1c221af8029efdba65fd953c1f001d24c1f6a44323306943bff000c123"
-              status: "failed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608260947-C6WV4T/supervision/declared-checks.json"
-              check_id: "check-full"
-              command_identity: "bun run ci:local:full"
-              detail: "Declared check failed: bunx vitest run scripts/qualification/release-qualification.test.mjs"
-              exit_code: 0
-              observed_at: "2026-08-26T10:20:54.662Z"
-              repository_snapshot_digest: "sha256:04820a1c221af8029efdba65fd953c1f001d24c1f6a44323306943bff000c123"
-              status: "passed"
-          schema_version: 1
-          stale_evidence: []
-          status: "blocked"
-          unsatisfied_criteria:
-            - "criterion-fixture"
-            - "criterion-contract"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
@@ -819,7 +922,7 @@ Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: required hosted
 
 ## Plan
 
-Add the smallest fixture-only full-regression capability required by the selected code.direct blueprint, retain fail-closed evaluator handoff assertions, and prove the installed packaged lifecycle plus qualification contract and full repository regression on the exact implementation.
+Prepared a command-only recovery revision of the approved one-WorkItem plan. It preserves the implementation scope and evidence while using the repository-canonical node:test runner for the qualification contract.
 
 ## Verify Steps
 
