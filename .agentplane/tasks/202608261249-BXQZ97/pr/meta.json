@@ -1,10 +1,13 @@
 {
-  "base": "main",
+  "artifact_state": "remote_failed",
+  "artifact_state_reason": "GitHub PR creation failed",
+  "artifact_state_updated_at": "2026-08-26T17:14:18.225Z",
+  "base": "79bc13ff33358c49e216901f59c8fbc0a17987d2",
   "branch": "task/202608261249-BXQZ97/add-provider-update-branch-recovery",
   "created_at": "2026-08-26T13:12:22.036Z",
   "diffstat_sha256": "sha256:dfe0de89e62315d7bd62014ce738733c0c54c859404df1b07d56b34025b441c9",
-  "last_verified_at": "2026-08-26T17:01:34.616Z",
-  "last_verified_diffstat_sha256": "sha256:915fe26fe6d19af523588c1c59b9cccbea20ab5bb71010238aa110fc24122e2e",
+  "last_verified_at": "2026-08-26T17:13:22.652Z",
+  "last_verified_diffstat_sha256": "sha256:dfe0de89e62315d7bd62014ce738733c0c54c859404df1b07d56b34025b441c9",
   "pr_number": 4892,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4892",
   "provider": {
@@ -18,8 +21,8 @@
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608261249-BXQZ97",
-  "updated_at": "2026-08-26T15:54:45.336Z",
+  "updated_at": "2026-08-26T17:12:03.142Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }

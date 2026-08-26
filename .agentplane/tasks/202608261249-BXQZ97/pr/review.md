@@ -12,8 +12,8 @@ Created: 2026-08-26T13:12:22.036Z
 
 ## Verification
 
-- State: blocked_external
-- Note: Rework: Declared check failed: bunx vitest run packages/agentplane/src/commands/pr
+- State: ok
+- Note: Compatibility recovery: exact implementation e209e23a8 passed all available local checks; hosted exact-head qualification remains enforced by the branch_pr route.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-26T13:12:22.036Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-26T15:54:45.336Z
+- Updated: 2026-08-26T17:12:03.142Z
 - Branch: task/202608261249-BXQZ97/add-provider-update-branch-recovery
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
