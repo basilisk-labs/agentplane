@@ -43,12 +43,13 @@ Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPE
  .../src/commands/shared/workflow-postconditions.ts |   6 +
  .../src/commands/shared/workflow-step-branch.ts    |   9 +-
  ...rkflow-step-projections.conflict-rework.test.ts | 112 +++++++
- .../shared/workflow-step-provider-update-branch.ts |  41 +++
+ .../workflow-step-provider-update-branch-spec.ts   |  21 ++
+ .../shared/workflow-step-provider-update-branch.ts |  20 ++
  .../src/commands/shared/workflow-step.ts           |   6 +
  .../task/branch-task-supervisor-operations.test.ts | 107 ++++++
  .../task/branch-task-supervisor-operations.ts      |  33 ++
  .../src/commands/task/configured-authority.test.ts |   1 +
- 21 files changed, 1165 insertions(+), 5 deletions(-)
+ 22 files changed, 1165 insertions(+), 5 deletions(-)
 ```
 
 </details>
