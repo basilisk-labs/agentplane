@@ -2,10 +2,10 @@
 id: "202608252330-9RCWZQ"
 title: "Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 97
+revision: 98
 origin:
   system: "manual"
 depends_on: []
@@ -65,9 +65,9 @@ quality_review:
     - "Supervisor-owned evidence binds the passing full declared check to implementation commit 88bea044da28e8d7a95ff3a932fb5bb1b973bf6f; 43e3be9d3 contains only recorded implementation evidence."
     - "Residual risk: Hosted exact-head qualification remains mandatory before integration."
 token_usage:
-  agent_runs: 33
+  agent_runs: 37
   input_tokens: null
-  journal_digest: "sha256:f2d586a955b298fd215e2e097c2529226b05b627c1ee854edf52f4ed3d4068d9"
+  journal_digest: "sha256:dd0cb17da707a905aa687f96ff66f4831408af3aa57784a0effc55678cddeb50"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -77,7 +77,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-26T08:52:04.137Z"
+  updated_at: "2026-08-26T09:38:17.478Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -285,8 +285,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "88bea044da28e8d7a95ff3a932fb5bb1b973bf6f"
-  message: "🚧 9RCWZQ task: apply external agent result"
+  hash: "84177ce0e0b8522e66dec4dbd2eb86e1b84b8237"
+  message: "🚧 9RCWZQ task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -402,6 +402,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 88bea044da28. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -798,9 +801,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-26T09:38:17.478Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "84177ce0e0b8522e66dec4dbd2eb86e1b84b8237"
 doc_version: 3
-doc_updated_at: "2026-08-26T09:38:00.517Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-26T09:38:17.508Z"
+doc_updated_by: "CODER"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:
   Summary: |-
@@ -2483,6 +2494,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "88bea044da28e8d7a95ff3a932fb5bb1b973bf6f"
+    message: "🚧 9RCWZQ task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
@@ -3380,12 +3392,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/33` agent runs
+- Completeness: `0/37` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:f2d586a955b298fd215e2e097c2529226b05b627c1ee854edf52f4ed3d4068d9`
+- Journal digest: `sha256:dd0cb17da707a905aa687f96ff66f4831408af3aa57784a0effc55678cddeb50`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-26T08:52:04.137Z`
+- Updated at: `2026-08-26T09:38:17.478Z`
