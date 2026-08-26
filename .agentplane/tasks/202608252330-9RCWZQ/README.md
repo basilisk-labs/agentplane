@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 96
+revision: 97
 origin:
   system: "manual"
 depends_on: []
@@ -36,32 +36,34 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-26T08:50:44.597Z"
+  updated_at: "2026-08-26T09:38:00.483Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 4 typed finding(s)."
-  evaluated_sha: "f880b823da2e6cd4988995c519664bfa0f7c570b"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "88bea044da28e8d7a95ff3a932fb5bb1b973bf6f"
   blueprint_digest: "aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c"
   evidence_refs:
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-085003708-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-085003708-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/5f0c1c06ecc8db604eed2afe3d8ef62d88de1b03a2233b7f8064add5675a7e2c.md"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-085003708-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-085003708-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-085003708-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-093647370-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-093647370-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/afae2b0ac3b3e5557dbe976742d52f545107dbb7e0600f77ff5b691d9a4c52d7.md"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-093647370-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-093647370-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-093647370-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608252330-9RCWZQ/README.md"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/0e9e009c19595885670bfeffa6a89a4b95913701d78fc8b82a642af983e9b070.patch"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/dece295262267362e3b0e5560d040cecba4b096c3c4a4fbd5f53fe79bd2e55f2.json"
-    - ".agentplane/tasks/202608252330-9RCWZQ/verification/20260826084952154-d05180d3d18d1aa9.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/2ba2a401e55333665fa73aef9f76d5435f2836c71455551acfef029eab149d63.patch"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/d7af7017bfbbb3cfb14f27b5a5ec22ae9fbc0c9b8c7d2fb08f8d6f44e3816c1d.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/verification/20260826093630234-e75cc6f5784bfa93.json"
     - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/cbf2a89c25f28cf78edbe7197684c73ad7e9a2d05109f7706d956a1390e66550.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The exact task head changes five approved product/test files relative to the frozen base and passes git diff --check."
-    - "Exact-head GitHub provider serialization tests pass 19/19 and explicitly reject a 40-hex provider base payload."
-    - "Focused PR-open tests, typecheck, and bounded full-regression evidence cover the implementation; hosted integration remains a lifecycle gate after branch publication."
-    - "Residual risk: Hosted checks have not yet run against exact head f880b823da2e6cd4988995c519664bfa0f7c570b and must remain mandatory before integration."
+    - "The live provider lookup uses the task branch publication remote rather than a hard-coded origin, so a non-origin upstream remains supported."
+    - "Full 40- and 64-hex OIDs are normalized case-insensitively while ordinary branch refs pass through unchanged."
+    - "The regression suite covers exact success, uppercase SHA, configured-branch mismatch, missing local tracking evidence with live-provider success, non-origin publication remote, local drift, and stale tracking data after provider drift."
+    - "The oversized-test regression introduced during rework is resolved: the CLI integration test is 839 lines and the focused provider-base test is 202 lines."
+    - "Supervisor-owned evidence binds the passing full declared check to implementation commit 88bea044da28e8d7a95ff3a932fb5bb1b973bf6f; 43e3be9d3 contains only recorded implementation evidence."
+    - "Residual risk: Hosted exact-head qualification remains mandatory before integration."
 token_usage:
   agent_runs: 33
   input_tokens: null
@@ -797,7 +799,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-26T09:36:32.342Z"
+doc_updated_at: "2026-08-26T09:38:00.517Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:

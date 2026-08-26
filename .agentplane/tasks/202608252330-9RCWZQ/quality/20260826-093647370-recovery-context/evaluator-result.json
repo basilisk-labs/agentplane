@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The live provider lookup uses the task branch publication remote rather than a hard-coded origin, so a non-origin upstream remains supported.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/2ba2a401e55333665fa73aef9f76d5435f2836c71455551acfef029eab149d63.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Full 40- and 64-hex OIDs are normalized case-insensitively while ordinary branch refs pass through unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/2ba2a401e55333665fa73aef9f76d5435f2836c71455551acfef029eab149d63.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The regression suite covers exact success, uppercase SHA, configured-branch mismatch, missing local tracking evidence with live-provider success, non-origin publication remote, local drift, and stale tracking data after provider drift.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/2ba2a401e55333665fa73aef9f76d5435f2836c71455551acfef029eab149d63.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The oversized-test regression introduced during rework is resolved: the CLI integration test is 839 lines and the focused provider-base test is 202 lines.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/2ba2a401e55333665fa73aef9f76d5435f2836c71455551acfef029eab149d63.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Supervisor-owned evidence binds the passing full declared check to implementation commit 88bea044da28e8d7a95ff3a932fb5bb1b973bf6f; 43e3be9d3 contains only recorded implementation evidence.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/2ba2a401e55333665fa73aef9f76d5435f2836c71455551acfef029eab149d63.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted exact-head qualification remains mandatory before integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/2ba2a401e55333665fa73aef9f76d5435f2836c71455551acfef029eab149d63.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
