@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
   cmdWorkStart: vi.fn(),
   enqueue: vi.fn(),
   cmdCleanupMerged: vi.fn(),
+  updateProviderBranch: vi.fn(),
 }));
 
 vi.mock("../shared/task-backend.js", () => ({
@@ -36,6 +37,10 @@ vi.mock("./finish-command.js", () => ({
 
 vi.mock("../branch/cleanup-merged.js", () => ({
   cmdCleanupMerged: mocks.cmdCleanupMerged,
+}));
+
+vi.mock("../pr/provider-update-branch.js", () => ({
+  updateProviderBranch: mocks.updateProviderBranch,
 }));
 
 vi.mock("../integrate-queue.command.js", () => ({
@@ -130,6 +135,39 @@ function runNextOperation(): Extract<WorkflowOperation, { id: "integration.run_n
   };
 }
 
+function updateBranchOperation(): Extract<WorkflowOperation, { id: "provider.pr.update_branch" }> {
+  return {
+    id: "provider.pr.update_branch",
+    type: "provider_update_branch",
+    params: {
+      taskId: "202607221852-71SCSW",
+      identity: {
+        provider: "github",
+        hostname: "github.com",
+        remote: "origin",
+        sourceProject: "owner/repo",
+        targetProject: "owner/repo",
+        sourceUrl: "git@github.com:owner/repo.git",
+        targetUrl: "https://github.com/owner/repo.git",
+      },
+      prNumber: 42,
+      branch: "task/202607221852-71SCSW/frozen-base",
+      baseBranch: "main",
+      expectedHeadSha: "b".repeat(40),
+      expectedBaseSha: "a".repeat(40),
+    },
+    preconditionFingerprint: preMergeCloseOperation().preconditionFingerprint,
+    authorityRef: "route:test",
+    idempotencyKey: "provider.pr.update_branch:test",
+    expectedPostconditions: [
+      { id: "provider_branch_updated", subject: "provider", expected: "updated" },
+      { id: "provider_state_observed", subject: "provider", expected: "observed" },
+      { id: "route_state_recomputed", subject: "route", expected: "recomputed" },
+    ],
+    triggersGitHooks: false,
+  };
+}
+
 describe("branch task supervisor operations", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -153,6 +191,75 @@ describe("branch task supervisor operations", () => {
     mocks.cmdFinish.mockResolvedValue(0);
     mocks.runNext.mockResolvedValue(0);
     mocks.cmdCleanupMerged.mockResolvedValue(0);
+    mocks.updateProviderBranch.mockResolvedValue({
+      state: "updated",
+      effect: "applied",
+      observed: {},
+      evidence: {
+        observedHeadSha: "c".repeat(40),
+      },
+    });
+  });
+
+  it("executes the exact provider update-branch operation and reports proven readback", async () => {
+    const operation = updateBranchOperation();
+
+    const result = await executeBranchWorkflowOperation({
+      decision: routeDecision(operation),
+      operation,
+    });
+
+    expect(result.status).toBe("succeeded");
+    expect(result.observed_postconditions).toContain("provider_branch_updated");
+    expect(mocks.updateProviderBranch).toHaveBeenCalledWith({
+      gitRoot: "/repo",
+      identity: operation.params.identity,
+      prNumber: 42,
+      branch: operation.params.branch,
+      baseBranch: "main",
+      expectedHeadSha: "b".repeat(40),
+      expectedBaseSha: "a".repeat(40),
+    });
+  });
+
+  it("requires a distinct supervisor operation after a pre-effect provider failure", async () => {
+    const operation = updateBranchOperation();
+    mocks.updateProviderBranch.mockResolvedValueOnce({
+      state: "not_applied",
+      reason: "head_drift",
+      detail: "provider head changed",
+      observed: null,
+    });
+
+    const result = await executeBranchWorkflowOperation({
+      decision: routeDecision(operation),
+      operation,
+    });
+
+    expect(result.status).toBe("failed");
+    expect(result.detail).toContain("stopped before a proven effect");
+    expect(result.detail).toContain("distinct fresh supervisor operation");
+    expect(mocks.updateProviderBranch).toHaveBeenCalledOnce();
+  });
+
+  it("stops effect-in-doubt without repeating the provider mutation", async () => {
+    const operation = updateBranchOperation();
+    mocks.updateProviderBranch.mockResolvedValueOnce({
+      state: "effect_in_doubt",
+      reason: "readback_unproven",
+      detail: "provider ancestry is not yet conclusive",
+      observed: null,
+    });
+
+    const result = await executeBranchWorkflowOperation({
+      decision: routeDecision(operation),
+      operation,
+    });
+
+    expect(result.status).toBe("failed");
+    expect(result.detail).toContain("effect-in-doubt");
+    expect(result.detail).toContain("do not repeat the effect blindly");
+    expect(mocks.updateProviderBranch).toHaveBeenCalledOnce();
   });
 
   it("routes worktree creation and integration through the frozen task base", async () => {

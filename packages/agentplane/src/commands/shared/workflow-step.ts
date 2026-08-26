@@ -4,6 +4,7 @@ import type { TaskRepositoryEffect } from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { ConflictReworkPreparation } from "../pr/conflict-rework.js";
+import type { GitHostIdentity } from "../pr/internal/git-host-identity.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { RouteBatchOwnership } from "./route-batch-ownership.js";
 import type { RouteCleanupProbe, RouteNextAction } from "./route-decision-types.js";
@@ -50,6 +51,7 @@ type WorkflowOperationType =
   | "integration_run_next"
   | "pr_sync"
   | "provider_refresh"
+  | "provider_update_branch"
   | "runner_follow"
   | "task_record_result"
   | "task_scope_extend"
@@ -70,6 +72,7 @@ export type WorkflowOperationId =
   | "pr.open"
   | "pr.sync_or_verify"
   | "provider.pr.refresh"
+  | "provider.pr.update_branch"
   | "flow.repair.foreign_task_readme"
   | "route.remote.refresh"
   | "runner.follow"
@@ -103,6 +106,15 @@ export type WorkflowOperationParams = {
   "pr.open": { taskId: string; author: string; includeTaskIds: readonly string[] };
   "pr.sync_or_verify": { taskId: string; includeTaskIds: readonly string[] };
   "provider.pr.refresh": { taskId: string };
+  "provider.pr.update_branch": {
+    taskId: string;
+    identity: GitHostIdentity;
+    prNumber: number;
+    branch: string;
+    baseBranch: string;
+    expectedHeadSha: string;
+    expectedBaseSha: string;
+  };
   "flow.repair.foreign_task_readme": { taskId: string };
   "route.remote.refresh": { taskId: string };
   "runner.follow":
@@ -321,6 +333,25 @@ export const WORKFLOW_OPERATION_REGISTRY = {
     mustNot: ["do not queue or merge while the live GitHub PR head cannot be confirmed"],
     triggersGitHooks: false,
     verificationCandidate: "agentplane pr flow status <task-id>",
+    needsVerificationRecord: false,
+  },
+  "provider.pr.update_branch": {
+    type: "provider_update_branch",
+    phase: "provider_pr_update_branch_required",
+    checkout: "task_worktree",
+    role: "INTEGRATOR",
+    expectedPostconditions: [
+      POSTCONDITION.providerBranchUpdated,
+      POSTCONDITION.providerObserved,
+      POSTCONDITION.routeRecomputed,
+    ],
+    mustNot: [
+      "do not update a different PR, branch, base, provider identity, or head than the exact approved operation",
+      "do not repeat an effect-in-doubt update; reconcile fresh provider ancestry before another mutation",
+      "do not merge, rebase, force-push, or edit AgentPlane task state as a substitute for provider update-branch",
+    ],
+    triggersGitHooks: false,
+    verificationCandidate: "agentplane task next-action <task-id> --remote --explain",
     needsVerificationRecord: false,
   },
   "route.remote.refresh": {
