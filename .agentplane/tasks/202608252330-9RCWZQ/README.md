@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -36,33 +36,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-26T06:05:52.168Z"
+  updated_at: "2026-08-26T06:29:12.941Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "93b98c574a28bdc90d00f98e5fbf0792eb613c6d"
+  evaluated_sha: "a375a1f236a6876cd0ad951138019de16fc0f95e"
   blueprint_digest: "aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c"
   evidence_refs:
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-060414373-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-060414373-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/9030f6db3ac22b8e375c240eab2a4920201b30cfd445e59db7efa82c94e33859.md"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-060414373-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-060414373-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-060414373-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-062731191-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-062731191-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/5cf42d0429a29fe94572168ac8e017fb97ffee897dadc6385c281f6c6b163d3f.md"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-062731191-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-062731191-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-062731191-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608252330-9RCWZQ/README.md"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/70744792c7fe045d23e9b810884c837707ab88de1f7342676904940140da6a62.patch"
-    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/9c66274d02c228f7332938b2f706cb90df485bf39456f592a01aea2181d5d961.json"
-    - ".agentplane/tasks/202608252330-9RCWZQ/verification/20260826024303650-f2e563fb6d96c67e.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+    - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/2eb35587ddc04fcea7671dc8260d2eb5ce6affca80819c3adc2831a95fc6945e.json"
+    - ".agentplane/tasks/202608252330-9RCWZQ/verification/20260826062718487-b652f6fb590963d3.json"
     - ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/cbf2a89c25f28cf78edbe7197684c73ad7e9a2d05109f7706d956a1390e66550.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The product diff remains limited to provider-base resolution, central PR sync integration, and focused regression coverage."
-    - "Exact-SHA refs resolve only with concordant frozen, local, and origin-tracking evidence."
-    - "Inconsistent or unavailable base evidence fails before provider PR creation."
-    - "Full regression passed on implementation commit fed82c864bfdc690c735b5dab3dca2e1201c7203."
-    - "The DONE-to-DOING recovery commit changes only the Task projection so canonical WI-1 and WI-2 can receive their already-proven result evidence."
+    - "Ordinary non-OID provider base refs retain the existing branch path."
+    - "Exact-SHA refs require base_ref/base_sha identity plus matching local and origin-tracking heads for the configured provider base branch."
+    - "Inconsistent frozen evidence, an OID-valued configured base, a SHA-to-branch mismatch, missing tracking evidence, and divergent local/provider heads all fail before provider PR creation."
+    - "The product diff is confined to provider-base.ts, central sync integration, and the focused Git regression test; no release-candidate content is changed."
+    - "Supervisor-owned verification record 20260826062718487-b652f6fb590963d3.json records result ok, and declared-checks.json records bun run ci:local:full with exit code 0 on implementation commit a375a1f236a6876cd0ad951138019de16fc0f95e."
 token_usage:
   agent_runs: 13
   input_tokens: null
@@ -452,7 +452,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-26T06:27:19.565Z"
+doc_updated_at: "2026-08-26T06:29:12.956Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:
