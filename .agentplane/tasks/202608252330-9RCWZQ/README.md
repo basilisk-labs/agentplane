@@ -2,10 +2,10 @@
 id: "202608252330-9RCWZQ"
 title: "Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -305,6 +305,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Recovery: project the already verified implementation through canonical WI-1 and WI-2 so TaskAggregate completion matches the legacy DONE evidence."
 events:
   -
     type: "status"
@@ -418,8 +421,15 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "3fb2802f533261e10fa29e306d9e5111c736acf4"
+  -
+    type: "status"
+    at: "2026-08-26T06:03:04.674Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Recovery: project the already verified implementation through canonical WI-1 and WI-2 so TaskAggregate completion matches the legacy DONE evidence."
 doc_version: 3
-doc_updated_at: "2026-08-26T05:59:44.124Z"
+doc_updated_at: "2026-08-26T06:03:04.698Z"
 doc_updated_by: "CODER"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:
