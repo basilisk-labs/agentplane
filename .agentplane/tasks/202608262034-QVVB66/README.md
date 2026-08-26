@@ -4,7 +4,7 @@ title: "Initialize blueprint test projects as real Git repositories for release 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:469f305e3965104a4b9f4e30f72e793f7b92c7a93b9ddec7bdfab681c7867a1e"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-26T21:09:37.938Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -81,7 +81,8 @@ execution_contract:
     scope_roots:
       - "packages/agentplane/src/cli/run-cli.core.blueprint.test.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-2:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -90,7 +91,13 @@ execution_contract:
     repository_effects:
       - "repository_write"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -180,9 +187,8 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "85d4f4dc814843404e5e4078426bd0945f46cb29"
-  message: "🚧 QVVB66 task: apply external agent result"
+      - "verification_recovery:recorded-check-2"
+commit: null
 comments:
   -
     author: "CODER"
@@ -206,8 +212,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 85d4f4dc8148. CLI accepted one state-bound external-agent semantic result."
     commit: "85d4f4dc814843404e5e4078426bd0945f46cb29"
+  -
+    type: "verify"
+    at: "2026-08-26T21:09:37.938Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-08-26T20:47:36.615Z"
+doc_updated_at: "2026-08-26T21:09:44.061Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 0.7.8. Symptom: required release:prepublish fails in run-cli.core.blueprint.test.ts because task new returns E_IO exit 4. Violated invariant: release fixtures exercising task creation must be valid Git repositories. Root cause: mkProject() creates an empty .git directory while the canonical task-create path now runs git worktree list --porcelain. Recovery: keep the 0.7.8 release Task blocked and clean. Permanent fix: initialize the fixture with git init using the existing test Git helper or an equivalent isolated command. Regression: both blueprint snapshot and drift tests pass in a clean exact-main checkout and the focused suite remains green."
 sections:
@@ -227,6 +239,46 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-26T21:09:37.938Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a2890bbcd4b887cbc7fc111bdf14ff6daf94273317ec974544804c7b688d4048, input_digest=sha256:d7fd1247b7dac0da501b24fef17c1e2253fd09f908f099e8087f491f9c3b8521
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.blueprint.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608262034-QVVB66/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608262034-QVVB66 declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608262034-QVVB66/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608262034-QVVB66 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608262034-QVVB66-initialize-blueprint-test-projects-as-real-git-r/.agentplane/tasks/202608262034-QVVB66/blueprint/resolved-snapshot.json
+    - old_digest: ebe584eb0546553d8c6feff2fe0c29d84b0cf9a6c8901a3072536e266d4341b1
+    - current_digest: ebe584eb0546553d8c6feff2fe0c29d84b0cf9a6c8901a3072536e266d4341b1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608262034-QVVB66
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608262034-QVVB66
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -445,27 +497,99 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 8
     schema_version: 1
-    updated_at: "2026-08-26T20:45:55.317Z"
+    updated_at: "2026-08-26T21:09:50.633Z"
     work_items:
       repair-blueprint-git-fixture:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "repair-blueprint-git-fixture"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
-  implementation_commit:
-    hash: "85d4f4dc814843404e5e4078426bd0945f46cb29"
+        output_manifests:
+          -
+            digest: "sha256:653df6993cec48b9186d07a057ef4c4deac4a58eb3ea16a80467de4f278c079a"
+            id: "real-git-blueprint-fixture"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608262034-QVVB66"
+              work_item_id: "repair-blueprint-git-fixture"
+            provenance:
+              - "sha256:29803ac06fc27a2c208f172264b58dc4b520d1372c2636e6353644596a7da3ea"
+              - ".agentplane/tasks/202608262034-QVVB66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:4ef5265ce92c1ab03a972ece2248e92bb4600fd148653829efaea042e352d28c"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:ec47c8015f7ccc7e094626ba87de8e7884c47146d77013b02b7f90a35c8c5b05"
+            id: "passing-blueprint-snapshot-and-drift-regression"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608262034-QVVB66"
+              work_item_id: "repair-blueprint-git-fixture"
+            provenance:
+              - "sha256:29803ac06fc27a2c208f172264b58dc4b520d1372c2636e6353644596a7da3ea"
+              - ".agentplane/tasks/202608262034-QVVB66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:4ef5265ce92c1ab03a972ece2248e92bb4600fd148653829efaea042e352d28c"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608262034-QVVB66/supervision/declared-checks.json"
+              check_id: "check-blueprint-suite"
+              command_identity: "bunx vitest run packages/agentplane/src/cli/run-cli.core.blueprint.test.ts"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-08-26T21:09:50.629Z"
+              repository_snapshot_digest: "sha256:4ef5265ce92c1ab03a972ece2248e92bb4600fd148653829efaea042e352d28c"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608262034-QVVB66-executor-4196d3d76ab95e8c14960f17:
+        aggregate_digest: "sha256:8c0488972809ac5d59cb687c8fd54b363e30df49b4a1df3826ec11e3bb5b07a9"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-26T21:09:50.633Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_c2d3bcc7d243e4b399a347ac"
+          mutation_id: "external-result:work-order-202608262034-QVVB66-executor-4196d3d76ab95e8c14960f17"
+          plan_digest: "sha256:488af2d295d43ab4e862ba6fa38b4c153f1039cce8095570697b1141310e72d9"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608262034-QVVB66"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "repair-blueprint-git-fixture"
+        mutation_id: "external-result:work-order-202608262034-QVVB66-executor-4196d3d76ab95e8c14960f17"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202608262034-QVVB66"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
   task_execution_context:
     base_ref: "main"
     base_sha: "c5626485f2bb9097d3cb6f34ef32f26cdd95c940"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "c5626485f2bb9097d3cb6f34ef32f26cdd95c940"
     version: 1
@@ -497,6 +621,46 @@ PLANNER fallback scaffold for "Initialize blueprint test projects as real Git re
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-26T21:09:37.938Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a2890bbcd4b887cbc7fc111bdf14ff6daf94273317ec974544804c7b688d4048, input_digest=sha256:d7fd1247b7dac0da501b24fef17c1e2253fd09f908f099e8087f491f9c3b8521
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.blueprint.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608262034-QVVB66/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608262034-QVVB66 declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608262034-QVVB66/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608262034-QVVB66 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608262034-QVVB66-initialize-blueprint-test-projects-as-real-git-r/.agentplane/tasks/202608262034-QVVB66/blueprint/resolved-snapshot.json
+- old_digest: ebe584eb0546553d8c6feff2fe0c29d84b0cf9a6c8901a3072536e266d4341b1
+- current_digest: ebe584eb0546553d8c6feff2fe0c29d84b0cf9a6c8901a3072536e266d4341b1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608262034-QVVB66
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608262034-QVVB66
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
