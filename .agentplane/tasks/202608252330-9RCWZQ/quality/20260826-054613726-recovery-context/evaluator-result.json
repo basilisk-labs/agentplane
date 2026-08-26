@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The frozen product diff is unchanged and limited to provider-base resolution, central PR sync integration, and regression coverage.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/70744792c7fe045d23e9b810884c837707ab88de1f7342676904940140da6a62.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Exact-SHA provider bases require matching frozen evidence and concordant local and origin tracking heads.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/70744792c7fe045d23e9b810884c837707ab88de1f7342676904940140da6a62.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "All inconsistent or unavailable base evidence fails before provider creation.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/70744792c7fe045d23e9b810884c837707ab88de1f7342676904940140da6a62.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-4",
+      "severity": "medium",
+      "summary": "Full regression passed on implementation commit fed82c864bfdc690c735b5dab3dca2e1201c7203.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/70744792c7fe045d23e9b810884c837707ab88de1f7342676904940140da6a62.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-5",
+      "severity": "medium",
+      "summary": "The descendant commits contain only AgentPlane-managed Task evidence and recovery observations.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/70744792c7fe045d23e9b810884c837707ab88de1f7342676904940140da6a62.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
