@@ -2,10 +2,10 @@
 id: "202608252330-9RCWZQ"
 title: "Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -64,9 +64,9 @@ quality_review:
     - "The product diff is confined to provider-base.ts, central sync integration, and the focused Git regression test; no release-candidate content is changed."
     - "Supervisor-owned verification record 20260826062718487-b652f6fb590963d3.json records result ok, and declared-checks.json records bun run ci:local:full with exit code 0 on implementation commit a375a1f236a6876cd0ad951138019de16fc0f95e."
 token_usage:
-  agent_runs: 13
+  agent_runs: 16
   input_tokens: null
-  journal_digest: "sha256:c969e311b21482b5de472aca094e0f0d9d0f181cdc693be88d097fc1fe5758b1"
+  journal_digest: "sha256:a8f8e0dde9e7731f421586525297717eb21f0768c228c365ffa26c7bcf431a04"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -76,7 +76,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-26T05:59:44.110Z"
+  updated_at: "2026-08-26T06:31:21.808Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -263,8 +263,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "a375a1f236a6876cd0ad951138019de16fc0f95e"
-  message: "🚧 9RCWZQ task: apply external agent result"
+  hash: "bd453fe55214fdfa442854a88b2ca5245289a388"
+  message: "🚧 9RCWZQ task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -311,6 +311,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: a375a1f236a6. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The sole dirty path is intended AgentPlane-owned pre-merge-close evidence produced by the failed closeout recovery. No product, test, policy, provider, or release-candidate path is dirty."
 events:
   -
     type: "status"
@@ -451,8 +457,21 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-26T06:31:21.808Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "bd453fe55214fdfa442854a88b2ca5245289a388"
+  -
+    type: "comment"
+    at: "2026-08-26T06:33:05.183Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The sole dirty path is intended AgentPlane-owned pre-merge-close evidence produced by the failed closeout recovery. No product, test, policy, provider, or release-candidate path is dirty."
 doc_version: 3
-doc_updated_at: "2026-08-26T06:29:12.956Z"
+doc_updated_at: "2026-08-26T06:33:05.197Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA."
 sections:
@@ -1032,6 +1051,7 @@ extensions:
         validation_result: null
   implementation_commit:
     hash: "a375a1f236a6876cd0ad951138019de16fc0f95e"
+    message: "🚧 9RCWZQ task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
@@ -1305,12 +1325,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/13` agent runs
+- Completeness: `0/16` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:c969e311b21482b5de472aca094e0f0d9d0f181cdc693be88d097fc1fe5758b1`
+- Journal digest: `sha256:a8f8e0dde9e7731f421586525297717eb21f0768c228c365ffa26c7bcf431a04`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-26T05:59:44.110Z`
+- Updated at: `2026-08-26T06:31:21.808Z`
