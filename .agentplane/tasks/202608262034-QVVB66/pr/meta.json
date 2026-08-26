@@ -2,8 +2,11 @@
   "base": "main",
   "branch": "task/202608262034-QVVB66/initialize-blueprint-test-projects-as-real-git-r",
   "created_at": "2026-08-26T20:46:10.293Z",
-  "diffstat_sha256": "sha256:e6a6da908bad7b54fcb4f908cbe920ddd741acc9cf15b9efe5123867c28a181f",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:a5404f07f2e28697f4fe2e08d841be83cef7727a01661879d1187aa9e1ae4ee1",
+  "last_verified_at": "2026-08-26T21:09:37.938Z",
+  "last_verified_diffstat_sha256": "sha256:e6a6da908bad7b54fcb4f908cbe920ddd741acc9cf15b9efe5123867c28a181f",
+  "pr_number": 4894,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4894",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -13,9 +16,10 @@
     "target_project": "basilisk-labs/agentplane"
   },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202608262034-QVVB66",
-  "updated_at": "2026-08-26T20:46:10.293Z",
+  "updated_at": "2026-08-26T20:48:34.328Z",
   "verify": {
-    "status": "skipped"
+    "status": "fail"
   }
 }

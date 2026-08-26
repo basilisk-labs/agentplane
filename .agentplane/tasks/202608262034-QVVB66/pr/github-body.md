@@ -15,20 +15,20 @@ Release blocker for 0.7.8. Symptom: required release:prepublish fails in run-cli
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-26T20:46:10.293Z
+- Updated: 2026-08-26T20:48:34.328Z
 - Branch: task/202608262034-QVVB66/initialize-blueprint-test-projects-as-real-git-r
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- packages/agentplane/src/cli/run-cli.core.blueprint.test.ts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ packages/agentplane/src/cli/run-cli.core.blueprint.test.ts | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 ```
 
 </details>
