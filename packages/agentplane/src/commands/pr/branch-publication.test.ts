@@ -7,6 +7,7 @@ import {
   configurePushableOrigin,
   execFile,
   installFakeGhPrApi,
+  mkdir,
   mkGitRepoRootWithBranch,
   mkdtemp,
   os,
@@ -39,6 +40,7 @@ async function installGithubPushTransport(opts: {
   remotePath: string;
   branch: string;
   advertisedPushUrl?: string;
+  advertisedRemoteHead?: string | null;
   raceHead?: string | null;
   sourceRaceHead?: string | null;
 }): Promise<{ fakeGitBin: string; pushLogPath: string }> {
@@ -62,6 +64,7 @@ async function installGithubPushTransport(opts: {
       `const remoteRef = ${JSON.stringify(`refs/heads/${opts.branch}`)};`,
       `const advertisedFetchUrl = ${JSON.stringify(MATCHING_GITHUB_PUSH_URL)};`,
       `const advertisedPushUrl = ${JSON.stringify(advertisedPushUrl)};`,
+      `const advertisedRemoteHead = ${JSON.stringify(opts.advertisedRemoteHead ?? null)};`,
       `const raceHead = ${JSON.stringify(opts.raceHead ?? null)};`,
       `const sourceRaceHead = ${JSON.stringify(opts.sourceRaceHead ?? null)};`,
       `const pushLogPath = ${JSON.stringify(pushLogPath)};`,
@@ -75,6 +78,10 @@ async function installGithubPushTransport(opts: {
       "    console.log(advertisedFetchUrl);",
       "    process.exit(0);",
       "  }",
+      "}",
+      "if (advertisedRemoteHead && args[0] === 'ls-remote' && args.includes(remoteRef)) {",
+      "  console.log(`${advertisedRemoteHead}\\t${remoteRef}`);",
+      "  process.exit(0);",
       "}",
       "if (args[0] === 'push') fs.appendFileSync(pushLogPath, `${JSON.stringify(args)}\\n`);",
       "if (raceHead && args[0] === 'push' && args.some((arg) => arg.startsWith('--force-with-lease='))) {",
@@ -99,7 +106,10 @@ async function installGithubPushTransport(opts: {
   return { fakeGitBin, pushLogPath };
 }
 
-async function setupRewrittenOpenPrBranch(scenarioName: string): Promise<{
+async function setupRewrittenOpenPrBranch(
+  scenarioName: string,
+  options: { changedPath?: string } = {},
+): Promise<{
   branch: string;
   fakeGhBin: string;
   fakeGitBin: string;
@@ -127,6 +137,14 @@ async function setupRewrittenOpenPrBranch(scenarioName: string): Promise<{
     cwd: root,
     env: cleanGitEnv(),
   });
+  if (options.changedPath) {
+    await mkdir(path.dirname(path.join(root, options.changedPath)), { recursive: true });
+    await writeFile(path.join(root, options.changedPath), "remote task evidence\n", "utf8");
+    await execFileAsync("git", ["add", "--", options.changedPath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+  }
   await execFileAsync("git", ["commit", "--allow-empty", "-m", "feat original task head"], {
     cwd: root,
     env: cleanGitEnv(),
@@ -150,6 +168,13 @@ async function setupRewrittenOpenPrBranch(scenarioName: string): Promise<{
     ["config", "remote.origin.fetch", "+refs/heads/main:refs/remotes/origin/main"],
     { cwd: root, env: cleanGitEnv() },
   );
+  if (options.changedPath) {
+    await writeFile(path.join(root, options.changedPath), "local task evidence\n", "utf8");
+    await execFileAsync("git", ["add", "--", options.changedPath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+  }
   await execFileAsync(
     "git",
     ["commit", "--amend", "--allow-empty", "-m", "feat rebased task head"],
@@ -479,6 +504,304 @@ describe("PR task branch publication", { timeout: TEST_TIMEOUT_MS }, () => {
     await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
       fixture.oldHead,
     );
+  });
+
+  it("publishes an orphan branch when divergence is confined to the current Task artifacts", async () => {
+    const fixture = await setupRewrittenOpenPrBranch("orphan-task-artifacts", {
+      changedPath: ".agentplane/tasks/T-LEASE/README.md",
+    });
+    const { fakeBin: missingGhBin } = await installFakeGhPrApi({
+      scenarioName: "orphan-task-artifacts-response",
+      branch: fixture.branch,
+      existingResponse: [],
+      createResponse: {},
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fixture.fakeGitBin}${path.delimiter}${missingGhBin}${path.delimiter}${originalPath ?? ""}`;
+    try {
+      await expect(
+        pushTaskBranchUpstreamIfConfigured({
+          gitRoot: fixture.root,
+          branch: fixture.branch,
+          baseBranch: "main",
+          taskId: "T-LEASE",
+          workflowDir: ".agentplane/tasks",
+          tasksPath: ".agentplane/tasks.json",
+        }),
+      ).resolves.toBe(true);
+    } finally {
+      process.env.PATH = originalPath;
+    }
+
+    await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
+      fixture.localHead,
+    );
+    const pushLogText = await readFile(fixture.pushLogPath, "utf8");
+    expect(pushLogText).toContain(
+      `--force-with-lease=refs/heads/${fixture.branch}:${fixture.oldHead}`,
+    );
+    expect(pushLogText).not.toContain('"--force"');
+  });
+
+  it("refuses orphan branch replacement when source files diverge", async () => {
+    const fixture = await setupRewrittenOpenPrBranch("orphan-source-divergence", {
+      changedPath: "src/index.ts",
+    });
+    const { fakeBin: missingGhBin } = await installFakeGhPrApi({
+      scenarioName: "orphan-source-divergence-response",
+      branch: fixture.branch,
+      existingResponse: [],
+      createResponse: {},
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fixture.fakeGitBin}${path.delimiter}${missingGhBin}${path.delimiter}${originalPath ?? ""}`;
+    try {
+      await expect(
+        pushTaskBranchUpstreamIfConfigured({
+          gitRoot: fixture.root,
+          branch: fixture.branch,
+          baseBranch: "main",
+          taskId: "T-LEASE",
+          workflowDir: ".agentplane/tasks",
+          tasksPath: ".agentplane/tasks.json",
+        }),
+      ).rejects.toThrow();
+    } finally {
+      process.env.PATH = originalPath;
+    }
+
+    await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
+      fixture.oldHead,
+    );
+    const pushLogText = await readFile(fixture.pushLogPath, "utf8");
+    expect(pushLogText).not.toContain("--force-with-lease=");
+  });
+
+  it("refuses orphan branch replacement when provider evidence is unavailable", async () => {
+    const fixture = await setupRewrittenOpenPrBranch("orphan-provider-unavailable", {
+      changedPath: ".agentplane/tasks/T-LEASE/README.md",
+    });
+    const { fakeBin: unavailableGhBin } = await installFakeGhPrApi({
+      scenarioName: "orphan-provider-unavailable-response",
+      branch: fixture.branch,
+      existingResponse: [],
+      createResponse: {},
+      rejectEnvKey: "AGENTPLANE_TEST_PROVIDER_UNAVAILABLE",
+      rejectEnvValue: "1",
+    });
+    const originalPath = process.env.PATH;
+    const originalProviderState = process.env.AGENTPLANE_TEST_PROVIDER_UNAVAILABLE;
+    process.env.PATH = `${fixture.fakeGitBin}${path.delimiter}${unavailableGhBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_TEST_PROVIDER_UNAVAILABLE = "1";
+    try {
+      await expect(
+        pushTaskBranchUpstreamIfConfigured({
+          gitRoot: fixture.root,
+          branch: fixture.branch,
+          baseBranch: "main",
+          taskId: "T-LEASE",
+          workflowDir: ".agentplane/tasks",
+          tasksPath: ".agentplane/tasks.json",
+        }),
+      ).rejects.toThrow();
+    } finally {
+      process.env.PATH = originalPath;
+      if (originalProviderState === undefined) {
+        delete process.env.AGENTPLANE_TEST_PROVIDER_UNAVAILABLE;
+      } else {
+        process.env.AGENTPLANE_TEST_PROVIDER_UNAVAILABLE = originalProviderState;
+      }
+    }
+
+    await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
+      fixture.oldHead,
+    );
+  });
+
+  it("refuses orphan branch replacement when provider evidence is ambiguous", async () => {
+    const fixture = await setupRewrittenOpenPrBranch("orphan-provider-ambiguous", {
+      changedPath: ".agentplane/tasks/T-LEASE/README.md",
+    });
+    const providerRecord = (number: number) => ({
+      number,
+      html_url: `https://github.com/example/repo/pull/${number}`,
+      state: "open",
+      merged_at: null,
+      merge_commit_sha: null,
+      head: { ref: fixture.branch, sha: fixture.oldHead },
+      base: { ref: "main" },
+    });
+    const { fakeBin: ambiguousGhBin } = await installFakeGhPrApi({
+      scenarioName: "orphan-provider-ambiguous-response",
+      branch: fixture.branch,
+      existingResponse: [providerRecord(321), providerRecord(322)],
+      createResponse: {},
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fixture.fakeGitBin}${path.delimiter}${ambiguousGhBin}${path.delimiter}${originalPath ?? ""}`;
+    try {
+      await expect(
+        pushTaskBranchUpstreamIfConfigured({
+          gitRoot: fixture.root,
+          branch: fixture.branch,
+          baseBranch: "main",
+          taskId: "T-LEASE",
+          workflowDir: ".agentplane/tasks",
+          tasksPath: ".agentplane/tasks.json",
+        }),
+      ).rejects.toThrow();
+    } finally {
+      process.env.PATH = originalPath;
+    }
+
+    await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
+      fixture.oldHead,
+    );
+  });
+
+  it("refuses orphan branch replacement when fetch and push target different repositories", async () => {
+    const fixture = await setupRewrittenOpenPrBranch("orphan-mismatched-repository", {
+      changedPath: ".agentplane/tasks/T-LEASE/README.md",
+    });
+    const { fakeBin: missingGhBin } = await installFakeGhPrApi({
+      scenarioName: "orphan-mismatched-repository-response",
+      branch: fixture.branch,
+      existingResponse: [],
+      createResponse: {},
+    });
+    const { fakeGitBin, pushLogPath } = await installGithubPushTransport({
+      root: fixture.root,
+      remotePath: fixture.remotePath,
+      branch: fixture.branch,
+      advertisedPushUrl: "git@github.com:other/repo.git",
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeGitBin}${path.delimiter}${missingGhBin}${path.delimiter}${originalPath ?? ""}`;
+    try {
+      await expect(
+        pushTaskBranchUpstreamIfConfigured({
+          gitRoot: fixture.root,
+          branch: fixture.branch,
+          baseBranch: "main",
+          taskId: "T-LEASE",
+          workflowDir: ".agentplane/tasks",
+          tasksPath: ".agentplane/tasks.json",
+        }),
+      ).rejects.toThrow();
+    } finally {
+      process.env.PATH = originalPath;
+    }
+
+    await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
+      fixture.oldHead,
+    );
+    const pushLogText = await readFile(pushLogPath, "utf8");
+    expect(pushLogText).not.toContain("--force-with-lease=");
+  });
+
+  it("refuses orphan branch replacement when the observed remote object is unavailable", async () => {
+    const fixture = await setupRewrittenOpenPrBranch("orphan-missing-object", {
+      changedPath: ".agentplane/tasks/T-LEASE/README.md",
+    });
+    const { fakeBin: missingGhBin } = await installFakeGhPrApi({
+      scenarioName: "orphan-missing-object-response",
+      branch: fixture.branch,
+      existingResponse: [],
+      createResponse: {},
+    });
+    const { fakeGitBin, pushLogPath } = await installGithubPushTransport({
+      root: fixture.root,
+      remotePath: fixture.remotePath,
+      branch: fixture.branch,
+      advertisedRemoteHead: "f".repeat(40),
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeGitBin}${path.delimiter}${missingGhBin}${path.delimiter}${originalPath ?? ""}`;
+    try {
+      await expect(
+        pushTaskBranchUpstreamIfConfigured({
+          gitRoot: fixture.root,
+          branch: fixture.branch,
+          baseBranch: "main",
+          taskId: "T-LEASE",
+          workflowDir: ".agentplane/tasks",
+          tasksPath: ".agentplane/tasks.json",
+        }),
+      ).rejects.toThrow();
+    } finally {
+      process.env.PATH = originalPath;
+    }
+
+    await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
+      fixture.oldHead,
+    );
+    const pushLogText = await readFile(pushLogPath, "utf8");
+    expect(pushLogText).not.toContain("--force-with-lease=");
+  });
+
+  it("fails closed when an orphan branch moves after observation", async () => {
+    const fixture = await setupRewrittenOpenPrBranch("orphan-force-lease-race", {
+      changedPath: ".agentplane/tasks/T-LEASE/README.md",
+    });
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["checkout", "-b", "orphan-race-head", fixture.oldHead], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "feat concurrent orphan head"], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    const { stdout: raceHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    const raceHead = raceHeadStdout.trim();
+    await execFileAsync("git", ["push", "origin", "HEAD:refs/heads/orphan-race-seed"], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["checkout", fixture.branch], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    const { fakeBin: missingGhBin } = await installFakeGhPrApi({
+      scenarioName: "orphan-force-lease-race-response",
+      branch: fixture.branch,
+      existingResponse: [],
+      createResponse: {},
+    });
+    const { fakeGitBin, pushLogPath } = await installGithubPushTransport({
+      root: fixture.root,
+      remotePath: fixture.remotePath,
+      branch: fixture.branch,
+      raceHead,
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeGitBin}${path.delimiter}${missingGhBin}${path.delimiter}${originalPath ?? ""}`;
+    try {
+      await expect(
+        pushTaskBranchUpstreamIfConfigured({
+          gitRoot: fixture.root,
+          branch: fixture.branch,
+          baseBranch: "main",
+          taskId: "T-LEASE",
+          workflowDir: ".agentplane/tasks",
+          tasksPath: ".agentplane/tasks.json",
+        }),
+      ).rejects.toThrow();
+    } finally {
+      process.env.PATH = originalPath;
+    }
+
+    await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
+      raceHead,
+    );
+    const pushLogText = await readFile(pushLogPath, "utf8");
+    expect(pushLogText).toContain(
+      `--force-with-lease=refs/heads/${fixture.branch}:${fixture.oldHead}`,
+    );
+    expect(pushLogText).not.toContain('"--force"');
   });
 
   it("fails closed when the remote branch moves after observation", async () => {

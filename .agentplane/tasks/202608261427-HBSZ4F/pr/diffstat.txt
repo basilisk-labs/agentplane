@@ -1,0 +1,4 @@
+ .../src/commands/pr/branch-publication.test.ts     | 325 ++++++++++++++++++++-
+ .../src/commands/pr/branch-publication.ts          | 110 ++++++-
+ packages/agentplane/src/commands/pr/open.ts        |   3 +
+ 3 files changed, 436 insertions(+), 2 deletions(-)
