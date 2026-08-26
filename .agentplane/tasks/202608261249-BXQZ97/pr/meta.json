@@ -8,10 +8,10 @@
   "pr_number": 4892,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4892",
   "pre_merge_closure": {
-    "basis_commit": "fae4f17cd226df6fb479f6d107d83ccd4ec2c96a",
+    "basis_commit": "058d0842e2f94bab0c6e75023d038a0b83cdb482",
     "branch": "task/202608261249-BXQZ97/add-provider-update-branch-recovery",
     "pr_number": 4892,
-    "recorded_at": "2026-08-26T17:22:03.027Z",
+    "recorded_at": "2026-08-26T17:47:56.658Z",
     "state": "closed_before_merge"
   },
   "provider": {
