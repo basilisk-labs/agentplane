@@ -4,7 +4,7 @@ title: "Add a digest-bound provider update-branch recovery transition for stale 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -30,11 +30,11 @@ plan_approval:
   updated_by: "HOST:slingshot:env_e_6a1ef5a7691083289addb82f53997126:USER"
   note: "host_user_decision=sha256:e918dacceec86ebe3ec6f78d30e4c19e04d779c92c70ea9a3bdf6575b4317d33"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-26T14:03:54.671Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -93,12 +93,30 @@ execution_contract:
       - "packages/agentplane/src/commands/shared"
       - "packages/agentplane/src/commands/task"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-4:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
       - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
       - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+      - "packages/agentplane/src/commands/shared/route-gate-priority.ts"
+      - "packages/agentplane/src/commands/shared/route-oracle.ts"
+      - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
+      - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-effects.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+      - "packages/agentplane/src/commands/shared/workflow-postconditions.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+      - "packages/agentplane/src/commands/task/configured-authority.test.ts"
     external_effects: []
     repository_effects:
       - "repository_write"
@@ -140,7 +158,7 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-4"
-        result: "pass"
+        result: "fail"
       -
         id: "recorded-check-5"
         result: "pass"
@@ -196,8 +214,22 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:5a5880f8d7e3b4db5d9ea95ad6e5e1037d556648e57e1124ed9b53ee16b30b26"
+      digest: "sha256:6c55246ef558944022c7abfe43167a396b03b1717c06e8cc71a5faf196ad7478"
       escalation_reasons:
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-gate-priority.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-oracle.ts"
+        - "central_path:packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/side-effect-authority.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-effects.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-postconditions.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step.ts"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
       execution_groups:
@@ -211,6 +243,23 @@ execution_contract:
         changed_files:
           - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
           - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+          - "packages/agentplane/src/commands/shared/route-gate-priority.ts"
+          - "packages/agentplane/src/commands/shared/route-oracle.ts"
+          - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
+          - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-effects.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+          - "packages/agentplane/src/commands/shared/workflow-postconditions.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+          - "packages/agentplane/src/commands/task/configured-authority.test.ts"
         external_effects: []
         repository_effects:
           - "repository_write"
@@ -250,6 +299,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-4"
 commit: null
 comments:
   -
@@ -267,6 +317,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: c5ede4c792c8. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: c2138ac88b0d. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -324,8 +377,22 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-26T13:53:22.340Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: c2138ac88b0d. CLI accepted one state-bound external-agent semantic result."
+    commit: "c2138ac88b0d44ad1bfb6ed2dea6f1e2d47efe04"
+  -
+    type: "verify"
+    at: "2026-08-26T14:03:54.671Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-08-26T13:37:37.704Z"
+doc_updated_at: "2026-08-26T14:03:58.075Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPEN, MERGEABLE, and BEHIND; required verify-real-e2e fails on exact head e19eb173c25eb7c6800643bcb87173c857a042fb because that head excludes the already integrated C6WV4T qualification correction on exact main 79bc13ff33358c49e216901f59c8fbc0a17987d2. All other hosted jobs pass. The failure reproduced on multiple clean published heads. Violated invariant: when required hosted checks fail solely on a provider PR head that is behind its protected base, AgentPlane must offer a digest-bound, effectively-once provider update-branch recovery transition before semantic source rework or integration. Root cause: current route classification maps failed hosted checks directly to implementation_rework_required and exposes no normal AgentPlane operation for GitHub's update-branch effect. Temporary recovery: preserve 9RCWZQ and use an approved bootstrap runtime only for control-plane retirement; do not manually merge, rebase, push, or edit state. Permanent fix: add the smallest provider-neutral route/effect contract with GitHub update-branch execution, exact expected-head/base readback, effect-in-doubt reconciliation, authority digests, and fail-closed behavior for conflicts, head drift, ambiguity, or unsupported providers. Regression tests must prove route selection, pre-effect failure safety, effect reconciliation, and that semantic rework remains selected for genuine source failures. Integrate normally, then use the fresh runtime to refresh PR #4889 and resume 9RCWZQ."
 sections:
@@ -527,6 +594,56 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
     Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check task_outcome (4/4)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+    - old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-26T14:03:54.671Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:8cdd6d46b7126ef0ccdc977f412b956e5a89d7a471a94b91a72fcb1a17621e2d
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/pr
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+    Command: bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+    Command: bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608261249-BXQZ97 declared verification
 
     BlueprintSnapshotRef:
     - state: current
@@ -1219,9 +1336,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608261249-BXQZ97"
-    revision: 20
+    revision: 24
     schema_version: 1
-    updated_at: "2026-08-26T13:37:39.112Z"
+    updated_at: "2026-08-26T14:03:59.521Z"
     work_items:
       provider-update-branch-effect:
         attempt: 1
@@ -1293,14 +1410,84 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       route-digest-bound-update-before-rework:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "route-digest-bound-update-before-rework"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:c0b672d646701f9abb772935914e96773660922d0f48d5a7ca567729a2a8d3be"
+            id: "digest-bound-provider-update-route"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608261249-BXQZ97"
+              work_item_id: "route-digest-bound-update-before-rework"
+            provenance:
+              - "sha256:26432556714a1c266daa28e9862fc74f0d9d0fab0a580d8f4b31b03e26c95082"
+              - ".agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:845f04258a7e94f5956a8ae24012911adfc6283bae925784400458a8e435635a"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:14ade2ecde52badb15a363631afad7cd006ad9b2948b37b66f63e93eb689d9db"
+            id: "supervisor-effect-recovery"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608261249-BXQZ97"
+              work_item_id: "route-digest-bound-update-before-rework"
+            provenance:
+              - "sha256:26432556714a1c266daa28e9862fc74f0d9d0fab0a580d8f4b31b03e26c95082"
+              - ".agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:845f04258a7e94f5956a8ae24012911adfc6283bae925784400458a8e435635a"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:21f95b15def4b262128b1450688ff77f17290fc116ba459eba2565b43ea5d179"
+            id: "route-and-authority-regression-suite"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608261249-BXQZ97"
+              work_item_id: "route-digest-bound-update-before-rework"
+            provenance:
+              - "sha256:26432556714a1c266daa28e9862fc74f0d9d0fab0a580d8f4b31b03e26c95082"
+              - ".agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:845f04258a7e94f5956a8ae24012911adfc6283bae925784400458a8e435635a"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json"
+              check_id: "check-route"
+              command_identity: "bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-08-26T14:03:59.505Z"
+              repository_snapshot_digest: "sha256:845f04258a7e94f5956a8ae24012911adfc6283bae925784400458a8e435635a"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json"
+              check_id: "check-supervisor"
+              command_identity: "bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-08-26T14:03:59.505Z"
+              repository_snapshot_digest: "sha256:845f04258a7e94f5956a8ae24012911adfc6283bae925784400458a8e435635a"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
@@ -1351,6 +1538,29 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608261249-BXQZ97"
+      external-result:work-order-202608261249-BXQZ97-executor-f58254f7928dcf49cabbd8ec:
+        aggregate_digest: "sha256:5a083968e271e99a141e2b7f0a9ea72568ddf08c4e1e2558e92b24fe511df950"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-26T14:03:59.521Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_406d203b51bb603c5e9f5cb5"
+          mutation_id: "external-result:work-order-202608261249-BXQZ97-executor-f58254f7928dcf49cabbd8ec"
+          plan_digest: "sha256:648d6a7212fbbb7933b2507f3acca6ccd9ab09e364c23cec1dbf9adc8a638acd"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608261249-BXQZ97"
+          task_revision: 23
+          to: "COMPLETED"
+          work_item_id: "route-digest-bound-update-before-rework"
+        mutation_id: "external-result:work-order-202608261249-BXQZ97-executor-f58254f7928dcf49cabbd8ec"
+        next_revision: 24
+        previous_revision: 23
+        schema_version: 1
+        task_id: "202608261249-BXQZ97"
       plan-refinement:work-order-202608261249-BXQZ97-executor-1c7f9604ad6d5447aa519c4d:
         aggregate_digest: "sha256:c8fc696914bc3f27f647617cba575b7958973ec917f1cab0f8b2a53eff53fb4b"
         event:
@@ -1378,8 +1588,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "c5ede4c792c837bcaf8cfeae1aef9fbaee99489b"
   task_execution_context:
     base_ref: "79bc13ff33358c49e216901f59c8fbc0a17987d2"
     base_sha: "79bc13ff33358c49e216901f59c8fbc0a17987d2"
@@ -1598,6 +1806,56 @@ Command: bun run ci:local:full
 Result: pass
 Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
 Scope: branch_pr task 202608261249-BXQZ97 Verification Contract check task_outcome (4/4)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608261249-BXQZ97-add-provider-update-branch-recovery/.agentplane/tasks/202608261249-BXQZ97/blueprint/resolved-snapshot.json
+- old_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- current_digest: ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608261249-BXQZ97
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-26T14:03:54.671Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24bffea4cd69fff4560e7111e963b698310685c305463625baa43d9cac58eb99, input_digest=sha256:8cdd6d46b7126ef0ccdc977f412b956e5a89d7a471a94b91a72fcb1a17621e2d
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/pr
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+Command: bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+Command: bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608261249-BXQZ97 declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608261249-BXQZ97 declared verification
 
 BlueprintSnapshotRef:
 - state: current
