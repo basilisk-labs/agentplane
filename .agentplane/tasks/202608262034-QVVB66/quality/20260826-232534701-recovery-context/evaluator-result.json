@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The product diff is limited to three added lines and one removed line in packages/agentplane/src/cli/run-cli.core.blueprint.test.ts; production runtime code is unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608262034-QVVB66/quality/objects/sha256/6e4e04668c5a112cfb3f80c4b887a269381efd99162afd71dc2db583b725b51f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The focused blueprint suite passes all 23 tests on implementation SHA 63468394f8a4c785e373529d8184705078807a2f.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608262034-QVVB66/quality/objects/sha256/6e4e04668c5a112cfb3f80c4b887a269381efd99162afd71dc2db583b725b51f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "No actionable defect is present in the scoped implementation; the remaining local full-gate instability is resource-order dependent and outside the 0.7.8 release firewall.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608262034-QVVB66/quality/objects/sha256/6e4e04668c5a112cfb3f80c4b887a269381efd99162afd71dc2db583b725b51f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: Required hosted checks must pass on the exact published PR head before integration; the local evidence reconciliation is not publication proof.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608262034-QVVB66/quality/objects/sha256/6e4e04668c5a112cfb3f80c4b887a269381efd99162afd71dc2db583b725b51f.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

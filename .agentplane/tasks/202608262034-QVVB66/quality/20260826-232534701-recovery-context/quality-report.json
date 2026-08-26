@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608262034-QVVB66",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-26T23:26:29.099Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 4 typed finding(s).",
+  "evaluated_sha": "63468394f8a4c785e373529d8184705078807a2f",
+  "blueprint_digest": "ebe584eb0546553d8c6feff2fe0c29d84b0cf9a6c8901a3072536e266d4341b1",
+  "findings": [
+    "The product diff is limited to three added lines and one removed line in packages/agentplane/src/cli/run-cli.core.blueprint.test.ts; production runtime code is unchanged.",
+    "The focused blueprint suite passes all 23 tests on implementation SHA 63468394f8a4c785e373529d8184705078807a2f.",
+    "No actionable defect is present in the scoped implementation; the remaining local full-gate instability is resource-order dependent and outside the 0.7.8 release firewall.",
+    "Residual risk: Required hosted checks must pass on the exact published PR head before integration; the local evidence reconciliation is not publication proof."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608262034-QVVB66/quality/objects/sha256/6e4e04668c5a112cfb3f80c4b887a269381efd99162afd71dc2db583b725b51f.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
