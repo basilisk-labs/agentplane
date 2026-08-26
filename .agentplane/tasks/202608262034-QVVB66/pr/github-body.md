@@ -15,8 +15,8 @@ Release blocker for 0.7.8. Symptom: required release:prepublish fails in run-cli
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

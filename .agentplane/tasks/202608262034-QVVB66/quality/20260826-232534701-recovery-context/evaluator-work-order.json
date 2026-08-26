@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608262034-QVVB66-9fd190d4343558371d64731a",
+  "prepared_at": "2026-08-26T23:25:34.701Z",
+  "task": {
+    "id": "202608262034-QVVB66",
+    "revision": 33,
+    "objective": "Initialize blueprint test projects as real Git repositories for release CI\n\nRelease blocker for 0.7.8. Symptom: required release:prepublish fails in run-cli.core.blueprint.test.ts because task new returns E_IO exit 4. Violated invariant: release fixtures exercising task creation must be valid Git repositories. Root cause: mkProject() creates an empty .git directory while the canonical task-create path now runs git worktree list --porcelain. Recovery: keep the 0.7.8 release Task blocked and clean. Permanent fix: initialize the fixture with git init using the existing test Git helper or an equivalent isolated command. Regression: both blueprint snapshot and drift tests pass in a clean exact-main checkout and the focused suite remains green.",
+    "acceptance_criteria": [
+      "bunx vitest run packages/agentplane/src/cli/run-cli.core.blueprint.test.ts",
+      "- In scope: Release blocker for 0.7.8. Symptom: required release:prepublish fails in run-cli.core.blueprint.test.ts because task new returns E_IO exit 4. Violated invariant: release fixtures exercising task creation must be valid Git repositories. Root cause: mkProject() creates an empty .git directory while the canonical task-create path now runs git worktree list --porcelain. Recovery: keep the 0.7.8 release Task blocked and clean. Permanent fix: initialize the fixture with git init using the existing test Git helper or an equivalent isolated command. Regression: both blueprint snapshot and drift tests pass in a clean exact-main checkout and the focused suite remains green.\n- Out of scope: unrelated refactors not required for \"Initialize blueprint test projects as real Git repositories for release CI\".",
+      "Repair the release-blocking blueprint test fixture by initializing each temporary project as a real Git repository, while preserving the existing blueprint snapshot and drift assertions and changing no production runtime code.",
+      "PLANNER fallback scaffold for \"Initialize blueprint test projects as real Git repositories for release CI\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Initialize blueprint test projects as real Git repositories for release CI\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "63468394f8a4c785e373529d8184705078807a2f",
+  "diff_base_sha": "c5626485f2bb9097d3cb6f34ef32f26cdd95c940",
+  "blueprint_digest": "ebe584eb0546553d8c6feff2fe0c29d84b0cf9a6c8901a3072536e266d4341b1",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608262034-QVVB66/quality/20260826-232534701-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:b7a3d08d318d04c462bc9f342a6d8214d47c8c8082db3fa64b9af5031ddc8300",
+    "prompt_path": ".agentplane/tasks/202608262034-QVVB66/quality/objects/sha256/1f8c4d5afe794c741ad276e3c9a442bb8d4a0a833501f6c57adcc2cc0cbd510a.md",
+    "result_schema_path": ".agentplane/tasks/202608262034-QVVB66/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608262034-QVVB66/README.md",
+      "sha256": "sha256:2a0524ad76e90ad7a67e1804863ce74cfd175f95a5f716176f4d18e886e4ce37",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608262034-QVVB66/quality/objects/sha256/6e4e04668c5a112cfb3f80c4b887a269381efd99162afd71dc2db583b725b51f.patch",
+      "sha256": "sha256:6e4e04668c5a112cfb3f80c4b887a269381efd99162afd71dc2db583b725b51f",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608262034-QVVB66/quality/objects/sha256/fb1af76268dd0e8465077608561a882b98194d2c2106b9f4a0f54b5a8216c4e9.json",
+      "sha256": "sha256:fb1af76268dd0e8465077608561a882b98194d2c2106b9f4a0f54b5a8216c4e9",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608262034-QVVB66/verification/20260826232507417-6ba5f717053eee31.json",
+      "sha256": "sha256:bf3a0022ce89202cefefb7d5162284c15b468f35d862074da5188d7085f7a7b9",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608262034-QVVB66/quality/objects/sha256/0d8d9d809bba84acdf89f5b6a6de1e594e0e057ad12081d1c93925007ae3ba56.json",
+      "sha256": "sha256:0d8d9d809bba84acdf89f5b6a6de1e594e0e057ad12081d1c93925007ae3ba56",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
