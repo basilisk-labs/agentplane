@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check c07a2fc6b187230ce3209a4a37abb8b4b63bfd39..c5ede4c792c837bcaf8cfeae1aef9fbaee99489b",
+      "command": "git diff --check f69a2362c3bf8a88094e28fe805cf2cce1e580b5..c2138ac88b0d44ad1bfb6ed2dea6f1e2d47efe04",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,20 +13,31 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB c07a2fc6b187230ce3209a4a37abb8b4b63bfd39..c5ede4c792c837bcaf8cfeae1aef9fbaee99489b",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB f69a2362c3bf8a88094e28fe805cf2cce1e580b5..c2138ac88b0d44ad1bfb6ed2dea6f1e2d47efe04",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202608261249-BXQZ97/README.md",
         "M\t.agentplane/tasks/202608261249-BXQZ97/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608261249-BXQZ97/pr/github-body.md",
         "M\t.agentplane/tasks/202608261249-BXQZ97/pr/meta.json",
         "M\t.agentplane/tasks/202608261249-BXQZ97/pr/review.md",
-        "A\t.agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json",
-        "A\t.agentplane/tasks/202608261249-BXQZ97/supervision/implementation-evidence.json",
-        "A\t.agentplane/tasks/202608261249-BXQZ97/verification/20260826131231828-4899fc7776fc3011.json",
-        "A\t.agentplane/tasks/202608261249-BXQZ97/verification/20260826131801504-414ceddf9264b14a.json",
-        "M\tpackages/agentplane/src/commands/pr/provider-update-branch.test.ts"
+        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-gate-priority.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-oracle.ts",
+        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-operation-effects.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-operation-prefix.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-operation-projection.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-postconditions.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-branch.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
+        "M\tpackages/agentplane/src/commands/task/configured-authority.test.ts"
       ]
     },
     {
@@ -36,66 +47,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "c07a2fc6b187230ce3209a4a37abb8b4b63bfd39",
-  "implementation_commit": "c5ede4c792c837bcaf8cfeae1aef9fbaee99489b",
+  "execution_base_commit": "f69a2362c3bf8a88094e28fe805cf2cce1e580b5",
+  "implementation_commit": "c2138ac88b0d44ad1bfb6ed2dea6f1e2d47efe04",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M .agentplane/tasks/202608261249-BXQZ97/README.md",
-      " M .agentplane/tasks/202608261249-BXQZ97/pr/github-body.md",
-      " M .agentplane/tasks/202608261249-BXQZ97/pr/meta.json",
-      " M .agentplane/tasks/202608261249-BXQZ97/pr/review.md",
-      "?? .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202608261249-BXQZ97/supervision/implementation-evidence.json",
-      "?? .agentplane/tasks/202608261249-BXQZ97/verification/20260826131231828-4899fc7776fc3011.json",
-      "?? .agentplane/tasks/202608261249-BXQZ97/verification/20260826131801504-414ceddf9264b14a.json"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608261249-BXQZ97/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608261249-BXQZ97/pr/github-body.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608261249-BXQZ97/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608261249-BXQZ97/pr/review.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608261249-BXQZ97/supervision/implementation-evidence.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608261249-BXQZ97/verification/20260826131231828-4899fc7776fc3011.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608261249-BXQZ97/verification/20260826131801504-414ceddf9264b14a.json"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202608261249-BXQZ97/README.md",
-      " M .agentplane/tasks/202608261249-BXQZ97/pr/github-body.md",
-      " M .agentplane/tasks/202608261249-BXQZ97/pr/meta.json",
-      " M .agentplane/tasks/202608261249-BXQZ97/pr/review.md",
-      "?? .agentplane/tasks/202608261249-BXQZ97/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202608261249-BXQZ97/supervision/implementation-evidence.json",
-      "?? .agentplane/tasks/202608261249-BXQZ97/verification/20260826131231828-4899fc7776fc3011.json",
-      "?? .agentplane/tasks/202608261249-BXQZ97/verification/20260826131801504-414ceddf9264b14a.json"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
