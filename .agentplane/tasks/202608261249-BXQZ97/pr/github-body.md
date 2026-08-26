@@ -22,7 +22,7 @@ Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPE
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-26T15:47:45.942Z
+- Updated: 2026-08-26T15:54:45.336Z
 - Branch: task/202608261249-BXQZ97/add-provider-update-branch-recovery
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

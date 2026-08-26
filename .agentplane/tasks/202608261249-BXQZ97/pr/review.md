@@ -24,7 +24,7 @@ Created: 2026-08-26T13:12:22.036Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-26T15:47:45.942Z
+- Updated: 2026-08-26T15:54:45.336Z
 - Branch: task/202608261249-BXQZ97/add-provider-update-branch-recovery
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
