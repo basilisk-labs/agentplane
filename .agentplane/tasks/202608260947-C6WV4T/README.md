@@ -1,10 +1,11 @@
 ---
 id: "202608260947-C6WV4T"
 title: "Restore packaged mixed-scope lifecycle qualification on the exact release candidate"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -60,6 +61,20 @@ quality_review:
     - "Regression coverage proves a valid EVALUATOR exchange, explicit verification rework, and the fail-closed missing_evaluator_episode case for a pending verification state."
     - "Supervisor-owned verification passed full local CI, all 39 qualification contract tests, and the exact installed packaged mixed-scope lifecycle on implementation SHA 402e3a4cb939b02a471fba5b28091fdac5560bd0."
     - "Residual risk: Hosted checks and integration must still pass on the exact published PR head before this blocker can be treated as integrated."
+token_usage:
+  agent_runs: 10
+  input_tokens: null
+  journal_digest: "sha256:6f086f5a7d313f1c5a2efed04cf4376c79f4bc85b76efe03b59cb471248794ab"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-26T10:56:47.786Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -265,8 +280,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "402e3a4cb939b02a471fba5b28091fdac5560bd0"
-  message: "🚧 C6WV4T task: apply external agent result"
+  hash: "a8803b85332cbe7287e8bc8c4817c080f47a1997"
+  message: "🚧 C6WV4T task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -295,6 +310,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 402e3a4cb939. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -387,9 +405,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-26T10:56:47.786Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "a8803b85332cbe7287e8bc8c4817c080f47a1997"
 doc_version: 3
-doc_updated_at: "2026-08-26T10:48:52.300Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-26T10:56:47.794Z"
+doc_updated_by: "CODER"
 description: "Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: required hosted verify-real-e2e fails reproducibly on clean exact heads c59dad6936fea2b664973d12cfe6ec96d2bc89f5 and 69a4f33f94fbcd46d83d4eb5f40b6654e041dd68 with missing_evaluator_episode: expected EVALUATOR, received EXECUTOR. Violated invariant: packaged-mixed-scope-lifecycle must supply every deterministic verification capability required by its selected code.direct blueprint before expecting evaluator handoff. Root cause: the fixture verification record reports needs_rework because full_regression is required while fixture package.json does not define ci:local:full; all declared commands themselves pass, so AgentPlane correctly returns implementation rework. Temporary recovery: preserve one isolated fixture and read its public verification record; no state edits. Permanent fix: minimally update the qualification fixture to provide a bounded full-regression command consistent with its declared Node test, retain the public lifecycle assertion, and add/adjust regression coverage so a verification rework cannot be misclassified as missing evaluator. Do not weaken hosted gates or production lifecycle invariants. Verify the direct packaged scenario, qualification contract tests, and full local CI. Integrate normally, then refresh 202608252330-9RCWZQ from current main and rerun exact-head hosted qualification."
 sections:
   Summary: |-
@@ -833,7 +859,45 @@ extensions:
       schema_version: 1
       task_id: "202608260947-C6WV4T"
     event_cursor: 1
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608260947-C6WV4T"
+            - "git:402e3a4cb939b02a471fba5b28091fdac5560bd0"
+          check_id: "check-packaged"
+          command_identity: "node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-26T10:48:50.237Z"
+          repository_snapshot_digest: "sha256:8f178cfd0ecf727466b5aa655ae457573a405668cd4a966abd22803974a698c9"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608260947-C6WV4T"
+            - "git:402e3a4cb939b02a471fba5b28091fdac5560bd0"
+          check_id: "check-contract"
+          command_identity: "node --test scripts/qualification/release-qualification.test.mjs"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-26T10:48:50.237Z"
+          repository_snapshot_digest: "sha256:8f178cfd0ecf727466b5aa655ae457573a405668cd4a966abd22803974a698c9"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608260947-C6WV4T"
+            - "git:402e3a4cb939b02a471fba5b28091fdac5560bd0"
+          check_id: "check-full"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-26T10:48:50.237Z"
+          repository_snapshot_digest: "sha256:8f178cfd0ecf727466b5aa655ae457573a405668cd4a966abd22803974a698c9"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608260947-C6WV4T"
     intent:
       acceptance_criteria:
@@ -859,7 +923,7 @@ extensions:
 
         Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: required hosted verify-real-e2e fails reproducibly on clean exact heads c59dad6936fea2b664973d12cfe6ec96d2bc89f5 and 69a4f33f94fbcd46d83d4eb5f40b6654e041dd68 with missing_evaluator_episode: expected EVALUATOR, received EXECUTOR. Violated invariant: packaged-mixed-scope-lifecycle must supply every deterministic verification capability required by its selected code.direct blueprint before expecting evaluator handoff. Root cause: the fixture verification record reports needs_rework because full_regression is required while fixture package.json does not define ci:local:full; all declared commands themselves pass, so AgentPlane correctly returns implementation rework. Temporary recovery: preserve one isolated fixture and read its public verification record; no state edits. Permanent fix: minimally update the qualification fixture to provide a bounded full-regression command consistent with its declared Node test, retain the public lifecycle assertion, and add/adjust regression coverage so a verification rework cannot be misclassified as missing evaluator. Do not weaken hosted gates or production lifecycle invariants. Verify the direct packaged scenario, qualification contract tests, and full local CI. Integrate normally, then refresh 202608252330-9RCWZQ from current main and rerun exact-head hosted qualification.
       task_id: "202608260947-C6WV4T"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1075,9 +1139,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608260947-C6WV4T"
-    revision: 29
+    revision: 32
     schema_version: 1
-    updated_at: "2026-08-26T10:48:53.513Z"
+    updated_at: "2026-08-26T10:56:47.786Z"
     work_items:
       restore-packaged-mixed-scope-qualification:
         attempt: 2
@@ -1234,6 +1298,31 @@ extensions:
         previous_revision: 28
         schema_version: 1
         task_id: "202608260947-C6WV4T"
+      legacy-finish:202608260947-C6WV4T:2026-08-26T10:48:50.237Z:402e3a4cb939b02a471fba5b28091fdac5560bd0:
+        aggregate_digest: "sha256:faab47cabb6b7fe94953ab7dd69c33d6245fa88327aadd59f602531b052927fd"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-26T10:56:47.786Z"
+          cause_refs:
+            - "task-verification:202608260947-C6WV4T"
+            - "git:402e3a4cb939b02a471fba5b28091fdac5560bd0"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ba3f9f93b5dd49f31237aed2"
+          mutation_id: "legacy-finish:202608260947-C6WV4T:2026-08-26T10:48:50.237Z:402e3a4cb939b02a471fba5b28091fdac5560bd0"
+          plan_digest: "sha256:0f76356cccc58587839852726467f6fbe06744dd90484cb1856a69402dfd5a35"
+          plan_revision: 2
+          repository_fingerprint: "sha256:8f178cfd0ecf727466b5aa655ae457573a405668cd4a966abd22803974a698c9"
+          schema_version: 1
+          task_id: "202608260947-C6WV4T"
+          task_revision: 29
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608260947-C6WV4T:2026-08-26T10:48:50.237Z:402e3a4cb939b02a471fba5b28091fdac5560bd0"
+        next_revision: 32
+        previous_revision: 31
+        schema_version: 1
+        task_id: "202608260947-C6WV4T"
       plan-refinement:work-order-202608260947-C6WV4T-executor-134c0eebf6d70143baa6961f:
         aggregate_digest: "sha256:470aea798ae4bd7d54b308e3bfacf5482fca0b91aebf1be264563cf29553e4b0"
         event:
@@ -1262,6 +1351,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "402e3a4cb939b02a471fba5b28091fdac5560bd0"
+    message: "🚧 C6WV4T task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
@@ -1529,3 +1619,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/10` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:6f086f5a7d313f1c5a2efed04cf4376c79f4bc85b76efe03b59cb471248794ab`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-26T10:56:47.786Z`
