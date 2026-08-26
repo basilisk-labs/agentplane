@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608252330-9RCWZQ-5ecb076fc3f8d90ccdaba457",
+  "task_id": "202608252330-9RCWZQ",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Rework. Implementation commit 1c53295ba0a1d77eb1d4adc93b8c1776dbad1a08 and full CI pass, but the approved Task plan is not executable because WI-1 prose context was encoded as required artifact IDs, leaving scheduler readiness false.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "The exact-SHA provider-base implementation and provider-boundary regressions are within scope and pass full CI.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/40b7d8dc17957fc877ffa91a1ef8afa3b513a03b896a29fa8ff477dc295356b0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "TaskAggregate records WI-1 READY and WI-2 PLANNED, but computeReadyWorkItems reports WI-1 false with input_missing for Task execution.base_ref and execution.base_sha, Configured or current repository base branch, and Live local and provider-visible branch heads.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/40b7d8dc17957fc877ffa91a1ef8afa3b513a03b896a29fa8ff477dc295356b0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "Those three values are context requirements, not output-manifest IDs; no predecessor WorkItem can produce them under the approved graph.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/40b7d8dc17957fc877ffa91a1ef8afa3b513a03b896a29fa8ff477dc295356b0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "WorkItemScheduler therefore returns an empty selection and recordTaskCentricExternalResult fails with The issued WorkItem is no longer present in the approved task plan.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/40b7d8dc17957fc877ffa91a1ef8afa3b513a03b896a29fa8ff477dc295356b0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "summary": "A validation-only material plan refinement is required before another verification: retain the same two WorkItems, scope, outputs, acceptance criteria, checks, and dependency WI-1 to WI-2, but remove prose context from required_inputs and keep it in context.required_sources/symbol_hints.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/40b7d8dc17957fc877ffa91a1ef8afa3b513a03b896a29fa8ff477dc295356b0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "summary": "Residual risk: Repeating implementation verification without correcting the plan graph will deterministically fail receipt recording again.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/40b7d8dc17957fc877ffa91a1ef8afa3b513a03b896a29fa8ff477dc295356b0.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-070310593-recovery-context/evaluator-result.json"
+}
