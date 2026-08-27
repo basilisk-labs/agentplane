@@ -4,7 +4,7 @@ title: "Align PR fixtures with committed Git identity"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -24,10 +24,10 @@ plan_approval:
   updated_by: "USER"
   note: "The user explicitly authorized autonomous continuation until refactoring is complete and granted all required permissions in the current conversation. This approval records that authorization for the reviewed ten-file PR fixture repair, plan sha256:5708ce75eefea6706dde2e1d3794220f871b19cee2b1c00e647a09c89b8e7357. No fabricated host decision is used. Mandatory local and hosted checks remain required."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-27T14:50:57.353Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -97,11 +97,47 @@ execution_contract:
       - "packages/testkit/src/cli.test.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+      - "packages/testkit"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
+      - "packages/testkit/src/cli-core-pr-flow.ts"
+      - "packages/testkit/src/cli.test.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -142,7 +178,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:c9f31405452e34483524abe3e2a8378985e2a581c1d22ab7fcb6956f06a4eb12"
+      digest: "sha256:513a0922aaa44600b63df81c92ac015f69d54f9ff52e35da085949d0b7088ff2"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts"
@@ -152,16 +188,39 @@ execution_contract:
         - "central_component:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+          - "packages/testkit"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
+          - "packages/testkit/src/cli-core-pr-flow.ts"
+          - "packages/testkit/src/cli.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -193,11 +252,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "634e327f8af5385343077ba50fc861b4e65b724b"
+  message: "🚧 9EWJA1 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 634e327f8af5. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -206,9 +270,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-27T14:40:12.391Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 634e327f8af5. CLI accepted one state-bound external-agent semantic result."
+    commit: "634e327f8af5385343077ba50fc861b4e65b724b"
+  -
+    type: "verify"
+    at: "2026-08-27T14:50:57.353Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-27T14:29:57.601Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-27T14:51:04.272Z"
+doc_updated_by: "SUPERVISOR"
 description: "Repair the 26 freshly reproduced failures across eight PR fixture suites on main 5fce04a8. Reuse and export the existing mkGitRepoRootWithCommit helper only where PR operations require a real base identity. Preserve empty-repository helpers and argument-validation scenarios. Update provider-neutral output assertions only where behavior and metadata assertions remain equivalent. Add testkit coverage for empty versus committed repository identity. Remove unused imports or redundant fixture setup rather than increasing oversized-file baselines. No production, policy, gate, release-state or roadmap change. This task is independent of concurrent G0N9P4: its ten writable files do not overlap, and it requires only already merged GHHA0Q. Both targeted tests and full CI remain mandatory."
 sections:
   Summary: |-
@@ -226,6 +304,78 @@ sections:
     4. Before integration, require hosted mandatory checks for the exact published head. Preserve all unrelated worktrees and the parallel G0N9P4 changes.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-27T14:50:57.353Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f3593bc2be1392bd35e6eedacd6e11a5354794f1f5ee827836beb1494f6e8b3b, input_digest=sha256:ccd85ac39c26cea68b5089d710d848e47100fd958fe598312d424d30369c2493
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271425-9EWJA1 Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts packages/testkit/src/cli.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271425-9EWJA1 Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271425-9EWJA1 Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts packages/testkit/src/cli.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271425-9EWJA1 Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271425-9EWJA1 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271425-9EWJA1 Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts packages/testkit/src/cli.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271425-9EWJA1 Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271425-9EWJA1-align-pr-fixtures-with-committed-git-identity/.agentplane/tasks/202608271425-9EWJA1/blueprint/resolved-snapshot.json
+    - old_digest: 9a2f6ba60b98c148d6ee0ad4277dc7b841e5d7e5dd92bde8e554e8a40f965c09
+    - current_digest: 9a2f6ba60b98c148d6ee0ad4277dc7b841e5d7e5dd92bde8e554e8a40f965c09
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608271425-9EWJA1
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -726,25 +876,96 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608271425-9EWJA1"
-    revision: 2
+    revision: 12
     schema_version: 1
-    updated_at: "2026-08-27T14:29:43.046Z"
+    updated_at: "2026-08-27T14:51:07.053Z"
     work_items:
       repair-pr-fixtures:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "repair-pr-fixtures"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:29fbcbfe02fe78f2e09db5fe9389b36067a26b1805987a2c1bad591cf376c477"
+            id: "artifact:pr-fixture-report"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608271425-9EWJA1"
+              work_item_id: "repair-pr-fixtures"
+            provenance:
+              - "sha256:a2bb981d7c207da87425d642cef1989d2a2d33f2da880ab4068aa33c6dc54723"
+              - ".agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:b27f870371f571d054a86da1858c241ba56e77c584d4102c8c246e2c56c52341"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json"
+              check_id: "pr-fixtures"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts packages/testkit/src/cli.test.ts --pool=threads --maxWorkers=2"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts packages/testkit/src/cli.test.ts --pool=threads --maxWorkers=2."
+              exit_code: 0
+              observed_at: "2026-08-27T14:51:07.048Z"
+              repository_snapshot_digest: "sha256:b27f870371f571d054a86da1858c241ba56e77c584d4102c8c246e2c56c52341"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json"
+              check_id: "full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-27T14:51:07.048Z"
+              repository_snapshot_digest: "sha256:b27f870371f571d054a86da1858c241ba56e77c584d4102c8c246e2c56c52341"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608271425-9EWJA1-executor-131b6d232a3a2f122aedd6ac:
+        aggregate_digest: "sha256:adb8fc37666d5c4835f61ea8c21da345c9853dc6d52521671db58c10437b8093"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-27T14:51:07.053Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_08237792ec0ecd3f32ee7754"
+          mutation_id: "external-result:work-order-202608271425-9EWJA1-executor-131b6d232a3a2f122aedd6ac"
+          plan_digest: "sha256:5708ce75eefea6706dde2e1d3794220f871b19cee2b1c00e647a09c89b8e7357"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608271425-9EWJA1"
+          task_revision: 11
+          to: "COMPLETED"
+          work_item_id: "repair-pr-fixtures"
+        mutation_id: "external-result:work-order-202608271425-9EWJA1-executor-131b6d232a3a2f122aedd6ac"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202608271425-9EWJA1"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "634e327f8af5385343077ba50fc861b4e65b724b"
   task_execution_context:
     base_ref: "main"
     base_sha: "5fce04a8be14816be4cae236d2941dff7045e214"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "5fce04a8be14816be4cae236d2941dff7045e214"
     version: 1
@@ -775,6 +996,78 @@ Export the existing committed-repository helper through the PR testkit facade. A
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-27T14:50:57.353Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f3593bc2be1392bd35e6eedacd6e11a5354794f1f5ee827836beb1494f6e8b3b, input_digest=sha256:ccd85ac39c26cea68b5089d710d848e47100fd958fe598312d424d30369c2493
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271425-9EWJA1 Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts packages/testkit/src/cli.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271425-9EWJA1 Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271425-9EWJA1 Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts packages/testkit/src/cli.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271425-9EWJA1 Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271425-9EWJA1 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271425-9EWJA1 Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts packages/testkit/src/cli.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271425-9EWJA1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271425-9EWJA1 Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271425-9EWJA1-align-pr-fixtures-with-committed-git-identity/.agentplane/tasks/202608271425-9EWJA1/blueprint/resolved-snapshot.json
+- old_digest: 9a2f6ba60b98c148d6ee0ad4277dc7b841e5d7e5dd92bde8e554e8a40f965c09
+- current_digest: 9a2f6ba60b98c148d6ee0ad4277dc7b841e5d7e5dd92bde8e554e8a40f965c09
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608271425-9EWJA1
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
