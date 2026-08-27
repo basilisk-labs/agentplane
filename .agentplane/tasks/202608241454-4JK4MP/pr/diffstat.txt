@@ -1,0 +1,4 @@
+ ...n-cli.core.task-advance-effect-recovery.test.ts | 38 +++++++---
+ ...un-cli.core.task-advance.blocked-result.test.ts | 82 ++++++++++++++++++++++
+ .../src/commands/task/external-agent-supervisor.ts | 71 +++++++++++++++++--
+ 3 files changed, 176 insertions(+), 15 deletions(-)

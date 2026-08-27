@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608241454-4JK4MP/allow-replacement-after-a-rejected-external-agen",
+  "created_at": "2026-08-24T15:04:21.249Z",
+  "diffstat_sha256": "sha256:2ed73b157e652bc5f88fb360104e7bfd9ae823d195cb07145e747c2e337b5cf3",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608241454-4JK4MP",
+  "updated_at": "2026-08-24T15:04:21.249Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

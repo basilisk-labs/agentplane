@@ -300,6 +300,17 @@ function assertReadOnlyReturnFresh(opts: {
   }
 }
 
+const NO_IMPLEMENTATION_CHANGE_REJECTION =
+  "Completed implementation result produced no supervisor-observed workspace change.";
+
+function isPreApplyImplementationResultRejection(error: unknown): error is CliError {
+  return (
+    error instanceof CliError &&
+    error.code === "E_VALIDATION" &&
+    error.message === NO_IMPLEMENTATION_CHANGE_REJECTION
+  );
+}
+
 export async function acceptExternalAgentResult(opts: {
   ctx: CommandCtx;
   command: CommandContext;
@@ -459,13 +470,59 @@ export async function acceptExternalAgentResult(opts: {
       assertReadOnlyReturnFresh({ exchange, decision: current });
     }
     if (!(alreadyApplied && exchange.purpose === "planning")) {
-      await applyAcceptedExternalAgentResult({
-        command: checkoutCommand,
-        decision: current,
-        exchange,
-        work_order: workOrder,
-        envelope,
-      });
+      try {
+        await applyAcceptedExternalAgentResult({
+          command: checkoutCommand,
+          decision: current,
+          exchange,
+          work_order: workOrder,
+          envelope,
+        });
+      } catch (error) {
+        if (intent.state !== "issued" || !isPreApplyImplementationResultRejection(error)) {
+          throw error;
+        }
+        const failed = completeSupervisorExecutionEpisode({
+          journal: issuedJournal,
+          operation_key: operation.operation_key,
+          result: {
+            classification: "external_agent_result_rejected_before_apply",
+            error: error.message,
+            result_digest: resultDigest,
+          },
+          failed: true,
+        });
+        if (!(await store.compareAndSwap(issuedJournal.digest, failed))) {
+          throw new CliError({
+            code: "E_RUNTIME",
+            message:
+              "External-agent supervisor changed while recording a pre-apply result rejection.",
+          });
+        }
+        exchange = {
+          ...exchange,
+          status: "retired",
+          updated_at: new Date().toISOString(),
+        };
+        await writeExternalAgentExchange(paths.exchange, exchange);
+        throw new CliError({
+          code: "E_VALIDATION",
+          message:
+            `${error.message} AgentPlane retired the rejected result before any apply effect; ` +
+            `run: agentplane task advance ${opts.task_id} --replacement --agent-json`,
+          context: {
+            task_id: opts.task_id,
+            exact_argv: [
+              "agentplane",
+              "task",
+              "advance",
+              opts.task_id,
+              "--replacement",
+              "--agent-json",
+            ],
+          },
+        });
+      }
     }
     const after = await refreshExternalAgentRoute({
       cwd: exchange.checkout,

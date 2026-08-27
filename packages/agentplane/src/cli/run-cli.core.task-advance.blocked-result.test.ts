@@ -624,6 +624,88 @@ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
     expect(resumed.state_fingerprint).not.toBe(issued.state_fingerprint);
   });
 
+  it("retires a no-change implementation result and accepts a corrected replacement", async () => {
+    const { taskId, taskWorktree } = await prepareBlockedResultTask({
+      title: "Replace rejected no-change result",
+      plan: "Replace a completed implementation result rejected before any apply effect.",
+      slug: "replace-rejected-no-change-result",
+    });
+    const issued = await readAgentPacket(taskWorktree, taskId);
+    if (!issued.exchange) throw new Error("expected an implementation exchange");
+    const rejectedResultPath = await writeCompletedResult(
+      issued,
+      "Implementation completed without a workspace change.",
+    );
+
+    const rejected = await returnAgentResult(taskWorktree, taskId, rejectedResultPath);
+    expect(rejected.code).not.toBe(0);
+    expect(rejected.stderr).toContain(
+      "Completed implementation result produced no supervisor-observed workspace change.",
+    );
+    expect(rejected.stderr).toContain("--replacement");
+    const rejectedExchangePath = path.join(issued.exchange.directory, "exchange.json");
+    expect(JSON.parse(await readFile(rejectedExchangePath, "utf8"))).toMatchObject({
+      status: "retired",
+    });
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: taskWorktree,
+      task_id: taskId,
+    });
+    const failedJournal = validateSupervisorExecutionEpisodeJournal(
+      JSON.parse(await readFile(journalPath, "utf8")) as unknown,
+    );
+    const failedOperation = failedJournal.operations.at(-1);
+    expect(failedJournal).toMatchObject({
+      status: "stopped",
+      stop: { reason: "operation_failed", operation_key: failedOperation?.operation_key },
+    });
+    expect(failedOperation).toMatchObject({ status: "failed" });
+
+    const conflicting = JSON.parse(await readFile(rejectedResultPath, "utf8")) as {
+      result: { summary: string };
+    };
+    conflicting.result.summary = "Conflicting replacement written into the retired exchange.";
+    await writeFile(rejectedResultPath, `${JSON.stringify(conflicting, null, 2)}\n`, "utf8");
+    const replay = await returnAgentResult(taskWorktree, taskId, rejectedResultPath);
+    expect(replay.code).not.toBe(0);
+    expect(replay.stderr).toContain("exchange was retired");
+
+    const replacementIo = captureStdIO();
+    let replacement: AgentPacket;
+    try {
+      expect(
+        await runCli([
+          "task",
+          "advance",
+          taskId,
+          "--replacement",
+          "--agent-json",
+          "--root",
+          taskWorktree,
+        ]),
+        replacementIo.stderr,
+      ).toBe(0);
+      replacement = JSON.parse(replacementIo.stdout) as AgentPacket;
+    } finally {
+      replacementIo.restore();
+    }
+    expect(replacement.action.kind).toBe("agent_episode");
+    expect(replacement.exchange?.result_path).not.toBe(rejectedResultPath);
+    expect(replacement.transition_id).not.toBe(issued.transition_id);
+    expect(replacement.exchange?.directory).not.toBe(issued.exchange.directory);
+    const replacementJournal = validateSupervisorExecutionEpisodeJournal(
+      JSON.parse(await readFile(journalPath, "utf8")) as unknown,
+    );
+    expect(replacementJournal).toMatchObject({
+      status: "running",
+      cursor: { phase: "intent_recorded" },
+    });
+    expect(replacementJournal.operations.slice(-2)).toMatchObject([
+      { status: "failed" },
+      { status: "intent", replacement_of_operation_key: failedOperation?.operation_key },
+    ]);
+  });
+
   it("rejects workspace changes returned with a blocked branch result", async () => {
     const { taskId, taskWorktree } = await prepareBlockedResultTask({
       title: "Blocked result with workspace changes",
