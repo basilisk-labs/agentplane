@@ -1,0 +1,526 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+index c0627a326..9c696ef0e 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+@@ -2,10 +2,12 @@ import { execFile } from "node:child_process";
+ import { readFile, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { promisify } from "node:util";
++import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+ 
+ import {
+   advanceSupervisorExecutionEpisodeState,
+   completeSupervisorExecutionEpisode,
++  digestSupervisorEpisodeValue,
+   recoverSupervisorExecutionEpisodeJournal,
+   startSupervisorExecutionEpisode,
+   validateSupervisorExecutionEpisodeJournal,
+@@ -14,7 +16,7 @@ import {
+ import {
+   captureStdIO,
+   installRunCliIntegrationHarness,
+-  mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   runCliSilent,
+   writeConfig,
+ } from "@agentplane/testkit";
+@@ -41,6 +43,9 @@ import {
+ import { defaultConfig } from "./core-imports.js";
+ import { runCli } from "./run-cli.js";
+ import { readRouteFingerprint } from "./run-cli.core.task-advance.testkit.js";
++import { recoveryPlanningProposal } from "./task-advance-effect-recovery.testkit.js";
++import { applyExternalPlanningResult } from "../commands/task/external-agent-planning-authority.js";
++import { loadCommandContext } from "../commands/shared/task-backend.js";
+ 
+ installRunCliIntegrationHarness();
+ 
+@@ -100,7 +105,7 @@ async function writePlanningResult(packet: AgentPacket, summary: string): Promis
+   if (!packet.exchange) throw new Error("expected an external-agent exchange");
+   const workOrder = JSON.parse(
+     await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
+-  ) as { work_order_id: string; role: string };
++  ) as AgentWorkOrderV2;
+   const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
+   await writeFile(
+     resultPath,
+@@ -120,6 +125,9 @@ async function writePlanningResult(packet: AgentPacket, summary: string): Promis
+           summary,
+           findings: [],
+           uncertainty: [],
++          ...(workOrder.role === "PLANNER"
++            ? { task_plan_proposal: recoveryPlanningProposal(workOrder, summary) }
++            : {}),
+         },
+       },
+       null,
+@@ -230,7 +238,7 @@ describe("task advance effect recovery", () => {
+   });
+ 
+   it("retires a drifted result-less exchange and issues one exact-key replacement", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -340,7 +348,7 @@ describe("task advance effect recovery", () => {
+   });
+ 
+   it("recovers an interrupted formal verification before issuing the next agent episode", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -416,7 +424,7 @@ describe("task advance effect recovery", () => {
+   });
+ 
+   it("reconciles a retired exchange whose journal intent survived interruption", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -493,7 +501,7 @@ describe("task advance effect recovery", () => {
+   });
+ 
+   it("rejects replacement when no terminal operation failure exists", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -510,7 +518,7 @@ describe("task advance effect recovery", () => {
+   });
+ 
+   it("requires an explicit exact-key replacement after a known operation failure", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -573,7 +581,7 @@ describe("task advance effect recovery", () => {
+   });
+ 
+   it("refreshes a pending exact-key replacement after route state changes", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -646,7 +654,7 @@ describe("task advance effect recovery", () => {
+   });
+ 
+   it("rejects replacement while accepting an external result", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -675,7 +683,7 @@ describe("task advance effect recovery", () => {
+   });
+ 
+   it("automatically applies a durably received result on the next plain advance", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -725,7 +733,7 @@ describe("task advance effect recovery", () => {
+   });
+ 
+   it("rejects a conflicting replay after the original result was consumed", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -776,7 +784,7 @@ describe("task advance effect recovery", () => {
+   });
+ 
+   it("reconciles an exact approved planning result without replaying the agent", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -784,19 +792,34 @@ describe("task advance effect recovery", () => {
+     const issued = await readAgentPacket(root, taskId);
+     const plan = "1. Preserve the original intent. 2. Apply its observed result exactly once.";
+     const resultPath = await writePlanningResult(issued, plan);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      plan,
+-      "--updated-by",
+-      "PLANNER",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    if (!issued.exchange) throw new Error("expected an external-agent exchange");
++    const exchange = JSON.parse(
++      await readFile(path.join(issued.exchange.directory, "exchange.json"), "utf8"),
++    ) as ExternalAgentExchange;
++    const workOrder = JSON.parse(
++      await readFile(path.join(issued.exchange.directory, issued.exchange.work_order_ref), "utf8"),
++    ) as AgentWorkOrderV2;
++    const envelope = validateExternalAgentResultEnvelope({
++      raw: JSON.parse(await readFile(resultPath, "utf8")) as unknown,
++      exchange,
++      work_order: workOrder,
++    });
++    // Simulate interruption after the real planning effect, before journal completion.
++    await applyExternalPlanningResult({
++      command: await loadCommandContext({ cwd: root, rootOverride: root }),
++      exchange,
++      envelope,
++      work_order: workOrder,
++    });
++    expect(
++      await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
++    ).toBe(0);
++    const appliedContext = await loadCommandContext({ cwd: root, rootOverride: root });
++    const appliedTask = await appliedContext.taskBackend.getTask(taskId);
++    expect(appliedTask?.sections?.Plan?.trim()).toBe(plan);
++    expect(
++      taskCentricAggregateFromExtensions(appliedTask?.extensions)?.current_plan?.proposal,
++    ).toEqual(envelope.result.task_plan_proposal);
+     const journalPath = await resolveSupervisorExecutionEpisodePath({
+       git_root: root,
+       task_id: taskId,
+@@ -810,6 +833,7 @@ describe("task advance effect recovery", () => {
+       }),
+     );
+ 
++    let executionRoot = root;
+     const io = captureStdIO();
+     try {
+       const code = await runCli([
+@@ -823,27 +847,66 @@ describe("task advance effect recovery", () => {
+         root,
+       ]);
+       expect(code, io.stderr).toBe(0);
+-      expect(JSON.parse(io.stdout)).toMatchObject({
+-        action: { kind: "framework_transition" },
+-        stop: { reason: "control_plane_boundary" },
++      const resumed = JSON.parse(io.stdout) as AgentPacket;
++      expect(resumed).toMatchObject({
++        action: { kind: "agent_episode" },
++        authority: { role: "EXECUTOR" },
++        stop: { reason: "semantic_boundary" },
++      });
++      if (!resumed.exchange) throw new Error("expected the next execution exchange");
++      const nextWorkOrder = JSON.parse(
++        await readFile(
++          path.join(resumed.exchange.directory, resumed.exchange.work_order_ref),
++          "utf8",
++        ),
++      ) as AgentWorkOrderV2;
++      expect(nextWorkOrder).toMatchObject({
++        role: "EXECUTOR",
++        task: { id: taskId, work_item_id: "exercise-recovery" },
+       });
++      if (!nextWorkOrder.state_fingerprint.worktree) throw new Error("expected execution checkout");
++      executionRoot = nextWorkOrder.state_fingerprint.worktree;
+     } finally {
+       io.restore();
+     }
+     expect(
+-      await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
++      await readFile(path.join(executionRoot, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
+     ).toContain(plan);
+-    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
++    const recovered = validateSupervisorExecutionEpisodeJournal(await store.read());
++    const nextOperation = recovered.operations.at(-1);
++    expect(recovered).toMatchObject({
+       status: "running",
+       stop: null,
+-      cursor: { phase: "ready", operation_key: null },
+-      usage: journal.usage,
+-      operations: [{ role: "PLANNER", status: "completed" }],
++      cursor: { phase: "intent_recorded", operation_key: nextOperation?.operation_key },
++      usage: {
++        ...journal.usage,
++        agent_runs: journal.usage.agent_runs + 1,
++        episodes: journal.usage.episodes + recovered.operations.length - journal.operations.length,
++      },
+     });
++    expect(
++      recovered.operations.filter((operation) => operation.kind === "agent_episode"),
++    ).toMatchObject([
++      {
++        role: "PLANNER",
++        status: "completed",
++        operation_key: journal.operations[0]?.operation_key,
++        work_order_ref: journal.operations[0]?.work_order_ref,
++        result_digest: digestSupervisorEpisodeValue({
++          work_order_id: exchange.work_order_id,
++          semantic_status: envelope.result.status,
++          result_digest: externalAgentResultDigest(envelope),
++        }),
++      },
++      { role: "EXECUTOR", status: "intent", result_digest: null },
++    ]);
++    expect(
++      JSON.parse(await readFile(path.join(issued.exchange.directory, "exchange.json"), "utf8")),
++    ).toMatchObject({ status: "consumed", result_digest: externalAgentResultDigest(envelope) });
+   });
+ 
+   it("rejects a late planning result when a different plan awaits approval", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+diff --git a/packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts b/packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts
+new file mode 100644
+index 000000000..74578a201
+--- /dev/null
++++ b/packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts
+@@ -0,0 +1,64 @@
++import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++import type { TaskPlanProposal } from "@agentplaneorg/core/tasks";
++
++export function recoveryPlanningProposal(
++  workOrder: AgentWorkOrderV2,
++  summary: string,
++): TaskPlanProposal {
++  const baseline = workOrder.planning_context?.repository_snapshot;
++  if (!baseline) throw new Error("Recovery fixture requires the issued planning snapshot.");
++  const criterion = {
++    id: "exact-recovery",
++    description: summary,
++    required: true,
++    check_ids: ["task-check"],
++  };
++  const validation = {
++    schema_version: 1 as const,
++    criteria: [criterion],
++    checks: [
++      {
++        id: "task-check",
++        kind: "deterministic" as const,
++        required: true,
++        capability: "task.verify",
++        command: "bun run test:critical",
++      },
++    ],
++    evidence_fingerprint: baseline.digest,
++  };
++  return {
++    schema_version: 1,
++    task_id: workOrder.task.id,
++    planning_baseline: baseline,
++    work_items: {
++      schema_version: 1,
++      work_items: [
++        {
++          id: "exercise-recovery",
++          objective: summary,
++          depends_on: [],
++          required_inputs: [],
++          expected_outputs: ["recovery-result"],
++          scope_roots: ["."],
++          acceptance_criteria: [criterion],
++          validation,
++          context: {
++            required_sources: [],
++            optional_sources: [],
++            symbol_hints: [],
++            max_bytes: 65_536,
++          },
++          risk: "low",
++          capabilities: ["task.verify"],
++          resource_claims: [{ kind: "workspace", resource: ".", mode: "write" }],
++          optional: false,
++          priority: 1,
++        },
++      ],
++    },
++    assumptions: [],
++    unresolved_questions: [],
++    top_level_validation: validation,
++  };
++}
+diff --git a/packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts b/packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts
+new file mode 100644
+index 000000000..5d6adc638
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts
+@@ -0,0 +1,151 @@
++import { beforeEach, describe, expect, it, vi } from "vitest";
++
++import { TASK_CENTRIC_EXTENSION_KEY } from "@agentplaneorg/core/tasks";
++
++const mocks = vi.hoisted(() => ({ loadTask: vi.fn() }));
++vi.mock("../shared/task-backend.js", () => ({ loadTaskFromContext: mocks.loadTask }));
++
++import { isExternalPlanningResultApplied } from "./external-agent-planning-authority.js";
++
++const summary = "Preserve exact planning-result recovery.";
++// These projections isolate comparison after the envelope has already been validated.
++// The CLI recovery suite exercises validation and persistence of a full TaskPlanProposal.
++const returnedProposal = {
++  task_id: "202608190000-ABC123",
++  work_items: [
++    { id: "first", context: { required: true, paths: ["src", "tests"] } },
++    { id: "second", context: { required: false, paths: [] } },
++  ],
++};
++const persistedProposal = {
++  work_items: [
++    { context: { paths: ["src", "tests"], required: true }, id: "first" },
++    { context: { paths: [], required: false }, id: "second" },
++  ],
++  task_id: "202608190000-ABC123",
++};
++
++function taskRecord(proposal: unknown = persistedProposal) {
++  return {
++    sections: { Plan: summary },
++    plan_approval: { state: "approved" },
++    extensions: { [TASK_CENTRIC_EXTENSION_KEY]: { current_plan: { proposal } } },
++  };
++}
++
++function applied(
++  opts: {
++    status?: "completed" | "blocked";
++    proposal?: unknown;
++    approvalRoute?: boolean;
++    intent?: unknown;
++  } = {},
++) {
++  return isExternalPlanningResultApplied({
++    command: {} as never,
++    exchange: { task_id: returnedProposal.task_id } as never,
++    decision: {
++      workflowStep: opts.approvalRoute
++        ? { kind: "approval", request: { type: "plan_approval" } }
++        : { kind: "agent_episode" },
++    } as never,
++    envelope: {
++      result: {
++        status: opts.status ?? "completed",
++        summary,
++        task_plan_proposal: opts.proposal ?? returnedProposal,
++        ...(opts.intent ? { task_intent: opts.intent } : {}),
++      },
++    } as never,
++  });
++}
++
++describe("persisted external planning-result comparison", () => {
++  beforeEach(() => {
++    vi.resetAllMocks();
++    mocks.loadTask.mockResolvedValue(taskRecord());
++  });
++
++  it("recognizes equivalent nested objects regardless of property insertion order", async () => {
++    expect(persistedProposal).toEqual(returnedProposal);
++    expect(JSON.stringify(persistedProposal)).not.toBe(JSON.stringify(returnedProposal));
++    expect(await applied()).toBe(true);
++  });
++
++  it.each([
++    ["changed scalar", { ...persistedProposal, task_id: "202608190000-OTHER1" }],
++    ["missing field", { work_items: persistedProposal.work_items }],
++    ["added field", { ...persistedProposal, unexpected: true }],
++    [
++      "reordered work items",
++      {
++        ...persistedProposal,
++        work_items: persistedProposal.work_items.toReversed(),
++      },
++    ],
++    [
++      "reordered nested array",
++      {
++        ...persistedProposal,
++        work_items: [
++          { id: "first", context: { required: true, paths: ["tests", "src"] } },
++          persistedProposal.work_items[1],
++        ],
++      },
++    ],
++    [
++      "changed nested value",
++      {
++        ...persistedProposal,
++        work_items: [
++          { id: "first", context: { required: false, paths: ["src", "tests"] } },
++          persistedProposal.work_items[1],
++        ],
++      },
++    ],
++  ])("rejects a %s", async (_label, proposal) => {
++    mocks.loadTask.mockResolvedValue(taskRecord(proposal));
++    expect(await applied()).toBe(false);
++  });
++
++  it("rejects a missing persisted proposal", async () => {
++    mocks.loadTask.mockResolvedValue({ ...taskRecord(), extensions: {} });
++    expect(await applied()).toBe(false);
++  });
++
++  it("rejects changed plan text despite an equivalent proposal", async () => {
++    mocks.loadTask.mockResolvedValue({ ...taskRecord(), sections: { Plan: "A different plan." } });
++    expect(await applied()).toBe(false);
++  });
++
++  it("requires either current plan approval or the plan-approval route", async () => {
++    mocks.loadTask.mockResolvedValue({ ...taskRecord(), plan_approval: { state: "pending" } });
++    expect(await applied()).toBe(false);
++    expect(await applied({ approvalRoute: true })).toBe(true);
++  });
++
++  it("does not treat an incomplete result as applied", async () => {
++    expect(await applied({ status: "blocked" })).toBe(false);
++    expect(mocks.loadTask).not.toHaveBeenCalled();
++  });
++
++  it("compares structured classification values semantically without relaxing their content", async () => {
++    const intent = {
++      task_kind: "code",
++      mutation_scope: "code",
++      risk_flags: [],
++      tags: ["code", "tests"],
++      blueprint_request: { mode: "extend", recipeIds: ["one", "two"] },
++    };
++    const record = {
++      ...taskRecord(),
++      ...intent,
++      tags: ["tests", "code"],
++      blueprint_request: { recipeIds: ["one", "two"], mode: "extend" },
++    };
++    mocks.loadTask.mockResolvedValue(record);
++    expect(await applied({ intent })).toBe(true);
++    mocks.loadTask.mockResolvedValue({ ...record, mutation_scope: "docs" });
++    expect(await applied({ intent })).toBe(false);
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/external-agent-planning-authority.ts b/packages/agentplane/src/commands/task/external-agent-planning-authority.ts
+index f1c23c07c..40423078a 100644
+--- a/packages/agentplane/src/commands/task/external-agent-planning-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-planning-authority.ts
+@@ -1,6 +1,7 @@
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+ import {
++  canonicalizeJson,
+   createLegacyTaskAggregate,
+   createTaskPlanRevision,
+   taskCentricAggregateFromExtensions,
+@@ -24,7 +25,8 @@ import type {
+ import { setTaskPlan } from "./plan.js";
+ 
+ function sameValue(left: unknown, right: unknown): boolean {
+-  return JSON.stringify(left) === JSON.stringify(right);
++  // Persistence can reorder object members without changing the planning value.
++  return JSON.stringify(canonicalizeJson(left)) === JSON.stringify(canonicalizeJson(right));
+ }
+ 
+ function sameStringSet(left: readonly string[] | undefined, right: readonly string[]): boolean {

@@ -3,6 +3,8 @@ import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schema
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe } from "vitest";
+import { approveRouteTaskPlan, recordRouteVerification } from "./route-decision.testkit.js";
+import { mkGitRepoRootWithCommit, withEvaluatorPolicyFixture } from "@agentplane/testkit";
 
 import {
   captureStdIO,
@@ -11,12 +13,10 @@ import {
   defaultConfig,
   expect,
   it,
-  mkGitRepoRootWithBranch,
   runCli,
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit/cli-core-pr-flow";
-import { withEvaluatorPolicyFixture } from "@agentplane/testkit";
 
 async function createBranchPrTask(root: string): Promise<string> {
   const taskIo = captureStdIO();
@@ -77,25 +77,13 @@ async function recordEvaluatorReview(root: string, taskId: string): Promise<void
 
 describe("runCli route decision direct closeout", () => {
   it("routes approved direct tasks to current-agent start-ready before execution", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Exercise direct route guidance before start-ready.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await approveRouteTaskPlan(root, taskId, "Exercise direct route guidance before start-ready.");
 
     const nextIo = captureStdIO();
     try {
@@ -120,25 +108,13 @@ describe("runCli route decision direct closeout", () => {
   });
 
   it("routes a newly started direct task to the typed EXECUTOR runner operation", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Exercise direct route guidance after start-ready.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await approveRouteTaskPlan(root, taskId, "Exercise direct route guidance after start-ready.");
     await runCliSilent([
       "task",
       "start-ready",
@@ -211,7 +187,7 @@ describe("runCli route decision direct closeout", () => {
   });
 
   it("stops for verification evidence after a successful runner instead of looping verify-show", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     await configureGitUser(root);
     const config = defaultConfig();
     config.workflow_mode = "direct";
@@ -219,19 +195,11 @@ describe("runCli route decision direct closeout", () => {
     await commitAll(root, "seed direct workflow config");
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Exercise the direct terminal-runner verification gate.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
+    await approveRouteTaskPlan(
       root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+      taskId,
+      "Exercise the direct terminal-runner verification gate.",
+    );
     await runCliSilent([
       "task",
       "start-ready",
@@ -339,25 +307,13 @@ describe("runCli route decision direct closeout", () => {
   });
 
   it("routes verified direct tasks to closeout instead of rerunning them and drops them from active work", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Exercise direct verified closeout routing.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await approveRouteTaskPlan(root, taskId, "Exercise direct verified closeout routing.");
     await runCliSilent([
       "task",
       "start-ready",
@@ -369,17 +325,8 @@ describe("runCli route decision direct closeout", () => {
       "--root",
       root,
     ]);
-    await runCliSilent([
-      "verify",
-      taskId,
-      "--ok",
-      "--by",
-      "EVALUATOR",
-      "--note",
-      "Verified: ready for direct closeout.",
-      "--root",
-      root,
-    ]);
+    await recordRouteVerification(root, taskId, "Verified: ready for direct closeout.");
+    await recordEvaluatorReview(root, taskId);
 
     const nextIo = captureStdIO();
     try {
@@ -421,7 +368,7 @@ describe("runCli route decision direct closeout", () => {
     "routes done direct tasks with dirty tracked task artifacts to a cleanup commit",
     { timeout: 120_000 },
     async () => {
-      const root = await mkGitRepoRootWithBranch("main");
+      const root = await mkGitRepoRootWithCommit();
       await configureGitUser(root);
       const config = defaultConfig();
       config.workflow_mode = "direct";

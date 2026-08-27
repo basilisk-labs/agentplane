@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The six successful verification cases, four positive matrix cases and four incident verification cases now use the existing committed fixture. Their output, findings and incident promotion assertions remain unchanged. Argument-validation fixtures remain unborn.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271358-G0N9P4/quality/objects/sha256/2501149452aa79bbcf0f5915f02d7db1170a7c5b1117d25c3504628d5d3d60f1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Removing redundant configureGitUser calls is equivalent because the existing helper configures identity. No shared helper or product behavior changed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271358-G0N9P4/quality/objects/sha256/2501149452aa79bbcf0f5915f02d7db1170a7c5b1117d25c3504628d5d3d60f1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The new runtime test removes synthetic execution extensions, uses a real unborn repository, requires git_base_identity_unavailable and compares the entire task before and after rejection. Existing zero-SHA, mismatched batch base and branch-floor cases remain.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271358-G0N9P4/quality/objects/sha256/2501149452aa79bbcf0f5915f02d7db1170a7c5b1117d25c3504628d5d3d60f1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The frozen diff contains exactly four approved test files. Concurrent work is in disjoint worktrees and paths. Supervisor-owned task artifacts are not additional implementation changes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271358-G0N9P4/quality/objects/sha256/2501149452aa79bbcf0f5915f02d7db1170a7c5b1117d25c3504628d5d3d60f1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Frozen verification record 20260827144238263-382161b49fad458b binds both required commands to cf3fa3f9c8a628c46a62bb10b347ac1684668394. Full CI and 34 scoped tests passed. Lint, formatting and diff checks passed without relaxed gates.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271358-G0N9P4/quality/objects/sha256/2501149452aa79bbcf0f5915f02d7db1170a7c5b1117d25c3504628d5d3d60f1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: The full release-specific broad sweep must still pass. This repair does not implement AP-CORE-013 canonical verification migration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271358-G0N9P4/quality/objects/sha256/2501149452aa79bbcf0f5915f02d7db1170a7c5b1117d25c3504628d5d3d60f1.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

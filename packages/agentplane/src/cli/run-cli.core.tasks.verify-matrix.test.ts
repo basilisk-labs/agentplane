@@ -6,6 +6,7 @@ import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
   mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   registerAgentplaneHome,
   silenceStdIO,
   writeDefaultConfig,
@@ -142,14 +143,14 @@ describe("verify flag matrix", () => {
       notContains: ["Fixability: external"],
     },
   ])("$name", async ({ args, contains, notContains, output }) => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
     const taskId = await createTask(root, `Verify matrix ${output}`);
 
     const io = captureStdIO();
     try {
       const code = await runCli(["verify", taskId, "--by", "REVIEWER", ...args, "--root", root]);
-      expect(code).toBe(0);
+      expect(code, io.stderr).toBe(0);
       expect(io.stdout).toContain(output);
     } finally {
       io.restore();

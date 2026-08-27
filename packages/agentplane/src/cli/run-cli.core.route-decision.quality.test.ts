@@ -4,6 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { describe } from "vitest";
+import { approveRouteTaskPlan, recordRouteVerification } from "./route-decision.testkit.js";
 
 import {
   captureStdIO,
@@ -73,19 +74,7 @@ async function createVerifiedOpenPrFixture(
   taskId: string;
 }> {
   const taskId = await createBranchPrTask(root);
-  await runCliSilent([
-    "task",
-    "plan",
-    "set",
-    taskId,
-    "--text",
-    title,
-    "--updated-by",
-    "ORCHESTRATOR",
-    "--root",
-    root,
-  ]);
-  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+  await approveRouteTaskPlan(root, taskId, title);
 
   const branch = `task/${taskId}/route-decision`;
   await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
@@ -106,17 +95,7 @@ async function createVerifiedOpenPrFixture(
   await writeFile(path.join(root, "impl.txt"), "implementation\n");
   await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
   await execFileAsync("git", ["commit", "-m", "feat: implementation"], { cwd: root });
-  await runCliSilent([
-    "verify",
-    taskId,
-    "--ok",
-    "--by",
-    "CODER",
-    "--note",
-    "Verified: route decision behavior.",
-    "--root",
-    root,
-  ]);
+  await recordRouteVerification(root, taskId, "Verified: route decision behavior.");
   await markTaskDoing(root, taskId);
   await execFileAsync("git", ["add", "-A"], { cwd: root });
   await execFileAsync("git", ["commit", "-m", "task: seed verified lifecycle state"], {

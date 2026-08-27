@@ -4,6 +4,12 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { describe } from "vitest";
+import { recordQualityReviewPass } from "@agentplane/testkit";
+import {
+  approveRouteTaskPlan,
+  recordRouteVerification,
+  routeVerificationDetails,
+} from "./route-decision.testkit.js";
 
 import {
   captureStdIO,
@@ -11,7 +17,6 @@ import {
   expect,
   it,
   mkGitRepoRootWithBranch,
-  recordVerificationOk,
   runCli,
   runCliSilent,
   writeConfig,
@@ -75,23 +80,12 @@ describe("runCli route decision verification freshness", () => {
     await execFileAsync("git", ["commit", "-m", "test: seed verification base"], { cwd: root });
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Exercise done route decisions.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await approveRouteTaskPlan(root, taskId, "Exercise done route decisions.");
     await runCliSilent(["task", "set-status", taskId, "DOING", "--force", "--yes", "--root", root]);
     await execFileAsync("git", ["add", "--all"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "task: prepare done route fixture"], { cwd: root });
-    await recordVerificationOk(root, taskId);
+    await recordRouteVerification(root, taskId, "Verify the completed route fixture.");
+    await recordQualityReviewPass(root, taskId);
 
     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const readme = await readFile(readmePath, "utf8");
@@ -140,19 +134,11 @@ describe("runCli route decision verification freshness", () => {
     await execFileAsync("git", ["commit", "-m", "test: seed verification base"], { cwd: root });
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Require verification evidence for the current semantic implementation head.",
-      "--updated-by",
-      "PLANNER",
-      "--root",
+    await approveRouteTaskPlan(
       root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+      taskId,
+      "Require verification evidence for the current semantic implementation head.",
+    );
 
     await execFileAsync("git", ["checkout", "-b", `task/${taskId}/verification-freshness`], {
       cwd: root,
@@ -186,7 +172,8 @@ describe("runCli route decision verification freshness", () => {
       `${JSON.stringify({ base: "main", branch: `task/${taskId}/verification-freshness`, created_at: "2026-01-01T00:00:00.000Z", head_sha: firstImplementationHead.trim(), pr_number: 123, pr_url: "https://github.com/example/repo/pull/123", schema_version: 1, status: "OPEN", task_id: taskId, updated_at: "2026-01-01T00:00:00.000Z" }, null, 2)}\n`,
       "utf8",
     );
-    await recordVerificationOk(root, taskId);
+    await recordRouteVerification(root, taskId, "Verify the initial semantic implementation.");
+    await recordQualityReviewPass(root, taskId);
     await execFileAsync("git", ["add", "--all"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "task: record fresh verification"], { cwd: root });
 
@@ -232,19 +219,11 @@ describe("runCli route decision verification freshness", () => {
     await execFileAsync("git", ["commit", "-m", "test: seed verification base"], { cwd: root });
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Record verification once and reuse it when only lifecycle evidence changes.",
-      "--updated-by",
-      "PLANNER",
-      "--root",
+    await approveRouteTaskPlan(
       root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+      taskId,
+      "Record verification once and reuse it when only lifecycle evidence changes.",
+    );
     const branch = `task/${taskId}/single-verification`;
     await execFileAsync("git", ["checkout", "-b", branch], {
       cwd: root,
@@ -376,25 +355,27 @@ describe("runCli route decision verification freshness", () => {
     expect(afterConflicting.blockers.map((blocker) => blocker.code)).toContain(
       "verification_required",
     );
-    await runCliSilent([
-      "verify",
-      taskId,
-      "--ok",
-      "--by",
-      "TESTER",
-      "--note",
-      "Focused verification passed.",
-      "--details",
-      "Command: test fixture. Result: pass. Evidence: implementation fixture is present. Scope: verification freshness.",
-      "--observation",
-      "The committed implementation and verification input match.",
-      "--impact",
-      "The route may reuse this evidence after lifecycle-only changes.",
-      "--resolution",
-      "Keep semantic verification input separate from lifecycle artifacts.",
-      "--root",
-      root,
-    ]);
+    expect(
+      await runCliSilent([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "TESTER",
+        "--note",
+        "Focused verification passed.",
+        "--details",
+        await routeVerificationDetails(root, taskId),
+        "--observation",
+        "The committed implementation and verification input match.",
+        "--impact",
+        "The route may reuse this evidence after lifecycle-only changes.",
+        "--resolution",
+        "Keep semantic verification input separate from lifecycle artifacts.",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
 
     const immediate = await runJson<{
       blockers: { code: string }[];

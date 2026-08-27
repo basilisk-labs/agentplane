@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608271425-9EWJA1-0ecd25fcd0fd222a5d24ada4",
+  "prepared_at": "2026-08-27T14:51:46.182Z",
+  "task": {
+    "id": "202608271425-9EWJA1",
+    "revision": 12,
+    "objective": "Align PR fixtures with committed Git identity\n\nRepair the 26 freshly reproduced failures across eight PR fixture suites on main 5fce04a8. Reuse and export the existing mkGitRepoRootWithCommit helper only where PR operations require a real base identity. Preserve empty-repository helpers and argument-validation scenarios. Update provider-neutral output assertions only where behavior and metadata assertions remain equivalent. Add testkit coverage for empty versus committed repository identity. Remove unused imports or redundant fixture setup rather than increasing oversized-file baselines. No production, policy, gate, release-state or roadmap change. This task is independent of concurrent G0N9P4: its ten writable files do not overlap, and it requires only already merged GHHA0Q. Both targeted tests and full CI remain mandatory.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts packages/testkit/src/cli.test.ts --pool=threads --maxWorkers=2",
+      "- In scope: Repair the 26 freshly reproduced failures across eight PR fixture suites on main 5fce04a8. Reuse and export the existing mkGitRepoRootWithCommit helper only where PR operations require a real base identity. Preserve empty-repository helpers and argument-validation scenarios. Update provider-neutral output assertions only where behavior and metadata assertions remain equivalent. Add testkit coverage for empty versus committed repository identity. Remove unused imports or redundant fixture setup rather than increasing oversized-file baselines. No production, policy, gate, release-state or roadmap change. This task is independent of concurrent G0N9P4: its ten writable files do not overlap, and it requires only already merged GHHA0Q. Both targeted tests and full CI remain mandatory.\n- Out of scope: unrelated refactors not required for \"Align PR fixtures with committed Git identity\".",
+      "Export the existing committed-repository helper through the PR testkit facade. Add explicit empty-versus-committed Git identity coverage. Migrate only PR fixtures whose operations require a frozen base before task creation. Update obsolete PR-specific status wording to the equivalent provider-neutral wording while retaining metadata and behavior assertions. Remove unused imports and redundant configuration where needed to honor the existing test-size budget. Run all nine declared test files, formatting, lint, hotspot baseline, full CI and hosted exact-head checks. Do not change production code or enforcement.",
+      "1. Run `node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts packages/testkit/src/cli.test.ts --pool=threads --maxWorkers=2`. Expected: every test passes with no skipped cases; PR metadata, exact-head publication and error-path assertions remain intact.\n2. Run ESLint and Prettier --check on all ten scoped files, plus git diff --check and node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000. Expected: all pass without baseline changes.\n3. Run `bun run ci:local:full`. Expected: every mandatory group passes for the committed implementation. A focused pass is not a substitute.\n4. Before integration, require hosted mandatory checks for the exact published head. Preserve all unrelated worktrees and the parallel G0N9P4 changes."
+    ]
+  },
+  "evaluated_sha": "634e327f8af5385343077ba50fc861b4e65b724b",
+  "diff_base_sha": "5fce04a8be14816be4cae236d2941dff7045e214",
+  "blueprint_digest": "9a2f6ba60b98c148d6ee0ad4277dc7b841e5d7e5dd92bde8e554e8a40f965c09",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608271425-9EWJA1/quality/20260827-145146182-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:518e1c1aaafdaada7a2b1cdf14a6333978a0150a1b2eaf1832d6d7f6d1938b1a",
+    "prompt_path": ".agentplane/tasks/202608271425-9EWJA1/quality/objects/sha256/35a9c1b23cfd9a14cf2f7657ea3fea0d01006ae742d37e9c2cf68e91d2df2217.md",
+    "result_schema_path": ".agentplane/tasks/202608271425-9EWJA1/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608271425-9EWJA1/README.md",
+      "sha256": "sha256:c7031d3182dd5ef3466181562f1952fac84772b3b298d4f8a981895c05615472",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608271425-9EWJA1/quality/objects/sha256/0573f938635c08e770dcac6ba9e37ee421ad948d77a226a96c698c79010dd886.patch",
+      "sha256": "sha256:0573f938635c08e770dcac6ba9e37ee421ad948d77a226a96c698c79010dd886",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608271425-9EWJA1/quality/objects/sha256/d95d0acf71eba724329a418bc06e8264aea65cb35720be95bfc5a172bb57ba3d.json",
+      "sha256": "sha256:d95d0acf71eba724329a418bc06e8264aea65cb35720be95bfc5a172bb57ba3d",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608271425-9EWJA1/verification/20260827145057353-8504a8d8eb4611ab.json",
+      "sha256": "sha256:b82606756a734d5098d25e61657a497d02e2d8b0f2a78ce7245aaeec5a436907",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608271425-9EWJA1/quality/objects/sha256/7080a6be2e427488741d82e5f0f80a864c64a7fa2e9cdb8e5118aedded4881ec.json",
+      "sha256": "sha256:7080a6be2e427488741d82e5f0f80a864c64a7fa2e9cdb8e5118aedded4881ec",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

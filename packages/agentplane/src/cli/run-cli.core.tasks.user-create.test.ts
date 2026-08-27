@@ -10,6 +10,7 @@ import {
   cleanGitEnv,
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
 } from "@agentplane/testkit";
 import { runCli } from "./run-cli.js";
 
@@ -424,7 +425,7 @@ describe("task create user-first intake", { timeout: TASKS_CLI_TIMEOUT_MS }, () 
   });
 
   it("keeps the compact task advance agent-json handoff compatible", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     let taskId = "";
     const createIo = captureStdIO();
     try {
