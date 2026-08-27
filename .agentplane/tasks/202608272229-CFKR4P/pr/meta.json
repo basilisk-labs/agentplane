@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:d79494e607db1cf7b5c9f3d1857cacf25021aeb3f5ea2e0e22140b82cc6ce4f0",
   "pr_number": 5863,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5863",
+  "pre_merge_closure": {
+    "basis_commit": "fea5ef88e37a9d149ce3bfd9370c94a1c854be96",
+    "branch": "task/202608272229-CFKR4P/keep-verification-and-review-on-the-same-semanti",
+    "pr_number": 5863,
+    "recorded_at": "2026-08-27T23:07:59.986Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
