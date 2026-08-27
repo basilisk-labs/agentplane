@@ -4,7 +4,7 @@ title: "Modernize route-decision fixture prerequisites"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -28,6 +28,38 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-27T16:36:39.567Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "da6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc"
+  blueprint_digest: "571a2372fccb43736231c69f80518c18c9cfe9e008de98c0ab35218156886553"
+  evidence_refs:
+    - ".agentplane/tasks/202608271520-175BQX/quality/20260827-163417019-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608271520-175BQX/quality/20260827-163417019-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/cfcdcb5435bc36040568a2bd28a1a5c734c0b2fe8cc3b738c45514cc0aefe561.md"
+    - ".agentplane/tasks/202608271520-175BQX/quality/20260827-163417019-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608271520-175BQX/quality/20260827-163417019-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608271520-175BQX/quality/20260827-163417019-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608271520-175BQX/README.md"
+    - ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/3df5f4f1f353a441910c5898702f18d37f00971bf3cad8e11319d03103ab1c56.patch"
+    - ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/aadfab4fb644761f23c0e128c6d090eb8b31d8787d9b2a201c93e5e10f1e03fe.json"
+    - ".agentplane/tasks/202608271520-175BQX/verification/20260827163359452-f5a7fe6f4992aa43.json"
+    - ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/a288575b74937de29ef9e860b24bcdc61f3191f48df33fc132a601fd7072e7e6.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The frozen diff changes only seven approved CLI test files and one250-line local helper. Existing global helpers, production routing, CI gates and timeout values are unchanged."
+    - "The helper submits the actual issued PLANNER proposal and uses the exact resume arguments before explicit fixture USER approval. It preserves the task verification commands and configured direct/branch mode."
+    - "Verification fixture details are generated from the actual reconciled execution contract, explicitly exclude hosted integration and identify themselves as isolated fixture evidence. Verification calls now assert success instead of silently ignoring errors."
+    - "Batch-extension fixture mutation now merges parsed extensions rather than introducing duplicate YAML keys that could overwrite structured planning state. Direct-closeout and verification-freshness fixtures record the required evaluator review before testing downstream routes."
+    - "All existing downstream route expectations remain: provider confidence and no-default-provider-call checks, planning precedence, stale semantic verification versus lifecycle-only changes, direct terminal routes and explicit batch ownership."
+    - "Frozen verification20260827163359452-f5a7fe6f4992aa43 binds implementationda6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc to full CI525884ms and32/32 focused tests44146ms. No skipped tests or baseline expansion is reported."
+    - "Residual risk: Hosted exact-head checks and supported integration remain uncompleted; passing fixture tests are not release qualification."
 execution_route:
   frozen: true
   reason_codes:
