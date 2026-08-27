@@ -3,7 +3,8 @@
   "branch": "task/202608271649-DVNTRR/modernize-task-continuity-and-approval-fixtures",
   "created_at": "2026-08-27T16:53:10.841Z",
   "diffstat_sha256": "sha256:1ace5026d0c9c2c7dd4b825643c098d7b4fbdac8d211a23a47b049886f07f95b",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-27T17:07:18.338Z",
+  "last_verified_diffstat_sha256": "sha256:1ace5026d0c9c2c7dd4b825643c098d7b4fbdac8d211a23a47b049886f07f95b",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202608271649-DVNTRR",
   "updated_at": "2026-08-27T16:53:10.841Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

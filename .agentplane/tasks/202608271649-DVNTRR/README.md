@@ -4,7 +4,7 @@ title: "Modernize task continuity and approval fixtures"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -23,10 +23,10 @@ plan_approval:
   updated_by: "USER"
   note: "Approved under the user instruction to continue refactoring autonomously with all permissions. Bounded five-file fixture repair; preserve all9scenarios and mandatory checks. Do not modify production or the old0.6task."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-27T17:07:18.338Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -86,11 +86,41 @@ execution_contract:
       - "packages/agentplane/src/cli/task-continuity.testkit.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-routing.test.ts"
+      - "packages/agentplane/src/cli/task-continuity.testkit.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -126,23 +156,37 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:8898c52874887d510b98c9153566ecf6fe8fa43c111f7f808645037615fed922"
+      digest: "sha256:2c3915bf36bac530c24d2f1cabb3d9c83d328d7cc0525f733cd0fa78f9c281af"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-routing.test.ts"
         - "central_component:packages/agentplane/src/cli/task-continuity.testkit.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-routing.test.ts"
+        - "central_path:packages/agentplane/src/cli/task-continuity.testkit.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-routing.test.ts"
+          - "packages/agentplane/src/cli/task-continuity.testkit.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -174,11 +218,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "56e4367136dd17997ced56fe2de81990e06cdb2a"
+  message: "🚧 DVNTRR task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 56e4367136dd. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -187,9 +236,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-27T16:58:34.978Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 56e4367136dd. CLI accepted one state-bound external-agent semantic result."
+    commit: "56e4367136dd17997ced56fe2de81990e06cdb2a"
+  -
+    type: "verify"
+    at: "2026-08-27T17:07:18.338Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-27T16:53:09.776Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-27T17:07:20.482Z"
+doc_updated_by: "SUPERVISOR"
 description: "Repair eight freshly reproduced fixture failures across task handoff, direct supervisor approval, next-action JSON and route escalation. Scope only run-cli.core.task-handoff.test.ts, run-cli.core.direct-task-supervision.test.ts, run-cli.core.task-next-action-json.test.ts, run-cli.core.task-routing.test.ts and a new local task-continuity.testkit.ts under packages/agentplane/src/cli. Use real committed Git baselines and typed TaskPlanProposal from the actual PLANNER work order. Preserve task kind, mutation, risk and requested route in fixture proposals. Keep explicit approval ungranted in the supervisor stop test. Retain stale claimed-run cancellation, unclaimed-run refusal, branch snapshot precedence, exact authority/head preservation, JSON aliases and state fingerprints, user-question precedence, and publish-risk branch escalation. No production, global testkit, CI, policy, timeout or roadmap changes. Do not modify the old0.6 P5BWP0 task or its artifacts. This is a new0.7.8 qualification repair on current main, disjoint from all active source edits. Require all9 existing scenarios, focused lint/format, full CI, EVALUATOR and hosted exact-head proof."
 sections:
   Summary: |-
@@ -208,6 +271,78 @@ sections:
     5. Require independent EVALUATOR review and fresh hosted exact-head checks before supported integration.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-27T17:07:18.338Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:60532933be057795f50b6cff2214fbc4b43a50470b8b3cae37471282af6164b0, input_digest=sha256:81d55c102634838ff63a2e2728fa9f5dbc8c09c5d9e95bcf57a8bbdc9a96ff8f
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271649-DVNTRR Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271649-DVNTRR Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271649-DVNTRR Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271649-DVNTRR Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271649-DVNTRR Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271649-DVNTRR Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271649-DVNTRR Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271649-DVNTRR-modernize-task-continuity-and-approval-fixtures/.agentplane/tasks/202608271649-DVNTRR/blueprint/resolved-snapshot.json
+    - old_digest: cbc829fe5ba7d0105060276d39d531060b7773c5c3c3cf3691a2b45820b15f58
+    - current_digest: cbc829fe5ba7d0105060276d39d531060b7773c5c3c3cf3691a2b45820b15f58
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608271649-DVNTRR
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -454,25 +589,96 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 3
+    revision: 10
     schema_version: 1
-    updated_at: "2026-08-27T16:52:24.105Z"
+    updated_at: "2026-08-27T17:07:21.581Z"
     work_items:
       repair-continuity-fixtures:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "repair-continuity-fixtures"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:542d99a6bf92630ac2d325adcec4e3527d635c3bbb6054bd883502b07cac4926"
+            id: "artifact:continuity-fixture-report"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608271649-DVNTRR"
+              work_item_id: "repair-continuity-fixtures"
+            provenance:
+              - "sha256:43769ff9db03d308079efa87222f6ede8fd96a15acd4db86a4e18639e727ad6e"
+              - ".agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:b9c5b3dcb962dc1d803344850fd8cefee6bcca8c53d9985ed2c685201fbd32c2"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json"
+              check_id: "scoped-tests"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts --pool=forks --maxWorkers=1"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts --pool=forks --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-08-27T17:07:21.574Z"
+              repository_snapshot_digest: "sha256:b9c5b3dcb962dc1d803344850fd8cefee6bcca8c53d9985ed2c685201fbd32c2"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json"
+              check_id: "full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-27T17:07:21.574Z"
+              repository_snapshot_digest: "sha256:b9c5b3dcb962dc1d803344850fd8cefee6bcca8c53d9985ed2c685201fbd32c2"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608271649-DVNTRR-executor-7fbddae817efad207952ce7e:
+        aggregate_digest: "sha256:d475cf68b951fa45dbefec0a30f3046037fb05043bb161e9c191ba84db53194e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-27T17:07:21.581Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_ab266905e6a0b96ba36ebcda"
+          mutation_id: "external-result:work-order-202608271649-DVNTRR-executor-7fbddae817efad207952ce7e"
+          plan_digest: "sha256:12f1eedce20f8ce708bcae897dafd74423968710a04a8052568476364148ccdf"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608271649-DVNTRR"
+          task_revision: 9
+          to: "COMPLETED"
+          work_item_id: "repair-continuity-fixtures"
+        mutation_id: "external-result:work-order-202608271649-DVNTRR-executor-7fbddae817efad207952ce7e"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202608271649-DVNTRR"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "56e4367136dd17997ced56fe2de81990e06cdb2a"
   task_execution_context:
     base_ref: "main"
     base_sha: "2c9a2f59146c302c517524136e66abb902f92ba6"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "2c9a2f59146c302c517524136e66abb902f92ba6"
     version: 1
@@ -504,6 +710,78 @@ Repair the four continuity and approval suites with real Git baselines and actua
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-27T17:07:18.338Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:60532933be057795f50b6cff2214fbc4b43a50470b8b3cae37471282af6164b0, input_digest=sha256:81d55c102634838ff63a2e2728fa9f5dbc8c09c5d9e95bcf57a8bbdc9a96ff8f
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271649-DVNTRR Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271649-DVNTRR Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271649-DVNTRR Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271649-DVNTRR Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271649-DVNTRR Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271649-DVNTRR Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608271649-DVNTRR/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271649-DVNTRR Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271649-DVNTRR-modernize-task-continuity-and-approval-fixtures/.agentplane/tasks/202608271649-DVNTRR/blueprint/resolved-snapshot.json
+- old_digest: cbc829fe5ba7d0105060276d39d531060b7773c5c3c3cf3691a2b45820b15f58
+- current_digest: cbc829fe5ba7d0105060276d39d531060b7773c5c3c3cf3691a2b45820b15f58
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608271649-DVNTRR
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
