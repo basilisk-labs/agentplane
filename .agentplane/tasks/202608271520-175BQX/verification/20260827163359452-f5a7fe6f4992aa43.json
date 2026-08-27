@@ -1,0 +1,116 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271520-175BQX Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts --pool=threads --maxWorkers=2\nResult: pass\nEvidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608271520-175BQX Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271520-175BQX Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts --pool=threads --maxWorkers=2\nResult: pass\nEvidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608271520-175BQX Verification Contract check critical_paths (2/2)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271520-175BQX Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271520-175BQX Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts --pool=threads --maxWorkers=2\nResult: pass\nEvidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608271520-175BQX Verification Contract check task_outcome (2/2)",
+  "digest": "sha256:f5a7fe6f4992aa437d500c0e9214a310b8d892fe5b050c32f222703617655f2f",
+  "implementation_sha": "da6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:08c166dc3e71184716d214799780c96d6f87cb6d35f0da2a87b502472c47cc08",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:94a48965127981b7f19d91bbbe770054f4b0141e700bb3b9fd58fa1797d7c59e",
+      "digest": "sha256:099730b6dfe035b9101afb9145d5fd0ae189cd2df5abf8a5f9fbd5f6a9810121",
+      "references": [
+        {
+          "digest": "sha256:855780c3c8a596fafc829aa3b80ce546b6fa8a0950b2a7a129eeaf9b1bca4920",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:855780c3c8a596fafc829aa3b80ce546b6fa8a0950b2a7a129eeaf9b1bca4920",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+      "digest": "sha256:fa3e72e584a2e51f98d8174a16f67ef9d2960e4378f35b0a9fdafb051b1dfa5e",
+      "primary_task_id": "202608271520-175BQX",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608271520-175BQX"
+      ]
+    },
+    "implementation": {
+      "base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+      "digest": "sha256:54b76e1868acfa33920d93b0919589b7821218d42638124cefa8b63eebc85a6a",
+      "strategy": "branch_diff",
+      "target_sha": "da6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:cd2c5e9d1008b306a78df7dc5a239bf72fe70f5fc6f43ae17d5fdb6182f85257",
+    "verify_steps_digest": "sha256:efe0abf493dc7d11fd43f2dd5e77bbf416d698683c6bdf140ed2ff89dbb86c32"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-27T16:33:59.452Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts --pool=threads --maxWorkers=2. Expected: all seven suites pass without skipped tests; exact routing, authority, provider confidence, freshness and batch ownership contracts remain covered.\n2. Run ESLint, Prettier, git diff --check and node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000. Expected: no errors or baseline growth.\n3. Run bun run ci:local:full. Expected: all mandatory groups pass.\n4. Review the diff. Expected: the seven approved tests and one route-decision.testkit.ts helper only; real planning fixtures, no weakened gates, no production or global helper changes.\n5. Require hosted exact-head checks and supported integration before closure.",
+  "scope_digest": "sha256:efe0abf493dc7d11fd43f2dd5e77bbf416d698683c6bdf140ed2ff89dbb86c32",
+  "task_id": "202608271520-175BQX",
+  "verification_command": "agentplane verify 202608271520-175BQX --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

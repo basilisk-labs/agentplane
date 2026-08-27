@@ -4,7 +4,7 @@ title: "Modernize route-decision fixture prerequisites"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -23,10 +23,10 @@ plan_approval:
   updated_by: "USER"
   note: "The user explicitly authorized autonomous refactoring until completion and granted all permissions. Apply that authorization to this bounded routing-fixture repair without weakening approval, provider or verification gates."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-27T16:33:59.452Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -92,11 +92,44 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/route-decision.testkit.ts"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -135,7 +168,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:07a1392731dde5aff7d3fa976e4e7b754aa2e7f93ba454133c17935ef8992bb5"
+      digest: "sha256:cd2c5e9d1008b306a78df7dc5a239bf72fe70f5fc6f43ae17d5fdb6182f85257"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/route-decision.testkit.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
@@ -145,16 +178,36 @@ execution_contract:
         - "central_component:packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
+        - "central_path:packages/agentplane/src/cli/route-decision.testkit.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/route-decision.testkit.ts"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -186,11 +239,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "da6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc"
+  message: "🚧 175BQX task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: da6bbcbac2fc. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -199,9 +257,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-27T16:24:28.919Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: da6bbcbac2fc. CLI accepted one state-bound external-agent semantic result."
+    commit: "da6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc"
+  -
+    type: "verify"
+    at: "2026-08-27T16:33:59.452Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-27T15:25:09.436Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-27T16:34:01.831Z"
+doc_updated_by: "SUPERVISOR"
 description: "Repair 29 freshly reproduced failures in seven route-decision CLI suites on main 2c9a2f59146c302c517524136e66abb902f92ba6. Provide real Git execution bases before task creation and structured semantic planning prerequisites for downstream routing scenarios. Add one narrowly scoped route-decision.testkit.ts helper if needed to submit real PLANNER results through the existing exchange. Preserve exact approval and provider boundaries, local-only versus remote evidence, quality freshness, semantic changes versus lifecycle-only commits, batch ownership, direct terminal routing, and no-provider-call assertions. Preserve planning-first negative scenarios. Do not relabel downstream safety expectations as planning failures. No production behavior, global fixture helper semantics, CI gates, timeouts, policy, release state or roadmap dependency changes. Require all scoped tests, lint, formatting, unchanged oversized-test baseline and full CI. This scope is disjoint from current fixture repairs."
 sections:
   Summary: |-
@@ -220,6 +292,78 @@ sections:
     5. Require hosted exact-head checks and supported integration before closure.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-27T16:33:59.452Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:efe0abf493dc7d11fd43f2dd5e77bbf416d698683c6bdf140ed2ff89dbb86c32, input_digest=sha256:08c166dc3e71184716d214799780c96d6f87cb6d35f0da2a87b502472c47cc08
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271520-175BQX Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271520-175BQX Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271520-175BQX Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271520-175BQX Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271520-175BQX Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271520-175BQX Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271520-175BQX Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271520-175BQX-modernize-route-decision-fixture-prerequisites/.agentplane/tasks/202608271520-175BQX/blueprint/resolved-snapshot.json
+    - old_digest: 571a2372fccb43736231c69f80518c18c9cfe9e008de98c0ab35218156886553
+    - current_digest: 571a2372fccb43736231c69f80518c18c9cfe9e008de98c0ab35218156886553
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608271520-175BQX
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -486,25 +630,96 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 3
+    revision: 9
     schema_version: 1
-    updated_at: "2026-08-27T15:23:29.648Z"
+    updated_at: "2026-08-27T16:34:02.986Z"
     work_items:
       repair-routing-fixtures:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "repair-routing-fixtures"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:39d2fe0f781be8ffca32fd21c322ee576cba06769336f526cdac6577b2759729"
+            id: "artifact:routing-fixture-report"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608271520-175BQX"
+              work_item_id: "repair-routing-fixtures"
+            provenance:
+              - "sha256:d48510344fac9fb3d1d2d5b753a359e9a4a839cbdf2b9b679b9962d3f99ccd3b"
+              - ".agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:65e9097d260fe9bcb34041206f68c1adf162361add475ad26b10c7b8fbf41e07"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json"
+              check_id: "scoped-tests"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts --pool=threads --maxWorkers=2"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts --pool=threads --maxWorkers=2."
+              exit_code: 0
+              observed_at: "2026-08-27T16:34:02.980Z"
+              repository_snapshot_digest: "sha256:65e9097d260fe9bcb34041206f68c1adf162361add475ad26b10c7b8fbf41e07"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json"
+              check_id: "full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-27T16:34:02.980Z"
+              repository_snapshot_digest: "sha256:65e9097d260fe9bcb34041206f68c1adf162361add475ad26b10c7b8fbf41e07"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608271520-175BQX-executor-b80b4c614d30ef003c487e6b:
+        aggregate_digest: "sha256:ef7431bfdc05cd814344be9fcbd77cdc9a82f8a97a76303c48afbff60c92391a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-27T16:34:02.986Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_c70094f654a1e07fa567c16d"
+          mutation_id: "external-result:work-order-202608271520-175BQX-executor-b80b4c614d30ef003c487e6b"
+          plan_digest: "sha256:72ebe2b4b31b033a67b730cd6960b9da2efced9235a2ad8b23d72e44b0595f53"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608271520-175BQX"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: "repair-routing-fixtures"
+        mutation_id: "external-result:work-order-202608271520-175BQX-executor-b80b4c614d30ef003c487e6b"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202608271520-175BQX"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "da6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc"
   task_execution_context:
     base_ref: "main"
     base_sha: "2c9a2f59146c302c517524136e66abb902f92ba6"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "2c9a2f59146c302c517524136e66abb902f92ba6"
     version: 1
@@ -536,6 +751,78 @@ Repair the seven route-decision suites with real Git execution bases and actual 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-27T16:33:59.452Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:efe0abf493dc7d11fd43f2dd5e77bbf416d698683c6bdf140ed2ff89dbb86c32, input_digest=sha256:08c166dc3e71184716d214799780c96d6f87cb6d35f0da2a87b502472c47cc08
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271520-175BQX Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271520-175BQX Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271520-175BQX Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271520-175BQX Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271520-175BQX Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271520-175BQX Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271520-175BQX/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271520-175BQX Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271520-175BQX-modernize-route-decision-fixture-prerequisites/.agentplane/tasks/202608271520-175BQX/blueprint/resolved-snapshot.json
+- old_digest: 571a2372fccb43736231c69f80518c18c9cfe9e008de98c0ab35218156886553
+- current_digest: 571a2372fccb43736231c69f80518c18c9cfe9e008de98c0ab35218156886553
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608271520-175BQX
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
