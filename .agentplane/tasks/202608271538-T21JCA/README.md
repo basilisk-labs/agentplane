@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -30,34 +30,35 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-27T16:00:02.799Z"
+  updated_at: "2026-08-27T16:59:17.079Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "da64f2d0ea907c7f18a113743f731db104b0d564"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "7266db812ee6925d8a88264cec9967167c607277"
   blueprint_digest: "bf6412e3d49da0bea86f3add5fbd4a74730f923069b0d97f7d3737c785393ad9"
   evidence_refs:
-    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-155614370-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-155614370-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/d45ba3378de8f21986c7dba53843422ac84e13c3a300a10b253f902a75553e18.md"
-    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-155614370-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-155614370-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-155614370-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-165816155-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-165816155-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/2ba4423ad95e1c8d825431449b05e8979e4147776ed5596cb0d9d1e8f498b19b.md"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-165816155-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-165816155-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-165816155-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608271538-T21JCA/README.md"
-    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/8272d31e92fdd32ae188f1bceceb8fd5b20abee2ac53a445582b54e3cf230ada.patch"
-    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/20e682bec49f3be073f007266985798ff96956563ac46f42c9c8963175cb0d75.json"
-    - ".agentplane/tasks/202608271538-T21JCA/verification/20260827155541958-c84df617bc1e0c1a.json"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/fcf8dd2e46cf020a4dfa46a07d648ce3dfb919b0ad00a577f97eacfd649d9817.patch"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/aaae0a4db026925daff5ae459b577e586f725c6f7b05301210c65ca44c52ae5f.json"
+    - ".agentplane/tasks/202608271538-T21JCA/verification/20260827165804845-f40035f1f5135e14.json"
     - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/23f41be610f22839e63955e61a6129a0f92dc7b634a33469b42faf27be8d2392.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The production diff removes only the failed-check prerequisite and updates the route description. It reuses the existing guarded provider update operation without altering provider writes or merge protection."
-    - "The positive matrix covers failed and successful checks, including successful checks after integration handoff. Each case requires digest-bound approval and exposes no mutable command before authorization."
-    - "Negative cases cover unchecked hosted evidence, clean or conflicting provider state, unpublished and stale heads, and missing base identity. Active runner ownership still selects wait.runner in every positive case."
-    - "The frozen diff contains exactly four approved files. The observed verification record binds passing checks to implementation da64f2d0ea907c7f18a113743f731db104b0d564. Full CI passed in531675ms and all60 focused tests passed."
-    - "No CI, timeout, policy, approval enforcement or queue executor changed. Actual hosted recovery remains to be checked after integration."
-    - "Residual risk: Provider state can change between observation and execution; the unchanged exact-head/base guards must continue to reject drift."
+    - "The original routing correction uses coherent provider behind evidence for both passing and failing checked heads. Exact branch/head/base, aligned publication, active-runner precedence and digest-bound authority remain enforced."
+    - "The supervisor supplies the authoritative task worktree. Local preflight checks branch, head, upstream, clean tracked/untracked state and authorized remote URLs before PUT. Provider identity, expected-head API binding and both ancestry proofs are preserved."
+    - "Reconciliation fetches the authorized publication source, requires exact observed head and locally proves both ancestors, rechecks local state, then fast-forwards with no-overwrite-ignore. It verifies exact local/upstream alignment before reporting updated. No force push, reset or queue mutation is introduced."
+    - "Fourteen real-Git cases cover fresh and interrupted updates, no repeat PUT, next publication alignment, dirty/staged/untracked state, branch/head/remote/upstream drift, changes during PUT, moved remote head, fetch failure and preservation of ignored files. The original3regressions were demonstrated failing before the fix."
+    - "Frozen verification20260827165804845-f40035f1f5135e14 binds implementation7266db812ee6925d8a88264cec9967167c607277 to full CI593997ms and75focused tests9780ms. The approved scope extension preceded implementation and the frozen diff stays within its10paths."
+    - "Residual risk: The provider API fixture is mocked while local Git and preservation checks are real; hosted exact-head qualification remains a separate gate."
+    - "Residual risk: An external concurrent edit can cause a fail-closed effect_in_doubt result after the provider has updated. Recovery must reconcile before publication; success is not claimed in that state."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -366,7 +367,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-27T16:58:06.964Z"
+doc_updated_at: "2026-08-27T16:59:17.127Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the demonstrated recovery gap for an OPEN GitHub PR whose exact aligned head has successful required checks but whose provider mergeability is behind under strict protection. PR #5854 is the observed case: queue handoff after HTTP 405 required PR verification expected; no merge conflict, no live runner. Route the existing provider.pr.update_branch operation for coherent exact-head behind evidence, preserve stale-head/provider/base/authority guards, required checks, and queue ownership. Add focused regression tests. Do not merge or publish from semantic implementation, bypass protection, manufacture hosted failures, or rewrite frozen task bases."
 sections:
