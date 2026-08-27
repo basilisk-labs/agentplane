@@ -15,8 +15,8 @@ On exact main 9ab453ac00d41ea0a58cdd02e84bd0456233b151, run-cli.core.pr-flow.int
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

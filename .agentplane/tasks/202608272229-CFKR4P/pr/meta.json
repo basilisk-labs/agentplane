@@ -3,7 +3,8 @@
   "branch": "task/202608272229-CFKR4P/keep-verification-and-review-on-the-same-semanti",
   "created_at": "2026-08-27T22:32:39.183Z",
   "diffstat_sha256": "sha256:d79494e607db1cf7b5c9f3d1857cacf25021aeb3f5ea2e0e22140b82cc6ce4f0",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-27T23:05:53.240Z",
+  "last_verified_diffstat_sha256": "sha256:d79494e607db1cf7b5c9f3d1857cacf25021aeb3f5ea2e0e22140b82cc6ce4f0",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202608272229-CFKR4P",
   "updated_at": "2026-08-27T22:32:39.183Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
