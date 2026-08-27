@@ -15,8 +15,8 @@ Repair the 26 freshly reproduced failures across eight PR fixture suites on main
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
