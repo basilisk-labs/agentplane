@@ -22,7 +22,7 @@ Repair 29 freshly reproduced failures in seven route-decision CLI suites on main
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T15:25:16.819Z
+- Updated: 2026-08-27T16:34:13.630Z
 - Branch: task/202608271520-175BQX/modernize-route-decision-fixture-prerequisites
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
