@@ -27,6 +27,7 @@ import {
   mkdir,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
+  mkGitRepoRootWithCommit,
   mkTempDir,
   mkdtemp,
   os,
@@ -60,8 +61,8 @@ import {
 } from "@agentplane/testkit/cli-core-pr-flow";
 
 describe("runCli pr open flow artifacts", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
-  it("pr open creates PR artifacts", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+  it("pr open creates local artifacts and fails hosted publication without a remote", async () => {
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -107,7 +108,7 @@ describe("runCli pr open flow artifacts", { timeout: PR_FLOW_INTEGRATION_TIMEOUT
       expect(code).toBe(0);
       expect(io.stdout).toContain("✅ pr open");
       expect(io.stdout).toContain(
-        "local PR artifacts synced; remote PR creation staged (GitHub origin repo unavailable)",
+        "local PR artifacts synced; remote change-request creation failed",
       );
     } finally {
       io.restore();
@@ -122,8 +123,10 @@ describe("runCli pr open flow artifacts", { timeout: PR_FLOW_INTEGRATION_TIMEOUT
     }>();
     expect(meta.task_id).toBe(taskId);
     expect(meta.branch).toBe(`task/${taskId}/pr-open`);
-    expect(meta.artifact_state).toBe("remote_staged");
-    expect(meta.artifact_state_reason).toBe("GitHub origin repo unavailable");
+    expect(meta.artifact_state).toBe("remote_failed");
+    expect(meta.artifact_state_reason).toMatch(
+      /Cannot resolve one (?:fetch|push) URL for publication remote origin; found 0\./u,
+    );
     const review = await prArtifacts.readReview();
     const notesExists = await pathExists(prArtifacts.notesPath);
     const verifyLogExists = await pathExists(prArtifacts.verifyLogPath);
