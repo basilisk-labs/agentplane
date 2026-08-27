@@ -1,10 +1,10 @@
 ---
 id: "202608271659-AD3030"
 title: "Preserve task identity in closeout and worktree fixtures"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 25
 origin:
   system: "manual"
 depends_on:
@@ -258,6 +258,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator requested only a task Findings update. The packet protects .agentplane/tasks and grants only the four test files, so no workspace or lifecycle mutation was performed. Recommended action: Use the supported operator task doc set command for Findings only, record the fixture cause, preserved invariants, exact successful verification and unresolved timeout mechanism, then resume through a fresh packet. Do not alter source or Verify Steps. Agentplane receipt: external-agent-blocker/tr_d8c7864f4b1fd8607fed0359cfb7e2ec/sha256:8354d611be8ba18a293e7b2c437812bcb481542160882142ca962cd3abf9d09e."
+  -
+    author: "ORCHESTRATOR"
+    body: "Resume: the operator populated Findings through task doc set. Source, approved scope and Verify Steps remain unchanged; request fresh route and evaluation."
 events:
   -
     type: "status"
@@ -329,9 +332,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator requested only a task Findings update. The packet protects .agentplane/tasks and grants only the four test files, so no workspace or lifecycle mutation was performed. Recommended action: Use the supported operator task doc set command for Findings only, record the fixture cause, preserved invariants, exact successful verification and unresolved timeout mechanism, then resume through a fresh packet. Do not alter source or Verify Steps. Agentplane receipt: external-agent-blocker/tr_d8c7864f4b1fd8607fed0359cfb7e2ec/sha256:8354d611be8ba18a293e7b2c437812bcb481542160882142ca962cd3abf9d09e."
+  -
+    type: "status"
+    at: "2026-08-27T23:18:49.330Z"
+    author: "ORCHESTRATOR"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume: the operator populated Findings through task doc set. Source, approved scope and Verify Steps remain unchanged; request fresh route and evaluation."
 doc_version: 3
-doc_updated_at: "2026-08-27T23:18:03.969Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-27T23:18:49.330Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Repair six freshly reproduced failures among27scenarios in four closeout and worktree-routing fixture files. Scope only packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts, packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts. Merge batch extensions into parsed task metadata rather than duplicate the YAML extensions key; preserve the immutable task_execution_context and make shared tasks use one real committed base. Seed Git for the work-start usage-error case so it reaches the intended worktree requirement. Align the start-ready test with the existing authoritative loadTaskCommandContext redirect: prove it updates only the task-owned worktree without recreating base README or changing base HEAD; do not demand an obsolete manual-cd error. Preserve multi-task exact reviewed implementation SHA, landed versus stale or rebased PR commit choice, unresolved-task failure and all remaining negative scenarios. Use current canonical planning only if needed for fixture validity. No production, global helper, policy, CI gate, timeout, release version or task graph changes. Require all27scenarios, scoped lint/format, full CI, EVALUATOR and hosted exact-head proof."
 sections:
   Summary: |-
@@ -531,7 +541,12 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    Proved fixture causes: duplicate YAML extensions entries discarded task execution identity; shared-task and usage-error fixtures lacked a real immutable Git base; the start-ready expectation described an obsolete manual worktree recovery error. The four-file repair merges parsed extensions, seeds only the required fixtures, and asserts actual task-owned worktree mutation with unchanged base HEAD and no recreated base README. Exact reviewed implementation SHA, landed/rebased commit precedence, unresolved refusal and the remaining negative scenarios are preserved.
+
+    Current local evidence: supervisor ci:local:full passed in 505807 ms and the exact four-file suite passed 27/27 in 16.29 s for implementation 37c73e481fb24ef71c13270b9c74ec22ba117040. Scoped lint, formatting and diff checks passed. The full run retained the existing opt-in network packaging skip; this task added no skip, timeout increase, product change or CI-policy change.
+
+    Recovery caveat: earlier supervisor runs timed out in cleanup and fresh-authority replay tests. Both exact cases passed unchanged in isolation, and the subsequent full run passed with no concurrent local test/build workload using Node 26.7.0 and the supported command-local worker-four setting. Workload interference is a hypothesis, not a proven root cause. Hosted exact-head verification, integration, terminal closeout and release prepublish remain separate, unconfirmed boundaries.
 extensions:
   agentplane.execution_grant:
     actor: "USER"
@@ -1145,3 +1160,9 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+Proved fixture causes: duplicate YAML extensions entries discarded task execution identity; shared-task and usage-error fixtures lacked a real immutable Git base; the start-ready expectation described an obsolete manual worktree recovery error. The four-file repair merges parsed extensions, seeds only the required fixtures, and asserts actual task-owned worktree mutation with unchanged base HEAD and no recreated base README. Exact reviewed implementation SHA, landed/rebased commit precedence, unresolved refusal and the remaining negative scenarios are preserved.
+
+Current local evidence: supervisor ci:local:full passed in 505807 ms and the exact four-file suite passed 27/27 in 16.29 s for implementation 37c73e481fb24ef71c13270b9c74ec22ba117040. Scoped lint, formatting and diff checks passed. The full run retained the existing opt-in network packaging skip; this task added no skip, timeout increase, product change or CI-policy change.
+
+Recovery caveat: earlier supervisor runs timed out in cleanup and fresh-authority replay tests. Both exact cases passed unchanged in isolation, and the subsequent full run passed with no concurrent local test/build workload using Node 26.7.0 and the supported command-local worker-four setting. Workload interference is a hypothesis, not a proven root cause. Hosted exact-head verification, integration, terminal closeout and release prepublish remain separate, unconfirmed boundaries.
