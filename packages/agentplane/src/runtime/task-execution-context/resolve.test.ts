@@ -1,10 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import { defaultConfig } from "@agentplane/testkit/cli-core-pr-flow";
+import { mkGitRepoRoot, registerAgentplaneHome } from "@agentplane/testkit";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import { resolveTaskExecutionContext, selectLegacyBaseRef } from "./resolve.js";
+
+registerAgentplaneHome();
 
 function commandContext(mode: "direct" | "branch_pr"): CommandContext {
   const config = defaultConfig();
@@ -124,6 +127,30 @@ describe("TaskExecutionContext", () => {
         tasks: [task("TASK-1", route), task("TASK-2", route, "b".repeat(40))],
       }),
     ).rejects.toThrow(/mismatched base_sha/u);
+  });
+
+  it("rejects an unborn repository without inventing or persisting an execution base", async () => {
+    const root = await mkGitRepoRoot();
+    const template = commandContext("direct");
+    const ctx = {
+      ...template,
+      resolvedProject: { ...template.resolvedProject, gitRoot: root },
+    };
+    const unbornTask = task("TASK-1", {
+      schema_version: 1,
+      requested_mode: "auto",
+      selected_mode: "direct",
+      repository_mode: "direct",
+      reason_codes: ["automatic_safe_direct"],
+      frozen: true,
+    });
+    delete unbornTask.extensions;
+    const before = structuredClone(unbornTask);
+
+    await expect(resolveTaskExecutionContext({ ctx, tasks: [unbornTask] })).rejects.toMatchObject({
+      reason_code: "git_base_identity_unavailable",
+    });
+    expect(unbornTask).toEqual(before);
   });
 
   it("rejects the historical zero-SHA sentinel instead of treating it as a commit", async () => {
