@@ -4,7 +4,7 @@ title: "Resolve protected integration handoffs from their owning checkout"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -25,10 +25,10 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-27T22:15:27.248Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -95,11 +95,43 @@ execution_contract:
       - "packages/agentplane/src/commands/task/handoff.shared.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts"
+      - "packages/agentplane/src/commands/pr/flow-status.ts"
+      - "packages/agentplane/src/commands/shared/task-handoff-reader.test.ts"
+      - "packages/agentplane/src/commands/shared/task-handoff-reader.ts"
+      - "packages/agentplane/src/commands/task/handoff-show.command.ts"
+      - "packages/agentplane/src/commands/task/handoff.shared.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -138,23 +170,38 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:26d309d7023f5ec9709eceb59ddf53e4d0c5d5b12d22790dbbc57e0a7f816a83"
+      digest: "sha256:fb6d8ce65610da20bd9591060076173266c5f96da4ef392a64c957362f1883eb"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/route-decision.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-handoff-reader.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-handoff-reader.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-handoff-reader.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-handoff-reader.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts"
+          - "packages/agentplane/src/commands/pr/flow-status.ts"
+          - "packages/agentplane/src/commands/shared/task-handoff-reader.test.ts"
+          - "packages/agentplane/src/commands/shared/task-handoff-reader.ts"
+          - "packages/agentplane/src/commands/task/handoff-show.command.ts"
+          - "packages/agentplane/src/commands/task/handoff.shared.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -186,11 +233,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "bd72b49eaf67bd2cfcf8170232d6c365de4c572c"
+  message: "🚧 DVS5NN task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: bd72b49eaf67. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -199,9 +251,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-27T22:07:01.951Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: bd72b49eaf67. CLI accepted one state-bound external-agent semantic result."
+    commit: "bd72b49eaf67bd2cfcf8170232d6c365de4c572c"
+  -
+    type: "verify"
+    at: "2026-08-27T22:15:27.248Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-27T21:37:58.045Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-27T22:15:29.511Z"
+doc_updated_by: "SUPERVISOR"
 description: "Repair the reproduced protected-integration handoff reader/owner mismatch on main db908ae90dd32609c6d12454fe87166a08e6ec4e. The focused integration diagnostic has 12 passing and 3 failing tests; run-cli.core.pr-conflict-rework.test.ts:842 fails because the expected legacy adoption route is unavailable. Confirm the exact route and cause before changing behavior. The integration writer persists the handoff on the base checkout, while task route hydration redirects readers to the task worktree. Real task handoff show from a worktree also failed to find the base-owned INTEGRATOR artifact. Cover one complete scenario: persisted protected-base handoff, task-worktree route/show/resume reads, explicit legacy adoption where applicable, repeat read/recovery, and the next transition. Use existing task execution ownership and base resolution. Reject wrong task, branch, head, base, PR identity, malformed or ambiguous evidence. Preserve direct and worktree-local handoff behavior. Keep read-only probes non-mutating. Do not copy or rewrite lifecycle artifacts, introduce a new state store, relax authority or exact-identity guards, change required CI, alter release/Core order, or implement AP-CORE-013. Scope the smallest necessary shared handoff reader, route/PR-flow consumers, and regression tests through a structured plan. The other two diagnostic failures, incident verification target and provider-neutral error wording, are separate causes and are out of scope. Run focused positive/negative/replay tests and full mandatory CI. The user authorized autonomous refactoring and supported exact operator approvals; release publication remains separate."
 sections:
   Summary: |-
@@ -221,6 +287,78 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-27T22:15:27.248Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:134795c74a27965abb7b952f8fa80265b2bca277d1a6c042b7f29a46cbcb39ae, input_digest=sha256:793531f84417a29fbcb82431472b2d0e76f3afaf4150c877edda3734b7e8c550
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608272129-DVS5NN Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608272129-DVS5NN Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608272129-DVS5NN Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608272129-DVS5NN Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608272129-DVS5NN Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608272129-DVS5NN Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608272129-DVS5NN Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608272129-DVS5NN-resolve-protected-integration-handoffs-from-thei/.agentplane/tasks/202608272129-DVS5NN/blueprint/resolved-snapshot.json
+    - old_digest: 44b77635db1ede03f74e71a46d3871a3ffc26b542d7f15c632f0216ebb67d1ff
+    - current_digest: 44b77635db1ede03f74e71a46d3871a3ffc26b542d7f15c632f0216ebb67d1ff
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608272129-DVS5NN
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -533,25 +671,96 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 8
     schema_version: 1
-    updated_at: "2026-08-27T21:37:08.002Z"
+    updated_at: "2026-08-27T22:15:30.575Z"
     work_items:
       repair-protected-handoff-readback:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "repair-protected-handoff-readback"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:a52391f9ef8f1d34dda4bc9b6ed2b76cb0d8a4c493a8eb4589f7b5b45999cb48"
+            id: "artifact:handoff-readback-report"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608272129-DVS5NN"
+              work_item_id: "repair-protected-handoff-readback"
+            provenance:
+              - "sha256:2f1d34a937c0167d99c4f5bcc98fc35da6f7e5b78b8b307d559ae4daab2e5dc8"
+              - ".agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:42d1e6a03cf081034ba5b97d763562799ea518903a352ef66369c436f66e6c43"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json"
+              check_id: "full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-27T22:15:30.568Z"
+              repository_snapshot_digest: "sha256:42d1e6a03cf081034ba5b97d763562799ea518903a352ef66369c436f66e6c43"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json"
+              check_id: "diff-check"
+              command_identity: "git diff --check"
+              detail: "Observed by git diff --check."
+              exit_code: 0
+              observed_at: "2026-08-27T22:15:30.568Z"
+              repository_snapshot_digest: "sha256:42d1e6a03cf081034ba5b97d763562799ea518903a352ef66369c436f66e6c43"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608272129-DVS5NN-executor-a881d964816373a63aae299b:
+        aggregate_digest: "sha256:3ee81910a7ad74bf69dc8bcfff004a4571e0cbf65e49cf4dfc6e4a2e5abfb0d2"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-27T22:15:30.575Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_4c2c90108a194224270d28d4"
+          mutation_id: "external-result:work-order-202608272129-DVS5NN-executor-a881d964816373a63aae299b"
+          plan_digest: "sha256:d4e602f5637f6025a37079f35f393e6a449494dc25e974efaabeab4ec7dfb009"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608272129-DVS5NN"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "repair-protected-handoff-readback"
+        mutation_id: "external-result:work-order-202608272129-DVS5NN-executor-a881d964816373a63aae299b"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202608272129-DVS5NN"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "bd72b49eaf67bd2cfcf8170232d6c365de4c572c"
   task_execution_context:
     base_ref: "main"
     base_sha: "db908ae90dd32609c6d12454fe87166a08e6ec4e"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "db908ae90dd32609c6d12454fe87166a08e6ec4e"
     version: 1
@@ -584,6 +793,78 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-27T22:15:27.248Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:134795c74a27965abb7b952f8fa80265b2bca277d1a6c042b7f29a46cbcb39ae, input_digest=sha256:793531f84417a29fbcb82431472b2d0e76f3afaf4150c877edda3734b7e8c550
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608272129-DVS5NN Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608272129-DVS5NN Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608272129-DVS5NN Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608272129-DVS5NN Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608272129-DVS5NN Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608272129-DVS5NN Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608272129-DVS5NN Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608272129-DVS5NN-resolve-protected-integration-handoffs-from-thei/.agentplane/tasks/202608272129-DVS5NN/blueprint/resolved-snapshot.json
+- old_digest: 44b77635db1ede03f74e71a46d3871a3ffc26b542d7f15c632f0216ebb67d1ff
+- current_digest: 44b77635db1ede03f74e71a46d3871a3ffc26b542d7f15c632f0216ebb67d1ff
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608272129-DVS5NN
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
