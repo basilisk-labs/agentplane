@@ -6,7 +6,7 @@ Created: 2026-08-27T22:32:39.183Z
 
 - Task: `202608272229-CFKR4P`
 - Title: Keep verification and review on the same semantic commit
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608272229-CFKR4P/keep-verification-and-review-on-the-same-semanti`
 - Canonical task record: `.agentplane/tasks/202608272229-CFKR4P/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-27T22:32:39.183Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T22:32:39.183Z
+- Updated: 2026-08-27T23:06:06.875Z
 - Branch: task/202608272229-CFKR4P/keep-verification-and-review-on-the-same-semanti
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
