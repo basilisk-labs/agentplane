@@ -6,7 +6,7 @@ Created: 2026-08-27T15:46:45.984Z
 
 - Task: `202608271544-1TDVPJ`
 - Title: Modernize exact-result recovery fixtures
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608271544-1TDVPJ/modernize-exact-result-recovery-fixtures`
 - Canonical task record: `.agentplane/tasks/202608271544-1TDVPJ/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-27T15:46:45.984Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T15:46:45.984Z
+- Updated: 2026-08-27T16:23:53.379Z
 - Branch: task/202608271544-1TDVPJ/modernize-exact-result-recovery-fixtures
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
