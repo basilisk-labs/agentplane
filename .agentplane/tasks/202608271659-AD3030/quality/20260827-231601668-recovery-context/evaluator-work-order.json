@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608271659-AD3030-904d4dcb9dc15012bbd13ee8",
+  "prepared_at": "2026-08-27T23:16:01.668Z",
+  "task": {
+    "id": "202608271659-AD3030",
+    "revision": 21,
+    "objective": "Preserve task identity in closeout and worktree fixtures\n\nRepair six freshly reproduced failures among27scenarios in four closeout and worktree-routing fixture files. Scope only packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts, packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts. Merge batch extensions into parsed task metadata rather than duplicate the YAML extensions key; preserve the immutable task_execution_context and make shared tasks use one real committed base. Seed Git for the work-start usage-error case so it reaches the intended worktree requirement. Align the start-ready test with the existing authoritative loadTaskCommandContext redirect: prove it updates only the task-owned worktree without recreating base README or changing base HEAD; do not demand an obsolete manual-cd error. Preserve multi-task exact reviewed implementation SHA, landed versus stale or rebased PR commit choice, unresolved-task failure and all remaining negative scenarios. Use current canonical planning only if needed for fixture validity. No production, global helper, policy, CI gate, timeout, release version or task graph changes. Require all27scenarios, scoped lint/format, full CI, EVALUATOR and hosted exact-head proof.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --pool=forks --maxWorkers=1",
+      "- In scope: Repair six freshly reproduced failures among27scenarios in four closeout and worktree-routing fixture files. Scope only packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts, packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts. Merge batch extensions into parsed task metadata rather than duplicate the YAML extensions key; preserve the immutable task_execution_context and make shared tasks use one real committed base. Seed Git for the work-start usage-error case so it reaches the intended worktree requirement. Align the start-ready test with the existing authoritative loadTaskCommandContext redirect: prove it updates only the task-owned worktree without recreating base README or changing base HEAD; do not demand an obsolete manual-cd error. Preserve multi-task exact reviewed implementation SHA, landed versus stale or rebased PR commit choice, unresolved-task failure and all remaining negative scenarios. Use current canonical planning only if needed for fixture validity. No production, global helper, policy, CI gate, timeout, release version or task graph changes. Require all27scenarios, scoped lint/format, full CI, EVALUATOR and hosted exact-head proof.\n- Out of scope: unrelated refactors not required for \"Preserve task identity in closeout and worktree fixtures\".",
+      "Repair only the four closeout/worktree fixture suites. Preserve parsed task extensions and one immutable real Git base for shared tasks. Seed the work-start usage fixture before its intended guard. Replace the obsolete start-ready manual-cd error expectation with exact authoritative worktree mutation and unchanged base HEAD/absent base document assertions. Preserve exact reviewed implementation and landed/rebased/stale commit decisions, unresolved refusal and all other scenarios. Run27tests, lint/format, full CI and independent review; no product, global helper, timeout, policy, CI or roadmap changes.",
+      "1. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --pool=forks --maxWorkers=1. Expected: all27scenarios pass without skips or increased timeouts.\n2. Run scoped ESLint, Prettier and git diff --check. Expected: no errors and unchanged oversized-test baseline.\n3. Run bun run ci:local:full. Expected: mandatory local CI passes.\n4. Review the four-file diff. Shared task execution bases and unknown extensions survive fixture changes. Landed commit precedence, unresolved-task refusal, reviewed implementation identity, worktree requirement and authoritative worktree-only start are asserted. No production, global helpers, policy or CI changes.\n5. Require independent EVALUATOR and hosted exact-head proof before supported integration."
+    ]
+  },
+  "evaluated_sha": "37c73e481fb24ef71c13270b9c74ec22ba117040",
+  "diff_base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+  "blueprint_digest": "0d09cb76e6021e2ef303a75461cc70335a3cea6d6f7bee5819b630d96da713fb",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608271659-AD3030/quality/20260827-231601668-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:50e02332be5b8680851c2f40cd8f0389c8d94ed1c9b1c1fbe3d084ca9be41631",
+    "prompt_path": ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/90f0d1030d222fc87d8e92a8fc71195cb2c49a013eb106f43b8d570dab8cea0c.md",
+    "result_schema_path": ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608271659-AD3030/README.md",
+      "sha256": "sha256:c58de5d45caff3809e48a31afbafc45ef36d2261e653015cbd38fd0d8b0c314f",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/6a54b986c4337537710c4beb64489bec480674ba7177b0351762cbc6ef90410f.patch",
+      "sha256": "sha256:6a54b986c4337537710c4beb64489bec480674ba7177b0351762cbc6ef90410f",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/d36ac47a0ebecb9519f911ec1314b9ad33af5c3ced863ba464a8788b49dec5b9.json",
+      "sha256": "sha256:d36ac47a0ebecb9519f911ec1314b9ad33af5c3ced863ba464a8788b49dec5b9",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608271659-AD3030/verification/20260827231543799-24b0be63cfe9653d.json",
+      "sha256": "sha256:439edf65e2a9fc56067ca73dd000db5c389eacdcdc1b9a250ef9823901566864",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/d0d238d23c3006d5e0d4d0953d1881f99c4173f65bfe5d0abfb7b08b76de5a06.json",
+      "sha256": "sha256:d0d238d23c3006d5e0d4d0953d1881f99c4173f65bfe5d0abfb7b08b76de5a06",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
