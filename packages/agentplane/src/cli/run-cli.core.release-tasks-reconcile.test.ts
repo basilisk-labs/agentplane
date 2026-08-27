@@ -5,6 +5,7 @@ import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
+import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
 import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 
 import { runCli } from "./run-cli.js";
@@ -30,22 +31,31 @@ async function addIncludedBatchExtension(opts: {
   base?: string;
 }): Promise<void> {
   const taskPath = path.join(opts.root, ".agentplane", "tasks", opts.taskId, "README.md");
-  const current = await readFile(taskPath, "utf8");
-  const frontmatterEnd = current.indexOf("\n---\n", 4);
-  expect(frontmatterEnd).toBeGreaterThan(0);
-  const extension = [
-    "extensions:",
-    "  branch_pr_batch:",
-    `    base: "${opts.base ?? "main"}"`,
-    `    branch: "${opts.branch}"`,
-    "    included_task_ids:",
-    `      - "${opts.taskId}"`,
-    `    primary_task_id: "${opts.primaryTaskId}"`,
-    '    role: "included"',
-    '    updated_at: "2026-05-23T00:00:00.000Z"',
-  ].join("\n");
-  const next = `${current.slice(0, frontmatterEnd)}\n${extension}${current.slice(frontmatterEnd)}`;
+  const current = parseTaskReadme(await readFile(taskPath, "utf8"));
+  const extensions = (current.frontmatter.extensions ?? {}) as Record<string, unknown>;
+  const next = renderTaskReadme(
+    {
+      ...current.frontmatter,
+      extensions: {
+        ...extensions,
+        branch_pr_batch: {
+          base: opts.base ?? "main",
+          branch: opts.branch,
+          included_task_ids: [opts.taskId],
+          primary_task_id: opts.primaryTaskId,
+          role: "included",
+          updated_at: "2026-05-23T00:00:00.000Z",
+        },
+      },
+    },
+    current.body,
+  );
   await writeFile(taskPath, next, "utf8");
+  const updated = parseTaskReadme(await readFile(taskPath, "utf8"));
+  expect(updated.frontmatter.extensions).toMatchObject(extensions);
+  expect(
+    (updated.frontmatter.extensions as Record<string, unknown>).task_execution_context,
+  ).toEqual(extensions.task_execution_context);
 }
 
 async function writePrMeta(opts: {
@@ -391,22 +401,31 @@ describe("runCli release tasks reconcile", { timeout: RELEASE_TASKS_RECONCILE_TI
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     await execFileAsync("git", ["checkout", "-b", "main"], { cwd: root, env: cleanGitEnv() });
+    // Verification needs a real base. The negative condition is missing landed task metadata.
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "test: seed unresolved batch"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
 
     const primaryTaskId = await createDocBackedTask(root, "Unresolved primary batch task");
     const includedTaskId = await createDocBackedTask(root, "Unresolved included batch task");
-    await runCliSilent(["task", "set-status", includedTaskId, "DOING", "--root", root]);
-    await runCliSilent([
-      "verify",
-      includedTaskId,
-      "--ok",
-      "--by",
-      "CODER",
-      "--note",
-      "verified included batch task",
-      "--quiet",
-      "--root",
-      root,
-    ]);
+    expect(
+      await runCliSilent(["task", "set-status", includedTaskId, "DOING", "--root", root]),
+    ).toBe(0);
+    expect(
+      await runCliSilent([
+        "verify",
+        includedTaskId,
+        "--ok",
+        "--by",
+        "CODER",
+        "--note",
+        "verified included batch task",
+        "--quiet",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
     await addIncludedBatchExtension({
       root,
       taskId: includedTaskId,

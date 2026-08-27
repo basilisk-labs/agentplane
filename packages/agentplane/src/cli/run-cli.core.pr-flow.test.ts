@@ -40,6 +40,7 @@ import {
   installRunCliIntegrationHarness,
   runCliSilent,
   mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   mkGitRepoRootWithBranch,
   mkTempDir,
   pathExists,
@@ -169,7 +170,7 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
   });
 
   it("work start requires --worktree in branch_pr mode", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
