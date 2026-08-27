@@ -6,7 +6,7 @@ Created: 2026-08-26T20:46:10.293Z
 
 - Task: `202608262034-QVVB66`
 - Title: Initialize blueprint test projects as real Git repositories for release CI
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608262034-QVVB66/initialize-blueprint-test-projects-as-real-git-r`
 - Canonical task record: `.agentplane/tasks/202608262034-QVVB66/README.md`
 
