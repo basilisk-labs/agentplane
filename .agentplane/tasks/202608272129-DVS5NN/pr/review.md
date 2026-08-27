@@ -6,7 +6,7 @@ Created: 2026-08-27T21:37:59.785Z
 
 - Task: `202608272129-DVS5NN`
 - Title: Resolve protected integration handoffs from their owning checkout
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608272129-DVS5NN/resolve-protected-integration-handoffs-from-thei`
 - Canonical task record: `.agentplane/tasks/202608272129-DVS5NN/README.md`
 
