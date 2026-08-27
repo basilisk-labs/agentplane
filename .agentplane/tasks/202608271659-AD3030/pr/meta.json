@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:3adbed6704cbb2e666caf1a4edc6893c031c475ded7c4d370edf3aa1a8485f80",
   "pr_number": 5864,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5864",
+  "pre_merge_closure": {
+    "basis_commit": "3617bb22996cd0c162adc88a0f71f205a4e501dd",
+    "branch": "task/202608271659-AD3030/preserve-task-identity-in-closeout-and-worktree",
+    "pr_number": 5864,
+    "recorded_at": "2026-08-27T23:33:46.074Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
