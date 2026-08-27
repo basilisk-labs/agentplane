@@ -71,11 +71,8 @@ function restoreTty(): void {
 describe("cli/prompts", () => {
   beforeEach(() => {
     setTty(false);
-    if (originalPromptMode === undefined) {
-      delete process.env.AGENTPLANE_PROMPTS;
-    } else {
-      process.env.AGENTPLANE_PROMPTS = originalPromptMode;
-    }
+    // Each test selects its prompt mode independently of the invoking agent.
+    delete process.env.AGENTPLANE_PROMPTS;
     mocks.state.nextAnswer = "";
     mocks.questionMock.mockReset().mockImplementation(() => mocks.state.nextAnswer);
     mocks.closeMock.mockReset();

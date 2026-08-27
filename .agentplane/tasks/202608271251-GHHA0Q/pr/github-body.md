@@ -15,8 +15,8 @@ Implement the approved test-audit first slice independently of the preserved 0.7
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,10 +28,12 @@ Implement the approved test-audit first slice independently of the preserved 0.7
 
 ```text
  .../run-cli.core.help-snap.test.ts.snap            |   2 +-
+ packages/agentplane/src/cli/prompts.test.ts        |   7 +-
  .../src/cli/run-cli.core.help-snap.test.ts         |   3 +
  ...n-cli.core.task-advance.branch-worktree.test.ts | 186 ++++++++++++++++++---
  ...i.core.task-advance.worktree-resolution.test.ts | 165 ++++++++++++++++--
- 4 files changed, 314 insertions(+), 42 deletions(-)
+ .../src/cli/run-cli/commands/init/prompts.test.ts  |   7 +-
+ 6 files changed, 318 insertions(+), 52 deletions(-)
 ```
 
 </details>
