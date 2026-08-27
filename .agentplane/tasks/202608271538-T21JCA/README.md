@@ -4,7 +4,7 @@ title: "Recover green behind PRs through provider branch update"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -26,6 +26,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-27T16:00:02.799Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "da64f2d0ea907c7f18a113743f731db104b0d564"
+  blueprint_digest: "bf6412e3d49da0bea86f3add5fbd4a74730f923069b0d97f7d3737c785393ad9"
+  evidence_refs:
+    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-155614370-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-155614370-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/d45ba3378de8f21986c7dba53843422ac84e13c3a300a10b253f902a75553e18.md"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-155614370-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-155614370-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-155614370-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608271538-T21JCA/README.md"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/8272d31e92fdd32ae188f1bceceb8fd5b20abee2ac53a445582b54e3cf230ada.patch"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/20e682bec49f3be073f007266985798ff96956563ac46f42c9c8963175cb0d75.json"
+    - ".agentplane/tasks/202608271538-T21JCA/verification/20260827155541958-c84df617bc1e0c1a.json"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/23f41be610f22839e63955e61a6129a0f92dc7b634a33469b42faf27be8d2392.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The production diff removes only the failed-check prerequisite and updates the route description. It reuses the existing guarded provider update operation without altering provider writes or merge protection."
+    - "The positive matrix covers failed and successful checks, including successful checks after integration handoff. Each case requires digest-bound approval and exposes no mutable command before authorization."
+    - "Negative cases cover unchecked hosted evidence, clean or conflicting provider state, unpublished and stale heads, and missing base identity. Active runner ownership still selects wait.runner in every positive case."
+    - "The frozen diff contains exactly four approved files. The observed verification record binds passing checks to implementation da64f2d0ea907c7f18a113743f731db104b0d564. Full CI passed in531675ms and all60 focused tests passed."
+    - "No CI, timeout, policy, approval enforcement or queue executor changed. Actual hosted recovery remains to be checked after integration."
+    - "Residual risk: Provider state can change between observation and execution; the unchanged exact-head/base guards must continue to reject drift."
 execution_route:
   frozen: true
   reason_codes:
