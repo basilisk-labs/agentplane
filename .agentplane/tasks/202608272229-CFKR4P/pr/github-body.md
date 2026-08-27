@@ -27,10 +27,10 @@ On exact main 9ab453ac00d41ea0a58cdd02e84bd0456233b151, run-cli.core.pr-flow.int
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/task/verify-record-execute.ts     |   4 +-
- .../task/verify-record.durability.unit.test.ts     | 100 +++++++++++++++++++++
- .../src/commands/task/verify-record.unit.test.ts   |   2 +-
- 3 files changed, 103 insertions(+), 3 deletions(-)
+ .../src/commands/task/verify-record-execute.ts     |  11 +-
+ .../task/verify-record.durability.unit.test.ts     | 329 +++++++++++++++------
+ .../src/commands/task/verify-record.unit.test.ts   |   5 +-
+ 3 files changed, 253 insertions(+), 92 deletions(-)
 ```
 
 </details>
