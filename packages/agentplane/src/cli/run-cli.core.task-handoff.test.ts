@@ -9,6 +9,7 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { loadCommandContext } from "../commands/shared/task-backend.js";
+import { buildTaskHandoffArtifact } from "../commands/shared/task-handoff.js";
 import { evolveRunnerRunState, writeRunnerRunState } from "../runner/artifacts.js";
 import { staleClaim, writeActiveClaim } from "../runner/usecases/task-run-active-claim.testkit.js";
 import { prepareTaskRunnerExecution } from "../runner/usecases/task-run.js";
@@ -50,6 +51,91 @@ async function planAndStartTask(opts: {
 }
 
 describe("runCli task handoff and recovery", () => {
+  it("reads the protected integration owner's handoff from a task worktree without mutation", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    expect(await runCliSilent(["branch", "base", "set", "main", "--root", root])).toBe(0);
+    const created = captureStdIO();
+    let taskId: string;
+    try {
+      expect(
+        await runCli([
+          "task",
+          "new",
+          "--title",
+          "Read protected handoff",
+          "--description",
+          "Recover integration evidence from its owning checkout.",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      taskId = created.stdout.trim();
+    } finally {
+      created.restore();
+    }
+    await execFileAsync("git", ["add", "-A"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: persist handoff task"], { cwd: root });
+    const branch = `task/${taskId}/handoff-reader`;
+    const worktree = path.join(root, ".agentplane", "worktrees", "handoff-reader");
+    await execFileAsync("git", ["worktree", "add", "-b", branch, worktree], { cwd: root });
+    const headResult = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: worktree });
+    const head = headResult.stdout.trim();
+    const handoff = buildTaskHandoffArtifact({
+      task_id: taskId,
+      created_at: "2026-08-27T00:00:00.000Z",
+      from_role: "INTEGRATOR",
+      reason: "Resume protected integration.",
+      branch,
+      pr_branch: branch,
+      base_branch: "main",
+      head_sha: head,
+      route: { kind: "protected_base_integrate", status: "awaiting_github_merge", pr_number: 321 },
+    });
+    const artifactPath = path.join(root, ".agentplane", "tasks", taskId, "handoff", "latest.json");
+    await mkdir(path.dirname(artifactPath), { recursive: true });
+    await writeFile(artifactPath, JSON.stringify(handoff), "utf8");
+    const before = await readFile(artifactPath, "utf8");
+    const snapshot = async () =>
+      Promise.all(
+        [root, worktree].map(async (cwd) => {
+          const [headResult, statusResult] = await Promise.all([
+            execFileAsync("git", ["rev-parse", "HEAD"], { cwd }),
+            execFileAsync("git", ["status", "--porcelain"], { cwd }),
+          ]);
+          return { head: headResult.stdout, status: statusResult.stdout };
+        }),
+      );
+    const gitBefore = await snapshot();
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      for (const checkout of [root, worktree]) {
+        for (const command of [["handoff", "show"], ["resume-context"]]) {
+          const io = captureStdIO();
+          try {
+            expect(await runCli(["task", ...command, taskId, "--json", "--root", checkout])).toBe(
+              0,
+            );
+            const result = JSON.parse(io.stdout) as Record<string, unknown>;
+            expect(command[0] === "handoff" ? result : result.latest_handoff).toEqual(handoff);
+          } finally {
+            io.restore();
+          }
+        }
+      }
+    }
+    expect(await snapshot()).toEqual(gitBefore);
+    expect(await readFile(artifactPath, "utf8")).toBe(before);
+    await expect(
+      access(path.join(worktree, ".agentplane", "tasks", taskId, "handoff", "latest.json")),
+    ).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
   it("task reclaim records a deterministic handoff for a task awaiting a local agent", async () => {
     const root = await mkGitRepoRootWithCommit();
     await writeConfig(root, defaultConfig());

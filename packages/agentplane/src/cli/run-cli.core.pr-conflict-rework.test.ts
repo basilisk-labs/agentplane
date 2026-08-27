@@ -839,7 +839,9 @@ describe("provider conflict rework CLI", () => {
           const route = await readRemoteRoute(root, taskId);
           const conflictRework = route.conflict_rework;
           if (conflictRework?.state !== "adoption_required") {
-            throw new Error("expected legacy conflict-rework adoption requirement");
+            throw new Error(
+              `expected legacy conflict-rework adoption requirement: ${JSON.stringify(conflictRework)}`,
+            );
           }
           const grantCommand = route.workflow_step.compatibility.command;
           if (typeof grantCommand !== "string") throw new Error("expected authority grant command");
