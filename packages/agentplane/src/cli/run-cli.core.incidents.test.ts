@@ -33,7 +33,6 @@ function makeCompactOpenEntry(index: number): string {
 describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
   it("incidents collect validates structured external candidates and emits json", async () => {
     const root = await mkGitRepoRootWithCommit();
-    await configureGitUser(root);
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     config.agents.approvals.require_plan = false;
@@ -187,7 +186,6 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
 
   it("verify can append promotable findings and local-only findings stay skipped in incidents collect", async () => {
     const root = await mkGitRepoRootWithCommit();
-    await configureGitUser(root);
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     config.agents.approvals.require_plan = false;
@@ -368,7 +366,6 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
 
   it("verify can append repo-fixable findings and incidents collect promotes them", async () => {
     const root = await mkGitRepoRootWithCommit();
-    await configureGitUser(root);
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     config.agents.approvals.require_plan = false;
@@ -461,7 +458,6 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
 
   it("verify --collect-incidents updates incidents.md immediately while default verify stays record-only", async () => {
     const root = await mkGitRepoRootWithCommit();
-    await configureGitUser(root);
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     config.agents.approvals.require_plan = false;

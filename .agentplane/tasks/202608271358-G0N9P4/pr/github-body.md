@@ -27,11 +27,11 @@ Replace unexecuted task 202608271350-HVGQPQ, which froze its creation base befor
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.incidents.test.ts         |  9 ++++----
+ .../src/cli/run-cli.core.incidents.test.ts         | 13 ++++-------
  .../src/cli/run-cli.core.lifecycle.verify.test.ts  | 15 ++++++------
  .../cli/run-cli.core.tasks.verify-matrix.test.ts   |  5 ++--
  .../runtime/task-execution-context/resolve.test.ts | 27 ++++++++++++++++++++++
- 4 files changed, 43 insertions(+), 13 deletions(-)
+ 4 files changed, 43 insertions(+), 17 deletions(-)
 ```
 
 </details>
