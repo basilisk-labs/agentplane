@@ -4,7 +4,7 @@ title: "Repair verification fixtures on integrated main 5fce04a8"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -23,10 +23,10 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly requested continued autonomous refactoring and granted all in-scope permissions. This bounded prerequisite changes only four test files, preserves all checks and executes on integrated main."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-27T14:42:38.263Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -82,8 +82,7 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts"
       - "packages/agentplane/src/runtime/task-execution-context/resolve.test.ts"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -98,7 +97,25 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -186,8 +203,9 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-commit: null
+commit:
+  hash: "cf3fa3f9c8a628c46a62bb10b347ac1684668394"
+  message: "🚧 G0N9P4 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -195,6 +213,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: d16b70862aa3. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: cf3fa3f9c8a6. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: cf3fa3f9c8a6. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -217,8 +241,36 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-27T14:13:02.044Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: cf3fa3f9c8a6. CLI accepted one state-bound external-agent semantic result."
+    commit: "cf3fa3f9c8a628c46a62bb10b347ac1684668394"
+  -
+    type: "verify"
+    at: "2026-08-27T14:30:26.261Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-27T14:33:25.268Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: cf3fa3f9c8a6. CLI accepted one state-bound external-agent semantic result."
+    commit: "cf3fa3f9c8a628c46a62bb10b347ac1684668394"
+  -
+    type: "verify"
+    at: "2026-08-27T14:42:38.263Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-27T14:10:52.075Z"
+doc_updated_at: "2026-08-27T14:42:43.111Z"
 doc_updated_by: "SUPERVISOR"
 description: "Replace unexecuted task 202608271350-HVGQPQ, which froze its creation base before GHHA0Q integration. Implement only the verification-fixture slice on integrated main 5fce04a8be14816be4cae236d2941dff7045e214. Inspect exact failures in lifecycle.verify, tasks.verify-matrix and incidents CLI tests. Use mkGitRepoRootWithCommit only for scenarios requiring implementation evidence. Preserve all assertions and argument-validation cases. Add an explicit unborn-repository rejection regression in runtime/task-execution-context/resolve.test.ts. Do not change shared helpers, production code, CI gates, release candidate or roadmap dependencies. Canonical verification migration remains AP-CORE-013. Require scoped tests, full CI and hosted integration. User authorizes autonomous execution and normal in-scope approvals."
 sections:
@@ -253,6 +305,113 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-1
     Scope: branch_pr task 202608271358-G0N9P4 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271358-G0N9P4-repair-verification-fixtures-on-integrated-main/.agentplane/tasks/202608271358-G0N9P4/blueprint/resolved-snapshot.json
+    - old_digest: b1859a8987ab5370ba9bb6a9a47c5ec76b7d1cef936e10f53b3f4285459515d3
+    - current_digest: b1859a8987ab5370ba9bb6a9a47c5ec76b7d1cef936e10f53b3f4285459515d3
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608271358-G0N9P4
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-27T14:30:26.261Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d86d752e9921371990c552de874f4422cf748aacae6dfb9ff2ad36feee0f14bc, input_digest=sha256:0bf738950bb7a2f75e02c08dd467dc02628769493ee02d180a2188f65d3c7a8d
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271358-G0N9P4 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271358-G0N9P4-repair-verification-fixtures-on-integrated-main/.agentplane/tasks/202608271358-G0N9P4/blueprint/resolved-snapshot.json
+    - old_digest: b1859a8987ab5370ba9bb6a9a47c5ec76b7d1cef936e10f53b3f4285459515d3
+    - current_digest: b1859a8987ab5370ba9bb6a9a47c5ec76b7d1cef936e10f53b3f4285459515d3
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608271358-G0N9P4
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-27T14:42:38.263Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d86d752e9921371990c552de874f4422cf748aacae6dfb9ff2ad36feee0f14bc, input_digest=sha256:cf6126f484c66cabc2f628a6c8e3152cfc2d55627d3cc6c242cd40863ca27e8f
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271358-G0N9P4 Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/runtime/task-execution-context/resolve.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271358-G0N9P4 Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271358-G0N9P4 Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/runtime/task-execution-context/resolve.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271358-G0N9P4 Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271358-G0N9P4 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271358-G0N9P4 Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/runtime/task-execution-context/resolve.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271358-G0N9P4 Verification Contract check task_outcome (2/2)
 
     BlueprintSnapshotRef:
     - state: current
@@ -515,39 +674,33 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 17
     schema_version: 1
-    updated_at: "2026-08-27T14:10:53.173Z"
+    updated_at: "2026-08-27T14:42:44.689Z"
     work_items:
       repair-verification-fixtures:
-        attempt: 1
+        attempt: 3
         claim_id: null
         id: "repair-verification-fixtures"
-        last_failure:
-          cause_refs:
-            - "identity-bound-fixtures"
-          code: "validation_failed"
-          kind: "validation"
-          message: "Repaired 14 verification/incident fixture failures in the four approved test files. Positive verification scenarios now use the existing committed-repository helper. Argument-validation and unrelated incident fixtures remain empty. Added actual unborn-repository rejection and unchanged-task assertions. Production code, shared helpers, required checks, release state and roadmap dependencies are unchanged."
-          retryable: true
+        last_failure: null
         output_manifests:
           -
-            digest: "sha256:8e222ca7964e5bea45a59cac4b576d9cbe0b998784c4512c3585841c7fefc7f1"
+            digest: "sha256:d78e26a54fbc926b3868811e84474c409e87f9e154b5710ba5169db4f6e189cb"
             id: "artifact:verification-fixture-report"
             kind: "semantic_output"
             producer:
-              attempt: 1
+              attempt: 3
               plan_revision: 1
               task_id: "202608271358-G0N9P4"
               work_item_id: "repair-verification-fixtures"
             provenance:
-              - "sha256:f8fc59bc7e775e0c7c1bb8ca2fbfd7d6a01e73f23fa94e300aa7b3b5afe43e10"
+              - "sha256:5e7a74bb3f2be546e8ebf7e4ac68668a52e13d8dc3fc6f8dbd4b89a64636acae"
               - ".agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:4d38b2f0e7a65cf9d29b3ce510a849b12af66ecf68be5f1fc961a265b4b16f21"
+            repository_snapshot_digest: "sha256:753f283287d749ceb2acdd2d32367099d0f622b7ad2a34b084ce155039e1d98d"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
-        revision: 2
-        state: "REWORK_READY"
+        revision: 4
+        state: "COMPLETED"
         validation_result:
           evidence:
             -
@@ -555,30 +708,52 @@ extensions:
                 - ".agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json"
               check_id: "scoped-tests"
               command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/runtime/task-execution-context/resolve.test.ts --pool=threads --maxWorkers=2"
-              detail: "Declared validation command node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/runtime/task-execution-context/resolve.test.ts --pool=threads --maxWorkers=2 was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-08-27T14:10:53.169Z"
-              repository_snapshot_digest: "sha256:4d38b2f0e7a65cf9d29b3ce510a849b12af66ecf68be5f1fc961a265b4b16f21"
-              status: "unsupported"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/runtime/task-execution-context/resolve.test.ts --pool=threads --maxWorkers=2."
+              exit_code: 0
+              observed_at: "2026-08-27T14:42:44.680Z"
+              repository_snapshot_digest: "sha256:753f283287d749ceb2acdd2d32367099d0f622b7ad2a34b084ce155039e1d98d"
+              status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json"
               check_id: "full-ci"
               command_identity: "bun run ci:local:full"
-              detail: "Declared check failed: bun run ci:local:full"
-              exit_code: 1
-              observed_at: "2026-08-27T14:10:53.169Z"
-              repository_snapshot_digest: "sha256:4d38b2f0e7a65cf9d29b3ce510a849b12af66ecf68be5f1fc961a265b4b16f21"
-              status: "failed"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-27T14:42:44.680Z"
+              repository_snapshot_digest: "sha256:753f283287d749ceb2acdd2d32367099d0f622b7ad2a34b084ce155039e1d98d"
+              status: "passed"
           schema_version: 1
           stale_evidence: []
-          status: "blocked"
-          unsatisfied_criteria:
-            - "identity-bound-fixtures"
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
     mutation_receipts:
+      external-result:work-order-202608271358-G0N9P4-executor-14f610d61aac0bad48567bd7:
+        aggregate_digest: "sha256:f53bfc017399c35210b1f3078763c1d0008fda66e6938512e26f5141bdf2e141"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-27T14:30:29.834Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_79f27da78477bfbb90c781a7"
+          mutation_id: "external-result:work-order-202608271358-G0N9P4-executor-14f610d61aac0bad48567bd7"
+          plan_digest: "sha256:cd9afd5c980648e4491d0d193a12781423b0ed1324c524d212fb52b0cecd2034"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608271358-G0N9P4"
+          task_revision: 12
+          to: "REWORK_READY"
+          work_item_id: "repair-verification-fixtures"
+        mutation_id: "external-result:work-order-202608271358-G0N9P4-executor-14f610d61aac0bad48567bd7"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202608271358-G0N9P4"
       external-result:work-order-202608271358-G0N9P4-executor-31131e4f2e1a4b86e5e7e202:
         aggregate_digest: "sha256:1da1115b1cf6ef141a876d0c94a7ccc5eb368bd15282828d9641e590a70a13c5"
         event:
@@ -602,9 +777,34 @@ extensions:
         previous_revision: 8
         schema_version: 1
         task_id: "202608271358-G0N9P4"
+      external-result:work-order-202608271358-G0N9P4-executor-ba3c5de4407439ac80ccb853:
+        aggregate_digest: "sha256:1084707a17fe10ad70654222d6f5884160f5a18861c1bb21e222fc8023c80944"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-27T14:42:44.689Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_c2a837dba1765789fabfe98e"
+          mutation_id: "external-result:work-order-202608271358-G0N9P4-executor-ba3c5de4407439ac80ccb853"
+          plan_digest: "sha256:cd9afd5c980648e4491d0d193a12781423b0ed1324c524d212fb52b0cecd2034"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608271358-G0N9P4"
+          task_revision: 16
+          to: "COMPLETED"
+          work_item_id: "repair-verification-fixtures"
+        mutation_id: "external-result:work-order-202608271358-G0N9P4-executor-ba3c5de4407439ac80ccb853"
+        next_revision: 17
+        previous_revision: 16
+        schema_version: 1
+        task_id: "202608271358-G0N9P4"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "cf3fa3f9c8a628c46a62bb10b347ac1684668394"
   task_execution_context:
     base_ref: "main"
     base_sha: "5fce04a8be14816be4cae236d2941dff7045e214"
@@ -656,6 +856,113 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-1
 Scope: branch_pr task 202608271358-G0N9P4 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271358-G0N9P4-repair-verification-fixtures-on-integrated-main/.agentplane/tasks/202608271358-G0N9P4/blueprint/resolved-snapshot.json
+- old_digest: b1859a8987ab5370ba9bb6a9a47c5ec76b7d1cef936e10f53b3f4285459515d3
+- current_digest: b1859a8987ab5370ba9bb6a9a47c5ec76b7d1cef936e10f53b3f4285459515d3
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608271358-G0N9P4
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-27T14:30:26.261Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d86d752e9921371990c552de874f4422cf748aacae6dfb9ff2ad36feee0f14bc, input_digest=sha256:0bf738950bb7a2f75e02c08dd467dc02628769493ee02d180a2188f65d3c7a8d
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271358-G0N9P4 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271358-G0N9P4-repair-verification-fixtures-on-integrated-main/.agentplane/tasks/202608271358-G0N9P4/blueprint/resolved-snapshot.json
+- old_digest: b1859a8987ab5370ba9bb6a9a47c5ec76b7d1cef936e10f53b3f4285459515d3
+- current_digest: b1859a8987ab5370ba9bb6a9a47c5ec76b7d1cef936e10f53b3f4285459515d3
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608271358-G0N9P4
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-27T14:42:38.263Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d86d752e9921371990c552de874f4422cf748aacae6dfb9ff2ad36feee0f14bc, input_digest=sha256:cf6126f484c66cabc2f628a6c8e3152cfc2d55627d3cc6c242cd40863ca27e8f
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271358-G0N9P4 Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/runtime/task-execution-context/resolve.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271358-G0N9P4 Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271358-G0N9P4 Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/runtime/task-execution-context/resolve.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271358-G0N9P4 Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271358-G0N9P4 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271358-G0N9P4 Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/runtime/task-execution-context/resolve.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271358-G0N9P4/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271358-G0N9P4 Verification Contract check task_outcome (2/2)
 
 BlueprintSnapshotRef:
 - state: current
