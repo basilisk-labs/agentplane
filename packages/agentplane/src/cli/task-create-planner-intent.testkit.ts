@@ -7,7 +7,9 @@ import { parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { captureStdIO } from "@agentplane/testkit";
 
 import { runCli } from "./run-cli.js";
-import type { TaskExecutionDeclaration } from "@agentplaneorg/core/tasks";
+import type { TaskExecutionDeclaration, TaskPlanProposal } from "@agentplaneorg/core/tasks";
+import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+import { RUNTIME_GITIGNORE_LINES } from "../runtime/shared/runtime-artifacts.js";
 
 const execFileAsync = promisify(execFile);
 const originalGhBin = process.env.AGENTPLANE_GH_BIN;
@@ -46,6 +48,25 @@ export type ScenarioMetrics = {
   work_preserved: boolean;
   recovery_commands: number;
 };
+
+export async function describePacketEvidence(packet: AgentPacket): Promise<string> {
+  if (!packet.exchange) return JSON.stringify(packet);
+  const workOrder = JSON.parse(
+    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
+  ) as AgentWorkOrderV2;
+  const checks = await readFile(
+    path.join(
+      workOrder.state_fingerprint.worktree,
+      ".agentplane",
+      "tasks",
+      packet.task_id,
+      "supervision",
+      "declared-checks.json",
+    ),
+    "utf8",
+  ).catch(() => "no declared check evidence");
+  return JSON.stringify({ packet, checks });
+}
 
 export const LOCALIZED_DIRECT_REFERENCE = {
   control_plane_commands: 7,
@@ -90,7 +111,10 @@ export async function runJson(
   const startedAt = performance.now();
   try {
     const code = await runCli([...argv, "--root", root]);
-    expect(code, io.stderr).toBe(0);
+    const statusResult =
+      code === 0 ? undefined : await execFileAsync("git", ["status", "--short"], { cwd: root });
+    const status = statusResult?.stdout ?? "";
+    expect(code, `${io.stderr}\n${status}`).toBe(0);
     const payload = JSON.parse(io.stdout) as Record<string, unknown>;
     observeCommand(metrics, argv, payload, performance.now() - startedAt);
     return payload;
@@ -144,9 +168,12 @@ export async function findTaskWorktree(root: string, taskId: string): Promise<st
 }
 
 export async function writeFrameworkHarnessGitignore(root: string): Promise<void> {
+  const existing = await readFile(path.join(root, ".gitignore"), "utf8").catch(() => "");
   await writeFile(
     path.join(root, ".gitignore"),
     [
+      existing.trimEnd(),
+      ...RUNTIME_GITIGNORE_LINES,
       ".agentplane/bin",
       ".agentplane/cache.sqlite*",
       "agentplane-recipes",
@@ -181,7 +208,106 @@ export async function writePlannerResult(opts: {
   if (!exchange) throw new Error("expected external-agent exchange");
   const workOrder = JSON.parse(
     await readFile(path.join(exchange.directory, exchange.work_order_ref), "utf8"),
-  ) as { work_order_id: string; role: string };
+  ) as AgentWorkOrderV2;
+  const execution: TaskExecutionDeclaration = opts.execution ?? {
+    schema_version: 2,
+    preferred_mode: "direct",
+    scope_roots: ["packages/agentplane/src/cli"],
+    repository_effects: ["repository_write", "source_code", "tests"],
+    external_effects: [],
+    requirements_uncertainty: "bounded",
+    implementation_uncertainty: "bounded",
+    reversibility: "reversible",
+    rationale: ["localized parser change with existing tests"],
+  };
+  let proposal: TaskPlanProposal | undefined;
+  if (workOrder.role === "PLANNER" && opts.includeIntent) {
+    const baseline = workOrder.planning_context?.repository_snapshot;
+    if (!baseline) throw new Error("expected the issued planner repository snapshot");
+    const task = parseTaskReadme(
+      await readFile(
+        path.join(
+          workOrder.state_fingerprint.worktree,
+          ".agentplane",
+          "tasks",
+          opts.packet.task_id,
+          "README.md",
+        ),
+        "utf8",
+      ),
+    ).frontmatter;
+    const declaredChecks: unknown = task.verify;
+    const commands = Array.isArray(declaredChecks)
+      ? declaredChecks.filter((value: unknown): value is string => typeof value === "string")
+      : [];
+    const checks =
+      commands.length > 0
+        ? commands.map((command, index) => ({
+            id: `task-check-${index + 1}`,
+            kind: "deterministic" as const,
+            required: true,
+            capability: "task.verify",
+            command,
+          }))
+        : [
+            {
+              id: "task-check",
+              kind: "deterministic" as const,
+              required: true,
+              capability: "task.verify",
+            },
+          ];
+    const criterion = {
+      id: "intent-preserved",
+      description: opts.summary,
+      required: true,
+      check_ids: checks.map((check) => check.id),
+    };
+    const validation = {
+      schema_version: 1 as const,
+      criteria: [criterion],
+      checks,
+      evidence_fingerprint: baseline.digest,
+    };
+    proposal = {
+      schema_version: 1,
+      task_id: opts.packet.task_id,
+      planning_baseline: baseline,
+      work_items: {
+        schema_version: 1,
+        work_items: [
+          {
+            id: "implement-declared-intent",
+            objective: opts.summary,
+            depends_on: [],
+            required_inputs: [],
+            expected_outputs: ["artifact:declared-intent-result"],
+            scope_roots: execution.scope_roots,
+            acceptance_criteria: [criterion],
+            validation,
+            context: {
+              required_sources: [],
+              optional_sources: [],
+              symbol_hints: [],
+              max_bytes: 65_536,
+            },
+            risk: "low",
+            capabilities: ["task.verify"],
+            resource_claims: execution.scope_roots.map((resource) => ({
+              kind: "path",
+              resource,
+              mode: "write",
+            })),
+            optional: false,
+            priority: 1,
+          },
+        ],
+      },
+      assumptions: [],
+      unresolved_questions: [],
+      top_level_validation: validation,
+    };
+  }
   const resultPath = path.join(exchange.directory, exchange.result_ref);
   await writeFile(
     resultPath,
@@ -202,6 +328,7 @@ export async function writePlannerResult(opts: {
           findings: opts.review ? ["The frozen implementation satisfies the declared intent."] : [],
           uncertainty: [],
           ...(opts.review ? { review: opts.review } : {}),
+          ...(proposal ? { task_plan_proposal: proposal } : {}),
           ...(opts.includeIntent
             ? {
                 task_intent: {
@@ -209,17 +336,7 @@ export async function writePlannerResult(opts: {
                   mutation_scope: "code",
                   risk_flags: [],
                   tags: ["cli", "parser"],
-                  execution: opts.execution ?? {
-                    schema_version: 2,
-                    preferred_mode: "direct",
-                    scope_roots: ["packages/agentplane/src/cli"],
-                    repository_effects: ["repository_write", "source_code", "tests"],
-                    external_effects: [],
-                    requirements_uncertainty: "bounded",
-                    implementation_uncertainty: "bounded",
-                    reversibility: "reversible",
-                    rationale: ["localized parser change with existing tests"],
-                  },
+                  execution,
                 },
               }
             : {}),
