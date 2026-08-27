@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:5d54897cdc4afda38a30accfb2818c71b885b2e09507b94bab0401405276ff1b",
   "pr_number": 5858,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5858",
+  "pre_merge_closure": {
+    "basis_commit": "042f68391d3b51915e07f648cc6f02bf54579bd6",
+    "branch": "task/202608271544-1TDVPJ/modernize-exact-result-recovery-fixtures",
+    "pr_number": 5858,
+    "recorded_at": "2026-08-27T16:29:32.038Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
