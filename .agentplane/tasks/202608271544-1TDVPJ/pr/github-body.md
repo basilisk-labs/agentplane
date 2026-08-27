@@ -12,14 +12,8 @@ In scope: packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework: Declared check failed: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run
-packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads
---maxWorkers=1
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

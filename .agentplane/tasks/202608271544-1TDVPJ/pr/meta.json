@@ -3,8 +3,8 @@
   "branch": "task/202608271544-1TDVPJ/modernize-exact-result-recovery-fixtures",
   "created_at": "2026-08-27T15:46:45.984Z",
   "diffstat_sha256": "sha256:5d54897cdc4afda38a30accfb2818c71b885b2e09507b94bab0401405276ff1b",
-  "last_verified_at": "2026-08-27T16:06:42.690Z",
-  "last_verified_diffstat_sha256": "sha256:014e1835c1260851473542f9f740065922f7a8747cb3468cf7a8d112742c5159",
+  "last_verified_at": "2026-08-27T16:23:35.964Z",
+  "last_verified_diffstat_sha256": "sha256:5d54897cdc4afda38a30accfb2818c71b885b2e09507b94bab0401405276ff1b",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -17,6 +17,6 @@
   "task_id": "202608271544-1TDVPJ",
   "updated_at": "2026-08-27T15:46:45.984Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }

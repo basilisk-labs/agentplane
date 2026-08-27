@@ -4,7 +4,7 @@ title: "Modernize exact-result recovery fixtures"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -21,11 +21,11 @@ plan_approval:
   updated_by: "USER"
   note: "The user explicitly authorized autonomous completion and all approvals for refactoring and necessary release blockers. This material replan covers the proven JSON property-order comparison defect; four-file scope and verification criteria were aligned before approval."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-27T16:06:42.690Z"
+  state: "ok"
+  updated_at: "2026-08-27T16:23:35.964Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads --maxWorkers=1"
-  attempts: 1
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -82,11 +82,49 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+      - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+      - "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -121,20 +159,30 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:02a2e0b10b83b3673e76129e5e41191ccefa2639689afa45544fe73c7f950345"
+      digest: "sha256:298987b3b360e41341209fdedff24d7a4763725199256e338b44afbe701fcd8f"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
         - "central_component:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+        - "central_path:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+          - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+          - "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -166,7 +214,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "04686a004a2b9969d03059d853a294afdc6a22c7"
+  message: "🚧 1TDVPJ task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -177,6 +227,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 04686a004a2b. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -206,9 +259,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-27T16:15:47.384Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 04686a004a2b. CLI accepted one state-bound external-agent semantic result."
+    commit: "04686a004a2b9969d03059d853a294afdc6a22c7"
+  -
+    type: "verify"
+    at: "2026-08-27T16:23:35.964Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-27T16:09:12.321Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-27T16:23:38.330Z"
+doc_updated_by: "SUPERVISOR"
 description: "Repair exact-result recovery using real Git bases and structured planner results. The approved material replan also addresses the demonstrated production defect in external-agent-planning-authority.ts: persisted JSON object property order must not change semantic equality. Reuse canonical JSON comparison and add focused unit regressions. Preserve array order, changed-value rejection, exact operation keys, replacement authority, original received-result identity, single consumption, replay rejection, retirement and approval guards. Scope is the existing recovery CLI test and local helper plus the planning-authority implementation and its unit tests. No lifecycle, provider, CI, policy, timeout or roadmap changes."
 sections:
   Summary: "Repair exact-result recovery using real Git bases and structured planner results. The approved material replan also addresses the demonstrated production defect in external-agent-planning-authority.ts: persisted JSON object property order must not change semantic equality. Reuse canonical JSON comparison and add focused unit regressions. Preserve array order, changed-value rejection, exact operation keys, replacement authority, original received-result identity, single consumption, replay rejection, retirement and approval guards. Scope is the existing recovery CLI test and local helper plus the planning-authority implementation and its unit tests. No lifecycle, provider, CI, policy, timeout or roadmap changes."
@@ -247,6 +314,96 @@ sections:
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271544-1TDVPJ-modernize-exact-result-recovery-fixtures/.agentplane/tasks/202608271544-1TDVPJ/blueprint/resolved-snapshot.json
     - old_digest: 5f70bce5143724f1f15761bdfdfc51de01d8f3521395a9b7f574edffbdb8e3fe
     - current_digest: 5f70bce5143724f1f15761bdfdfc51de01d8f3521395a9b7f574edffbdb8e3fe
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608271544-1TDVPJ
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-27T16:23:35.964Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c80df9155ad67fb6ac81a081d9db2fb40bf65ddd5c7bd06002af1358172da139, input_digest=sha256:465f7a2ab93c465eeb397bbbc9d539b8b3f11cd6dfdd123bf18c3661215174c4
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check critical_paths (3/3)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check task_outcome (3/3)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271544-1TDVPJ-modernize-exact-result-recovery-fixtures/.agentplane/tasks/202608271544-1TDVPJ/blueprint/resolved-snapshot.json
+    - old_digest: 8cbff0e94b30e0bd23b9bf575f6cf6cf653277543f74e663e847264604414e96
+    - current_digest: 8cbff0e94b30e0bd23b9bf575f6cf6cf653277543f74e663e847264604414e96
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202608271544-1TDVPJ
 
@@ -663,23 +820,111 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608271544-1TDVPJ"
-    revision: 9
+    revision: 19
     schema_version: 1
-    updated_at: "2026-08-27T16:09:04.532Z"
+    updated_at: "2026-08-27T16:23:39.630Z"
     work_items:
       repair-planning-recovery-comparison:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "repair-planning-recovery-comparison"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:fe4dcc90ecfa5cca85cabd4b710fb2d6187288dcb1c1b7e888483a152da671a0"
+            id: "artifact:recovery-fixture-report"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608271544-1TDVPJ"
+              work_item_id: "repair-planning-recovery-comparison"
+            provenance:
+              - "sha256:ec074de77392d22c2b7011ce6dc7eace5aedb726a53b7572578aafe919b2d26d"
+              - ".agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:260f90aefffe097b3d7323ab226675ca35f3762e3755ed23b2201549c6679cad"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:a048c191b54c0d6781d25daa49debdfe4dbfb6269e6d887347336aa955f79649"
+            id: "artifact:planning-recovery-comparison-report"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608271544-1TDVPJ"
+              work_item_id: "repair-planning-recovery-comparison"
+            provenance:
+              - "sha256:ec074de77392d22c2b7011ce6dc7eace5aedb726a53b7572578aafe919b2d26d"
+              - ".agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:260f90aefffe097b3d7323ab226675ca35f3762e3755ed23b2201549c6679cad"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json"
+              check_id: "scoped-tests"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads --maxWorkers=1"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-08-27T16:23:39.626Z"
+              repository_snapshot_digest: "sha256:260f90aefffe097b3d7323ab226675ca35f3762e3755ed23b2201549c6679cad"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json"
+              check_id: "comparison-tests"
+              command_identity: "node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --pool=forks --maxWorkers=1"
+              detail: "Observed by node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --pool=forks --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-08-27T16:23:39.626Z"
+              repository_snapshot_digest: "sha256:260f90aefffe097b3d7323ab226675ca35f3762e3755ed23b2201549c6679cad"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json"
+              check_id: "full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-27T16:23:39.626Z"
+              repository_snapshot_digest: "sha256:260f90aefffe097b3d7323ab226675ca35f3762e3755ed23b2201549c6679cad"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
     mutation_receipts:
+      external-result:work-order-202608271544-1TDVPJ-executor-2667a855c3036d3869d54daa:
+        aggregate_digest: "sha256:61602d7b7521178ce3be1aeb7f684872d88aea143a8e769ba6cc68c168d44e7e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-27T16:23:39.630Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_76fd70ef03d06d4b6ae38a9e"
+          mutation_id: "external-result:work-order-202608271544-1TDVPJ-executor-2667a855c3036d3869d54daa"
+          plan_digest: "sha256:bfba75a974242322a62a86e2095680afb70b469b484b174aacd3b59828dd895a"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608271544-1TDVPJ"
+          task_revision: 18
+          to: "COMPLETED"
+          work_item_id: "repair-planning-recovery-comparison"
+        mutation_id: "external-result:work-order-202608271544-1TDVPJ-executor-2667a855c3036d3869d54daa"
+        next_revision: 19
+        previous_revision: 18
+        schema_version: 1
+        task_id: "202608271544-1TDVPJ"
       plan-refinement:work-order-202608271544-1TDVPJ-executor-1da499554db1753591412e8d:
         aggregate_digest: "sha256:b1702e8ee6c89ed28f2b76ba04bcdab0f5e13f632fbf2c676e32024bacdf7dca"
         event:
@@ -710,6 +955,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "04686a004a2b9969d03059d853a294afdc6a22c7"
   task_execution_context:
     base_ref: "main"
     base_sha: "2c9a2f59146c302c517524136e66abb902f92ba6"
@@ -768,6 +1015,96 @@ BlueprintSnapshotRef:
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271544-1TDVPJ-modernize-exact-result-recovery-fixtures/.agentplane/tasks/202608271544-1TDVPJ/blueprint/resolved-snapshot.json
 - old_digest: 5f70bce5143724f1f15761bdfdfc51de01d8f3521395a9b7f574edffbdb8e3fe
 - current_digest: 5f70bce5143724f1f15761bdfdfc51de01d8f3521395a9b7f574edffbdb8e3fe
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608271544-1TDVPJ
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-27T16:23:35.964Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c80df9155ad67fb6ac81a081d9db2fb40bf65ddd5c7bd06002af1358172da139, input_digest=sha256:465f7a2ab93c465eeb397bbbc9d539b8b3f11cd6dfdd123bf18c3661215174c4
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check critical_paths (3/3)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608271544-1TDVPJ Verification Contract check task_outcome (3/3)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271544-1TDVPJ-modernize-exact-result-recovery-fixtures/.agentplane/tasks/202608271544-1TDVPJ/blueprint/resolved-snapshot.json
+- old_digest: 8cbff0e94b30e0bd23b9bf575f6cf6cf653277543f74e663e847264604414e96
+- current_digest: 8cbff0e94b30e0bd23b9bf575f6cf6cf653277543f74e663e847264604414e96
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202608271544-1TDVPJ
 
