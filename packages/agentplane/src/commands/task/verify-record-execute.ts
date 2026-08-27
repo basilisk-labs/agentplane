@@ -169,8 +169,8 @@ async function recordVerificationResult(opts: {
           taskId: current.id,
           taskIds: qualityReviewTaskIds,
           lifecycleTaskIds: batchTaskIds,
-          headSha: recordedTaskImplementationCommitSha(current),
-          previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
+          previousEvaluatedSha:
+            current.quality_review?.evaluated_sha ?? recordedTaskImplementationCommitSha(current),
           workflowMode,
         });
         const observedChangedPaths = await resolveObservedVerificationChangedPaths({

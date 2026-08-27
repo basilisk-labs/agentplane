@@ -10,6 +10,8 @@ import * as taskMutation from "../shared/task-mutation.js";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import { cmdVerifyParsed } from "./verify-record.js";
 import { resolveObservedVerificationChangedPaths } from "./verify-record-observed-changes.js";
+import { resolveEvaluatorReviewTarget } from "../evaluator/evaluator-qualification-review.js";
+import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import { mkGitRepoRootWithCommit, writeDefaultConfig } from "@agentplane/testkit";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
@@ -321,6 +323,104 @@ describe("task verification durability", () => {
     };
     expect(record.input?.verification_contract_digest).toBe(contract?.digest);
   });
+
+  it.each(["policy", "lifecycle"] as const)(
+    "keeps verification and evaluator targets aligned after a %s commit",
+    async (change) => {
+      const root = await makeRepo();
+      const taskId = "202602050900-V1F4T";
+      await addTask(root, taskId);
+      const git = async (...args: string[]) => {
+        const result = await execFileAsync("git", args, { cwd: root });
+        return result.stdout.trim();
+      };
+      const baseSha = await git("rev-parse", "HEAD");
+      await writeFile(path.join(root, "feature.ts"), "export const feature = true;\n");
+      await git("add", "feature.ts");
+      await git("commit", "-m", "test: reviewed implementation");
+      const implementationSha = await git("rev-parse", "HEAD");
+      const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+      ctx.config.workflow_mode = "direct";
+      const initial = await ctx.taskBackend.getTask(taskId);
+      if (!initial) throw new Error("missing target continuity fixture");
+      await ctx.taskBackend.writeTask?.({
+        ...initial,
+        extensions: {
+          ...initial.extensions,
+          implementation_commit: { hash: implementationSha },
+          workflow_route_baseline: { start_head_sha: baseSha },
+        },
+      });
+      mocks.writeJsonStableIfChanged.mockImplementation(async (filePath, value) => {
+        const resolvedPath = String(filePath);
+        await mkdir(path.dirname(resolvedPath), { recursive: true });
+        await writeFile(resolvedPath, `${JSON.stringify(value)}\n`, "utf8");
+        return true;
+      });
+      const verify = () =>
+        cmdVerifyParsed({
+          ctx,
+          cwd: root,
+          taskId,
+          state: "ok",
+          by: "REVIEWER",
+          note: "Target continuity checks passed.",
+          details:
+            "Command: bun test\nResult: pass\nEvidence: target continuity fixture passed\nScope: complete task diff",
+          quiet: true,
+        });
+      await verify();
+      const verificationDir = path.join(root, ".agentplane", "tasks", taskId, "verification");
+      const initialRecords = new Set(await readdir(verificationDir));
+      const policyPath = ".agentplane/policy/incidents.md";
+      if (change === "policy") {
+        await mkdir(path.dirname(path.join(root, policyPath)), { recursive: true });
+        await writeFile(path.join(root, policyPath), "# Recorded incident\n");
+        await git("add", "-f", policyPath);
+      } else {
+        const evidencePath = `.agentplane/tasks/${taskId}/evidence/closeout.json`;
+        await mkdir(path.dirname(path.join(root, evidencePath)), { recursive: true });
+        await writeFile(path.join(root, evidencePath), '{"kind":"closeout-evidence"}\n');
+        await git("add", "-f", evidencePath);
+      }
+      await git("commit", "-m", `test: ${change} after implementation`);
+      const changedHead = await git("rev-parse", "HEAD");
+      const expectedSha = change === "policy" ? changedHead : implementationSha;
+      const expectedPaths = change === "policy" ? [policyPath, "feature.ts"] : ["feature.ts"];
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        await verify();
+        const task = await ctx.taskBackend.getTask(taskId);
+        if (!task) throw new Error("missing verified target continuity fixture");
+        const execution = await resolveTaskExecutionContext({
+          ctx,
+          tasks: [task],
+          primaryTaskId: taskId,
+          authoritativeTaskSource: "base_checkout",
+        });
+        const review = await resolveEvaluatorReviewTarget({
+          ctx,
+          task,
+          reason: "preparation",
+          execution,
+        });
+        expect(review.evaluatedSha).toBe(expectedSha);
+        expect(task.execution_contract?.verification.contract?.observed.changed_files).toEqual(
+          expectedPaths,
+        );
+        expect(task.extensions?.implementation_commit).toEqual({ hash: implementationSha });
+        expect(await git("rev-parse", "HEAD")).toBe(changedHead);
+      }
+      const allRecords = await readdir(verificationDir);
+      const newRecords = allRecords.filter((name) => !initialRecords.has(name));
+      expect(newRecords).toHaveLength(2);
+      for (const name of newRecords) {
+        const record = JSON.parse(await readFile(path.join(verificationDir, name), "utf8")) as {
+          implementation_sha: string;
+        };
+        expect(record.implementation_sha).toBe(expectedSha);
+      }
+    },
+  );
 
   it("observes the complete direct task diff from the frozen execution base", async () => {
     const root = await makeRepo();

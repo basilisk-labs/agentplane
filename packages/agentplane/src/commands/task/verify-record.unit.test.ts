@@ -206,7 +206,7 @@ describe("task verify record (unit)", () => {
     expect(writes.join("")).toContain("agentplane task findings add T-1");
     expect(writes.join("")).toContain("--promote --external");
     expect(mocks.resolveQualityReviewTargetSha).toHaveBeenCalledWith(
-      expect.objectContaining({ headSha: "implementation-sha" }),
+      expect.objectContaining({ previousEvaluatedSha: "implementation-sha" }),
     );
     expect(writeTask.mock.calls[0]?.[0].extensions?.implementation_commit).toEqual({
       hash: "implementation-sha",
