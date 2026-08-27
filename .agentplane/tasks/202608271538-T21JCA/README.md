@@ -1,10 +1,11 @@
 ---
 id: "202608271538-T21JCA"
 title: "Recover green behind PRs through provider branch update"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -57,6 +58,20 @@ quality_review:
     - "The frozen diff contains exactly four approved files. The observed verification record binds passing checks to implementation da64f2d0ea907c7f18a113743f731db104b0d564. Full CI passed in531675ms and all60 focused tests passed."
     - "No CI, timeout, policy, approval enforcement or queue executor changed. Actual hosted recovery remains to be checked after integration."
     - "Residual risk: Provider state can change between observation and execution; the unchanged exact-head/base guards must continue to reject drift."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:e8fb68bb3a68fc3a75c99d2a0a54d73a39ea1b8e7279def494a27a8ad90d7517"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-27T16:00:43.171Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -241,8 +256,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "da64f2d0ea907c7f18a113743f731db104b0d564"
-  message: "🚧 T21JCA task: apply external agent result"
+  hash: "9e1ad7a03d3c607b8fad1329e8f446338749ed80"
+  message: "🚧 T21JCA task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -250,6 +265,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: da64f2d0ea90. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -272,9 +290,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-27T16:00:43.171Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "9e1ad7a03d3c607b8fad1329e8f446338749ed80"
 doc_version: 3
-doc_updated_at: "2026-08-27T15:55:47.779Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-27T16:00:43.203Z"
+doc_updated_by: "CODER"
 description: "Repair the demonstrated recovery gap for an OPEN GitHub PR whose exact aligned head has successful required checks but whose provider mergeability is behind under strict protection. PR #5854 is the observed case: queue handoff after HTTP 405 required PR verification expected; no merge conflict, no live runner. Route the existing provider.pr.update_branch operation for coherent exact-head behind evidence, preserve stale-head/provider/base/authority guards, required checks, and queue ownership. Add focused regression tests. Do not merge or publish from semantic implementation, bypass protection, manufacture hosted failures, or rewrite frozen task bases."
 sections:
   Summary: |-
@@ -583,7 +609,34 @@ extensions:
       schema_version: 1
       task_id: "202608271538-T21JCA"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608271538-T21JCA"
+            - "git:da64f2d0ea907c7f18a113743f731db104b0d564"
+          check_id: "scoped-tests"
+          command_identity: "node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=threads --maxWorkers=2"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T15:55:41.958Z"
+          repository_snapshot_digest: "sha256:96b00b0f547f9a8bedade8eee13d4bdad1b9788178287f6ce2a46878ca1b6ab4"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608271538-T21JCA"
+            - "git:da64f2d0ea907c7f18a113743f731db104b0d564"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T15:55:41.958Z"
+          repository_snapshot_digest: "sha256:96b00b0f547f9a8bedade8eee13d4bdad1b9788178287f6ce2a46878ca1b6ab4"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608271538-T21JCA"
     intent:
       acceptance_criteria:
@@ -599,12 +652,12 @@ extensions:
 
         Repair the demonstrated recovery gap for an OPEN GitHub PR whose exact aligned head has successful required checks but whose provider mergeability is behind under strict protection. PR #5854 is the observed case: queue handoff after HTTP 405 required PR verification expected; no merge conflict, no live runner. Route the existing provider.pr.update_branch operation for coherent exact-head behind evidence, preserve stale-head/provider/base/authority guards, required checks, and queue ownership. Add focused regression tests. Do not merge or publish from semantic implementation, bypass protection, manufacture hosted failures, or rewrite frozen task bases.
       task_id: "202608271538-T21JCA"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 11
     schema_version: 1
-    updated_at: "2026-08-27T15:55:49.603Z"
+    updated_at: "2026-08-27T16:00:43.171Z"
     work_items:
       recover-green-behind:
         attempt: 1
@@ -682,11 +735,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608271538-T21JCA"
+      legacy-finish:202608271538-T21JCA:2026-08-27T15:55:41.958Z:da64f2d0ea907c7f18a113743f731db104b0d564:
+        aggregate_digest: "sha256:7e7eb66cb2a872cfd3091353d0f44787aa7d036ccf571b076e20c2137fd1f754"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-27T16:00:43.171Z"
+          cause_refs:
+            - "task-verification:202608271538-T21JCA"
+            - "git:da64f2d0ea907c7f18a113743f731db104b0d564"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_cedbbc7d9be0b2e4504783ad"
+          mutation_id: "legacy-finish:202608271538-T21JCA:2026-08-27T15:55:41.958Z:da64f2d0ea907c7f18a113743f731db104b0d564"
+          plan_digest: "sha256:a140615d520f400234e42cf17067be1c08443c8cca9712aba4bfbbc7894c2994"
+          plan_revision: 1
+          repository_fingerprint: "sha256:96b00b0f547f9a8bedade8eee13d4bdad1b9788178287f6ce2a46878ca1b6ab4"
+          schema_version: 1
+          task_id: "202608271538-T21JCA"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608271538-T21JCA:2026-08-27T15:55:41.958Z:da64f2d0ea907c7f18a113743f731db104b0d564"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202608271538-T21JCA"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "da64f2d0ea907c7f18a113743f731db104b0d564"
+    message: "🚧 T21JCA task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "2c9a2f59146c302c517524136e66abb902f92ba6"
@@ -803,3 +882,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:e8fb68bb3a68fc3a75c99d2a0a54d73a39ea1b8e7279def494a27a8ad90d7517`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-27T16:00:43.171Z`
