@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:6890e8426876d6bba7b4fc683b8815712a237945a9e6324bc6447e3b660295e8",
   "pr_number": 5860,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5860",
+  "pre_merge_closure": {
+    "basis_commit": "bfbf38ac2a52e21796c78e0ea07cf5d22bd025b0",
+    "branch": "task/202608271450-TZHW4C/modernize-structured-planner-intent-fixtures",
+    "pr_number": 5860,
+    "recorded_at": "2026-08-27T16:48:47.425Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
