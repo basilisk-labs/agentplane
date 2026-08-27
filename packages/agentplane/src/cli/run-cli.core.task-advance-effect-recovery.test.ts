@@ -7,6 +7,7 @@ import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
+  digestSupervisorEpisodeValue,
   recoverSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,
@@ -832,6 +833,7 @@ describe("task advance effect recovery", () => {
       }),
     );
 
+    let executionRoot = root;
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -845,23 +847,62 @@ describe("task advance effect recovery", () => {
         root,
       ]);
       expect(code, io.stderr).toBe(0);
-      expect(JSON.parse(io.stdout)).toMatchObject({
-        action: { kind: "framework_transition" },
-        stop: { reason: "control_plane_boundary" },
+      const resumed = JSON.parse(io.stdout) as AgentPacket;
+      expect(resumed).toMatchObject({
+        action: { kind: "agent_episode" },
+        authority: { role: "EXECUTOR" },
+        stop: { reason: "semantic_boundary" },
       });
+      if (!resumed.exchange) throw new Error("expected the next execution exchange");
+      const nextWorkOrder = JSON.parse(
+        await readFile(
+          path.join(resumed.exchange.directory, resumed.exchange.work_order_ref),
+          "utf8",
+        ),
+      ) as AgentWorkOrderV2;
+      expect(nextWorkOrder).toMatchObject({
+        role: "EXECUTOR",
+        task: { id: taskId, work_item_id: "exercise-recovery" },
+      });
+      if (!nextWorkOrder.state_fingerprint.worktree) throw new Error("expected execution checkout");
+      executionRoot = nextWorkOrder.state_fingerprint.worktree;
     } finally {
       io.restore();
     }
     expect(
-      await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
+      await readFile(path.join(executionRoot, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
     ).toContain(plan);
-    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
+    const recovered = validateSupervisorExecutionEpisodeJournal(await store.read());
+    const nextOperation = recovered.operations.at(-1);
+    expect(recovered).toMatchObject({
       status: "running",
       stop: null,
-      cursor: { phase: "ready", operation_key: null },
-      usage: journal.usage,
-      operations: [{ role: "PLANNER", status: "completed" }],
+      cursor: { phase: "intent_recorded", operation_key: nextOperation?.operation_key },
+      usage: {
+        ...journal.usage,
+        agent_runs: journal.usage.agent_runs + 1,
+        episodes: journal.usage.episodes + recovered.operations.length - journal.operations.length,
+      },
     });
+    expect(
+      recovered.operations.filter((operation) => operation.kind === "agent_episode"),
+    ).toMatchObject([
+      {
+        role: "PLANNER",
+        status: "completed",
+        operation_key: journal.operations[0]?.operation_key,
+        work_order_ref: journal.operations[0]?.work_order_ref,
+        result_digest: digestSupervisorEpisodeValue({
+          work_order_id: exchange.work_order_id,
+          semantic_status: envelope.result.status,
+          result_digest: externalAgentResultDigest(envelope),
+        }),
+      },
+      { role: "EXECUTOR", status: "intent", result_digest: null },
+    ]);
+    expect(
+      JSON.parse(await readFile(path.join(issued.exchange.directory, "exchange.json"), "utf8")),
+    ).toMatchObject({ status: "consumed", result_digest: externalAgentResultDigest(envelope) });
   });
 
   it("rejects a late planning result when a different plan awaits approval", async () => {

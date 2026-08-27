@@ -12,8 +12,8 @@ Created: 2026-08-27T15:46:45.984Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads --maxWorkers=1
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,11 @@ Created: 2026-08-27T15:46:45.984Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...n-cli.core.task-advance-effect-recovery.test.ts | 74 ++++++++++++++--------
- .../cli/task-advance-effect-recovery.testkit.ts    | 64 +++++++++++++++++++
- 2 files changed, 112 insertions(+), 26 deletions(-)
+ ...n-cli.core.task-advance-effect-recovery.test.ts | 131 +++++++++++++-----
+ .../cli/task-advance-effect-recovery.testkit.ts    |  64 +++++++++
+ .../task/external-agent-planning-authority.test.ts | 151 +++++++++++++++++++++
+ .../task/external-agent-planning-authority.ts      |   4 +-
+ 4 files changed, 315 insertions(+), 35 deletions(-)
 ```
 
 </details>
