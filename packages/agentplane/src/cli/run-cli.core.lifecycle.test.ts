@@ -39,6 +39,7 @@ import {
   runCliSilent,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
+  mkGitRepoRootWithCommit,
   mkTempDir,
   pathExists,
   stageGitignoreIfPresent,
@@ -137,7 +138,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
   });
 
   it("start reads structured comment bodies from files", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
     const ioNew = captureStdIO();
@@ -191,7 +192,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
   });
 
   it("start accepts --commit-require-clean flag without commit-from-comment", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
     const ioNew = captureStdIO();
@@ -267,7 +268,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
   });
 
   it("start rejects comments without the required prefix", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
     const ioNew = captureStdIO();
@@ -319,7 +320,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
   });
 
   it("start rejects comments that are too short", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
     const ioNew = captureStdIO();
