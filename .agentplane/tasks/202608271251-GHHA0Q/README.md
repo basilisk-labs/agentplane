@@ -4,7 +4,7 @@ title: "Replace obsolete CLI test expectations with architecture-aligned contrac
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -26,6 +26,39 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-27T13:27:08.282Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 8 typed finding(s)."
+  evaluated_sha: "54ed013b9e52173795ee80b5acdb7b47913b8b4b"
+  blueprint_digest: "f1b26b57f079cbc23ac19906eea9e1d366ecf04d70a161651377eaada92ae52b"
+  evidence_refs:
+    - ".agentplane/tasks/202608271251-GHHA0Q/quality/20260827-132550152-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608271251-GHHA0Q/quality/20260827-132550152-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608271251-GHHA0Q/quality/objects/sha256/5f1761b308e3fa79606d64298d038aa48eed248df8f75002c32bf6175b74a26f.md"
+    - ".agentplane/tasks/202608271251-GHHA0Q/quality/20260827-132550152-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608271251-GHHA0Q/quality/20260827-132550152-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608271251-GHHA0Q/quality/20260827-132550152-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608271251-GHHA0Q/README.md"
+    - ".agentplane/tasks/202608271251-GHHA0Q/quality/objects/sha256/87363b64dfbbc8acb0a0e1d49c8a00c932eb1f73b80583339c6e83f8490049d8.patch"
+    - ".agentplane/tasks/202608271251-GHHA0Q/quality/objects/sha256/9ee81d006aad7410d4eabee9de9e480cf2cd79d61bd1335ade9707d04079fb6f.json"
+    - ".agentplane/tasks/202608271251-GHHA0Q/verification/20260827132532555-956f74b4ae404852.json"
+    - ".agentplane/tasks/202608271251-GHHA0Q/quality/objects/sha256/655d50e79cbbfa8962590054cf5fa3edbb0455a549a7ebf14ff0e4491251ee69.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The help snapshot now matches the existing public route enum/default, and explicit positive and negative assertions keep the removed repository default from returning unnoticed."
+    - "The worktree fixtures now obtain an actual structured PLANNER proposal and assert explicit fixture approval before requiring EXECUTOR scoped-write packets. They do not relabel a planner packet as execution to make the test pass."
+    - "Replacing an internal transition hash formula and a fixed preliminary operation count preserves the meaningful constraints: packet/exchange identity, task and role, purpose, exact checkout, frozen HEAD, one pending journal intent bound to the work order and fingerprint, prior completed operations, unique operation keys and no-mutation observation/recovery paths."
+    - "The recovery fixture's deterministic ci:local:full script checks the intended payload in its temporary repository. It does not modify project CI; recipe runtime artifacts are excluded consistently with the other injected harness runtime artifacts."
+    - "Prompt beforeEach hooks establish deterministic input mode; afterEach retains environment restoration. Existing explicit plain-mode, interactive TTY, cancellation and cached-loader assertions are unchanged. Both inherited-environment variants pass."
+    - "Frozen verification records bind the passing scoped tests and full ci:local:full to implementation SHA 54ed013b9e52173795ee80b5acdb7b47913b8b4b. Production source, policy, workflows, release files and roadmap dependencies are absent from the frozen implementation diff."
+    - "Residual risk: Two local structured-plan fixture builders duplicate schema setup; future shared testkit modernization should consolidate them within its own approved scope."
+    - "Residual risk: The old broad failure inventory must be rerun before claiming a remaining failure count or 0.7.8 readiness."
 execution_route:
   frozen: true
   reason_codes:
