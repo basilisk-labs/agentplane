@@ -6,6 +6,7 @@ import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
   mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   registerAgentplaneHome,
   silenceStdIO,
   writeDefaultConfig,
@@ -101,7 +102,7 @@ describe("runCli", () => {
   });
 
   it("verify records ok result and prints a status summary", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
     const ioTask = captureStdIO();
@@ -140,7 +141,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
+      expect(code, io.stderr).toBe(0);
       expect(io.stdout).toContain(`✅ verified ${taskId} (state=ok`);
       expect(io.stdout).toContain(`readme=.agentplane/tasks/${taskId}/README.md`);
     } finally {
@@ -154,7 +155,7 @@ describe("runCli", () => {
   });
 
   it("verify accepts --local-only without a structured finding", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
     const ioTask = captureStdIO();
@@ -203,7 +204,7 @@ describe("runCli", () => {
   });
 
   it("verify supports --note-file and normalizes it to a single line", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
     const ioTask = captureStdIO();
@@ -257,7 +258,7 @@ describe("runCli", () => {
   });
 
   it("verify supports --quiet", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
     const ioTask = captureStdIO();
@@ -357,7 +358,7 @@ describe("runCli", () => {
   });
 
   it("task verify ok writes record", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
     const ioTask = captureStdIO();
@@ -406,7 +407,7 @@ describe("runCli", () => {
   });
 
   it("task verify ok supports --note-file", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
     const ioTask = captureStdIO();

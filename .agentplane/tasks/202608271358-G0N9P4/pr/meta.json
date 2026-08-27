@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608271358-G0N9P4/repair-verification-fixtures-on-integrated-main",
+  "created_at": "2026-08-27T13:59:57.996Z",
+  "diffstat_sha256": "sha256:5592ee0d12cf4db4e1e32a4072cac2487f306bfc32ebaa4f25b8af0c065b77a5",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608271358-G0N9P4",
+  "updated_at": "2026-08-27T13:59:57.996Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
