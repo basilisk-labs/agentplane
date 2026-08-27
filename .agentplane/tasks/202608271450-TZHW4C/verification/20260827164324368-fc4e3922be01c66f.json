@@ -1,0 +1,116 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271450-TZHW4C Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2\nResult: pass\nEvidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608271450-TZHW4C Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271450-TZHW4C Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2\nResult: pass\nEvidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608271450-TZHW4C Verification Contract check critical_paths (2/2)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271450-TZHW4C Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271450-TZHW4C Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2\nResult: pass\nEvidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608271450-TZHW4C Verification Contract check task_outcome (2/2)",
+  "digest": "sha256:fc4e3922be01c66fc2690fb18f9d34d0fcfac8c2410c1ca3f818be5980c414a0",
+  "implementation_sha": "5d196df119a9335cc606237716455b7487db4e1c",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:15f0d18d3127f0174741b0a0807bbd2a7dfc8d299539d4c0fdcc44b0a9530ebb",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:7f3086a4c3578339f7633c6fa5a30a7576236fbbfee64da724821e684d3b81a4",
+      "digest": "sha256:bbdf2d5fe56b41ea033217a2333e0b4bdce7dc6b9fa9cbbd5abe2845099dac92",
+      "references": [
+        {
+          "digest": "sha256:0f34f77d15ab3446461c69da2945e8cb59151ef01a5d9abf8ca9065722d29e48",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:0f34f77d15ab3446461c69da2945e8cb59151ef01a5d9abf8ca9065722d29e48",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "5fce04a8be14816be4cae236d2941dff7045e214",
+      "digest": "sha256:6c6e93b9e5a2e491c71aee2e1298acc243c1366e6d7416f3b4f7863dc6909deb",
+      "primary_task_id": "202608271450-TZHW4C",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608271450-TZHW4C"
+      ]
+    },
+    "implementation": {
+      "base_sha": "5fce04a8be14816be4cae236d2941dff7045e214",
+      "digest": "sha256:2313a59a471cb0f1a1f7338951d877c6c42db3f2d0531bbed6cceb0a987d9c1b",
+      "strategy": "branch_diff",
+      "target_sha": "5d196df119a9335cc606237716455b7487db4e1c"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:ca384f1882c03f4ad1cf70b82ebe7c79fb965880bf1c9f9f37272aa3c0129c3d",
+    "verify_steps_digest": "sha256:0db33f0096755e0c22a0fb223818208899e7981aa3a270aa7f35dbea3a43773c"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-27T16:43:24.368Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2. Expected: both suites pass without skipped tests; explicit approval, network and forbidden effects, missing intent, route selection and exact bases remain asserted.\n2. Run ESLint, Prettier and git diff --check on the three files. Expected: no errors and unchanged hotspot baseline.\n3. Run bun run ci:local:full. Expected: mandatory full CI passes.\n4. Review the diff. Expected: only three approved fixture files change; no product behavior, global helper semantics, CI gates, policy or release graph changes.\n5. Require hosted exact-head checks and supported integration before closure.",
+  "scope_digest": "sha256:0db33f0096755e0c22a0fb223818208899e7981aa3a270aa7f35dbea3a43773c",
+  "task_id": "202608271450-TZHW4C",
+  "verification_command": "agentplane verify 202608271450-TZHW4C --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

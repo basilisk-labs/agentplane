@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608271520-175BQX-0c3a740f5045d585fded740f",
+  "prepared_at": "2026-08-27T16:34:17.019Z",
+  "task": {
+    "id": "202608271520-175BQX",
+    "revision": 9,
+    "objective": "Modernize route-decision fixture prerequisites\n\nRepair 29 freshly reproduced failures in seven route-decision CLI suites on main 2c9a2f59146c302c517524136e66abb902f92ba6. Provide real Git execution bases before task creation and structured semantic planning prerequisites for downstream routing scenarios. Add one narrowly scoped route-decision.testkit.ts helper if needed to submit real PLANNER results through the existing exchange. Preserve exact approval and provider boundaries, local-only versus remote evidence, quality freshness, semantic changes versus lifecycle-only commits, batch ownership, direct terminal routing, and no-provider-call assertions. Preserve planning-first negative scenarios. Do not relabel downstream safety expectations as planning failures. No production behavior, global fixture helper semantics, CI gates, timeouts, policy, release state or roadmap dependency changes. Require all scoped tests, lint, formatting, unchanged oversized-test baseline and full CI. This scope is disjoint from current fixture repairs.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts --pool=threads --maxWorkers=2",
+      "- In scope: Repair 29 freshly reproduced failures in seven route-decision CLI suites on main 2c9a2f59146c302c517524136e66abb902f92ba6. Provide real Git execution bases before task creation and structured semantic planning prerequisites for downstream routing scenarios. Add one narrowly scoped route-decision.testkit.ts helper if needed to submit real PLANNER results through the existing exchange. Preserve exact approval and provider boundaries, local-only versus remote evidence, quality freshness, semantic changes versus lifecycle-only commits, batch ownership, direct terminal routing, and no-provider-call assertions. Preserve planning-first negative scenarios. Do not relabel downstream safety expectations as planning failures. No production behavior, global fixture helper semantics, CI gates, timeouts, policy, release state or roadmap dependency changes. Require all scoped tests, lint, formatting, unchanged oversized-test baseline and full CI. This scope is disjoint from current fixture repairs.\n- Out of scope: unrelated refactors not required for \"Modernize route-decision fixture prerequisites\".",
+      "Repair the seven route-decision suites with real Git execution bases and actual structured planning prerequisites. Use one local test-only helper for the planning exchange. Preserve downstream routing assertions, negative planning precedence, exact authority, provider confidence and evidence freshness. Run all scoped tests, lint, formatting and full CI. Do not change product behavior, global helpers, gates, policy or the release roadmap.",
+      "1. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts --pool=threads --maxWorkers=2. Expected: all seven suites pass without skipped tests; exact routing, authority, provider confidence, freshness and batch ownership contracts remain covered.\n2. Run ESLint, Prettier, git diff --check and node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000. Expected: no errors or baseline growth.\n3. Run bun run ci:local:full. Expected: all mandatory groups pass.\n4. Review the diff. Expected: the seven approved tests and one route-decision.testkit.ts helper only; real planning fixtures, no weakened gates, no production or global helper changes.\n5. Require hosted exact-head checks and supported integration before closure."
+    ]
+  },
+  "evaluated_sha": "da6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc",
+  "diff_base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+  "blueprint_digest": "571a2372fccb43736231c69f80518c18c9cfe9e008de98c0ab35218156886553",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608271520-175BQX/quality/20260827-163417019-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:2ed336fb4b4c4defd2dfcbdef06b1b2ef8bb4afcc46cf721fa9d7145dc719fff",
+    "prompt_path": ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/cfcdcb5435bc36040568a2bd28a1a5c734c0b2fe8cc3b738c45514cc0aefe561.md",
+    "result_schema_path": ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608271520-175BQX/README.md",
+      "sha256": "sha256:92939e436a3919ff0ec31c7bfa542be13c641ef0b7f5e40acda97440d8bd9584",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/3df5f4f1f353a441910c5898702f18d37f00971bf3cad8e11319d03103ab1c56.patch",
+      "sha256": "sha256:3df5f4f1f353a441910c5898702f18d37f00971bf3cad8e11319d03103ab1c56",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/aadfab4fb644761f23c0e128c6d090eb8b31d8787d9b2a201c93e5e10f1e03fe.json",
+      "sha256": "sha256:aadfab4fb644761f23c0e128c6d090eb8b31d8787d9b2a201c93e5e10f1e03fe",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608271520-175BQX/verification/20260827163359452-f5a7fe6f4992aa43.json",
+      "sha256": "sha256:cf0ade3b860b2b845281b866cf31271c91fd36f0e782651a3783b08baddabf6b",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/a288575b74937de29ef9e860b24bcdc61f3191f48df33fc132a601fd7072e7e6.json",
+      "sha256": "sha256:a288575b74937de29ef9e860b24bcdc61f3191f48df33fc132a601fd7072e7e6",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

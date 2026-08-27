@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The frozen diff changes only seven approved CLI test files and one250-line local helper. Existing global helpers, production routing, CI gates and timeout values are unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/3df5f4f1f353a441910c5898702f18d37f00971bf3cad8e11319d03103ab1c56.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The helper submits the actual issued PLANNER proposal and uses the exact resume arguments before explicit fixture USER approval. It preserves the task verification commands and configured direct/branch mode.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/3df5f4f1f353a441910c5898702f18d37f00971bf3cad8e11319d03103ab1c56.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Verification fixture details are generated from the actual reconciled execution contract, explicitly exclude hosted integration and identify themselves as isolated fixture evidence. Verification calls now assert success instead of silently ignoring errors.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/3df5f4f1f353a441910c5898702f18d37f00971bf3cad8e11319d03103ab1c56.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Batch-extension fixture mutation now merges parsed extensions rather than introducing duplicate YAML keys that could overwrite structured planning state. Direct-closeout and verification-freshness fixtures record the required evaluator review before testing downstream routes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/3df5f4f1f353a441910c5898702f18d37f00971bf3cad8e11319d03103ab1c56.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "All existing downstream route expectations remain: provider confidence and no-default-provider-call checks, planning precedence, stale semantic verification versus lifecycle-only changes, direct terminal routes and explicit batch ownership.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/3df5f4f1f353a441910c5898702f18d37f00971bf3cad8e11319d03103ab1c56.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Frozen verification20260827163359452-f5a7fe6f4992aa43 binds implementationda6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc to full CI525884ms and32/32 focused tests44146ms. No skipped tests or baseline expansion is reported.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/3df5f4f1f353a441910c5898702f18d37f00971bf3cad8e11319d03103ab1c56.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted exact-head checks and supported integration remain uncompleted; passing fixture tests are not release qualification.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271520-175BQX/quality/objects/sha256/3df5f4f1f353a441910c5898702f18d37f00971bf3cad8e11319d03103ab1c56.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

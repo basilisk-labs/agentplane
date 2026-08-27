@@ -1,0 +1,101 @@
+{
+  "details": null,
+  "digest": "sha256:63965a85298089d82ef70a94dcc16b3488ab8c62d6ec8d36771066ba2412cd10",
+  "implementation_sha": "da64f2d0ea907c7f18a113743f731db104b0d564",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:955ca6767ba29b354cacd0fd0e19005562937fcd57bfc0e3a4b2bbbf1516af9b",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+      "digest": "sha256:9525a07f348b3cdc6fa9023563d761474545cdd270c1a0498d6f8d1ef1f1cf7c",
+      "primary_task_id": "202608271538-T21JCA",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608271538-T21JCA"
+      ]
+    },
+    "implementation": {
+      "base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+      "digest": "sha256:2b85bac23ed986f2b275b20ce70061fb1cd8bb229a66f2057806d1a3adc80af1",
+      "strategy": "branch_diff",
+      "target_sha": "da64f2d0ea907c7f18a113743f731db104b0d564"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:bd37bb7bf5c5ff66b106f43e65d497b5ef387d0b76bae82b472c9aaf78a38663",
+    "verify_steps_digest": "sha256:c7f40471aab7f29cb33117fa69b09c04daf0ab903aa1dd9b971374c6efdb5765"
+  },
+  "kind": "task_verification_record",
+  "note": "Needs rework: PR5856 review PRRT_kwDORCLmJM6c4qDW is confirmed by provider-update-branch.ts, branch-task-supervisor-operations.ts, head-publication.ts and branch-publication.ts. The successful hosted update leaves the local task branch stale, so the subsequent publish route can overwrite the provider head. Existing local and hosted checks passed but do not cover update-to-next-route continuity. Preserve their evidence. Prepare a bounded material replan for safe local reconciliation and end-to-end regression coverage before integration.",
+  "recorded_at": "2026-08-27T16:30:17.204Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:c7f40471aab7f29cb33117fa69b09c04daf0ab903aa1dd9b971374c6efdb5765",
+  "task_id": "202608271538-T21JCA",
+  "verification_command": "agentplane task verify rework 202608271538-T21JCA --rework --by REVIEWER",
+  "verifier": "REVIEWER"
+}

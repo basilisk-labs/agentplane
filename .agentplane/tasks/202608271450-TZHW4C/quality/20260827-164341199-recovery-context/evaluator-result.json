@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The frozen diff changes only the two approved suites and their local helper. No product, shared testkit, policy, CI gate or task graph changes are present.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/68302d9b5aaca3ffd777ed8c0b0c11a4f0141aa08562b9d28cc3bc9a3075ecfc.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Structured TaskPlanProposal uses the issued repository_snapshot, bounded declared scope, actual task checks, validation criteria and path claims. Missing-intent cases still omit proposals; executor and evaluator roles cannot emit proposals through this helper.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/68302d9b5aaca3ffd777ed8c0b0c11a4f0141aa08562b9d28cc3bc9a3075ecfc.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Execution fixtures commit their prerequisites before planning instead of changing the planning baseline after approval. Existing runtime ignore rules are preserved. The isolated fixture CI validates actual output content.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/68302d9b5aaca3ffd777ed8c0b0c11a4f0141aa08562b9d28cc3bc9a3075ecfc.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Explicit user approval, network boundary, forbidden deployment/destructive effects, routing, preservation and exact-base assertions are retained. EVALUATOR role assertions are strengthened with diagnostics rather than removed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/68302d9b5aaca3ffd777ed8c0b0c11a4f0141aa08562b9d28cc3bc9a3075ecfc.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Frozen verification20260827164324368-fc4e3922be01c66f binds implementation5d196df119a9335cc606237716455b7487db4e1c to full CI499181ms and11 scoped tests27035ms. The earlier failed full-CI evidence is preserved; fresh serial verification passed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/68302d9b5aaca3ffd777ed8c0b0c11a4f0141aa08562b9d28cc3bc9a3075ecfc.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: The local fixture CI proves fixture output only; it does not stand in for product CI or hosted qualification.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/68302d9b5aaca3ffd777ed8c0b0c11a4f0141aa08562b9d28cc3bc9a3075ecfc.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: The earlier unrelated runtime timeout remains historical failed evidence and was not suppressed by a test or timeout change.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/68302d9b5aaca3ffd777ed8c0b0c11a4f0141aa08562b9d28cc3bc9a3075ecfc.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

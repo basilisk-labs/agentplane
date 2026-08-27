@@ -1,0 +1,99 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 2c9a2f59146c302c517524136e66abb902f92ba6..56e4367136dd17997ced56fe2de81990e06cdb2a",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2c9a2f59146c302c517524136e66abb902f92ba6..56e4367136dd17997ced56fe2de81990e06cdb2a",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202608271649-DVNTRR/README.md",
+        "A\t.agentplane/tasks/202608271649-DVNTRR/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202608271649-DVNTRR/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202608271649-DVNTRR/pr/github-body.md",
+        "A\t.agentplane/tasks/202608271649-DVNTRR/pr/github-title.txt",
+        "A\t.agentplane/tasks/202608271649-DVNTRR/pr/meta.json",
+        "A\t.agentplane/tasks/202608271649-DVNTRR/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-handoff.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-routing.test.ts",
+        "A\tpackages/agentplane/src/cli/task-continuity.testkit.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "2c9a2f59146c302c517524136e66abb902f92ba6",
+  "implementation_commit": "56e4367136dd17997ced56fe2de81990e06cdb2a",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202608271649-DVNTRR/README.md",
+      "?? .agentplane/tasks/202608271649-DVNTRR/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202608271649-DVNTRR/pr/diffstat.txt",
+      "?? .agentplane/tasks/202608271649-DVNTRR/pr/github-body.md",
+      "?? .agentplane/tasks/202608271649-DVNTRR/pr/github-title.txt",
+      "?? .agentplane/tasks/202608271649-DVNTRR/pr/meta.json",
+      "?? .agentplane/tasks/202608271649-DVNTRR/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608271649-DVNTRR/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608271649-DVNTRR/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608271649-DVNTRR/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608271649-DVNTRR/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608271649-DVNTRR/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608271649-DVNTRR/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608271649-DVNTRR/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202608271649-DVNTRR/README.md",
+      "?? .agentplane/tasks/202608271649-DVNTRR/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202608271649-DVNTRR/pr/diffstat.txt",
+      "?? .agentplane/tasks/202608271649-DVNTRR/pr/github-body.md",
+      "?? .agentplane/tasks/202608271649-DVNTRR/pr/github-title.txt",
+      "?? .agentplane/tasks/202608271649-DVNTRR/pr/meta.json",
+      "?? .agentplane/tasks/202608271649-DVNTRR/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608271649-DVNTRR"
+}

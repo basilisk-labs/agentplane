@@ -1,0 +1,918 @@
+diff --git a/packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts b/packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts
+new file mode 100644
+index 000000000..b67645d50
+--- /dev/null
++++ b/packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts
+@@ -0,0 +1,241 @@
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { mkdtemp, readFile, rename, rm, writeFile } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++import { execFileAsync } from "@agentplaneorg/core/process";
++import { gitEnv } from "@agentplaneorg/core/git";
++import { updateProviderBranch } from "./provider-update-branch.js";
++import { resolvePrHeadPublicationStatus } from "./head-publication.js";
++import { reconcileProviderUpdateLocalHead } from "./provider-update-branch-local.js";
++import type { ObservedChangeRequest } from "./internal/change-request-model.js";
++
++const mocks = vi.hoisted(() => ({
++  observe: vi.fn(),
++  api: vi.fn<(cwd: string, args: string[]) => Promise<unknown>>(),
++}));
++vi.mock("./internal/change-request-provider.js", () => ({
++  observeExistingChangeRequestByNumber: mocks.observe,
++}));
++vi.mock("./internal/gh-api.js", () => ({ runGhApiJson: mocks.api }));
++
++const directories: string[] = [];
++async function git(cwd: string, ...args: string[]) {
++  const result = await execFileAsync("git", args, { cwd, env: gitEnv() });
++  return result.stdout.trim();
++}
++
++async function fixture() {
++  const directory = await mkdtemp(path.join(os.tmpdir(), "agentplane-provider-local-"));
++  directories.push(directory);
++  const root = path.join(directory, "task");
++  const remote = path.join(directory, "remote.git");
++  const provider = path.join(directory, "provider");
++  await git(directory, "init", "-b", "main", root);
++  await git(root, "config", "user.name", "Fixture");
++  await git(root, "config", "user.email", "fixture@example.invalid");
++  await writeFile(path.join(root, "base.txt"), "base\n");
++  await git(root, "add", ".");
++  await git(root, "commit", "-m", "seed base");
++  const branch = "task/T-1/update";
++  await git(root, "checkout", "-b", branch);
++  await writeFile(path.join(root, "task.txt"), "task\n");
++  await git(root, "add", ".");
++  await git(root, "commit", "-m", "task implementation");
++  const oldHead = await git(root, "rev-parse", "HEAD");
++  await git(directory, "clone", "--bare", root, remote);
++  await git(root, "remote", "add", "origin", remote);
++  await git(root, "push", "-u", "origin", branch);
++  await git(directory, "clone", remote, provider);
++  await git(provider, "config", "user.name", "Fixture");
++  await git(provider, "config", "user.email", "fixture@example.invalid");
++  await git(provider, "checkout", "main");
++  await writeFile(path.join(provider, "base.txt"), "advanced base\n");
++  await git(provider, "commit", "-am", "advance base");
++  const baseHead = await git(provider, "rev-parse", "HEAD");
++  await git(provider, "push", "origin", "main");
++  await git(provider, "checkout", branch);
++  await git(provider, "merge", "--no-ff", "main", "-m", "provider update");
++  const newHead = await git(provider, "rev-parse", "HEAD");
++  await git(provider, "push", "origin", branch);
++  const identity = {
++    provider: "github" as const,
++    hostname: "github.com",
++    remote: "origin",
++    sourceProject: "owner/repo",
++    targetProject: "owner/repo",
++    sourceUrl: remote,
++    targetUrl: remote,
++  };
++  const request = {
++    gitRoot: root,
++    identity,
++    prNumber: 42,
++    branch,
++    baseBranch: "main",
++    expectedHeadSha: oldHead,
++    expectedBaseSha: baseHead,
++  };
++  const observed = (headSha: string): ObservedChangeRequest => ({
++    provider: "github",
++    identity,
++    prNumber: 42,
++    prUrl: "https://github.com/owner/repo/pull/42",
++    status: "OPEN",
++    mergedAt: null,
++    mergeCommit: null,
++    base: "main",
++    baseSha: baseHead,
++    headSha,
++    headRef: branch,
++    mergeability: { state: "not_conflicting", mergeable: true, providerState: "behind" },
++  });
++  mocks.api.mockImplementation(async (cwd: string, args: string[]) => {
++    if (args.includes("PUT")) return {};
++    const ancestor = args[0]!.split("/compare/")[1]!.split("...")[0]!;
++    expect(await git(cwd === root ? provider : cwd, "merge-base", ancestor, newHead)).toBe(
++      ancestor,
++    );
++    return {
++      status: "ahead",
++      base_commit: { sha: ancestor },
++      merge_base_commit: { sha: ancestor },
++    };
++  });
++  return { root, remote, provider, branch, oldHead, baseHead, newHead, request, observed };
++}
++
++describe("provider update local continuity", () => {
++  beforeEach(() => {
++    vi.resetAllMocks();
++  });
++  afterEach(async () => {
++    await Promise.all(
++      directories.splice(0).map((directory) => rm(directory, { recursive: true, force: true })),
++    );
++  });
++
++  it.each(["applied", "reconciled"] as const)(
++    "leaves the next publication route aligned after an %s update",
++    async (effect) => {
++      const f = await fixture();
++      if (effect === "applied")
++        mocks.observe.mockResolvedValueOnce({ state: "found", pr: f.observed(f.oldHead) });
++      mocks.observe.mockResolvedValue({ state: "found", pr: f.observed(f.newHead) });
++      expect(await git(f.root, "rev-parse", "HEAD")).toBe(f.oldHead);
++      expect(await updateProviderBranch(f.request)).toMatchObject({ state: "updated", effect });
++      const head = await git(f.root, "rev-parse", "HEAD");
++      expect(head).toBe(f.newHead);
++      expect(await git(f.root, "rev-parse", "@{upstream}")).toBe(f.newHead);
++      expect(await readFile(path.join(f.root, "base.txt"), "utf8")).toBe("advanced base\n");
++      expect(
++        await resolvePrHeadPublicationStatus({
++          gitRoot: f.root,
++          branch: f.branch,
++          localHeadSha: head,
++          providerObservation: { state: "found", headSha: f.newHead },
++        }),
++      ).toMatchObject({ state: "aligned" });
++      expect(mocks.api.mock.calls.filter(([, args]) => args.includes("PUT"))).toHaveLength(
++        effect === "applied" ? 1 : 0,
++      );
++    },
++  );
++
++  it("preserves dirty work and performs no provider mutation", async () => {
++    const f = await fixture();
++    await writeFile(path.join(f.root, "task.txt"), "uncommitted user work\n");
++    mocks.observe.mockResolvedValue({ state: "found", pr: f.observed(f.oldHead) });
++    expect(await updateProviderBranch(f.request)).toMatchObject({ state: "not_applied" });
++    expect(mocks.api).not.toHaveBeenCalled();
++    expect(await git(f.root, "rev-parse", "HEAD")).toBe(f.oldHead);
++    expect(await readFile(path.join(f.root, "task.txt"), "utf8")).toBe("uncommitted user work\n");
++  });
++
++  it.each(["untracked", "staged", "branch", "head", "remote", "upstream"])(
++    "rejects local %s drift before the provider mutation",
++    async (drift) => {
++      const f = await fixture();
++      if (drift === "untracked" || drift === "staged") {
++        await writeFile(path.join(f.root, "user.txt"), "preserve\n");
++        if (drift === "staged") await git(f.root, "add", "user.txt");
++      }
++      if (drift === "branch") await git(f.root, "checkout", "-b", "other-work");
++      if (drift === "head") await git(f.root, "commit", "--allow-empty", "-m", "concurrent work");
++      if (drift === "remote")
++        await git(f.root, "remote", "set-url", "--push", "origin", f.provider);
++      if (drift === "upstream")
++        await git(f.root, "config", `branch.${f.branch}.merge`, "refs/heads/main");
++      const beforeHead = await git(f.root, "rev-parse", "HEAD");
++      const beforeStatus = await git(f.root, "status", "--porcelain", "--untracked-files=all");
++      mocks.observe.mockResolvedValue({ state: "found", pr: f.observed(f.oldHead) });
++      expect(await updateProviderBranch(f.request)).toMatchObject({
++        state: "not_applied",
++        reason: "local_state_unavailable",
++      });
++      expect(mocks.api).not.toHaveBeenCalled();
++      expect(await git(f.root, "rev-parse", "HEAD")).toBe(beforeHead);
++      expect(await git(f.root, "status", "--porcelain", "--untracked-files=all")).toBe(
++        beforeStatus,
++      );
++    },
++  );
++
++  it("can repeat local reconciliation after an interrupted successful fast-forward", async () => {
++    const f = await fixture();
++    expect(await reconcileProviderUpdateLocalHead(f.request, f.newHead)).toBeNull();
++    mocks.observe.mockResolvedValue({ state: "found", pr: f.observed(f.newHead) });
++    expect(await updateProviderBranch(f.request)).toMatchObject({
++      state: "updated",
++      effect: "reconciled",
++    });
++    expect(mocks.api.mock.calls.filter(([, args]) => args.includes("PUT"))).toHaveLength(0);
++    expect(await git(f.root, "rev-parse", "HEAD")).toBe(f.newHead);
++  });
++
++  it("preserves local changes introduced while the provider operation runs", async () => {
++    const f = await fixture();
++    mocks.observe
++      .mockResolvedValueOnce({ state: "found", pr: f.observed(f.oldHead) })
++      .mockResolvedValue({ state: "found", pr: f.observed(f.newHead) });
++    const api = mocks.api.getMockImplementation()!;
++    mocks.api.mockImplementation(async (cwd, args) => {
++      if (args.includes("PUT")) await writeFile(path.join(f.root, "task.txt"), "concurrent edit\n");
++      return api(cwd, args);
++    });
++    expect(await updateProviderBranch(f.request)).toMatchObject({ state: "effect_in_doubt" });
++    expect(await git(f.root, "rev-parse", "HEAD")).toBe(f.oldHead);
++    expect(await readFile(path.join(f.root, "task.txt"), "utf8")).toBe("concurrent edit\n");
++  });
++
++  it("does not adopt a remote head that moved after provider proof", async () => {
++    const f = await fixture();
++    await git(f.provider, "commit", "--allow-empty", "-m", "remote race");
++    await git(f.provider, "push", "origin", f.branch);
++    expect(await reconcileProviderUpdateLocalHead(f.request, f.newHead)).toContain(
++      "does not match",
++    );
++    expect(await git(f.root, "rev-parse", "HEAD")).toBe(f.oldHead);
++  });
++
++  it("stops on fetch failure without advancing local history", async () => {
++    const f = await fixture();
++    await rename(f.remote, `${f.remote}.unavailable`);
++    expect(await reconcileProviderUpdateLocalHead(f.request, f.newHead)).toContain("failed");
++    expect(await git(f.root, "rev-parse", "HEAD")).toBe(f.oldHead);
++  });
++
++  it("does not overwrite ignored local files during fast-forward", async () => {
++    const f = await fixture();
++    await writeFile(path.join(f.provider, "generated.txt"), "incoming tracked data\n");
++    await git(f.provider, "add", "generated.txt");
++    await git(f.provider, "commit", "-m", "track generated data");
++    await git(f.provider, "push", "origin", f.branch);
++    const head = await git(f.provider, "rev-parse", "HEAD");
++    await writeFile(path.join(f.root, ".git", "info", "exclude"), "generated.txt\n");
++    await writeFile(path.join(f.root, "generated.txt"), "ignored user data\n");
++    expect(await git(f.root, "status", "--porcelain")).toBe("");
++    expect(await reconcileProviderUpdateLocalHead(f.request, head)).toContain("failed");
++    expect(await git(f.root, "rev-parse", "HEAD")).toBe(f.oldHead);
++    expect(await readFile(path.join(f.root, "generated.txt"), "utf8")).toBe("ignored user data\n");
++  });
++});
+diff --git a/packages/agentplane/src/commands/pr/provider-update-branch-local.ts b/packages/agentplane/src/commands/pr/provider-update-branch-local.ts
+new file mode 100644
+index 000000000..b3e68412b
+--- /dev/null
++++ b/packages/agentplane/src/commands/pr/provider-update-branch-local.ts
+@@ -0,0 +1,89 @@
++import { execFileAsync } from "@agentplaneorg/core/process";
++import { gitEnv, gitProofEnv } from "@agentplaneorg/core/git";
++import type { ProviderUpdateBranchRequest } from "./provider-update-branch.js";
++
++async function git(cwd: string, args: string[], proof = false): Promise<string> {
++  const { stdout } = await execFileAsync("git", args, {
++    cwd,
++    env: proof ? gitProofEnv() : gitEnv(),
++  });
++  return stdout.trim();
++}
++
++function checkout(request: ProviderUpdateBranchRequest): string {
++  return request.worktreePath ?? request.gitRoot;
++}
++
++function trackingRef(request: ProviderUpdateBranchRequest): string {
++  return `refs/remotes/${request.identity.remote}/${request.branch}`;
++}
++
++/** Validate only. No local or provider mutation is permitted before this succeeds. */
++export async function validateProviderUpdateLocalState(
++  request: ProviderUpdateBranchRequest,
++  allowedHeads: readonly string[],
++): Promise<string | null> {
++  const cwd = checkout(request);
++  try {
++    await git(cwd, ["check-ref-format", `refs/heads/${request.branch}`]);
++    await git(cwd, ["check-ref-format", trackingRef(request)]);
++    const [branch, head, status, upstream, fetchUrl, pushUrl] = await Promise.all([
++      git(cwd, ["symbolic-ref", "--quiet", "HEAD"]),
++      git(cwd, ["rev-parse", "--verify", "HEAD"]),
++      git(cwd, ["status", "--porcelain", "--untracked-files=all"]),
++      git(cwd, ["rev-parse", "--symbolic-full-name", "@{upstream}"]),
++      git(cwd, ["remote", "get-url", "--all", request.identity.remote]),
++      git(cwd, ["remote", "get-url", "--push", "--all", request.identity.remote]),
++    ]);
++    if (branch !== `refs/heads/${request.branch}`)
++      return "The authoritative checkout is not on the task branch.";
++    if (!allowedHeads.includes(head))
++      return "The local task head changed outside the authorized update.";
++    if (status) return "The task checkout contains uncommitted or untracked work.";
++    if (upstream !== trackingRef(request)) return "The task branch tracking identity changed.";
++    if (fetchUrl !== request.identity.targetUrl || pushUrl !== request.identity.sourceUrl) {
++      return "The task remote URLs changed after provider identity was authorized.";
++    }
++    const upstreamHead = await git(cwd, ["rev-parse", "--verify", upstream]);
++    if (!allowedHeads.includes(upstreamHead))
++      return "The task tracking head changed outside the authorized update.";
++    return null;
++  } catch {
++    return "The exact local branch, clean state or tracking identity could not be verified.";
++  }
++}
++
++/** Adopt only a provider-proven descendant. Never discard or rewrite local history. */
++export async function reconcileProviderUpdateLocalHead(
++  request: ProviderUpdateBranchRequest,
++  observedHead: string,
++): Promise<string | null> {
++  const cwd = checkout(request);
++  const allowedHeads = [request.expectedHeadSha, observedHead];
++  const before = await validateProviderUpdateLocalState(request, allowedHeads);
++  if (before) return before;
++  try {
++    // The PR head belongs to the publication source, which can differ from the base remote.
++    await git(cwd, [
++      "fetch",
++      "--no-tags",
++      "--no-write-fetch-head",
++      "--",
++      request.identity.sourceUrl,
++      `refs/heads/${request.branch}:${trackingRef(request)}`,
++    ]);
++    if ((await git(cwd, ["rev-parse", "--verify", trackingRef(request)])) !== observedHead) {
++      return "Fetched task branch does not match the ancestry-proven provider head.";
++    }
++    for (const ancestor of [request.expectedHeadSha, request.expectedBaseSha]) {
++      await git(cwd, ["merge-base", "--is-ancestor", ancestor, observedHead], true);
++    }
++    const beforeMerge = await validateProviderUpdateLocalState(request, allowedHeads);
++    if (beforeMerge) return beforeMerge;
++    await git(cwd, ["merge", "--ff-only", "--no-edit", "--no-overwrite-ignore", observedHead]);
++    const after = await validateProviderUpdateLocalState(request, [observedHead]);
++    return after;
++  } catch {
++    return "Fetching or fast-forwarding the proven provider head failed. Preserve local work and reconcile before any publication.";
++  }
++}
+diff --git a/packages/agentplane/src/commands/pr/provider-update-branch.test.ts b/packages/agentplane/src/commands/pr/provider-update-branch.test.ts
+index 257673639..6c04d435b 100644
+--- a/packages/agentplane/src/commands/pr/provider-update-branch.test.ts
++++ b/packages/agentplane/src/commands/pr/provider-update-branch.test.ts
+@@ -2,13 +2,19 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+ const mocks = vi.hoisted(() => ({
+   observeExistingChangeRequestByNumber: vi.fn(),
+-  runGhApiJson: vi.fn(),
++  runGhApiJson: vi.fn<(cwd: string, args: string[]) => Promise<unknown>>(),
++  validateLocal: vi.fn(),
++  reconcileLocal: vi.fn(),
+ }));
+ 
+ vi.mock("./internal/change-request-provider.js", () => ({
+   observeExistingChangeRequestByNumber: mocks.observeExistingChangeRequestByNumber,
+ }));
+ vi.mock("./internal/gh-api.js", () => ({ runGhApiJson: mocks.runGhApiJson }));
++vi.mock("./provider-update-branch-local.js", () => ({
++  validateProviderUpdateLocalState: mocks.validateLocal,
++  reconcileProviderUpdateLocalHead: mocks.reconcileLocal,
++}));
+ 
+ import type { ObservedChangeRequest } from "./internal/change-request-model.js";
+ import type { GitHostIdentity } from "./internal/git-host-identity.js";
+@@ -69,6 +75,8 @@ function comparison(ancestor: string) {
+ describe("provider update-branch effect", () => {
+   beforeEach(() => {
+     vi.clearAllMocks();
++    mocks.validateLocal.mockResolvedValue(null);
++    mocks.reconcileLocal.mockResolvedValue(null);
+   });
+ 
+   it("binds the GitHub mutation to the expected head and proves both ancestors", async () => {
+@@ -98,6 +106,8 @@ describe("provider update-branch effect", () => {
+       "-f",
+       `expected_head_sha=${oldHead}`,
+     ]);
++    expect(mocks.validateLocal).toHaveBeenCalledWith(request(), [oldHead, oldHead]);
++    expect(mocks.reconcileLocal).toHaveBeenCalledWith(request(), newHead);
+   });
+ 
+   it("reconciles an already-updated head without repeating the mutation", async () => {
+@@ -226,5 +236,27 @@ describe("provider update-branch effect", () => {
+       state: "effect_in_doubt",
+       reason: "readback_unproven",
+     });
++    expect(mocks.reconcileLocal).not.toHaveBeenCalled();
++  });
++
++  it("does not report success before local reconciliation succeeds", async () => {
++    mocks.observeExistingChangeRequestByNumber
++      .mockResolvedValueOnce({ state: "found", pr: observed() })
++      .mockResolvedValueOnce({ state: "found", pr: observed({ headSha: newHead }) });
++    mocks.runGhApiJson
++      .mockResolvedValueOnce({})
++      .mockResolvedValueOnce(comparison(oldHead))
++      .mockResolvedValueOnce(comparison(baseHead));
++    mocks.reconcileLocal.mockResolvedValueOnce("local state changed");
++    const result = await updateProviderBranch(request());
++    expect(result).toMatchObject({
++      state: "effect_in_doubt",
++      reason: "readback_unproven",
++    });
++    if (result.state !== "effect_in_doubt") throw new Error("expected uncertain local state");
++    expect(result.detail).toContain("local reconciliation is incomplete");
++    expect(mocks.runGhApiJson.mock.calls.filter(([, args]) => args.includes("PUT"))).toHaveLength(
++      1,
++    );
+   });
+ });
+diff --git a/packages/agentplane/src/commands/pr/provider-update-branch.ts b/packages/agentplane/src/commands/pr/provider-update-branch.ts
+index 4936e4cd5..bdac0b953 100644
+--- a/packages/agentplane/src/commands/pr/provider-update-branch.ts
++++ b/packages/agentplane/src/commands/pr/provider-update-branch.ts
+@@ -1,4 +1,8 @@
+ import { normalizeGhTransportError } from "../shared/gh-transport.js";
++import {
++  reconcileProviderUpdateLocalHead,
++  validateProviderUpdateLocalState,
++} from "./provider-update-branch-local.js";
+ 
+ import type { ObservedChangeRequest } from "./internal/change-request-model.js";
+ import { observeExistingChangeRequestByNumber } from "./internal/change-request-provider.js";
+@@ -9,6 +13,7 @@ const GIT_OBJECT_ID = /^[0-9a-f]{40,64}$/u;
+ 
+ export type ProviderUpdateBranchRequest = Readonly<{
+   gitRoot: string;
++  worktreePath?: string;
+   identity: GitHostIdentity;
+   prNumber: number;
+   branch: string;
+@@ -49,7 +54,8 @@ export type ProviderUpdateBranchResult =
+         | "branch_drift"
+         | "base_drift"
+         | "head_drift"
+-        | "conflict";
++        | "conflict"
++        | "local_state_unavailable";
+       detail: string;
+       observed: ObservedChangeRequest | null;
+     }>
+@@ -203,6 +209,15 @@ async function reconcileUpdatedHead(opts: {
+         observed: opts.observed,
+       };
+     }
++    const localFailure = await reconcileProviderUpdateLocalHead(opts.request, observedHeadSha);
++    if (localFailure) {
++      return {
++        state: "effect_in_doubt",
++        reason: "readback_unproven",
++        detail: `Hosted ancestry is proven, but local reconciliation is incomplete: ${localFailure}`,
++        observed: opts.observed,
++      };
++    }
+     return {
+       state: "updated",
+       effect: opts.effect,
+@@ -294,6 +309,18 @@ export async function updateProviderBranch(
+ 
+   const before = await observeAuthorizedPullRequest(opts);
+   if (before.state === "not_applied") return before.result;
++  const localFailure = await validateProviderUpdateLocalState(opts, [
++    opts.expectedHeadSha,
++    ...(before.observed.headSha ? [before.observed.headSha] : []),
++  ]);
++  if (localFailure) {
++    return {
++      state: "not_applied",
++      reason: "local_state_unavailable",
++      detail: localFailure,
++      observed: before.observed,
++    };
++  }
+   if (before.observed.headSha !== opts.expectedHeadSha) {
+     const reconciled = await reconcileUpdatedHead({
+       request: opts,
+diff --git a/packages/agentplane/src/commands/shared/provider-update-branch-route.ts b/packages/agentplane/src/commands/shared/provider-update-branch-route.ts
+index 86894b4b6..83b2f0311 100644
+--- a/packages/agentplane/src/commands/shared/provider-update-branch-route.ts
++++ b/packages/agentplane/src/commands/shared/provider-update-branch-route.ts
+@@ -27,12 +27,13 @@ export function providerUpdateBranchParams(
+     !prFlow.pr.base ||
+     prFlow.providerObservation?.state !== "found" ||
+     prFlow.publication?.state !== "aligned" ||
+-    !prFlow.hostedChecks.checked ||
+-    prFlow.hostedChecks.failing <= 0
++    !prFlow.hostedChecks.checked
+   ) {
+     return null;
+   }
+   const observed = prFlow.providerObservation.pr;
++  // Strict protection can require an updated branch even when its current head checks pass.
++  // The coherent provider "behind" observation, not a failed check, establishes this route.
+   const localHead = prFlow.branch.headSha;
+   const baseSha = observed.baseSha ?? "";
+   const mergeability = observed.mergeability;
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts
+index 867980121..24d9712d0 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts
+@@ -441,17 +441,111 @@ describe("DONE route quality-review target", () => {
+     );
+   });
+ 
+-  it("routes an exact aligned GitHub behind state to provider update before semantic rework", async () => {
+-    const blockers = await blockersFor(reviewedSha, undefined, failingHostedPrFlow("behind"));
++  it.each(["failing", "passing"] as const)(
++    "routes an exact aligned GitHub behind state with %s checks to provider update",
++    async (checkState) => {
++      const flow = failingHostedPrFlow("behind");
++      if (checkState === "passing") {
++        flow.hostedChecks = {
++          checked: true,
++          total: 1,
++          pending: 0,
++          failing: 0,
++          passing: 1,
++          missingRequired: [],
++          rows: [{ name: "PR verification", state: "SUCCESS" }],
++        };
++      }
++      const blockers = await blockersFor(reviewedSha, undefined, flow);
++
++      expect(blockers).toEqual(
++        expect.arrayContaining([
++          expect.objectContaining({ code: "provider_pr_update_branch_required" }),
++        ]),
++      );
++      expect(blockers).not.toEqual(
++        expect.arrayContaining([
++          expect.objectContaining({ code: "implementation_rework_required" }),
++        ]),
++      );
++    },
++  );
+ 
+-    expect(blockers).toEqual(
++  it.each([
++    [
++      "clean provider state",
++      (flow: PrFlowStatusReport) => {
++        if (flow.providerObservation?.state === "found") {
++          flow.providerObservation.pr.mergeability = {
++            state: "not_conflicting",
++            mergeable: true,
++            providerState: "clean",
++          };
++        }
++      },
++    ],
++    [
++      "unchecked hosted checks",
++      (flow: PrFlowStatusReport) => {
++        flow.hostedChecks = { checked: false, reason: "not observed" };
++      },
++    ],
++    [
++      "unpublished head",
++      (flow: PrFlowStatusReport) => {
++        flow.publication = {
++          state: "unpublished",
++          reason: "upstream_head_mismatch",
++          localHeadSha: headSha,
++          upstreamRef: "origin/task/T-1/metadata-gate",
++          upstreamHeadSha: "c".repeat(40),
++          hostedHeadSha: "c".repeat(40),
++        };
++      },
++    ],
++    [
++      "stale observed head",
++      (flow: PrFlowStatusReport) => {
++        if (flow.providerObservation?.state === "found")
++          flow.providerObservation.pr.headSha = "c".repeat(40);
++      },
++    ],
++    [
++      "missing base identity",
++      (flow: PrFlowStatusReport) => {
++        if (flow.providerObservation?.state === "found") flow.providerObservation.pr.baseSha = null;
++      },
++    ],
++    [
++      "conflicting provider state",
++      (flow: PrFlowStatusReport) => {
++        if (flow.providerObservation?.state === "found") {
++          flow.providerObservation.pr.mergeability = {
++            state: "conflicting",
++            mergeable: false,
++            providerState: "dirty",
++          };
++        }
++      },
++    ],
++  ] as const)("does not infer green-behind recovery from %s", async (_label, mutate) => {
++    const flow = failingHostedPrFlow("behind");
++    flow.hostedChecks = {
++      checked: true,
++      total: 1,
++      pending: 0,
++      failing: 0,
++      passing: 1,
++      missingRequired: [],
++      rows: [{ name: "PR verification", state: "SUCCESS" }],
++    };
++    mutate(flow);
++    const blockers = await blockersFor(reviewedSha, undefined, flow);
++    expect(blockers).not.toEqual(
+       expect.arrayContaining([
+         expect.objectContaining({ code: "provider_pr_update_branch_required" }),
+       ]),
+     );
+-    expect(blockers).not.toEqual(
+-      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+-    );
+   });
+ 
+   it.each([
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts b/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
+index 66ddb0e68..9b35c18b3 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
+@@ -628,117 +628,145 @@ describe("WorkflowStep conflict rework projections", () => {
+     });
+   });
+ 
+-  it("routes an exact aligned GitHub behind state to a digest-bound provider update before rework", () => {
+-    const baseSha = "2222222222222222222222222222222222222222";
+-    const behindPrFlow = {
+-      task: { id: task.id, status: "DONE", verification: "ok" },
+-      branch: { name: taskBranch, headSha: resume.head_sha, metaHeadSha: resume.head_sha },
+-      pr: {
+-        provider: "github",
+-        state: "OPEN",
+-        source: "lookup",
+-        prNumber: 4626,
+-        prUrl: "https://github.example/acme/agentplane/pull/4626",
+-        base: "main",
+-        headSha: resume.head_sha,
+-        mergeCommit: null,
+-      },
+-      providerObservation: {
+-        state: "found",
++  it.each([
++    { label: "failing checks", failing: 1, handoff: false },
++    { label: "passing checks", failing: 0, handoff: false },
++    { label: "passing checks after integration handoff", failing: 0, handoff: true },
++  ])(
++    "routes an exact aligned GitHub behind state with $label to a digest-bound provider update",
++    ({ failing, handoff }) => {
++      const baseSha = "2222222222222222222222222222222222222222";
++      const behindPrFlow = {
++        task: { id: task.id, status: "DONE", verification: "ok" },
++        branch: { name: taskBranch, headSha: resume.head_sha, metaHeadSha: resume.head_sha },
+         pr: {
+           provider: "github",
+-          identity: {
+-            provider: "github",
+-            hostname: "github.example",
+-            remote: "origin",
+-            sourceProject: "acme/agentplane",
+-            targetProject: "acme/agentplane",
+-            sourceUrl: "git@github.example:acme/agentplane.git",
+-            targetUrl: "https://github.example/acme/agentplane.git",
+-          },
++          state: "OPEN",
++          source: "lookup",
+           prNumber: 4626,
+           prUrl: "https://github.example/acme/agentplane/pull/4626",
+-          status: "OPEN",
+-          mergedAt: null,
+-          mergeCommit: null,
+           base: "main",
+-          baseSha,
+-          headRef: taskBranch,
+           headSha: resume.head_sha,
+-          mergeability: { state: "not_conflicting", mergeable: true, providerState: "behind" },
++          mergeCommit: null,
+         },
+-      },
+-      publication: {
+-        state: "aligned",
+-        branch: taskBranch,
+-        localHeadSha: resume.head_sha,
+-        upstreamRef: `origin/${taskBranch}`,
+-        upstreamHeadSha: resume.head_sha,
+-        hostedHeadSha: resume.head_sha,
+-      },
+-      closeTail: { state: "not_applicable", reason: "implementation PR remains open" },
+-      hostedChecks: {
+-        checked: true,
+-        total: 1,
+-        pending: 0,
+-        failing: 1,
+-        passing: 0,
+-        missingRequired: [],
+-        rows: [{ name: "verify-contract", state: "FAILURE" }],
+-      },
+-      reviewThreads: { checked: true, unresolved: 0 },
+-      queue: { present: false },
+-      handoff: { present: false },
+-      nextAction: "hosted checks are failing because the PR branch is behind main",
+-    } satisfies PrFlowStatusReport;
+-    const state = routeState({
+-      task: { ...task, status: "DONE", verification: { state: "ok" } },
+-      resume: { ...resume, task_status: "DONE" },
+-      prFlow: behindPrFlow,
+-      conflictRework: null,
+-      blockers: [
+-        {
+-          code: "provider_pr_update_branch_required",
+-          summary: "provider branch is behind the exact hosted base",
++        providerObservation: {
++          state: "found",
++          pr: {
++            provider: "github",
++            identity: {
++              provider: "github",
++              hostname: "github.example",
++              remote: "origin",
++              sourceProject: "acme/agentplane",
++              targetProject: "acme/agentplane",
++              sourceUrl: "git@github.example:acme/agentplane.git",
++              targetUrl: "https://github.example/acme/agentplane.git",
++            },
++            prNumber: 4626,
++            prUrl: "https://github.example/acme/agentplane/pull/4626",
++            status: "OPEN",
++            mergedAt: null,
++            mergeCommit: null,
++            base: "main",
++            baseSha,
++            headRef: taskBranch,
++            headSha: resume.head_sha,
++            mergeability: { state: "not_conflicting", mergeable: true, providerState: "behind" },
++          },
+         },
+-      ],
+-    });
+-    const step = reduceRouteState(state);
+-    const { oracle, packet } = executionPacket({ state, step, paths: { taskWorktreePath } });
++        publication: {
++          state: "aligned",
++          branch: taskBranch,
++          localHeadSha: resume.head_sha,
++          upstreamRef: `origin/${taskBranch}`,
++          upstreamHeadSha: resume.head_sha,
++          hostedHeadSha: resume.head_sha,
++        },
++        closeTail: { state: "not_applicable", reason: "implementation PR remains open" },
++        hostedChecks: {
++          checked: true,
++          total: 1,
++          pending: 0,
++          failing,
++          passing: 1 - failing,
++          missingRequired: [],
++          rows: [{ name: "PR verification", state: failing > 0 ? "FAILURE" : "SUCCESS" }],
++        },
++        reviewThreads: { checked: true, unresolved: 0 },
++        queue: handoff
++          ? {
++              present: true,
++              status: "handoff",
++              branch: taskBranch,
++              headSha: resume.head_sha,
++              base: "main",
++              prNumber: 4626,
++            }
++          : { present: false },
++        handoff: { present: false },
++        nextAction: "the PR branch is behind main",
++      } satisfies PrFlowStatusReport;
++      const state = routeState({
++        task: { ...task, status: "DONE", verification: { state: "ok" } },
++        resume: { ...resume, task_status: "DONE" },
++        prFlow: behindPrFlow,
++        conflictRework: null,
++        blockers: [
++          {
++            code: "provider_pr_update_branch_required",
++            summary: "provider branch is behind the exact hosted base",
++          },
++        ],
++      });
++      const step = reduceRouteState(state);
++      const { oracle, packet } = executionPacket({ state, step, paths: { taskWorktreePath } });
+ 
+-    expect(step).toMatchObject({
+-      kind: "approval",
+-      id: "approval.provider.pr.update_branch",
+-      request: {
+-        type: "side_effect",
+-        operationId: "provider.pr.update_branch",
+-        operation: {
+-          id: "provider.pr.update_branch",
+-          params: {
+-            taskId: task.id,
+-            prNumber: 4626,
+-            branch: taskBranch,
+-            baseBranch: "main",
+-            expectedHeadSha: resume.head_sha,
+-            expectedBaseSha: baseSha,
++      expect(step).toMatchObject({
++        kind: "approval",
++        id: "approval.provider.pr.update_branch",
++        request: {
++          type: "side_effect",
++          operationId: "provider.pr.update_branch",
++          operation: {
++            id: "provider.pr.update_branch",
++            params: {
++              taskId: task.id,
++              prNumber: 4626,
++              branch: taskBranch,
++              baseBranch: "main",
++              expectedHeadSha: resume.head_sha,
++              expectedBaseSha: baseSha,
++            },
+           },
+         },
+-      },
+-    });
+-    expect(step.id).not.toBe("agent.implementation_rework");
+-    expect(oracle).toMatchObject({
+-      phase: "side_effect_authority_required",
+-      authoritativeCheckout: "task_worktree",
+-    });
+-    expect(oracle.nextCommand).toContain("--operation provider.pr.update_branch");
+-    expect(oracle.nextCommand).toContain("--operation-digest sha256:");
+-    expect(oracle.nextCommand).toContain("--state-scope-digest sha256:");
+-    expect(packet).toMatchObject({
+-      actionKind: "provider_action",
+-      safeToMutate: false,
+-      exactArgv: null,
+-    });
+-  });
++      });
++      expect(step.id).not.toBe("agent.implementation_rework");
++      expect(oracle).toMatchObject({
++        phase: "side_effect_authority_required",
++        authoritativeCheckout: "task_worktree",
++      });
++      expect(oracle.nextCommand).toContain("--operation provider.pr.update_branch");
++      expect(oracle.nextCommand).toContain("--operation-digest sha256:");
++      expect(oracle.nextCommand).toContain("--state-scope-digest sha256:");
++      expect(packet).toMatchObject({
++        actionKind: "provider_action",
++        safeToMutate: false,
++        exactArgv: null,
++      });
++      const activeRunnerState = routeState({
++        ...state,
++        resume: {
++          ...state.resume,
++          runner: { ...state.resume.runner, next_action: "wait" },
++        },
++      });
++      expect(reduceRouteState(activeRunnerState)).toMatchObject({
++        kind: "wait",
++        id: "wait.runner",
++        compatibility: { code: "wait_runner", command: null },
++      });
++    },
++  );
+ 
+   it("publishes a newer unpublished head before acting on stale failed hosted checks", () => {
+     const providerHeadSha = "2222222222222222222222222222222222222222";
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts b/packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts
+index 58cfecc54..e30f918d6 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts
+@@ -14,7 +14,7 @@ export function providerUpdateBranchStep(state: WorkflowRouteState): WorkflowSte
+     params,
+     code: "update_provider_pr_branch",
+     summary:
+-      "update the exact behind provider PR head from its observed base before classifying hosted failures as semantic rework",
++      "update the exact behind provider PR head from its observed base before integration or hosted-failure rework",
+     selectedBlocker: routeBlockerFor(state, "provider_pr_update_branch_required"),
+   });
+ }
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+index 679c1fec0..188c02f60 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+@@ -213,6 +213,7 @@ describe("branch task supervisor operations", () => {
+     expect(result.observed_postconditions).toContain("provider_branch_updated");
+     expect(mocks.updateProviderBranch).toHaveBeenCalledWith({
+       gitRoot: "/repo",
++      worktreePath: "/repo/task",
+       identity: operation.params.identity,
+       prNumber: 42,
+       branch: operation.params.branch,
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+index f18a96504..cdcc420ae 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+@@ -180,6 +180,7 @@ export async function executeBranchWorkflowOperation(opts: {
+     case "provider.pr.update_branch": {
+       const result = await updateProviderBranch({
+         gitRoot: command.resolvedProject.gitRoot,
++        worktreePath: cwd,
+         identity: operation.params.identity,
+         prNumber: operation.params.prNumber,
+         branch: operation.params.branch,
+@@ -191,7 +192,8 @@ export async function executeBranchWorkflowOperation(opts: {
+         return succeeded(
+           operation,
+           `provider PR #${operation.params.prNumber} update-branch ${result.effect}; ` +
+-            `readback proved ${result.evidence.observedHeadSha} contains the exact expected head and base`,
++            `readback proved ${result.evidence.observedHeadSha} contains the exact expected head and base; ` +
++            "the task checkout and tracking head are aligned with that provider head",
+         );
+       }
+       if (result.state === "not_applied") {

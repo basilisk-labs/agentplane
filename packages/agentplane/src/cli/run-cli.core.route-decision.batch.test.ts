@@ -4,13 +4,15 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { describe } from "vitest";
+import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
+import { approveRouteTaskPlan, recordRouteVerification } from "./route-decision.testkit.js";
+import { mkGitRepoRootWithCommit } from "@agentplane/testkit";
 
 import {
   captureStdIO,
   defaultConfig,
   expect,
   it,
-  mkGitRepoRootWithBranch,
   runCli,
   runCliSilent,
   writeConfig,
@@ -47,19 +49,7 @@ async function createTask(root: string): Promise<string> {
 
 async function approveTasks(root: string, taskIds: string[], text: string): Promise<void> {
   for (const taskId of taskIds) {
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      text,
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await approveRouteTaskPlan(root, taskId, text);
   }
 }
 
@@ -112,26 +102,24 @@ async function addIncludedBatchExtension(opts: {
 }): Promise<void> {
   const taskPath = path.join(opts.root, ".agentplane", "tasks", opts.taskId, "README.md");
   const current = await readFile(taskPath, "utf8");
-  const frontmatterEnd = current.indexOf("\n---\n", 4);
-  expect(frontmatterEnd).toBeGreaterThan(0);
-  const extension = [
-    "extensions:",
-    "  branch_pr_batch:",
-    '    base: "main"',
-    `    branch: "${opts.branch}"`,
-    "    included_task_ids:",
-    `      - "${opts.taskId}"`,
-    `    primary_task_id: "${opts.primaryTaskId}"`,
-    '    role: "included"',
-    '    updated_at: "2026-05-23T00:00:00.000Z"',
-  ].join("\n");
-  const next = `${current.slice(0, frontmatterEnd)}\n${extension}${current.slice(frontmatterEnd)}`;
-  await writeFile(taskPath, next, "utf8");
+  const parsed = parseTaskReadme(current);
+  parsed.frontmatter.extensions = {
+    ...(parsed.frontmatter.extensions ?? {}),
+    branch_pr_batch: {
+      base: "main",
+      branch: opts.branch,
+      included_task_ids: [opts.taskId],
+      primary_task_id: opts.primaryTaskId,
+      role: "included",
+      updated_at: "2026-05-23T00:00:00.000Z",
+    },
+  };
+  await writeFile(taskPath, renderTaskReadme(parsed.frontmatter, parsed.body), "utf8");
 }
 
 describe("runCli route decision batch ownership", () => {
   it("keeps primary quality fresh across explicitly included task artifact commits", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -232,7 +220,7 @@ describe("runCli route decision batch ownership", () => {
   });
 
   it("keeps a verified batch primary with PR metadata out of included closure recovery", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -284,7 +272,7 @@ describe("runCli route decision batch ownership", () => {
   });
 
   it("exposes branch_pr batch ownership in route and brief output", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -398,7 +386,7 @@ describe("runCli route decision batch ownership", () => {
   });
 
   it("reports included batch delegation in the route oracle after plan approval", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -429,7 +417,7 @@ describe("runCli route decision batch ownership", () => {
   });
 
   it("routes verified landed included tasks to release reconciliation", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -448,18 +436,12 @@ describe("runCli route decision batch ownership", () => {
       "--root",
       root,
     ]);
-    await runCliSilent([
-      "verify",
-      includedTaskId,
-      "--ok",
-      "--by",
-      "CODER",
-      "--note",
-      "Verified: included in batch implementation landed.",
-      "--local-only",
-      "--root",
+    await recordRouteVerification(
       root,
-    ]);
+      includedTaskId,
+      "Verified: included in batch implementation landed.",
+      true,
+    );
 
     await addIncludedBatchExtension({
       root,
@@ -487,7 +469,7 @@ describe("runCli route decision batch ownership", () => {
   });
 
   it("does not infer included-batch ownership from verification prose", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -505,18 +487,12 @@ describe("runCli route decision batch ownership", () => {
       "--root",
       root,
     ]);
-    await runCliSilent([
-      "verify",
-      includedTaskId,
-      "--ok",
-      "--by",
-      "CODER",
-      "--note",
-      "Verified: included in batch implementation landed.",
-      "--local-only",
-      "--root",
+    await recordRouteVerification(
       root,
-    ]);
+      includedTaskId,
+      "Verified: included in batch implementation landed.",
+      true,
+    );
 
     const nextIo = captureStdIO();
     try {
@@ -546,7 +522,7 @@ describe("runCli route decision batch ownership", () => {
   });
 
   it("keeps semantic planning ahead of included batch delegation in the route oracle", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -576,7 +552,7 @@ describe("runCli route decision batch ownership", () => {
   });
 
   it("does not let stale batch PR artifacts override direct-mode routing", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
