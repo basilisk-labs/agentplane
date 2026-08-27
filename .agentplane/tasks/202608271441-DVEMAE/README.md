@@ -4,7 +4,7 @@ title: "Repair lifecycle fixture execution bases"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -23,10 +23,10 @@ plan_approval:
   updated_by: "USER"
   note: "The user explicitly instructed: Continue until refactoring is complete; all permissions are granted. Record that authorization for this bounded four-file lifecycle fixture repair, preserving all safety assertions and mandatory checks."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-27T16:14:59.128Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -83,11 +83,39 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -120,22 +148,33 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:2164a747868530365896cd36fb95737621b4d3ce18337b64182dd21363dd6a08"
+      digest: "sha256:6581261f2d8f41c591ad99c1906bcf29e1dd10b7550217d99d4bfae7fe9d96b7"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -166,11 +205,19 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "0da9c92cbda53ff55e24c84ff81fa401165f1f29"
+  message: "🚧 DVEMAE task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 0da9c92cbda5. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 0da9c92cbda5. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -179,9 +226,37 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-27T14:49:09.669Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 0da9c92cbda5. CLI accepted one state-bound external-agent semantic result."
+    commit: "0da9c92cbda53ff55e24c84ff81fa401165f1f29"
+  -
+    type: "verify"
+    at: "2026-08-27T15:13:21.725Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-27T16:07:04.950Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 0da9c92cbda5. CLI accepted one state-bound external-agent semantic result."
+    commit: "0da9c92cbda53ff55e24c84ff81fa401165f1f29"
+  -
+    type: "verify"
+    at: "2026-08-27T16:14:59.128Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-27T14:46:13.976Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-27T16:15:01.272Z"
+doc_updated_by: "SUPERVISOR"
 description: "Repair ten freshly reproduced failures in four lifecycle CLI test files. Use the existing committed-repository helper only for scenarios that need a real execution base. Preserve argument-validation fixtures, dependency readiness, force approval, comment validation, status-commit confirmation, incident advice and task-status assertions. Bind the start-ready baseline assertion to the actual fixture seed SHA instead of an unborn null. Do not change production behavior, shared helpers, policy, timeouts, CI gates, release state or roadmap dependencies. Scope is disjoint from concurrent G0N9P4 and 9EWJA1; the already merged GHHA0Q base is sufficient. Require focused tests and full CI."
 sections:
   Summary: |-
@@ -200,6 +275,113 @@ sections:
     5. Require hosted exact-head checks and supported integration before final closure.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-27T15:13:21.725Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f864c678239dfad51fc967415a857af2561f020e8b667f29bb06300539e69569, input_digest=sha256:ef90e4337a1d33aee613a9b85f5df768998397a01d67efd27b94df22a6c96780
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271441-DVEMAE declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271441-DVEMAE-repair-lifecycle-fixture-execution-bases/.agentplane/tasks/202608271441-DVEMAE/blueprint/resolved-snapshot.json
+    - old_digest: 2b538fb46b5e765efc10e62bac34f801f70ff4fd4736b259b48100c885b51a7f
+    - current_digest: 2b538fb46b5e765efc10e62bac34f801f70ff4fd4736b259b48100c885b51a7f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608271441-DVEMAE
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-27T16:14:59.128Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f864c678239dfad51fc967415a857af2561f020e8b667f29bb06300539e69569, input_digest=sha256:aaa633e2e31db61dd3f0c324b8f82e25a8ad6bcb7c3dfe7cf7d9d9a496cd8541
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271441-DVEMAE Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271441-DVEMAE Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271441-DVEMAE Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271441-DVEMAE Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271441-DVEMAE Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271441-DVEMAE Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271441-DVEMAE Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271441-DVEMAE-repair-lifecycle-fixture-execution-bases/.agentplane/tasks/202608271441-DVEMAE/blueprint/resolved-snapshot.json
+    - old_digest: 2b538fb46b5e765efc10e62bac34f801f70ff4fd4736b259b48100c885b51a7f
+    - current_digest: 2b538fb46b5e765efc10e62bac34f801f70ff4fd4736b259b48100c885b51a7f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608271441-DVEMAE
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -442,25 +624,119 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 13
     schema_version: 1
-    updated_at: "2026-08-27T14:45:50.821Z"
+    updated_at: "2026-08-27T16:15:02.467Z"
     work_items:
       repair-lifecycle-fixtures:
-        attempt: 0
+        attempt: 2
         claim_id: null
         id: "repair-lifecycle-fixtures"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:adb7bc9e9ee0c9208dc8f6a8034b4c74c59f344e08b07377ec281cdd69414990"
+            id: "artifact:lifecycle-fixture-report"
+            kind: "semantic_output"
+            producer:
+              attempt: 2
+              plan_revision: 1
+              task_id: "202608271441-DVEMAE"
+              work_item_id: "repair-lifecycle-fixtures"
+            provenance:
+              - "sha256:f1446a3b59aab211861ddb5fdc05ab7e634e958f41ae73945ac7dd7eecae8a2f"
+              - ".agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:893c87c4a98472b914ef2128ce5082225dd119550555afd2b6521aae2ee92b72"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 3
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json"
+              check_id: "scoped-tests"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --pool=threads --maxWorkers=2"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --pool=threads --maxWorkers=2."
+              exit_code: 0
+              observed_at: "2026-08-27T16:15:02.461Z"
+              repository_snapshot_digest: "sha256:893c87c4a98472b914ef2128ce5082225dd119550555afd2b6521aae2ee92b72"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json"
+              check_id: "full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-27T16:15:02.461Z"
+              repository_snapshot_digest: "sha256:893c87c4a98472b914ef2128ce5082225dd119550555afd2b6521aae2ee92b72"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608271441-DVEMAE-executor-a3d13af35680cb00641ebc8a:
+        aggregate_digest: "sha256:71c602b5c84787fb0fad9a17758ca91192e023d8dce7442322878ab27b59b945"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-27T16:15:02.467Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_1f0c9047ce3c613a534a96e2"
+          mutation_id: "external-result:work-order-202608271441-DVEMAE-executor-a3d13af35680cb00641ebc8a"
+          plan_digest: "sha256:ed05b2c841e190b91a71fa7f92a61f4d080a3b99786d64de2954faaf06e6ecb7"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608271441-DVEMAE"
+          task_revision: 12
+          to: "COMPLETED"
+          work_item_id: "repair-lifecycle-fixtures"
+        mutation_id: "external-result:work-order-202608271441-DVEMAE-executor-a3d13af35680cb00641ebc8a"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202608271441-DVEMAE"
+      external-result:work-order-202608271441-DVEMAE-executor-f701682c918929b05c4615f5:
+        aggregate_digest: "sha256:2611e2b86db6205f447c3aaf0f46cf2a5214b86af71566513bf10356420ce7b1"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-27T15:13:44.998Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_e01e6e793a8dc1e1dfd3e943"
+          mutation_id: "external-result:work-order-202608271441-DVEMAE-executor-f701682c918929b05c4615f5"
+          plan_digest: "sha256:ed05b2c841e190b91a71fa7f92a61f4d080a3b99786d64de2954faaf06e6ecb7"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608271441-DVEMAE"
+          task_revision: 8
+          to: "REWORK_READY"
+          work_item_id: "repair-lifecycle-fixtures"
+        mutation_id: "external-result:work-order-202608271441-DVEMAE-executor-f701682c918929b05c4615f5"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202608271441-DVEMAE"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "0da9c92cbda53ff55e24c84ff81fa401165f1f29"
   task_execution_context:
     base_ref: "main"
     base_sha: "5fce04a8be14816be4cae236d2941dff7045e214"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "5fce04a8be14816be4cae236d2941dff7045e214"
     version: 1
@@ -492,6 +768,113 @@ Repair only the ten reproduced lifecycle test prerequisite failures. Use existin
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-27T15:13:21.725Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f864c678239dfad51fc967415a857af2561f020e8b667f29bb06300539e69569, input_digest=sha256:ef90e4337a1d33aee613a9b85f5df768998397a01d67efd27b94df22a6c96780
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271441-DVEMAE declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271441-DVEMAE-repair-lifecycle-fixture-execution-bases/.agentplane/tasks/202608271441-DVEMAE/blueprint/resolved-snapshot.json
+- old_digest: 2b538fb46b5e765efc10e62bac34f801f70ff4fd4736b259b48100c885b51a7f
+- current_digest: 2b538fb46b5e765efc10e62bac34f801f70ff4fd4736b259b48100c885b51a7f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608271441-DVEMAE
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-27T16:14:59.128Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f864c678239dfad51fc967415a857af2561f020e8b667f29bb06300539e69569, input_digest=sha256:aaa633e2e31db61dd3f0c324b8f82e25a8ad6bcb7c3dfe7cf7d9d9a496cd8541
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271441-DVEMAE Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271441-DVEMAE Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271441-DVEMAE Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271441-DVEMAE Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271441-DVEMAE Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271441-DVEMAE Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271441-DVEMAE Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271441-DVEMAE-repair-lifecycle-fixture-execution-bases/.agentplane/tasks/202608271441-DVEMAE/blueprint/resolved-snapshot.json
+- old_digest: 2b538fb46b5e765efc10e62bac34f801f70ff4fd4736b259b48100c885b51a7f
+- current_digest: 2b538fb46b5e765efc10e62bac34f801f70ff4fd4736b259b48100c885b51a7f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608271441-DVEMAE
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
