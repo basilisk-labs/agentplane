@@ -6,14 +6,14 @@ Created: 2026-08-27T15:41:27.859Z
 
 - Task: `202608271538-T21JCA`
 - Title: Recover green behind PRs through provider branch update
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608271538-T21JCA/recover-green-behind-prs-through-provider-branch`
 - Canonical task record: `.agentplane/tasks/202608271538-T21JCA/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Real GitHub continuation reproduced delayed-readback failure and an unregistered rendered pr update-branch command. Provider advanced to8518b71c495e8dd1c4765dcb36cb7708d15c5205 but immediate readback retained13bee78d; the next route proposed stale publication. The user explicitly approved one local-only fast-forward recovery; exact clean checkout, remote identity and old-head/current-main ancestry were proved before synchronization. No publication, repeated PUT, PR merge or journal edit occurred. Rework must cover delayed observation, restart reconciliation, no stale publication, exact authority and executable continuation.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

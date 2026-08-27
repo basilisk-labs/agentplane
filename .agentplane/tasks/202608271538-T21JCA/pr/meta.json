@@ -3,17 +3,10 @@
   "branch": "task/202608271538-T21JCA/recover-green-behind-prs-through-provider-branch",
   "created_at": "2026-08-27T15:41:27.859Z",
   "diffstat_sha256": "sha256:e83812be5be6a3f6b31cecf902a6fac4933b9dcaa0d0c04391a61fb3d8a984c3",
-  "last_verified_at": "2026-08-27T16:58:04.845Z",
+  "last_verified_at": "2026-08-27T17:51:17.746Z",
   "last_verified_diffstat_sha256": "sha256:e83812be5be6a3f6b31cecf902a6fac4933b9dcaa0d0c04391a61fb3d8a984c3",
   "pr_number": 5856,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5856",
-  "pre_merge_closure": {
-    "basis_commit": "66c08e2359e47b0737d95fc269f2bb6cf9807d6c",
-    "branch": "task/202608271538-T21JCA/recover-green-behind-prs-through-provider-branch",
-    "pr_number": 5856,
-    "recorded_at": "2026-08-27T16:59:26.787Z",
-    "state": "closed_before_merge"
-  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -27,6 +20,6 @@
   "task_id": "202608271538-T21JCA",
   "updated_at": "2026-08-27T15:56:08.543Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }
