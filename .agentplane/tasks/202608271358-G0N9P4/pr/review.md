@@ -6,7 +6,7 @@ Created: 2026-08-27T13:59:57.996Z
 
 - Task: `202608271358-G0N9P4`
 - Title: Repair verification fixtures on integrated main 5fce04a8
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608271358-G0N9P4/repair-verification-fixtures-on-integrated-main`
 - Canonical task record: `.agentplane/tasks/202608271358-G0N9P4/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-27T13:59:57.996Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T13:59:57.996Z
+- Updated: 2026-08-27T14:43:02.687Z
 - Branch: task/202608271358-G0N9P4/repair-verification-fixtures-on-integrated-main
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

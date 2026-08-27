@@ -22,7 +22,7 @@ Replace unexecuted task 202608271350-HVGQPQ, which froze its creation base befor
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T13:59:57.996Z
+- Updated: 2026-08-27T14:43:02.687Z
 - Branch: task/202608271358-G0N9P4/repair-verification-fixtures-on-integrated-main
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
