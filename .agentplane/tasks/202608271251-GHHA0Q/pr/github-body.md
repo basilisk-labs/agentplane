@@ -22,7 +22,7 @@ Implement the approved test-audit first slice independently of the preserved 0.7
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T12:55:50.935Z
+- Updated: 2026-08-27T13:25:46.511Z
 - Branch: task/202608271251-GHHA0Q/replace-obsolete-cli-test-expectations-with-arch
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
