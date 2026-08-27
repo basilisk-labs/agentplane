@@ -4,7 +4,7 @@ title: "Modernize task continuity and approval fixtures"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -28,6 +28,38 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-27T17:09:16.876Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "56e4367136dd17997ced56fe2de81990e06cdb2a"
+  blueprint_digest: "cbc829fe5ba7d0105060276d39d531060b7773c5c3c3cf3691a2b45820b15f58"
+  evidence_refs:
+    - ".agentplane/tasks/202608271649-DVNTRR/quality/20260827-170736164-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608271649-DVNTRR/quality/20260827-170736164-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/fb58551d02547676b978b5aedde40828c7008703d368d527a61c52535306d00f.md"
+    - ".agentplane/tasks/202608271649-DVNTRR/quality/20260827-170736164-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608271649-DVNTRR/quality/20260827-170736164-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608271649-DVNTRR/quality/20260827-170736164-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608271649-DVNTRR/README.md"
+    - ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/9e458f50f4a70613d2c4d7d41c1006bf431af26fd040c3649cf38af0ae39c0ac.patch"
+    - ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/a0a854b5539401e1ce7b8c5d69c90e66e4e7164cedf7d87371aed16ed16c54e5.json"
+    - ".agentplane/tasks/202608271649-DVNTRR/verification/20260827170718338-d32fb33a649bef9e.json"
+    - ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/26b29129cee78cb00a376b7d25f1c78233418cc92f456e963b0122292f6b29fe.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The frozen diff changes only the four approved suites and one local helper. Production, global testkit, CI, policy, timeouts and task graph are unchanged."
+    - "The helper requests the actual PLANNER work order, uses its repository snapshot in a typed proposal, preserves task kind, mutation, risk and declared effects, and resumes the exact exchange. It asserts approval_required rather than supplying inferred lifecycle state."
+    - "The supervisor stop test submits a complete structured plan but does not approve it. It still asserts null executor/evaluator, approval_required, and matching transition/fingerprint between managed and external routes."
+    - "Handoff stale-claim cancellation, unclaimed refusal and branch snapshot precedence assertions are retained. JSON route authority/head immutability, aliases/fingerprints and user-question precedence remain unchanged."
+    - "The publish-risk test retains risk_publish before structured planning and checks effect_publish after the typed declaration, while retaining branch_pr and worktree assertions. This tests both architectural stages rather than deleting the old safety contract."
+    - "Frozen verification20260827170718338-d32fb33a649bef9e binds implementation56e4367136dd17997ced56fe2de81990e06cdb2a. Full CI passed in503011ms; all9focused cases passed in19591ms. Only CLI-owned PR/quality artifacts appeared during evaluation."
+    - "Residual risk: Local fixture qualification does not establish hosted exact-head readiness or release:prepublish readiness."
 execution_route:
   frozen: true
   reason_codes:
