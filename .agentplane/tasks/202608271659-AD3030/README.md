@@ -1,10 +1,11 @@
 ---
 id: "202608271659-AD3030"
 title: "Preserve task identity in closeout and worktree fixtures"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 31
 origin:
   system: "manual"
 depends_on:
@@ -58,6 +59,20 @@ quality_review:
     - "The previously empty Findings section now records the fixture causes, preserved behavior, local evidence, existing opt-in packaging skip, and unproven timeout-causality caveat. The documentation-only commit changes only the task README. No documentation rework remains."
     - "Residual risk: Earlier intermittent timeout causality remains unproven; no test or timeout was weakened."
     - "Residual risk: Hosted exact-head proof, integration and terminal closeout are still required."
+token_usage:
+  agent_runs: 9
+  input_tokens: null
+  journal_digest: "sha256:b8d0fa39dd7f4b40d44b47d85b8fdf5cef75236190ea6208aef25b4e4a047e6a"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-27T23:33:45.947Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -236,8 +251,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "cf8a8316396397bb7688b34fdcbf93c6ab86a249"
-  message: "🚧 AD3030 task: apply external agent result"
+  hash: "3617bb22996cd0c162adc88a0f71f205a4e501dd"
+  message: "🚧 AD3030 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -263,6 +278,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: cf8a83163963. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -355,9 +373,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-27T23:33:45.947Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "3617bb22996cd0c162adc88a0f71f205a4e501dd"
 doc_version: 3
-doc_updated_at: "2026-08-27T23:30:48.871Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-27T23:33:45.956Z"
+doc_updated_by: "CODER"
 description: "Repair six freshly reproduced failures among27scenarios in four closeout and worktree-routing fixture files. Scope only packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts, packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts. Merge batch extensions into parsed task metadata rather than duplicate the YAML extensions key; preserve the immutable task_execution_context and make shared tasks use one real committed base. Seed Git for the work-start usage-error case so it reaches the intended worktree requirement. Align the start-ready test with the existing authoritative loadTaskCommandContext redirect: prove it updates only the task-owned worktree without recreating base README or changing base HEAD; do not demand an obsolete manual-cd error. Preserve multi-task exact reviewed implementation SHA, landed versus stale or rebased PR commit choice, unresolved-task failure and all remaining negative scenarios. Use current canonical planning only if needed for fixture validity. No production, global helper, policy, CI gate, timeout, release version or task graph changes. Require all27scenarios, scoped lint/format, full CI, EVALUATOR and hosted exact-head proof."
 sections:
   Summary: |-
@@ -849,7 +875,34 @@ extensions:
       schema_version: 1
       task_id: "202608271659-AD3030"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608271659-AD3030"
+            - "git:37c73e481fb24ef71c13270b9c74ec22ba117040"
+          check_id: "scoped-tests"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --pool=forks --maxWorkers=1"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T23:30:43.685Z"
+          repository_snapshot_digest: "sha256:d5d6950421a28aceb66255b8d21b390dc2aeb45a1531c4698481186cf8adac8a"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608271659-AD3030"
+            - "git:37c73e481fb24ef71c13270b9c74ec22ba117040"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T23:30:43.685Z"
+          repository_snapshot_digest: "sha256:d5d6950421a28aceb66255b8d21b390dc2aeb45a1531c4698481186cf8adac8a"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608271659-AD3030"
     intent:
       acceptance_criteria:
@@ -870,12 +923,12 @@ extensions:
 
         Repair six freshly reproduced failures among27scenarios in four closeout and worktree-routing fixture files. Scope only packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts, packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts. Merge batch extensions into parsed task metadata rather than duplicate the YAML extensions key; preserve the immutable task_execution_context and make shared tasks use one real committed base. Seed Git for the work-start usage-error case so it reaches the intended worktree requirement. Align the start-ready test with the existing authoritative loadTaskCommandContext redirect: prove it updates only the task-owned worktree without recreating base README or changing base HEAD; do not demand an obsolete manual-cd error. Preserve multi-task exact reviewed implementation SHA, landed versus stale or rebased PR commit choice, unresolved-task failure and all remaining negative scenarios. Use current canonical planning only if needed for fixture validity. No production, global helper, policy, CI gate, timeout, release version or task graph changes. Require all27scenarios, scoped lint/format, full CI, EVALUATOR and hosted exact-head proof.
       task_id: "202608271659-AD3030"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 21
+    revision: 31
     schema_version: 1
-    updated_at: "2026-08-27T23:15:47.181Z"
+    updated_at: "2026-08-27T23:33:45.947Z"
     work_items:
       repair-closeout-fixtures:
         attempt: 4
@@ -1022,11 +1075,37 @@ extensions:
         previous_revision: 20
         schema_version: 1
         task_id: "202608271659-AD3030"
+      legacy-finish:202608271659-AD3030:2026-08-27T23:30:43.685Z:37c73e481fb24ef71c13270b9c74ec22ba117040:
+        aggregate_digest: "sha256:431c08ba17b75485c31f5a5ba1c590546d4d570e0f785b89ad2ffb6adfb439c2"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-27T23:33:45.947Z"
+          cause_refs:
+            - "task-verification:202608271659-AD3030"
+            - "git:37c73e481fb24ef71c13270b9c74ec22ba117040"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f3de104ca8c05a8f465d9e34"
+          mutation_id: "legacy-finish:202608271659-AD3030:2026-08-27T23:30:43.685Z:37c73e481fb24ef71c13270b9c74ec22ba117040"
+          plan_digest: "sha256:8e455a06d47efb83de5e179c745ff761455eb4e128b5ea06644e1ed8e10dfcdc"
+          plan_revision: 1
+          repository_fingerprint: "sha256:d5d6950421a28aceb66255b8d21b390dc2aeb45a1531c4698481186cf8adac8a"
+          schema_version: 1
+          task_id: "202608271659-AD3030"
+          task_revision: 21
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608271659-AD3030:2026-08-27T23:30:43.685Z:37c73e481fb24ef71c13270b9c74ec22ba117040"
+        next_revision: 31
+        previous_revision: 30
+        schema_version: 1
+        task_id: "202608271659-AD3030"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "cf8a8316396397bb7688b34fdcbf93c6ab86a249"
+    hash: "37c73e481fb24ef71c13270b9c74ec22ba117040"
+    message: "🚧 AD3030 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "2c9a2f59146c302c517524136e66abb902f92ba6"
@@ -1326,3 +1405,16 @@ Proved fixture causes: duplicate YAML extensions entries discarded task executio
 Current local evidence: supervisor ci:local:full passed in 505807 ms and the exact four-file suite passed 27/27 in 16.29 s for implementation 37c73e481fb24ef71c13270b9c74ec22ba117040. Scoped lint, formatting and diff checks passed. The full run retained the existing opt-in network packaging skip; this task added no skip, timeout increase, product change or CI-policy change.
 
 Recovery caveat: earlier supervisor runs timed out in cleanup and fresh-authority replay tests. Both exact cases passed unchanged in isolation, and the subsequent full run passed with no concurrent local test/build workload using Node 26.7.0 and the supported command-local worker-four setting. Workload interference is a hypothesis, not a proven root cause. Hosted exact-head verification, integration, terminal closeout and release prepublish remain separate, unconfirmed boundaries.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/9` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:b8d0fa39dd7f4b40d44b47d85b8fdf5cef75236190ea6208aef25b4e4a047e6a`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-27T23:33:45.947Z`
