@@ -3,6 +3,8 @@ import { realpath, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
+import { prepareContinuityPlan } from "./task-continuity.testkit.js";
+
 import { describe } from "vitest";
 
 import {
@@ -80,19 +82,13 @@ describe("runCli task execution routing", () => {
     } finally {
       taskIo.restore();
     }
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Verify automatic route escalation.",
-      "--updated-by",
-      "PLANNER",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    const [initialCode, initialRoute] = await runJson<{
+      task: { execution_route: { selected_mode: string; reason_codes: string[] } };
+    }>(["task", "next-action", taskId, "--json", "--root", root]);
+    expect(initialCode).toBe(0);
+    expect(initialRoute.task.execution_route.selected_mode).toBe("branch_pr");
+    expect(initialRoute.task.execution_route.reason_codes).toContain("risk_publish");
+    await prepareContinuityPlan(root, taskId, "Verify publish-risk route escalation.");
 
     const [code, payload] = await runJson<{
       workflow_mode: string;
@@ -102,7 +98,7 @@ describe("runCli task execution routing", () => {
     expect(code).toBe(0);
     expect(payload.workflow_mode).toBe("branch_pr");
     expect(payload.task.execution_route.selected_mode).toBe("branch_pr");
-    expect(payload.task.execution_route.reason_codes).toContain("risk_publish");
+    expect(payload.task.execution_route.reason_codes).toContain("effect_publish");
     expect(payload.next_action.code).toBe("start_or_recover_worktree");
 
     const worktreePath = path.join(

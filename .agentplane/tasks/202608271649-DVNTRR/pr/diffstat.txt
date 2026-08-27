@@ -1,0 +1,6 @@
+ .../run-cli.core.direct-task-supervision.test.ts   |  35 ++---
+ .../src/cli/run-cli.core.task-handoff.test.ts      |  41 ++---
+ .../cli/run-cli.core.task-next-action-json.test.ts |  42 ++---
+ .../src/cli/run-cli.core.task-routing.test.ts      |  24 ++-
+ .../agentplane/src/cli/task-continuity.testkit.ts  | 170 +++++++++++++++++++++
+ 5 files changed, 217 insertions(+), 95 deletions(-)
