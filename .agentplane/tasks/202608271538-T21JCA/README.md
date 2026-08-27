@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 52
+revision: 53
 origin:
   system: "manual"
 depends_on:
@@ -27,6 +27,38 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-27T18:57:04.992Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "714ec7d931205d05fc7158b883806e5ea4388200"
+  blueprint_digest: "bf6412e3d49da0bea86f3add5fbd4a74730f923069b0d97f7d3737c785393ad9"
+  evidence_refs:
+    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-185237520-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-185237520-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/efe135d010022261174668a4c7cb2b3925b6118a8068b12cda82e02713ab0c81.md"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-185237520-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-185237520-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-185237520-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608271538-T21JCA/README.md"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/a7e3196d56670a618cab6f2faccd91792fd9fdd6bb32df3f9587ff725891c60f.patch"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/5b969fa31cb380006daa12e43d9292d0b7b40b06dab78d360d996621e45a56f0.json"
+    - ".agentplane/tasks/202608271538-T21JCA/verification/20260827185225478-6366f2fb7f9e38cb.json"
+    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/23f41be610f22839e63955e61a6129a0f92dc7b634a33469b42faf27be8d2392.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The frozen diff preserves exact provider identity and pre-effect base binding. Reconciliation-only requests bind a distinct observed head and reject target drift before any PUT. Delayed readback repeats observation, not mutation."
+    - "Local reconciliation validates the authoritative checkout, branch, clean state, remote URLs and upstream before fetch and again before fast-forward. It proves exact fetched head and ancestry, uses ff-only/no-overwrite-ignore, and reports uncertainty rather than success if alignment is incomplete."
+    - "The publication classifier distinguishes a fetched hosted descendant from new unpublished local work. Recovery routes before stale publication, while the next local implementation remains publishable. Real Git fixtures cover interruption before and after fetch, repeated reconciliation, concurrent edits and ignored-file preservation."
+    - "The projected command uses registered task run with fresh managed routing. Exact operation authority and active-runner precedence remain tested. The registry expectation was updated to the real command without weakening assertions."
+    - "Frozen evidence digests match. CLI-owned verification records full local CI and focused checks passing for evaluated SHA 714ec7d931205d05fc7158b883806e5ea4388200. Extra diff paths belong to already-integrated 1TDVPJ: the exact current-main source delta is restricted to the 15 approved paths."
+    - "Residual risk: Provider observations can remain delayed beyond the bounded retry interval; the operation intentionally stops with effect_in_doubt and requires a fresh reconciliation route."
+    - "Residual risk: Hosted exact-head checks, unresolved review and integration/closure still require provider evidence. This verdict is not a delivery or release claim."
 token_usage:
   agent_runs: 8
   input_tokens: null
@@ -615,7 +647,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-27T18:52:27.772Z"
+doc_updated_at: "2026-08-27T18:57:05.031Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the demonstrated recovery gap for an OPEN GitHub PR whose exact aligned head has successful required checks but whose provider mergeability is behind under strict protection. PR #5854 is the observed case: queue handoff after HTTP 405 required PR verification expected; no merge conflict, no live runner. Route the existing provider.pr.update_branch operation for coherent exact-head behind evidence, preserve stale-head/provider/base/authority guards, required checks, and queue ownership. Add focused regression tests. Do not merge or publish from semantic implementation, bypass protection, manufacture hosted failures, or rewrite frozen task bases."
 sections:
