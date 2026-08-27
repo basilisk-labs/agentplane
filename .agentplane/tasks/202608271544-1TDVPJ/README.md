@@ -4,7 +4,7 @@ title: "Modernize exact-result recovery fixtures"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -26,6 +26,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-27T16:29:07.224Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "04686a004a2b9969d03059d853a294afdc6a22c7"
+  blueprint_digest: "8cbff0e94b30e0bd23b9bf575f6cf6cf653277543f74e663e847264604414e96"
+  evidence_refs:
+    - ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/b138e23a64b8077d010b45401e70824413f65d708334c29a5b663586700828e7.md"
+    - ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608271544-1TDVPJ/README.md"
+    - ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/4a6b7f61fc2cd73a0ac64c0afa6b1e91ee9137ee153073440092170e287545ae.patch"
+    - ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/54db07e252c5020879f6e899f2b62e2cbfdd0f825307f6b3f8a998e2cee24ddf.json"
+    - ".agentplane/tasks/202608271544-1TDVPJ/verification/20260827162335964-8d33c746263199fc.json"
+    - ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/09e7b31f3ac865c48223b58cfb33a8e0b13406f6b1d10fbd0397887ce64fcd39.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The approved material replan covers exactly the four changed paths. Production changes reuse the existing canonical JSON representation; no lifecycle, provider, approval, policy or CI authority is changed."
+    - "Twelve focused comparison tests prove nested property-order equivalence while rejecting changed scalars, missing or added fields, reordered arrays, absent proposal, changed plan text and missing approval. The structured-classification path retains content checks."
+    - "The CLI test applies the real planning effect before simulated interruption, observes persisted proposal equality, resumes into the issued EXECUTOR checkout and verifies the original operation key, work-order reference, wrapped result digest, consumed exchange and exactly two semantic operations. Other replay, stale, retirement and replacement guards remain intact."
+    - "Frozen verification20260827162335964-8d33c746263199fc binds implementation04686a004a2b9969d03059d853a294afdc6a22c7 to passing full CI454103ms,15 CLI tests13295ms and12 comparison tests800ms. Earlier failed evidence remains preserved."
+    - "Residual risk: The comparator operates on schema-validated JSON values; this change does not extend the supported data model."
+    - "Residual risk: Local verification does not prove hosted publication or integration."
 execution_route:
   frozen: true
   reason_codes:
