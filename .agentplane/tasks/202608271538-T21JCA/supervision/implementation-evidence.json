@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 95085920e0bf838d7367658d16d40dec2c139932..4e41eae79ea88ac143a2767282bd41289a77306f",
+      "command": "git diff --check 13536bcf0bac442a88b588129d7c3652ff28a573..714ec7d931205d05fc7158b883806e5ea4388200",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 95085920e0bf838d7367658d16d40dec2c139932..4e41eae79ea88ac143a2767282bd41289a77306f",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 13536bcf0bac442a88b588129d7c3652ff28a573..714ec7d931205d05fc7158b883806e5ea4388200",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,19 +21,7 @@
         "M\t.agentplane/tasks/202608271538-T21JCA/pr/github-body.md",
         "M\t.agentplane/tasks/202608271538-T21JCA/pr/meta.json",
         "M\t.agentplane/tasks/202608271538-T21JCA/pr/review.md",
-        "M\tpackages/agentplane/src/commands/pr/head-publication.test.ts",
-        "M\tpackages/agentplane/src/commands/pr/head-publication.ts",
-        "M\tpackages/agentplane/src/commands/pr/provider-update-branch-local.test.ts",
-        "M\tpackages/agentplane/src/commands/pr/provider-update-branch.test.ts",
-        "M\tpackages/agentplane/src/commands/pr/provider-update-branch.ts",
-        "M\tpackages/agentplane/src/commands/shared/provider-update-branch-route.ts",
-        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-operation-prefix.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-operation-projection.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+        "M\tpackages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
       ]
     },
     {
@@ -43,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "95085920e0bf838d7367658d16d40dec2c139932",
-  "implementation_commit": "4e41eae79ea88ac143a2767282bd41289a77306f",
+  "execution_base_commit": "13536bcf0bac442a88b588129d7c3652ff28a573",
+  "implementation_commit": "714ec7d931205d05fc7158b883806e5ea4388200",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
