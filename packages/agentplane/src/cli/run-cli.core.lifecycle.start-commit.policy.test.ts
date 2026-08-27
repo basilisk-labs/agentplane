@@ -39,6 +39,7 @@ import {
   runCliSilent,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
+  mkGitRepoRootWithCommit,
   mkTempDir,
   pathExists,
   stageGitignoreIfPresent,
@@ -57,7 +58,7 @@ installRunCliIntegrationHarness();
 
 describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
   it("start blocks comment-driven commits when status_commit_policy=confirm", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const cfg = defaultConfig();
     cfg.status_commit_policy = "confirm";
     await writeConfig(root, cfg);
