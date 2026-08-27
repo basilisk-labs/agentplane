@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608271251-GHHA0Q/replace-obsolete-cli-test-expectations-with-arch",
   "created_at": "2026-08-27T12:55:50.935Z",
-  "diffstat_sha256": "sha256:187bbc74ab6efe7239211d6e2ff589ad2d4222cfec218f13088de0f27f3d860c",
+  "diffstat_sha256": "sha256:ee22b5af3a6d8af94214c655af82d141b266e7471bceccf022f261ee62741210",
   "last_verified_at": "2026-08-27T13:06:52.681Z",
   "last_verified_diffstat_sha256": "sha256:187bbc74ab6efe7239211d6e2ff589ad2d4222cfec218f13088de0f27f3d860c",
   "provider": {
