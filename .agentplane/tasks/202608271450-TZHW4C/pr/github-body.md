@@ -22,7 +22,7 @@ Modernize the three planner-intent fixture files after eight freshly reproduced 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T14:52:22.610Z
+- Updated: 2026-08-27T16:43:37.535Z
 - Branch: task/202608271450-TZHW4C/modernize-structured-planner-intent-fixtures
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

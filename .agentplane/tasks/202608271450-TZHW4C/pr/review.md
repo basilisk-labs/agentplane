@@ -6,7 +6,7 @@ Created: 2026-08-27T14:52:22.610Z
 
 - Task: `202608271450-TZHW4C`
 - Title: Modernize structured planner-intent fixtures
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608271450-TZHW4C/modernize-structured-planner-intent-fixtures`
 - Canonical task record: `.agentplane/tasks/202608271450-TZHW4C/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-27T14:52:22.610Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T14:52:22.610Z
+- Updated: 2026-08-27T16:43:37.535Z
 - Branch: task/202608271450-TZHW4C/modernize-structured-planner-intent-fixtures
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
