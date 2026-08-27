@@ -1,0 +1,5 @@
+ .../cli/run-cli.core.lifecycle.start-commit.policy.test.ts   |  3 ++-
+ .../src/cli/run-cli.core.lifecycle.start-readiness.test.ts   |  5 +++--
+ packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts   |  9 +++++----
+ .../agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts  | 12 ++++++++----
+ 4 files changed, 18 insertions(+), 11 deletions(-)

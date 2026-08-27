@@ -441,16 +441,130 @@ describe("DONE route quality-review target", () => {
     );
   });
 
-  it("routes an exact aligned GitHub behind state to provider update before semantic rework", async () => {
-    const blockers = await blockersFor(reviewedSha, undefined, failingHostedPrFlow("behind"));
+  it.each(["failing", "passing"] as const)(
+    "routes an exact aligned GitHub behind state with %s checks to provider update",
+    async (checkState) => {
+      const flow = failingHostedPrFlow("behind");
+      if (checkState === "passing") {
+        flow.hostedChecks = {
+          checked: true,
+          total: 1,
+          pending: 0,
+          failing: 0,
+          passing: 1,
+          missingRequired: [],
+          rows: [{ name: "PR verification", state: "SUCCESS" }],
+        };
+      }
+      const blockers = await blockersFor(reviewedSha, undefined, flow);
 
-    expect(blockers).toEqual(
+      expect(blockers).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ code: "provider_pr_update_branch_required" }),
+        ]),
+      );
+      expect(blockers).not.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ code: "implementation_rework_required" }),
+        ]),
+      );
+    },
+  );
+
+  it.each([
+    [
+      "clean provider state",
+      (flow: PrFlowStatusReport) => {
+        if (flow.providerObservation?.state === "found") {
+          flow.providerObservation.pr.mergeability = {
+            state: "not_conflicting",
+            mergeable: true,
+            providerState: "clean",
+          };
+        }
+      },
+    ],
+    [
+      "unchecked hosted checks",
+      (flow: PrFlowStatusReport) => {
+        flow.hostedChecks = { checked: false, reason: "not observed" };
+      },
+    ],
+    [
+      "unpublished head",
+      (flow: PrFlowStatusReport) => {
+        flow.publication = {
+          state: "unpublished",
+          reason: "upstream_head_mismatch",
+          localHeadSha: headSha,
+          upstreamRef: "origin/task/T-1/metadata-gate",
+          upstreamHeadSha: "c".repeat(40),
+          hostedHeadSha: "c".repeat(40),
+        };
+      },
+    ],
+    [
+      "stale observed head",
+      (flow: PrFlowStatusReport) => {
+        if (flow.providerObservation?.state === "found")
+          flow.providerObservation.pr.headSha = "c".repeat(40);
+      },
+    ],
+    [
+      "missing base identity",
+      (flow: PrFlowStatusReport) => {
+        if (flow.providerObservation?.state === "found") flow.providerObservation.pr.baseSha = null;
+      },
+    ],
+    [
+      "conflicting provider state",
+      (flow: PrFlowStatusReport) => {
+        if (flow.providerObservation?.state === "found") {
+          flow.providerObservation.pr.mergeability = {
+            state: "conflicting",
+            mergeable: false,
+            providerState: "dirty",
+          };
+        }
+      },
+    ],
+  ] as const)("does not infer green-behind recovery from %s", async (_label, mutate) => {
+    const flow = failingHostedPrFlow("behind");
+    flow.hostedChecks = {
+      checked: true,
+      total: 1,
+      pending: 0,
+      failing: 0,
+      passing: 1,
+      missingRequired: [],
+      rows: [{ name: "PR verification", state: "SUCCESS" }],
+    };
+    mutate(flow);
+    const blockers = await blockersFor(reviewedSha, undefined, flow);
+    expect(blockers).not.toEqual(
       expect.arrayContaining([
         expect.objectContaining({ code: "provider_pr_update_branch_required" }),
       ]),
     );
-    expect(blockers).not.toEqual(
-      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+  });
+
+  it("requires reconciliation of a coherent mismatched head before stale publication", async () => {
+    const flow = failingHostedPrFlow("unknown", { mergeabilityState: "unknown" });
+    const hosted = "c".repeat(40);
+    flow.pr.headSha = hosted;
+    if (flow.providerObservation?.state === "found") flow.providerObservation.pr.headSha = hosted;
+    flow.publication = {
+      state: "hosted_mismatch",
+      localHeadSha: headSha,
+      upstreamRef: "origin/task/T-1/metadata-gate",
+      upstreamHeadSha: headSha,
+      hostedHeadSha: hosted,
+    };
+    flow.hostedChecks = { checked: false, reason: "updated checks not available" };
+    expect(await blockersFor(reviewedSha, undefined, flow)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ code: "provider_pr_update_branch_required" }),
+      ]),
     );
   });
 

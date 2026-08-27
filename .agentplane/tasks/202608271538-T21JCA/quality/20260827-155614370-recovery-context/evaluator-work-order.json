@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608271538-T21JCA-8a5a0e803cb9e6c181fc13f0",
+  "prepared_at": "2026-08-27T15:56:14.370Z",
+  "task": {
+    "id": "202608271538-T21JCA",
+    "revision": 8,
+    "objective": "Recover green behind PRs through provider branch update\n\nRepair the demonstrated recovery gap for an OPEN GitHub PR whose exact aligned head has successful required checks but whose provider mergeability is behind under strict protection. PR #5854 is the observed case: queue handoff after HTTP 405 required PR verification expected; no merge conflict, no live runner. Route the existing provider.pr.update_branch operation for coherent exact-head behind evidence, preserve stale-head/provider/base/authority guards, required checks, and queue ownership. Add focused regression tests. Do not merge or publish from semantic implementation, bypass protection, manufacture hosted failures, or rewrite frozen task bases.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "- In scope: Repair the demonstrated recovery gap for an OPEN GitHub PR whose exact aligned head has successful required checks but whose provider mergeability is behind under strict protection. PR #5854 is the observed case: queue handoff after HTTP 405 required PR verification expected; no merge conflict, no live runner. Route the existing provider.pr.update_branch operation for coherent exact-head behind evidence, preserve stale-head/provider/base/authority guards, required checks, and queue ownership. Add focused regression tests. Do not merge or publish from semantic implementation, bypass protection, manufacture hosted failures, or rewrite frozen task bases.\n- Out of scope: unrelated refactors not required for \"Recover green behind PRs through provider branch update\".",
+      "Use the existing exact-head provider branch-update route for coherent GitHub behind observations regardless of whether completed hosted checks are green or failing. Keep the existing authority operation, guarded provider write, verification restart, and queue ownership. Add focused positive and negative regression coverage.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "da64f2d0ea907c7f18a113743f731db104b0d564",
+  "diff_base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+  "blueprint_digest": "bf6412e3d49da0bea86f3add5fbd4a74730f923069b0d97f7d3737c785393ad9",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608271538-T21JCA/quality/20260827-155614370-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:928c0d64aca45786d5055eba5bbccf58a3774b3172910ad5cba052ee67174f19",
+    "prompt_path": ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/d45ba3378de8f21986c7dba53843422ac84e13c3a300a10b253f902a75553e18.md",
+    "result_schema_path": ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608271538-T21JCA/README.md",
+      "sha256": "sha256:0f6589445c6347d65e03624472e2f4e61d2f362e5e54c2128501dc857b659ce6",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/8272d31e92fdd32ae188f1bceceb8fd5b20abee2ac53a445582b54e3cf230ada.patch",
+      "sha256": "sha256:8272d31e92fdd32ae188f1bceceb8fd5b20abee2ac53a445582b54e3cf230ada",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/20e682bec49f3be073f007266985798ff96956563ac46f42c9c8963175cb0d75.json",
+      "sha256": "sha256:20e682bec49f3be073f007266985798ff96956563ac46f42c9c8963175cb0d75",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608271538-T21JCA/verification/20260827155541958-c84df617bc1e0c1a.json",
+      "sha256": "sha256:14bb74509219b58afebcbe5941c47e748f69d3f0dae112f9d63f58ed6959d050",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/23f41be610f22839e63955e61a6129a0f92dc7b634a33469b42faf27be8d2392.json",
+      "sha256": "sha256:23f41be610f22839e63955e61a6129a0f92dc7b634a33469b42faf27be8d2392",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

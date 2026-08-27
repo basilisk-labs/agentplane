@@ -1,4 +1,4 @@
-import { gitBranchUpstream, gitRevParse } from "../shared/git-ops.js";
+import { gitBranchUpstream, gitProofIsAncestor, gitRevParse } from "../shared/git-ops.js";
 
 type ProviderHeadObservation =
   | { state: "found"; headSha: string | null }
@@ -65,6 +65,15 @@ export async function resolvePrHeadPublicationStatus(opts: {
     return { state: "unpublished", reason: "missing_upstream", ...evidence };
   }
   if (upstreamHeadSha !== opts.localHeadSha) {
+    if (hostedHeadSha === upstreamHeadSha) {
+      try {
+        if (await gitProofIsAncestor(opts.gitRoot, opts.localHeadSha, hostedHeadSha)) {
+          return { state: "hosted_mismatch", ...evidence };
+        }
+      } catch {
+        return { state: "unavailable", reason: "Local ancestry inspection failed", ...evidence };
+      }
+    }
     return { state: "unpublished", reason: "upstream_head_mismatch", ...evidence };
   }
   if (opts.providerObservation?.state === "unavailable") {

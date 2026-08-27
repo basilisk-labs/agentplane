@@ -4,13 +4,14 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { describe } from "vitest";
+import { approveRouteTaskPlan } from "./route-decision.testkit.js";
+import { mkGitRepoRootWithCommit } from "@agentplane/testkit";
 
 import {
   captureStdIO,
   defaultConfig,
   expect,
   it,
-  mkGitRepoRootWithBranch,
   runCli,
   runCliSilent,
   writeConfig,
@@ -84,26 +85,14 @@ async function withFakeGh<T>(
 
 describe("runCli route decision commands", () => {
   it("reports status, next action, work resume, and dry-run repair", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Exercise route decision commands.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await approveRouteTaskPlan(root, taskId, "Exercise route decision commands.");
     const rootRealpath = await realpath(root);
 
     const statusIo = captureStdIO();
@@ -221,26 +210,14 @@ describe("runCli route decision commands", () => {
   });
 
   it("prints a local-first task brief with JSON output and no default gh lookup", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Exercise task brief command.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await approveRouteTaskPlan(root, taskId, "Exercise task brief command.");
 
     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
     await mkdir(prDir, { recursive: true });
@@ -523,25 +500,13 @@ describe("runCli route decision commands", () => {
   });
 
   it("does not block direct route mutation when a running runner pid is dead", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Exercise stale runner route handling.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await approveRouteTaskPlan(root, taskId, "Exercise stale runner route handling.");
     await runCliSilent([
       "task",
       "start-ready",
@@ -605,7 +570,7 @@ describe("runCli route decision commands", () => {
   });
 
   it("safe-apply skips approval and provider-only repair steps", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -650,26 +615,14 @@ describe("runCli route decision commands", () => {
   });
 
   it("routes stale local branch_pr state to base sync after hosted close is recorded upstream", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Exercise hosted close sync route.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await approveRouteTaskPlan(root, taskId, "Exercise hosted close sync route.");
     await runCliSilent(["task", "set-status", taskId, "DOING", "--force", "--yes", "--root", root]);
 
     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
@@ -765,25 +718,13 @@ describe("runCli route decision commands", () => {
   });
 
   it("keeps done direct-mode tasks on a direct-safe terminal route", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Exercise direct done route decisions.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await approveRouteTaskPlan(root, taskId, "Exercise direct done route decisions.");
 
     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const readme = await readFile(readmePath, "utf8");
@@ -812,26 +753,14 @@ describe("runCli route decision commands", () => {
   });
 
   it("does not treat task-local artifact commits as stale PR metadata", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Exercise route decision commands.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await approveRouteTaskPlan(root, taskId, "Exercise route decision commands.");
 
     const branch = `task/${taskId}/route-decision`;
     await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
@@ -884,35 +813,14 @@ describe("runCli route decision commands", () => {
     "refreshes stale PR metadata before recommending integration",
     { timeout: 180_000 },
     async () => {
-      const root = await mkGitRepoRootWithBranch("main");
+      const root = await mkGitRepoRootWithCommit();
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
       await writeConfig(root, config);
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
       const taskId = await createBranchPrTask(root);
-      await runCliSilent([
-        "task",
-        "plan",
-        "set",
-        taskId,
-        "--text",
-        "Exercise stale PR metadata routing.",
-        "--updated-by",
-        "ORCHESTRATOR",
-        "--root",
-        root,
-      ]);
-      await runCliSilent([
-        "task",
-        "plan",
-        "approve",
-        taskId,
-        "--by",
-        "ORCHESTRATOR",
-        "--root",
-        root,
-      ]);
+      await approveRouteTaskPlan(root, taskId, "Exercise stale PR metadata routing.");
 
       const branch = `task/${taskId}/route-decision`;
       await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
@@ -1051,26 +959,14 @@ describe("runCli route decision commands", () => {
   );
 
   it("does not claim no repair when blockers are unmapped", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Exercise blocked repair plans.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await approveRouteTaskPlan(root, taskId, "Exercise blocked repair plans.");
 
     const branch = `task/${taskId}/missing-branch`;
     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");

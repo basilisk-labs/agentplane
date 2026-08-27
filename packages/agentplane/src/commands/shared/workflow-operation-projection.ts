@@ -67,37 +67,8 @@ function operationArgv(operation: WorkflowOperation): string[] {
       return ["agentplane", "pr", "flow", "status", operation.params.taskId];
     }
     case "provider.pr.update_branch": {
-      const { identity } = operation.params;
-      return [
-        "agentplane",
-        "pr",
-        "update-branch",
-        operation.params.taskId,
-        "--provider",
-        identity.provider,
-        "--hostname",
-        identity.hostname,
-        "--remote",
-        identity.remote,
-        "--source-project",
-        identity.sourceProject,
-        "--target-project",
-        identity.targetProject,
-        "--source-url",
-        identity.sourceUrl,
-        "--target-url",
-        identity.targetUrl,
-        "--pr-number",
-        String(operation.params.prNumber),
-        "--branch",
-        operation.params.branch,
-        "--base",
-        operation.params.baseBranch,
-        "--expect-head",
-        operation.params.expectedHeadSha,
-        "--expect-base",
-        operation.params.expectedBaseSha,
-      ];
+      // The managed runner revalidates the typed operation and its exact authority.
+      return ["agentplane", "task", "run", operation.params.taskId, "--remote", "--json"];
     }
     case "flow.repair.foreign_task_readme": {
       return ["agentplane", "flow", "repair", operation.params.taskId, "--safe-apply"];

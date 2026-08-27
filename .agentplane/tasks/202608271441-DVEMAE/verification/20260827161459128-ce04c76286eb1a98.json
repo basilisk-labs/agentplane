@@ -1,0 +1,116 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271441-DVEMAE Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --pool=threads --maxWorkers=2\nResult: pass\nEvidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608271441-DVEMAE Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271441-DVEMAE Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --pool=threads --maxWorkers=2\nResult: pass\nEvidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608271441-DVEMAE Verification Contract check critical_paths (2/2)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271441-DVEMAE Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271441-DVEMAE Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --pool=threads --maxWorkers=2\nResult: pass\nEvidence: .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608271441-DVEMAE Verification Contract check task_outcome (2/2)",
+  "digest": "sha256:ce04c76286eb1a98cfdbcd4ce2cab8947349da4247c8f4191491baab3212d359",
+  "implementation_sha": "0da9c92cbda53ff55e24c84ff81fa401165f1f29",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:aaa633e2e31db61dd3f0c324b8f82e25a8ad6bcb7c3dfe7cf7d9d9a496cd8541",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:a459452f19987306ab61530ba3ae0b4f8b67b4cd77b5e7565e96b09ce49ecd5a",
+      "digest": "sha256:97e8920f50b3c88ff1f4335f07b9721e7fc86b0726620f8045153f9afd16eba4",
+      "references": [
+        {
+          "digest": "sha256:8f9dac437bd62012d1181fe397ec4525b209cc8b1ada5022123c7828b0fc351f",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:8f9dac437bd62012d1181fe397ec4525b209cc8b1ada5022123c7828b0fc351f",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "5fce04a8be14816be4cae236d2941dff7045e214",
+      "digest": "sha256:9fbd130daf11ecda1172f7bd5eb16a1665ebaa9b21cf90d1c34717e0a7cd639b",
+      "primary_task_id": "202608271441-DVEMAE",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608271441-DVEMAE"
+      ]
+    },
+    "implementation": {
+      "base_sha": "5fce04a8be14816be4cae236d2941dff7045e214",
+      "digest": "sha256:aff371c4d9f6f55cfed62ae771e00bfae24db28c65c54f27cd7f3e1f9264abe2",
+      "strategy": "branch_diff",
+      "target_sha": "0da9c92cbda53ff55e24c84ff81fa401165f1f29"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:6581261f2d8f41c591ad99c1906bcf29e1dd10b7550217d99d4bfae7fe9d96b7",
+    "verify_steps_digest": "sha256:f864c678239dfad51fc967415a857af2561f020e8b667f29bb06300539e69569"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-27T16:14:59.128Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --pool=threads --maxWorkers=2. Expected: all 28 tests pass with dependency, force approval, comment validation, confirmation, incident and exact seed SHA assertions preserved.\n2. Run ESLint and Prettier on all four files and git diff --check. Expected: no errors.\n3. Run bun run ci:local:full. Expected: mandatory full CI succeeds.\n4. Review the diff. Expected: only the four scoped test files change, with no skips, weakened safety assertions, production or shared helper changes.\n5. Require hosted exact-head checks and supported integration before final closure.",
+  "scope_digest": "sha256:f864c678239dfad51fc967415a857af2561f020e8b667f29bb06300539e69569",
+  "task_id": "202608271441-DVEMAE",
+  "verification_command": "agentplane verify 202608271441-DVEMAE --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

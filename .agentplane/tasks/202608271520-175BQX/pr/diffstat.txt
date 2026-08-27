@@ -1,0 +1,9 @@
+ .../agentplane/src/cli/route-decision.testkit.ts   | 250 +++++++++++++++++++++
+ .../cli/run-cli.core.route-decision.batch.test.ts  |  90 +++-----
+ ...cli.core.route-decision.direct-closeout.test.ts |  83 ++-----
+ ...li.core.route-decision.pr-open-metadata.test.ts |  48 +---
+ .../run-cli.core.route-decision.quality.test.ts    |  27 +--
+ ...i.core.route-decision.remote-confidence.test.ts |   4 +-
+ .../src/cli/run-cli.core.route-decision.test.ts    | 142 ++----------
+ ...un-cli.core.route-decision.verification.test.ts |  95 ++++----
+ 8 files changed, 369 insertions(+), 370 deletions(-)

@@ -1,0 +1,116 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271538-T21JCA Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608271538-T21JCA Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271538-T21JCA Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608271538-T21JCA Verification Contract check critical_paths (2/2)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271538-T21JCA Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271538-T21JCA Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608271538-T21JCA Verification Contract check task_outcome (2/2)",
+  "digest": "sha256:f40035f1f5135e1474d5039a2e47c71050a37694bd07b71cf954aeee95a47bf7",
+  "implementation_sha": "7266db812ee6925d8a88264cec9967167c607277",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:29928c4eefa522037a2a438eec0098f3000b9de90c20eb2b3d1ac6f602e3b999",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:f617a88787175ff05bfa82e783302d9e3b9b4be4e5e86b12a7849f9f82be9166",
+      "digest": "sha256:b525de7ffd9e53a711832fe96c5d4c73469d354947473cb5dbcaa2b27adcd64b",
+      "references": [
+        {
+          "digest": "sha256:010f4696b8031c55d2c74a5de4abb6c9f898f490fc35efce287f8651c6870d09",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:010f4696b8031c55d2c74a5de4abb6c9f898f490fc35efce287f8651c6870d09",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+      "digest": "sha256:9525a07f348b3cdc6fa9023563d761474545cdd270c1a0498d6f8d1ef1f1cf7c",
+      "primary_task_id": "202608271538-T21JCA",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608271538-T21JCA"
+      ]
+    },
+    "implementation": {
+      "base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+      "digest": "sha256:cbe8e4553f7e4836c9827e0b9fa4a69d75f160aa8e43001cf15a10bb3223134d",
+      "strategy": "branch_diff",
+      "target_sha": "7266db812ee6925d8a88264cec9967167c607277"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:316bbb0db9035f5eb940d98b2eb1b1b5b7d95712748ae1acc450a2f2ce73ebb0",
+    "verify_steps_digest": "sha256:8c71019fa5684e8ff9d5d23ad0d170ed62240513f04eb799db555d5a9e957885"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-27T16:58:04.845Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run `node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1`. Expected: all tests pass without skips or weaker guards.\n2. Run `bun run ci:local:full`. Expected: all tests pass without skips or weaker guards.\n3. Review local preservation, exact provider identity, ancestry and next-route alignment across successful update and interrupted retry. Require hosted exact-head checks and resolved PR review before integration.",
+  "scope_digest": "sha256:8c71019fa5684e8ff9d5d23ad0d170ed62240513f04eb799db555d5a9e957885",
+  "task_id": "202608271538-T21JCA",
+  "verification_command": "agentplane verify 202608271538-T21JCA --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

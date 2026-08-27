@@ -1,0 +1,147 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts b/packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts
+index 7bb41da8c..f26c0a896 100644
+--- a/packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts
+@@ -39,6 +39,7 @@ import {
+   runCliSilent,
+   mkGitRepoRoot,
+   mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   mkTempDir,
+   pathExists,
+   stageGitignoreIfPresent,
+@@ -57,7 +58,7 @@ installRunCliIntegrationHarness();
+ 
+ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
+   it("start blocks comment-driven commits when status_commit_policy=confirm", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithCommit();
+     const cfg = defaultConfig();
+     cfg.status_commit_policy = "confirm";
+     await writeConfig(root, cfg);
+diff --git a/packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts b/packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts
+index f0a3f8cd7..dde71b1de 100644
+--- a/packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts
+@@ -39,6 +39,7 @@ import {
+   runCliSilent,
+   mkGitRepoRoot,
+   mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   mkTempDir,
+   pathExists,
+   stageGitignoreIfPresent,
+@@ -57,7 +58,7 @@ installRunCliIntegrationHarness();
+ 
+ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
+   it("start enforces dependency readiness unless forced", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithCommit();
+     let taskA = "";
+     let taskB = "";
+     {
+@@ -154,7 +155,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
+   });
+ 
+   it("start --force always requires explicit approval", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithCommit();
+     const cfg = defaultConfig();
+     cfg.execution.profile = "conservative";
+     await writeConfig(root, cfg);
+diff --git a/packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts b/packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts
+index 4b84f7f11..c90b82776 100644
+--- a/packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts
+@@ -39,6 +39,7 @@ import {
+   runCliSilent,
+   mkGitRepoRoot,
+   mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   mkTempDir,
+   pathExists,
+   stageGitignoreIfPresent,
+@@ -137,7 +138,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
+   });
+ 
+   it("start reads structured comment bodies from files", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithCommit();
+     await writeDefaultConfig(root);
+ 
+     const ioNew = captureStdIO();
+@@ -191,7 +192,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
+   });
+ 
+   it("start accepts --commit-require-clean flag without commit-from-comment", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithCommit();
+     await writeDefaultConfig(root);
+ 
+     const ioNew = captureStdIO();
+@@ -267,7 +268,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
+   });
+ 
+   it("start rejects comments without the required prefix", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithCommit();
+     await writeDefaultConfig(root);
+ 
+     const ioNew = captureStdIO();
+@@ -319,7 +320,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
+   });
+ 
+   it("start rejects comments that are too short", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithCommit();
+     await writeDefaultConfig(root);
+ 
+     const ioNew = captureStdIO();
+diff --git a/packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts b/packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts
+index 7bd0d9b09..c82ce3b96 100644
+--- a/packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts
+@@ -39,6 +39,7 @@ import {
+   runCliSilent,
+   mkGitRepoRoot,
+   mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   mkTempDir,
+   pathExists,
+   stageGitignoreIfPresent,
+@@ -595,7 +596,10 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
+   });
+ 
+   it("task start-ready checks readiness and starts task in one command", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithCommit();
++    const { stdout: seedSha } = await promisify(execFile)("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
+     const config = defaultConfig();
+     config.agents.approvals.require_plan = false;
+     await writeConfig(root, config);
+@@ -651,12 +655,12 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
+     const extensions = task.frontmatter.extensions as Record<string, unknown> | undefined;
+     expect(extensions?.workflow_route_baseline).toEqual({
+       version: 1,
+-      start_head_sha: null,
++      start_head_sha: seedSha.trim(),
+     });
+   });
+ 
+   it("task start-ready prints matching incident advice for analogous tasks", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.agents.approvals.require_plan = false;
+     await writeConfig(root, config);
+@@ -736,7 +740,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
+   });
+ 
+   it("task start-ready fails early when dependencies are not ready", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.agents.approvals.require_plan = false;
+     await writeConfig(root, config);

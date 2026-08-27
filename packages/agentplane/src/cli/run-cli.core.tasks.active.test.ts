@@ -2,6 +2,7 @@ import { lstat } from "node:fs/promises";
 import path from "node:path";
 
 import { describe } from "vitest";
+import { mkGitRepoRootWithCommit } from "@agentplane/testkit";
 
 import {
   TASKS_QUERY_CLI_TIMEOUT_MS,
@@ -22,7 +23,7 @@ useRunCliIntegrationHarness();
 
 describe("runCli task active", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS }, () => {
   it("ranks active work with route and freshness fields", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const readyTaskId = "202603010150-AAAAAA";
     const blockedTaskId = "202603010151-BBBBBB";
     const doneTaskId = "202603010152-CCCCCC";
@@ -116,7 +117,7 @@ describe("runCli task active", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS }, () => {
   });
 
   it("uses canonical status keys when sorting merged-pending-close tasks", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const mergedTaskId = "202603010160-MERGED";
     const blockedTaskId = "202603010161-B1CKD";
     const approval = {
@@ -180,7 +181,7 @@ describe("runCli task active", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS }, () => {
   });
 
   it("reads concurrent active routes without creating protected runner artifacts", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const taskIds = Array.from(
       { length: 13 },
       (_, index) => `202603010200-A${String(index).padStart(3, "0")}`,
@@ -226,7 +227,7 @@ describe("runCli task active", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS }, () => {
   });
 
   it("surfaces waiting-on-user questions with answer commands", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const blockedTaskId = "202603010157-ASKSER";
     await seedTaskQueryFixture(root, [
       {

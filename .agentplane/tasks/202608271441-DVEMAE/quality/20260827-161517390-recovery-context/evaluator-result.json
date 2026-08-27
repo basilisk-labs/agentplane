@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The frozen diff contains only the four approved test files:18 insertions and11 deletions. Ten execution-dependent roots opt into the existing committed fixture helper. Existing argument-validation fixtures and shared helpers are unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271441-DVEMAE/quality/objects/sha256/bc9a4be916f6f1bf3e52810f0bdcae083f6de1da2c9050a0b73d2b46f2f4c158.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Dependency readiness, explicit force approval, required comment prefix/length, status-commit confirmation and incident matching remain tested with unchanged assertions.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271441-DVEMAE/quality/objects/sha256/bc9a4be916f6f1bf3e52810f0bdcae083f6de1da2c9050a0b73d2b46f2f4c158.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The start-ready assertion now compares workflow_route_baseline.start_head_sha to the actual HEAD captured before task creation. This strengthens execution identity rather than accepting an arbitrary non-null value.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271441-DVEMAE/quality/objects/sha256/bc9a4be916f6f1bf3e52810f0bdcae083f6de1da2c9050a0b73d2b46f2f4c158.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The serial supervisor run passed full CI in463861ms and repeated all28 scoped tests in7452ms. Verification record20260827161459128-ce04c76286eb1a98 binds the checks to the same implementation0da9c92cbda53ff55e24c84ff81fa401165f1f29.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271441-DVEMAE/quality/objects/sha256/bc9a4be916f6f1bf3e52810f0bdcae083f6de1da2c9050a0b73d2b46f2f4c158.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The earlier failed Core timeout was not relabeled. A fresh passing record was produced without changing code, timeouts, test selection, policy or CI. Pre-existing task artifacts were preserved and no unrelated worktree paths changed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271441-DVEMAE/quality/objects/sha256/bc9a4be916f6f1bf3e52810f0bdcae083f6de1da2c9050a0b73d2b46f2f4c158.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted qualification remains a separate mandatory gate; the earlier timeout history should remain visible.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271441-DVEMAE/quality/objects/sha256/bc9a4be916f6f1bf3e52810f0bdcae083f6de1da2c9050a0b73d2b46f2f4c158.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
