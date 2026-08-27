@@ -6,7 +6,7 @@ Created: 2026-08-27T15:08:25.681Z
 
 - Task: `202608271502-J6B4RW`
 - Title: Align intake and query execution fixtures
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608271502-J6B4RW/align-intake-and-query-execution-fixtures`
 - Canonical task record: `.agentplane/tasks/202608271502-J6B4RW/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-27T15:08:25.681Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T15:08:25.681Z
+- Updated: 2026-08-27T15:46:19.836Z
 - Branch: task/202608271502-J6B4RW/align-intake-and-query-execution-fixtures
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
