@@ -19,7 +19,7 @@ In scope: packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T15:46:45.984Z
+- Updated: 2026-08-27T16:23:53.379Z
 - Branch: task/202608271544-1TDVPJ/modernize-exact-result-recovery-fixtures
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
