@@ -6,7 +6,7 @@ Created: 2026-08-27T14:46:15.480Z
 
 - Task: `202608271441-DVEMAE`
 - Title: Repair lifecycle fixture execution bases
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608271441-DVEMAE/repair-lifecycle-fixture-execution-bases`
 - Canonical task record: `.agentplane/tasks/202608271441-DVEMAE/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-27T14:46:15.480Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T14:46:15.480Z
+- Updated: 2026-08-27T16:15:13.904Z
 - Branch: task/202608271441-DVEMAE/repair-lifecycle-fixture-execution-bases
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
