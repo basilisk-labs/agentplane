@@ -2,10 +2,10 @@
 id: "202608271538-T21JCA"
 title: "Recover green behind PRs through provider branch update"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 47
 origin:
   system: "manual"
 depends_on:
@@ -23,42 +23,10 @@ plan_approval:
   note: "Manual operator compatibility under the user authorization to continue refactoring with all permissions and the renewed instruction to complete this recovery. The replan retains the current ten-file recovery scope and mandatory checks. Request the two projection paths through the supported scope-extension route before edits. No signed or host-originated receipt is asserted."
 verification:
   state: "pending"
-  updated_at: "2026-08-27T18:02:16.991Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 1
-quality_review:
-  state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-27T16:59:17.079Z"
-  updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 7 typed finding(s)."
-  evaluated_sha: "7266db812ee6925d8a88264cec9967167c607277"
-  blueprint_digest: "bf6412e3d49da0bea86f3add5fbd4a74730f923069b0d97f7d3737c785393ad9"
-  evidence_refs:
-    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-165816155-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-165816155-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/2ba4423ad95e1c8d825431449b05e8979e4147776ed5596cb0d9d1e8f498b19b.md"
-    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-165816155-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-165816155-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608271538-T21JCA/quality/20260827-165816155-recovery-context/evaluator-evidence-manifest.json"
-    - ".agentplane/tasks/202608271538-T21JCA/README.md"
-    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/fcf8dd2e46cf020a4dfa46a07d648ce3dfb919b0ad00a577f97eacfd649d9817.patch"
-    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/aaae0a4db026925daff5ae459b577e586f725c6f7b05301210c65ca44c52ae5f.json"
-    - ".agentplane/tasks/202608271538-T21JCA/verification/20260827165804845-f40035f1f5135e14.json"
-    - ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/23f41be610f22839e63955e61a6129a0f92dc7b634a33469b42faf27be8d2392.json"
-    - ".agentplane/policy/dod.code.md"
-    - ".agentplane/policy/dod.core.md"
-    - ".agentplane/policy/security.must.md"
-    - ".agentplane/policy/workflow.branch_pr.md"
-  findings:
-    - "The original routing correction uses coherent provider behind evidence for both passing and failing checked heads. Exact branch/head/base, aligned publication, active-runner precedence and digest-bound authority remain enforced."
-    - "The supervisor supplies the authoritative task worktree. Local preflight checks branch, head, upstream, clean tracked/untracked state and authorized remote URLs before PUT. Provider identity, expected-head API binding and both ancestry proofs are preserved."
-    - "Reconciliation fetches the authorized publication source, requires exact observed head and locally proves both ancestors, rechecks local state, then fast-forwards with no-overwrite-ignore. It verifies exact local/upstream alignment before reporting updated. No force push, reset or queue mutation is introduced."
-    - "Fourteen real-Git cases cover fresh and interrupted updates, no repeat PUT, next publication alignment, dirty/staged/untracked state, branch/head/remote/upstream drift, changes during PUT, moved remote head, fetch failure and preservation of ignored files. The original3regressions were demonstrated failing before the fix."
-    - "Frozen verification20260827165804845-f40035f1f5135e14 binds implementation7266db812ee6925d8a88264cec9967167c607277 to full CI593997ms and75focused tests9780ms. The approved scope extension preceded implementation and the frozen diff stays within its10paths."
-    - "Residual risk: The provider API fixture is mocked while local Git and preservation checks are real; hosted exact-head qualification remains a separate gate."
-    - "Residual risk: An external concurrent edit can cause a fail-closed effect_in_doubt result after the provider has updated. Recovery must reconcile before publication; success is not claimed in that state."
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
 token_usage:
   agent_runs: 8
   input_tokens: null
@@ -150,14 +118,114 @@ execution_contract:
       - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
       - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "repository_effect:documentation"
+      - "verification:recorded-check-1:fail"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/README.md"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/blueprint/resolved-snapshot.json"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/pr/diffstat.txt"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/pr/github-body.md"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/pr/github-title.txt"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/pr/meta.json"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/pr/review.md"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-evidence-manifest.json"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-opinion.md"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-result.json"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-work-order.json"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/quality-report.json"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/09e7b31f3ac865c48223b58cfb33a8e0b13406f6b1d10fbd0397887ce64fcd39.json"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/4a6b7f61fc2cd73a0ac64c0afa6b1e91ee9137ee153073440092170e287545ae.patch"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/54db07e252c5020879f6e899f2b62e2cbfdd0f825307f6b3f8a998e2cee24ddf.json"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/b138e23a64b8077d010b45401e70824413f65d708334c29a5b663586700828e7.md"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/supervision/implementation-evidence.json"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/verification/20260827160642690-24295292837d8d7e.json"
+      - "writable_scope:.agentplane/tasks/202608271544-1TDVPJ/verification/20260827162335964-8d33c746263199fc.json"
+      - "writable_scope:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+      - "writable_scope:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+      - "writable_scope:packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+      - "writable_scope:packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
+    changed_components:
+      - ".agentplane"
+      - "packages/agentplane"
+    changed_paths:
+      - ".agentplane/tasks/202608271544-1TDVPJ/README.md"
+      - ".agentplane/tasks/202608271544-1TDVPJ/blueprint/resolved-snapshot.json"
+      - ".agentplane/tasks/202608271544-1TDVPJ/pr/diffstat.txt"
+      - ".agentplane/tasks/202608271544-1TDVPJ/pr/github-body.md"
+      - ".agentplane/tasks/202608271544-1TDVPJ/pr/github-title.txt"
+      - ".agentplane/tasks/202608271544-1TDVPJ/pr/meta.json"
+      - ".agentplane/tasks/202608271544-1TDVPJ/pr/review.md"
+      - ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-evidence-manifest.json"
+      - ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-opinion.md"
+      - ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-result.json"
+      - ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-work-order.json"
+      - ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/quality-report.json"
+      - ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/09e7b31f3ac865c48223b58cfb33a8e0b13406f6b1d10fbd0397887ce64fcd39.json"
+      - ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/4a6b7f61fc2cd73a0ac64c0afa6b1e91ee9137ee153073440092170e287545ae.patch"
+      - ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/54db07e252c5020879f6e899f2b62e2cbfdd0f825307f6b3f8a998e2cee24ddf.json"
+      - ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+      - ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/b138e23a64b8077d010b45401e70824413f65d708334c29a5b663586700828e7.md"
+      - ".agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json"
+      - ".agentplane/tasks/202608271544-1TDVPJ/supervision/implementation-evidence.json"
+      - ".agentplane/tasks/202608271544-1TDVPJ/verification/20260827160642690-24295292837d8d7e.json"
+      - ".agentplane/tasks/202608271544-1TDVPJ/verification/20260827162335964-8d33c746263199fc.json"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+      - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+      - "packages/agentplane/src/commands/pr/head-publication.test.ts"
+      - "packages/agentplane/src/commands/pr/head-publication.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-branch-local.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+      - "packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+      - "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/README.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/blueprint/resolved-snapshot.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/pr/diffstat.txt"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/pr/github-body.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/pr/github-title.txt"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/pr/meta.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/pr/review.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/09e7b31f3ac865c48223b58cfb33a8e0b13406f6b1d10fbd0397887ce64fcd39.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/4a6b7f61fc2cd73a0ac64c0afa6b1e91ee9137ee153073440092170e287545ae.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/54db07e252c5020879f6e899f2b62e2cbfdd0f825307f6b3f8a998e2cee24ddf.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/b138e23a64b8077d010b45401e70824413f65d708334c29a5b663586700828e7.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/supervision/implementation-evidence.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/verification/20260827160642690-24295292837d8d7e.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608271544-1TDVPJ/verification/20260827162335964-8d33c746263199fc.json"
+    - "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+    - "observed_path_outside_scope:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+    - "observed_path_outside_scope:packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+    - "observed_path_outside_scope:packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
   safety:
@@ -187,6 +255,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
         evidence_requirements:
           - "hosted_integration"
+          - "repository_effect:documentation"
           - "repository_effect:repository_write"
           - "repository_effect:source_code"
           - "repository_effect:tests"
@@ -200,7 +269,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:133c8110171c48cdbdf6caba4275993ef27fcca312dffa9cccf2bb9582e21e5d"
+      digest: "sha256:3caff76437692636604b0f7bc2a7e082f9a1c1a54d08e5912a049697a2919188"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
         - "central_component:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
@@ -208,16 +277,85 @@ execution_contract:
         - "central_component:packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+        - "central_path:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+        - "central_path:packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/blueprint/resolved-snapshot.json"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/pr/diffstat.txt"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/pr/github-title.txt"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/pr/meta.json"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-evidence-manifest.json"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-result.json"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-work-order.json"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/quality-report.json"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/09e7b31f3ac865c48223b58cfb33a8e0b13406f6b1d10fbd0397887ce64fcd39.json"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/4a6b7f61fc2cd73a0ac64c0afa6b1e91ee9137ee153073440092170e287545ae.patch"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/54db07e252c5020879f6e899f2b62e2cbfdd0f825307f6b3f8a998e2cee24ddf.json"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/supervision/implementation-evidence.json"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/verification/20260827160642690-24295292837d8d7e.json"
+        - "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/verification/20260827162335964-8d33c746263199fc.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - ".agentplane"
+          - "packages/agentplane"
+        changed_files:
+          - ".agentplane/tasks/202608271544-1TDVPJ/README.md"
+          - ".agentplane/tasks/202608271544-1TDVPJ/blueprint/resolved-snapshot.json"
+          - ".agentplane/tasks/202608271544-1TDVPJ/pr/diffstat.txt"
+          - ".agentplane/tasks/202608271544-1TDVPJ/pr/github-body.md"
+          - ".agentplane/tasks/202608271544-1TDVPJ/pr/github-title.txt"
+          - ".agentplane/tasks/202608271544-1TDVPJ/pr/meta.json"
+          - ".agentplane/tasks/202608271544-1TDVPJ/pr/review.md"
+          - ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-evidence-manifest.json"
+          - ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-opinion.md"
+          - ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-result.json"
+          - ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-work-order.json"
+          - ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/quality-report.json"
+          - ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/09e7b31f3ac865c48223b58cfb33a8e0b13406f6b1d10fbd0397887ce64fcd39.json"
+          - ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/4a6b7f61fc2cd73a0ac64c0afa6b1e91ee9137ee153073440092170e287545ae.patch"
+          - ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/54db07e252c5020879f6e899f2b62e2cbfdd0f825307f6b3f8a998e2cee24ddf.json"
+          - ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+          - ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/b138e23a64b8077d010b45401e70824413f65d708334c29a5b663586700828e7.md"
+          - ".agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json"
+          - ".agentplane/tasks/202608271544-1TDVPJ/supervision/implementation-evidence.json"
+          - ".agentplane/tasks/202608271544-1TDVPJ/verification/20260827160642690-24295292837d8d7e.json"
+          - ".agentplane/tasks/202608271544-1TDVPJ/verification/20260827162335964-8d33c746263199fc.json"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+          - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+          - "packages/agentplane/src/commands/pr/head-publication.test.ts"
+          - "packages/agentplane/src/commands/pr/head-publication.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-branch-local.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+          - "packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+          - "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -229,6 +367,7 @@ execution_contract:
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "docs_contract"
         - "full_regression"
         - "hosted_integration"
         - "task_outcome"
@@ -245,10 +384,12 @@ execution_contract:
       source: "execution_contract"
     required_evidence:
       - "hosted_integration"
+      - "repository_effect:documentation"
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
@@ -284,6 +425,12 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/pr/head-publication.test.ts, packages/agentplane/src/commands/pr/head-publication.ts; repository effects: unchanged."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 4e41eae79ea8. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Required full CI found one obsolete registry expectation for the unregistered pr update-branch command. Runtime, docs/schema and critical CLI groups passed. No workspace edits were made in this episode. Recommended action: Apply this exact scope extension, then issue a fresh EXECUTOR packet for the same WorkItem. Requested scope: roots=packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts; repository effects=unchanged; request digest=sha256:7d6b29c95f647fffddd04b580eb04060b4a71e87579f6dba19fd6ef5ef5d5d9c. Agentplane receipt: external-agent-blocker/tr_b40a5bf7666d4ec3b78dd6a336b0872a/sha256:09e551d8905443b72cd3a34831d1d2e2da0722b884bf095919faf3745e1eaa38/sha256:7d6b29c95f647fffddd04b580eb04060b4a71e87579f6dba19fd6ef5ef5d5d9c."
 events:
   -
     type: "status"
@@ -369,8 +516,29 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Recovery and executable continuation are implemented locally; 86 focused checks pass. Completing interrupted-after-fetch recovery without blocking new unpublished commits requires a local ancestry observation in publication status. Recommended action: Apply this exact scope extension, then issue a fresh EXECUTOR packet for the same WorkItem. Requested scope: roots=packages/agentplane/src/commands/pr/head-publication.test.ts,packages/agentplane/src/commands/pr/head-publication.ts; repository effects=unchanged; request digest=sha256:2e8384edad49f48daa0e8e190dbab1f6dabdfeec254c831739597316fc8f8e75. Agentplane receipt: external-agent-blocker/tr_79a902c369a97c92b3c8d7607da84ada/sha256:23fb57346c01616e464b8ea954936e7ad0bd67830b2cbb75aa7919de7c066157/sha256:2e8384edad49f48daa0e8e190dbab1f6dabdfeec254c831739597316fc8f8e75."
+  -
+    type: "status"
+    at: "2026-08-27T18:04:51.808Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 4e41eae79ea8. CLI accepted one state-bound external-agent semantic result."
+    commit: "4e41eae79ea88ac143a2767282bd41289a77306f"
+  -
+    type: "verify"
+    at: "2026-08-27T18:11:12.407Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-27T18:12:02.463Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Required full CI found one obsolete registry expectation for the unregistered pr update-branch command. Runtime, docs/schema and critical CLI groups passed. No workspace edits were made in this episode. Recommended action: Apply this exact scope extension, then issue a fresh EXECUTOR packet for the same WorkItem. Requested scope: roots=packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts; repository effects=unchanged; request digest=sha256:7d6b29c95f647fffddd04b580eb04060b4a71e87579f6dba19fd6ef5ef5d5d9c. Agentplane receipt: external-agent-blocker/tr_b40a5bf7666d4ec3b78dd6a336b0872a/sha256:09e551d8905443b72cd3a34831d1d2e2da0722b884bf095919faf3745e1eaa38/sha256:7d6b29c95f647fffddd04b580eb04060b4a71e87579f6dba19fd6ef5ef5d5d9c."
 doc_version: 3
-doc_updated_at: "2026-08-27T18:02:10.528Z"
+doc_updated_at: "2026-08-27T18:12:02.501Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the demonstrated recovery gap for an OPEN GitHub PR whose exact aligned head has successful required checks but whose provider mergeability is behind under strict protection. PR #5854 is the observed case: queue handoff after HTTP 405 required PR verification expected; no merge conflict, no live runner. Route the existing provider.pr.update_branch operation for coherent exact-head behind evidence, preserve stale-head/provider/base/authority guards, required checks, and queue ownership. Add focused regression tests. Do not merge or publish from semantic implementation, bypass protection, manufacture hosted failures, or rewrite frozen task bases."
 sections:
@@ -587,6 +755,41 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-27T18:11:12.407Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8c71019fa5684e8ff9d5d23ad0d170ed62240513f04eb799db555d5a9e957885, input_digest=sha256:b31bf3b2377c752631955a0d5e95d63e48234fe583243f2aa9cfdf6dfd050059
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271538-T21JCA declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271538-T21JCA-recover-green-behind-prs-through-provider-branch/.agentplane/tasks/202608271538-T21JCA/blueprint/resolved-snapshot.json
+    - old_digest: bf6412e3d49da0bea86f3add5fbd4a74730f923069b0d97f7d3737c785393ad9
+    - current_digest: bf6412e3d49da0bea86f3add5fbd4a74730f923069b0d97f7d3737c785393ad9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608271538-T21JCA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608271538-T21JCA
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -617,21 +820,18 @@ extensions:
     status: "active"
     task_id: "202608271538-T21JCA"
   agentplane.scope_extension_request:
-    applied_at: "2026-08-27T18:02:16.991Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:23fb57346c01616e464b8ea954936e7ad0bd67830b2cbb75aa7919de7c066157"
+    blocker_state_fingerprint: "sha256:09e551d8905443b72cd3a34831d1d2e2da0722b884bf095919faf3745e1eaa38"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Complete the same interrupted-provider-update scenario while preserving ordinary publication of newer local commits. Add bounded local Git ancestry observation and regression tests. Do not change external effects, schemas, CI, policy, queue or release order."
+      rationale: "Align the existing exact command registry contract with the already implemented registered managed continuation. Preserve all operation coverage and authority assertions. No policy, CI, schema, external-effect or task-graph changes."
       repository_effects: []
       schema_version: 1
       scope_roots:
-        - "packages/agentplane/src/commands/pr/head-publication.test.ts"
-        - "packages/agentplane/src/commands/pr/head-publication.ts"
-    request_digest: "sha256:2e8384edad49f48daa0e8e190dbab1f6dabdfeec254c831739597316fc8f8e75"
+        - "packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+    request_digest: "sha256:7d6b29c95f647fffddd04b580eb04060b4a71e87579f6dba19fd6ef5ef5d5d9c"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_79a902c369a97c92b3c8d7607da84ada"
+    status: "pending"
+    transition_id: "tr_b40a5bf7666d4ec3b78dd6a336b0872a"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -1968,23 +2168,93 @@ extensions:
         revision: 6
         schema_version: 1
         task_id: "202608271538-T21JCA"
-    revision: 34
+    revision: 45
     schema_version: 1
-    updated_at: "2026-08-27T18:02:16.991Z"
+    updated_at: "2026-08-27T18:11:19.000Z"
     work_items:
       complete-provider-recovery:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "complete-provider-recovery"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "update-recovery"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Complete the provider-update recovery scenario with bounded delayed readback, exact reconciliation-only routing, executable managed continuation, and preservation of ordinary unpublished local work."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:fec90df529d19090026ba9d884eb3ec1938b94bda6cd9ea7ea8491afe7fbc83f"
+            id: "artifact:provider-update-recovery-report"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 7
+              task_id: "202608271538-T21JCA"
+              work_item_id: "complete-provider-recovery"
+            provenance:
+              - "sha256:92c159480e03780c01255d8cfbde0c6d8f8aaf0fd993424b7927197e3cd9a0f9"
+              - ".agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:31a7757de1415805edb174eba4647cb79a68ef2a48720f2606fae614dfd800f0"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json"
+              check_id: "scoped-tests"
+              command_identity: "node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1"
+              detail: "Declared validation command node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1 was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-08-27T18:11:18.988Z"
+              repository_snapshot_digest: "sha256:31a7757de1415805edb174eba4647cb79a68ef2a48720f2606fae614dfd800f0"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json"
+              check_id: "full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 1
+              observed_at: "2026-08-27T18:11:18.988Z"
+              repository_snapshot_digest: "sha256:31a7757de1415805edb174eba4647cb79a68ef2a48720f2606fae614dfd800f0"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "blocked"
+          unsatisfied_criteria:
+            - "update-recovery"
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
     mutation_receipts:
+      external-result:work-order-202608271538-T21JCA-executor-3755d957891a539bd97e57d3:
+        aggregate_digest: "sha256:636ef59d4c4eae7721d5bdb7cc10b921a1fb506624a35e88cc94a9e1dcb6d151"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-27T18:11:19.000Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_7855281027c87887a1cdac02"
+          mutation_id: "external-result:work-order-202608271538-T21JCA-executor-3755d957891a539bd97e57d3"
+          plan_digest: "sha256:93ed6a118d2525ea9b9056323072b939d1d8b66fbed17c02fd2349af8db115ab"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608271538-T21JCA"
+          task_revision: 44
+          to: "REWORK_READY"
+          work_item_id: "complete-provider-recovery"
+        mutation_id: "external-result:work-order-202608271538-T21JCA-executor-3755d957891a539bd97e57d3"
+        next_revision: 45
+        previous_revision: 44
+        schema_version: 1
+        task_id: "202608271538-T21JCA"
       external-result:work-order-202608271538-T21JCA-executor-5841c35ac854c6cb561cb9be:
         aggregate_digest: "sha256:72ae89d409be08028abd522f1089bbe487b5ea43ee95d12b09e52b19429ee89d"
         event:
@@ -2313,6 +2583,41 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-27T18:11:12.407Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8c71019fa5684e8ff9d5d23ad0d170ed62240513f04eb799db555d5a9e957885, input_digest=sha256:b31bf3b2377c752631955a0d5e95d63e48234fe583243f2aa9cfdf6dfd050059
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271538-T21JCA declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271538-T21JCA-recover-green-behind-prs-through-provider-branch/.agentplane/tasks/202608271538-T21JCA/blueprint/resolved-snapshot.json
+- old_digest: bf6412e3d49da0bea86f3add5fbd4a74730f923069b0d97f7d3737c785393ad9
+- current_digest: bf6412e3d49da0bea86f3add5fbd4a74730f923069b0d97f7d3737c785393ad9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608271538-T21JCA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608271538-T21JCA
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
