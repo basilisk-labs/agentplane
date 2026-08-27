@@ -180,6 +180,7 @@ export async function executeBranchWorkflowOperation(opts: {
     case "provider.pr.update_branch": {
       const result = await updateProviderBranch({
         gitRoot: command.resolvedProject.gitRoot,
+        worktreePath: cwd,
         identity: operation.params.identity,
         prNumber: operation.params.prNumber,
         branch: operation.params.branch,
@@ -191,7 +192,8 @@ export async function executeBranchWorkflowOperation(opts: {
         return succeeded(
           operation,
           `provider PR #${operation.params.prNumber} update-branch ${result.effect}; ` +
-            `readback proved ${result.evidence.observedHeadSha} contains the exact expected head and base`,
+            `readback proved ${result.evidence.observedHeadSha} contains the exact expected head and base; ` +
+            "the task checkout and tracking head are aligned with that provider head",
         );
       }
       if (result.state === "not_applied") {

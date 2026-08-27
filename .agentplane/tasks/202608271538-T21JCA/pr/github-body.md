@@ -4,28 +4,16 @@ Canonical task record: `.agentplane/tasks/202608271538-T21JCA/README.md`
 
 ## Summary
 
-Recover green behind PRs through provider branch update
-
-Repair the demonstrated recovery gap for an OPEN GitHub PR whose exact aligned head has successful required checks but whose provider mergeability is behind under strict protection. PR #5854 is the observed case: queue handoff after HTTP 405 required PR verification expected; no merge conflict, no live runner. Route the existing provider.pr.update_branch operation for coherent exact-head behind evidence, preserve stale-head/provider/base/authority guards, required checks, and queue ownership. Add focused regression tests. Do not merge or publish from semantic implementation, bypass protection, manufacture hosted failures, or rewrite frozen task bases.
+Preserve the green-behind routing correction and complete its successful-operation contract. Before provider update, validate the exact task checkout, local head and clean state. After exact provider identity and ancestry proof, fetch and fast-forward only to that proven head, then verify local and tracking alignment. Reject drift or dirty state without discarding changes. Cover fresh update, interrupted reconciliation, no-repeat behavior and the next publication route with real local Git fixtures. Do not force push, reset, bypass checks or alter queue ownership.
 
 ## Scope
 
-- In scope: Repair the demonstrated recovery gap for an OPEN GitHub PR whose exact aligned head has successful required checks but whose provider mergeability is behind under strict protection. PR #5854 is the observed case: queue handoff after HTTP 405 required PR verification expected; no merge conflict, no live runner. Route the existing provider.pr.update_branch operation for coherent exact-head behind evidence, preserve stale-head/provider/base/authority guards, required checks, and queue ownership. Add focused regression tests. Do not merge or publish from semantic implementation, bypass protection, manufacture hosted failures, or rewrite frozen task bases.
-- Out of scope: unrelated refactors not required for "Recover green behind PRs through provider branch update".
+In scope: packages/agentplane/src/commands/shared/provider-update-branch-route.ts, packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts, packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts, packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts, packages/agentplane/src/commands/pr/provider-update-branch.ts, packages/agentplane/src/commands/pr/provider-update-branch.test.ts, packages/agentplane/src/commands/pr/provider-update-branch-local.ts, packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts, packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts, packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts. Complete the exact provider-update-to-local-publication continuity contract described in Plan. Out of scope: policy, CI selection, timeouts, queue ownership, release roadmap changes, force reset/push and unrelated refactoring.
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Needs rework: PR5856 review PRRT_kwDORCLmJM6c4qDW is confirmed by provider-update-branch.ts,
-branch-task-supervisor-operations.ts, head-publication.ts and branch-publication.ts. The successful
-hosted update leaves the local task branch stale, so the subsequent publish route can overwrite the
-provider head. Existing local and hosted checks passed but do not cover update-to-next-route
-continuity. Preserve their evidence. Prepare a bounded material replan for safe local reconciliation
-and end-to-end regression coverage before integration.
-```
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -36,11 +24,17 @@ and end-to-end regression coverage before integration.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../pr/provider-update-branch-local.test.ts        | 241 +++++++++++++++++++++
+ .../commands/pr/provider-update-branch-local.ts    |  89 ++++++++
+ .../src/commands/pr/provider-update-branch.test.ts |  34 ++-
+ .../src/commands/pr/provider-update-branch.ts      |  29 ++-
  .../shared/provider-update-branch-route.ts         |   5 +-
- .../route-decision-blockers.quality-review.test.ts | 106 +++++++++-
- ...rkflow-step-projections.conflict-rework.test.ts | 228 ++++++++++++---------
+ .../route-decision-blockers.quality-review.test.ts | 106 ++++++++-
+ ...rkflow-step-projections.conflict-rework.test.ts | 228 ++++++++++---------
  .../shared/workflow-step-provider-update-branch.ts |   2 +-
- 4 files changed, 232 insertions(+), 109 deletions(-)
+ .../task/branch-task-supervisor-operations.test.ts |   1 +
+ .../task/branch-task-supervisor-operations.ts      |   4 +-
+ 10 files changed, 627 insertions(+), 112 deletions(-)
 ```
 
 </details>

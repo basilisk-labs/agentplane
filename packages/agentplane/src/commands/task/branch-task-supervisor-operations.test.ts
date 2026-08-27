@@ -213,6 +213,7 @@ describe("branch task supervisor operations", () => {
     expect(result.observed_postconditions).toContain("provider_branch_updated");
     expect(mocks.updateProviderBranch).toHaveBeenCalledWith({
       gitRoot: "/repo",
+      worktreePath: "/repo/task",
       identity: operation.params.identity,
       prNumber: 42,
       branch: operation.params.branch,

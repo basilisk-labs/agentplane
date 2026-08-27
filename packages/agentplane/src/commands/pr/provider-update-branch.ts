@@ -1,4 +1,8 @@
 import { normalizeGhTransportError } from "../shared/gh-transport.js";
+import {
+  reconcileProviderUpdateLocalHead,
+  validateProviderUpdateLocalState,
+} from "./provider-update-branch-local.js";
 
 import type { ObservedChangeRequest } from "./internal/change-request-model.js";
 import { observeExistingChangeRequestByNumber } from "./internal/change-request-provider.js";
@@ -9,6 +13,7 @@ const GIT_OBJECT_ID = /^[0-9a-f]{40,64}$/u;
 
 export type ProviderUpdateBranchRequest = Readonly<{
   gitRoot: string;
+  worktreePath?: string;
   identity: GitHostIdentity;
   prNumber: number;
   branch: string;
@@ -49,7 +54,8 @@ export type ProviderUpdateBranchResult =
         | "branch_drift"
         | "base_drift"
         | "head_drift"
-        | "conflict";
+        | "conflict"
+        | "local_state_unavailable";
       detail: string;
       observed: ObservedChangeRequest | null;
     }>
@@ -203,6 +209,15 @@ async function reconcileUpdatedHead(opts: {
         observed: opts.observed,
       };
     }
+    const localFailure = await reconcileProviderUpdateLocalHead(opts.request, observedHeadSha);
+    if (localFailure) {
+      return {
+        state: "effect_in_doubt",
+        reason: "readback_unproven",
+        detail: `Hosted ancestry is proven, but local reconciliation is incomplete: ${localFailure}`,
+        observed: opts.observed,
+      };
+    }
     return {
       state: "updated",
       effect: opts.effect,
@@ -294,6 +309,18 @@ export async function updateProviderBranch(
 
   const before = await observeAuthorizedPullRequest(opts);
   if (before.state === "not_applied") return before.result;
+  const localFailure = await validateProviderUpdateLocalState(opts, [
+    opts.expectedHeadSha,
+    ...(before.observed.headSha ? [before.observed.headSha] : []),
+  ]);
+  if (localFailure) {
+    return {
+      state: "not_applied",
+      reason: "local_state_unavailable",
+      detail: localFailure,
+      observed: before.observed,
+    };
+  }
   if (before.observed.headSha !== opts.expectedHeadSha) {
     const reconciled = await reconcileUpdatedHead({
       request: opts,

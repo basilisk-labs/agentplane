@@ -12,8 +12,8 @@ Created: 2026-08-27T15:41:27.859Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Needs rework: PR5856 review PRRT_kwDORCLmJM6c4qDW is confirmed by provider-update-branch.ts, branch-task-supervisor-operations.ts, head-publication.ts and branch-publication.ts. The successful hosted update leaves the local task branch stale, so the subsequent publish route can overwrite the provider head. Existing local and hosted checks passed but do not cover update-to-next-route continuity. Preserve their evidence. Prepare a bounded material replan for safe local reconciliation and end-to-end regression coverage before integration.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,11 +29,17 @@ Created: 2026-08-27T15:41:27.859Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../pr/provider-update-branch-local.test.ts        | 241 +++++++++++++++++++++
+ .../commands/pr/provider-update-branch-local.ts    |  89 ++++++++
+ .../src/commands/pr/provider-update-branch.test.ts |  34 ++-
+ .../src/commands/pr/provider-update-branch.ts      |  29 ++-
  .../shared/provider-update-branch-route.ts         |   5 +-
- .../route-decision-blockers.quality-review.test.ts | 106 +++++++++-
- ...rkflow-step-projections.conflict-rework.test.ts | 228 ++++++++++++---------
+ .../route-decision-blockers.quality-review.test.ts | 106 ++++++++-
+ ...rkflow-step-projections.conflict-rework.test.ts | 228 ++++++++++---------
  .../shared/workflow-step-provider-update-branch.ts |   2 +-
- 4 files changed, 232 insertions(+), 109 deletions(-)
+ .../task/branch-task-supervisor-operations.test.ts |   1 +
+ .../task/branch-task-supervisor-operations.ts      |   4 +-
+ 10 files changed, 627 insertions(+), 112 deletions(-)
 ```
 
 </details>
