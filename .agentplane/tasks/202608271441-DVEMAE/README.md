@@ -1,10 +1,11 @@
 ---
 id: "202608271441-DVEMAE"
 title: "Repair lifecycle fixture execution bases"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -59,6 +60,20 @@ quality_review:
     - "The serial supervisor run passed full CI in463861ms and repeated all28 scoped tests in7452ms. Verification record20260827161459128-ce04c76286eb1a98 binds the checks to the same implementation0da9c92cbda53ff55e24c84ff81fa401165f1f29."
     - "The earlier failed Core timeout was not relabeled. A fresh passing record was produced without changing code, timeouts, test selection, policy or CI. Pre-existing task artifacts were preserved and no unrelated worktree paths changed."
     - "Residual risk: Hosted qualification remains a separate mandatory gate; the earlier timeout history should remain visible."
+token_usage:
+  agent_runs: 4
+  input_tokens: null
+  journal_digest: "sha256:d2e9f65afdb146821e771e1da46af50c9d6aaf52c45ddf2b2563d0eac95df5bc"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-27T16:16:59.917Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -237,8 +252,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "0da9c92cbda53ff55e24c84ff81fa401165f1f29"
-  message: "🚧 DVEMAE task: apply external agent result"
+  hash: "c1b4fc98d2b8d4a54694268a6aa8b827d0aecc73"
+  message: "🚧 DVEMAE task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -249,6 +264,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 0da9c92cbda5. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -285,9 +303,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-27T16:16:59.917Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "c1b4fc98d2b8d4a54694268a6aa8b827d0aecc73"
 doc_version: 3
-doc_updated_at: "2026-08-27T16:15:01.272Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-27T16:16:59.928Z"
+doc_updated_by: "CODER"
 description: "Repair ten freshly reproduced failures in four lifecycle CLI test files. Use the existing committed-repository helper only for scenarios that need a real execution base. Preserve argument-validation fixtures, dependency readiness, force approval, comment validation, status-commit confirmation, incident advice and task-status assertions. Bind the start-ready baseline assertion to the actual fixture seed SHA instead of an unborn null. Do not change production behavior, shared helpers, policy, timeouts, CI gates, release state or roadmap dependencies. Scope is disjoint from concurrent G0N9P4 and 9EWJA1; the already merged GHHA0Q base is sufficient. Require focused tests and full CI."
 sections:
   Summary: |-
@@ -631,7 +657,34 @@ extensions:
       schema_version: 1
       task_id: "202608271441-DVEMAE"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608271441-DVEMAE"
+            - "git:0da9c92cbda53ff55e24c84ff81fa401165f1f29"
+          check_id: "scoped-tests"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --pool=threads --maxWorkers=2"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T16:14:59.128Z"
+          repository_snapshot_digest: "sha256:a18fcae4b5769c5f9e9fd660d1943e0c220c8532d43062be6921d42a6f7f6ed8"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608271441-DVEMAE"
+            - "git:0da9c92cbda53ff55e24c84ff81fa401165f1f29"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T16:14:59.128Z"
+          repository_snapshot_digest: "sha256:a18fcae4b5769c5f9e9fd660d1943e0c220c8532d43062be6921d42a6f7f6ed8"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608271441-DVEMAE"
     intent:
       acceptance_criteria:
@@ -652,12 +705,12 @@ extensions:
 
         Repair ten freshly reproduced failures in four lifecycle CLI test files. Use the existing committed-repository helper only for scenarios that need a real execution base. Preserve argument-validation fixtures, dependency readiness, force approval, comment validation, status-commit confirmation, incident advice and task-status assertions. Bind the start-ready baseline assertion to the actual fixture seed SHA instead of an unborn null. Do not change production behavior, shared helpers, policy, timeouts, CI gates, release state or roadmap dependencies. Scope is disjoint from concurrent G0N9P4 and 9EWJA1; the already merged GHHA0Q base is sufficient. Require focused tests and full CI.
       task_id: "202608271441-DVEMAE"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 13
+    revision: 16
     schema_version: 1
-    updated_at: "2026-08-27T16:15:02.467Z"
+    updated_at: "2026-08-27T16:16:59.917Z"
     work_items:
       repair-lifecycle-fixtures:
         attempt: 2
@@ -758,11 +811,37 @@ extensions:
         previous_revision: 8
         schema_version: 1
         task_id: "202608271441-DVEMAE"
+      legacy-finish:202608271441-DVEMAE:2026-08-27T16:14:59.128Z:0da9c92cbda53ff55e24c84ff81fa401165f1f29:
+        aggregate_digest: "sha256:3e73e47b95e7423747f29b1e8e1086c91fc22b10308e7ac58debf15d40746484"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-27T16:16:59.917Z"
+          cause_refs:
+            - "task-verification:202608271441-DVEMAE"
+            - "git:0da9c92cbda53ff55e24c84ff81fa401165f1f29"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b1c738cfecca0b0253440456"
+          mutation_id: "legacy-finish:202608271441-DVEMAE:2026-08-27T16:14:59.128Z:0da9c92cbda53ff55e24c84ff81fa401165f1f29"
+          plan_digest: "sha256:ed05b2c841e190b91a71fa7f92a61f4d080a3b99786d64de2954faaf06e6ecb7"
+          plan_revision: 1
+          repository_fingerprint: "sha256:a18fcae4b5769c5f9e9fd660d1943e0c220c8532d43062be6921d42a6f7f6ed8"
+          schema_version: 1
+          task_id: "202608271441-DVEMAE"
+          task_revision: 13
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608271441-DVEMAE:2026-08-27T16:14:59.128Z:0da9c92cbda53ff55e24c84ff81fa401165f1f29"
+        next_revision: 16
+        previous_revision: 15
+        schema_version: 1
+        task_id: "202608271441-DVEMAE"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "0da9c92cbda53ff55e24c84ff81fa401165f1f29"
+    message: "🚧 DVEMAE task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "5fce04a8be14816be4cae236d2941dff7045e214"
@@ -914,3 +993,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:d2e9f65afdb146821e771e1da46af50c9d6aaf52c45ddf2b2563d0eac95df5bc`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-27T16:16:59.917Z`

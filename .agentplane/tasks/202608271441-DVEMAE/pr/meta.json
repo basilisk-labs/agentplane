@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:a36cf6bc5f1917885a1e812678b723d9731ae2c538ed17d642dad69bd7981ba6",
   "pr_number": 5857,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5857",
+  "pre_merge_closure": {
+    "basis_commit": "c1b4fc98d2b8d4a54694268a6aa8b827d0aecc73",
+    "branch": "task/202608271441-DVEMAE/repair-lifecycle-fixture-execution-bases",
+    "pr_number": 5857,
+    "recorded_at": "2026-08-27T16:17:00.052Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
