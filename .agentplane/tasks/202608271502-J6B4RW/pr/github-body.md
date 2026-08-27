@@ -22,7 +22,7 @@ Repair ten reproduced failures across five intake and query test files on integr
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T15:08:25.681Z
+- Updated: 2026-08-27T15:46:19.836Z
 - Branch: task/202608271502-J6B4RW/align-intake-and-query-execution-fixtures
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
