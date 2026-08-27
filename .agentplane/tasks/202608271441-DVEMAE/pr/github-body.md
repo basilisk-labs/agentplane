@@ -22,7 +22,7 @@ Repair ten freshly reproduced failures in four lifecycle CLI test files. Use the
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T14:46:15.480Z
+- Updated: 2026-08-27T16:15:13.904Z
 - Branch: task/202608271441-DVEMAE/repair-lifecycle-fixture-execution-bases
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
