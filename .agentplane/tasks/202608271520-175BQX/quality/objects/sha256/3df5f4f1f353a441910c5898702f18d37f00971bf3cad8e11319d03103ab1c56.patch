@@ -1,0 +1,1222 @@
+diff --git a/packages/agentplane/src/cli/route-decision.testkit.ts b/packages/agentplane/src/cli/route-decision.testkit.ts
+new file mode 100644
+index 000000000..70a6725ea
+--- /dev/null
++++ b/packages/agentplane/src/cli/route-decision.testkit.ts
+@@ -0,0 +1,250 @@
++import { readFile, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { expect } from "vitest";
++import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++import { parseTaskReadme, type TaskPlanProposal } from "@agentplaneorg/core/tasks";
++import { captureStdIO, runCliSilent } from "@agentplane/testkit";
++import { runCli } from "./run-cli.js";
++import { loadCommandContext, loadTaskFromContext } from "../commands/shared/task-backend.js";
++import { loadTaskCommandContext } from "../runtime/task-execution-context/index.js";
++import { reconcileTaskExecutionContract } from "../runtime/task-routing/index.js";
++import {
++  recordedTaskImplementationCommitSha,
++  resolveQualityReviewTargetSha,
++} from "../commands/shared/quality-review-target.js";
++import { resolveObservedVerificationChangedPaths } from "../commands/task/verify-record-observed-changes.js";
++
++type PlanningPacket = {
++  transition_id: string;
++  state_fingerprint: string;
++  authority: { role: string };
++  exchange: {
++    directory: string;
++    work_order_ref: string;
++    result_path: string;
++    resume_argv: string[];
++  };
++};
++
++export async function approveRouteTaskPlan(
++  root: string,
++  taskId: string,
++  objective: string,
++): Promise<void> {
++  let packet: PlanningPacket;
++  const io = captureStdIO();
++  try {
++    expect(
++      await runCli(["task", "advance", taskId, "--agent-json", "--root", root]),
++      io.stderr,
++    ).toBe(0);
++    packet = JSON.parse(io.stdout) as PlanningPacket;
++  } finally {
++    io.restore();
++  }
++  expect(packet.authority.role).toBe("PLANNER");
++  const workOrder = JSON.parse(
++    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
++  ) as AgentWorkOrderV2;
++  const baseline = workOrder.planning_context!.repository_snapshot;
++  const task = parseTaskReadme(
++    await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
++  ).frontmatter;
++  const { config } = await loadCommandContext({ cwd: root, rootOverride: root });
++  const commands: string[] = Array.isArray(task.verify)
++    ? task.verify.filter((value): value is string => typeof value === "string")
++    : [];
++  const checks = commands.map((command, index) => ({
++    id: `task-check-${index + 1}`,
++    kind: "deterministic" as const,
++    required: true,
++    capability: "task.verify",
++    command,
++  }));
++  const taskChecks =
++    checks.length > 0
++      ? checks
++      : [
++          {
++            id: "task-check",
++            kind: "deterministic" as const,
++            required: true,
++            capability: "task.verify",
++          },
++        ];
++  const criterion = {
++    id: "route-contract",
++    description: objective,
++    required: true,
++    check_ids: taskChecks.map((check) => check.id),
++  };
++  const validation = {
++    schema_version: 1 as const,
++    criteria: [criterion],
++    checks: taskChecks,
++    evidence_fingerprint: baseline.digest,
++  };
++  const proposal: TaskPlanProposal = {
++    schema_version: 1,
++    task_id: taskId,
++    planning_baseline: baseline,
++    work_items: {
++      schema_version: 1,
++      work_items: [
++        {
++          id: "exercise-route",
++          objective,
++          depends_on: [],
++          required_inputs: [],
++          expected_outputs: ["route-result"],
++          scope_roots: ["."],
++          acceptance_criteria: [criterion],
++          validation,
++          context: {
++            required_sources: [],
++            optional_sources: [],
++            symbol_hints: [],
++            max_bytes: 65_536,
++          },
++          risk: "low",
++          capabilities: ["task.verify"],
++          resource_claims: [{ kind: "workspace", resource: ".", mode: "write" }],
++          optional: false,
++          priority: 1,
++        },
++      ],
++    },
++    assumptions: [],
++    unresolved_questions: [],
++    top_level_validation: validation,
++  };
++  await writeFile(
++    packet.exchange.result_path,
++    JSON.stringify({
++      schema_version: 1,
++      kind: "agent_action_result",
++      task_id: taskId,
++      transition_id: packet.transition_id,
++      state_fingerprint: packet.state_fingerprint,
++      role: "PLANNER",
++      result: {
++        schema_version: 2,
++        kind: "agent_semantic_result",
++        work_order_id: workOrder.work_order_id,
++        status: "completed",
++        summary: objective,
++        findings: [],
++        uncertainty: [],
++        task_intent: {
++          task_kind: "code",
++          mutation_scope: "code",
++          risk_flags: [],
++          tags: ["code"],
++          ...(task.blueprint_request ? { blueprint_request: task.blueprint_request } : {}),
++          execution: {
++            schema_version: 2,
++            preferred_mode: config.workflow_mode,
++            scope_roots: ["."],
++            repository_effects: ["repository_write", "source_code"],
++            external_effects: [],
++            requirements_uncertainty: "bounded",
++            implementation_uncertainty: "bounded",
++            reversibility: "reversible",
++            rationale: ["Exercise the configured route in an isolated local fixture."],
++          },
++        },
++        task_plan_proposal: proposal,
++      },
++    }),
++  );
++  const resumeIo = captureStdIO();
++  try {
++    expect(
++      await runCli([...packet.exchange.resume_argv.slice(1), "--root", root]),
++      resumeIo.stderr,
++    ).toBe(0);
++    expect(JSON.parse(resumeIo.stdout)).toMatchObject({ action: { kind: "approval_required" } });
++  } finally {
++    resumeIo.restore();
++  }
++  expect(
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
++  ).toBe(0);
++}
++
++export async function routeVerificationDetails(root: string, taskId: string): Promise<string> {
++  const initialCtx = await loadCommandContext({ cwd: root, rootOverride: root });
++  const { command: ctx, execution } = await loadTaskCommandContext({
++    ctx: initialCtx,
++    taskIds: [taskId],
++  });
++  const task = await loadTaskFromContext({ ctx, taskId });
++  const evaluatedSha = await resolveQualityReviewTargetSha({
++    gitRoot: ctx.resolvedProject.gitRoot,
++    workflowDir: ctx.config.paths.workflow_dir,
++    taskId,
++    taskIds: [taskId],
++    lifecycleTaskIds: [taskId],
++    headSha: recordedTaskImplementationCommitSha(task),
++    previousEvaluatedSha: task.quality_review?.evaluated_sha ?? null,
++    workflowMode: execution.selected_mode,
++  });
++  const changedPaths = await resolveObservedVerificationChangedPaths({
++    ctx,
++    evaluatedSha,
++    taskId,
++    artifactTaskIds: [taskId],
++    execution,
++  });
++  expect(task.execution_contract).toBeDefined();
++  const contract = reconcileTaskExecutionContract({
++    contract: task.execution_contract!,
++    changed_paths: changedPaths,
++  }).contract;
++  const checks = contract.verification.contract!.selected_checks.filter(
++    (check) => check !== "hosted_integration",
++  );
++  expect(checks.length).toBeGreaterThan(0);
++  return checks
++    .map((check) =>
++      [
++        `Check: ${check}`,
++        "Command: isolated route fixture verification",
++        "Result: pass",
++        "Evidence: deterministic test fixture; no hosted evidence claimed",
++        "Scope: local route-decision fixture",
++      ].join("\n"),
++    )
++    .join("\n\n");
++}
++
++export async function recordRouteVerification(
++  root: string,
++  taskId: string,
++  note: string,
++  localOnly = false,
++): Promise<void> {
++  const details = await routeVerificationDetails(root, taskId);
++  const io = captureStdIO();
++  try {
++    expect(
++      await runCli([
++        "verify",
++        taskId,
++        "--ok",
++        "--by",
++        "TESTER",
++        "--note",
++        note,
++        "--details",
++        details,
++        ...(localOnly ? ["--local-only"] : []),
++        "--root",
++        root,
++      ]),
++      io.stderr,
++    ).toBe(0);
++  } finally {
++    io.restore();
++  }
++}
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts
+index 482c09818..986e024cf 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts
+@@ -4,13 +4,15 @@ import path from "node:path";
+ import { promisify } from "node:util";
+ 
+ import { describe } from "vitest";
++import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
++import { approveRouteTaskPlan, recordRouteVerification } from "./route-decision.testkit.js";
++import { mkGitRepoRootWithCommit } from "@agentplane/testkit";
+ 
+ import {
+   captureStdIO,
+   defaultConfig,
+   expect,
+   it,
+-  mkGitRepoRootWithBranch,
+   runCli,
+   runCliSilent,
+   writeConfig,
+@@ -47,19 +49,7 @@ async function createTask(root: string): Promise<string> {
+ 
+ async function approveTasks(root: string, taskIds: string[], text: string): Promise<void> {
+   for (const taskId of taskIds) {
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      text,
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await approveRouteTaskPlan(root, taskId, text);
+   }
+ }
+ 
+@@ -112,26 +102,24 @@ async function addIncludedBatchExtension(opts: {
+ }): Promise<void> {
+   const taskPath = path.join(opts.root, ".agentplane", "tasks", opts.taskId, "README.md");
+   const current = await readFile(taskPath, "utf8");
+-  const frontmatterEnd = current.indexOf("\n---\n", 4);
+-  expect(frontmatterEnd).toBeGreaterThan(0);
+-  const extension = [
+-    "extensions:",
+-    "  branch_pr_batch:",
+-    '    base: "main"',
+-    `    branch: "${opts.branch}"`,
+-    "    included_task_ids:",
+-    `      - "${opts.taskId}"`,
+-    `    primary_task_id: "${opts.primaryTaskId}"`,
+-    '    role: "included"',
+-    '    updated_at: "2026-05-23T00:00:00.000Z"',
+-  ].join("\n");
+-  const next = `${current.slice(0, frontmatterEnd)}\n${extension}${current.slice(frontmatterEnd)}`;
+-  await writeFile(taskPath, next, "utf8");
++  const parsed = parseTaskReadme(current);
++  parsed.frontmatter.extensions = {
++    ...(parsed.frontmatter.extensions ?? {}),
++    branch_pr_batch: {
++      base: "main",
++      branch: opts.branch,
++      included_task_ids: [opts.taskId],
++      primary_task_id: opts.primaryTaskId,
++      role: "included",
++      updated_at: "2026-05-23T00:00:00.000Z",
++    },
++  };
++  await writeFile(taskPath, renderTaskReadme(parsed.frontmatter, parsed.body), "utf8");
+ }
+ 
+ describe("runCli route decision batch ownership", () => {
+   it("keeps primary quality fresh across explicitly included task artifact commits", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -232,7 +220,7 @@ describe("runCli route decision batch ownership", () => {
+   });
+ 
+   it("keeps a verified batch primary with PR metadata out of included closure recovery", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -284,7 +272,7 @@ describe("runCli route decision batch ownership", () => {
+   });
+ 
+   it("exposes branch_pr batch ownership in route and brief output", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -398,7 +386,7 @@ describe("runCli route decision batch ownership", () => {
+   });
+ 
+   it("reports included batch delegation in the route oracle after plan approval", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -429,7 +417,7 @@ describe("runCli route decision batch ownership", () => {
+   });
+ 
+   it("routes verified landed included tasks to release reconciliation", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -448,18 +436,12 @@ describe("runCli route decision batch ownership", () => {
+       "--root",
+       root,
+     ]);
+-    await runCliSilent([
+-      "verify",
++    await recordRouteVerification(
++      root,
+       includedTaskId,
+-      "--ok",
+-      "--by",
+-      "CODER",
+-      "--note",
+       "Verified: included in batch implementation landed.",
+-      "--local-only",
+-      "--root",
+-      root,
+-    ]);
++      true,
++    );
+ 
+     await addIncludedBatchExtension({
+       root,
+@@ -487,7 +469,7 @@ describe("runCli route decision batch ownership", () => {
+   });
+ 
+   it("does not infer included-batch ownership from verification prose", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -505,18 +487,12 @@ describe("runCli route decision batch ownership", () => {
+       "--root",
+       root,
+     ]);
+-    await runCliSilent([
+-      "verify",
++    await recordRouteVerification(
++      root,
+       includedTaskId,
+-      "--ok",
+-      "--by",
+-      "CODER",
+-      "--note",
+       "Verified: included in batch implementation landed.",
+-      "--local-only",
+-      "--root",
+-      root,
+-    ]);
++      true,
++    );
+ 
+     const nextIo = captureStdIO();
+     try {
+@@ -546,7 +522,7 @@ describe("runCli route decision batch ownership", () => {
+   });
+ 
+   it("keeps semantic planning ahead of included batch delegation in the route oracle", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -576,7 +552,7 @@ describe("runCli route decision batch ownership", () => {
+   });
+ 
+   it("does not let stale batch PR artifacts override direct-mode routing", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+     await writeConfig(root, config);
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts
+index 00a8e846a..931bacc3d 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts
+@@ -3,6 +3,8 @@ import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schema
+ import { mkdir, readFile, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { describe } from "vitest";
++import { approveRouteTaskPlan, recordRouteVerification } from "./route-decision.testkit.js";
++import { mkGitRepoRootWithCommit, withEvaluatorPolicyFixture } from "@agentplane/testkit";
+ 
+ import {
+   captureStdIO,
+@@ -11,12 +13,10 @@ import {
+   defaultConfig,
+   expect,
+   it,
+-  mkGitRepoRootWithBranch,
+   runCli,
+   runCliSilent,
+   writeConfig,
+ } from "@agentplane/testkit/cli-core-pr-flow";
+-import { withEvaluatorPolicyFixture } from "@agentplane/testkit";
+ 
+ async function createBranchPrTask(root: string): Promise<string> {
+   const taskIo = captureStdIO();
+@@ -77,25 +77,13 @@ async function recordEvaluatorReview(root: string, taskId: string): Promise<void
+ 
+ describe("runCli route decision direct closeout", () => {
+   it("routes approved direct tasks to current-agent start-ready before execution", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+     await writeConfig(root, config);
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Exercise direct route guidance before start-ready.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await approveRouteTaskPlan(root, taskId, "Exercise direct route guidance before start-ready.");
+ 
+     const nextIo = captureStdIO();
+     try {
+@@ -120,25 +108,13 @@ describe("runCli route decision direct closeout", () => {
+   });
+ 
+   it("routes a newly started direct task to the typed EXECUTOR runner operation", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+     await writeConfig(root, config);
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Exercise direct route guidance after start-ready.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await approveRouteTaskPlan(root, taskId, "Exercise direct route guidance after start-ready.");
+     await runCliSilent([
+       "task",
+       "start-ready",
+@@ -211,7 +187,7 @@ describe("runCli route decision direct closeout", () => {
+   });
+ 
+   it("stops for verification evidence after a successful runner instead of looping verify-show", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     await configureGitUser(root);
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+@@ -219,19 +195,11 @@ describe("runCli route decision direct closeout", () => {
+     await commitAll(root, "seed direct workflow config");
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
++    await approveRouteTaskPlan(
++      root,
+       taskId,
+-      "--text",
+       "Exercise the direct terminal-runner verification gate.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    );
+     await runCliSilent([
+       "task",
+       "start-ready",
+@@ -339,25 +307,13 @@ describe("runCli route decision direct closeout", () => {
+   });
+ 
+   it("routes verified direct tasks to closeout instead of rerunning them and drops them from active work", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+     await writeConfig(root, config);
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Exercise direct verified closeout routing.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await approveRouteTaskPlan(root, taskId, "Exercise direct verified closeout routing.");
+     await runCliSilent([
+       "task",
+       "start-ready",
+@@ -369,17 +325,8 @@ describe("runCli route decision direct closeout", () => {
+       "--root",
+       root,
+     ]);
+-    await runCliSilent([
+-      "verify",
+-      taskId,
+-      "--ok",
+-      "--by",
+-      "EVALUATOR",
+-      "--note",
+-      "Verified: ready for direct closeout.",
+-      "--root",
+-      root,
+-    ]);
++    await recordRouteVerification(root, taskId, "Verified: ready for direct closeout.");
++    await recordEvaluatorReview(root, taskId);
+ 
+     const nextIo = captureStdIO();
+     try {
+@@ -421,7 +368,7 @@ describe("runCli route decision direct closeout", () => {
+     "routes done direct tasks with dirty tracked task artifacts to a cleanup commit",
+     { timeout: 120_000 },
+     async () => {
+-      const root = await mkGitRepoRootWithBranch("main");
++      const root = await mkGitRepoRootWithCommit();
+       await configureGitUser(root);
+       const config = defaultConfig();
+       config.workflow_mode = "direct";
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts
+index 77a0a106a..ab4595134 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts
+@@ -4,14 +4,14 @@ import path from "node:path";
+ import { promisify } from "node:util";
+ 
+ import { describe } from "vitest";
+-import { recordQualityReviewPass } from "@agentplane/testkit";
++import { approveRouteTaskPlan, recordRouteVerification } from "./route-decision.testkit.js";
++import { mkGitRepoRootWithCommit, recordQualityReviewPass } from "@agentplane/testkit";
+ 
+ import {
+   captureStdIO,
+   defaultConfig,
+   expect,
+   it,
+-  mkGitRepoRootWithBranch,
+   runCli,
+   runCliSilent,
+   writeConfig,
+@@ -48,26 +48,14 @@ async function createBranchPrTask(root: string): Promise<string> {
+ 
+ describe("runCli route decision open PR metadata", () => {
+   it("starts a TODO task in its existing worktree before routing to pr open", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Publish the already-created task branch.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await approveRouteTaskPlan(root, taskId, "Publish the already-created task branch.");
+     await execFileAsync("git", ["add", "."], { cwd: root });
+     await execFileAsync("git", ["commit", "-m", "seed task artifacts"], { cwd: root });
+     const branch = `task/${taskId}/bootstrap-existing`;
+@@ -285,26 +273,14 @@ describe("runCli route decision open PR metadata", () => {
+   });
+ 
+   it("routes local open PR metadata to pre-merge closure without remote lookup", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Exercise local open PR routing.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await approveRouteTaskPlan(root, taskId, "Exercise local open PR routing.");
+     await execFileAsync("git", ["add", "."], { cwd: root });
+     await execFileAsync("git", ["commit", "-m", "seed task workflow"], { cwd: root });
+ 
+@@ -326,17 +302,11 @@ describe("runCli route decision open PR metadata", () => {
+       root,
+     ]);
+ 
+-    await runCliSilent([
+-      "verify",
++    await recordRouteVerification(
++      root,
+       taskId,
+-      "--ok",
+-      "--by",
+-      "CODER",
+-      "--note",
+       "Implementation verified for local open PR routing.",
+-      "--root",
+-      root,
+-    ]);
++    );
+     await recordQualityReviewPass(root, taskId);
+ 
+     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts
+index 13c0d8f8e..23472db13 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts
+@@ -4,6 +4,7 @@ import path from "node:path";
+ import { promisify } from "node:util";
+ 
+ import { describe } from "vitest";
++import { approveRouteTaskPlan, recordRouteVerification } from "./route-decision.testkit.js";
+ 
+ import {
+   captureStdIO,
+@@ -73,19 +74,7 @@ async function createVerifiedOpenPrFixture(
+   taskId: string;
+ }> {
+   const taskId = await createBranchPrTask(root);
+-  await runCliSilent([
+-    "task",
+-    "plan",
+-    "set",
+-    taskId,
+-    "--text",
+-    title,
+-    "--updated-by",
+-    "ORCHESTRATOR",
+-    "--root",
+-    root,
+-  ]);
+-  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++  await approveRouteTaskPlan(root, taskId, title);
+ 
+   const branch = `task/${taskId}/route-decision`;
+   await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+@@ -106,17 +95,7 @@ async function createVerifiedOpenPrFixture(
+   await writeFile(path.join(root, "impl.txt"), "implementation\n");
+   await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
+   await execFileAsync("git", ["commit", "-m", "feat: implementation"], { cwd: root });
+-  await runCliSilent([
+-    "verify",
+-    taskId,
+-    "--ok",
+-    "--by",
+-    "CODER",
+-    "--note",
+-    "Verified: route decision behavior.",
+-    "--root",
+-    root,
+-  ]);
++  await recordRouteVerification(root, taskId, "Verified: route decision behavior.");
+   await markTaskDoing(root, taskId);
+   await execFileAsync("git", ["add", "-A"], { cwd: root });
+   await execFileAsync("git", ["commit", "-m", "task: seed verified lifecycle state"], {
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts
+index b1a2fb9ea..0ad8e4599 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts
+@@ -4,13 +4,13 @@ import path from "node:path";
+ import { promisify } from "node:util";
+ 
+ import { describe } from "vitest";
++import { mkGitRepoRootWithCommit } from "@agentplane/testkit";
+ 
+ import {
+   captureStdIO,
+   defaultConfig,
+   expect,
+   it,
+-  mkGitRepoRootWithBranch,
+   runCli,
+   runCliSilent,
+   writeConfig,
+@@ -69,7 +69,7 @@ async function withFakeGh<T>(
+ 
+ describe("runCli route decision remote confidence", () => {
+   it("distinguishes confirmed missing close-tail state from unavailable provider evidence", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+index e40e39a23..2083fe1ed 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+@@ -4,13 +4,14 @@ import path from "node:path";
+ import { promisify } from "node:util";
+ 
+ import { describe } from "vitest";
++import { approveRouteTaskPlan } from "./route-decision.testkit.js";
++import { mkGitRepoRootWithCommit } from "@agentplane/testkit";
+ 
+ import {
+   captureStdIO,
+   defaultConfig,
+   expect,
+   it,
+-  mkGitRepoRootWithBranch,
+   runCli,
+   runCliSilent,
+   writeConfig,
+@@ -84,26 +85,14 @@ async function withFakeGh<T>(
+ 
+ describe("runCli route decision commands", () => {
+   it("reports status, next action, work resume, and dry-run repair", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Exercise route decision commands.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await approveRouteTaskPlan(root, taskId, "Exercise route decision commands.");
+     const rootRealpath = await realpath(root);
+ 
+     const statusIo = captureStdIO();
+@@ -221,26 +210,14 @@ describe("runCli route decision commands", () => {
+   });
+ 
+   it("prints a local-first task brief with JSON output and no default gh lookup", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Exercise task brief command.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await approveRouteTaskPlan(root, taskId, "Exercise task brief command.");
+ 
+     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+     await mkdir(prDir, { recursive: true });
+@@ -523,25 +500,13 @@ describe("runCli route decision commands", () => {
+   });
+ 
+   it("does not block direct route mutation when a running runner pid is dead", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+     await writeConfig(root, config);
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Exercise stale runner route handling.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await approveRouteTaskPlan(root, taskId, "Exercise stale runner route handling.");
+     await runCliSilent([
+       "task",
+       "start-ready",
+@@ -605,7 +570,7 @@ describe("runCli route decision commands", () => {
+   });
+ 
+   it("safe-apply skips approval and provider-only repair steps", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -650,26 +615,14 @@ describe("runCli route decision commands", () => {
+   });
+ 
+   it("routes stale local branch_pr state to base sync after hosted close is recorded upstream", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Exercise hosted close sync route.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await approveRouteTaskPlan(root, taskId, "Exercise hosted close sync route.");
+     await runCliSilent(["task", "set-status", taskId, "DOING", "--force", "--yes", "--root", root]);
+ 
+     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+@@ -765,25 +718,13 @@ describe("runCli route decision commands", () => {
+   });
+ 
+   it("keeps done direct-mode tasks on a direct-safe terminal route", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+     await writeConfig(root, config);
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Exercise direct done route decisions.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await approveRouteTaskPlan(root, taskId, "Exercise direct done route decisions.");
+ 
+     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+     const readme = await readFile(readmePath, "utf8");
+@@ -812,26 +753,14 @@ describe("runCli route decision commands", () => {
+   });
+ 
+   it("does not treat task-local artifact commits as stale PR metadata", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Exercise route decision commands.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await approveRouteTaskPlan(root, taskId, "Exercise route decision commands.");
+ 
+     const branch = `task/${taskId}/route-decision`;
+     await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+@@ -884,35 +813,14 @@ describe("runCli route decision commands", () => {
+     "refreshes stale PR metadata before recommending integration",
+     { timeout: 180_000 },
+     async () => {
+-      const root = await mkGitRepoRootWithBranch("main");
++      const root = await mkGitRepoRootWithCommit();
+       const config = defaultConfig();
+       config.workflow_mode = "branch_pr";
+       await writeConfig(root, config);
+       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+ 
+       const taskId = await createBranchPrTask(root);
+-      await runCliSilent([
+-        "task",
+-        "plan",
+-        "set",
+-        taskId,
+-        "--text",
+-        "Exercise stale PR metadata routing.",
+-        "--updated-by",
+-        "ORCHESTRATOR",
+-        "--root",
+-        root,
+-      ]);
+-      await runCliSilent([
+-        "task",
+-        "plan",
+-        "approve",
+-        taskId,
+-        "--by",
+-        "ORCHESTRATOR",
+-        "--root",
+-        root,
+-      ]);
++      await approveRouteTaskPlan(root, taskId, "Exercise stale PR metadata routing.");
+ 
+       const branch = `task/${taskId}/route-decision`;
+       await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+@@ -1051,26 +959,14 @@ describe("runCli route decision commands", () => {
+   );
+ 
+   it("does not claim no repair when blockers are unmapped", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Exercise blocked repair plans.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await approveRouteTaskPlan(root, taskId, "Exercise blocked repair plans.");
+ 
+     const branch = `task/${taskId}/missing-branch`;
+     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts
+index 6f4a49769..880a69746 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts
+@@ -4,6 +4,12 @@ import path from "node:path";
+ import { promisify } from "node:util";
+ 
+ import { describe } from "vitest";
++import { recordQualityReviewPass } from "@agentplane/testkit";
++import {
++  approveRouteTaskPlan,
++  recordRouteVerification,
++  routeVerificationDetails,
++} from "./route-decision.testkit.js";
+ 
+ import {
+   captureStdIO,
+@@ -11,7 +17,6 @@ import {
+   expect,
+   it,
+   mkGitRepoRootWithBranch,
+-  recordVerificationOk,
+   runCli,
+   runCliSilent,
+   writeConfig,
+@@ -75,23 +80,12 @@ describe("runCli route decision verification freshness", () => {
+     await execFileAsync("git", ["commit", "-m", "test: seed verification base"], { cwd: root });
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Exercise done route decisions.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await approveRouteTaskPlan(root, taskId, "Exercise done route decisions.");
+     await runCliSilent(["task", "set-status", taskId, "DOING", "--force", "--yes", "--root", root]);
+     await execFileAsync("git", ["add", "--all"], { cwd: root });
+     await execFileAsync("git", ["commit", "-m", "task: prepare done route fixture"], { cwd: root });
+-    await recordVerificationOk(root, taskId);
++    await recordRouteVerification(root, taskId, "Verify the completed route fixture.");
++    await recordQualityReviewPass(root, taskId);
+ 
+     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+     const readme = await readFile(readmePath, "utf8");
+@@ -140,19 +134,11 @@ describe("runCli route decision verification freshness", () => {
+     await execFileAsync("git", ["commit", "-m", "test: seed verification base"], { cwd: root });
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
++    await approveRouteTaskPlan(
++      root,
+       taskId,
+-      "--text",
+       "Require verification evidence for the current semantic implementation head.",
+-      "--updated-by",
+-      "PLANNER",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    );
+ 
+     await execFileAsync("git", ["checkout", "-b", `task/${taskId}/verification-freshness`], {
+       cwd: root,
+@@ -186,7 +172,8 @@ describe("runCli route decision verification freshness", () => {
+       `${JSON.stringify({ base: "main", branch: `task/${taskId}/verification-freshness`, created_at: "2026-01-01T00:00:00.000Z", head_sha: firstImplementationHead.trim(), pr_number: 123, pr_url: "https://github.com/example/repo/pull/123", schema_version: 1, status: "OPEN", task_id: taskId, updated_at: "2026-01-01T00:00:00.000Z" }, null, 2)}\n`,
+       "utf8",
+     );
+-    await recordVerificationOk(root, taskId);
++    await recordRouteVerification(root, taskId, "Verify the initial semantic implementation.");
++    await recordQualityReviewPass(root, taskId);
+     await execFileAsync("git", ["add", "--all"], { cwd: root });
+     await execFileAsync("git", ["commit", "-m", "task: record fresh verification"], { cwd: root });
+ 
+@@ -232,19 +219,11 @@ describe("runCli route decision verification freshness", () => {
+     await execFileAsync("git", ["commit", "-m", "test: seed verification base"], { cwd: root });
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
++    await approveRouteTaskPlan(
++      root,
+       taskId,
+-      "--text",
+       "Record verification once and reuse it when only lifecycle evidence changes.",
+-      "--updated-by",
+-      "PLANNER",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    );
+     const branch = `task/${taskId}/single-verification`;
+     await execFileAsync("git", ["checkout", "-b", branch], {
+       cwd: root,
+@@ -376,25 +355,27 @@ describe("runCli route decision verification freshness", () => {
+     expect(afterConflicting.blockers.map((blocker) => blocker.code)).toContain(
+       "verification_required",
+     );
+-    await runCliSilent([
+-      "verify",
+-      taskId,
+-      "--ok",
+-      "--by",
+-      "TESTER",
+-      "--note",
+-      "Focused verification passed.",
+-      "--details",
+-      "Command: test fixture. Result: pass. Evidence: implementation fixture is present. Scope: verification freshness.",
+-      "--observation",
+-      "The committed implementation and verification input match.",
+-      "--impact",
+-      "The route may reuse this evidence after lifecycle-only changes.",
+-      "--resolution",
+-      "Keep semantic verification input separate from lifecycle artifacts.",
+-      "--root",
+-      root,
+-    ]);
++    expect(
++      await runCliSilent([
++        "verify",
++        taskId,
++        "--ok",
++        "--by",
++        "TESTER",
++        "--note",
++        "Focused verification passed.",
++        "--details",
++        await routeVerificationDetails(root, taskId),
++        "--observation",
++        "The committed implementation and verification input match.",
++        "--impact",
++        "The route may reuse this evidence after lifecycle-only changes.",
++        "--resolution",
++        "Keep semantic verification input separate from lifecycle artifacts.",
++        "--root",
++        root,
++      ]),
++    ).toBe(0);
+ 
+     const immediate = await runJson<{
+       blockers: { code: string }[];

@@ -1,0 +1,6 @@
+ .../src/cli/run-cli.core.lifecycle.plan.test.ts    | 148 +++++++++++++++++++--
+ .../src/cli/run-cli.core.task-guided.test.ts       |   7 +-
+ .../run-cli.core.task-status-token-usage.test.ts   |   4 +-
+ .../src/cli/run-cli.core.tasks.active.test.ts      |   9 +-
+ .../src/cli/run-cli.core.tasks.user-create.test.ts |   3 +-
+ 5 files changed, 148 insertions(+), 23 deletions(-)

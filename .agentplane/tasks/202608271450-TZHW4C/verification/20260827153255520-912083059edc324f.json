@@ -1,0 +1,109 @@
+{
+  "details": "Command: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271450-TZHW4C declared verification",
+  "digest": "sha256:912083059edc324fe6e7909eb5016163af8a639952ae5917641042ebb78323da",
+  "implementation_sha": "5d196df119a9335cc606237716455b7487db4e1c",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:0af815e9fc51e5b10913ff50164ab373fb75df0538a541d46650631ae1278e55",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:b48bd4daa1f4dd6f9edbbc71ae3488d91219eba694fa2772c0e0171bf0cff275",
+      "digest": "sha256:6a16a28f7e929056499b02b13ae941ca8c3b675c18ed8d48a15689f29a1fb050",
+      "references": [
+        {
+          "digest": "sha256:9fb7e9e14a33e280716d38d2ab6f8ba4637f67e0952f9ba5aa5a96475f19adfb",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "5fce04a8be14816be4cae236d2941dff7045e214",
+      "digest": "sha256:6c6e93b9e5a2e491c71aee2e1298acc243c1366e6d7416f3b4f7863dc6909deb",
+      "primary_task_id": "202608271450-TZHW4C",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608271450-TZHW4C"
+      ]
+    },
+    "implementation": {
+      "base_sha": "5fce04a8be14816be4cae236d2941dff7045e214",
+      "digest": "sha256:2313a59a471cb0f1a1f7338951d877c6c42db3f2d0531bbed6cceb0a987d9c1b",
+      "strategy": "branch_diff",
+      "target_sha": "5d196df119a9335cc606237716455b7487db4e1c"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:ca384f1882c03f4ad1cf70b82ebe7c79fb965880bf1c9f9f37272aa3c0129c3d",
+    "verify_steps_digest": "sha256:0db33f0096755e0c22a0fb223818208899e7981aa3a270aa7f35dbea3a43773c"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-08-27T15:32:55.520Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2. Expected: both suites pass without skipped tests; explicit approval, network and forbidden effects, missing intent, route selection and exact bases remain asserted.\n2. Run ESLint, Prettier and git diff --check on the three files. Expected: no errors and unchanged hotspot baseline.\n3. Run bun run ci:local:full. Expected: mandatory full CI passes.\n4. Review the diff. Expected: only three approved fixture files change; no product behavior, global helper semantics, CI gates, policy or release graph changes.\n5. Require hosted exact-head checks and supported integration before closure.",
+  "scope_digest": "sha256:0db33f0096755e0c22a0fb223818208899e7981aa3a270aa7f35dbea3a43773c",
+  "task_id": "202608271450-TZHW4C",
+  "verification_command": "agentplane verify 202608271450-TZHW4C --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

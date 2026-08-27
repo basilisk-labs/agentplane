@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608271538-T21JCA-dd497368c15afcdb85e259e0",
+  "prepared_at": "2026-08-27T18:52:37.520Z",
+  "task": {
+    "id": "202608271538-T21JCA",
+    "revision": 52,
+    "objective": "Preserve the green-behind routing correction and complete its successful-operation contract. Before provider update, validate the exact task checkout, local head and clean state. After exact provider identity and ancestry proof, fetch and fast-forward only to that proven head, then verify local and tracking alignment. Reject drift or dirty state without discarding changes. Cover fresh update, interrupted reconciliation, no-repeat behavior and the next publication route with real local Git fixtures. Do not force push, reset, bypass checks or alter queue ownership.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "In scope: packages/agentplane/src/commands/shared/provider-update-branch-route.ts, packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts, packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts, packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts, packages/agentplane/src/commands/pr/provider-update-branch.ts, packages/agentplane/src/commands/pr/provider-update-branch.test.ts, packages/agentplane/src/commands/pr/provider-update-branch-local.ts, packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts, packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts, packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts. Complete the exact provider-update-to-local-publication continuity contract described in Plan. Out of scope: policy, CI selection, timeouts, queue ownership, release roadmap changes, force reset/push and unrelated refactoring.",
+      "Complete provider-update recovery across delayed readback and restart. Preserve exact identity, expected-head binding, ancestry and all local preservation checks. Route a mismatched hosted descendant to a separately bound reconciliation-only operation that can never repeat PUT or publish the old local head. Keep strict pre-effect base validation. Prove any post-effect base advance before accepting it. Cover immediate success, delayed observation, interruption, rerun and the next transition. Before changing command projection, request a bounded scope extension for shared/workflow-operation-projection.ts and shared/workflow-operation-prefix.ts; route through the existing managed task command instead of an unregistered pr update-branch command. Keep CI, policy, queue ownership and release/Core order unchanged.",
+      "1. Run `node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1`. Expected: all tests pass without skips or weaker guards.\n2. Run `bun run ci:local:full`. Expected: all tests pass without skips or weaker guards.\n3. Review local preservation, exact provider identity, ancestry and next-route alignment across successful update and interrupted retry. Require hosted exact-head checks and resolved PR review before integration."
+    ]
+  },
+  "evaluated_sha": "714ec7d931205d05fc7158b883806e5ea4388200",
+  "diff_base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+  "blueprint_digest": "bf6412e3d49da0bea86f3add5fbd4a74730f923069b0d97f7d3737c785393ad9",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608271538-T21JCA/quality/20260827-185237520-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:ce3679ac5a8d7fa886cd35b010eaee3061adaf1244778c9b9f51f2778b022649",
+    "prompt_path": ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/efe135d010022261174668a4c7cb2b3925b6118a8068b12cda82e02713ab0c81.md",
+    "result_schema_path": ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608271538-T21JCA/README.md",
+      "sha256": "sha256:f271dfc4349afc0e40232934c51ac2e710f2baa943459fc990ab74601f31ccf5",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/a7e3196d56670a618cab6f2faccd91792fd9fdd6bb32df3f9587ff725891c60f.patch",
+      "sha256": "sha256:a7e3196d56670a618cab6f2faccd91792fd9fdd6bb32df3f9587ff725891c60f",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/5b969fa31cb380006daa12e43d9292d0b7b40b06dab78d360d996621e45a56f0.json",
+      "sha256": "sha256:5b969fa31cb380006daa12e43d9292d0b7b40b06dab78d360d996621e45a56f0",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608271538-T21JCA/verification/20260827185225478-6366f2fb7f9e38cb.json",
+      "sha256": "sha256:3657e320c7d8591eb132804350fc44b85f9400decc845780c96995a03e6504a7",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608271538-T21JCA/quality/objects/sha256/23f41be610f22839e63955e61a6129a0f92dc7b634a33469b42faf27be8d2392.json",
+      "sha256": "sha256:23f41be610f22839e63955e61a6129a0f92dc7b634a33469b42faf27be8d2392",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

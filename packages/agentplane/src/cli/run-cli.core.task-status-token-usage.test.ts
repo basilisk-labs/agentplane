@@ -1,11 +1,11 @@
 import { describe } from "vitest";
+import { mkGitRepoRootWithCommit } from "@agentplane/testkit";
 
 import {
   captureStdIO,
   defaultConfig,
   expect,
   it,
-  mkGitRepoRootWithBranch,
   runCli,
   runCliSilent,
   seedTaskQueryFixture,
@@ -44,7 +44,7 @@ async function captureCli(args: string[]): Promise<string> {
 
 describe("runCli completed task token usage", () => {
   it("keeps status, brief, and machine projections consistent", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await seedTaskQueryFixture(root, [

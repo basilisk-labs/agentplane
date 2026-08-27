@@ -26,6 +26,7 @@ import {
   mkdir,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
+  mkGitRepoRootWithCommit,
   mkTempDir,
   mkdtemp,
   os,
@@ -62,7 +63,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
   it(
     "pr open leaves committed PR artifacts unchanged when task branch publish fails",
     async () => {
-      const root = await mkGitRepoRootWithBranch("main");
+      const root = await mkGitRepoRootWithCommit();
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
       await writeConfig(root, config);
@@ -332,7 +333,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
   );
 
   it("pr open creates a remote GitHub PR on the first pass after packet materialization", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -381,11 +382,23 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
       cwd: root,
       env: cleanGitEnv(),
     });
-    await execFileAsync("git", ["remote", "add", "publish", publishRemotePath], {
+    await execFileAsync(
+      "git",
+      ["remote", "add", "publish", "https://github.com/example/repo.git"],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    await execFileAsync("git", ["push", publishRemotePath, `HEAD:refs/heads/${branch}`], {
       cwd: root,
       env: cleanGitEnv(),
     });
-    await execFileAsync("git", ["push", "-u", "publish", `HEAD:refs/heads/${branch}`], {
+    await execFileAsync("git", ["config", `branch.${branch}.remote`, "publish"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["config", `branch.${branch}.merge`, `refs/heads/${branch}`], {
       cwd: root,
       env: cleanGitEnv(),
     });
@@ -396,6 +409,29 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
       packetCommitSubject,
       publishRemote: "publish",
     });
+    const { stdout: realGit } = await execFileAsync("which", ["git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    // Preserve hosted remote identity while using an isolated local Git transport.
+    const fakeGitPath = path.join(fakeBin, "git");
+    await writeFile(
+      fakeGitPath,
+      [
+        "#!/usr/bin/env node",
+        "const { spawnSync } = require('node:child_process');",
+        "const args = process.argv.slice(2);",
+        "if (['push', 'fetch', 'ls-remote'].includes(args[0])) {",
+        `  args.unshift('-c', ${JSON.stringify(`url.${publishRemotePath}.insteadOf=https://github.com/example/repo.git`)});`,
+        "}",
+        `const result = spawnSync(${JSON.stringify(realGit.trim())}, args, { stdio: 'inherit', env: process.env });`,
+        "if (result.error) throw result.error;",
+        "process.exit(result.status ?? 1);",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeGitPath, 0o755);
     const originalPath = process.env.PATH;
     process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
     process.env.AGENTPLANE_GH_LOG = logPath;
@@ -413,9 +449,9 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
+      expect(code, io.stderr).toBe(0);
       expect(io.stdout).toContain("created GitHub PR #888");
-      expect(io.stdout).not.toContain("remote PR creation staged");
+      expect(io.stdout).not.toContain("remote change-request creation staged");
     } finally {
       io.restore();
       process.env.PATH = originalPath;
@@ -446,7 +482,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
   });
 
   it("pr open auto-publishes an unpublished task branch to origin before creating the GitHub PR", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -530,7 +566,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
       ]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("created GitHub PR #912");
-      expect(io.stdout).not.toContain("remote PR creation staged");
+      expect(io.stdout).not.toContain("remote change-request creation staged");
       expect(io.stdout).not.toContain("not yet published on origin");
     } finally {
       io.restore();
@@ -559,7 +595,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
   });
 
   it("pr open auto-publishes an unpublished branch even when PR artifacts were already committed locally", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -665,7 +701,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
       ]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("created GitHub PR #913");
-      expect(io.stdout).not.toContain("remote PR creation staged");
+      expect(io.stdout).not.toContain("remote change-request creation staged");
       expect(io.stdout).not.toContain("not yet published on origin");
     } finally {
       io.restore();
@@ -686,7 +722,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
   it(
     "pr open skips a redundant push when origin already has the matching branch head",
     async () => {
-      const root = await mkGitRepoRootWithBranch("main");
+      const root = await mkGitRepoRootWithCommit();
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
       await writeConfig(root, config);
@@ -833,7 +869,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
         ]);
         expect(code).toBe(0);
         expect(io.stdout).toContain("created GitHub PR #914");
-        expect(io.stdout).not.toContain("remote PR creation staged");
+        expect(io.stdout).not.toContain("remote change-request creation staged");
       } finally {
         io.restore();
         process.env.PATH = originalPath;

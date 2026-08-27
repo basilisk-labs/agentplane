@@ -8,6 +8,7 @@ import {
   captureStdIO,
   installRunCliIntegrationHarness,
   mkGitRepoRootWithBranch,
+  mkGitRepoRootWithCommit,
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
@@ -203,7 +204,7 @@ describe("task creation intent and long-lived bases", { timeout: 60_000 }, () =>
   });
 
   it("preserves a reusable envelope and re-resolves the route from typed intent", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);

@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The eleven seeded roots belong to execution-dependent scenarios. Missing-Verify-Steps and argument-validation fixtures retain unborn histories; no global helper changed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271502-J6B4RW/quality/objects/sha256/58b664e7b0a81b253833b10a6c216059659b73855a9bfe7503edda7e5c2c4aee.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The host approval fixture uses the issued PLANNER work order and snapshot, submits a canonical proposal, asserts the approval boundary, and then retains the existing host decision and replan revocation checks. It does not substitute executor claims for observed evidence.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271502-J6B4RW/quality/objects/sha256/58b664e7b0a81b253833b10a6c216059659b73855a9bfe7503edda7e5c2c4aee.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "All pre-existing input rejection, missing receipt, branch verification without closure, token equality, dependency ordering and waiting-user assertions remain unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271502-J6B4RW/quality/objects/sha256/58b664e7b0a81b253833b10a6c216059659b73855a9bfe7503edda7e5c2c4aee.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The concurrent active-query test still asserts no protected runner artifacts are created. An empty no-active-work repository remains a separate unseeded case.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271502-J6B4RW/quality/objects/sha256/58b664e7b0a81b253833b10a6c216059659b73855a9bfe7503edda7e5c2c4aee.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The frozen actual diff contains only five approved test files. Full CI passed on Node26 in577839ms and the supervisor repeated the24-test focused suite successfully.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271502-J6B4RW/quality/objects/sha256/58b664e7b0a81b253833b10a6c216059659b73855a9bfe7503edda7e5c2c4aee.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Verification record20260827154604703-18e8da1d3734f6ea binds the checks and contract to implementation23a18d80343f279497c47eba6699b86d2571aa73. No CI, timeout, policy, product or release metadata changes were made.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271502-J6B4RW/quality/objects/sha256/58b664e7b0a81b253833b10a6c216059659b73855a9bfe7503edda7e5c2c4aee.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Real hosted qualification remains a later mandatory lifecycle gate.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271502-J6B4RW/quality/objects/sha256/58b664e7b0a81b253833b10a6c216059659b73855a9bfe7503edda7e5c2c4aee.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -6,6 +6,7 @@ import {
   expect,
   it,
   mkGitRepoRootWithBranch,
+  mkGitRepoRootWithCommit,
   readFile,
   runCli,
   runCliSilent,
@@ -131,7 +132,7 @@ describe("runCli pr flow status", () => {
   });
 
   it("reports task branch, local PR metadata, close-tail state, and next action", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -236,7 +237,7 @@ describe("runCli pr flow status", () => {
       expectLabeledValue(
         io.stdout,
         "hosted_checks",
-        "unchecked: GitHub PR number is not recorded in PR metadata",
+        "unchecked: Hosted change-request number is not recorded in PR metadata",
       );
       expectLabeledValue(
         io.stdout,
@@ -369,7 +370,7 @@ describe("runCli pr flow status", () => {
   });
 
   it("reports hosted check counts when gh returns pending status with exit code 8", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -443,7 +444,7 @@ describe("runCli pr flow status", () => {
   });
 
   it("resolves a merged PR by persisted number after its remote head branch is deleted", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);

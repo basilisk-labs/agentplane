@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608271502-J6B4RW-63c685ad9046e72b1b077c7c",
+  "prepared_at": "2026-08-27T15:46:23.971Z",
+  "task": {
+    "id": "202608271502-J6B4RW",
+    "revision": 9,
+    "objective": "Align intake and query execution fixtures\n\nRepair ten reproduced failures across five intake and query test files on integrated main. Use the existing committed fixture only for execution-dependent scenarios. Preserve missing Verify Steps rejection, unsupported-check and invalid-intake negatives, executor-claim and observed-receipt refusal, branch verification versus closure, token telemetry equality, active-task sorting and dependency readiness, user questions, and read-only concurrent queries. If a query fixture lacks a canonical plan, assert the actual semantic-planning route instead of an obsolete pre-worktree route without weakening query invariants. Do not invent approval or verification evidence. Do not change production code, shared helpers, policy, timeouts, CI gates, release state or roadmap dependencies. Five-file scope is disjoint from current repair tasks and requires only merged GHHA0Q. Require focused tests and full CI.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.task-guided.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts --pool=threads --maxWorkers=2",
+      "- In scope: Repair ten reproduced failures across five intake and query test files on integrated main. Use the existing committed fixture only for execution-dependent scenarios. Preserve missing Verify Steps rejection, unsupported-check and invalid-intake negatives, executor-claim and observed-receipt refusal, branch verification versus closure, token telemetry equality, active-task sorting and dependency readiness, user questions, and read-only concurrent queries. If a query fixture lacks a canonical plan, assert the actual semantic-planning route instead of an obsolete pre-worktree route without weakening query invariants. Do not invent approval or verification evidence. Do not change production code, shared helpers, policy, timeouts, CI gates, release state or roadmap dependencies. Five-file scope is disjoint from current repair tasks and requires only merged GHHA0Q. Require focused tests and full CI.\n- Out of scope: unrelated refactors not required for \"Align intake and query execution fixtures\".",
+      "Repair only ten reproduced failures in the five approved intake/query suites. Seed real Git identity for execution-dependent fixtures. Preserve unsupported input, missing Verify Steps, executor-claim and missing-receipt refusal, branch verification without closure, token telemetry equality, dependency ordering and read-only query behavior. Align the query-only fixture next action with canonical planning when no structured plan exists. Run scoped tests, lint, formatting and full CI. Stop if production changes or wider scope become necessary.",
+      "1. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.task-guided.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts --pool=threads --maxWorkers=2. Expected: all five suites pass with no skipped tests and all safety, query, telemetry and read-only concurrency assertions preserved.\n2. Run ESLint, Prettier, git diff --check and the oversized-test baseline check. Expected: no errors or baseline increases.\n3. Run bun run ci:local:full. Expected: mandatory full CI passes.\n4. Review the diff. Expected: five test files only; empty argument-validation fixtures retained, no invented approval or verification, no product, helper, policy, CI or release changes.\n5. Require hosted exact-head checks and supported integration before closure."
+    ]
+  },
+  "evaluated_sha": "23a18d80343f279497c47eba6699b86d2571aa73",
+  "diff_base_sha": "5fce04a8be14816be4cae236d2941dff7045e214",
+  "blueprint_digest": "ec71e2accf4025630a0bc4823aef9d76ec08c45b5d87d5e0694342e7c6f982d9",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608271502-J6B4RW/quality/20260827-154623971-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:17d078afcae246fe6717e89666feb83ab88815ee040d5ff95365385f696094ec",
+    "prompt_path": ".agentplane/tasks/202608271502-J6B4RW/quality/objects/sha256/0031c8f4d4758e61b1466e0d1cc73f10d4188334296df7b99d8d999f5c4e8ea1.md",
+    "result_schema_path": ".agentplane/tasks/202608271502-J6B4RW/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608271502-J6B4RW/README.md",
+      "sha256": "sha256:46913581c0371195eb45356b447ef2889b65d7f34f043b2e3eebdb7740c43c29",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608271502-J6B4RW/quality/objects/sha256/58b664e7b0a81b253833b10a6c216059659b73855a9bfe7503edda7e5c2c4aee.patch",
+      "sha256": "sha256:58b664e7b0a81b253833b10a6c216059659b73855a9bfe7503edda7e5c2c4aee",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608271502-J6B4RW/quality/objects/sha256/b1ec08ea0502169eb633c52e878c5f61dab6a05f7abb0b1e3821a09aae111dc8.json",
+      "sha256": "sha256:b1ec08ea0502169eb633c52e878c5f61dab6a05f7abb0b1e3821a09aae111dc8",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608271502-J6B4RW/verification/20260827154604703-18e8da1d3734f6ea.json",
+      "sha256": "sha256:756811d7c3677dc0f5e08a348c63e018af3b564e6b4bf497685841878b2cdc3e",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608271502-J6B4RW/quality/objects/sha256/4fac0491a5e9a0c96c8ac043242a10a8897ab3ae27acf6ec034902b9811d012b.json",
+      "sha256": "sha256:4fac0491a5e9a0c96c8ac043242a10a8897ab3ae27acf6ec034902b9811d012b",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
