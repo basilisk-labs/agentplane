@@ -4,7 +4,7 @@ title: "Modernize structured planner-intent fixtures"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -23,10 +23,10 @@ plan_approval:
   updated_by: "USER"
   note: "The user explicitly authorized autonomous refactoring until completion and granted all permissions. Apply that authorization to this bounded three-file planner fixture modernization while preserving approval and safety gates."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-27T16:43:24.368Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -82,11 +82,39 @@ execution_contract:
       - "packages/agentplane/src/cli/task-create-planner-intent.testkit.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+      - "packages/agentplane/src/cli/task-create-planner-intent.testkit.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -120,21 +148,31 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:7e6b95c44801b73084e60927ca798f6ea0182a9907c65d054a3a756af5be3a4a"
+      digest: "sha256:ca384f1882c03f4ad1cf70b82ebe7c79fb965880bf1c9f9f37272aa3c0129c3d"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
         - "central_component:packages/agentplane/src/cli/task-create-planner-intent.testkit.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+        - "central_path:packages/agentplane/src/cli/task-create-planner-intent.testkit.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+          - "packages/agentplane/src/cli/task-create-planner-intent.testkit.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -166,11 +204,19 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "5d196df119a9335cc606237716455b7487db4e1c"
+  message: "🚧 TZHW4C task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 5d196df119a9. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 5d196df119a9. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -179,9 +225,37 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-27T15:08:58.919Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 5d196df119a9. CLI accepted one state-bound external-agent semantic result."
+    commit: "5d196df119a9335cc606237716455b7487db4e1c"
+  -
+    type: "verify"
+    at: "2026-08-27T15:32:55.520Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-27T16:34:35.731Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 5d196df119a9. CLI accepted one state-bound external-agent semantic result."
+    commit: "5d196df119a9335cc606237716455b7487db4e1c"
+  -
+    type: "verify"
+    at: "2026-08-27T16:43:24.368Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-27T14:52:20.838Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-27T16:43:26.390Z"
+doc_updated_by: "SUPERVISOR"
 description: "Modernize the three planner-intent fixture files after eight freshly reproduced failures. Produce a real structured TaskPlanProposal from the issued PLANNER work order with exact repository_snapshot, bounded WorkItem scope and declared checks. Do not attach planning proposals to EXECUTOR or EVALUATOR results. Preserve missing-intent negative coverage, explicit user approval, forbidden external effects, network approval, direct versus branch_pr routing, exact execution identity and work preservation. Seed Git before planning where execution requires it. Keep isolated fixture CI and fake-provider transport valid without changing production CI. Replace only obsolete internal lifecycle counts with semantic invariants if necessary, preserving the one-user-approval outcome. No product, global testkit helper, policy, release or task graph changes. Scope is disjoint from G0N9P4, 9EWJA1 and DVEMAE; use already integrated GHHA0Q. Require focused tests and full CI."
 sections:
   Summary: |-
@@ -200,6 +274,113 @@ sections:
     5. Require hosted exact-head checks and supported integration before closure.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-27T15:32:55.520Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0db33f0096755e0c22a0fb223818208899e7981aa3a270aa7f35dbea3a43773c, input_digest=sha256:0af815e9fc51e5b10913ff50164ab373fb75df0538a541d46650631ae1278e55
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271450-TZHW4C declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271450-TZHW4C-modernize-structured-planner-intent-fixtures/.agentplane/tasks/202608271450-TZHW4C/blueprint/resolved-snapshot.json
+    - old_digest: 1de4bc98bc6285e27bc35a92b921be938f564fe533f886bc1bfa75e7b0dc033c
+    - current_digest: 1de4bc98bc6285e27bc35a92b921be938f564fe533f886bc1bfa75e7b0dc033c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608271450-TZHW4C
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-27T16:43:24.368Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0db33f0096755e0c22a0fb223818208899e7981aa3a270aa7f35dbea3a43773c, input_digest=sha256:15f0d18d3127f0174741b0a0807bbd2a7dfc8d299539d4c0fdcc44b0a9530ebb
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271450-TZHW4C Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271450-TZHW4C Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271450-TZHW4C Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271450-TZHW4C Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271450-TZHW4C Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271450-TZHW4C Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271450-TZHW4C Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271450-TZHW4C-modernize-structured-planner-intent-fixtures/.agentplane/tasks/202608271450-TZHW4C/blueprint/resolved-snapshot.json
+    - old_digest: 1de4bc98bc6285e27bc35a92b921be938f564fe533f886bc1bfa75e7b0dc033c
+    - current_digest: 1de4bc98bc6285e27bc35a92b921be938f564fe533f886bc1bfa75e7b0dc033c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608271450-TZHW4C
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -436,25 +617,119 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 13
     schema_version: 1
-    updated_at: "2026-08-27T14:52:00.194Z"
+    updated_at: "2026-08-27T16:43:27.413Z"
     work_items:
       modernize-planner-intent-fixtures:
-        attempt: 0
+        attempt: 2
         claim_id: null
         id: "modernize-planner-intent-fixtures"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:78de0739aaf5174b0b4d07df2eee209dbb8f76f3b0329537463e2331b8d30c6a"
+            id: "artifact:planner-intent-fixture-report"
+            kind: "semantic_output"
+            producer:
+              attempt: 2
+              plan_revision: 1
+              task_id: "202608271450-TZHW4C"
+              work_item_id: "modernize-planner-intent-fixtures"
+            provenance:
+              - "sha256:7ce0a05e7d83d836892e8b2f6db8409c9709bdb765cd403f732f2d9a4cb49cc1"
+              - ".agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:bfb798e460ca4b5a35ee30d9a87600d51828996639fff46274a44c1d0b92f240"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 3
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json"
+              check_id: "scoped-tests"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2."
+              exit_code: 0
+              observed_at: "2026-08-27T16:43:27.409Z"
+              repository_snapshot_digest: "sha256:bfb798e460ca4b5a35ee30d9a87600d51828996639fff46274a44c1d0b92f240"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json"
+              check_id: "full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-27T16:43:27.409Z"
+              repository_snapshot_digest: "sha256:bfb798e460ca4b5a35ee30d9a87600d51828996639fff46274a44c1d0b92f240"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608271450-TZHW4C-executor-b34e64d480bf4a1912f46ef4:
+        aggregate_digest: "sha256:c5f42d5d7816f6d0a6469217989e8af958903fefb8cff61652ea16115a9d5c6f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-27T15:33:05.022Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_23172e423a71f682a94def50"
+          mutation_id: "external-result:work-order-202608271450-TZHW4C-executor-b34e64d480bf4a1912f46ef4"
+          plan_digest: "sha256:9649584b7fcb4c1c31925c5339cc703721aeecbb34870b0dd04f295b69b74322"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608271450-TZHW4C"
+          task_revision: 8
+          to: "REWORK_READY"
+          work_item_id: "modernize-planner-intent-fixtures"
+        mutation_id: "external-result:work-order-202608271450-TZHW4C-executor-b34e64d480bf4a1912f46ef4"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202608271450-TZHW4C"
+      external-result:work-order-202608271450-TZHW4C-executor-f4b53d6d675340e4f400dbbf:
+        aggregate_digest: "sha256:b45228f228c82ab4f164e415c4f9a6e1a2f93b8032c38b353659e399fd006c2c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-27T16:43:27.413Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_3354a9c0133009c6184e7aee"
+          mutation_id: "external-result:work-order-202608271450-TZHW4C-executor-f4b53d6d675340e4f400dbbf"
+          plan_digest: "sha256:9649584b7fcb4c1c31925c5339cc703721aeecbb34870b0dd04f295b69b74322"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608271450-TZHW4C"
+          task_revision: 12
+          to: "COMPLETED"
+          work_item_id: "modernize-planner-intent-fixtures"
+        mutation_id: "external-result:work-order-202608271450-TZHW4C-executor-f4b53d6d675340e4f400dbbf"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202608271450-TZHW4C"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "5d196df119a9335cc606237716455b7487db4e1c"
   task_execution_context:
     base_ref: "main"
     base_sha: "5fce04a8be14816be4cae236d2941dff7045e214"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "5fce04a8be14816be4cae236d2941dff7045e214"
     version: 1
@@ -486,6 +761,113 @@ Modernize only the planner-intent test helper and its two consumers. Build a typ
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-27T15:32:55.520Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0db33f0096755e0c22a0fb223818208899e7981aa3a270aa7f35dbea3a43773c, input_digest=sha256:0af815e9fc51e5b10913ff50164ab373fb75df0538a541d46650631ae1278e55
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271450-TZHW4C declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271450-TZHW4C-modernize-structured-planner-intent-fixtures/.agentplane/tasks/202608271450-TZHW4C/blueprint/resolved-snapshot.json
+- old_digest: 1de4bc98bc6285e27bc35a92b921be938f564fe533f886bc1bfa75e7b0dc033c
+- current_digest: 1de4bc98bc6285e27bc35a92b921be938f564fe533f886bc1bfa75e7b0dc033c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608271450-TZHW4C
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-27T16:43:24.368Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0db33f0096755e0c22a0fb223818208899e7981aa3a270aa7f35dbea3a43773c, input_digest=sha256:15f0d18d3127f0174741b0a0807bbd2a7dfc8d299539d4c0fdcc44b0a9530ebb
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271450-TZHW4C Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271450-TZHW4C Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271450-TZHW4C Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271450-TZHW4C Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271450-TZHW4C Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271450-TZHW4C Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271450-TZHW4C/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271450-TZHW4C Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271450-TZHW4C-modernize-structured-planner-intent-fixtures/.agentplane/tasks/202608271450-TZHW4C/blueprint/resolved-snapshot.json
+- old_digest: 1de4bc98bc6285e27bc35a92b921be938f564fe533f886bc1bfa75e7b0dc033c
+- current_digest: 1de4bc98bc6285e27bc35a92b921be938f564fe533f886bc1bfa75e7b0dc033c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608271450-TZHW4C
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
