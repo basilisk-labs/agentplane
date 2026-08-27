@@ -1,6 +1,7 @@
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import {
+  canonicalizeJson,
   createLegacyTaskAggregate,
   createTaskPlanRevision,
   taskCentricAggregateFromExtensions,
@@ -24,7 +25,8 @@ import type {
 import { setTaskPlan } from "./plan.js";
 
 function sameValue(left: unknown, right: unknown): boolean {
-  return JSON.stringify(left) === JSON.stringify(right);
+  // Persistence can reorder object members without changing the planning value.
+  return JSON.stringify(canonicalizeJson(left)) === JSON.stringify(canonicalizeJson(right));
 }
 
 function sameStringSet(left: readonly string[] | undefined, right: readonly string[]): boolean {

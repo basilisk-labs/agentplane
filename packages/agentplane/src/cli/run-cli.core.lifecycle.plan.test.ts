@@ -15,6 +15,7 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
+import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 
 import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
 import {
@@ -43,6 +44,7 @@ import {
   installRunCliIntegrationHarness,
   runCliSilent,
   mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   mkGitRepoRootWithBranch,
   mkTempDir,
   pathExists,
@@ -59,6 +61,136 @@ import {
 } from "@agentplane/testkit/cli-core-lifecycle";
 
 installRunCliIntegrationHarness();
+
+async function prepareHostApproval(root: string, taskId: string): Promise<Record<string, unknown>> {
+  const io = captureStdIO();
+  try {
+    expect(
+      await runCli(["task", "advance", taskId, "--agent-json", "--root", root]),
+      io.stderr,
+    ).toBe(0);
+    const packet = JSON.parse(io.stdout) as {
+      transition_id: string;
+      state_fingerprint: string;
+      authority: { role: string };
+      exchange: {
+        directory: string;
+        work_order_ref: string;
+        result_path: string;
+        resume_argv: string[];
+      };
+    };
+    expect(packet.authority.role).toBe("PLANNER");
+    const workOrder = JSON.parse(
+      await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
+    ) as AgentWorkOrderV2;
+    const baseline = workOrder.planning_context!.repository_snapshot;
+    const criterion = {
+      id: "approval-contract",
+      description: "Preserve scaffolded verification and state-bound host approval.",
+      required: true,
+      check_ids: ["task-check"],
+    };
+    const validation = {
+      schema_version: 1,
+      criteria: [criterion],
+      checks: [
+        { id: "task-check", kind: "deterministic", required: true, capability: "task.verify" },
+      ],
+      evidence_fingerprint: baseline.digest,
+    };
+    await writeFile(
+      packet.exchange.result_path,
+      JSON.stringify({
+        schema_version: 1,
+        kind: "agent_action_result",
+        task_id: taskId,
+        transition_id: packet.transition_id,
+        state_fingerprint: packet.state_fingerprint,
+        role: "PLANNER",
+        result: {
+          schema_version: 2,
+          kind: "agent_semantic_result",
+          work_order_id: workOrder.work_order_id,
+          status: "completed",
+          summary: "Exercise scaffolded verification through a structured approval contract.",
+          findings: [],
+          uncertainty: [],
+          task_intent: {
+            task_kind: "code",
+            mutation_scope: "code",
+            risk_flags: [],
+            tags: ["code"],
+            execution: {
+              schema_version: 2,
+              preferred_mode: "direct",
+              scope_roots: ["."],
+              repository_effects: ["repository_write", "source_code"],
+              external_effects: [],
+              requirements_uncertainty: "bounded",
+              implementation_uncertainty: "bounded",
+              reversibility: "reversible",
+              rationale: [
+                "The fixture exercises approval without implementation or external effects.",
+              ],
+            },
+          },
+          task_plan_proposal: {
+            schema_version: 1,
+            task_id: taskId,
+            planning_baseline: baseline,
+            work_items: {
+              schema_version: 1,
+              work_items: [
+                {
+                  id: "exercise-approval",
+                  objective: criterion.description,
+                  depends_on: [],
+                  required_inputs: [],
+                  expected_outputs: ["approval-result"],
+                  scope_roots: ["."],
+                  acceptance_criteria: [criterion],
+                  validation,
+                  context: {
+                    required_sources: [],
+                    optional_sources: [],
+                    symbol_hints: [],
+                    max_bytes: 65_536,
+                  },
+                  risk: "low",
+                  capabilities: ["task.verify"],
+                  resource_claims: [{ kind: "workspace", resource: ".", mode: "write" }],
+                  optional: false,
+                  priority: 1,
+                },
+              ],
+            },
+            assumptions: [],
+            unresolved_questions: [],
+            top_level_validation: validation,
+          },
+        },
+      }),
+    );
+    const resumeIo = captureStdIO();
+    try {
+      expect(
+        await runCli([...packet.exchange.resume_argv.slice(1), "--root", root]),
+        resumeIo.stderr,
+      ).toBe(0);
+      const approval = JSON.parse(resumeIo.stdout) as {
+        action: { kind: string };
+        operator_action: { host_user_decision: { request: Record<string, unknown> } };
+      };
+      expect(approval.action.kind).toBe("approval_required");
+      return approval.operator_action.host_user_decision.request;
+    } finally {
+      resumeIo.restore();
+    }
+  } finally {
+    io.restore();
+  }
+}
 
 describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
   it("task plan approve rejects verify-required tasks with missing Verify Steps", async () => {
@@ -169,7 +301,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
   });
 
   it("task plan approve accepts scaffolded Verify Steps for verify-required tasks without README surgery", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
     const ioNew = captureStdIO();
@@ -212,17 +344,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
     ]);
     expect(codeSet).toBe(0);
 
-    const ioAdvance = captureStdIO();
-    let hostRequest: Record<string, unknown>;
-    try {
-      expect(await runCli(["task", "advance", taskId, "--agent-json", "--root", root])).toBe(0);
-      const packet = JSON.parse(ioAdvance.stdout) as {
-        operator_action: { host_user_decision: { request: Record<string, unknown> } };
-      };
-      hostRequest = packet.operator_action.host_user_decision.request;
-    } finally {
-      ioAdvance.restore();
-    }
+    const hostRequest = await prepareHostApproval(root, taskId);
     const hostDecision = Buffer.from(
       JSON.stringify({
         schema_version: 1,
@@ -285,7 +407,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
   });
 
   it("start blocks verify-required tasks when plan approval is disabled and Verify Steps is missing", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
 
     const cfg = defaultConfig();
     cfg.agents.approvals.require_plan = false;

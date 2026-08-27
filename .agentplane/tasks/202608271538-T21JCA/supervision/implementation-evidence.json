@@ -1,0 +1,47 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 13536bcf0bac442a88b588129d7c3652ff28a573..714ec7d931205d05fc7158b883806e5ea4388200",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 13536bcf0bac442a88b588129d7c3652ff28a573..714ec7d931205d05fc7158b883806e5ea4388200",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608271538-T21JCA/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608271538-T21JCA/pr/github-body.md",
+        "M\t.agentplane/tasks/202608271538-T21JCA/pr/meta.json",
+        "M\t.agentplane/tasks/202608271538-T21JCA/pr/review.md",
+        "M\tpackages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "13536bcf0bac442a88b588129d7c3652ff28a573",
+  "implementation_commit": "714ec7d931205d05fc7158b883806e5ea4388200",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608271538-T21JCA"
+}
