@@ -1,0 +1,4 @@
+ .../src/commands/task/verify-record-execute.ts     |   4 +-
+ .../task/verify-record.durability.unit.test.ts     | 100 +++++++++++++++++++++
+ .../src/commands/task/verify-record.unit.test.ts   |   2 +-
+ 3 files changed, 103 insertions(+), 3 deletions(-)
