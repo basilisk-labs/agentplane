@@ -4,7 +4,7 @@ title: "Keep verification and review on the same semantic commit"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -26,6 +26,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-27T23:07:50.499Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "8faaaffd788fcdd84c7a1512a63c852174f78175"
+  blueprint_digest: "9365470d276e275ad8a5a0ffd6972bf7ad6d1d75750c245fea562d6ae7b551d2"
+  evidence_refs:
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260827-230610775-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260827-230610775-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/5a91f816258fbfff2849f7bc6be1f7cf50e4796b2e269be89388b9c66f1d5c68.md"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260827-230610775-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260827-230610775-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260827-230610775-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/README.md"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/3fa8c5a4ffd8708f6e96a21eba31edaf65882e1844c30c1e86c408070f957b5b.patch"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/ddfa9158349dd8bc733f31959f4dd5b52edf19f263a2c56ebf3c0556d6f7eb98.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/verification/20260827230553240-5454bb7d2f564299.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/6f267ba300d86b30f5a46cb1b7eae0f2cb31b89dd4cf4c01d666f9423b309d5e.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Code review confirms the only product change removes the forced recorded-implementation head and uses that implementation solely as previousEvaluatedSha fallback, matching resolveEvaluatorReviewTarget. Existing ancestry validation, lifecycle-only filtering, frozen execution-base observation and exact-diff evaluator validation remain unchanged."
+    - "Real-Git regressions distinguish an actual policy commit from lifecycle-only generated evidence. They verify two repeated invocations, exact observed changed paths and durable verification targets, unchanged implementation extension and unchanged HEAD. The policy variant failed before the change, while the lifecycle control already passed. This supports the internal-call assertion change with behavior evidence."
+    - "The exact integrate-incident regression and neighboring finish control now pass within the 58-test focused run. Existing resolver tests retain nonancestor, unrelated-history and base-sync negative coverage. The fresh supervisor full run passed in 473512ms, including platform-critical 98/98, guard 101/101 and all 17 significant coverage targets. All nine frozen evidence hashes match."
+    - "The implementation result records the proved cause and separate provider-neutral wording remainder through the semantic-result route expressly allowed by Verify Steps. No actual policy, CI configuration, test timeout or artifact schema was changed. The hook recovery committed the intended task payload through the supported guarded CLI; no evidence was hand-edited."
+    - "Residual risk: Hosted checks, integration and terminal closeout remain to be completed."
+    - "Residual risk: Provider-neutral integrate-error wording is a separate unresolved diagnostic cause."
 execution_route:
   frozen: true
   reason_codes:
