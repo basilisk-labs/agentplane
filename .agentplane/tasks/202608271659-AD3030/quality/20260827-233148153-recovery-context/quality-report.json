@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608271659-AD3030",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-27T23:33:34.954Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "37c73e481fb24ef71c13270b9c74ec22ba117040",
+  "blueprint_digest": "0d09cb76e6021e2ef303a75461cc70335a3cea6d6f7bee5819b630d96da713fb",
+  "findings": [
+    "The actual diff digest remains 6a54b986c4337537710c4beb64489bec480674ba7177b0351762cbc6ef90410f. Reviewed fixture changes preserve parsed extensions, immutable shared bases, exact reviewed and landed commit decisions, unresolved refusal, and authoritative worktree-only start. No production code, global helpers, checks or timeouts are changed.",
+    "All nine frozen evidence hashes match. The fresh 20260827233043685-d1e770e639a91501 verification record binds successful required full and four-file checks to implementation 37c73e481fb24ef71c13270b9c74ec22ba117040 and the declared environment. The prior 27-scenario review and guard assessment remain applicable to the identical source diff.",
+    "The previously empty Findings section now records the fixture causes, preserved behavior, local evidence, existing opt-in packaging skip, and unproven timeout-causality caveat. The documentation-only commit changes only the task README. No documentation rework remains.",
+    "Residual risk: Earlier intermittent timeout causality remains unproven; no test or timeout was weakened.",
+    "Residual risk: Hosted exact-head proof, integration and terminal closeout are still required."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/6a54b986c4337537710c4beb64489bec480674ba7177b0351762cbc6ef90410f.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
