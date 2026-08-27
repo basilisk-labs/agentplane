@@ -1,10 +1,11 @@
 ---
 id: "202608271544-1TDVPJ"
 title: "Modernize exact-result recovery fixtures"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 22
 origin:
   system: "manual"
 depends_on:
@@ -57,6 +58,20 @@ quality_review:
     - "Frozen verification20260827162335964-8d33c746263199fc binds implementation04686a004a2b9969d03059d853a294afdc6a22c7 to passing full CI454103ms,15 CLI tests13295ms and12 comparison tests800ms. Earlier failed evidence remains preserved."
     - "Residual risk: The comparator operates on schema-validated JSON values; this change does not extend the supported data model."
     - "Residual risk: Local verification does not prove hosted publication or integration."
+token_usage:
+  agent_runs: 5
+  input_tokens: null
+  journal_digest: "sha256:71f7f8c2a407745cd3fdaabead59b12e7a3e2580bd12f8cbe03428da32a6bfa0"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-27T16:29:31.721Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -246,8 +261,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "04686a004a2b9969d03059d853a294afdc6a22c7"
-  message: "🚧 1TDVPJ task: apply external agent result"
+  hash: "042f68391d3b51915e07f648cc6f02bf54579bd6"
+  message: "🚧 1TDVPJ task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -261,6 +276,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 04686a004a2b. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -304,9 +322,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-27T16:29:31.721Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "042f68391d3b51915e07f648cc6f02bf54579bd6"
 doc_version: 3
-doc_updated_at: "2026-08-27T16:23:38.330Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-27T16:29:31.746Z"
+doc_updated_by: "CODER"
 description: "Repair exact-result recovery using real Git bases and structured planner results. The approved material replan also addresses the demonstrated production defect in external-agent-planning-authority.ts: persisted JSON object property order must not change semantic equality. Reuse canonical JSON comparison and add focused unit regressions. Preserve array order, changed-value rejection, exact operation keys, replacement authority, original received-result identity, single consumption, replay rejection, retirement and approval guards. Scope is the existing recovery CLI test and local helper plus the planning-authority implementation and its unit tests. No lifecycle, provider, CI, policy, timeout or roadmap changes."
 sections:
   Summary: "Repair exact-result recovery using real Git bases and structured planner results. The approved material replan also addresses the demonstrated production defect in external-agent-planning-authority.ts: persisted JSON object property order must not change semantic equality. Reuse canonical JSON comparison and add focused unit regressions. Preserve array order, changed-value rejection, exact operation keys, replacement authority, original received-result identity, single consumption, replay rejection, retirement and approval guards. Scope is the existing recovery CLI test and local helper plus the planning-authority implementation and its unit tests. No lifecycle, provider, CI, policy, timeout or roadmap changes."
@@ -659,7 +685,45 @@ extensions:
       schema_version: 1
       task_id: "202608271544-1TDVPJ"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608271544-1TDVPJ"
+            - "git:04686a004a2b9969d03059d853a294afdc6a22c7"
+          check_id: "scoped-tests"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads --maxWorkers=1"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T16:23:35.964Z"
+          repository_snapshot_digest: "sha256:a98cccba5356a56f32fdc10345a8dabe3d38768571a6dda3859b1d23e0b5fba4"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608271544-1TDVPJ"
+            - "git:04686a004a2b9969d03059d853a294afdc6a22c7"
+          check_id: "comparison-tests"
+          command_identity: "node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --pool=forks --maxWorkers=1"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T16:23:35.964Z"
+          repository_snapshot_digest: "sha256:a98cccba5356a56f32fdc10345a8dabe3d38768571a6dda3859b1d23e0b5fba4"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608271544-1TDVPJ"
+            - "git:04686a004a2b9969d03059d853a294afdc6a22c7"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T16:23:35.964Z"
+          repository_snapshot_digest: "sha256:a98cccba5356a56f32fdc10345a8dabe3d38768571a6dda3859b1d23e0b5fba4"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608271544-1TDVPJ"
     intent:
       acceptance_criteria:
@@ -675,7 +739,7 @@ extensions:
 
         Repair the effect-recovery CLI suite using real committed Git execution bases and canonical structured planner results. Fresh main 2c9a2f5 reproduces 11 failures out of 15 before intended recovery assertions because execution bases are unborn. Preserve exact operation keys, replacement authority, durable received-result recovery, single-use consumption, replay rejection, retirement, and stale-plan rejection. Limit edits to run-cli.core.task-advance-effect-recovery.test.ts and an optional local test-only helper. Do not change production recovery semantics, lifecycle gates, policy, CI, or timeouts.
       task_id: "202608271544-1TDVPJ"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -851,9 +915,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608271544-1TDVPJ"
-    revision: 19
+    revision: 22
     schema_version: 1
-    updated_at: "2026-08-27T16:23:39.630Z"
+    updated_at: "2026-08-27T16:29:31.721Z"
     work_items:
       repair-planning-recovery-comparison:
         attempt: 1
@@ -956,6 +1020,31 @@ extensions:
         previous_revision: 18
         schema_version: 1
         task_id: "202608271544-1TDVPJ"
+      legacy-finish:202608271544-1TDVPJ:2026-08-27T16:23:35.964Z:04686a004a2b9969d03059d853a294afdc6a22c7:
+        aggregate_digest: "sha256:419be110402b4e4340d24223620d9bcdfc6935327078e6100c6da1ee5e606889"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-27T16:29:31.721Z"
+          cause_refs:
+            - "task-verification:202608271544-1TDVPJ"
+            - "git:04686a004a2b9969d03059d853a294afdc6a22c7"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e7183fee275b766683654788"
+          mutation_id: "legacy-finish:202608271544-1TDVPJ:2026-08-27T16:23:35.964Z:04686a004a2b9969d03059d853a294afdc6a22c7"
+          plan_digest: "sha256:bfba75a974242322a62a86e2095680afb70b469b484b174aacd3b59828dd895a"
+          plan_revision: 2
+          repository_fingerprint: "sha256:a98cccba5356a56f32fdc10345a8dabe3d38768571a6dda3859b1d23e0b5fba4"
+          schema_version: 1
+          task_id: "202608271544-1TDVPJ"
+          task_revision: 19
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608271544-1TDVPJ:2026-08-27T16:23:35.964Z:04686a004a2b9969d03059d853a294afdc6a22c7"
+        next_revision: 22
+        previous_revision: 21
+        schema_version: 1
+        task_id: "202608271544-1TDVPJ"
       plan-refinement:work-order-202608271544-1TDVPJ-executor-1da499554db1753591412e8d:
         aggregate_digest: "sha256:b1702e8ee6c89ed28f2b76ba04bcdab0f5e13f632fbf2c676e32024bacdf7dca"
         event:
@@ -988,6 +1077,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "04686a004a2b9969d03059d853a294afdc6a22c7"
+    message: "🚧 1TDVPJ task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "2c9a2f59146c302c517524136e66abb902f92ba6"
@@ -1158,3 +1248,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/5` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:71f7f8c2a407745cd3fdaabead59b12e7a3e2580bd12f8cbe03428da32a6bfa0`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-27T16:29:31.721Z`
