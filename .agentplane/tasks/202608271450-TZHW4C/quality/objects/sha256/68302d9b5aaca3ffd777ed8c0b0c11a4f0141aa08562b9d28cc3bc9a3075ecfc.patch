@@ -1,0 +1,507 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts b/packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts
+index 17755e743..9ec5f5b9c 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts
+@@ -8,6 +8,7 @@ import {
+   captureStdIO,
+   installRunCliIntegrationHarness,
+   mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   runCliSilent,
+   writeConfig,
+ } from "@agentplane/testkit";
+@@ -203,7 +204,7 @@ describe("task creation intent and long-lived bases", { timeout: 60_000 }, () =>
+   });
+ 
+   it("preserves a reusable envelope and re-resolves the route from typed intent", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts b/packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts
+index d89dea137..51f031e76 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts
+@@ -7,7 +7,7 @@ import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
+ 
+ import {
+   installRunCliIntegrationHarness,
+-  mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   mkTempDir,
+   writeConfig,
+ } from "@agentplane/testkit";
+@@ -15,6 +15,7 @@ import {
+ import { defaultConfig } from "./core-imports.js";
+ import {
+   findTaskWorktree,
++  describePacketEvidence,
+   LOCALIZED_DIRECT_REFERENCE,
+   readLifecycleMetrics,
+   runCommand,
+@@ -31,7 +32,8 @@ const execFileAsync = promisify(execFile);
+ 
+ describe("task create planner intent", { timeout: 60_000 }, () => {
+   it("keeps a localized product change direct", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
++    await writeFrameworkHarnessGitignore(root);
+     await cp(
+       path.join(process.cwd(), ".agentplane", "policy"),
+       path.join(root, ".agentplane", "policy"),
+@@ -40,6 +42,10 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+     await writeConfig(root, config);
++    await execFileAsync("git", ["add", "-A"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: seed localized direct task"], {
++      cwd: root,
++    });
+     const metrics = scenarioMetrics();
+     const created = await runJson(
+       root,
+@@ -103,10 +109,6 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+       ["task", "plan", "approve", taskId, "--host-user-decision", hostDecision],
+       metrics,
+     );
+-    await execFileAsync("git", ["add", "-A"], { cwd: root });
+-    await execFileAsync("git", ["commit", "-m", "test: seed localized direct task"], {
+-      cwd: root,
+-    });
+     let implementationCheckout = root;
+     let implementation = (await runJson(
+       root,
+@@ -161,7 +163,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+     )) as AgentPacket;
+     metrics.verification_time_ms += performance.now() - verificationStartedAt;
+     expect(evaluator.action.kind, JSON.stringify(evaluator, null, 2)).toBe("agent_episode");
+-    expect(evaluator.authority?.role).toBe("EVALUATOR");
++    expect(evaluator.authority?.role, await describePacketEvidence(evaluator)).toBe("EVALUATOR");
+     const evaluatorResult = await writePlannerResult({
+       packet: evaluator,
+       summary: "The localized badge and focused verification satisfy the task.",
+@@ -206,7 +208,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+   }, 60_000);
+ 
+   it("respects an agent-selected branch_pr route for broad multi-component work", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     await writeFrameworkHarnessGitignore(root);
+     await cp(
+       path.join(process.cwd(), ".agentplane", "policy"),
+@@ -217,6 +219,8 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+     config.workflow_mode = "direct";
+     await writeConfig(root, config);
+     await runCommand(root, ["branch", "base", "set", "main"], scenarioMetrics());
++    await execFileAsync("git", ["add", "-A"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: seed broad branch task"], { cwd: root });
+     const metrics = scenarioMetrics();
+     const created = await runJson(
+       root,
+@@ -277,8 +281,6 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+       ]),
+     );
+     await runCommand(root, ["task", "plan", "approve", taskId, "--by", "USER"], metrics);
+-    await execFileAsync("git", ["add", "-A"], { cwd: root });
+-    await execFileAsync("git", ["commit", "-m", "test: seed broad branch task"], { cwd: root });
+     let implementationCheckout = root;
+     let implementation = (await runJson(
+       root,
+@@ -434,7 +436,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+       evaluator.action.kind,
+       JSON.stringify({ packet: evaluator, route: evaluatorRoute }, null, 2),
+     ).toBe("agent_episode");
+-    expect(evaluator.authority?.role).toBe("EVALUATOR");
++    expect(evaluator.authority?.role, await describePacketEvidence(evaluator)).toBe("EVALUATOR");
+     const evaluatorResult = await writePlannerResult({
+       packet: evaluator,
+       summary: "The broad implementation matches its declared scope and verification evidence.",
+@@ -494,7 +496,8 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+   }, 120_000);
+ 
+   it("ignores misleading product language when the declared work is local documentation", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
++    await writeFrameworkHarnessGitignore(root);
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+     await writeConfig(root, config);
+@@ -560,10 +563,25 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+   });
+ 
+   it("preserves underestimated direct work during one deterministic branch_pr escalation", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
++    await writeFrameworkHarnessGitignore(root);
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+     await writeConfig(root, config);
++    await execFileAsync("git", ["add", "-A"], { cwd: root });
++    await execFileAsync(
++      "git",
++      [
++        "-c",
++        "user.name=AgentPlane Test",
++        "-c",
++        "user.email=test@example.invalid",
++        "commit",
++        "-m",
++        "test: seed underestimated execution task",
++      ],
++      { cwd: root },
++    );
+     const metrics = scenarioMetrics();
+     const created = await runJson(
+       root,
+@@ -604,20 +622,6 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+       metrics,
+     );
+     await runCommand(root, ["task", "plan", "approve", taskId, "--by", "USER"], metrics);
+-    await execFileAsync("git", ["add", "-A"], { cwd: root });
+-    await execFileAsync(
+-      "git",
+-      [
+-        "-c",
+-        "user.name=AgentPlane Test",
+-        "-c",
+-        "user.email=test@example.invalid",
+-        "commit",
+-        "-m",
+-        "test: seed underestimated execution task",
+-      ],
+-      { cwd: root },
+-    );
+     const implementation = (await runJson(
+       root,
+       ["task", "advance", taskId, "--agent-json"],
+@@ -658,7 +662,8 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+   }, 60_000);
+ 
+   it("keeps declared deployment and destructive Git effects forbidden", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
++    await writeFrameworkHarnessGitignore(root);
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+     await writeConfig(root, config);
+@@ -728,11 +733,26 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+   });
+ 
+   it("issues network-read authority only after the configured user approval boundary", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
++    await writeFrameworkHarnessGitignore(root);
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+     config.agents.approvals.require_network = true;
+     await writeConfig(root, config);
++    await execFileAsync("git", ["add", "-A"], { cwd: root });
++    await execFileAsync(
++      "git",
++      [
++        "-c",
++        "user.name=AgentPlane Test",
++        "-c",
++        "user.email=test@example.invalid",
++        "commit",
++        "-m",
++        "test: seed approved network-read task",
++      ],
++      { cwd: root },
++    );
+     const metrics = scenarioMetrics();
+     const created = await runJson(
+       root,
+@@ -780,20 +800,6 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+     });
+     expect(taskContract.authority.forbidden_external_effects).not.toContain("network_read");
+     await runCommand(root, ["task", "plan", "approve", taskId, "--by", "USER"], metrics);
+-    await execFileAsync("git", ["add", "-A"], { cwd: root });
+-    await execFileAsync(
+-      "git",
+-      [
+-        "-c",
+-        "user.name=AgentPlane Test",
+-        "-c",
+-        "user.email=test@example.invalid",
+-        "commit",
+-        "-m",
+-        "test: seed approved network-read task",
+-      ],
+-      { cwd: root },
+-    );
+     const executor = (await runJson(
+       root,
+       ["task", "advance", taskId, "--agent-json"],
+@@ -814,7 +820,18 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+   }, 60_000);
+ 
+   it("loads an existing contract without a migration command and completes direct work", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
++    await writeFrameworkHarnessGitignore(root);
++    await writeFile(
++      path.join(root, "package.json"),
++      JSON.stringify({
++        private: true,
++        scripts: {
++          "ci:local:full": `node -e "require('node:assert/strict').equal(require('node:fs').readFileSync('status-label.txt', 'utf8'), 'Available\\n')"`,
++        },
++      }),
++      "utf8",
++    );
+     await cp(
+       path.join(process.cwd(), ".agentplane", "policy"),
+       path.join(root, ".agentplane", "policy"),
+@@ -823,6 +840,20 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+     await writeConfig(root, config);
++    await execFileAsync("git", ["add", "-A"], { cwd: root });
++    await execFileAsync(
++      "git",
++      [
++        "-c",
++        "user.name=AgentPlane Test",
++        "-c",
++        "user.email=test@example.invalid",
++        "commit",
++        "-m",
++        "test: seed existing contract lifecycle",
++      ],
++      { cwd: root },
++    );
+     const metrics = scenarioMetrics();
+     const created = await runJson(
+       root,
+@@ -869,20 +900,6 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+     contract.observed = { repository_effects: [], changed_paths: [] };
+     await writeFile(readmePath, renderTaskReadme(existing.frontmatter, existing.body), "utf8");
+     await runCommand(root, ["task", "plan", "approve", taskId, "--by", "USER"], metrics);
+-    await execFileAsync("git", ["add", "-A"], { cwd: root });
+-    await execFileAsync(
+-      "git",
+-      [
+-        "-c",
+-        "user.name=AgentPlane Test",
+-        "-c",
+-        "user.email=test@example.invalid",
+-        "commit",
+-        "-m",
+-        "test: seed existing contract lifecycle",
+-      ],
+-      { cwd: root },
+-    );
+     const implementation = (await runJson(
+       root,
+       ["task", "advance", taskId, "--agent-json"],
+@@ -902,6 +919,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
+     )) as AgentPacket;
+     metrics.verification_time_ms += performance.now() - verificationStartedAt;
+     expect(evaluator.action.kind).toBe("agent_episode");
++    expect(evaluator.authority?.role, await describePacketEvidence(evaluator)).toBe("EVALUATOR");
+     const evaluatorResult = await writePlannerResult({
+       packet: evaluator,
+       summary: "The status-label change and focused check satisfy the task.",
+diff --git a/packages/agentplane/src/cli/task-create-planner-intent.testkit.ts b/packages/agentplane/src/cli/task-create-planner-intent.testkit.ts
+index 9a7e2e762..56b25f6cc 100644
+--- a/packages/agentplane/src/cli/task-create-planner-intent.testkit.ts
++++ b/packages/agentplane/src/cli/task-create-planner-intent.testkit.ts
+@@ -7,7 +7,9 @@ import { parseTaskReadme } from "@agentplaneorg/core/tasks";
+ import { captureStdIO } from "@agentplane/testkit";
+ 
+ import { runCli } from "./run-cli.js";
+-import type { TaskExecutionDeclaration } from "@agentplaneorg/core/tasks";
++import type { TaskExecutionDeclaration, TaskPlanProposal } from "@agentplaneorg/core/tasks";
++import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++import { RUNTIME_GITIGNORE_LINES } from "../runtime/shared/runtime-artifacts.js";
+ 
+ const execFileAsync = promisify(execFile);
+ const originalGhBin = process.env.AGENTPLANE_GH_BIN;
+@@ -47,6 +49,25 @@ export type ScenarioMetrics = {
+   recovery_commands: number;
+ };
+ 
++export async function describePacketEvidence(packet: AgentPacket): Promise<string> {
++  if (!packet.exchange) return JSON.stringify(packet);
++  const workOrder = JSON.parse(
++    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
++  ) as AgentWorkOrderV2;
++  const checks = await readFile(
++    path.join(
++      workOrder.state_fingerprint.worktree,
++      ".agentplane",
++      "tasks",
++      packet.task_id,
++      "supervision",
++      "declared-checks.json",
++    ),
++    "utf8",
++  ).catch(() => "no declared check evidence");
++  return JSON.stringify({ packet, checks });
++}
++
+ export const LOCALIZED_DIRECT_REFERENCE = {
+   control_plane_commands: 7,
+   approval_boundaries: 1,
+@@ -90,7 +111,10 @@ export async function runJson(
+   const startedAt = performance.now();
+   try {
+     const code = await runCli([...argv, "--root", root]);
+-    expect(code, io.stderr).toBe(0);
++    const statusResult =
++      code === 0 ? undefined : await execFileAsync("git", ["status", "--short"], { cwd: root });
++    const status = statusResult?.stdout ?? "";
++    expect(code, `${io.stderr}\n${status}`).toBe(0);
+     const payload = JSON.parse(io.stdout) as Record<string, unknown>;
+     observeCommand(metrics, argv, payload, performance.now() - startedAt);
+     return payload;
+@@ -144,9 +168,12 @@ export async function findTaskWorktree(root: string, taskId: string): Promise<st
+ }
+ 
+ export async function writeFrameworkHarnessGitignore(root: string): Promise<void> {
++  const existing = await readFile(path.join(root, ".gitignore"), "utf8").catch(() => "");
+   await writeFile(
+     path.join(root, ".gitignore"),
+     [
++      existing.trimEnd(),
++      ...RUNTIME_GITIGNORE_LINES,
+       ".agentplane/bin",
+       ".agentplane/cache.sqlite*",
+       "agentplane-recipes",
+@@ -181,7 +208,106 @@ export async function writePlannerResult(opts: {
+   if (!exchange) throw new Error("expected external-agent exchange");
+   const workOrder = JSON.parse(
+     await readFile(path.join(exchange.directory, exchange.work_order_ref), "utf8"),
+-  ) as { work_order_id: string; role: string };
++  ) as AgentWorkOrderV2;
++  const execution: TaskExecutionDeclaration = opts.execution ?? {
++    schema_version: 2,
++    preferred_mode: "direct",
++    scope_roots: ["packages/agentplane/src/cli"],
++    repository_effects: ["repository_write", "source_code", "tests"],
++    external_effects: [],
++    requirements_uncertainty: "bounded",
++    implementation_uncertainty: "bounded",
++    reversibility: "reversible",
++    rationale: ["localized parser change with existing tests"],
++  };
++  let proposal: TaskPlanProposal | undefined;
++  if (workOrder.role === "PLANNER" && opts.includeIntent) {
++    const baseline = workOrder.planning_context?.repository_snapshot;
++    if (!baseline) throw new Error("expected the issued planner repository snapshot");
++    const task = parseTaskReadme(
++      await readFile(
++        path.join(
++          workOrder.state_fingerprint.worktree,
++          ".agentplane",
++          "tasks",
++          opts.packet.task_id,
++          "README.md",
++        ),
++        "utf8",
++      ),
++    ).frontmatter;
++    const declaredChecks: unknown = task.verify;
++    const commands = Array.isArray(declaredChecks)
++      ? declaredChecks.filter((value: unknown): value is string => typeof value === "string")
++      : [];
++    const checks =
++      commands.length > 0
++        ? commands.map((command, index) => ({
++            id: `task-check-${index + 1}`,
++            kind: "deterministic" as const,
++            required: true,
++            capability: "task.verify",
++            command,
++          }))
++        : [
++            {
++              id: "task-check",
++              kind: "deterministic" as const,
++              required: true,
++              capability: "task.verify",
++            },
++          ];
++    const criterion = {
++      id: "intent-preserved",
++      description: opts.summary,
++      required: true,
++      check_ids: checks.map((check) => check.id),
++    };
++    const validation = {
++      schema_version: 1 as const,
++      criteria: [criterion],
++      checks,
++      evidence_fingerprint: baseline.digest,
++    };
++    proposal = {
++      schema_version: 1,
++      task_id: opts.packet.task_id,
++      planning_baseline: baseline,
++      work_items: {
++        schema_version: 1,
++        work_items: [
++          {
++            id: "implement-declared-intent",
++            objective: opts.summary,
++            depends_on: [],
++            required_inputs: [],
++            expected_outputs: ["artifact:declared-intent-result"],
++            scope_roots: execution.scope_roots,
++            acceptance_criteria: [criterion],
++            validation,
++            context: {
++              required_sources: [],
++              optional_sources: [],
++              symbol_hints: [],
++              max_bytes: 65_536,
++            },
++            risk: "low",
++            capabilities: ["task.verify"],
++            resource_claims: execution.scope_roots.map((resource) => ({
++              kind: "path",
++              resource,
++              mode: "write",
++            })),
++            optional: false,
++            priority: 1,
++          },
++        ],
++      },
++      assumptions: [],
++      unresolved_questions: [],
++      top_level_validation: validation,
++    };
++  }
+   const resultPath = path.join(exchange.directory, exchange.result_ref);
+   await writeFile(
+     resultPath,
+@@ -202,6 +328,7 @@ export async function writePlannerResult(opts: {
+           findings: opts.review ? ["The frozen implementation satisfies the declared intent."] : [],
+           uncertainty: [],
+           ...(opts.review ? { review: opts.review } : {}),
++          ...(proposal ? { task_plan_proposal: proposal } : {}),
+           ...(opts.includeIntent
+             ? {
+                 task_intent: {
+@@ -209,17 +336,7 @@ export async function writePlannerResult(opts: {
+                   mutation_scope: "code",
+                   risk_flags: [],
+                   tags: ["cli", "parser"],
+-                  execution: opts.execution ?? {
+-                    schema_version: 2,
+-                    preferred_mode: "direct",
+-                    scope_roots: ["packages/agentplane/src/cli"],
+-                    repository_effects: ["repository_write", "source_code", "tests"],
+-                    external_effects: [],
+-                    requirements_uncertainty: "bounded",
+-                    implementation_uncertainty: "bounded",
+-                    reversibility: "reversible",
+-                    rationale: ["localized parser change with existing tests"],
+-                  },
++                  execution,
+                 },
+               }
+             : {}),

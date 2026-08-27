@@ -4,7 +4,7 @@ title: "Modernize structured planner-intent fixtures"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -28,6 +28,38 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-27T16:48:25.727Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "5d196df119a9335cc606237716455b7487db4e1c"
+  blueprint_digest: "1de4bc98bc6285e27bc35a92b921be938f564fe533f886bc1bfa75e7b0dc033c"
+  evidence_refs:
+    - ".agentplane/tasks/202608271450-TZHW4C/quality/20260827-164341199-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608271450-TZHW4C/quality/20260827-164341199-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/d7febebeb12f1a3d979e56533b3ec80fabd2809b0f26382417f868bf173049e8.md"
+    - ".agentplane/tasks/202608271450-TZHW4C/quality/20260827-164341199-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608271450-TZHW4C/quality/20260827-164341199-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608271450-TZHW4C/quality/20260827-164341199-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608271450-TZHW4C/README.md"
+    - ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/68302d9b5aaca3ffd777ed8c0b0c11a4f0141aa08562b9d28cc3bc9a3075ecfc.patch"
+    - ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/db8f8a8efe42f5970786efbd4c479276e3b511d8fad72bc91924436db46ac611.json"
+    - ".agentplane/tasks/202608271450-TZHW4C/verification/20260827164324368-fc4e3922be01c66f.json"
+    - ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/4f8d1195a803cd3c4754483629f1325c54ba2b91328ee958c9811dbc031ab8fd.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The frozen diff changes only the two approved suites and their local helper. No product, shared testkit, policy, CI gate or task graph changes are present."
+    - "Structured TaskPlanProposal uses the issued repository_snapshot, bounded declared scope, actual task checks, validation criteria and path claims. Missing-intent cases still omit proposals; executor and evaluator roles cannot emit proposals through this helper."
+    - "Execution fixtures commit their prerequisites before planning instead of changing the planning baseline after approval. Existing runtime ignore rules are preserved. The isolated fixture CI validates actual output content."
+    - "Explicit user approval, network boundary, forbidden deployment/destructive effects, routing, preservation and exact-base assertions are retained. EVALUATOR role assertions are strengthened with diagnostics rather than removed."
+    - "Frozen verification20260827164324368-fc4e3922be01c66f binds implementation5d196df119a9335cc606237716455b7487db4e1c to full CI499181ms and11 scoped tests27035ms. The earlier failed full-CI evidence is preserved; fresh serial verification passed."
+    - "Residual risk: The local fixture CI proves fixture output only; it does not stand in for product CI or hosted qualification."
+    - "Residual risk: The earlier unrelated runtime timeout remains historical failed evidence and was not suppressed by a test or timeout change."
 execution_route:
   frozen: true
   reason_codes:
