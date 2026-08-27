@@ -22,7 +22,7 @@ On exact main 9ab453ac00d41ea0a58cdd02e84bd0456233b151, run-cli.core.pr-flow.int
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T22:32:39.183Z
+- Updated: 2026-08-27T23:06:06.875Z
 - Branch: task/202608272229-CFKR4P/keep-verification-and-review-on-the-same-semanti
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
