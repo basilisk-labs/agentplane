@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608271251-GHHA0Q-0ea2894db1bd6cb0bc7527fe",
+  "prepared_at": "2026-08-27T13:25:50.152Z",
+  "task": {
+    "id": "202608271251-GHHA0Q",
+    "revision": 25,
+    "objective": "Replace obsolete CLI test expectations with architecture-aligned contracts\n\nImplement the approved test-audit first slice independently of the preserved 0.7.8 candidate. Correct the obsolete task-new route help snapshot and replace internal transition identity coupling only where the current issuance contract proves the old expectation obsolete. Preserve approval, replay, workspace isolation, provider, verification and release gates. Keep unborn-repository and canonical-plan fixture investigation explicit; do not blanket seed commits, skip tests, weaken required checks, change production lifecycle or alter roadmap dependencies. Initial scope is the help snapshot/test and the two task-advance identity tests, subject to exact PLANNER authority.",
+    "acceptance_criteria": [
+      "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2",
+      "- In scope: Implement the approved test-audit first slice independently of the preserved 0.7.8 candidate. Correct the obsolete task-new route help snapshot and replace internal transition identity coupling only where the current issuance contract proves the old expectation obsolete. Preserve approval, replay, workspace isolation, provider, verification and release gates. Keep unborn-repository and canonical-plan fixture investigation explicit; do not blanket seed commits, skip tests, weaken required checks, change production lifecycle or alter roadmap dependencies. Initial scope is the help snapshot/test and the two task-advance identity tests, subject to exact PLANNER authority.\n- Out of scope: unrelated refactors not required for \"Replace obsolete CLI test expectations with architecture-aligned contracts\".",
+      "Replan a schedulable follow-up under the original execution scope. Apply the already pending two-file scope extension through its supported operator command before any prompt edit. Then isolate inherited AGENTPLANE_PROMPTS, preserve all assertions, and require focused tests plus full CI.",
+      "1. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2. Expected: all scoped help and external-episode identity tests pass without skips.\n2. Run git diff --check and formatter checks on changed files. Expected: no errors.\n3. Retain mandatory repository and hosted checks. Full release:prepublish remains required for 0.7.8; this task does not qualify or publish that release."
+    ]
+  },
+  "evaluated_sha": "54ed013b9e52173795ee80b5acdb7b47913b8b4b",
+  "diff_base_sha": "74c39ba73325b0808c46bdd0accb46a5a6cf2c22",
+  "blueprint_digest": "f1b26b57f079cbc23ac19906eea9e1d366ecf04d70a161651377eaada92ae52b",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608271251-GHHA0Q/quality/20260827-132550152-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:ff3c27e79605547373e0651ef7ee291614e51295d8bd718739fb558f5f2bb891",
+    "prompt_path": ".agentplane/tasks/202608271251-GHHA0Q/quality/objects/sha256/5f1761b308e3fa79606d64298d038aa48eed248df8f75002c32bf6175b74a26f.md",
+    "result_schema_path": ".agentplane/tasks/202608271251-GHHA0Q/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608271251-GHHA0Q/README.md",
+      "sha256": "sha256:9d37b4c6c35de677290b954054cb3f039eaf651accb8046d7c8f28220d19d3a9",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608271251-GHHA0Q/quality/objects/sha256/87363b64dfbbc8acb0a0e1d49c8a00c932eb1f73b80583339c6e83f8490049d8.patch",
+      "sha256": "sha256:87363b64dfbbc8acb0a0e1d49c8a00c932eb1f73b80583339c6e83f8490049d8",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608271251-GHHA0Q/quality/objects/sha256/9ee81d006aad7410d4eabee9de9e480cf2cd79d61bd1335ade9707d04079fb6f.json",
+      "sha256": "sha256:9ee81d006aad7410d4eabee9de9e480cf2cd79d61bd1335ade9707d04079fb6f",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608271251-GHHA0Q/verification/20260827132532555-956f74b4ae404852.json",
+      "sha256": "sha256:b77082aab92072b56a8983b18fea490811fff80752eb9074c04b59edabeb9df8",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608271251-GHHA0Q/quality/objects/sha256/655d50e79cbbfa8962590054cf5fa3edbb0455a549a7ebf14ff0e4491251ee69.json",
+      "sha256": "sha256:655d50e79cbbfa8962590054cf5fa3edbb0455a549a7ebf14ff0e4491251ee69",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
