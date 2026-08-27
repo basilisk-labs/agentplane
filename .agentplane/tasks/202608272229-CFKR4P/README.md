@@ -1,10 +1,11 @@
 ---
 id: "202608272229-CFKR4P"
 title: "Keep verification and review on the same semantic commit"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,20 @@ quality_review:
     - "The implementation result records the proved cause and separate provider-neutral wording remainder through the semantic-result route expressly allowed by Verify Steps. No actual policy, CI configuration, test timeout or artifact schema was changed. The hook recovery committed the intended task payload through the supported guarded CLI; no evidence was hand-edited."
     - "Residual risk: Hosted checks, integration and terminal closeout remain to be completed."
     - "Residual risk: Provider-neutral integrate-error wording is a separate unresolved diagnostic cause."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:8b2db5799963f660674733196728ffb15e72d004f73469fb14813c713ec4faab"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-27T23:07:59.846Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -233,8 +248,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "8faaaffd788fcdd84c7a1512a63c852174f78175"
-  message: "🚧 CFKR4P task: apply external agent result"
+  hash: "fea5ef88e37a9d149ce3bfd9370c94a1c854be96"
+  message: "🚧 CFKR4P task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -242,6 +257,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 8faaaffd788f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -264,9 +282,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-27T23:07:59.846Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "fea5ef88e37a9d149ce3bfd9370c94a1c854be96"
 doc_version: 3
-doc_updated_at: "2026-08-27T23:05:55.372Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-27T23:07:59.857Z"
+doc_updated_by: "CODER"
 description: "On exact main 9ab453ac00d41ea0a58cdd02e84bd0456233b151, run-cli.core.pr-flow.integrate-merge.test.ts test 'integrate promotes structured external incident candidates into the incident registry' fails at prepareHostedIntegrateFixture -> recordVerificationOk -> evaluator with missing observed changed file .agentplane/policy/incidents.md. The neighboring finish-only incident scenario passes. Diagnose the complete implementation -> pre-merge closure/policy commit -> verification -> evaluator -> integration/replay chain. Current verify-record-execute pins the review resolver head to the recorded implementation, while evaluator resolves current HEAD; prove the cause with real-Git controls before changing this. Retain the existing semantic-target resolver, frozen execution base, unchanged lifecycle-only identity, and exact evaluated diff/authority guards. Fix the smallest product/fixture scope justified by the proof. Cover a reviewable post-implementation policy change, lifecycle-only metadata, repeat verification and stale evidence. Replace any internal-call expectation only with behavior-backed coverage. Do not omit incidents from observed evidence, relax checks, add skips/timeouts, rewrite artifacts, change actual policy or CI, create a new verification architecture or implement AP-CORE-013. Preserve full mandatory CI and release 0.7.8 -> Core order. Keep provider-neutral wording as a separate cause. Two existing changes DVS5NN and AD3030 have priority for integration; planning and bounded diagnosis may proceed while their checks run. User authorized autonomous refactoring and supported operator approvals; release publication is separate."
 sections:
   Summary: |-
@@ -625,7 +651,34 @@ extensions:
       schema_version: 1
       task_id: "202608272229-CFKR4P"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608272229-CFKR4P"
+            - "git:8faaaffd788fcdd84c7a1512a63c852174f78175"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T23:05:53.240Z"
+          repository_snapshot_digest: "sha256:22aaad5941301f461da2576409e90313ccf1554f54d0b0e15f168c925c90f47e"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608272229-CFKR4P"
+            - "git:8faaaffd788fcdd84c7a1512a63c852174f78175"
+          check_id: "diff-check"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T23:05:53.240Z"
+          repository_snapshot_digest: "sha256:22aaad5941301f461da2576409e90313ccf1554f54d0b0e15f168c925c90f47e"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608272229-CFKR4P"
     intent:
       acceptance_criteria:
@@ -646,12 +699,12 @@ extensions:
 
         On exact main 9ab453ac00d41ea0a58cdd02e84bd0456233b151, run-cli.core.pr-flow.integrate-merge.test.ts test 'integrate promotes structured external incident candidates into the incident registry' fails at prepareHostedIntegrateFixture -> recordVerificationOk -> evaluator with missing observed changed file .agentplane/policy/incidents.md. The neighboring finish-only incident scenario passes. Diagnose the complete implementation -> pre-merge closure/policy commit -> verification -> evaluator -> integration/replay chain. Current verify-record-execute pins the review resolver head to the recorded implementation, while evaluator resolves current HEAD; prove the cause with real-Git controls before changing this. Retain the existing semantic-target resolver, frozen execution base, unchanged lifecycle-only identity, and exact evaluated diff/authority guards. Fix the smallest product/fixture scope justified by the proof. Cover a reviewable post-implementation policy change, lifecycle-only metadata, repeat verification and stale evidence. Replace any internal-call expectation only with behavior-backed coverage. Do not omit incidents from observed evidence, relax checks, add skips/timeouts, rewrite artifacts, change actual policy or CI, create a new verification architecture or implement AP-CORE-013. Preserve full mandatory CI and release 0.7.8 -> Core order. Keep provider-neutral wording as a separate cause. Two existing changes DVS5NN and AD3030 have priority for integration; planning and bounded diagnosis may proceed while their checks run. User authorized autonomous refactoring and supported operator approvals; release publication is separate.
       task_id: "202608272229-CFKR4P"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 12
     schema_version: 1
-    updated_at: "2026-08-27T23:05:56.564Z"
+    updated_at: "2026-08-27T23:07:59.846Z"
     work_items:
       align-verification-review-target:
         attempt: 1
@@ -729,11 +782,37 @@ extensions:
         previous_revision: 8
         schema_version: 1
         task_id: "202608272229-CFKR4P"
+      legacy-finish:202608272229-CFKR4P:2026-08-27T23:05:53.240Z:8faaaffd788fcdd84c7a1512a63c852174f78175:
+        aggregate_digest: "sha256:16e08e1aacd0ed7d457bf9ae33f067565b1b9081faea6462d14184c0e2a8c5aa"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-27T23:07:59.846Z"
+          cause_refs:
+            - "task-verification:202608272229-CFKR4P"
+            - "git:8faaaffd788fcdd84c7a1512a63c852174f78175"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5dcc6d95672c4518eb3939f5"
+          mutation_id: "legacy-finish:202608272229-CFKR4P:2026-08-27T23:05:53.240Z:8faaaffd788fcdd84c7a1512a63c852174f78175"
+          plan_digest: "sha256:824cd4fe3071eaa1b996c270fe96d2c82e446efeb7ea50af3713408465581342"
+          plan_revision: 1
+          repository_fingerprint: "sha256:22aaad5941301f461da2576409e90313ccf1554f54d0b0e15f168c925c90f47e"
+          schema_version: 1
+          task_id: "202608272229-CFKR4P"
+          task_revision: 9
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608272229-CFKR4P:2026-08-27T23:05:53.240Z:8faaaffd788fcdd84c7a1512a63c852174f78175"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202608272229-CFKR4P"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "8faaaffd788fcdd84c7a1512a63c852174f78175"
+    message: "🚧 CFKR4P task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "9ab453ac00d41ea0a58cdd02e84bd0456233b151"
@@ -850,3 +929,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:8b2db5799963f660674733196728ffb15e72d004f73469fb14813c713ec4faab`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-27T23:07:59.846Z`
