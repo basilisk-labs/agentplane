@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:1821045027f9126a110fffb1b6bba1fd020575151f38fe5e4aecedf2739b8803",
   "pr_number": 5853,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5853",
+  "pre_merge_closure": {
+    "basis_commit": "ff801694a166b0cc200a6d390ed4ef125841c6b9",
+    "branch": "task/202608271358-G0N9P4/repair-verification-fixtures-on-integrated-main",
+    "pr_number": 5853,
+    "recorded_at": "2026-08-27T14:47:16.347Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
