@@ -4,7 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { readTask } from "@agentplaneorg/core/tasks";
+import { parseTaskReadme, readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -12,6 +12,7 @@ import {
   commitAll,
   configureGitUser,
   mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   registerAgentplaneHome,
   runCliSilent,
   silenceStdIO,
@@ -66,25 +67,32 @@ async function linkSharedTaskBatch(root: string, primaryTaskId: string, included
     [includedTaskId, "included"],
   ] as const) {
     const taskPath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
-    const current = await readFile(taskPath, "utf8");
-    const frontmatterEnd = current.indexOf("\n---\n", 4);
-    expect(frontmatterEnd).toBeGreaterThan(0);
-    const extension = [
-      "extensions:",
-      "  branch_pr_batch:",
-      '    base: "main"',
-      '    branch: "task/shared/finish-multiple"',
-      "    included_task_ids:",
-      `      - "${includedTaskId}"`,
-      `    primary_task_id: "${primaryTaskId}"`,
-      `    role: "${role}"`,
-      '    updated_at: "2026-08-01T00:00:00.000Z"',
-    ].join("\n");
+    const current = parseTaskReadme(await readFile(taskPath, "utf8"));
+    const extensions = (current.frontmatter.extensions ?? {}) as Record<string, unknown>;
+    expect(extensions.task_execution_context).toBeDefined();
     await writeFile(
       taskPath,
-      `${current.slice(0, frontmatterEnd)}\n${extension}${current.slice(frontmatterEnd)}`,
+      renderTaskReadme(
+        {
+          ...current.frontmatter,
+          extensions: {
+            ...extensions,
+            branch_pr_batch: {
+              base: "main",
+              branch: "task/shared/finish-multiple",
+              included_task_ids: [includedTaskId],
+              primary_task_id: primaryTaskId,
+              role,
+              updated_at: "2026-08-01T00:00:00.000Z",
+            },
+          },
+        },
+        current.body,
+      ),
       "utf8",
     );
+    const updated = parseTaskReadme(await readFile(taskPath, "utf8"));
+    expect(updated.frontmatter.extensions).toMatchObject(extensions);
   }
 }
 
@@ -419,7 +427,7 @@ describe("runCli", () => {
   );
 
   it("finish supports multiple task ids", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const execFileAsync = promisify(execFile);
     let taskA = "";
     let taskB = "";
