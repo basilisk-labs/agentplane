@@ -1,10 +1,11 @@
 ---
 id: "202608271251-GHHA0Q"
 title: "Replace obsolete CLI test expectations with architecture-aligned contracts"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -59,6 +60,20 @@ quality_review:
     - "Frozen verification records bind the passing scoped tests and full ci:local:full to implementation SHA 54ed013b9e52173795ee80b5acdb7b47913b8b4b. Production source, policy, workflows, release files and roadmap dependencies are absent from the frozen implementation diff."
     - "Residual risk: Two local structured-plan fixture builders duplicate schema setup; future shared testkit modernization should consolidate them within its own approved scope."
     - "Residual risk: The old broad failure inventory must be rerun before claiming a remaining failure count or 0.7.8 readiness."
+token_usage:
+  agent_runs: 10
+  input_tokens: null
+  journal_digest: "sha256:58f7e89a395f4ceacf1e7bce2220179d6bc95d99c70c57145dee4666b14c89a1"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-27T13:27:17.131Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -253,8 +268,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "54ed013b9e52173795ee80b5acdb7b47913b8b4b"
-  message: "🚧 GHHA0Q task: apply external agent result"
+  hash: "c69bb47c7db646f55fd18f9e8ef35b52ff9e5501"
+  message: "🚧 GHHA0Q task: record external evaluator result"
 comments:
   -
     author: "PLANNER"
@@ -274,6 +289,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 54ed013b9e52. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "comment"
@@ -322,9 +340,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-27T13:27:17.131Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "c69bb47c7db646f55fd18f9e8ef35b52ff9e5501"
 doc_version: 3
-doc_updated_at: "2026-08-27T13:25:35.003Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-27T13:27:17.143Z"
+doc_updated_by: "CODER"
 description: "Implement the approved test-audit first slice independently of the preserved 0.7.8 candidate. Correct the obsolete task-new route help snapshot and replace internal transition identity coupling only where the current issuance contract proves the old expectation obsolete. Preserve approval, replay, workspace isolation, provider, verification and release gates. Keep unborn-repository and canonical-plan fixture investigation explicit; do not blanket seed commits, skip tests, weaken required checks, change production lifecycle or alter roadmap dependencies. Initial scope is the help snapshot/test and the two task-advance identity tests, subject to exact PLANNER authority."
 sections:
   Summary: |-
@@ -646,7 +672,34 @@ extensions:
       schema_version: 1
       task_id: "202608271251-GHHA0Q"
     event_cursor: 1
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608271251-GHHA0Q"
+            - "git:54ed013b9e52173795ee80b5acdb7b47913b8b4b"
+          check_id: "scoped-tests"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T13:25:32.555Z"
+          repository_snapshot_digest: "sha256:9af93f9eb78814a9a218dca4e0bf2ceab7a8d853efd3c4919dde0f96ef9814f9"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608271251-GHHA0Q"
+            - "git:54ed013b9e52173795ee80b5acdb7b47913b8b4b"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T13:25:32.555Z"
+          repository_snapshot_digest: "sha256:9af93f9eb78814a9a218dca4e0bf2ceab7a8d853efd3c4919dde0f96ef9814f9"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608271251-GHHA0Q"
     intent:
       acceptance_criteria:
@@ -662,7 +715,7 @@ extensions:
 
         Implement the approved test-audit first slice independently of the preserved 0.7.8 candidate. Correct the obsolete task-new route help snapshot and replace internal transition identity coupling only where the current issuance contract proves the old expectation obsolete. Preserve approval, replay, workspace isolation, provider, verification and release gates. Keep unborn-repository and canonical-plan fixture investigation explicit; do not blanket seed commits, skip tests, weaken required checks, change production lifecycle or alter roadmap dependencies. Initial scope is the help snapshot/test and the two task-advance identity tests, subject to exact PLANNER authority.
       task_id: "202608271251-GHHA0Q"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1093,9 +1146,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202608271251-GHHA0Q"
-    revision: 25
+    revision: 28
     schema_version: 1
-    updated_at: "2026-08-27T13:25:36.124Z"
+    updated_at: "2026-08-27T13:27:17.131Z"
     work_items:
       isolate-prompt-test-environment:
         attempt: 1
@@ -1196,11 +1249,37 @@ extensions:
         previous_revision: 24
         schema_version: 1
         task_id: "202608271251-GHHA0Q"
+      legacy-finish:202608271251-GHHA0Q:2026-08-27T13:25:32.555Z:54ed013b9e52173795ee80b5acdb7b47913b8b4b:
+        aggregate_digest: "sha256:9722fc56b0e2c8fbee7cea88f49bf1f62f6bf79c4e6711017f9abcedb34ad059"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-27T13:27:17.131Z"
+          cause_refs:
+            - "task-verification:202608271251-GHHA0Q"
+            - "git:54ed013b9e52173795ee80b5acdb7b47913b8b4b"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2aac99a320650f6159dcbb6c"
+          mutation_id: "legacy-finish:202608271251-GHHA0Q:2026-08-27T13:25:32.555Z:54ed013b9e52173795ee80b5acdb7b47913b8b4b"
+          plan_digest: "sha256:330e5530b0f94e84902d4cfadda8646f4d9a3c9c1514741ef94bc6c2dc1f392b"
+          plan_revision: 4
+          repository_fingerprint: "sha256:9af93f9eb78814a9a218dca4e0bf2ceab7a8d853efd3c4919dde0f96ef9814f9"
+          schema_version: 1
+          task_id: "202608271251-GHHA0Q"
+          task_revision: 25
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608271251-GHHA0Q:2026-08-27T13:25:32.555Z:54ed013b9e52173795ee80b5acdb7b47913b8b4b"
+        next_revision: 28
+        previous_revision: 27
+        schema_version: 1
+        task_id: "202608271251-GHHA0Q"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "54ed013b9e52173795ee80b5acdb7b47913b8b4b"
+    message: "🚧 GHHA0Q task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "74c39ba73325b0808c46bdd0accb46a5a6cf2c22"
@@ -1355,3 +1434,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/10` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:58f7e89a395f4ceacf1e7bce2220179d6bc95d99c70c57145dee4666b14c89a1`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-27T13:27:17.131Z`
