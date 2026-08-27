@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:276b5b0c0f7c5da1348b6e2c84baf8e208ed20229b59541a01513236ab4dac9e",
   "pr_number": 5855,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5855",
+  "pre_merge_closure": {
+    "basis_commit": "7599cc8d1d39ac87d4c8a0f9dda0e4fb8bd9ec72",
+    "branch": "task/202608271502-J6B4RW/align-intake-and-query-execution-fixtures",
+    "pr_number": 5855,
+    "recorded_at": "2026-08-27T15:47:46.839Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
