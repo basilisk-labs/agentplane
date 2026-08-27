@@ -1,10 +1,10 @@
 ---
 id: "202608272129-DVS5NN"
 title: "Resolve protected integration handoffs from their owning checkout"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -277,6 +277,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The only evaluator rework is task-document normalization, but this EXECUTOR packet protects .agentplane/tasks and permits only eight implementation paths. No workspace or source changes were made. Recommended action: At the operator boundary, use supported task doc set commands to replace only Verify Steps and Findings for 202608272129-DVS5NN. Preserve the approved implementation plan and all mandatory checks. Then request a fresh semantic packet. Agentplane receipt: external-agent-blocker/tr_6594ff8695628b5c9d7709a8ced14d4e/sha256:b7e46c713eba8bc7f634629983628855425e0dbe0dfa8f546241b9ebf36f295c."
+  -
+    author: "ORCHESTRATOR"
+    body: "Resume: resolved the documentation-only blocker through supported task doc set. Verify Steps now specifies the approved owner/identity/replay scenario and retains full CI; Findings records evidence and two deferred causes. Source code and required checks are unchanged. Request fresh supervisor verification and evaluation under the user-authorized refactoring operator exception."
 events:
   -
     type: "status"
@@ -306,9 +309,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The only evaluator rework is task-document normalization, but this EXECUTOR packet protects .agentplane/tasks and permits only eight implementation paths. No workspace or source changes were made. Recommended action: At the operator boundary, use supported task doc set commands to replace only Verify Steps and Findings for 202608272129-DVS5NN. Preserve the approved implementation plan and all mandatory checks. Then request a fresh semantic packet. Agentplane receipt: external-agent-blocker/tr_6594ff8695628b5c9d7709a8ced14d4e/sha256:b7e46c713eba8bc7f634629983628855425e0dbe0dfa8f546241b9ebf36f295c."
+  -
+    type: "status"
+    at: "2026-08-27T22:23:47.666Z"
+    author: "ORCHESTRATOR"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume: resolved the documentation-only blocker through supported task doc set. Verify Steps now specifies the approved owner/identity/replay scenario and retains full CI; Findings records evidence and two deferred causes. Source code and required checks are unchanged. Request fresh supervisor verification and evaluation under the user-authorized refactoring operator exception."
 doc_version: 3
-doc_updated_at: "2026-08-27T22:22:18.568Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-27T22:23:47.666Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Repair the reproduced protected-integration handoff reader/owner mismatch on main db908ae90dd32609c6d12454fe87166a08e6ec4e. The focused integration diagnostic has 12 passing and 3 failing tests; run-cli.core.pr-conflict-rework.test.ts:842 fails because the expected legacy adoption route is unavailable. Confirm the exact route and cause before changing behavior. The integration writer persists the handoff on the base checkout, while task route hydration redirects readers to the task worktree. Real task handoff show from a worktree also failed to find the base-owned INTEGRATOR artifact. Cover one complete scenario: persisted protected-base handoff, task-worktree route/show/resume reads, explicit legacy adoption where applicable, repeat read/recovery, and the next transition. Use existing task execution ownership and base resolution. Reject wrong task, branch, head, base, PR identity, malformed or ambiguous evidence. Preserve direct and worktree-local handoff behavior. Keep read-only probes non-mutating. Do not copy or rewrite lifecycle artifacts, introduce a new state store, relax authority or exact-identity guards, change required CI, alter release/Core order, or implement AP-CORE-013. Scope the smallest necessary shared handoff reader, route/PR-flow consumers, and regression tests through a structured plan. The other two diagnostic failures, incident verification target and provider-neutral error wording, are separate causes and are out of scope. Run focused positive/negative/replay tests and full mandatory CI. The user authorized autonomous refactoring and supported exact operator approvals; release publication remains separate."
 sections:
   Summary: |-
@@ -320,12 +330,11 @@ sections:
     - Out of scope: unrelated refactors not required for "Resolve protected integration handoffs from their owning checkout".
   Plan: "Confirm the missing base-owned protected handoff in the failing route, then implement a bounded read-only ownership-aware reader using existing task execution and base-checkout resolution. Wire route/PR-flow and task handoff show/resume consumers to that reader. Keep the existing writer and artifact format unchanged. Preserve valid local/direct handoffs. Validate exact task identity and preserve downstream branch, HEAD, base, PR and adoption-token guards. Refuse malformed, mismatched, or ambiguous protected evidence. Cover persisted external-effect recovery, repeated reads, explicit legacy adoption and the following transition without mutating either checkout. Run the focused handoff and conflict suites, full CI, lint/format and diff check. Return blocked if the cause or required scope differs materially."
   Verify Steps: |-
-    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.
-    2. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.
-    3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-    4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+    1. Run `node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/commands/pr/conflict-rework-recovery.test.ts --pool=forks --maxWorkers=1`. Expected: all 83 focused tests pass. Protected base-owned handoffs resolve from both the base checkout and task worktree. Repeated show/resume reads preserve heads, status and artifact bytes and create no copied handoff. Explicit legacy adoption and the following transition remain valid.
+    2. Review negative and compatibility cases in the focused tests. Expected: wrong task, role, base, branch, head, PR identity, provider identity, malformed records and conflicting protected copies fail closed. Direct and ordinary worktree-local handoffs remain supported. Existing exact-authority, provider-head, queue and adoption-token guards are unchanged.
+    3. Run `bun run ci:local:full`. Expected: every mandatory local check succeeds for the current task input. Do not relax required checks, add skips or extend timeouts. This is task verification, not final release prepublish qualification.
+    4. Run `git diff --check`. Expected: no whitespace errors. Review the scoped diff for an owner-aware read-only reader and existing consumers only; no artifact copying, new state store or lifecycle bypass.
+    5. Compare the result with the approved plan and Findings. Expected: the proved owner mismatch and verification evidence are recorded, incident verification-target and provider-neutral wording remain explicit separate causes, and local checks are not presented as hosted integration or release completion.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-08-27T22:15:27.248Z — VERIFY — ok
@@ -404,7 +413,12 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    Proved cause: protected integration persists its INTEGRATOR handoff in the base checkout, but task-worktree route hydration previously looked only in the task checkout and lost the valid legacy adoption route. The owner-aware shared reader now resolves the registered base checkout, validates task and protected identity, rejects malformed or conflicting evidence, and preserves direct/local behavior without copying or rewriting artifacts.
+
+    Local evidence before documentation normalization: 83/83 focused owner-readback, negative, explicit-adoption, replay and next-transition tests passed; scoped lint, formatting, TypeScript build, diff and oversized-file checks passed. Independent manual full CI and supervisor-owned full CI passed for implementation bd72b49eaf67bd2cfcf8170232d6c365de4c572c. The broad core run retained one existing opt-in network packaging skip; this patch introduced no skip. Documentation changes require fresh supervisor verification and evaluation before publication.
+
+    Residual causes: the incident post-closure verification-target mismatch and the provider-neutral integrate-error wording expectation are separate, unmodified follow-up work. No GitHub checks, integration, closure or release-prepublish success is claimed for this task yet.
 extensions:
   agentplane.execution_grant:
     actor: "USER"
@@ -824,12 +838,11 @@ Confirm the missing base-owned protected handoff in the failing route, then impl
 
 ## Verify Steps
 
-PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.
-2. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.
-3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+1. Run `node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/commands/pr/conflict-rework-recovery.test.ts --pool=forks --maxWorkers=1`. Expected: all 83 focused tests pass. Protected base-owned handoffs resolve from both the base checkout and task worktree. Repeated show/resume reads preserve heads, status and artifact bytes and create no copied handoff. Explicit legacy adoption and the following transition remain valid.
+2. Review negative and compatibility cases in the focused tests. Expected: wrong task, role, base, branch, head, PR identity, provider identity, malformed records and conflicting protected copies fail closed. Direct and ordinary worktree-local handoffs remain supported. Existing exact-authority, provider-head, queue and adoption-token guards are unchanged.
+3. Run `bun run ci:local:full`. Expected: every mandatory local check succeeds for the current task input. Do not relax required checks, add skips or extend timeouts. This is task verification, not final release prepublish qualification.
+4. Run `git diff --check`. Expected: no whitespace errors. Review the scoped diff for an owner-aware read-only reader and existing consumers only; no artifact copying, new state store or lifecycle bypass.
+5. Compare the result with the approved plan and Findings. Expected: the proved owner mismatch and verification evidence are recorded, incident verification-target and provider-neutral wording remain explicit separate causes, and local checks are not presented as hosted integration or release completion.
 
 ## Verification
 
@@ -914,3 +927,9 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+Proved cause: protected integration persists its INTEGRATOR handoff in the base checkout, but task-worktree route hydration previously looked only in the task checkout and lost the valid legacy adoption route. The owner-aware shared reader now resolves the registered base checkout, validates task and protected identity, rejects malformed or conflicting evidence, and preserves direct/local behavior without copying or rewriting artifacts.
+
+Local evidence before documentation normalization: 83/83 focused owner-readback, negative, explicit-adoption, replay and next-transition tests passed; scoped lint, formatting, TypeScript build, diff and oversized-file checks passed. Independent manual full CI and supervisor-owned full CI passed for implementation bd72b49eaf67bd2cfcf8170232d6c365de4c572c. The broad core run retained one existing opt-in network packaging skip; this patch introduced no skip. Documentation changes require fresh supervisor verification and evaluation before publication.
+
+Residual causes: the incident post-closure verification-target mismatch and the provider-neutral integrate-error wording expectation are separate, unmodified follow-up work. No GitHub checks, integration, closure or release-prepublish success is claimed for this task yet.
