@@ -1,10 +1,11 @@
 ---
 id: "202608271358-G0N9P4"
 title: "Repair verification fixtures on integrated main 5fce04a8"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -59,6 +60,20 @@ quality_review:
     - "The frozen diff contains exactly four approved test files. Concurrent work is in disjoint worktrees and paths. Supervisor-owned task artifacts are not additional implementation changes."
     - "Frozen verification record 20260827144238263-382161b49fad458b binds both required commands to cf3fa3f9c8a628c46a62bb10b347ac1684668394. Full CI and 34 scoped tests passed. Lint, formatting and diff checks passed without relaxed gates."
     - "Residual risk: The full release-specific broad sweep must still pass. This repair does not implement AP-CORE-013 canonical verification migration."
+token_usage:
+  agent_runs: 5
+  input_tokens: null
+  journal_digest: "sha256:4dccf2d36623fbccb76c3d7f5b39076f849c7e75020d2127a588f854e57d0dd4"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-27T14:47:16.004Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -235,8 +250,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "cf3fa3f9c8a628c46a62bb10b347ac1684668394"
-  message: "🚧 G0N9P4 task: apply external agent result"
+  hash: "ff801694a166b0cc200a6d390ed4ef125841c6b9"
+  message: "🚧 G0N9P4 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -250,6 +265,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: cf3fa3f9c8a6. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -300,9 +318,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-27T14:47:16.004Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "ff801694a166b0cc200a6d390ed4ef125841c6b9"
 doc_version: 3
-doc_updated_at: "2026-08-27T14:42:43.111Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-27T14:47:16.078Z"
+doc_updated_by: "CODER"
 description: "Replace unexecuted task 202608271350-HVGQPQ, which froze its creation base before GHHA0Q integration. Implement only the verification-fixture slice on integrated main 5fce04a8be14816be4cae236d2941dff7045e214. Inspect exact failures in lifecycle.verify, tasks.verify-matrix and incidents CLI tests. Use mkGitRepoRootWithCommit only for scenarios requiring implementation evidence. Preserve all assertions and argument-validation cases. Add an explicit unborn-repository rejection regression in runtime/task-execution-context/resolve.test.ts. Do not change shared helpers, production code, CI gates, release candidate or roadmap dependencies. Canonical verification migration remains AP-CORE-013. Require scoped tests, full CI and hosted integration. User authorizes autonomous execution and normal in-scope approvals."
 sections:
   Summary: |-
@@ -681,7 +707,34 @@ extensions:
       schema_version: 1
       task_id: "202608271358-G0N9P4"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608271358-G0N9P4"
+            - "git:cf3fa3f9c8a628c46a62bb10b347ac1684668394"
+          check_id: "scoped-tests"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/runtime/task-execution-context/resolve.test.ts --pool=threads --maxWorkers=2"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T14:42:38.263Z"
+          repository_snapshot_digest: "sha256:6ee33073bec447d6f0bd5e7978833de9a090b700e7d9162aab91708e1227a25c"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608271358-G0N9P4"
+            - "git:cf3fa3f9c8a628c46a62bb10b347ac1684668394"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T14:42:38.263Z"
+          repository_snapshot_digest: "sha256:6ee33073bec447d6f0bd5e7978833de9a090b700e7d9162aab91708e1227a25c"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608271358-G0N9P4"
     intent:
       acceptance_criteria:
@@ -702,12 +755,12 @@ extensions:
 
         Replace unexecuted task 202608271350-HVGQPQ, which froze its creation base before GHHA0Q integration. Implement only the verification-fixture slice on integrated main 5fce04a8be14816be4cae236d2941dff7045e214. Inspect exact failures in lifecycle.verify, tasks.verify-matrix and incidents CLI tests. Use mkGitRepoRootWithCommit only for scenarios requiring implementation evidence. Preserve all assertions and argument-validation cases. Add an explicit unborn-repository rejection regression in runtime/task-execution-context/resolve.test.ts. Do not change shared helpers, production code, CI gates, release candidate or roadmap dependencies. Canonical verification migration remains AP-CORE-013. Require scoped tests, full CI and hosted integration. User authorizes autonomous execution and normal in-scope approvals.
       task_id: "202608271358-G0N9P4"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 17
+    revision: 20
     schema_version: 1
-    updated_at: "2026-08-27T14:42:44.689Z"
+    updated_at: "2026-08-27T14:47:16.004Z"
     work_items:
       repair-verification-fixtures:
         attempt: 3
@@ -831,11 +884,37 @@ extensions:
         previous_revision: 16
         schema_version: 1
         task_id: "202608271358-G0N9P4"
+      legacy-finish:202608271358-G0N9P4:2026-08-27T14:42:38.263Z:cf3fa3f9c8a628c46a62bb10b347ac1684668394:
+        aggregate_digest: "sha256:d160864696833f7bee5a26e7e01181e5826a57f2a6874379f8b7cff36391c27e"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-27T14:47:16.004Z"
+          cause_refs:
+            - "task-verification:202608271358-G0N9P4"
+            - "git:cf3fa3f9c8a628c46a62bb10b347ac1684668394"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_66cb84d5f020b06e0032b311"
+          mutation_id: "legacy-finish:202608271358-G0N9P4:2026-08-27T14:42:38.263Z:cf3fa3f9c8a628c46a62bb10b347ac1684668394"
+          plan_digest: "sha256:cd9afd5c980648e4491d0d193a12781423b0ed1324c524d212fb52b0cecd2034"
+          plan_revision: 1
+          repository_fingerprint: "sha256:6ee33073bec447d6f0bd5e7978833de9a090b700e7d9162aab91708e1227a25c"
+          schema_version: 1
+          task_id: "202608271358-G0N9P4"
+          task_revision: 17
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608271358-G0N9P4:2026-08-27T14:42:38.263Z:cf3fa3f9c8a628c46a62bb10b347ac1684668394"
+        next_revision: 20
+        previous_revision: 19
+        schema_version: 1
+        task_id: "202608271358-G0N9P4"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "cf3fa3f9c8a628c46a62bb10b347ac1684668394"
+    message: "🚧 G0N9P4 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "5fce04a8be14816be4cae236d2941dff7045e214"
@@ -1022,3 +1101,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/5` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:4dccf2d36623fbccb76c3d7f5b39076f849c7e75020d2127a588f854e57d0dd4`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-27T14:47:16.004Z`
