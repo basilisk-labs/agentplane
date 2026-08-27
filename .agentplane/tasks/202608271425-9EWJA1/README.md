@@ -1,10 +1,11 @@
 ---
 id: "202608271425-9EWJA1"
 title: "Align PR fixtures with committed Git identity"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -61,6 +62,20 @@ quality_review:
     - "New testkit regressions require both empty helper variants to have no HEAD and the opt-in committed fixture to have a real nonzero SHA, main equal to HEAD and a clean tree."
     - "The frozen diff contains only ten approved files. Verification record 20260827145057353-8504a8d8eb4611ab binds passing mandatory full CI and all 63 scoped tests to implementation 634e327f8af5385343077ba50fc861b4e65b724b. Formatting, lint and size gates remain unchanged."
     - "Residual risk: The fixture exercises Git transport against a local bare repository and a fake provider; real hosted qualification remains a separate lifecycle gate."
+token_usage:
+  agent_runs: 4
+  input_tokens: null
+  journal_digest: "sha256:41d8d4b0f0a9f3d895e8d4c6c212e967275d790fb6faf6535861f2b9135a432a"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-27T14:53:45.543Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -285,8 +300,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "634e327f8af5385343077ba50fc861b4e65b724b"
-  message: "🚧 9EWJA1 task: apply external agent result"
+  hash: "0e904fc5b847102091a567c817fa69af60a5f566"
+  message: "🚧 9EWJA1 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -294,6 +309,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 634e327f8af5. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -316,9 +334,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-27T14:53:45.543Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "0e904fc5b847102091a567c817fa69af60a5f566"
 doc_version: 3
-doc_updated_at: "2026-08-27T14:51:04.272Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-27T14:53:45.619Z"
+doc_updated_by: "CODER"
 description: "Repair the 26 freshly reproduced failures across eight PR fixture suites on main 5fce04a8. Reuse and export the existing mkGitRepoRootWithCommit helper only where PR operations require a real base identity. Preserve empty-repository helpers and argument-validation scenarios. Update provider-neutral output assertions only where behavior and metadata assertions remain equivalent. Add testkit coverage for empty versus committed repository identity. Remove unused imports or redundant fixture setup rather than increasing oversized-file baselines. No production, policy, gate, release-state or roadmap change. This task is independent of concurrent G0N9P4: its ten writable files do not overlap, and it requires only already merged GHHA0Q. Both targeted tests and full CI remain mandatory."
 sections:
   Summary: |-
@@ -662,7 +688,34 @@ extensions:
       schema_version: 1
       task_id: "202608271425-9EWJA1"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608271425-9EWJA1"
+            - "git:634e327f8af5385343077ba50fc861b4e65b724b"
+          check_id: "pr-fixtures"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts packages/testkit/src/cli.test.ts --pool=threads --maxWorkers=2"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T14:50:57.353Z"
+          repository_snapshot_digest: "sha256:8403b57a2fac89a35185d337d9834e62400cb037e9e0aa8f6819051a291a8695"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608271425-9EWJA1"
+            - "git:634e327f8af5385343077ba50fc861b4e65b724b"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T14:50:57.353Z"
+          repository_snapshot_digest: "sha256:8403b57a2fac89a35185d337d9834e62400cb037e9e0aa8f6819051a291a8695"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608271425-9EWJA1"
     intent:
       acceptance_criteria:
@@ -683,7 +736,7 @@ extensions:
 
         Repair the 26 freshly reproduced failures across eight PR fixture suites on main 5fce04a8. Reuse and export the existing mkGitRepoRootWithCommit helper only where PR operations require a real base identity. Preserve empty-repository helpers and argument-validation scenarios. Update provider-neutral output assertions only where behavior and metadata assertions remain equivalent. Add testkit coverage for empty versus committed repository identity. Remove unused imports or redundant fixture setup rather than increasing oversized-file baselines. No production, policy, gate, release-state or roadmap change. This task is independent of concurrent G0N9P4: its ten writable files do not overlap, and it requires only already merged GHHA0Q. Both targeted tests and full CI remain mandatory.
       task_id: "202608271425-9EWJA1"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -908,9 +961,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608271425-9EWJA1"
-    revision: 12
+    revision: 15
     schema_version: 1
-    updated_at: "2026-08-27T14:51:07.053Z"
+    updated_at: "2026-08-27T14:53:45.543Z"
     work_items:
       repair-pr-fixtures:
         attempt: 1
@@ -988,11 +1041,37 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202608271425-9EWJA1"
+      legacy-finish:202608271425-9EWJA1:2026-08-27T14:50:57.353Z:634e327f8af5385343077ba50fc861b4e65b724b:
+        aggregate_digest: "sha256:c72cb74e5f341fda98e9621b36510b79bef67d35469104be91935acfb0da1c5c"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-27T14:53:45.543Z"
+          cause_refs:
+            - "task-verification:202608271425-9EWJA1"
+            - "git:634e327f8af5385343077ba50fc861b4e65b724b"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_df1a3b5c75c17bf600d62c94"
+          mutation_id: "legacy-finish:202608271425-9EWJA1:2026-08-27T14:50:57.353Z:634e327f8af5385343077ba50fc861b4e65b724b"
+          plan_digest: "sha256:5708ce75eefea6706dde2e1d3794220f871b19cee2b1c00e647a09c89b8e7357"
+          plan_revision: 2
+          repository_fingerprint: "sha256:8403b57a2fac89a35185d337d9834e62400cb037e9e0aa8f6819051a291a8695"
+          schema_version: 1
+          task_id: "202608271425-9EWJA1"
+          task_revision: 12
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608271425-9EWJA1:2026-08-27T14:50:57.353Z:634e327f8af5385343077ba50fc861b4e65b724b"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202608271425-9EWJA1"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "634e327f8af5385343077ba50fc861b4e65b724b"
+    message: "🚧 9EWJA1 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "5fce04a8be14816be4cae236d2941dff7045e214"
@@ -1108,3 +1187,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:41d8d4b0f0a9f3d895e8d4c6c212e967275d790fb6faf6535861f2b9135a432a`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-27T14:53:45.543Z`
