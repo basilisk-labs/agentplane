@@ -1,3 +1,4 @@
+import { setTimeout as delay } from "node:timers/promises";
 import { normalizeGhTransportError } from "../shared/gh-transport.js";
 import {
   reconcileProviderUpdateLocalHead,
@@ -20,6 +21,7 @@ export type ProviderUpdateBranchRequest = Readonly<{
   baseBranch: string;
   expectedHeadSha: string;
   expectedBaseSha: string;
+  reconcileHeadSha?: string;
 }>;
 
 type ProviderUpdateBranchEvidence = Readonly<{
@@ -95,6 +97,12 @@ function validateRequest(opts: ProviderUpdateBranchRequest): string | null {
   if (!opts.branch.trim() || !opts.baseBranch.trim()) return "branch identity is incomplete";
   if (!GIT_OBJECT_ID.test(opts.expectedHeadSha)) return "expected head SHA is invalid";
   if (!GIT_OBJECT_ID.test(opts.expectedBaseSha)) return "expected base SHA is invalid";
+  if (
+    opts.reconcileHeadSha !== undefined &&
+    (!GIT_OBJECT_ID.test(opts.reconcileHeadSha) || opts.reconcileHeadSha === opts.expectedHeadSha)
+  ) {
+    return "reconciliation target must be a distinct valid head SHA";
+  }
   if (!/^[-A-Za-z0-9_.]+\/[-A-Za-z0-9_.]+$/u.test(opts.identity.targetProject)) {
     return "target project identity is invalid";
   }
@@ -104,6 +112,7 @@ function validateRequest(opts: ProviderUpdateBranchRequest): string | null {
 function validateObservedIdentity(
   opts: ProviderUpdateBranchRequest,
   observed: ObservedChangeRequest,
+  allowBaseAdvance = false,
 ): ProviderUpdateBranchNotApplied | null {
   if (
     observed.provider !== "github" ||
@@ -133,7 +142,11 @@ function validateObservedIdentity(
       observed,
     };
   }
-  if (observed.base !== opts.baseBranch || observed.baseSha !== opts.expectedBaseSha) {
+  if (
+    observed.base !== opts.baseBranch ||
+    !GIT_OBJECT_ID.test(observed.baseSha ?? "") ||
+    (!allowBaseAdvance && observed.baseSha !== opts.expectedBaseSha)
+  ) {
     return {
       state: "not_applied",
       reason: "base_drift",
@@ -168,7 +181,11 @@ async function reconcileUpdatedHead(opts: {
   observed: ObservedChangeRequest;
   effect: "applied" | "reconciled";
 }): Promise<ProviderUpdateBranchReconciliation> {
-  const identityFailure = validateObservedIdentity(opts.request, opts.observed);
+  const identityFailure = validateObservedIdentity(
+    opts.request,
+    opts.observed,
+    opts.effect === "applied",
+  );
   if (identityFailure) {
     return {
       state: "effect_in_doubt",
@@ -187,6 +204,31 @@ async function reconcileUpdatedHead(opts: {
     };
   }
   try {
+    const observedBase = opts.observed.baseSha!;
+    const comparisonContext = {
+      gitRoot: opts.request.gitRoot,
+      project: opts.request.identity.targetProject,
+    };
+    if (
+      observedBase !== opts.request.expectedBaseSha &&
+      (!(await provesAncestor({
+        ...comparisonContext,
+        ancestor: opts.request.expectedBaseSha,
+        descendant: observedBase,
+      })) ||
+        !(await provesAncestor({
+          ...comparisonContext,
+          ancestor: observedBase,
+          descendant: observedHeadSha,
+        })))
+    ) {
+      return {
+        state: "effect_in_doubt",
+        reason: "readback_unproven",
+        detail: "Updated base lacks exact expected-base and updated-head ancestry evidence.",
+        observed: opts.observed,
+      };
+    }
     const [containsExpectedHead, containsExpectedBase] = await Promise.all([
       provesAncestor({
         gitRoot: opts.request.gitRoot,
@@ -247,6 +289,7 @@ async function reconcileUpdatedHead(opts: {
 
 async function observeAuthorizedPullRequest(
   opts: ProviderUpdateBranchRequest,
+  allowBaseAdvance = false,
 ): Promise<
   | { state: "found"; observed: ObservedChangeRequest }
   | { state: "not_applied"; result: ProviderUpdateBranchNotApplied }
@@ -280,7 +323,7 @@ async function observeAuthorizedPullRequest(
       },
     };
   }
-  const failure = validateObservedIdentity(opts, lookup.pr);
+  const failure = validateObservedIdentity(opts, lookup.pr, allowBaseAdvance);
   return failure
     ? { state: "not_applied", result: failure }
     : { state: "found", observed: lookup.pr };
@@ -309,6 +352,14 @@ export async function updateProviderBranch(
 
   const before = await observeAuthorizedPullRequest(opts);
   if (before.state === "not_applied") return before.result;
+  if (opts.reconcileHeadSha !== undefined && before.observed.headSha !== opts.reconcileHeadSha) {
+    return {
+      state: "not_applied",
+      reason: "head_drift",
+      detail: "The exact reconciliation-only target changed; no provider mutation is permitted.",
+      observed: before.observed,
+    };
+  }
   const localFailure = await validateProviderUpdateLocalState(opts, [
     opts.expectedHeadSha,
     ...(before.observed.headSha ? [before.observed.headSha] : []),
@@ -360,36 +411,47 @@ export async function updateProviderBranch(
     mutationError = error;
   }
 
-  const after = await observeAuthorizedPullRequest(opts).catch((error: unknown) => ({
-    state: "not_applied" as const,
-    result: {
-      state: "effect_in_doubt" as const,
-      reason: "readback_unavailable" as const,
-      detail: `Provider readback failed: ${normalizeGhTransportError(error)}`,
-      observed: null,
-    },
-  }));
-  if (after.state === "not_applied") {
-    if (after.result.state === "effect_in_doubt") return after.result;
-    return {
-      state: "effect_in_doubt",
-      reason: "readback_unavailable",
-      detail:
-        `Provider update-branch ${mutationError ? "failed or remained uncertain" : "returned"}, ` +
-        `but exact readback was unavailable: ${after.result.detail}`,
-      observed: after.result.observed,
+  let lastResult: ProviderUpdateBranchReconciliation | null = null;
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    if (attempt > 0) await delay(250 * attempt);
+    const after = await observeAuthorizedPullRequest(opts, true).catch((error: unknown) => ({
+      state: "not_applied" as const,
+      result: {
+        state: "effect_in_doubt" as const,
+        reason: "readback_unavailable" as const,
+        detail: `Provider readback failed: ${normalizeGhTransportError(error)}`,
+        observed: null,
+      },
+    }));
+    if (after.state === "not_applied") {
+      lastResult = {
+        state: "effect_in_doubt",
+        reason: "readback_unavailable",
+        detail:
+          `Provider update-branch ${mutationError ? "failed or remained uncertain" : "returned"}, ` +
+          `but exact readback was unavailable: ${after.result.detail}`,
+        observed: after.result.observed,
+      };
+      if (
+        after.result.state === "not_applied" &&
+        !["observation_unavailable", "pr_not_found"].includes(after.result.reason)
+      )
+        return lastResult;
+      continue;
+    }
+    const reconciled = await reconcileUpdatedHead({
+      request: opts,
+      observed: after.observed,
+      effect: "applied",
+    });
+    if (reconciled.state === "updated") return reconciled;
+    lastResult = {
+      ...reconciled,
+      detail: mutationError
+        ? `Provider mutation error: ${normalizeGhTransportError(mutationError)}; ${reconciled.detail}`
+        : reconciled.detail,
     };
+    if (after.observed.headSha !== opts.expectedHeadSha) return lastResult;
   }
-  const reconciled = await reconcileUpdatedHead({
-    request: opts,
-    observed: after.observed,
-    effect: "applied",
-  });
-  if (reconciled.state === "updated") return reconciled;
-  return {
-    ...reconciled,
-    detail: mutationError
-      ? `Provider mutation error: ${normalizeGhTransportError(mutationError)}; ${reconciled.detail}`
-      : reconciled.detail,
-  };
+  return lastResult!;
 }

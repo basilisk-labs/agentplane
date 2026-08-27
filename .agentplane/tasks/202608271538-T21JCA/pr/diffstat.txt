@@ -1,11 +1,15 @@
- .../pr/provider-update-branch-local.test.ts        | 241 +++++++++++++++++++++
- .../commands/pr/provider-update-branch-local.ts    |  89 ++++++++
- .../src/commands/pr/provider-update-branch.test.ts |  34 ++-
- .../src/commands/pr/provider-update-branch.ts      |  29 ++-
- .../shared/provider-update-branch-route.ts         |   5 +-
- .../route-decision-blockers.quality-review.test.ts | 106 ++++++++-
- ...rkflow-step-projections.conflict-rework.test.ts | 228 ++++++++++---------
- .../shared/workflow-step-provider-update-branch.ts |   2 +-
- .../task/branch-task-supervisor-operations.test.ts |   1 +
- .../task/branch-task-supervisor-operations.ts      |   4 +-
- 10 files changed, 627 insertions(+), 112 deletions(-)
+ .../src/commands/pr/head-publication.test.ts       |  34 ++-
+ .../agentplane/src/commands/pr/head-publication.ts |  11 +-
+ .../pr/provider-update-branch-local.test.ts        | 325 +++++++++++++++++++++
+ .../commands/pr/provider-update-branch-local.ts    |  89 ++++++
+ .../src/commands/pr/provider-update-branch.test.ts | 101 ++++++-
+ .../src/commands/pr/provider-update-branch.ts      | 157 +++++++---
+ .../shared/provider-update-branch-route.ts         |  41 ++-
+ .../route-decision-blockers.quality-review.test.ts | 124 +++++++-
+ .../commands/shared/workflow-operation-prefix.ts   |   2 +-
+ .../shared/workflow-operation-projection.ts        |  33 +--
+ ...rkflow-step-projections.conflict-rework.test.ts | 258 +++++++++-------
+ .../shared/workflow-step-provider-update-branch.ts |   5 +-
+ .../task/branch-task-supervisor-operations.test.ts |  42 +--
+ .../task/branch-task-supervisor-operations.ts      |   7 +-
+ 14 files changed, 1021 insertions(+), 208 deletions(-)

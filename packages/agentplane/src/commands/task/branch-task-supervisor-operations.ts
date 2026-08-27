@@ -187,6 +187,9 @@ export async function executeBranchWorkflowOperation(opts: {
         baseBranch: operation.params.baseBranch,
         expectedHeadSha: operation.params.expectedHeadSha,
         expectedBaseSha: operation.params.expectedBaseSha,
+        ...(operation.params.reconcileHeadSha
+          ? { reconcileHeadSha: operation.params.reconcileHeadSha }
+          : {}),
       });
       if (result.state === "updated") {
         return succeeded(

@@ -13,8 +13,9 @@ export function providerUpdateBranchStep(state: WorkflowRouteState): WorkflowSte
     operationId: "provider.pr.update_branch",
     params,
     code: "update_provider_pr_branch",
-    summary:
-      "update the exact behind provider PR head from its observed base before integration or hosted-failure rework",
+    summary: params.reconcileHeadSha
+      ? "reconcile the exact observed provider descendant locally without PUT or head publication"
+      : "update the exact behind provider PR head from its observed base before integration or hosted-failure rework",
     selectedBlocker: routeBlockerFor(state, "provider_pr_update_branch_required"),
   });
 }

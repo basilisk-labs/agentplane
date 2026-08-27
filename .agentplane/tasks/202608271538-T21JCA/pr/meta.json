@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608271538-T21JCA/recover-green-behind-prs-through-provider-branch",
   "created_at": "2026-08-27T15:41:27.859Z",
-  "diffstat_sha256": "sha256:e83812be5be6a3f6b31cecf902a6fac4933b9dcaa0d0c04391a61fb3d8a984c3",
+  "diffstat_sha256": "sha256:12839c749cdf52ef7997ecaa298538eaf955592c751c8f4e9453abd12fd0a567",
   "last_verified_at": "2026-08-27T17:51:17.746Z",
   "last_verified_diffstat_sha256": "sha256:e83812be5be6a3f6b31cecf902a6fac4933b9dcaa0d0c04391a61fb3d8a984c3",
   "pr_number": 5856,
