@@ -4,7 +4,7 @@ title: "Preserve task identity in closeout and worktree fixtures"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -24,41 +24,40 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-27T23:15:43.799Z"
+  updated_at: "2026-08-27T23:30:43.685Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-27T23:17:26.287Z"
+  updated_at: "2026-08-27T23:33:34.954Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 5 typed finding(s)."
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
   evaluated_sha: "37c73e481fb24ef71c13270b9c74ec22ba117040"
   blueprint_digest: "0d09cb76e6021e2ef303a75461cc70335a3cea6d6f7bee5819b630d96da713fb"
   evidence_refs:
-    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-231601668-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-231601668-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/90f0d1030d222fc87d8e92a8fc71195cb2c49a013eb106f43b8d570dab8cea0c.md"
-    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-231601668-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-231601668-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-231601668-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-231601668-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-233148153-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-233148153-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/7f8eaa563a57e96bcafc6c3a0510357cc3af386dc72cd2c7ea05829ca02b93d1.md"
+    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-233148153-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-233148153-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-233148153-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608271659-AD3030/README.md"
     - ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/6a54b986c4337537710c4beb64489bec480674ba7177b0351762cbc6ef90410f.patch"
-    - ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/d36ac47a0ebecb9519f911ec1314b9ad33af5c3ced863ba464a8788b49dec5b9.json"
-    - ".agentplane/tasks/202608271659-AD3030/verification/20260827231543799-24b0be63cfe9653d.json"
+    - ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/95b232edfe20d366180cc29edc1979fdffee0202f5881344b07866a82d04fc4f.json"
+    - ".agentplane/tasks/202608271659-AD3030/verification/20260827233043685-d1e770e639a91501.json"
     - ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/d0d238d23c3006d5e0d4d0953d1881f99c4173f65bfe5d0abfb7b08b76de5a06.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Reviewed diff preserves parsed task extensions and the immutable execution context instead of adding a duplicate YAML key. Real base commits are introduced only where the intended fixture contract requires them. Start-ready now asserts actual task-owned worktree mutation, unchanged base HEAD and absence of a recreated base README. Exact reviewed SHA, landed/rebased precedence and unresolved refusal remain intact."
-    - "All nine frozen evidence hashes match. Fresh supervisor ci:local:full passed in 505807ms and the exact four-file suite passed 27/27 in 16.29 seconds, without added skips or longer timeouts. The previously failing cleanup/authority cases also passed in isolation; parallel workload interference remains a hypothesis, not a proven cause."
-    - "The frozen task document has an empty Findings section. The loaded core DoD requires populated task documentation. Record the fixture causes, preserved behavior, successful current checks and the unresolved timeout-cause caveat through the supported task-document route before closeout. Do not change Verify Steps, the plan, source, checks or timeouts."
-    - "Residual risk: The remaining correction is task documentation only; do not reopen product or fixture scope."
-    - "Residual risk: Hosted exact-head checks and terminal integration remain required."
+    - "The actual diff digest remains 6a54b986c4337537710c4beb64489bec480674ba7177b0351762cbc6ef90410f. Reviewed fixture changes preserve parsed extensions, immutable shared bases, exact reviewed and landed commit decisions, unresolved refusal, and authoritative worktree-only start. No production code, global helpers, checks or timeouts are changed."
+    - "All nine frozen evidence hashes match. The fresh 20260827233043685-d1e770e639a91501 verification record binds successful required full and four-file checks to implementation 37c73e481fb24ef71c13270b9c74ec22ba117040 and the declared environment. The prior 27-scenario review and guard assessment remain applicable to the identical source diff."
+    - "The previously empty Findings section now records the fixture causes, preserved behavior, local evidence, existing opt-in packaging skip, and unproven timeout-causality caveat. The documentation-only commit changes only the task README. No documentation rework remains."
+    - "Residual risk: Earlier intermittent timeout causality remains unproven; no test or timeout was weakened."
+    - "Residual risk: Hosted exact-head proof, integration and terminal closeout are still required."
 execution_route:
   frozen: true
   reason_codes:
@@ -237,7 +236,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "37c73e481fb24ef71c13270b9c74ec22ba117040"
+  hash: "cf8a8316396397bb7688b34fdcbf93c6ab86a249"
   message: "🚧 AD3030 task: apply external agent result"
 comments:
   -
@@ -261,6 +260,9 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Resume: the operator populated Findings through task doc set. Source, approved scope and Verify Steps remain unchanged; request fresh route and evaluation."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: cf8a83163963. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -339,9 +341,23 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Resume: the operator populated Findings through task doc set. Source, approved scope and Verify Steps remain unchanged; request fresh route and evaluation."
+  -
+    type: "status"
+    at: "2026-08-27T23:20:53.367Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: cf8a83163963. CLI accepted one state-bound external-agent semantic result."
+    commit: "cf8a8316396397bb7688b34fdcbf93c6ab86a249"
+  -
+    type: "verify"
+    at: "2026-08-27T23:30:43.685Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-27T23:18:49.330Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-08-27T23:30:48.871Z"
+doc_updated_by: "SUPERVISOR"
 description: "Repair six freshly reproduced failures among27scenarios in four closeout and worktree-routing fixture files. Scope only packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts, packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts. Merge batch extensions into parsed task metadata rather than duplicate the YAML extensions key; preserve the immutable task_execution_context and make shared tasks use one real committed base. Seed Git for the work-start usage-error case so it reaches the intended worktree requirement. Align the start-ready test with the existing authoritative loadTaskCommandContext redirect: prove it updates only the task-owned worktree without recreating base README or changing base HEAD; do not demand an obsolete manual-cd error. Preserve multi-task exact reviewed implementation SHA, landed versus stale or rebased PR commit choice, unresolved-task failure and all remaining negative scenarios. Use current canonical planning only if needed for fixture validity. No production, global helper, policy, CI gate, timeout, release version or task graph changes. Require all27scenarios, scoped lint/format, full CI, EVALUATOR and hosted exact-head proof."
 sections:
   Summary: |-
@@ -528,6 +544,78 @@ sections:
 
     DecisionContextRef:
     - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-27T23:30:43.685Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9ae473cbc5a07af7c0ac5336b7676b8b836d4b91ce6274f4dac1bbd5747c8023, input_digest=sha256:290e257f1c37e1a811b3693711d35fa86c97cbeff0100d433549667bc91ab913
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271659-AD3030/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271659-AD3030 Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608271659-AD3030/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271659-AD3030 Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271659-AD3030/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271659-AD3030 Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608271659-AD3030/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271659-AD3030 Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271659-AD3030/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271659-AD3030 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271659-AD3030/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271659-AD3030 Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608271659-AD3030/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271659-AD3030 Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271659-AD3030-preserve-task-identity-in-closeout-and-worktree/.agentplane/tasks/202608271659-AD3030/blueprint/resolved-snapshot.json
+    - old_digest: 0d09cb76e6021e2ef303a75461cc70335a3cea6d6f7bee5819b630d96da713fb
+    - current_digest: 0d09cb76e6021e2ef303a75461cc70335a3cea6d6f7bee5819b630d96da713fb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608271659-AD3030
+
+    DecisionContextRef:
+    - operator_action: stop
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
@@ -938,7 +1026,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "37c73e481fb24ef71c13270b9c74ec22ba117040"
+    hash: "cf8a8316396397bb7688b34fdcbf93c6ab86a249"
   task_execution_context:
     base_ref: "main"
     base_sha: "2c9a2f59146c302c517524136e66abb902f92ba6"
@@ -1143,6 +1231,78 @@ BlueprintSnapshotRef:
 
 DecisionContextRef:
 - operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-27T23:30:43.685Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9ae473cbc5a07af7c0ac5336b7676b8b836d4b91ce6274f4dac1bbd5747c8023, input_digest=sha256:290e257f1c37e1a811b3693711d35fa86c97cbeff0100d433549667bc91ab913
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271659-AD3030/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271659-AD3030 Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608271659-AD3030/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271659-AD3030 Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271659-AD3030/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271659-AD3030 Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608271659-AD3030/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271659-AD3030 Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271659-AD3030/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271659-AD3030 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271659-AD3030/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271659-AD3030 Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608271659-AD3030/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271659-AD3030 Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271659-AD3030-preserve-task-identity-in-closeout-and-worktree/.agentplane/tasks/202608271659-AD3030/blueprint/resolved-snapshot.json
+- old_digest: 0d09cb76e6021e2ef303a75461cc70335a3cea6d6f7bee5819b630d96da713fb
+- current_digest: 0d09cb76e6021e2ef303a75461cc70335a3cea6d6f7bee5819b630d96da713fb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608271659-AD3030
+
+DecisionContextRef:
+- operator_action: stop
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none

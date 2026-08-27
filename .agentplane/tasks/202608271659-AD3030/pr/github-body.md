@@ -22,7 +22,7 @@ Repair six freshly reproduced failures among27scenarios in four closeout and wor
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T21:02:51.479Z
+- Updated: 2026-08-27T23:15:58.290Z
 - Branch: task/202608271659-AD3030/preserve-task-identity-in-closeout-and-worktree
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
