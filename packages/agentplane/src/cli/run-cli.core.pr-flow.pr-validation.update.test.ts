@@ -26,6 +26,7 @@ import {
   mkdir,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
+  mkGitRepoRootWithCommit,
   mkTempDir,
   mkdtemp,
   os,
@@ -60,7 +61,7 @@ import {
 
 describe("runCli PR validation and hydration flow (pr update scenarios)", () => {
   it("pr update hydrates existing GitHub PR state into previously local-only artifacts", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -149,7 +150,7 @@ describe("runCli PR validation and hydration flow (pr update scenarios)", () => 
   });
 
   it("pr update observes an existing open GitHub PR and tracks open identity", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -240,7 +241,7 @@ describe("runCli PR validation and hydration flow (pr update scenarios)", () => 
   });
 
   it("pr update rejects missing artifacts", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);

@@ -6,7 +6,6 @@ import {
   PR_FLOW_LONG_TIMEOUT_MS,
   approveTaskPlan,
   captureStdIO,
-  chmod,
   cleanGitEnv,
   commitAll,
   commitPathsIfChanged,
@@ -26,6 +25,7 @@ import {
   mkdir,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
+  mkGitRepoRootWithCommit,
   mkTempDir,
   path,
   pathExists,
@@ -156,7 +156,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
   });
 
   it("pr check passes when artifacts exist", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -645,7 +645,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
   });
 
   it("pr open keeps incidents.md unchanged while creating PR artifacts", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -723,7 +723,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
   });
 
   it("pr open is idempotent when artifacts exist", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -836,7 +836,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
   });
 
   it("pr check fails when verify requirements are unmet", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -891,7 +891,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
   });
 
   it("pr check reports missing auto summary markers", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -952,7 +952,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
   });
 
   it("pr check reports invalid meta.json", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);

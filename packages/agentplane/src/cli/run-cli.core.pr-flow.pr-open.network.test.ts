@@ -252,7 +252,7 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("remote PR creation failed");
+      expect(io.stdout).toContain("remote change-request creation failed");
     } finally {
       io.restore();
       process.env.PATH = originalPath;
@@ -348,7 +348,7 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
       ]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("created GitHub PR #655");
-      expect(io.stdout).not.toContain("remote PR creation staged");
+      expect(io.stdout).not.toContain("remote change-request creation staged");
     } finally {
       io.restore();
       process.env.PATH = originalPath;
