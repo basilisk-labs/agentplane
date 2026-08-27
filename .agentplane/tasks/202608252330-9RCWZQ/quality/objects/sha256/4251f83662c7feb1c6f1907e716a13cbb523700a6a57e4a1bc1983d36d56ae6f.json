@@ -1,0 +1,167 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [
+        "external_write",
+        "network_read"
+      ],
+      "components": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts",
+        "packages/agentplane/src/commands/pr"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "recovery_required"
+      },
+      "evidence_requirements": [
+        "external_effect:external_write",
+        "external_effect:network_read",
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts",
+        "packages/agentplane/src/commands/pr/internal/provider-base.ts",
+        "packages/agentplane/src/commands/pr/internal/sync.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts",
+      "central_component:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts",
+      "external_effect_requires_real_e2e",
+      "reversibility_recovery_required"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": true,
+    "digest": "sha256:80ca17cd727aa7c9c05c4f769bbe409998c624d872e548262db65ad793236f63"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-26T07:00:10.704Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608252330-9RCWZQ/verification/20260826070010704-bb952dc1309ffb60.json",
+      "sha256": "sha256:f54071c32ef2858704958b4e4441bab2996d9ff1ac83e8f1cbb7bdf68fb034fc"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 6405116d7235b2d6497c8af552a41781383746c3..1c53295ba0a1d77eb1d4adc93b8c1776dbad1a08",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 6405116d7235b2d6497c8af552a41781383746c3..1c53295ba0a1d77eb1d4adc93b8c1776dbad1a08",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608252330-9RCWZQ/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608252330-9RCWZQ/pr/github-body.md",
+          "M\t.agentplane/tasks/202608252330-9RCWZQ/pr/github-title.txt",
+          "M\t.agentplane/tasks/202608252330-9RCWZQ/pr/meta.json",
+          "M\t.agentplane/tasks/202608252330-9RCWZQ/pr/review.md",
+          "M\tpackages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts",
+          "M\tpackages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "6405116d7235b2d6497c8af552a41781383746c3",
+    "implementation_commit": "1c53295ba0a1d77eb1d4adc93b8c1776dbad1a08",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608252330-9RCWZQ",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608252330-9RCWZQ/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

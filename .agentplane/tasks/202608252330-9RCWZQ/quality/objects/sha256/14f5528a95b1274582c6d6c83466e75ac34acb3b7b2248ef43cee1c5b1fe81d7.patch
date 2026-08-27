@@ -1,0 +1,699 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts
+index 97fe3aeda..f9c72f727 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts
+@@ -57,6 +57,14 @@ import {
+   installFakeGhPrLookup,
+   type ResolvedProject,
+ } from "@agentplane/testkit/cli-core-pr-flow";
++async function seedCommittedMain(root: string): Promise<void> {
++  await configureGitUser(root);
++  const execFileAsync = promisify(execFile);
++  await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore base seed"], {
++    cwd: root,
++    env: cleanGitEnv(),
++  });
++}
+ 
+ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
+   it(
+@@ -66,7 +74,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+       const config = defaultConfig();
+       config.workflow_mode = "branch_pr";
+       await writeConfig(root, config);
+-      await configureGitUser(root);
++      await seedCommittedMain(root);
+       const execFileAsync = promisify(execFile);
+       await execFileAsync(
+         "git",
+@@ -336,13 +344,13 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+-    await configureGitUser(root);
++    await seedCommittedMain(root);
+     const execFileAsync = promisify(execFile);
+     await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+       cwd: root,
+       env: cleanGitEnv(),
+     });
+-    await configurePushableOrigin(root);
++    const publishRemotePath = await configurePushableOrigin(root);
+     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+ 
+     let taskId = "";
+@@ -376,25 +384,12 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+       cwd: root,
+       env: cleanGitEnv(),
+     });
+-    const publishRemotePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-pr-open-publish-"));
+-    await execFileAsync("git", ["init", "--bare", publishRemotePath], {
+-      cwd: root,
+-      env: cleanGitEnv(),
+-    });
+-    await execFileAsync("git", ["remote", "add", "publish", publishRemotePath], {
+-      cwd: root,
+-      env: cleanGitEnv(),
+-    });
+-    await execFileAsync("git", ["push", "-u", "publish", `HEAD:refs/heads/${branch}`], {
+-      cwd: root,
+-      env: cleanGitEnv(),
+-    });
+     const packetCommitSubject = `🧩 ${extractTaskSuffix(taskId)} task: refresh task artifacts after commit`;
+     const { fakeBin, logPath } = await installFakeGhPrApiRequiringPublishedPacketHead({
+       scenarioName: "open-first-pass-final-head",
+       branch,
+       packetCommitSubject,
+-      publishRemote: "publish",
++      publishRemote: publishRemotePath,
+     });
+     const originalPath = process.env.PATH;
+     process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+@@ -450,7 +445,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+-    await configureGitUser(root);
++    await seedCommittedMain(root);
+     const execFileAsync = promisify(execFile);
+     await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+       cwd: root,
+@@ -563,7 +558,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+-    await configureGitUser(root);
++    await seedCommittedMain(root);
+     const execFileAsync = promisify(execFile);
+     await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+       cwd: root,
+@@ -690,7 +685,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+       const config = defaultConfig();
+       config.workflow_mode = "branch_pr";
+       await writeConfig(root, config);
+-      await configureGitUser(root);
++      await seedCommittedMain(root);
+       const execFileAsync = promisify(execFile);
+       await execFileAsync(
+         "git",
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts
+index b7ced9bee..e35340d88 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts
+@@ -67,7 +67,7 @@ async function seedGitBase(root: string): Promise<void> {
+ }
+ 
+ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
+-  it("pr open creates a remote GitHub PR when origin and gh are available", async () => {
++  it("pr open resolves an exact-SHA Task base to main for the remote GitHub PR", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+@@ -78,12 +78,21 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
+       cwd: root,
+       env: cleanGitEnv(),
+     });
+-    await configurePushableOrigin(root);
++    const publishRemotePath = await configurePushableOrigin(root);
+     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+     await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore test setup"], {
+       cwd: root,
+       env: cleanGitEnv(),
+     });
++    await execFileAsync("git", ["push", "origin", "main"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    const { stdout: baseStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    const baseSha = baseStdout.trim();
+ 
+     let taskId = "";
+     const ioTask = captureStdIO();
+@@ -110,6 +119,30 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
+       ioTask.restore();
+     }
+ 
++    const frozenTask = await readTask({ cwd: root, rootOverride: root, taskId });
++    const executionContext = frozenTask.frontmatter.extensions?.task_execution_context as
++      | Record<string, unknown>
++      | undefined;
++    await writeFile(
++      frozenTask.readmePath,
++      renderTaskReadme(
++        {
++          ...frozenTask.frontmatter,
++          extensions: {
++            ...frozenTask.frontmatter.extensions,
++            task_execution_context: {
++              ...executionContext,
++              schema_version: 1,
++              base_ref: baseSha,
++              base_sha: baseSha,
++            },
++          },
++        },
++        frozenTask.body,
++      ),
++      "utf8",
++    );
++
+     const branch = `task/${taskId}/remote-create`;
+     await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
+     await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore branch publish seed"], {
+@@ -129,8 +162,31 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
+         base: { ref: "main" },
+       },
+     });
++    const fakeGitBin = await mkdtemp(path.join(os.tmpdir(), "agentplane-provider-base-git-"));
++    const { stdout: realGitStdout } = await execFileAsync("which", ["git"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    const fakeGitPath = path.join(fakeGitBin, "git");
++    await writeFile(
++      fakeGitPath,
++      [
++        "#!/usr/bin/env node",
++        "const { spawnSync } = require('node:child_process');",
++        `const realGit = ${JSON.stringify(realGitStdout.trim())};`,
++        `const providerRemote = ${JSON.stringify(publishRemotePath)};`,
++        "const args = process.argv.slice(2);",
++        "if (args[0] === 'ls-remote' && args[1] === '--exit-code' && args[2] === 'origin' && args[3] === 'refs/heads/main') args[2] = providerRemote;",
++        "const result = spawnSync(realGit, args, { stdio: 'inherit', env: process.env });",
++        "if (result.error) throw result.error;",
++        "process.exit(result.status ?? 1);",
++        "",
++      ].join("\n"),
++      "utf8",
++    );
++    await chmod(fakeGitPath, 0o755);
+     const originalPath = process.env.PATH;
+-    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
++    process.env.PATH = `${fakeGitBin}${path.delimiter}${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+     process.env.AGENTPLANE_GH_LOG = logPath;
+ 
+     const io = captureStdIO();
+@@ -167,6 +223,12 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
+     expect(meta.status).toBe("OPEN");
+     expect(meta.head_sha).toBeUndefined();
+ 
++    const taskAfterOpen = await readTask({ cwd: root, rootOverride: root, taskId });
++    expect(taskAfterOpen.frontmatter.extensions?.task_execution_context).toMatchObject({
++      base_ref: baseSha,
++      base_sha: baseSha,
++    });
++
+     const logText = await readFile(logPath, "utf8");
+     const log = logText
+       .trim()
+@@ -182,6 +244,15 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
+           args.includes("POST"),
+       ),
+     ).toBe(true);
++    expect(
++      log.some(
++        (args) =>
++          args[0] === "api" &&
++          args[1]?.startsWith("repos/example/repo/pulls?") === true &&
++          new URL(`https://example.invalid/${args[1]}`).searchParams.get("base") === "main",
++      ),
++    ).toBe(true);
++    expect(log.some((args) => args.some((arg) => arg.includes(`base=${baseSha}`)))).toBe(false);
+   });
+ 
+   it("pr open marks remote creation failures explicitly in pr metadata", async () => {
+@@ -252,7 +323,7 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
+         root,
+       ]);
+       expect(code).toBe(0);
+-      expect(io.stdout).toContain("remote PR creation failed");
++      expect(io.stdout).toContain("remote change-request creation failed");
+     } finally {
+       io.restore();
+       process.env.PATH = originalPath;
+diff --git a/packages/agentplane/src/commands/pr/internal/git-host-identity.ts b/packages/agentplane/src/commands/pr/internal/git-host-identity.ts
+index 9123cb907..bff12ee05 100644
+--- a/packages/agentplane/src/commands/pr/internal/git-host-identity.ts
++++ b/packages/agentplane/src/commands/pr/internal/git-host-identity.ts
+@@ -82,7 +82,7 @@ async function gitOutput(cwd: string, args: string[]): Promise<string | null> {
+   return output || null;
+ }
+ 
+-async function resolvePublicationRemote(opts: {
++export async function resolvePublicationRemote(opts: {
+   gitRoot: string;
+   branch: string;
+ }): Promise<string> {
+diff --git a/packages/agentplane/src/commands/pr/internal/provider-base.test.ts b/packages/agentplane/src/commands/pr/internal/provider-base.test.ts
+new file mode 100644
+index 000000000..457593e69
+--- /dev/null
++++ b/packages/agentplane/src/commands/pr/internal/provider-base.test.ts
+@@ -0,0 +1,221 @@
++import { describe, expect, it } from "vitest";
++
++import {
++  cleanGitEnv,
++  configureGitUser,
++  execFile,
++  mkGitRepoRootWithBranch,
++  mkdtemp,
++  os,
++  path,
++  promisify,
++  writeFile,
++} from "@agentplane/testkit/cli-core-pr-flow";
++
++import { resolveProviderBaseBranch } from "./provider-base.js";
++
++describe("exact-SHA provider base resolution", () => {
++  it("requires an exact matching local and live provider base branch", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    await configureGitUser(root);
++    const execFileAsync = promisify(execFile);
++    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
++    await execFileAsync("git", ["add", "seed.txt"], { cwd: root, env: cleanGitEnv() });
++    await execFileAsync("git", ["commit", "-m", "seed"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    const { stdout: baseStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    const baseSha = baseStdout.trim();
++    const remote = await mkdtemp(path.join(os.tmpdir(), "agentplane-exact-base-remote-"));
++    await execFileAsync("git", ["init", "--bare", remote], { cwd: root, env: cleanGitEnv() });
++    await execFileAsync("git", ["remote", "add", "origin", remote], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    await execFileAsync("git", ["push", "-u", "origin", "main"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    await execFileAsync("git", ["config", "agentplane.baseBranch", "main"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++
++    await expect(
++      resolveProviderBaseBranch({
++        gitRoot: root,
++        cwd: root,
++        workflowMode: "branch_pr",
++        branch: "main",
++        baseRef: "main",
++        baseSha: "b".repeat(40),
++      }),
++    ).resolves.toBe("main");
++
++    await execFileAsync("git", ["config", "agentplane.baseBranch", baseSha], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    await expect(
++      resolveProviderBaseBranch({
++        gitRoot: root,
++        cwd: root,
++        workflowMode: "branch_pr",
++        branch: "main",
++        baseRef: baseSha,
++        baseSha,
++      }),
++    ).rejects.toThrow("cannot resolve a configured provider base branch");
++    await execFileAsync("git", ["config", "agentplane.baseBranch", "main"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++
++    await expect(
++      resolveProviderBaseBranch({
++        gitRoot: root,
++        cwd: root,
++        workflowMode: "branch_pr",
++        branch: "main",
++        baseRef: baseSha,
++        baseSha: "b".repeat(40),
++      }),
++    ).rejects.toThrow("inconsistent with the frozen Task execution base_sha");
++
++    await expect(
++      resolveProviderBaseBranch({
++        gitRoot: root,
++        cwd: root,
++        workflowMode: "branch_pr",
++        branch: "main",
++        baseRef: baseSha,
++        baseSha,
++      }),
++    ).resolves.toBe("main");
++
++    await expect(
++      resolveProviderBaseBranch({
++        gitRoot: root,
++        cwd: root,
++        workflowMode: "branch_pr",
++        branch: "main",
++        baseRef: baseSha.toUpperCase(),
++        baseSha: baseSha.toUpperCase(),
++      }),
++    ).resolves.toBe("main");
++
++    await expect(
++      resolveProviderBaseBranch({
++        gitRoot: root,
++        cwd: root,
++        workflowMode: "branch_pr",
++        branch: "main",
++        baseRef: "a".repeat(40),
++        baseSha: "a".repeat(40),
++      }),
++    ).rejects.toThrow("does not match configured provider base branch main");
++
++    await execFileAsync("git", ["update-ref", "-d", "refs/remotes/origin/main"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    await expect(
++      resolveProviderBaseBranch({
++        gitRoot: root,
++        cwd: root,
++        workflowMode: "branch_pr",
++        branch: "main",
++        baseRef: baseSha,
++        baseSha,
++      }),
++    ).resolves.toBe("main");
++
++    await execFileAsync("git", ["--git-dir", remote, "update-ref", "-d", "refs/heads/main"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    await expect(
++      resolveProviderBaseBranch({
++        gitRoot: root,
++        cwd: root,
++        workflowMode: "branch_pr",
++        branch: "main",
++        baseRef: baseSha,
++        baseSha,
++      }),
++    ).rejects.toThrow("requires both local main and live origin/main evidence");
++    await execFileAsync("git", ["push", "origin", `${baseSha}:refs/heads/main`], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++
++    await execFileAsync("git", ["remote", "rename", "origin", "upstream"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    await execFileAsync("git", ["config", "branch.main.remote", "upstream"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    await expect(
++      resolveProviderBaseBranch({
++        gitRoot: root,
++        cwd: root,
++        workflowMode: "branch_pr",
++        branch: "main",
++        baseRef: baseSha,
++        baseSha,
++      }),
++    ).resolves.toBe("main");
++    await execFileAsync("git", ["remote", "rename", "upstream", "origin"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    await execFileAsync("git", ["config", "branch.main.remote", "origin"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++
++    await execFileAsync("git", ["commit", "--allow-empty", "-m", "local base drift"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    await expect(
++      resolveProviderBaseBranch({
++        gitRoot: root,
++        cwd: root,
++        workflowMode: "branch_pr",
++        branch: "main",
++        baseRef: baseSha,
++        baseSha,
++      }),
++    ).rejects.toThrow("ambiguous");
++
++    await execFileAsync("git", ["push", "origin", "HEAD:refs/heads/main"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    await execFileAsync("git", ["reset", "--hard", baseSha], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    await execFileAsync("git", ["update-ref", "refs/remotes/origin/main", baseSha], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    await expect(
++      resolveProviderBaseBranch({
++        gitRoot: root,
++        cwd: root,
++        workflowMode: "branch_pr",
++        branch: "main",
++        baseRef: baseSha,
++        baseSha,
++      }),
++    ).rejects.toThrow("live origin/main resolve to different commits");
++  });
++});
+diff --git a/packages/agentplane/src/commands/pr/internal/provider-base.ts b/packages/agentplane/src/commands/pr/internal/provider-base.ts
+new file mode 100644
+index 000000000..b1401e3af
+--- /dev/null
++++ b/packages/agentplane/src/commands/pr/internal/provider-base.ts
+@@ -0,0 +1,111 @@
++import { resolveBaseBranch, gitEnv } from "@agentplaneorg/core/git";
++import { execFileAsync } from "@agentplaneorg/core/process";
++
++import { exitCodeForError } from "../../../cli/exit-codes.js";
++import { CliError } from "../../../shared/errors.js";
++import { resolvePublicationRemote } from "./git-host-identity.js";
++
++const FULL_COMMIT_OID = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/iu;
++
++function normalizeFullCommitOid(value: string): string | null {
++  const trimmed = value.trim();
++  return FULL_COMMIT_OID.test(trimmed) ? trimmed.toLowerCase() : null;
++}
++
++async function resolveCommit(gitRoot: string, ref: string): Promise<string | null> {
++  try {
++    const { stdout } = await execFileAsync("git", ["rev-parse", "--verify", `${ref}^{commit}`], {
++      cwd: gitRoot,
++      env: gitEnv(),
++    });
++    const head = stdout.trim();
++    return normalizeFullCommitOid(head);
++  } catch {
++    return null;
++  }
++}
++
++async function resolveProviderHead(opts: {
++  gitRoot: string;
++  remote: string;
++  branch: string;
++}): Promise<string | null> {
++  try {
++    const ref = `refs/heads/${opts.branch}`;
++    const { stdout } = await execFileAsync("git", ["ls-remote", "--exit-code", opts.remote, ref], {
++      cwd: opts.gitRoot,
++      env: gitEnv(),
++    });
++    const rows = stdout
++      .split(/\r?\n/u)
++      .map((row) => row.trim())
++      .filter(Boolean);
++    if (rows.length !== 1) return null;
++    const [oid, observedRef] = rows[0]!.split(/\s+/u);
++    return observedRef === ref ? normalizeFullCommitOid(oid ?? "") : null;
++  } catch {
++    return null;
++  }
++}
++
++function invalidExactBase(message: string): never {
++  throw new CliError({
++    exitCode: exitCodeForError("E_VALIDATION"),
++    code: "E_VALIDATION",
++    message,
++  });
++}
++
++export async function resolveProviderBaseBranch(opts: {
++  gitRoot: string;
++  cwd: string;
++  rootOverride?: string | null;
++  workflowMode: "direct" | "branch_pr";
++  branch: string;
++  baseRef: string | null;
++  baseSha: string | null;
++}): Promise<string | null> {
++  const baseRef = opts.baseRef?.trim() ?? "";
++  const exactBaseRef = normalizeFullCommitOid(baseRef);
++  if (!baseRef || !exactBaseRef) return baseRef || null;
++
++  const frozenSha = normalizeFullCommitOid(opts.baseSha ?? "") ?? "";
++  if (!frozenSha || frozenSha !== exactBaseRef) {
++    return invalidExactBase(
++      "Exact-SHA PR base is inconsistent with the frozen Task execution base_sha.",
++    );
++  }
++
++  const candidate = await resolveBaseBranch({
++    cwd: opts.cwd,
++    rootOverride: opts.rootOverride ?? null,
++    cliBaseOpt: null,
++    mode: opts.workflowMode,
++  });
++  const branch = candidate?.trim() ?? "";
++  if (!branch || normalizeFullCommitOid(branch)) {
++    return invalidExactBase("Exact-SHA PR base cannot resolve a configured provider base branch.");
++  }
++
++  const remote = await resolvePublicationRemote({ gitRoot: opts.gitRoot, branch: opts.branch });
++  const [localHead, providerHead] = await Promise.all([
++    resolveCommit(opts.gitRoot, `refs/heads/${branch}`),
++    resolveProviderHead({ gitRoot: opts.gitRoot, remote, branch }),
++  ]);
++  if (!localHead || !providerHead) {
++    return invalidExactBase(
++      `Exact-SHA PR base ${baseRef} requires both local ${branch} and live ${remote}/${branch} evidence.`,
++    );
++  }
++  if (localHead !== providerHead) {
++    return invalidExactBase(
++      `Exact-SHA PR base is ambiguous because local ${branch} and live ${remote}/${branch} resolve to different commits.`,
++    );
++  }
++  if (localHead !== frozenSha) {
++    return invalidExactBase(
++      `Exact-SHA PR base ${baseRef} does not match configured provider base branch ${branch} at ${localHead}.`,
++    );
++  }
++  return branch;
++}
+diff --git a/packages/agentplane/src/commands/pr/internal/sync-github.test.ts b/packages/agentplane/src/commands/pr/internal/sync-github.test.ts
+index a5599c7a1..73f4562f1 100644
+--- a/packages/agentplane/src/commands/pr/internal/sync-github.test.ts
++++ b/packages/agentplane/src/commands/pr/internal/sync-github.test.ts
+@@ -1,3 +1,5 @@
++import { readFile } from "node:fs/promises";
++
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+ const mocks = vi.hoisted(() => ({
+@@ -32,6 +34,7 @@ import {
+   observeExistingGithubPrByBranch,
+   observeExistingGithubPrByNumber,
+   shouldPersistObservedGithubPrIdentity,
++  tryCreateGithubPr,
+   tryLookupExistingGithubPrByBranchPrefix,
+ } from "./sync-github.js";
+ 
+@@ -74,6 +77,47 @@ describe("sync-github", () => {
+     expect(shouldPersistObservedGithubPrIdentity(null)).toBe(false);
+   });
+ 
++  it("serializes the resolved provider branch as the GitHub create base", async () => {
++    mocks.execFileAsync
++      .mockResolvedValueOnce({ stdout: "https://github.com/example/repo.git\n" })
++      .mockImplementationOnce(async (_command: string, args: string[]) => {
++        const inputIndex = args.indexOf("--input");
++        const inputPath = args[inputIndex + 1];
++        expect(inputIndex).toBeGreaterThan(-1);
++        expect(inputPath).toBeTruthy();
++        const payload = JSON.parse(await readFile(inputPath!, "utf8")) as {
++          base?: string;
++          head?: string;
++        };
++        expect(payload).toMatchObject({ base: "main", head: "task/T-1/work" });
++        expect(payload.base).not.toMatch(/^[0-9a-f]{40}$/u);
++        return {
++          stdout: JSON.stringify({
++            number: 123,
++            html_url: "https://github.com/example/repo/pull/123",
++            state: "open",
++            merged_at: null,
++            merge_commit_sha: null,
++            head: { ref: "task/T-1/work", sha: "head" },
++            base: { ref: "main", sha: "base-head" },
++          }),
++        };
++      });
++
++    await expect(
++      tryCreateGithubPr({
++        gitRoot: "/repo",
++        branch: "task/T-1/work",
++        baseBranch: "main",
++        title: "Exact SHA release",
++        body: "Release candidate",
++      }),
++    ).resolves.toMatchObject({
++      artifactState: null,
++      observed: { prNumber: 123, base: "main" },
++    });
++  });
++
+   it("treats transport or API 404 as unavailable rather than authoritative absence", async () => {
+     mocks.execFileAsync
+       .mockResolvedValueOnce({ stdout: "https://github.com/example/repo.git\n" })
+diff --git a/packages/agentplane/src/commands/pr/internal/sync.ts b/packages/agentplane/src/commands/pr/internal/sync.ts
+index 76fddb439..28f83d9b2 100644
+--- a/packages/agentplane/src/commands/pr/internal/sync.ts
++++ b/packages/agentplane/src/commands/pr/internal/sync.ts
+@@ -41,6 +41,7 @@ import { runPrOpenSync } from "./sync-open-step.js";
+ import { nowIso, readTextIfExists, restoreIncidentRegistryIfNeeded } from "./sync-support.js";
+ import { runPrUpdateSync } from "./sync-update-step.js";
+ import { assertBranchTaskArtifactOwnership } from "./branch-task-artifact-ownership.js";
++import { resolveProviderBaseBranch } from "./provider-base.js";
+ 
+ type PrSyncMode = "open" | "update";
+ export type { PrOpenOutcome, PrRemoteMode } from "./sync-model.js";
+@@ -282,11 +283,25 @@ export async function syncPrArtifacts(opts: {
+         metaExists && (await fileExists(metaPath))
+           ? parsePrMeta(await readFile(metaPath, "utf8"), task.id)
+           : null;
+-      const taskBase = taskExecutionBaseFromExtensions(task.extensions)?.base_ref;
++      const taskExecutionBase = taskExecutionBaseFromExtensions(task.extensions);
++      const taskBase = taskExecutionBase?.base_ref;
++      const requestedBase = opts.base ?? taskBase ?? null;
++      const providerBase = await resolveProviderBaseBranch({
++        gitRoot: resolved.gitRoot,
++        cwd: opts.cwd,
++        rootOverride: opts.rootOverride ?? null,
++        workflowMode,
++        branch,
++        baseRef: requestedBase,
++        baseSha:
++          requestedBase === taskExecutionBase?.base_ref
++            ? taskExecutionBase.base_sha
++            : requestedBase,
++      });
+       const baseBranch = await resolveBaseBranch({
+         cwd: opts.cwd,
+         rootOverride: opts.rootOverride ?? null,
+-        cliBaseOpt: opts.base ?? taskBase ?? null,
++        cliBaseOpt: providerBase,
+         mode: workflowMode,
+       });
+       const validatedIncludedTaskIds = await validateBranchPrBatchIncludedTasks({

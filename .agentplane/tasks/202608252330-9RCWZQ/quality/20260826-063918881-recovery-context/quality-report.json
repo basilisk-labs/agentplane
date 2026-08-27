@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608252330-9RCWZQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-26T06:40:02.694Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "c0d700867d32f864398b31f0efee971b094715cc",
+  "blueprint_digest": "aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c",
+  "findings": [
+    "Commit c0d700867d32f864398b31f0efee971b094715cc records only the intended Task worktree observation.",
+    "The frozen product diff remains sha256:e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d and contains no release-candidate change.",
+    "Exact-SHA base resolution preserves frozen Task execution evidence and fails closed on inconsistent, missing, mismatched, or divergent branch evidence.",
+    "Supervisor verification record 20260826062718487-b652f6fb590963d3.json remains result ok, with full local CI exit code 0 on implementation commit a375a1f236a6876cd0ad951138019de16fc0f95e.",
+    "Canonical WI-1/WI-2 receipt recovery remains a control-plane concern and is not evidence against the product result."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

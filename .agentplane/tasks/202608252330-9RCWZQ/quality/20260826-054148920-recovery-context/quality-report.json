@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608252330-9RCWZQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-26T05:41:49.666Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "9ef3d51b1149827c02df0fc1610558316728cdd5",
+  "blueprint_digest": "aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c",
+  "findings": [
+    "Ordinary branch refs retain the existing provider path.",
+    "Exact-SHA refs require matching frozen base evidence and concordant local and origin tracking heads.",
+    "Inconsistent, missing, mismatched, or divergent evidence fails before provider creation.",
+    "The frozen product diff remains limited to provider-base resolution, central PR sync integration, and focused regression coverage.",
+    "Supervisor-owned full regression passed on implementation commit fed82c864bfdc690c735b5dab3dca2e1201c7203."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/70744792c7fe045d23e9b810884c837707ab88de1f7342676904940140da6a62.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

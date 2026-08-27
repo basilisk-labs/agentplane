@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608252330-9RCWZQ-46d062911b4c448de7506b11",
+  "prepared_at": "2026-08-26T02:50:22.861Z",
+  "task": {
+    "id": "202608252330-9RCWZQ",
+    "revision": 16,
+    "objective": "Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch\n\nRelease blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA.",
+    "acceptance_criteria": [
+      "- In scope: Release blocker for 202608252234-4CKSWA. Symptom: AgentPlane pr open publishes the exact candidate branch, then GitHub PR creation fails because task execution.base_ref is the frozen 40-hex SHA and is passed as the provider base field; retries then diverge on AgentPlane-owned remote_failed metadata. Violated invariant: an exact-SHA-frozen branch_pr release Task must preserve base_sha evidence while resolving a real provider base branch for hosted PR creation. Root cause: packages/agentplane/src/commands/pr/open.ts passes execution.base_ref directly into PR sync, and sync-github.ts sends it as GitHub base without resolving an equivalent protected branch. Implement the smallest provider-neutral safe fix: when base_ref is a commit OID, resolve a unique configured/current protected base branch whose exact head equals the frozen base_sha; fail closed on mismatch or ambiguity. Preserve execution.base_ref/base_sha and candidate contents. Add regression tests for exact-SHA success and mismatch/ambiguity failure. Verify PR-open unit/network tests and required focused checks. Integrate normally, then resume 202608252234-4CKSWA.\n- Out of scope: unrelated refactors not required for \"Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch\".",
+      "Prepared a bounded branch_pr plan to preserve the frozen execution base while resolving an exact matching provider base branch for hosted PR creation, with fail-closed mismatch behavior and focused regressions.",
+      "PLANNER fallback scaffold for \"Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "c5aaf1e9af951938df9ae67808f64a490349f7a5",
+  "diff_base_sha": "8ea1cefbbc96a8da5595fce36325ec0c1194a360",
+  "blueprint_digest": "aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608252330-9RCWZQ/quality/20260826-025022861-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:e48b6cc2578352b960a6803d7cb8a0b0268157a39b08797078dad32e09e572c5",
+    "prompt_path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/af270f7a6605631c251c4f34a08c4a495a5a0322e42e8a1a64492921786dfeb2.md",
+    "result_schema_path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608252330-9RCWZQ/README.md",
+      "sha256": "sha256:1c590a9caa707c262ad57c0af17958f55382caa6224378a0d05120d635f4b111",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/70744792c7fe045d23e9b810884c837707ab88de1f7342676904940140da6a62.patch",
+      "sha256": "sha256:70744792c7fe045d23e9b810884c837707ab88de1f7342676904940140da6a62",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/f3ea1d8a3475ca7a8c1074e4fe70c59aa2e065a5d4a95e34bb5cd9b4e630d2c5.json",
+      "sha256": "sha256:f3ea1d8a3475ca7a8c1074e4fe70c59aa2e065a5d4a95e34bb5cd9b4e630d2c5",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608252330-9RCWZQ/verification/20260826024303650-f2e563fb6d96c67e.json",
+      "sha256": "sha256:8e2794b984af427e856817cd01c0de780073b6794efd1613862b51ddd7722200",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/cbf2a89c25f28cf78edbe7197684c73ad7e9a2d05109f7706d956a1390e66550.json",
+      "sha256": "sha256:cbf2a89c25f28cf78edbe7197684c73ad7e9a2d05109f7706d956a1390e66550",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

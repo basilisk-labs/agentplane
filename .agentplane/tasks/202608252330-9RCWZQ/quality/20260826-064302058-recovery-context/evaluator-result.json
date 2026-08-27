@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The exact-SHA provider-base implementation remains bounded, fail-closed, and fully verified.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The frozen product diff remains sha256:e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Supervisor verification record 20260826062718487-b652f6fb590963d3.json records result ok and full local CI exit code 0.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "TaskAggregate is authoritative for completion and currently records WI-1 state READY and WI-2 state PLANNED with no output manifests or validation results.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Three independent pre-merge-close attempts failed with required_work_item_incomplete:WI-1 and required_work_item_incomplete:WI-2; bounded implementation rework must create canonical receipts before another closeout attempt.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: A pass verdict would immediately repeat a pre-merge closeout that is provably ineligible until canonical WorkItem receipts are recorded.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/e48d1dde8b491816d13ae2030439396b0bfd9550966bcee0ac524f009cb9b52d.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "recovery_context": "Rework. The product implementation and full verification pass, but the required task outcome is not eligible for completion because the canonical TaskAggregate still has WI-1 READY and WI-2 PLANNED without WorkItem result receipts."
+}

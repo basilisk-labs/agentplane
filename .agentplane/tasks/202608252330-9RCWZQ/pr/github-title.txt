@@ -1,0 +1,1 @@
+✅ 9RCWZQ task: Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch [202608252330-9RCWZQ]

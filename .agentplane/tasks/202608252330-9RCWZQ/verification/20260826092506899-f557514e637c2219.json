@@ -1,0 +1,111 @@
+{
+  "details": "Command: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608252330-9RCWZQ declared verification",
+  "digest": "sha256:f557514e637c22194f27051c24ee8cb1a238b5c83ab78da285fcbc709c20eda7",
+  "implementation_sha": "7eea86885f3b35161e96524e2b71f8102e1f44ad",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:83abd9f9406d1e236c56485deeebe6ebfe3628420060347d1f43ac7819d11c7a",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:09fcc80373d0b80b9869e408d7b20b22ec11fef9a8bfc8d0e2030e70fc538826",
+      "digest": "sha256:dc9b9398387689553df912933821b2a1d6c5f83ade58c9df8d491cda0599a366",
+      "references": [
+        {
+          "digest": "sha256:d23cc0060a606fb562790640d6964ea6797320abbc09105d04cfd82d6232c029",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608252330-9RCWZQ/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "8ea1cefbbc96a8da5595fce36325ec0c1194a360",
+      "digest": "sha256:27406feca39ac2acd08f651be5b17a9b59987a9baf03f2eedab2353c8a760b67",
+      "primary_task_id": "202608252330-9RCWZQ",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_external_write",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "auto",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608252330-9RCWZQ"
+      ]
+    },
+    "implementation": {
+      "base_sha": "8ea1cefbbc96a8da5595fce36325ec0c1194a360",
+      "digest": "sha256:074ed4656adf1103836cd2eb7b169a32d222181f7b11c4916fa2c2137269bea4",
+      "strategy": "branch_diff",
+      "target_sha": "7eea86885f3b35161e96524e2b71f8102e1f44ad"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:b5bae28958e3ca0f82823ac249189f17d22630ed537de97a65e3f527503674b4",
+    "verify_steps_digest": "sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-08-26T09:25:06.899Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a",
+  "task_id": "202608252330-9RCWZQ",
+  "verification_command": "agentplane verify 202608252330-9RCWZQ --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

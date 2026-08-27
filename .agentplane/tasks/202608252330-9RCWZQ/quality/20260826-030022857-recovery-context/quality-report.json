@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608252330-9RCWZQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-26T03:03:21.660Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "2b5726fe9f1f544f181249cfe61aa408e793fbf4",
+  "blueprint_digest": "aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c",
+  "findings": [
+    "Ordinary non-OID base refs pass through unchanged.",
+    "Exact-SHA refs require matching frozen baseRef/baseSha plus concordant local and origin tracking heads for the configured provider branch.",
+    "The resolver fails closed before provider creation for inconsistent, missing, mismatched, or divergent base evidence.",
+    "The focused regression covers the required success and failure modes, and supervisor-owned full regression passed on implementation commit fed82c864bfdc690c735b5dab3dca2e1201c7203.",
+    "Commits after the implementation contain only Task-local supervision, evaluator, and recovery evidence; the frozen actual product diff remains sha256:70744792c7fe045d23e9b810884c837707ab88de1f7342676904940140da6a62."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/70744792c7fe045d23e9b810884c837707ab88de1f7342676904940140da6a62.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

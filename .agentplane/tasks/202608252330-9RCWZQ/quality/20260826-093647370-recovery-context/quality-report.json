@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608252330-9RCWZQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-26T09:38:00.483Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 6 typed finding(s).",
+  "evaluated_sha": "88bea044da28e8d7a95ff3a932fb5bb1b973bf6f",
+  "blueprint_digest": "aa295e3444593a86ec0dc8fc32bc9200896f9cb6616bc177a87661d6efc67b0c",
+  "findings": [
+    "The live provider lookup uses the task branch publication remote rather than a hard-coded origin, so a non-origin upstream remains supported.",
+    "Full 40- and 64-hex OIDs are normalized case-insensitively while ordinary branch refs pass through unchanged.",
+    "The regression suite covers exact success, uppercase SHA, configured-branch mismatch, missing local tracking evidence with live-provider success, non-origin publication remote, local drift, and stale tracking data after provider drift.",
+    "The oversized-test regression introduced during rework is resolved: the CLI integration test is 839 lines and the focused provider-base test is 202 lines.",
+    "Supervisor-owned evidence binds the passing full declared check to implementation commit 88bea044da28e8d7a95ff3a932fb5bb1b973bf6f; 43e3be9d3 contains only recorded implementation evidence.",
+    "Residual risk: Hosted exact-head qualification remains mandatory before integration."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608252330-9RCWZQ/quality/objects/sha256/2ba2a401e55333665fa73aef9f76d5435f2836c71455551acfef029eab149d63.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

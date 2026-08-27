@@ -1,0 +1,111 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/commands/pr/internal/sync-github.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: exact task head f880b823da2e6cd4988995c519664bfa0f7c570b; 1 test file passed, 19 tests passed\nScope: exact-SHA provider payload and GitHub PR synchronization regression coverage\n\nCheck: critical_paths\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: recorded focused PR-open verification passed 10/10 before the final test-only payload assertion; the implementation code is unchanged at f880b823da2e6cd4988995c519664bfa0f7c570b\nScope: exact-SHA base resolution, mismatch, ambiguity, and provider creation path\n\nCheck: full_regression\nCommand: AGENTPLANE_FAST_VITEST_MAX_WORKERS=2 AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1800000 bun run ci:local:full\nResult: pass\nEvidence: repository-supported bounded full regression completed successfully on implementation head 5295b03d165541fccaa4086d9cdb094e042ab511; f880b823da2e6cd4988995c519664bfa0f7c570b adds only one negative payload assertion and passes its exact focused suite\nScope: full repository regression plus exact-head delta validation\n\nCheck: real_e2e\nCommand: bunx vitest run packages/agentplane/src/commands/pr/internal/sync-github.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: intercepted GitHub create payload contains base main and does not contain a 40-hex base OID\nScope: provider-facing request serialization\n\nCheck: task_outcome\nCommand: git diff --name-only 8ea1cefbbc96a8da5595fce36325ec0c1194a360..f880b823da2e6cd4988995c519664bfa0f7c570b -- packages/agentplane\nResult: pass\nEvidence: five changed files, all within approved PR routing and regression-test scope\nScope: approved 9RCWZQ implementation outcome",
+  "digest": "sha256:d05180d3d18d1aa9fcf01c507e18c91f1b964f058182da24663f31713ef35f63",
+  "implementation_sha": "f880b823da2e6cd4988995c519664bfa0f7c570b",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:a55ad3768a5ae0fb03bd3a5c1c9cd3d2b8871b802ce64bd2ed746ed6f65fc3cd",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:9ce7801e74dd39fd4534882b631c6d9b226f93dbd6e74704190494a7d23e2d0e",
+      "digest": "sha256:a61733b57ba631a6cd78db925e7c0174db88f1371e0faf6a2d76f0f04282357c",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "10/10",
+          "reference": "10/10",
+          "source": "missing"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "8ea1cefbbc96a8da5595fce36325ec0c1194a360",
+      "digest": "sha256:27406feca39ac2acd08f651be5b17a9b59987a9baf03f2eedab2353c8a760b67",
+      "primary_task_id": "202608252330-9RCWZQ",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_external_write",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "auto",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608252330-9RCWZQ"
+      ]
+    },
+    "implementation": {
+      "base_sha": "8ea1cefbbc96a8da5595fce36325ec0c1194a360",
+      "digest": "sha256:2982dd85edf592c55c5aae3cb3d93046441bd9642a436a776e6c4f74b8fc0ee3",
+      "strategy": "branch_diff",
+      "target_sha": "f880b823da2e6cd4988995c519664bfa0f7c570b"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:a979152c7e3f98218a9c0295875b14f07192781113cb4a9b9c61acfe3b241ed2",
+    "verify_steps_digest": "sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified after recovery: exact-SHA provider-base implementation is unchanged, exact-head provider payload tests pass 19/19, focused PR-open tests and typecheck pass, and bounded full regression evidence is passing.",
+  "recorded_at": "2026-08-26T08:49:52.154Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow exact-SHA release tasks to open hosted PRs against the matching protected base branch\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:14ca98416f46528351c89e86e566836bc53af75fa6b934e64efd313ae710de4a",
+  "task_id": "202608252330-9RCWZQ",
+  "verification_command": "agentplane task verify ok 202608252330-9RCWZQ --ok --by EVALUATOR",
+  "verifier": "EVALUATOR"
+}

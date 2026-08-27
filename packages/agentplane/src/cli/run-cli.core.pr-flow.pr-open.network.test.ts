@@ -67,7 +67,7 @@ async function seedGitBase(root: string): Promise<void> {
 }
 
 describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
-  it("pr open creates a remote GitHub PR when origin and gh are available", async () => {
+  it("pr open resolves an exact-SHA Task base to main for the remote GitHub PR", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -78,12 +78,21 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
       cwd: root,
       env: cleanGitEnv(),
     });
-    await configurePushableOrigin(root);
+    const publishRemotePath = await configurePushableOrigin(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore test setup"], {
       cwd: root,
       env: cleanGitEnv(),
     });
+    await execFileAsync("git", ["push", "origin", "main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const { stdout: baseStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const baseSha = baseStdout.trim();
 
     let taskId = "";
     const ioTask = captureStdIO();
@@ -110,6 +119,30 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
       ioTask.restore();
     }
 
+    const frozenTask = await readTask({ cwd: root, rootOverride: root, taskId });
+    const executionContext = frozenTask.frontmatter.extensions?.task_execution_context as
+      | Record<string, unknown>
+      | undefined;
+    await writeFile(
+      frozenTask.readmePath,
+      renderTaskReadme(
+        {
+          ...frozenTask.frontmatter,
+          extensions: {
+            ...frozenTask.frontmatter.extensions,
+            task_execution_context: {
+              ...executionContext,
+              schema_version: 1,
+              base_ref: baseSha,
+              base_sha: baseSha,
+            },
+          },
+        },
+        frozenTask.body,
+      ),
+      "utf8",
+    );
+
     const branch = `task/${taskId}/remote-create`;
     await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
     await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore branch publish seed"], {
@@ -129,8 +162,31 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
         base: { ref: "main" },
       },
     });
+    const fakeGitBin = await mkdtemp(path.join(os.tmpdir(), "agentplane-provider-base-git-"));
+    const { stdout: realGitStdout } = await execFileAsync("which", ["git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const fakeGitPath = path.join(fakeGitBin, "git");
+    await writeFile(
+      fakeGitPath,
+      [
+        "#!/usr/bin/env node",
+        "const { spawnSync } = require('node:child_process');",
+        `const realGit = ${JSON.stringify(realGitStdout.trim())};`,
+        `const providerRemote = ${JSON.stringify(publishRemotePath)};`,
+        "const args = process.argv.slice(2);",
+        "if (args[0] === 'ls-remote' && args[1] === '--exit-code' && args[2] === 'origin' && args[3] === 'refs/heads/main') args[2] = providerRemote;",
+        "const result = spawnSync(realGit, args, { stdio: 'inherit', env: process.env });",
+        "if (result.error) throw result.error;",
+        "process.exit(result.status ?? 1);",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeGitPath, 0o755);
     const originalPath = process.env.PATH;
-    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.PATH = `${fakeGitBin}${path.delimiter}${fakeBin}${path.delimiter}${originalPath ?? ""}`;
     process.env.AGENTPLANE_GH_LOG = logPath;
 
     const io = captureStdIO();
@@ -167,6 +223,12 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
     expect(meta.status).toBe("OPEN");
     expect(meta.head_sha).toBeUndefined();
 
+    const taskAfterOpen = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(taskAfterOpen.frontmatter.extensions?.task_execution_context).toMatchObject({
+      base_ref: baseSha,
+      base_sha: baseSha,
+    });
+
     const logText = await readFile(logPath, "utf8");
     const log = logText
       .trim()
@@ -182,6 +244,15 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
           args.includes("POST"),
       ),
     ).toBe(true);
+    expect(
+      log.some(
+        (args) =>
+          args[0] === "api" &&
+          args[1]?.startsWith("repos/example/repo/pulls?") === true &&
+          new URL(`https://example.invalid/${args[1]}`).searchParams.get("base") === "main",
+      ),
+    ).toBe(true);
+    expect(log.some((args) => args.some((arg) => arg.includes(`base=${baseSha}`)))).toBe(false);
   });
 
   it("pr open marks remote creation failures explicitly in pr metadata", async () => {
@@ -252,7 +323,7 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("remote PR creation failed");
+      expect(io.stdout).toContain("remote change-request creation failed");
     } finally {
       io.restore();
       process.env.PATH = originalPath;

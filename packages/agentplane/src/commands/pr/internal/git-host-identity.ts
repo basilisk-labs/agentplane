@@ -82,7 +82,7 @@ async function gitOutput(cwd: string, args: string[]): Promise<string | null> {
   return output || null;
 }
 
-async function resolvePublicationRemote(opts: {
+export async function resolvePublicationRemote(opts: {
   gitRoot: string;
   branch: string;
 }): Promise<string> {

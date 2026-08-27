@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -32,6 +34,7 @@ import {
   observeExistingGithubPrByBranch,
   observeExistingGithubPrByNumber,
   shouldPersistObservedGithubPrIdentity,
+  tryCreateGithubPr,
   tryLookupExistingGithubPrByBranchPrefix,
 } from "./sync-github.js";
 
@@ -72,6 +75,47 @@ describe("sync-github", () => {
     expect(shouldPersistObservedGithubPrIdentity({ ...base, status: "MERGED" })).toBe(true);
     expect(shouldPersistObservedGithubPrIdentity({ ...base, status: "CLOSED" })).toBe(false);
     expect(shouldPersistObservedGithubPrIdentity(null)).toBe(false);
+  });
+
+  it("serializes the resolved provider branch as the GitHub create base", async () => {
+    mocks.execFileAsync
+      .mockResolvedValueOnce({ stdout: "https://github.com/example/repo.git\n" })
+      .mockImplementationOnce(async (_command: string, args: string[]) => {
+        const inputIndex = args.indexOf("--input");
+        const inputPath = args[inputIndex + 1];
+        expect(inputIndex).toBeGreaterThan(-1);
+        expect(inputPath).toBeTruthy();
+        const payload = JSON.parse(await readFile(inputPath!, "utf8")) as {
+          base?: string;
+          head?: string;
+        };
+        expect(payload).toMatchObject({ base: "main", head: "task/T-1/work" });
+        expect(payload.base).not.toMatch(/^[0-9a-f]{40}$/u);
+        return {
+          stdout: JSON.stringify({
+            number: 123,
+            html_url: "https://github.com/example/repo/pull/123",
+            state: "open",
+            merged_at: null,
+            merge_commit_sha: null,
+            head: { ref: "task/T-1/work", sha: "head" },
+            base: { ref: "main", sha: "base-head" },
+          }),
+        };
+      });
+
+    await expect(
+      tryCreateGithubPr({
+        gitRoot: "/repo",
+        branch: "task/T-1/work",
+        baseBranch: "main",
+        title: "Exact SHA release",
+        body: "Release candidate",
+      }),
+    ).resolves.toMatchObject({
+      artifactState: null,
+      observed: { prNumber: 123, base: "main" },
+    });
   });
 
   it("treats transport or API 404 as unavailable rather than authoritative absence", async () => {
