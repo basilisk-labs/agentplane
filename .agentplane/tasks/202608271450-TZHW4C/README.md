@@ -1,10 +1,11 @@
 ---
 id: "202608271450-TZHW4C"
 title: "Modernize structured planner-intent fixtures"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -60,6 +61,20 @@ quality_review:
     - "Frozen verification20260827164324368-fc4e3922be01c66f binds implementation5d196df119a9335cc606237716455b7487db4e1c to full CI499181ms and11 scoped tests27035ms. The earlier failed full-CI evidence is preserved; fresh serial verification passed."
     - "Residual risk: The local fixture CI proves fixture output only; it does not stand in for product CI or hosted qualification."
     - "Residual risk: The earlier unrelated runtime timeout remains historical failed evidence and was not suppressed by a test or timeout change."
+token_usage:
+  agent_runs: 4
+  input_tokens: null
+  journal_digest: "sha256:33058237068e9ae133af9c29bf1d8d54420ea06951925dcc82fbde3f828a03da"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-27T16:48:47.224Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -237,8 +252,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "5d196df119a9335cc606237716455b7487db4e1c"
-  message: "🚧 TZHW4C task: apply external agent result"
+  hash: "bfbf38ac2a52e21796c78e0ea07cf5d22bd025b0"
+  message: "🚧 TZHW4C task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -249,6 +264,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 5d196df119a9. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -285,9 +303,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-27T16:48:47.224Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "bfbf38ac2a52e21796c78e0ea07cf5d22bd025b0"
 doc_version: 3
-doc_updated_at: "2026-08-27T16:43:26.390Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-27T16:48:47.243Z"
+doc_updated_by: "CODER"
 description: "Modernize the three planner-intent fixture files after eight freshly reproduced failures. Produce a real structured TaskPlanProposal from the issued PLANNER work order with exact repository_snapshot, bounded WorkItem scope and declared checks. Do not attach planning proposals to EXECUTOR or EVALUATOR results. Preserve missing-intent negative coverage, explicit user approval, forbidden external effects, network approval, direct versus branch_pr routing, exact execution identity and work preservation. Seed Git before planning where execution requires it. Keep isolated fixture CI and fake-provider transport valid without changing production CI. Replace only obsolete internal lifecycle counts with semantic invariants if necessary, preserving the one-user-approval outcome. No product, global testkit helper, policy, release or task graph changes. Scope is disjoint from G0N9P4, 9EWJA1 and DVEMAE; use already integrated GHHA0Q. Require focused tests and full CI."
 sections:
   Summary: |-
@@ -625,7 +651,34 @@ extensions:
       schema_version: 1
       task_id: "202608271450-TZHW4C"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608271450-TZHW4C"
+            - "git:5d196df119a9335cc606237716455b7487db4e1c"
+          check_id: "scoped-tests"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T16:43:24.368Z"
+          repository_snapshot_digest: "sha256:7ffa28386aabe2c89bca98fc477265ec93518d9975f98af30b2810b4feb1d3e8"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608271450-TZHW4C"
+            - "git:5d196df119a9335cc606237716455b7487db4e1c"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T16:43:24.368Z"
+          repository_snapshot_digest: "sha256:7ffa28386aabe2c89bca98fc477265ec93518d9975f98af30b2810b4feb1d3e8"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608271450-TZHW4C"
     intent:
       acceptance_criteria:
@@ -646,12 +699,12 @@ extensions:
 
         Modernize the three planner-intent fixture files after eight freshly reproduced failures. Produce a real structured TaskPlanProposal from the issued PLANNER work order with exact repository_snapshot, bounded WorkItem scope and declared checks. Do not attach planning proposals to EXECUTOR or EVALUATOR results. Preserve missing-intent negative coverage, explicit user approval, forbidden external effects, network approval, direct versus branch_pr routing, exact execution identity and work preservation. Seed Git before planning where execution requires it. Keep isolated fixture CI and fake-provider transport valid without changing production CI. Replace only obsolete internal lifecycle counts with semantic invariants if necessary, preserving the one-user-approval outcome. No product, global testkit helper, policy, release or task graph changes. Scope is disjoint from G0N9P4, 9EWJA1 and DVEMAE; use already integrated GHHA0Q. Require focused tests and full CI.
       task_id: "202608271450-TZHW4C"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 13
+    revision: 16
     schema_version: 1
-    updated_at: "2026-08-27T16:43:27.413Z"
+    updated_at: "2026-08-27T16:48:47.224Z"
     work_items:
       modernize-planner-intent-fixtures:
         attempt: 2
@@ -752,11 +805,37 @@ extensions:
         previous_revision: 12
         schema_version: 1
         task_id: "202608271450-TZHW4C"
+      legacy-finish:202608271450-TZHW4C:2026-08-27T16:43:24.368Z:5d196df119a9335cc606237716455b7487db4e1c:
+        aggregate_digest: "sha256:4617fba8be45194e90c4f2d3780a7b3a087ff36076ea56c7eb28fd77a4d0b5f1"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-27T16:48:47.224Z"
+          cause_refs:
+            - "task-verification:202608271450-TZHW4C"
+            - "git:5d196df119a9335cc606237716455b7487db4e1c"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_fbceb7ccfcc70e21dd2aff64"
+          mutation_id: "legacy-finish:202608271450-TZHW4C:2026-08-27T16:43:24.368Z:5d196df119a9335cc606237716455b7487db4e1c"
+          plan_digest: "sha256:9649584b7fcb4c1c31925c5339cc703721aeecbb34870b0dd04f295b69b74322"
+          plan_revision: 1
+          repository_fingerprint: "sha256:7ffa28386aabe2c89bca98fc477265ec93518d9975f98af30b2810b4feb1d3e8"
+          schema_version: 1
+          task_id: "202608271450-TZHW4C"
+          task_revision: 13
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608271450-TZHW4C:2026-08-27T16:43:24.368Z:5d196df119a9335cc606237716455b7487db4e1c"
+        next_revision: 16
+        previous_revision: 15
+        schema_version: 1
+        task_id: "202608271450-TZHW4C"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "5d196df119a9335cc606237716455b7487db4e1c"
+    message: "🚧 TZHW4C task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "5fce04a8be14816be4cae236d2941dff7045e214"
@@ -908,3 +987,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:33058237068e9ae133af9c29bf1d8d54420ea06951925dcc82fbde3f828a03da`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-27T16:48:47.224Z`
