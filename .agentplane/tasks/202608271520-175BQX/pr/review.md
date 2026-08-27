@@ -6,7 +6,7 @@ Created: 2026-08-27T15:25:16.819Z
 
 - Task: `202608271520-175BQX`
 - Title: Modernize route-decision fixture prerequisites
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608271520-175BQX/modernize-route-decision-fixture-prerequisites`
 - Canonical task record: `.agentplane/tasks/202608271520-175BQX/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-27T15:25:16.819Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T15:25:16.819Z
+- Updated: 2026-08-27T16:34:13.630Z
 - Branch: task/202608271520-175BQX/modernize-route-decision-fixture-prerequisites
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
