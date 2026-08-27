@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 28
 origin:
   system: "manual"
 depends_on:
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "USER"
   note: "User-authorized autonomous refactoring: approve ordered recovery plan41c1f3e6b8e4b844b899dba9f6bc4917d438c8fcf959742786356523ea212c15. Apply the unchanged pending exact scope-extension request to the ready WorkItem before implementation; final ten-file scope and preservation criteria are unchanged."
 verification:
-  state: "pending"
-  updated_at: "2026-08-27T16:39:30.824Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-27T16:58:04.845Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -141,11 +141,46 @@ execution_contract:
       - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-branch-local.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+      - "packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -186,22 +221,40 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:1f22ed0705bb89052de66df636f80f2b05219a13fab467aea6d3a80300ad77a5"
+      digest: "sha256:316bbb0db9035f5eb940d98b2eb1b1b5b7d95712748ae1acc450a2f2ce73ebb0"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
         - "central_component:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
+        - "central_path:packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-branch-local.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+          - "packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -233,7 +286,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "7266db812ee6925d8a88264cec9967167c607277"
+  message: "🚧 T21JCA task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -250,6 +305,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts, packages/agentplane/src/commands/pr/provider-update-branch-local.ts, packages/agentplane/src/commands/pr/provider-update-branch.test.ts, packages/agentplane/src/commands/pr/provider-update-branch.ts, packages/agentplane/src/commands/shared/provider-update-branch-route.ts, packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts, packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts, packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts, packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts, packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts; repository effects: repository_write, source_code, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 7266db812ee6. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -293,8 +351,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The confirmed PR5856 review requires code outside the issued four routing files. The provider effect proves hosted ancestry but leaves local and tracking heads stale. No implementation or workspace changes were made in this episode. Request bounded scope extension and revised planning before local reconciliation is implemented. Recommended action: Use the supported scope-extension/replanning route under the user's authorization for autonomous refactoring. Keep the current PR out of integration until the fix is reviewed and freshly verified. Requested scope: roots=packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts,packages/agentplane/src/commands/pr/provider-update-branch-local.ts,packages/agentplane/src/commands/pr/provider-update-branch.test.ts,packages/agentplane/src/commands/pr/provider-update-branch.ts,packages/agentplane/src/commands/shared/provider-update-branch-route.ts,packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts,packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts,packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts,packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts,packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts; repository effects=repository_write,source_code,tests; request digest=sha256:45925acc1977e2c84ceea63a67314ee61bdf8172d568e10f80b0e69c01ab1925. Agentplane receipt: external-agent-blocker/tr_65e457723bed0668eb8e517fc02e2f8a/sha256:b227183443e6a9ed07943c2f0e8869dc685d30aed63a9bc916a58cfae6b00167/sha256:45925acc1977e2c84ceea63a67314ee61bdf8172d568e10f80b0e69c01ab1925."
+  -
+    type: "status"
+    at: "2026-08-27T16:48:00.609Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 7266db812ee6. CLI accepted one state-bound external-agent semantic result."
+    commit: "7266db812ee6925d8a88264cec9967167c607277"
+  -
+    type: "verify"
+    at: "2026-08-27T16:58:04.845Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-27T16:39:21.156Z"
+doc_updated_at: "2026-08-27T16:58:06.964Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the demonstrated recovery gap for an OPEN GitHub PR whose exact aligned head has successful required checks but whose provider mergeability is behind under strict protection. PR #5854 is the observed case: queue handoff after HTTP 405 required PR verification expected; no merge conflict, no live runner. Route the existing provider.pr.update_branch operation for coherent exact-head behind evidence, preserve stale-head/provider/base/authority guards, required checks, and queue ownership. Add focused regression tests. Do not merge or publish from semantic implementation, bypass protection, manufacture hosted failures, or rewrite frozen task bases."
 sections:
@@ -403,6 +475,78 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-27T16:58:04.845Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8c71019fa5684e8ff9d5d23ad0d170ed62240513f04eb799db555d5a9e957885, input_digest=sha256:29928c4eefa522037a2a438eec0098f3000b9de90c20eb2b3d1ac6f602e3b999
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271538-T21JCA Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271538-T21JCA Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271538-T21JCA Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271538-T21JCA Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271538-T21JCA Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271538-T21JCA Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271538-T21JCA Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271538-T21JCA-recover-green-behind-prs-through-provider-branch/.agentplane/tasks/202608271538-T21JCA/blueprint/resolved-snapshot.json
+    - old_digest: bf6412e3d49da0bea86f3add5fbd4a74730f923069b0d97f7d3737c785393ad9
+    - current_digest: bf6412e3d49da0bea86f3add5fbd4a74730f923069b0d97f7d3737c785393ad9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608271538-T21JCA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608271538-T21JCA
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1231,19 +1375,59 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202608271538-T21JCA"
-    revision: 14
+    revision: 28
     schema_version: 1
-    updated_at: "2026-08-27T16:39:30.824Z"
+    updated_at: "2026-08-27T16:58:10.828Z"
     work_items:
       reconcile-provider-updated-task-head:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "reconcile-provider-updated-task-head"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:583c96eded843f7495755613e2dafba853bb58c5aeff9358e33be1c719171f15"
+            id: "artifact:provider-update-continuity-report"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 4
+              task_id: "202608271538-T21JCA"
+              work_item_id: "reconcile-provider-updated-task-head"
+            provenance:
+              - "sha256:1574c523611433deb1c6104220e053d06d5de5bd7e87f4d2445b558b2ddf926a"
+              - ".agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:59f846211e293731df09de66c579e674ac0b0a86bc6fb2dde310b40b9c7b3659"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json"
+              check_id: "provider-regressions"
+              command_identity: "node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1"
+              detail: "Observed by node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-08-27T16:58:10.820Z"
+              repository_snapshot_digest: "sha256:59f846211e293731df09de66c579e674ac0b0a86bc6fb2dde310b40b9c7b3659"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json"
+              check_id: "full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-27T16:58:10.820Z"
+              repository_snapshot_digest: "sha256:59f846211e293731df09de66c579e674ac0b0a86bc6fb2dde310b40b9c7b3659"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
@@ -1269,6 +1453,29 @@ extensions:
         mutation_id: "external-result:work-order-202608271538-T21JCA-executor-5841c35ac854c6cb561cb9be"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202608271538-T21JCA"
+      external-result:work-order-202608271538-T21JCA-executor-fc8b6ff482c31faa443c7a1e:
+        aggregate_digest: "sha256:a7cd6c83b25497e0e12c38218a8434ce7e511c6a4a1ff2105c2724966396d1fb"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-27T16:58:10.828Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_df85bf3985a75d561451a7b4"
+          mutation_id: "external-result:work-order-202608271538-T21JCA-executor-fc8b6ff482c31faa443c7a1e"
+          plan_digest: "sha256:8192147142652b3c1b764e6d74af2d7a009da75f302cc589b447eec7845ccd04"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608271538-T21JCA"
+          task_revision: 27
+          to: "COMPLETED"
+          work_item_id: "reconcile-provider-updated-task-head"
+        mutation_id: "external-result:work-order-202608271538-T21JCA-executor-fc8b6ff482c31faa443c7a1e"
+        next_revision: 28
+        previous_revision: 27
         schema_version: 1
         task_id: "202608271538-T21JCA"
       legacy-finish:202608271538-T21JCA:2026-08-27T15:55:41.958Z:da64f2d0ea907c7f18a113743f731db104b0d564:
@@ -1299,6 +1506,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "7266db812ee6925d8a88264cec9967167c607277"
   task_execution_context:
     base_ref: "main"
     base_sha: "2c9a2f59146c302c517524136e66abb902f92ba6"
@@ -1426,6 +1635,78 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-27T16:58:04.845Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8c71019fa5684e8ff9d5d23ad0d170ed62240513f04eb799db555d5a9e957885, input_digest=sha256:29928c4eefa522037a2a438eec0098f3000b9de90c20eb2b3d1ac6f602e3b999
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271538-T21JCA Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271538-T21JCA Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271538-T21JCA Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271538-T21JCA Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271538-T21JCA Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271538-T21JCA Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608271538-T21JCA/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271538-T21JCA Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271538-T21JCA-recover-green-behind-prs-through-provider-branch/.agentplane/tasks/202608271538-T21JCA/blueprint/resolved-snapshot.json
+- old_digest: bf6412e3d49da0bea86f3add5fbd4a74730f923069b0d97f7d3737c785393ad9
+- current_digest: bf6412e3d49da0bea86f3add5fbd4a74730f923069b0d97f7d3737c785393ad9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608271538-T21JCA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608271538-T21JCA
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
