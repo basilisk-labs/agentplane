@@ -1,0 +1,547 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts
+index cce9eece2..ee4945568 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts
+@@ -26,6 +26,7 @@ import {
+   mkdir,
+   mkGitRepoRoot,
+   mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   mkTempDir,
+   mkdtemp,
+   os,
+@@ -152,7 +153,7 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
+   });
+ 
+   it("pr note appends to the note store and rerenders handoff notes", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -236,7 +237,7 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
+   });
+ 
+   it("pr note regenerates the handoff section from append-only notes", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts
+index 7cf8b1ecc..c90434ef7 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts
+@@ -27,6 +27,7 @@ import {
+   mkdir,
+   mkGitRepoRoot,
+   mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   mkTempDir,
+   mkdtemp,
+   os,
+@@ -60,8 +61,8 @@ import {
+ } from "@agentplane/testkit/cli-core-pr-flow";
+ 
+ describe("runCli pr open flow artifacts", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
+-  it("pr open creates PR artifacts", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++  it("pr open creates local artifacts and fails hosted publication without a remote", async () => {
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -107,7 +108,7 @@ describe("runCli pr open flow artifacts", { timeout: PR_FLOW_INTEGRATION_TIMEOUT
+       expect(code).toBe(0);
+       expect(io.stdout).toContain("✅ pr open");
+       expect(io.stdout).toContain(
+-        "local PR artifacts synced; remote PR creation staged (GitHub origin repo unavailable)",
++        "local PR artifacts synced; remote change-request creation failed",
+       );
+     } finally {
+       io.restore();
+@@ -122,8 +123,10 @@ describe("runCli pr open flow artifacts", { timeout: PR_FLOW_INTEGRATION_TIMEOUT
+     }>();
+     expect(meta.task_id).toBe(taskId);
+     expect(meta.branch).toBe(`task/${taskId}/pr-open`);
+-    expect(meta.artifact_state).toBe("remote_staged");
+-    expect(meta.artifact_state_reason).toBe("GitHub origin repo unavailable");
++    expect(meta.artifact_state).toBe("remote_failed");
++    expect(meta.artifact_state_reason).toMatch(
++      /Cannot resolve one (?:fetch|push) URL for publication remote origin; found 0\./u,
++    );
+     const review = await prArtifacts.readReview();
+     const notesExists = await pathExists(prArtifacts.notesPath);
+     const verifyLogExists = await pathExists(prArtifacts.verifyLogPath);
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts
+index 97fe3aeda..043316a5e 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts
+@@ -26,6 +26,7 @@ import {
+   mkdir,
+   mkGitRepoRoot,
+   mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   mkTempDir,
+   mkdtemp,
+   os,
+@@ -62,7 +63,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+   it(
+     "pr open leaves committed PR artifacts unchanged when task branch publish fails",
+     async () => {
+-      const root = await mkGitRepoRootWithBranch("main");
++      const root = await mkGitRepoRootWithCommit();
+       const config = defaultConfig();
+       config.workflow_mode = "branch_pr";
+       await writeConfig(root, config);
+@@ -332,7 +333,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+   );
+ 
+   it("pr open creates a remote GitHub PR on the first pass after packet materialization", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -381,11 +382,23 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+       cwd: root,
+       env: cleanGitEnv(),
+     });
+-    await execFileAsync("git", ["remote", "add", "publish", publishRemotePath], {
++    await execFileAsync(
++      "git",
++      ["remote", "add", "publish", "https://github.com/example/repo.git"],
++      {
++        cwd: root,
++        env: cleanGitEnv(),
++      },
++    );
++    await execFileAsync("git", ["push", publishRemotePath, `HEAD:refs/heads/${branch}`], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    await execFileAsync("git", ["config", `branch.${branch}.remote`, "publish"], {
+       cwd: root,
+       env: cleanGitEnv(),
+     });
+-    await execFileAsync("git", ["push", "-u", "publish", `HEAD:refs/heads/${branch}`], {
++    await execFileAsync("git", ["config", `branch.${branch}.merge`, `refs/heads/${branch}`], {
+       cwd: root,
+       env: cleanGitEnv(),
+     });
+@@ -396,6 +409,29 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+       packetCommitSubject,
+       publishRemote: "publish",
+     });
++    const { stdout: realGit } = await execFileAsync("which", ["git"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    // Preserve hosted remote identity while using an isolated local Git transport.
++    const fakeGitPath = path.join(fakeBin, "git");
++    await writeFile(
++      fakeGitPath,
++      [
++        "#!/usr/bin/env node",
++        "const { spawnSync } = require('node:child_process');",
++        "const args = process.argv.slice(2);",
++        "if (['push', 'fetch', 'ls-remote'].includes(args[0])) {",
++        `  args.unshift('-c', ${JSON.stringify(`url.${publishRemotePath}.insteadOf=https://github.com/example/repo.git`)});`,
++        "}",
++        `const result = spawnSync(${JSON.stringify(realGit.trim())}, args, { stdio: 'inherit', env: process.env });`,
++        "if (result.error) throw result.error;",
++        "process.exit(result.status ?? 1);",
++        "",
++      ].join("\n"),
++      "utf8",
++    );
++    await chmod(fakeGitPath, 0o755);
+     const originalPath = process.env.PATH;
+     process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+     process.env.AGENTPLANE_GH_LOG = logPath;
+@@ -413,9 +449,9 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+         "--root",
+         root,
+       ]);
+-      expect(code).toBe(0);
++      expect(code, io.stderr).toBe(0);
+       expect(io.stdout).toContain("created GitHub PR #888");
+-      expect(io.stdout).not.toContain("remote PR creation staged");
++      expect(io.stdout).not.toContain("remote change-request creation staged");
+     } finally {
+       io.restore();
+       process.env.PATH = originalPath;
+@@ -446,7 +482,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+   });
+ 
+   it("pr open auto-publishes an unpublished task branch to origin before creating the GitHub PR", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -530,7 +566,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+       ]);
+       expect(code).toBe(0);
+       expect(io.stdout).toContain("created GitHub PR #912");
+-      expect(io.stdout).not.toContain("remote PR creation staged");
++      expect(io.stdout).not.toContain("remote change-request creation staged");
+       expect(io.stdout).not.toContain("not yet published on origin");
+     } finally {
+       io.restore();
+@@ -559,7 +595,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+   });
+ 
+   it("pr open auto-publishes an unpublished branch even when PR artifacts were already committed locally", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -665,7 +701,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+       ]);
+       expect(code).toBe(0);
+       expect(io.stdout).toContain("created GitHub PR #913");
+-      expect(io.stdout).not.toContain("remote PR creation staged");
++      expect(io.stdout).not.toContain("remote change-request creation staged");
+       expect(io.stdout).not.toContain("not yet published on origin");
+     } finally {
+       io.restore();
+@@ -686,7 +722,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+   it(
+     "pr open skips a redundant push when origin already has the matching branch head",
+     async () => {
+-      const root = await mkGitRepoRootWithBranch("main");
++      const root = await mkGitRepoRootWithCommit();
+       const config = defaultConfig();
+       config.workflow_mode = "branch_pr";
+       await writeConfig(root, config);
+@@ -833,7 +869,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
+         ]);
+         expect(code).toBe(0);
+         expect(io.stdout).toContain("created GitHub PR #914");
+-        expect(io.stdout).not.toContain("remote PR creation staged");
++        expect(io.stdout).not.toContain("remote change-request creation staged");
+       } finally {
+         io.restore();
+         process.env.PATH = originalPath;
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts
+index b7ced9bee..4db361e9b 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts
+@@ -252,7 +252,7 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
+         root,
+       ]);
+       expect(code).toBe(0);
+-      expect(io.stdout).toContain("remote PR creation failed");
++      expect(io.stdout).toContain("remote change-request creation failed");
+     } finally {
+       io.restore();
+       process.env.PATH = originalPath;
+@@ -348,7 +348,7 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
+       ]);
+       expect(code).toBe(0);
+       expect(io.stdout).toContain("created GitHub PR #655");
+-      expect(io.stdout).not.toContain("remote PR creation staged");
++      expect(io.stdout).not.toContain("remote change-request creation staged");
+     } finally {
+       io.restore();
+       process.env.PATH = originalPath;
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts
+index 50fa0e388..99837d71f 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts
+@@ -26,6 +26,7 @@ import {
+   mkdir,
+   mkGitRepoRoot,
+   mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   mkTempDir,
+   mkdtemp,
+   os,
+@@ -63,7 +64,7 @@ describe(
+   { timeout: PR_FLOW_LONG_TIMEOUT_MS },
+   () => {
+     it("pr open reports linked GitHub PR identity when pr metadata already has one", async () => {
+-      const root = await mkGitRepoRootWithBranch("main");
++      const root = await mkGitRepoRootWithCommit();
+       const config = defaultConfig();
+       config.workflow_mode = "branch_pr";
+       await writeConfig(root, config);
+@@ -136,7 +137,7 @@ describe(
+     });
+ 
+     it("pr open reports an existing GitHub PR by branch and tracks open identity", async () => {
+-      const root = await mkGitRepoRootWithBranch("main");
++      const root = await mkGitRepoRootWithCommit();
+       const config = defaultConfig();
+       config.workflow_mode = "branch_pr";
+       await writeConfig(root, config);
+@@ -227,7 +228,7 @@ describe(
+     });
+ 
+     it("pr open keeps review/body stable when a second run creates the remote PR", async () => {
+-      const root = await mkGitRepoRootWithBranch("main");
++      const root = await mkGitRepoRootWithCommit();
+       const config = defaultConfig();
+       config.workflow_mode = "branch_pr";
+       await writeConfig(root, config);
+@@ -330,7 +331,7 @@ describe(
+     });
+ 
+     it("pr open leaves only PR metadata dirty when a rerun links a newly created remote PR", async () => {
+-      const root = await mkGitRepoRootWithBranch("main");
++      const root = await mkGitRepoRootWithCommit();
+       const config = defaultConfig();
+       config.workflow_mode = "branch_pr";
+       await writeConfig(root, config);
+@@ -460,7 +461,7 @@ describe(
+     });
+ 
+     it("pr open refreshes review/body when a second run observes an existing remote PR", async () => {
+-      const root = await mkGitRepoRootWithBranch("main");
++      const root = await mkGitRepoRootWithCommit();
+       const config = defaultConfig();
+       config.workflow_mode = "branch_pr";
+       await writeConfig(root, config);
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts
+index 082c736df..f357b2b32 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts
+@@ -6,7 +6,6 @@ import {
+   PR_FLOW_LONG_TIMEOUT_MS,
+   approveTaskPlan,
+   captureStdIO,
+-  chmod,
+   cleanGitEnv,
+   commitAll,
+   commitPathsIfChanged,
+@@ -26,6 +25,7 @@ import {
+   mkdir,
+   mkGitRepoRoot,
+   mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   mkTempDir,
+   path,
+   pathExists,
+@@ -156,7 +156,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
+   });
+ 
+   it("pr check passes when artifacts exist", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -645,7 +645,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
+   });
+ 
+   it("pr open keeps incidents.md unchanged while creating PR artifacts", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -723,7 +723,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
+   });
+ 
+   it("pr open is idempotent when artifacts exist", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -836,7 +836,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
+   });
+ 
+   it("pr check fails when verify requirements are unmet", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -891,7 +891,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
+   });
+ 
+   it("pr check reports missing auto summary markers", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -952,7 +952,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
+   });
+ 
+   it("pr check reports invalid meta.json", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts
+index 6a4c0806b..805d52628 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts
+@@ -26,6 +26,7 @@ import {
+   mkdir,
+   mkGitRepoRoot,
+   mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   mkTempDir,
+   mkdtemp,
+   os,
+@@ -60,7 +61,7 @@ import {
+ 
+ describe("runCli PR validation and hydration flow (pr update scenarios)", () => {
+   it("pr update hydrates existing GitHub PR state into previously local-only artifacts", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -149,7 +150,7 @@ describe("runCli PR validation and hydration flow (pr update scenarios)", () =>
+   });
+ 
+   it("pr update observes an existing open GitHub PR and tracks open identity", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -240,7 +241,7 @@ describe("runCli PR validation and hydration flow (pr update scenarios)", () =>
+   });
+ 
+   it("pr update rejects missing artifacts", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts
+index 44ba08f8e..060aa6b0e 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts
+@@ -6,6 +6,7 @@ import {
+   expect,
+   it,
+   mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   readFile,
+   runCli,
+   runCliSilent,
+@@ -131,7 +132,7 @@ describe("runCli pr flow status", () => {
+   });
+ 
+   it("reports task branch, local PR metadata, close-tail state, and next action", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -236,7 +237,7 @@ describe("runCli pr flow status", () => {
+       expectLabeledValue(
+         io.stdout,
+         "hosted_checks",
+-        "unchecked: GitHub PR number is not recorded in PR metadata",
++        "unchecked: Hosted change-request number is not recorded in PR metadata",
+       );
+       expectLabeledValue(
+         io.stdout,
+@@ -369,7 +370,7 @@ describe("runCli pr flow status", () => {
+   });
+ 
+   it("reports hosted check counts when gh returns pending status with exit code 8", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -443,7 +444,7 @@ describe("runCli pr flow status", () => {
+   });
+ 
+   it("resolves a merged PR by persisted number after its remote head branch is deleted", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+diff --git a/packages/testkit/src/cli-core-pr-flow.ts b/packages/testkit/src/cli-core-pr-flow.ts
+index 41c5bd6af..1cfa85658 100644
+--- a/packages/testkit/src/cli-core-pr-flow.ts
++++ b/packages/testkit/src/cli-core-pr-flow.ts
+@@ -42,6 +42,7 @@ import {
+   runCliSilent,
+   mkGitRepoRoot,
+   mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   mkTempDir,
+   pathExists,
+   stageGitignoreIfPresent,
+@@ -152,6 +153,7 @@ export {
+   mkdir,
+   mkGitRepoRoot,
+   mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
+   mkTempDir,
+   mkdtemp,
+   os,
+diff --git a/packages/testkit/src/cli.test.ts b/packages/testkit/src/cli.test.ts
+index d8f841488..211059fc8 100644
+--- a/packages/testkit/src/cli.test.ts
++++ b/packages/testkit/src/cli.test.ts
+@@ -3,7 +3,13 @@ import { promisify } from "node:util";
+ 
+ import { describe, expect, it } from "vitest";
+ 
+-import { cleanGitEnv, mkGitRepoRoot, splitOutputLines } from "./cli.js";
++import {
++  cleanGitEnv,
++  mkGitRepoRoot,
++  mkGitRepoRootWithBranch,
++  mkGitRepoRootWithCommit,
++  splitOutputLines,
++} from "./cli.js";
+ 
+ const execFileAsync = promisify(execFile);
+ 
+@@ -20,5 +26,40 @@ describe("@agentplane/testkit/cli", () => {
+       env: cleanGitEnv(),
+     });
+     expect(stdout.trim()).toBe("main");
++    await expect(
++      execFileAsync("git", ["rev-parse", "--verify", "HEAD"], { cwd: root, env: cleanGitEnv() }),
++    ).rejects.toMatchObject({ code: 128 });
++  });
++
++  it("keeps an explicitly named branch fixture unborn", async () => {
++    const root = await mkGitRepoRootWithBranch("fixture-branch");
++    const { stdout } = await execFileAsync("git", ["symbolic-ref", "--short", "HEAD"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    expect(stdout.trim()).toBe("fixture-branch");
++    await expect(
++      execFileAsync("git", ["rev-parse", "--verify", "HEAD"], { cwd: root, env: cleanGitEnv() }),
++    ).rejects.toMatchObject({ code: 128 });
++  });
++
++  it("creates an opt-in committed fixture with a real clean main base", async () => {
++    const root = await mkGitRepoRootWithCommit();
++    const { stdout: head } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    const { stdout: base } = await execFileAsync("git", ["rev-parse", "refs/heads/main"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    expect(head.trim()).toMatch(/^[0-9a-f]{40}$/u);
++    expect(head.trim()).not.toBe("0".repeat(40));
++    expect(base.trim()).toBe(head.trim());
++    const { stdout: status } = await execFileAsync("git", ["status", "--porcelain"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++    expect(status).toBe("");
+   });
+ });

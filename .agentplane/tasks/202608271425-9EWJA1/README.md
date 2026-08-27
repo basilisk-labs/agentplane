@@ -4,7 +4,7 @@ title: "Align PR fixtures with committed Git identity"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -29,6 +29,38 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-27T14:53:21.703Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "634e327f8af5385343077ba50fc861b4e65b724b"
+  blueprint_digest: "9a2f6ba60b98c148d6ee0ad4277dc7b841e5d7e5dd92bde8e554e8a40f965c09"
+  evidence_refs:
+    - ".agentplane/tasks/202608271425-9EWJA1/quality/20260827-145146182-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608271425-9EWJA1/quality/20260827-145146182-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608271425-9EWJA1/quality/objects/sha256/35a9c1b23cfd9a14cf2f7657ea3fea0d01006ae742d37e9c2cf68e91d2df2217.md"
+    - ".agentplane/tasks/202608271425-9EWJA1/quality/20260827-145146182-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608271425-9EWJA1/quality/20260827-145146182-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608271425-9EWJA1/quality/20260827-145146182-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608271425-9EWJA1/README.md"
+    - ".agentplane/tasks/202608271425-9EWJA1/quality/objects/sha256/0573f938635c08e770dcac6ba9e37ee421ad948d77a226a96c698c79010dd886.patch"
+    - ".agentplane/tasks/202608271425-9EWJA1/quality/objects/sha256/d95d0acf71eba724329a418bc06e8264aea65cb35720be95bfc5a172bb57ba3d.json"
+    - ".agentplane/tasks/202608271425-9EWJA1/verification/20260827145057353-8504a8d8eb4611ab.json"
+    - ".agentplane/tasks/202608271425-9EWJA1/quality/objects/sha256/7080a6be2e427488741d82e5f0f80a864c64a7fa2e9cdb8e5118aedded4881ec.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The existing committed helper is only re-exported; its implementation and empty-repository helpers are unchanged. Twenty-five PR scenarios now establish real execution identity before task creation. Existing argument-validation and explicit-history fixtures are preserved."
+    - "The missing-origin scenario now checks remote_failed plus the exact zero-URL failure, while retaining artifact content assertions. Accepting either missing fetch or push direction reflects concurrent resolution, not an optional failure."
+    - "The custom publish transport uses a real isolated bare Git repository while retaining the parseable hosted remote URL. URL rewriting is scoped to push/fetch/ls-remote, preserving remote identity queries and tracking branch name. Existing fake-provider logic still rejects PR creation before the exact materialized head is published."
+    - "Provider-neutral wording is corrected in both positive and negative assertions. GitHub-specific review-thread assertions are retained where their contract is still provider-specific."
+    - "New testkit regressions require both empty helper variants to have no HEAD and the opt-in committed fixture to have a real nonzero SHA, main equal to HEAD and a clean tree."
+    - "The frozen diff contains only ten approved files. Verification record 20260827145057353-8504a8d8eb4611ab binds passing mandatory full CI and all 63 scoped tests to implementation 634e327f8af5385343077ba50fc861b4e65b724b. Formatting, lint and size gates remain unchanged."
+    - "Residual risk: The fixture exercises Git transport against a local bare repository and a fake provider; real hosted qualification remains a separate lifecycle gate."
 execution_route:
   frozen: true
   reason_codes:
