@@ -4,19 +4,22 @@ Canonical task record: `.agentplane/tasks/202608271544-1TDVPJ/README.md`
 
 ## Summary
 
-Modernize exact-result recovery fixtures
-
-Repair the effect-recovery CLI suite using real committed Git execution bases and canonical structured planner results. Fresh main 2c9a2f5 reproduces 11 failures out of 15 before intended recovery assertions because execution bases are unborn. Preserve exact operation keys, replacement authority, durable received-result recovery, single-use consumption, replay rejection, retirement, and stale-plan rejection. Limit edits to run-cli.core.task-advance-effect-recovery.test.ts and an optional local test-only helper. Do not change production recovery semantics, lifecycle gates, policy, CI, or timeouts.
+Repair exact-result recovery using real Git bases and structured planner results. The approved material replan also addresses the demonstrated production defect in external-agent-planning-authority.ts: persisted JSON object property order must not change semantic equality. Reuse canonical JSON comparison and add focused unit regressions. Preserve array order, changed-value rejection, exact operation keys, replacement authority, original received-result identity, single consumption, replay rejection, retirement and approval guards. Scope is the existing recovery CLI test and local helper plus the planning-authority implementation and its unit tests. No lifecycle, provider, CI, policy, timeout or roadmap changes.
 
 ## Scope
 
-- In scope: Repair the effect-recovery CLI suite using real committed Git execution bases and canonical structured planner results. Fresh main 2c9a2f5 reproduces 11 failures out of 15 before intended recovery assertions because execution bases are unborn. Preserve exact operation keys, replacement authority, durable received-result recovery, single-use consumption, replay rejection, retirement, and stale-plan rejection. Limit edits to run-cli.core.task-advance-effect-recovery.test.ts and an optional local test-only helper. Do not change production recovery semantics, lifecycle gates, policy, CI, or timeouts.
-- Out of scope: unrelated refactors not required for "Modernize exact-result recovery fixtures".
+In scope: packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts, packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts, packages/agentplane/src/commands/task/external-agent-planning-authority.ts, packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts. The material replan replaces the earlier fixture-only restriction with the proven property-order-independent planning JSON comparison repair. Preserve all exact-result recovery, changed-value, ordered-array, approval and single-consumption invariants. Out of scope: provider operations, lifecycle routing, CI selection, timeouts, policy, dependencies and roadmap changes.
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Rework: Declared check failed: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run
+packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads
+--maxWorkers=1
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,9 +30,11 @@ Repair the effect-recovery CLI suite using real committed Git execution bases an
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...n-cli.core.task-advance-effect-recovery.test.ts | 74 ++++++++++++++--------
- .../cli/task-advance-effect-recovery.testkit.ts    | 64 +++++++++++++++++++
- 2 files changed, 112 insertions(+), 26 deletions(-)
+ ...n-cli.core.task-advance-effect-recovery.test.ts | 131 +++++++++++++-----
+ .../cli/task-advance-effect-recovery.testkit.ts    |  64 +++++++++
+ .../task/external-agent-planning-authority.test.ts | 151 +++++++++++++++++++++
+ .../task/external-agent-planning-authority.ts      |   4 +-
+ 4 files changed, 315 insertions(+), 35 deletions(-)
 ```
 
 </details>

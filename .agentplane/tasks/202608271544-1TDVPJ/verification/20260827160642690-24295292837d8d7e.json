@@ -1,0 +1,116 @@
+{
+  "details": "Command: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271544-1TDVPJ declared verification\n\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads --maxWorkers=1\nResult: fail\nEvidence: .agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608271544-1TDVPJ declared verification",
+  "digest": "sha256:24295292837d8d7e70dff6c177c9c377138d5407bd5a2b3b1c3e81a8094049d0",
+  "implementation_sha": "2c494d78a1533df3905b2f83f4716993d45d40e3",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:4afd021085f6d4a8c815f457d6669f37d5ecda895371a2cc9932675fa6d7b9ac",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:21a72274a39023c8e31f976e082ebb14c095f17286247b17af7e4538e8c943f2",
+      "digest": "sha256:5c8d04c328d3b2bc971546d0ddcebc012db1513050f1d0679cfac0e87ee9e41d",
+      "references": [
+        {
+          "digest": "sha256:ece6c7b78d90bb2f7270aaa5bc33b4aa611c547506c088c65b7230d5eebda569",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:ece6c7b78d90bb2f7270aaa5bc33b4aa611c547506c088c65b7230d5eebda569",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+      "digest": "sha256:b81927cc88ed894f182109b6c72b44d28a2090f9b7e18eb1d255f4b72db6990f",
+      "primary_task_id": "202608271544-1TDVPJ",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608271544-1TDVPJ"
+      ]
+    },
+    "implementation": {
+      "base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+      "digest": "sha256:2f0c0e9f4254afb2687fbad642a7c15052acfb43368c806dca9c7b2eaa01bb11",
+      "strategy": "branch_diff",
+      "target_sha": "2c494d78a1533df3905b2f83f4716993d45d40e3"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:9a15af54d332514a03b9c50ff67cc4332226088f27ee19203239df6ad98112c2",
+    "verify_steps_digest": "sha256:c6dbde0f93a1c3f05a512705bff682530b901ca07f7c80cc704089968d0f1b93"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads --maxWorkers=1",
+  "recorded_at": "2026-08-27T16:06:42.690Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Modernize exact-result recovery fixtures\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Modernize exact-result recovery fixtures\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:c6dbde0f93a1c3f05a512705bff682530b901ca07f7c80cc704089968d0f1b93",
+  "task_id": "202608271544-1TDVPJ",
+  "verification_command": "agentplane verify 202608271544-1TDVPJ --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

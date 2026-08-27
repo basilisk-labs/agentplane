@@ -4,7 +4,7 @@
   "resolverInput": {
     "taskId": "202608271544-1TDVPJ",
     "title": "Modernize exact-result recovery fixtures",
-    "description": "Repair the effect-recovery CLI suite using real committed Git execution bases and canonical structured planner results. Fresh main 2c9a2f5 reproduces 11 failures out of 15 before intended recovery assertions because execution bases are unborn. Preserve exact operation keys, replacement authority, durable received-result recovery, single-use consumption, replay rejection, retirement, and stale-plan rejection. Limit edits to run-cli.core.task-advance-effect-recovery.test.ts and an optional local test-only helper. Do not change production recovery semantics, lifecycle gates, policy, CI, or timeouts.",
+    "description": "Repair exact-result recovery using real Git bases and structured planner results. The approved material replan also addresses the demonstrated production defect in external-agent-planning-authority.ts: persisted JSON object property order must not change semantic equality. Reuse canonical JSON comparison and add focused unit regressions. Preserve array order, changed-value rejection, exact operation keys, replacement authority, original received-result identity, single consumption, replay rejection, retirement and approval guards. Scope is the existing recovery CLI test and local helper plus the planning-authority implementation and its unit tests. No lifecycle, provider, CI, policy, timeout or roadmap changes.",
     "tags": [
       "tests"
     ],
@@ -570,6 +570,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "5f70bce5143724f1f15761bdfdfc51de01d8f3521395a9b7f574edffbdb8e3fe"
+    "value": "8cbff0e94b30e0bd23b9bf575f6cf6cf653277543f74e663e847264604414e96"
   }
 }
