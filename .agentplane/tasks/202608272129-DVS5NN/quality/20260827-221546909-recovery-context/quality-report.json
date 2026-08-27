@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608272129-DVS5NN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-27T22:18:20.121Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 5 typed finding(s).",
+  "evaluated_sha": "bd72b49eaf67bd2cfcf8170232d6c365de4c572c",
+  "blueprint_digest": "44b77635db1ede03f74e71a46d3871a3ffc26b542d7f15c632f0216ebb67d1ff",
+  "findings": [
+    "README.md still contains the PLANNER fallback scaffold in Verify Steps even though the approved WorkItem has concrete owner-readback, identity-and-recovery and bounded-verification criteria. The frozen evaluator acceptance explicitly requires replacing this scaffold when planning context is available. Replace it through the supported task-document operator route, retaining full CI and diff checks and naming the focused positive/negative/replay command and expected outcomes.",
+    "README.md Findings is empty. Record the proved missing-base-handoff cause, the owner-aware read-only repair, focused test results, independent local verification, and the two deferred diagnostic causes. Do not describe hosted checks, integration or release qualification as completed.",
+    "Code review: the new reader uses the registered base checkout without copying artifacts; valid generic local/direct hints remain available; task/owner mismatch, malformed records and conflicting protected identities fail closed. Existing PR/head/base/adoption-token eligibility remains unchanged. Tests cover repeated reads from both checkouts without changing heads, status or bytes, and the existing explicit-adoption test covers the following transition.",
+    "Verification wording clarification: the focused run passed all 83 tests with no skips. The broad core run has one pre-existing opt-in network packaging test skipped by its existing environment gate; no skip was introduced or changed by this diff.",
+    "Residual risk: Release prepublish and hosted integration are not covered by the local task checks."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/c02e0755b019de4aa5dfb3a951ef88f662edaf0f9406228ecfcf7796b35e8926.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "A generic task-document scaffold is not a substitute for the already approved scenario-specific acceptance and a recorded diagnostic remainder."
+  ],
+  "residual_risks": [
+    "Use the supported operator task-document route to replace only Verify Steps and add concise Findings for 202608272129-DVS5NN. Preserve the existing plan, seven-file implementation, all mandatory checks, exact identities and release boundary. Recompute the route and obtain fresh verification/evaluation; do not edit task files or evidence manually."
+  ]
+}

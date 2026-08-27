@@ -4,7 +4,7 @@ title: "Resolve protected integration handoffs from their owning checkout"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -30,6 +30,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-27T22:18:20.121Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 5 typed finding(s)."
+  evaluated_sha: "bd72b49eaf67bd2cfcf8170232d6c365de4c572c"
+  blueprint_digest: "44b77635db1ede03f74e71a46d3871a3ffc26b542d7f15c632f0216ebb67d1ff"
+  evidence_refs:
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-221546909-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-221546909-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/64995aa9efc5768ea660988e9ba43483b102432f173bcb0e317f6c5aceb8532b.md"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-221546909-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-221546909-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-221546909-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-221546909-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608272129-DVS5NN/README.md"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/c02e0755b019de4aa5dfb3a951ef88f662edaf0f9406228ecfcf7796b35e8926.patch"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/d1b062168c6836aa3cff504c7671df999bda4f936f05e17c7134c083d9316783.json"
+    - ".agentplane/tasks/202608272129-DVS5NN/verification/20260827221527248-6c523168c94bbe69.json"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/276a5a3781c8fb8f8f6ee4d1e55952ab9fb07d70cc7bb3c390863a14fc413a4a.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "README.md still contains the PLANNER fallback scaffold in Verify Steps even though the approved WorkItem has concrete owner-readback, identity-and-recovery and bounded-verification criteria. The frozen evaluator acceptance explicitly requires replacing this scaffold when planning context is available. Replace it through the supported task-document operator route, retaining full CI and diff checks and naming the focused positive/negative/replay command and expected outcomes."
+    - "README.md Findings is empty. Record the proved missing-base-handoff cause, the owner-aware read-only repair, focused test results, independent local verification, and the two deferred diagnostic causes. Do not describe hosted checks, integration or release qualification as completed."
+    - "Code review: the new reader uses the registered base checkout without copying artifacts; valid generic local/direct hints remain available; task/owner mismatch, malformed records and conflicting protected identities fail closed. Existing PR/head/base/adoption-token eligibility remains unchanged. Tests cover repeated reads from both checkouts without changing heads, status or bytes, and the existing explicit-adoption test covers the following transition."
+    - "Verification wording clarification: the focused run passed all 83 tests with no skips. The broad core run has one pre-existing opt-in network packaging test skipped by its existing environment gate; no skip was introduced or changed by this diff."
+    - "Residual risk: Release prepublish and hosted integration are not covered by the local task checks."
 execution_route:
   frozen: true
   reason_codes:

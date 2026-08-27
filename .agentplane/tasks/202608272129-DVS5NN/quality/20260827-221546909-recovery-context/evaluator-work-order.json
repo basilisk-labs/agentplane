@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608272129-DVS5NN-78db96967bd0402fd897ff6d",
+  "prepared_at": "2026-08-27T22:15:46.909Z",
+  "task": {
+    "id": "202608272129-DVS5NN",
+    "revision": 8,
+    "objective": "Resolve protected integration handoffs from their owning checkout\n\nRepair the reproduced protected-integration handoff reader/owner mismatch on main db908ae90dd32609c6d12454fe87166a08e6ec4e. The focused integration diagnostic has 12 passing and 3 failing tests; run-cli.core.pr-conflict-rework.test.ts:842 fails because the expected legacy adoption route is unavailable. Confirm the exact route and cause before changing behavior. The integration writer persists the handoff on the base checkout, while task route hydration redirects readers to the task worktree. Real task handoff show from a worktree also failed to find the base-owned INTEGRATOR artifact. Cover one complete scenario: persisted protected-base handoff, task-worktree route/show/resume reads, explicit legacy adoption where applicable, repeat read/recovery, and the next transition. Use existing task execution ownership and base resolution. Reject wrong task, branch, head, base, PR identity, malformed or ambiguous evidence. Preserve direct and worktree-local handoff behavior. Keep read-only probes non-mutating. Do not copy or rewrite lifecycle artifacts, introduce a new state store, relax authority or exact-identity guards, change required CI, alter release/Core order, or implement AP-CORE-013. Scope the smallest necessary shared handoff reader, route/PR-flow consumers, and regression tests through a structured plan. The other two diagnostic failures, incident verification target and provider-neutral error wording, are separate causes and are out of scope. Run focused positive/negative/replay tests and full mandatory CI. The user authorized autonomous refactoring and supported exact operator approvals; release publication remains separate.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "git diff --check",
+      "- In scope: Repair the reproduced protected-integration handoff reader/owner mismatch on main db908ae90dd32609c6d12454fe87166a08e6ec4e. The focused integration diagnostic has 12 passing and 3 failing tests; run-cli.core.pr-conflict-rework.test.ts:842 fails because the expected legacy adoption route is unavailable. Confirm the exact route and cause before changing behavior. The integration writer persists the handoff on the base checkout, while task route hydration redirects readers to the task worktree. Real task handoff show from a worktree also failed to find the base-owned INTEGRATOR artifact. Cover one complete scenario: persisted protected-base handoff, task-worktree route/show/resume reads, explicit legacy adoption where applicable, repeat read/recovery, and the next transition. Use existing task execution ownership and base resolution. Reject wrong task, branch, head, base, PR identity, malformed or ambiguous evidence. Preserve direct and worktree-local handoff behavior. Keep read-only probes non-mutating. Do not copy or rewrite lifecycle artifacts, introduce a new state store, relax authority or exact-identity guards, change required CI, alter release/Core order, or implement AP-CORE-013. Scope the smallest necessary shared handoff reader, route/PR-flow consumers, and regression tests through a structured plan. The other two diagnostic failures, incident verification target and provider-neutral error wording, are separate causes and are out of scope. Run focused positive/negative/replay tests and full mandatory CI. The user authorized autonomous refactoring and supported exact operator approvals; release publication remains separate.\n- Out of scope: unrelated refactors not required for \"Resolve protected integration handoffs from their owning checkout\".",
+      "Confirm the missing base-owned protected handoff in the failing route, then implement a bounded read-only ownership-aware reader using existing task execution and base-checkout resolution. Wire route/PR-flow and task handoff show/resume consumers to that reader. Keep the existing writer and artifact format unchanged. Preserve valid local/direct handoffs. Validate exact task identity and preserve downstream branch, HEAD, base, PR and adoption-token guards. Refuse malformed, mismatched, or ambiguous protected evidence. Cover persisted external-effect recovery, repeated reads, explicit legacy adoption and the following transition without mutating either checkout. Run the focused handoff and conflict suites, full CI, lint/format and diff check. Return blocked if the cause or required scope differs materially.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "bd72b49eaf67bd2cfcf8170232d6c365de4c572c",
+  "diff_base_sha": "db908ae90dd32609c6d12454fe87166a08e6ec4e",
+  "blueprint_digest": "44b77635db1ede03f74e71a46d3871a3ffc26b542d7f15c632f0216ebb67d1ff",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-221546909-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:a14561cb956ce384da791f76a4e0fb3673a4fc816397ba48a9b12fe40b7f16ea",
+    "prompt_path": ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/64995aa9efc5768ea660988e9ba43483b102432f173bcb0e317f6c5aceb8532b.md",
+    "result_schema_path": ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608272129-DVS5NN/README.md",
+      "sha256": "sha256:548588631e8c935647645652febd871ce7d13380e6a15cc55dd0163511b7dcf7",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/c02e0755b019de4aa5dfb3a951ef88f662edaf0f9406228ecfcf7796b35e8926.patch",
+      "sha256": "sha256:c02e0755b019de4aa5dfb3a951ef88f662edaf0f9406228ecfcf7796b35e8926",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/d1b062168c6836aa3cff504c7671df999bda4f936f05e17c7134c083d9316783.json",
+      "sha256": "sha256:d1b062168c6836aa3cff504c7671df999bda4f936f05e17c7134c083d9316783",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608272129-DVS5NN/verification/20260827221527248-6c523168c94bbe69.json",
+      "sha256": "sha256:c1b59b06131048cd37f3863c849384be6343f21a9e2046c80d0a0ba75961f9d2",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/276a5a3781c8fb8f8f6ee4d1e55952ab9fb07d70cc7bb3c390863a14fc413a4a.json",
+      "sha256": "sha256:276a5a3781c8fb8f8f6ee4d1e55952ab9fb07d70cc7bb3c390863a14fc413a4a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
