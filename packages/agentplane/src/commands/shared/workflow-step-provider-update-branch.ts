@@ -14,7 +14,7 @@ export function providerUpdateBranchStep(state: WorkflowRouteState): WorkflowSte
     params,
     code: "update_provider_pr_branch",
     summary:
-      "update the exact behind provider PR head from its observed base before classifying hosted failures as semantic rework",
+      "update the exact behind provider PR head from its observed base before integration or hosted-failure rework",
     selectedBlocker: routeBlockerFor(state, "provider_pr_update_branch_required"),
   });
 }

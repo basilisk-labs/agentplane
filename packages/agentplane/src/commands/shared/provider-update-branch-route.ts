@@ -27,12 +27,13 @@ export function providerUpdateBranchParams(
     !prFlow.pr.base ||
     prFlow.providerObservation?.state !== "found" ||
     prFlow.publication?.state !== "aligned" ||
-    !prFlow.hostedChecks.checked ||
-    prFlow.hostedChecks.failing <= 0
+    !prFlow.hostedChecks.checked
   ) {
     return null;
   }
   const observed = prFlow.providerObservation.pr;
+  // Strict protection can require an updated branch even when its current head checks pass.
+  // The coherent provider "behind" observation, not a failed check, establishes this route.
   const localHead = prFlow.branch.headSha;
   const baseSha = observed.baseSha ?? "";
   const mergeability = observed.mergeability;
