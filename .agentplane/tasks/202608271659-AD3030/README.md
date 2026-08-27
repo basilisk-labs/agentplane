@@ -1,10 +1,10 @@
 ---
 id: "202608271659-AD3030"
 title: "Preserve task identity in closeout and worktree fixtures"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -255,6 +255,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 37c73e481fb2. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator requested only a task Findings update. The packet protects .agentplane/tasks and grants only the four test files, so no workspace or lifecycle mutation was performed. Recommended action: Use the supported operator task doc set command for Findings only, record the fixture cause, preserved invariants, exact successful verification and unresolved timeout mechanism, then resume through a fresh packet. Do not alter source or Verify Steps. Agentplane receipt: external-agent-blocker/tr_d8c7864f4b1fd8607fed0359cfb7e2ec/sha256:8354d611be8ba18a293e7b2c437812bcb481542160882142ca962cd3abf9d09e."
 events:
   -
     type: "status"
@@ -319,8 +322,15 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-27T23:18:03.969Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator requested only a task Findings update. The packet protects .agentplane/tasks and grants only the four test files, so no workspace or lifecycle mutation was performed. Recommended action: Use the supported operator task doc set command for Findings only, record the fixture cause, preserved invariants, exact successful verification and unresolved timeout mechanism, then resume through a fresh packet. Do not alter source or Verify Steps. Agentplane receipt: external-agent-blocker/tr_d8c7864f4b1fd8607fed0359cfb7e2ec/sha256:8354d611be8ba18a293e7b2c437812bcb481542160882142ca962cd3abf9d09e."
 doc_version: 3
-doc_updated_at: "2026-08-27T23:15:46.043Z"
+doc_updated_at: "2026-08-27T23:18:03.969Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair six freshly reproduced failures among27scenarios in four closeout and worktree-routing fixture files. Scope only packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts, packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts. Merge batch extensions into parsed task metadata rather than duplicate the YAML extensions key; preserve the immutable task_execution_context and make shared tasks use one real committed base. Seed Git for the work-start usage-error case so it reaches the intended worktree requirement. Align the start-ready test with the existing authoritative loadTaskCommandContext redirect: prove it updates only the task-owned worktree without recreating base README or changing base HEAD; do not demand an obsolete manual-cd error. Preserve multi-task exact reviewed implementation SHA, landed versus stale or rebased PR commit choice, unresolved-task failure and all remaining negative scenarios. Use current canonical planning only if needed for fixture validity. No production, global helper, policy, CI gate, timeout, release version or task graph changes. Require all27scenarios, scoped lint/format, full CI, EVALUATOR and hosted exact-head proof."
 sections:
