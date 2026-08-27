@@ -2,13 +2,19 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   observeExistingChangeRequestByNumber: vi.fn(),
-  runGhApiJson: vi.fn(),
+  runGhApiJson: vi.fn<(cwd: string, args: string[]) => Promise<unknown>>(),
+  validateLocal: vi.fn(),
+  reconcileLocal: vi.fn(),
 }));
 
 vi.mock("./internal/change-request-provider.js", () => ({
   observeExistingChangeRequestByNumber: mocks.observeExistingChangeRequestByNumber,
 }));
 vi.mock("./internal/gh-api.js", () => ({ runGhApiJson: mocks.runGhApiJson }));
+vi.mock("./provider-update-branch-local.js", () => ({
+  validateProviderUpdateLocalState: mocks.validateLocal,
+  reconcileProviderUpdateLocalHead: mocks.reconcileLocal,
+}));
 
 import type { ObservedChangeRequest } from "./internal/change-request-model.js";
 import type { GitHostIdentity } from "./internal/git-host-identity.js";
@@ -69,6 +75,8 @@ function comparison(ancestor: string) {
 describe("provider update-branch effect", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.validateLocal.mockResolvedValue(null);
+    mocks.reconcileLocal.mockResolvedValue(null);
   });
 
   it("binds the GitHub mutation to the expected head and proves both ancestors", async () => {
@@ -98,6 +106,8 @@ describe("provider update-branch effect", () => {
       "-f",
       `expected_head_sha=${oldHead}`,
     ]);
+    expect(mocks.validateLocal).toHaveBeenCalledWith(request(), [oldHead, oldHead]);
+    expect(mocks.reconcileLocal).toHaveBeenCalledWith(request(), newHead);
   });
 
   it("reconciles an already-updated head without repeating the mutation", async () => {
@@ -226,5 +236,27 @@ describe("provider update-branch effect", () => {
       state: "effect_in_doubt",
       reason: "readback_unproven",
     });
+    expect(mocks.reconcileLocal).not.toHaveBeenCalled();
+  });
+
+  it("does not report success before local reconciliation succeeds", async () => {
+    mocks.observeExistingChangeRequestByNumber
+      .mockResolvedValueOnce({ state: "found", pr: observed() })
+      .mockResolvedValueOnce({ state: "found", pr: observed({ headSha: newHead }) });
+    mocks.runGhApiJson
+      .mockResolvedValueOnce({})
+      .mockResolvedValueOnce(comparison(oldHead))
+      .mockResolvedValueOnce(comparison(baseHead));
+    mocks.reconcileLocal.mockResolvedValueOnce("local state changed");
+    const result = await updateProviderBranch(request());
+    expect(result).toMatchObject({
+      state: "effect_in_doubt",
+      reason: "readback_unproven",
+    });
+    if (result.state !== "effect_in_doubt") throw new Error("expected uncertain local state");
+    expect(result.detail).toContain("local reconciliation is incomplete");
+    expect(mocks.runGhApiJson.mock.calls.filter(([, args]) => args.includes("PUT"))).toHaveLength(
+      1,
+    );
   });
 });
