@@ -4,7 +4,7 @@ title: "Replace obsolete CLI test expectations with architecture-aligned contrac
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,11 @@ plan_approval:
   updated_by: "USER"
   note: "User authorized autonomous in-scope test modernization and continuation. Preserve existing work; apply the pending exact prompt-fixture scope delta through the supported route."
 verification:
-  state: "pending"
-  updated_at: "2026-08-27T13:15:21.997Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-27T13:25:32.555Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -86,11 +86,41 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
+      - "packages/agentplane/src/cli/prompts.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.help-snap.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+      - "packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -125,7 +155,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:d7fd82f5078e2eb98223c45b68f1ae10e4a88988cdd4885191b7465f5e87b46e"
+      digest: "sha256:ce34330683b91bfc7c8d9b1a1617ed68d274b6c06da4730ce04424884cd98f18"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
         - "central_component:packages/agentplane/src/cli/prompts.test.ts"
@@ -133,16 +163,32 @@ execution_contract:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts"
+        - "central_path:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
+        - "central_path:packages/agentplane/src/cli/prompts.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.help-snap.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts"
+        - "unknown_path:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
+          - "packages/agentplane/src/cli/prompts.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.help-snap.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+          - "packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -173,7 +219,9 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "54ed013b9e52173795ee80b5acdb7b47913b8b4b"
+  message: "🚧 GHHA0Q task: apply external agent result"
 comments:
   -
     author: "PLANNER"
@@ -190,6 +238,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/cli/prompts.test.ts, packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts; repository effects: tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 54ed013b9e52. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "comment"
@@ -224,8 +275,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. All scoped tests pass. Required ci:local:full is blocked by five environment-dependent prompt test failures outside the four-file authority. No changes were made during this rework episode. Recommended action: Extend this approved test-modernization task to the two specified test files only. Clearset prompt-mode input inside their beforeEach hooks and restore the inherited value in afterEach. Preserve TTY mocking, explicit plain-mode checks, cancellation checks and all assertions. Add or parameterize checks proving both inherited modes cannot contaminate the interactive fixture. Do not alter production agent-mode, remove plain mode, unset parent runtime environment to evade CI, or weaken release gates. Then rerun both environment variants and full CI through the supervisor. Requested scope: roots=packages/agentplane/src/cli/prompts.test.ts,packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts; repository effects=tests; request digest=sha256:4c736da4891a551d6f4dad3d28802a3ae722984d3063746524af63afba0ea27f. Agentplane receipt: external-agent-blocker/tr_c4d1d6f511b30e9288174acf9922e983/sha256:f7c7d2a7d5511301c485977d5e762a41b56167bcbc3cef42b548d96db2e3ea60/sha256:4c736da4891a551d6f4dad3d28802a3ae722984d3063746524af63afba0ea27f."
+  -
+    type: "status"
+    at: "2026-08-27T13:16:32.879Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 54ed013b9e52. CLI accepted one state-bound external-agent semantic result."
+    commit: "54ed013b9e52173795ee80b5acdb7b47913b8b4b"
+  -
+    type: "verify"
+    at: "2026-08-27T13:25:32.555Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-27T13:14:52.514Z"
+doc_updated_at: "2026-08-27T13:25:35.003Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the approved test-audit first slice independently of the preserved 0.7.8 candidate. Correct the obsolete task-new route help snapshot and replace internal transition identity coupling only where the current issuance contract proves the old expectation obsolete. Preserve approval, replay, workspace isolation, provider, verification and release gates. Keep unborn-repository and canonical-plan fixture investigation explicit; do not blanket seed commits, skip tests, weaken required checks, change production lifecycle or alter roadmap dependencies. Initial scope is the help snapshot/test and the two task-advance identity tests, subject to exact PLANNER authority."
 sections:
@@ -263,6 +328,78 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-2
     Scope: branch_pr task 202608271251-GHHA0Q declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271251-GHHA0Q-replace-obsolete-cli-test-expectations-with-arch/.agentplane/tasks/202608271251-GHHA0Q/blueprint/resolved-snapshot.json
+    - old_digest: f1b26b57f079cbc23ac19906eea9e1d366ecf04d70a161651377eaada92ae52b
+    - current_digest: f1b26b57f079cbc23ac19906eea9e1d366ecf04d70a161651377eaada92ae52b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608271251-GHHA0Q
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-27T13:25:32.555Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6f7c22f11187f4e6615945c14619958e49fde3021520d38b5c6d54807062d1da, input_digest=sha256:9c4ba3cf309d73f7d4073cdf9d053af930f4f962086bb83a8342c25461952a79
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271251-GHHA0Q Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271251-GHHA0Q Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271251-GHHA0Q Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271251-GHHA0Q Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271251-GHHA0Q Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271251-GHHA0Q Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271251-GHHA0Q Verification Contract check task_outcome (2/2)
 
     BlueprintSnapshotRef:
     - state: current
@@ -923,19 +1060,59 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202608271251-GHHA0Q"
-    revision: 15
+    revision: 25
     schema_version: 1
-    updated_at: "2026-08-27T13:15:21.997Z"
+    updated_at: "2026-08-27T13:25:36.124Z"
     work_items:
       isolate-prompt-test-environment:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "isolate-prompt-test-environment"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:6bfd386bbe5ef1d9876389863d10994eea29c4df6af81f746ad017998e8b728c"
+            id: "artifact:isolated-prompt-tests"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 4
+              task_id: "202608271251-GHHA0Q"
+              work_item_id: "isolate-prompt-test-environment"
+            provenance:
+              - "sha256:8f90a711c44ef9ed54ed2d8022482a7c829fdb43707036b81798350b470b028f"
+              - ".agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:d0342c9896f95f8ee60126f3379dbb1e000276cb96139b731972754c1d647dd1"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json"
+              check_id: "scoped-tests"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2."
+              exit_code: 0
+              observed_at: "2026-08-27T13:25:36.118Z"
+              repository_snapshot_digest: "sha256:d0342c9896f95f8ee60126f3379dbb1e000276cb96139b731972754c1d647dd1"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json"
+              check_id: "full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-27T13:25:36.118Z"
+              repository_snapshot_digest: "sha256:d0342c9896f95f8ee60126f3379dbb1e000276cb96139b731972754c1d647dd1"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
@@ -963,9 +1140,34 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202608271251-GHHA0Q"
+      external-result:work-order-202608271251-GHHA0Q-executor-ba9bd3c5bf1b1d340c4e0692:
+        aggregate_digest: "sha256:90e44b0a36332e3ed42fc5a0cf7f87222b1b1d2fe3feaeb8f0a9efc042427232"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-27T13:25:36.124Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_3aa344307e9cbddb8fdb4714"
+          mutation_id: "external-result:work-order-202608271251-GHHA0Q-executor-ba9bd3c5bf1b1d340c4e0692"
+          plan_digest: "sha256:330e5530b0f94e84902d4cfadda8646f4d9a3c9c1514741ef94bc6c2dc1f392b"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608271251-GHHA0Q"
+          task_revision: 24
+          to: "COMPLETED"
+          work_item_id: "isolate-prompt-test-environment"
+        mutation_id: "external-result:work-order-202608271251-GHHA0Q-executor-ba9bd3c5bf1b1d340c4e0692"
+        next_revision: 25
+        previous_revision: 24
+        schema_version: 1
+        task_id: "202608271251-GHHA0Q"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "54ed013b9e52173795ee80b5acdb7b47913b8b4b"
   task_execution_context:
     base_ref: "main"
     base_sha: "74c39ba73325b0808c46bdd0accb46a5a6cf2c22"
@@ -1020,6 +1222,78 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-2
 Scope: branch_pr task 202608271251-GHHA0Q declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271251-GHHA0Q-replace-obsolete-cli-test-expectations-with-arch/.agentplane/tasks/202608271251-GHHA0Q/blueprint/resolved-snapshot.json
+- old_digest: f1b26b57f079cbc23ac19906eea9e1d366ecf04d70a161651377eaada92ae52b
+- current_digest: f1b26b57f079cbc23ac19906eea9e1d366ecf04d70a161651377eaada92ae52b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608271251-GHHA0Q
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-27T13:25:32.555Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6f7c22f11187f4e6615945c14619958e49fde3021520d38b5c6d54807062d1da, input_digest=sha256:9c4ba3cf309d73f7d4073cdf9d053af930f4f962086bb83a8342c25461952a79
+
+Details:
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271251-GHHA0Q Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271251-GHHA0Q Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271251-GHHA0Q Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271251-GHHA0Q Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271251-GHHA0Q Verification Contract check full_regression
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271251-GHHA0Q Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271251-GHHA0Q Verification Contract check task_outcome (2/2)
 
 BlueprintSnapshotRef:
 - state: current
