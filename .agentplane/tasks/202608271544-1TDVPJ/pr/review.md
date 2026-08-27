@@ -12,8 +12,8 @@ Created: 2026-08-27T15:46:45.984Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads --maxWorkers=1
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
