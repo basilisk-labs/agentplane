@@ -3,7 +3,8 @@
   "branch": "task/202608271450-TZHW4C/modernize-structured-planner-intent-fixtures",
   "created_at": "2026-08-27T14:52:22.610Z",
   "diffstat_sha256": "sha256:6890e8426876d6bba7b4fc683b8815712a237945a9e6324bc6447e3b660295e8",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-27T16:43:24.368Z",
+  "last_verified_diffstat_sha256": "sha256:6890e8426876d6bba7b4fc683b8815712a237945a9e6324bc6447e3b660295e8",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202608271450-TZHW4C",
   "updated_at": "2026-08-27T14:52:22.610Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
