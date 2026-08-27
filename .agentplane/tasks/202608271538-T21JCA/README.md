@@ -2,10 +2,10 @@
 id: "202608271538-T21JCA"
 title: "Recover green behind PRs through provider branch update"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 38
+revision: 40
 origin:
   system: "manual"
 depends_on:
@@ -271,6 +271,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/shared/workflow-operation-prefix.ts, packages/agentplane/src/commands/shared/workflow-operation-projection.ts; repository effects: unchanged."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Recovery and executable continuation are implemented locally; 86 focused checks pass. Completing interrupted-after-fetch recovery without blocking new unpublished commits requires a local ancestry observation in publication status. Recommended action: Apply this exact scope extension, then issue a fresh EXECUTOR packet for the same WorkItem. Requested scope: roots=packages/agentplane/src/commands/pr/head-publication.test.ts,packages/agentplane/src/commands/pr/head-publication.ts; repository effects=unchanged; request digest=sha256:2e8384edad49f48daa0e8e190dbab1f6dabdfeec254c831739597316fc8f8e75. Agentplane receipt: external-agent-blocker/tr_79a902c369a97c92b3c8d7607da84ada/sha256:23fb57346c01616e464b8ea954936e7ad0bd67830b2cbb75aa7919de7c066157/sha256:2e8384edad49f48daa0e8e190dbab1f6dabdfeec254c831739597316fc8f8e75."
 events:
   -
     type: "status"
@@ -349,8 +352,15 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. supported continuation requires the two existing workflow command projection paths outside the current ten-file authority. Recommended action: Apply this exact scope extension, then issue a fresh EXECUTOR packet for the same WorkItem. Requested scope: roots=packages/agentplane/src/commands/shared/workflow-operation-prefix.ts,packages/agentplane/src/commands/shared/workflow-operation-projection.ts; repository effects=unchanged; request digest=sha256:f7686d827c4bcdd9cd17444f5b11ab35c343dd37703a1b5892fd3ef908772dd8. Agentplane receipt: external-agent-blocker/tr_3adf3c217cc0342f188239813cd43b35/sha256:edfdc1e3486e24c663581ffd34b8ee483eb5113c96a89cb57979642fcd89508f/sha256:f7686d827c4bcdd9cd17444f5b11ab35c343dd37703a1b5892fd3ef908772dd8."
+  -
+    type: "status"
+    at: "2026-08-27T18:02:10.453Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Recovery and executable continuation are implemented locally; 86 focused checks pass. Completing interrupted-after-fetch recovery without blocking new unpublished commits requires a local ancestry observation in publication status. Recommended action: Apply this exact scope extension, then issue a fresh EXECUTOR packet for the same WorkItem. Requested scope: roots=packages/agentplane/src/commands/pr/head-publication.test.ts,packages/agentplane/src/commands/pr/head-publication.ts; repository effects=unchanged; request digest=sha256:2e8384edad49f48daa0e8e190dbab1f6dabdfeec254c831739597316fc8f8e75. Agentplane receipt: external-agent-blocker/tr_79a902c369a97c92b3c8d7607da84ada/sha256:23fb57346c01616e464b8ea954936e7ad0bd67830b2cbb75aa7919de7c066157/sha256:2e8384edad49f48daa0e8e190dbab1f6dabdfeec254c831739597316fc8f8e75."
 doc_version: 3
-doc_updated_at: "2026-08-27T17:53:51.905Z"
+doc_updated_at: "2026-08-27T18:02:10.528Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the demonstrated recovery gap for an OPEN GitHub PR whose exact aligned head has successful required checks but whose provider mergeability is behind under strict protection. PR #5854 is the observed case: queue handoff after HTTP 405 required PR verification expected; no merge conflict, no live runner. Route the existing provider.pr.update_branch operation for coherent exact-head behind evidence, preserve stale-head/provider/base/authority guards, required checks, and queue ownership. Add focused regression tests. Do not merge or publish from semantic implementation, bypass protection, manufacture hosted failures, or rewrite frozen task bases."
 sections:
@@ -597,21 +607,19 @@ extensions:
     status: "active"
     task_id: "202608271538-T21JCA"
   agentplane.scope_extension_request:
-    applied_at: "2026-08-27T17:53:58.819Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:edfdc1e3486e24c663581ffd34b8ee483eb5113c96a89cb57979642fcd89508f"
+    blocker_state_fingerprint: "sha256:23fb57346c01616e464b8ea954936e7ad0bd67830b2cbb75aa7919de7c066157"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Use the registered managed task command for provider update continuation. Preserve the typed operation and exact authority; do not add a new CLI command or alter CI/policy/queue ownership."
+      rationale: "Complete the same interrupted-provider-update scenario while preserving ordinary publication of newer local commits. Add bounded local Git ancestry observation and regression tests. Do not change external effects, schemas, CI, policy, queue or release order."
       repository_effects: []
       schema_version: 1
       scope_roots:
-        - "packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
-        - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
-    request_digest: "sha256:f7686d827c4bcdd9cd17444f5b11ab35c343dd37703a1b5892fd3ef908772dd8"
+        - "packages/agentplane/src/commands/pr/head-publication.test.ts"
+        - "packages/agentplane/src/commands/pr/head-publication.ts"
+    request_digest: "sha256:2e8384edad49f48daa0e8e190dbab1f6dabdfeec254c831739597316fc8f8e75"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_3adf3c217cc0342f188239813cd43b35"
+    status: "pending"
+    transition_id: "tr_79a902c369a97c92b3c8d7607da84ada"
   agentplane.task_centric:
     current_plan:
       approval:
