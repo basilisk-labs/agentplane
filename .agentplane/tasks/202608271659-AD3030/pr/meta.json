@@ -3,7 +3,8 @@
   "branch": "task/202608271659-AD3030/preserve-task-identity-in-closeout-and-worktree",
   "created_at": "2026-08-27T21:02:51.479Z",
   "diffstat_sha256": "sha256:3adbed6704cbb2e666caf1a4edc6893c031c475ded7c4d370edf3aa1a8485f80",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-27T23:15:43.799Z",
+  "last_verified_diffstat_sha256": "sha256:3adbed6704cbb2e666caf1a4edc6893c031c475ded7c4d370edf3aa1a8485f80",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202608271659-AD3030",
   "updated_at": "2026-08-27T21:02:51.479Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
