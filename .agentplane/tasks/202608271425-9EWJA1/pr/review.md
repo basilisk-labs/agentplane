@@ -6,7 +6,7 @@ Created: 2026-08-27T14:29:58.630Z
 
 - Task: `202608271425-9EWJA1`
 - Title: Align PR fixtures with committed Git identity
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608271425-9EWJA1/align-pr-fixtures-with-committed-git-identity`
 - Canonical task record: `.agentplane/tasks/202608271425-9EWJA1/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-27T14:29:58.630Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T14:29:58.630Z
+- Updated: 2026-08-27T14:51:34.574Z
 - Branch: task/202608271425-9EWJA1/align-pr-fixtures-with-committed-git-identity
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
