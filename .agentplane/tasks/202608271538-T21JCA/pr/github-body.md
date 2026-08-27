@@ -12,8 +12,8 @@ In scope: packages/agentplane/src/commands/shared/provider-update-branch-route.t
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -33,12 +33,13 @@ In scope: packages/agentplane/src/commands/shared/provider-update-branch-route.t
  .../shared/provider-update-branch-route.ts         |  41 ++-
  .../route-decision-blockers.quality-review.test.ts | 124 +++++++-
  .../commands/shared/workflow-operation-prefix.ts   |   2 +-
+ .../workflow-operation-projection.registry.test.ts |  31 +-
  .../shared/workflow-operation-projection.ts        |  33 +--
  ...rkflow-step-projections.conflict-rework.test.ts | 258 +++++++++-------
  .../shared/workflow-step-provider-update-branch.ts |   5 +-
  .../task/branch-task-supervisor-operations.test.ts |  42 +--
  .../task/branch-task-supervisor-operations.ts      |   7 +-
- 14 files changed, 1021 insertions(+), 208 deletions(-)
+ 15 files changed, 1022 insertions(+), 238 deletions(-)
 ```
 
 </details>
