@@ -1,10 +1,11 @@
 ---
 id: "202608272129-DVS5NN"
 title: "Resolve protected integration handoffs from their owning checkout"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -62,6 +63,20 @@ quality_review:
     - "The observed-checks object retains earlier successful check tails under the existing stable-check identity behavior. Review uses the fresh supervisor verification record and the observed completed full run, not old tail timings as a new execution timestamp."
     - "Residual risk: The incident verification-target mismatch and provider-neutral error wording remain separate follow-up causes, not covered or altered by this patch."
     - "Residual risk: Local full CI is not final release prepublish qualification."
+token_usage:
+  agent_runs: 6
+  input_tokens: null
+  journal_digest: "sha256:9bda54f4e0c028ef835a4e95997c3dde17f0e3c886668c0d73069f6c9f205a5b"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-27T22:56:59.011Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -266,8 +281,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "db40fc44542cedbf516d4fef901c76bb73fe7aec"
-  message: "🚧 DVS5NN task: apply external agent result"
+  hash: "5d2f48ce48e8bf4538d9859cdd8544a0ef8d073e"
+  message: "🚧 DVS5NN task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -284,6 +299,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: db40fc44542c. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -334,9 +352,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-27T22:56:59.011Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "5d2f48ce48e8bf4538d9859cdd8544a0ef8d073e"
 doc_version: 3
-doc_updated_at: "2026-08-27T22:49:36.575Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-27T22:56:59.022Z"
+doc_updated_by: "CODER"
 description: "Repair the reproduced protected-integration handoff reader/owner mismatch on main db908ae90dd32609c6d12454fe87166a08e6ec4e. The focused integration diagnostic has 12 passing and 3 failing tests; run-cli.core.pr-conflict-rework.test.ts:842 fails because the expected legacy adoption route is unavailable. Confirm the exact route and cause before changing behavior. The integration writer persists the handoff on the base checkout, while task route hydration redirects readers to the task worktree. Real task handoff show from a worktree also failed to find the base-owned INTEGRATOR artifact. Cover one complete scenario: persisted protected-base handoff, task-worktree route/show/resume reads, explicit legacy adoption where applicable, repeat read/recovery, and the next transition. Use existing task execution ownership and base resolution. Reject wrong task, branch, head, base, PR identity, malformed or ambiguous evidence. Preserve direct and worktree-local handoff behavior. Keep read-only probes non-mutating. Do not copy or rewrite lifecycle artifacts, introduce a new state store, relax authority or exact-identity guards, change required CI, alter release/Core order, or implement AP-CORE-013. Scope the smallest necessary shared handoff reader, route/PR-flow consumers, and regression tests through a structured plan. The other two diagnostic failures, incident verification target and provider-neutral error wording, are separate causes and are out of scope. Run focused positive/negative/replay tests and full mandatory CI. The user authorized autonomous refactoring and supported exact operator approvals; release publication remains separate."
 sections:
   Summary: |-
@@ -792,7 +818,34 @@ extensions:
       schema_version: 1
       task_id: "202608272129-DVS5NN"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608272129-DVS5NN"
+            - "git:bd72b49eaf67bd2cfcf8170232d6c365de4c572c"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T22:49:32.357Z"
+          repository_snapshot_digest: "sha256:4c07c7fc3837fa3ed026e30f86274e9ecc58f4635b21d42579a9bbf3d5482ab7"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608272129-DVS5NN"
+            - "git:bd72b49eaf67bd2cfcf8170232d6c365de4c572c"
+          check_id: "diff-check"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T22:49:32.357Z"
+          repository_snapshot_digest: "sha256:4c07c7fc3837fa3ed026e30f86274e9ecc58f4635b21d42579a9bbf3d5482ab7"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608272129-DVS5NN"
     intent:
       acceptance_criteria:
@@ -813,12 +866,12 @@ extensions:
 
         Repair the reproduced protected-integration handoff reader/owner mismatch on main db908ae90dd32609c6d12454fe87166a08e6ec4e. The focused integration diagnostic has 12 passing and 3 failing tests; run-cli.core.pr-conflict-rework.test.ts:842 fails because the expected legacy adoption route is unavailable. Confirm the exact route and cause before changing behavior. The integration writer persists the handoff on the base checkout, while task route hydration redirects readers to the task worktree. Real task handoff show from a worktree also failed to find the base-owned INTEGRATOR artifact. Cover one complete scenario: persisted protected-base handoff, task-worktree route/show/resume reads, explicit legacy adoption where applicable, repeat read/recovery, and the next transition. Use existing task execution ownership and base resolution. Reject wrong task, branch, head, base, PR identity, malformed or ambiguous evidence. Preserve direct and worktree-local handoff behavior. Keep read-only probes non-mutating. Do not copy or rewrite lifecycle artifacts, introduce a new state store, relax authority or exact-identity guards, change required CI, alter release/Core order, or implement AP-CORE-013. Scope the smallest necessary shared handoff reader, route/PR-flow consumers, and regression tests through a structured plan. The other two diagnostic failures, incident verification target and provider-neutral error wording, are separate causes and are out of scope. Run focused positive/negative/replay tests and full mandatory CI. The user authorized autonomous refactoring and supported exact operator approvals; release publication remains separate.
       task_id: "202608272129-DVS5NN"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 19
     schema_version: 1
-    updated_at: "2026-08-27T22:15:30.575Z"
+    updated_at: "2026-08-27T22:56:59.011Z"
     work_items:
       repair-protected-handoff-readback:
         attempt: 1
@@ -896,11 +949,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608272129-DVS5NN"
+      legacy-finish:202608272129-DVS5NN:2026-08-27T22:49:32.357Z:bd72b49eaf67bd2cfcf8170232d6c365de4c572c:
+        aggregate_digest: "sha256:40b5553ae7ddc9d0bb8a03d6727f7447df1b5de0cbafd5bbef91248a55e5fa6b"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-27T22:56:59.011Z"
+          cause_refs:
+            - "task-verification:202608272129-DVS5NN"
+            - "git:bd72b49eaf67bd2cfcf8170232d6c365de4c572c"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_65ecdce1f2f02b11348fc3b3"
+          mutation_id: "legacy-finish:202608272129-DVS5NN:2026-08-27T22:49:32.357Z:bd72b49eaf67bd2cfcf8170232d6c365de4c572c"
+          plan_digest: "sha256:d4e602f5637f6025a37079f35f393e6a449494dc25e974efaabeab4ec7dfb009"
+          plan_revision: 1
+          repository_fingerprint: "sha256:4c07c7fc3837fa3ed026e30f86274e9ecc58f4635b21d42579a9bbf3d5482ab7"
+          schema_version: 1
+          task_id: "202608272129-DVS5NN"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608272129-DVS5NN:2026-08-27T22:49:32.357Z:bd72b49eaf67bd2cfcf8170232d6c365de4c572c"
+        next_revision: 19
+        previous_revision: 18
+        schema_version: 1
+        task_id: "202608272129-DVS5NN"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "db40fc44542cedbf516d4fef901c76bb73fe7aec"
+    hash: "bd72b49eaf67bd2cfcf8170232d6c365de4c572c"
+    message: "🚧 DVS5NN task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "db908ae90dd32609c6d12454fe87166a08e6ec4e"
@@ -1095,3 +1174,16 @@ Proved cause: protected integration persists its INTEGRATOR handoff in the base 
 Local evidence before documentation normalization: 83/83 focused owner-readback, negative, explicit-adoption, replay and next-transition tests passed; scoped lint, formatting, TypeScript build, diff and oversized-file checks passed. Independent manual full CI and supervisor-owned full CI passed for implementation bd72b49eaf67bd2cfcf8170232d6c365de4c572c. The broad core run retained one existing opt-in network packaging skip; this patch introduced no skip. Documentation changes require fresh supervisor verification and evaluation before publication.
 
 Residual causes: the incident post-closure verification-target mismatch and the provider-neutral integrate-error wording expectation are separate, unmodified follow-up work. No GitHub checks, integration, closure or release-prepublish success is claimed for this task yet.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/6` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:9bda54f4e0c028ef835a4e95997c3dde17f0e3c886668c0d73069f6c9f205a5b`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-27T22:56:59.011Z`
