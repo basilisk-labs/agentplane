@@ -4,7 +4,7 @@ title: "Preserve task identity in closeout and worktree fixtures"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on:
@@ -28,6 +28,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-27T23:17:26.287Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 5 typed finding(s)."
+  evaluated_sha: "37c73e481fb24ef71c13270b9c74ec22ba117040"
+  blueprint_digest: "0d09cb76e6021e2ef303a75461cc70335a3cea6d6f7bee5819b630d96da713fb"
+  evidence_refs:
+    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-231601668-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-231601668-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/90f0d1030d222fc87d8e92a8fc71195cb2c49a013eb106f43b8d570dab8cea0c.md"
+    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-231601668-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-231601668-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-231601668-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608271659-AD3030/quality/20260827-231601668-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608271659-AD3030/README.md"
+    - ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/6a54b986c4337537710c4beb64489bec480674ba7177b0351762cbc6ef90410f.patch"
+    - ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/d36ac47a0ebecb9519f911ec1314b9ad33af5c3ced863ba464a8788b49dec5b9.json"
+    - ".agentplane/tasks/202608271659-AD3030/verification/20260827231543799-24b0be63cfe9653d.json"
+    - ".agentplane/tasks/202608271659-AD3030/quality/objects/sha256/d0d238d23c3006d5e0d4d0953d1881f99c4173f65bfe5d0abfb7b08b76de5a06.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Reviewed diff preserves parsed task extensions and the immutable execution context instead of adding a duplicate YAML key. Real base commits are introduced only where the intended fixture contract requires them. Start-ready now asserts actual task-owned worktree mutation, unchanged base HEAD and absence of a recreated base README. Exact reviewed SHA, landed/rebased precedence and unresolved refusal remain intact."
+    - "All nine frozen evidence hashes match. Fresh supervisor ci:local:full passed in 505807ms and the exact four-file suite passed 27/27 in 16.29 seconds, without added skips or longer timeouts. The previously failing cleanup/authority cases also passed in isolation; parallel workload interference remains a hypothesis, not a proven cause."
+    - "The frozen task document has an empty Findings section. The loaded core DoD requires populated task documentation. Record the fixture causes, preserved behavior, successful current checks and the unresolved timeout-cause caveat through the supported task-document route before closeout. Do not change Verify Steps, the plan, source, checks or timeouts."
+    - "Residual risk: The remaining correction is task documentation only; do not reopen product or fixture scope."
+    - "Residual risk: Hosted exact-head checks and terminal integration remain required."
 execution_route:
   frozen: true
   reason_codes:
