@@ -22,7 +22,7 @@ Repair eight freshly reproduced fixture failures across task handoff, direct sup
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T16:53:10.841Z
+- Updated: 2026-08-27T17:07:32.507Z
 - Branch: task/202608271649-DVNTRR/modernize-task-continuity-and-approval-fixtures
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
