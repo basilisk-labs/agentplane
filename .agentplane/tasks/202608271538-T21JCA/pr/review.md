@@ -6,7 +6,7 @@ Created: 2026-08-27T15:41:27.859Z
 
 - Task: `202608271538-T21JCA`
 - Title: Recover green behind PRs through provider branch update
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608271538-T21JCA/recover-green-behind-prs-through-provider-branch`
 - Canonical task record: `.agentplane/tasks/202608271538-T21JCA/README.md`
 
