@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile, rm } from "node:fs/promises";
 import path from "node:path";
+import { gitRevParse } from "@agentplaneorg/core/git";
 
 import { canonicalizeJson, taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
 
@@ -26,6 +27,7 @@ import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import {
   loadCommandContext,
   loadTaskFromContext,
+  resolveTaskBranchFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
@@ -163,12 +165,17 @@ async function recordVerificationResult(opts: {
         const qualityReviewTaskIds = qualificationDependencies
           ? [...new Set([...batchTaskIds, ...qualificationDependencies.dependencyTaskIds])]
           : batchTaskIds;
+        const taskBranch =
+          workflowMode === "branch_pr"
+            ? await resolveTaskBranchFromContext({ ctx, taskId: current.id })
+            : null;
         const evaluatedSha = await resolveQualityReviewTargetSha({
           gitRoot: resolved.gitRoot,
           workflowDir: config.paths.workflow_dir,
           taskId: current.id,
           taskIds: qualityReviewTaskIds,
           lifecycleTaskIds: batchTaskIds,
+          headSha: taskBranch ? await gitRevParse(resolved.gitRoot, [taskBranch]) : undefined,
           previousEvaluatedSha:
             current.quality_review?.evaluated_sha ?? recordedTaskImplementationCommitSha(current),
           workflowMode,

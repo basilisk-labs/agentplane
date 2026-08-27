@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => ({
   loadTaskFromContext:
     vi.fn<(opts: { ctx: CommandContext; taskId: string }) => Promise<TaskData>>(),
   loadTaskCommandContext: vi.fn(),
+  resolveTaskBranchFromContext: vi.fn(),
   resolveTaskExecutionContext: vi.fn(),
   backendIsLocalFileBackend: vi.fn<(ctx: CommandContext) => boolean>(),
   getTaskStore: vi.fn(),
@@ -48,6 +49,7 @@ vi.mock("../shared/task-backend.js", () => ({
   backendUsesLocalTaskStore: mocks.backendIsLocalFileBackend,
   loadCommandContext: mocks.loadCommandContext,
   loadTaskFromContext: mocks.loadTaskFromContext,
+  resolveTaskBranchFromContext: mocks.resolveTaskBranchFromContext,
 }));
 vi.mock("../shared/reconcile-check.js", () => ({
   ensureReconciledBeforeMutation: mocks.ensureReconciledBeforeMutation,
@@ -117,6 +119,7 @@ describe("task verify record (unit)", () => {
         Promise.resolve(executionContext(ctx, primaryTaskId)),
     );
     mocks.resolveQualityReviewTargetSha.mockResolvedValue(null);
+    mocks.resolveTaskBranchFromContext.mockResolvedValue(null);
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
     mocks.ensureReconciledBeforeMutation.mockResolvedValue();
