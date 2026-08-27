@@ -1,10 +1,11 @@
 ---
 id: "202608271649-DVNTRR"
 title: "Modernize task continuity and approval fixtures"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -60,6 +61,20 @@ quality_review:
     - "The publish-risk test retains risk_publish before structured planning and checks effect_publish after the typed declaration, while retaining branch_pr and worktree assertions. This tests both architectural stages rather than deleting the old safety contract."
     - "Frozen verification20260827170718338-d32fb33a649bef9e binds implementation56e4367136dd17997ced56fe2de81990e06cdb2a. Full CI passed in503011ms; all9focused cases passed in19591ms. Only CLI-owned PR/quality artifacts appeared during evaluation."
     - "Residual risk: Local fixture qualification does not establish hosted exact-head readiness or release:prepublish readiness."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:4edd76474f8b59ac1ebd4e6ec8b9d2a3e8562a1579fff6d994a98967d24cebec"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-27T17:09:25.567Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -251,8 +266,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "56e4367136dd17997ced56fe2de81990e06cdb2a"
-  message: "🚧 DVNTRR task: apply external agent result"
+  hash: "aaa9634abfcdfb805a0a8e9796b3f595e6f351de"
+  message: "🚧 DVNTRR task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -260,6 +275,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 56e4367136dd. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -282,9 +300,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-27T17:09:25.567Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "aaa9634abfcdfb805a0a8e9796b3f595e6f351de"
 doc_version: 3
-doc_updated_at: "2026-08-27T17:07:20.482Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-27T17:09:25.578Z"
+doc_updated_by: "CODER"
 description: "Repair eight freshly reproduced fixture failures across task handoff, direct supervisor approval, next-action JSON and route escalation. Scope only run-cli.core.task-handoff.test.ts, run-cli.core.direct-task-supervision.test.ts, run-cli.core.task-next-action-json.test.ts, run-cli.core.task-routing.test.ts and a new local task-continuity.testkit.ts under packages/agentplane/src/cli. Use real committed Git baselines and typed TaskPlanProposal from the actual PLANNER work order. Preserve task kind, mutation, risk and requested route in fixture proposals. Keep explicit approval ungranted in the supervisor stop test. Retain stale claimed-run cancellation, unclaimed-run refusal, branch snapshot precedence, exact authority/head preservation, JSON aliases and state fingerprints, user-question precedence, and publish-risk branch escalation. No production, global testkit, CI, policy, timeout or roadmap changes. Do not modify the old0.6 P5BWP0 task or its artifacts. This is a new0.7.8 qualification repair on current main, disjoint from all active source edits. Require all9 existing scenarios, focused lint/format, full CI, EVALUATOR and hosted exact-head proof."
 sections:
   Summary: |-
@@ -597,7 +623,34 @@ extensions:
       schema_version: 1
       task_id: "202608271649-DVNTRR"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608271649-DVNTRR"
+            - "git:56e4367136dd17997ced56fe2de81990e06cdb2a"
+          check_id: "scoped-tests"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts --pool=forks --maxWorkers=1"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T17:07:18.338Z"
+          repository_snapshot_digest: "sha256:6df2c89747ed35c9079787b576f4330c97257d5a46945ffbdb48fd551be68a2a"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608271649-DVNTRR"
+            - "git:56e4367136dd17997ced56fe2de81990e06cdb2a"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T17:07:18.338Z"
+          repository_snapshot_digest: "sha256:6df2c89747ed35c9079787b576f4330c97257d5a46945ffbdb48fd551be68a2a"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608271649-DVNTRR"
     intent:
       acceptance_criteria:
@@ -618,12 +671,12 @@ extensions:
 
         Repair eight freshly reproduced fixture failures across task handoff, direct supervisor approval, next-action JSON and route escalation. Scope only run-cli.core.task-handoff.test.ts, run-cli.core.direct-task-supervision.test.ts, run-cli.core.task-next-action-json.test.ts, run-cli.core.task-routing.test.ts and a new local task-continuity.testkit.ts under packages/agentplane/src/cli. Use real committed Git baselines and typed TaskPlanProposal from the actual PLANNER work order. Preserve task kind, mutation, risk and requested route in fixture proposals. Keep explicit approval ungranted in the supervisor stop test. Retain stale claimed-run cancellation, unclaimed-run refusal, branch snapshot precedence, exact authority/head preservation, JSON aliases and state fingerprints, user-question precedence, and publish-risk branch escalation. No production, global testkit, CI, policy, timeout or roadmap changes. Do not modify the old0.6 P5BWP0 task or its artifacts. This is a new0.7.8 qualification repair on current main, disjoint from all active source edits. Require all9 existing scenarios, focused lint/format, full CI, EVALUATOR and hosted exact-head proof.
       task_id: "202608271649-DVNTRR"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 10
+    revision: 13
     schema_version: 1
-    updated_at: "2026-08-27T17:07:21.581Z"
+    updated_at: "2026-08-27T17:09:25.567Z"
     work_items:
       repair-continuity-fixtures:
         attempt: 1
@@ -701,11 +754,37 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202608271649-DVNTRR"
+      legacy-finish:202608271649-DVNTRR:2026-08-27T17:07:18.338Z:56e4367136dd17997ced56fe2de81990e06cdb2a:
+        aggregate_digest: "sha256:94c9f76055da1b42a5c61898420cda1ea023a31bb0e9d94d2cb53cb5febd1023"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-27T17:09:25.567Z"
+          cause_refs:
+            - "task-verification:202608271649-DVNTRR"
+            - "git:56e4367136dd17997ced56fe2de81990e06cdb2a"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_82a0a322cb7fdbbbf5dcdab7"
+          mutation_id: "legacy-finish:202608271649-DVNTRR:2026-08-27T17:07:18.338Z:56e4367136dd17997ced56fe2de81990e06cdb2a"
+          plan_digest: "sha256:12f1eedce20f8ce708bcae897dafd74423968710a04a8052568476364148ccdf"
+          plan_revision: 1
+          repository_fingerprint: "sha256:6df2c89747ed35c9079787b576f4330c97257d5a46945ffbdb48fd551be68a2a"
+          schema_version: 1
+          task_id: "202608271649-DVNTRR"
+          task_revision: 10
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608271649-DVNTRR:2026-08-27T17:07:18.338Z:56e4367136dd17997ced56fe2de81990e06cdb2a"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202608271649-DVNTRR"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "56e4367136dd17997ced56fe2de81990e06cdb2a"
+    message: "🚧 DVNTRR task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "2c9a2f59146c302c517524136e66abb902f92ba6"
@@ -822,3 +901,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:4edd76474f8b59ac1ebd4e6ec8b9d2a3e8562a1579fff6d994a98967d24cebec`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-27T17:09:25.567Z`
