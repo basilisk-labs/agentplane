@@ -8,6 +8,7 @@ import { updateProviderBranch } from "./provider-update-branch.js";
 import { resolvePrHeadPublicationStatus } from "./head-publication.js";
 import { reconcileProviderUpdateLocalHead } from "./provider-update-branch-local.js";
 import type { ObservedChangeRequest } from "./internal/change-request-model.js";
+import { providerUpdateBranchParams } from "../shared/provider-update-branch-route.js";
 
 const mocks = vi.hoisted(() => ({
   observe: vi.fn(),
@@ -150,6 +151,89 @@ describe("provider update local continuity", () => {
     expect(await git(f.root, "rev-parse", "HEAD")).toBe(f.oldHead);
     expect(await readFile(path.join(f.root, "task.txt"), "utf8")).toBe("uncommitted user work\n");
   });
+
+  it.each([false, true])(
+    "recovers after exhausted readback with tracking already fetched: %s",
+    async (fetched) => {
+      const f = await fixture();
+      mocks.observe.mockResolvedValue({ state: "found", pr: f.observed(f.oldHead) });
+      expect(await updateProviderBranch(f.request)).toMatchObject({ state: "effect_in_doubt" });
+      expect(await git(f.root, "rev-parse", "HEAD")).toBe(f.oldHead);
+      expect(mocks.observe).toHaveBeenCalledTimes(5);
+      if (fetched) await git(f.root, "fetch", "origin");
+      const publication = await resolvePrHeadPublicationStatus({
+        gitRoot: f.root,
+        branch: f.branch,
+        localHeadSha: f.oldHead,
+        providerObservation: { state: "found", headSha: f.newHead },
+      });
+      const providerPr = { ...f.observed(f.newHead), mergeability: null };
+      const flow = {
+        task: { id: "T-1", status: "DONE", verification: "ok" },
+        branch: { name: f.branch, headSha: f.oldHead, metaHeadSha: f.oldHead },
+        pr: {
+          provider: "github" as const,
+          state: "OPEN" as const,
+          source: "lookup" as const,
+          prNumber: 42,
+          prUrl: providerPr.prUrl,
+          base: "main",
+          headSha: f.newHead,
+          mergeCommit: null,
+        },
+        providerObservation: { state: "found" as const, pr: providerPr },
+        publication,
+        hostedChecks: { checked: false as const, reason: "new head pending" },
+        reviewThreads: { checked: false as const, reason: "not needed for reconciliation" },
+        closeTail: { state: "not_applicable" as const, reason: "open" },
+        queue: { present: false as const },
+        handoff: { present: false as const },
+        nextAction: "",
+      };
+      const params = providerUpdateBranchParams(flow);
+      expect(params).toMatchObject({ expectedHeadSha: f.oldHead, reconcileHeadSha: f.newHead });
+      if (!params) throw new Error("Missing reconciliation route");
+      mocks.observe.mockResolvedValue({ state: "found", pr: providerPr });
+      expect(await updateProviderBranch({ gitRoot: f.root, ...params })).toMatchObject({
+        state: "updated",
+        effect: "reconciled",
+      });
+      const head = await git(f.root, "rev-parse", "HEAD");
+      expect(head).toBe(f.newHead);
+      expect(await git(f.root, "rev-parse", "@{upstream}")).toBe(head);
+      const aligned = await resolvePrHeadPublicationStatus({
+        gitRoot: f.root,
+        branch: f.branch,
+        localHeadSha: head,
+        providerObservation: { state: "found", headSha: head },
+      });
+      expect(aligned.state).toBe("aligned");
+      expect(
+        providerUpdateBranchParams({
+          ...flow,
+          branch: { ...flow.branch, headSha: head },
+          publication: aligned,
+        }),
+      ).toBeNull();
+      expect(mocks.api.mock.calls.filter(([, args]) => args.includes("PUT"))).toHaveLength(1);
+      await git(f.root, "commit", "--allow-empty", "-m", "next local implementation");
+      const nextHead = await git(f.root, "rev-parse", "HEAD");
+      const unpublished = await resolvePrHeadPublicationStatus({
+        gitRoot: f.root,
+        branch: f.branch,
+        localHeadSha: nextHead,
+        providerObservation: { state: "found", headSha: f.newHead },
+      });
+      expect(unpublished.state).toBe("unpublished");
+      expect(
+        providerUpdateBranchParams({
+          ...flow,
+          branch: { ...flow.branch, headSha: nextHead },
+          publication: unpublished,
+        }),
+      ).toBeNull();
+    },
+  );
 
   it.each(["untracked", "staged", "branch", "head", "remote", "upstream"])(
     "rejects local %s drift before the provider mutation",

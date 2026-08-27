@@ -12,18 +12,8 @@ In scope: packages/agentplane/src/commands/shared/provider-update-branch-route.t
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Real GitHub continuation reproduced delayed-readback failure and an unregistered rendered pr
-update-branch command. Provider advanced to8518b71c495e8dd1c4765dcb36cb7708d15c5205 but immediate
-readback retained13bee78d; the next route proposed stale publication. The user explicitly approved
-one local-only fast-forward recovery; exact clean checkout, remote identity and
-old-head/current-main ancestry were proved before synchronization. No publication, repeated PUT, PR
-merge or journal edit occurred. Rework must cover delayed observation, restart reconciliation, no
-stale publication, exact authority and executable continuation.
-```
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -34,17 +24,21 @@ stale publication, exact authority and executable continuation.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../pr/provider-update-branch-local.test.ts        | 241 +++++++++++++++++++++
- .../commands/pr/provider-update-branch-local.ts    |  89 ++++++++
- .../src/commands/pr/provider-update-branch.test.ts |  34 ++-
- .../src/commands/pr/provider-update-branch.ts      |  29 ++-
- .../shared/provider-update-branch-route.ts         |   5 +-
- .../route-decision-blockers.quality-review.test.ts | 106 ++++++++-
- ...rkflow-step-projections.conflict-rework.test.ts | 228 ++++++++++---------
- .../shared/workflow-step-provider-update-branch.ts |   2 +-
- .../task/branch-task-supervisor-operations.test.ts |   1 +
- .../task/branch-task-supervisor-operations.ts      |   4 +-
- 10 files changed, 627 insertions(+), 112 deletions(-)
+ .../src/commands/pr/head-publication.test.ts       |  34 ++-
+ .../agentplane/src/commands/pr/head-publication.ts |  11 +-
+ .../pr/provider-update-branch-local.test.ts        | 325 +++++++++++++++++++++
+ .../commands/pr/provider-update-branch-local.ts    |  89 ++++++
+ .../src/commands/pr/provider-update-branch.test.ts | 101 ++++++-
+ .../src/commands/pr/provider-update-branch.ts      | 157 +++++++---
+ .../shared/provider-update-branch-route.ts         |  41 ++-
+ .../route-decision-blockers.quality-review.test.ts | 124 +++++++-
+ .../commands/shared/workflow-operation-prefix.ts   |   2 +-
+ .../shared/workflow-operation-projection.ts        |  33 +--
+ ...rkflow-step-projections.conflict-rework.test.ts | 258 +++++++++-------
+ .../shared/workflow-step-provider-update-branch.ts |   5 +-
+ .../task/branch-task-supervisor-operations.test.ts |  42 +--
+ .../task/branch-task-supervisor-operations.ts      |   7 +-
+ 14 files changed, 1021 insertions(+), 208 deletions(-)
 ```
 
 </details>

@@ -548,6 +548,26 @@ describe("DONE route quality-review target", () => {
     );
   });
 
+  it("requires reconciliation of a coherent mismatched head before stale publication", async () => {
+    const flow = failingHostedPrFlow("unknown", { mergeabilityState: "unknown" });
+    const hosted = "c".repeat(40);
+    flow.pr.headSha = hosted;
+    if (flow.providerObservation?.state === "found") flow.providerObservation.pr.headSha = hosted;
+    flow.publication = {
+      state: "hosted_mismatch",
+      localHeadSha: headSha,
+      upstreamRef: "origin/task/T-1/metadata-gate",
+      upstreamHeadSha: headSha,
+      hostedHeadSha: hosted,
+    };
+    flow.hostedChecks = { checked: false, reason: "updated checks not available" };
+    expect(await blockersFor(reviewedSha, undefined, flow)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ code: "provider_pr_update_branch_required" }),
+      ]),
+    );
+  });
+
   it.each([
     ["clean provider state", failingHostedPrFlow("clean")],
     [

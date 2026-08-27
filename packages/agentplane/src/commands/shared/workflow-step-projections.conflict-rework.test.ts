@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { findCommandEntry } from "../../cli/run-cli/command-catalog.js";
+import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
@@ -632,11 +634,13 @@ describe("WorkflowStep conflict rework projections", () => {
     { label: "failing checks", failing: 1, handoff: false },
     { label: "passing checks", failing: 0, handoff: false },
     { label: "passing checks after integration handoff", failing: 0, handoff: true },
+    { label: "interrupted before fetch", failing: 0, handoff: false, recovery: "before_fetch" },
+    { label: "interrupted after fetch", failing: 0, handoff: false, recovery: "after_fetch" },
   ])(
     "routes an exact aligned GitHub behind state with $label to a digest-bound provider update",
-    ({ failing, handoff }) => {
+    ({ failing, handoff, recovery }) => {
       const baseSha = "2222222222222222222222222222222222222222";
-      const behindPrFlow = {
+      const behindPrFlow: PrFlowStatusReport = {
         task: { id: task.id, status: "DONE", verification: "ok" },
         branch: { name: taskBranch, headSha: resume.head_sha, metaHeadSha: resume.head_sha },
         pr: {
@@ -706,6 +710,26 @@ describe("WorkflowStep conflict rework projections", () => {
         handoff: { present: false },
         nextAction: "the PR branch is behind main",
       } satisfies PrFlowStatusReport;
+      const recoveredHead = "3".repeat(40);
+      if (recovery) {
+        behindPrFlow.pr.headSha = recoveredHead;
+        if (behindPrFlow.providerObservation?.state === "found") {
+          behindPrFlow.providerObservation.pr.headSha = recoveredHead;
+          behindPrFlow.providerObservation.pr.mergeability = {
+            state: "unknown",
+            mergeable: null,
+            providerState: "unknown",
+          };
+        }
+        behindPrFlow.publication = {
+          ...behindPrFlow.publication!,
+          state: "hosted_mismatch",
+          localHeadSha: resume.head_sha,
+          upstreamHeadSha: recovery === "after_fetch" ? recoveredHead : resume.head_sha,
+          hostedHeadSha: recoveredHead,
+        };
+        behindPrFlow.hostedChecks = { checked: false, reason: "updated head not checked yet" };
+      }
       const state = routeState({
         task: { ...task, status: "DONE", verification: { state: "ok" } },
         resume: { ...resume, task_status: "DONE" },
@@ -736,10 +760,16 @@ describe("WorkflowStep conflict rework projections", () => {
               baseBranch: "main",
               expectedHeadSha: resume.head_sha,
               expectedBaseSha: baseSha,
+              ...(recovery ? { reconcileHeadSha: recoveredHead } : {}),
             },
           },
         },
       });
+      if (step.kind !== "approval" || step.request.type !== "side_effect")
+        throw new Error("Expected authority boundary");
+      const argv = projectWorkflowOperationArgv(step.request.operation);
+      expect(argv).toEqual(["agentplane", "task", "run", task.id, "--remote", "--json"]);
+      expect(findCommandEntry(argv.slice(1, 3))?.spec.id).toEqual(["task", "run"]);
       expect(step.id).not.toBe("agent.implementation_rework");
       expect(oracle).toMatchObject({
         phase: "side_effect_authority_required",
