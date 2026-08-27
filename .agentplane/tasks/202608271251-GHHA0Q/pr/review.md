@@ -6,7 +6,7 @@ Created: 2026-08-27T12:55:50.935Z
 
 - Task: `202608271251-GHHA0Q`
 - Title: Replace obsolete CLI test expectations with architecture-aligned contracts
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608271251-GHHA0Q/replace-obsolete-cli-test-expectations-with-arch`
 - Canonical task record: `.agentplane/tasks/202608271251-GHHA0Q/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-27T12:55:50.935Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T12:55:50.935Z
+- Updated: 2026-08-27T13:25:46.511Z
 - Branch: task/202608271251-GHHA0Q/replace-obsolete-cli-test-expectations-with-arch
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
