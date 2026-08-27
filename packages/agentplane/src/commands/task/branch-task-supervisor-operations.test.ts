@@ -201,26 +201,32 @@ describe("branch task supervisor operations", () => {
     });
   });
 
-  it("executes the exact provider update-branch operation and reports proven readback", async () => {
-    const operation = updateBranchOperation();
+  it.each([false, true])(
+    "executes the exact provider update operation with reconciliation-only mode: %s",
+    async (reconcile) => {
+      const operation = updateBranchOperation();
+      if (reconcile) operation.params.reconcileHeadSha = "c".repeat(40);
 
-    const result = await executeBranchWorkflowOperation({
-      decision: routeDecision(operation),
-      operation,
-    });
+      const result = await executeBranchWorkflowOperation({
+        decision: routeDecision(operation),
+        operation,
+      });
 
-    expect(result.status).toBe("succeeded");
-    expect(result.observed_postconditions).toContain("provider_branch_updated");
-    expect(mocks.updateProviderBranch).toHaveBeenCalledWith({
-      gitRoot: "/repo",
-      identity: operation.params.identity,
-      prNumber: 42,
-      branch: operation.params.branch,
-      baseBranch: "main",
-      expectedHeadSha: "b".repeat(40),
-      expectedBaseSha: "a".repeat(40),
-    });
-  });
+      expect(result.status).toBe("succeeded");
+      expect(result.observed_postconditions).toContain("provider_branch_updated");
+      expect(mocks.updateProviderBranch).toHaveBeenCalledWith({
+        gitRoot: "/repo",
+        worktreePath: "/repo/task",
+        identity: operation.params.identity,
+        prNumber: 42,
+        branch: operation.params.branch,
+        baseBranch: "main",
+        expectedHeadSha: "b".repeat(40),
+        expectedBaseSha: "a".repeat(40),
+        ...(reconcile ? { reconcileHeadSha: "c".repeat(40) } : {}),
+      });
+    },
+  );
 
   it("requires a distinct supervisor operation after a pre-effect provider failure", async () => {
     const operation = updateBranchOperation();
