@@ -1,10 +1,10 @@
 ---
 id: "202608272129-DVS5NN"
 title: "Resolve protected integration handoffs from their owning checkout"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -274,6 +274,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: bd72b49eaf67. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The only evaluator rework is task-document normalization, but this EXECUTOR packet protects .agentplane/tasks and permits only eight implementation paths. No workspace or source changes were made. Recommended action: At the operator boundary, use supported task doc set commands to replace only Verify Steps and Findings for 202608272129-DVS5NN. Preserve the approved implementation plan and all mandatory checks. Then request a fresh semantic packet. Agentplane receipt: external-agent-blocker/tr_6594ff8695628b5c9d7709a8ced14d4e/sha256:b7e46c713eba8bc7f634629983628855425e0dbe0dfa8f546241b9ebf36f295c."
 events:
   -
     type: "status"
@@ -296,8 +299,15 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-27T22:22:18.568Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The only evaluator rework is task-document normalization, but this EXECUTOR packet protects .agentplane/tasks and permits only eight implementation paths. No workspace or source changes were made. Recommended action: At the operator boundary, use supported task doc set commands to replace only Verify Steps and Findings for 202608272129-DVS5NN. Preserve the approved implementation plan and all mandatory checks. Then request a fresh semantic packet. Agentplane receipt: external-agent-blocker/tr_6594ff8695628b5c9d7709a8ced14d4e/sha256:b7e46c713eba8bc7f634629983628855425e0dbe0dfa8f546241b9ebf36f295c."
 doc_version: 3
-doc_updated_at: "2026-08-27T22:15:29.511Z"
+doc_updated_at: "2026-08-27T22:22:18.568Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the reproduced protected-integration handoff reader/owner mismatch on main db908ae90dd32609c6d12454fe87166a08e6ec4e. The focused integration diagnostic has 12 passing and 3 failing tests; run-cli.core.pr-conflict-rework.test.ts:842 fails because the expected legacy adoption route is unavailable. Confirm the exact route and cause before changing behavior. The integration writer persists the handoff on the base checkout, while task route hydration redirects readers to the task worktree. Real task handoff show from a worktree also failed to find the base-owned INTEGRATOR artifact. Cover one complete scenario: persisted protected-base handoff, task-worktree route/show/resume reads, explicit legacy adoption where applicable, repeat read/recovery, and the next transition. Use existing task execution ownership and base resolution. Reject wrong task, branch, head, base, PR identity, malformed or ambiguous evidence. Preserve direct and worktree-local handoff behavior. Keep read-only probes non-mutating. Do not copy or rewrite lifecycle artifacts, introduce a new state store, relax authority or exact-identity guards, change required CI, alter release/Core order, or implement AP-CORE-013. Scope the smallest necessary shared handoff reader, route/PR-flow consumers, and regression tests through a structured plan. The other two diagnostic failures, incident verification target and provider-neutral error wording, are separate causes and are out of scope. Run focused positive/negative/replay tests and full mandatory CI. The user authorized autonomous refactoring and supported exact operator approvals; release publication remains separate."
 sections:
