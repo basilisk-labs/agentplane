@@ -1,0 +1,101 @@
+{
+  "details": null,
+  "digest": "sha256:40e332b32f5ff76b55ca4877653f04de1186c9e580fa06e3e507e2a51a9108ab",
+  "implementation_sha": "7266db812ee6925d8a88264cec9967167c607277",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:4a005818363831666a4342843464a772e9d07a04de415dfcba2acee32f98f515",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+      "digest": "sha256:9525a07f348b3cdc6fa9023563d761474545cdd270c1a0498d6f8d1ef1f1cf7c",
+      "primary_task_id": "202608271538-T21JCA",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608271538-T21JCA"
+      ]
+    },
+    "implementation": {
+      "base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+      "digest": "sha256:cbe8e4553f7e4836c9827e0b9fa4a69d75f160aa8e43001cf15a10bb3223134d",
+      "strategy": "branch_diff",
+      "target_sha": "7266db812ee6925d8a88264cec9967167c607277"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:316bbb0db9035f5eb940d98b2eb1b1b5b7d95712748ae1acc450a2f2ce73ebb0",
+    "verify_steps_digest": "sha256:8c71019fa5684e8ff9d5d23ad0d170ed62240513f04eb799db555d5a9e957885"
+  },
+  "kind": "task_verification_record",
+  "note": "Real GitHub continuation reproduced delayed-readback failure and an unregistered rendered pr update-branch command. Provider advanced to8518b71c495e8dd1c4765dcb36cb7708d15c5205 but immediate readback retained13bee78d; the next route proposed stale publication. The user explicitly approved one local-only fast-forward recovery; exact clean checkout, remote identity and old-head/current-main ancestry were proved before synchronization. No publication, repeated PUT, PR merge or journal edit occurred. Rework must cover delayed observation, restart reconciliation, no stale publication, exact authority and executable continuation.",
+  "recorded_at": "2026-08-27T17:51:17.746Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1`. Expected: all tests pass without skips or weaker guards.\n2. Run `bun run ci:local:full`. Expected: all tests pass without skips or weaker guards.\n3. Review local preservation, exact provider identity, ancestry and next-route alignment across successful update and interrupted retry. Require hosted exact-head checks and resolved PR review before integration.",
+  "scope_digest": "sha256:8c71019fa5684e8ff9d5d23ad0d170ed62240513f04eb799db555d5a9e957885",
+  "task_id": "202608271538-T21JCA",
+  "verification_command": "agentplane task verify rework 202608271538-T21JCA --rework --by REVIEWER",
+  "verifier": "REVIEWER"
+}
