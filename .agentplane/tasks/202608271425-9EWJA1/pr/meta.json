@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:5de2e80beacfb776389efa54baaa2a53fce6055ae2052317f012d48cac6f0f7e",
   "pr_number": 5854,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5854",
+  "pre_merge_closure": {
+    "basis_commit": "0e904fc5b847102091a567c817fa69af60a5f566",
+    "branch": "task/202608271425-9EWJA1/align-pr-fixtures-with-committed-git-identity",
+    "pr_number": 5854,
+    "recorded_at": "2026-08-27T14:53:45.893Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
