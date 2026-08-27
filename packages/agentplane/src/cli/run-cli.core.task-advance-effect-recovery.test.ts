@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
+import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 
 import {
   advanceSupervisorExecutionEpisodeState,
@@ -14,7 +15,7 @@ import {
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
-  mkGitRepoRootWithBranch,
+  mkGitRepoRootWithCommit,
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
@@ -41,6 +42,9 @@ import {
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
 import { readRouteFingerprint } from "./run-cli.core.task-advance.testkit.js";
+import { recoveryPlanningProposal } from "./task-advance-effect-recovery.testkit.js";
+import { applyExternalPlanningResult } from "../commands/task/external-agent-planning-authority.js";
+import { loadCommandContext } from "../commands/shared/task-backend.js";
 
 installRunCliIntegrationHarness();
 
@@ -100,7 +104,7 @@ async function writePlanningResult(packet: AgentPacket, summary: string): Promis
   if (!packet.exchange) throw new Error("expected an external-agent exchange");
   const workOrder = JSON.parse(
     await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
-  ) as { work_order_id: string; role: string };
+  ) as AgentWorkOrderV2;
   const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
   await writeFile(
     resultPath,
@@ -120,6 +124,9 @@ async function writePlanningResult(packet: AgentPacket, summary: string): Promis
           summary,
           findings: [],
           uncertainty: [],
+          ...(workOrder.role === "PLANNER"
+            ? { task_plan_proposal: recoveryPlanningProposal(workOrder, summary) }
+            : {}),
         },
       },
       null,
@@ -230,7 +237,7 @@ describe("task advance effect recovery", () => {
   });
 
   it("retires a drifted result-less exchange and issues one exact-key replacement", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -340,7 +347,7 @@ describe("task advance effect recovery", () => {
   });
 
   it("recovers an interrupted formal verification before issuing the next agent episode", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -416,7 +423,7 @@ describe("task advance effect recovery", () => {
   });
 
   it("reconciles a retired exchange whose journal intent survived interruption", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -493,7 +500,7 @@ describe("task advance effect recovery", () => {
   });
 
   it("rejects replacement when no terminal operation failure exists", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -510,7 +517,7 @@ describe("task advance effect recovery", () => {
   });
 
   it("requires an explicit exact-key replacement after a known operation failure", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -573,7 +580,7 @@ describe("task advance effect recovery", () => {
   });
 
   it("refreshes a pending exact-key replacement after route state changes", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -646,7 +653,7 @@ describe("task advance effect recovery", () => {
   });
 
   it("rejects replacement while accepting an external result", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -675,7 +682,7 @@ describe("task advance effect recovery", () => {
   });
 
   it("automatically applies a durably received result on the next plain advance", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -725,7 +732,7 @@ describe("task advance effect recovery", () => {
   });
 
   it("rejects a conflicting replay after the original result was consumed", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -776,7 +783,7 @@ describe("task advance effect recovery", () => {
   });
 
   it("reconciles an exact approved planning result without replaying the agent", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -784,19 +791,34 @@ describe("task advance effect recovery", () => {
     const issued = await readAgentPacket(root, taskId);
     const plan = "1. Preserve the original intent. 2. Apply its observed result exactly once.";
     const resultPath = await writePlanningResult(issued, plan);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      plan,
-      "--updated-by",
-      "PLANNER",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    if (!issued.exchange) throw new Error("expected an external-agent exchange");
+    const exchange = JSON.parse(
+      await readFile(path.join(issued.exchange.directory, "exchange.json"), "utf8"),
+    ) as ExternalAgentExchange;
+    const workOrder = JSON.parse(
+      await readFile(path.join(issued.exchange.directory, issued.exchange.work_order_ref), "utf8"),
+    ) as AgentWorkOrderV2;
+    const envelope = validateExternalAgentResultEnvelope({
+      raw: JSON.parse(await readFile(resultPath, "utf8")) as unknown,
+      exchange,
+      work_order: workOrder,
+    });
+    // Simulate interruption after the real planning effect, before journal completion.
+    await applyExternalPlanningResult({
+      command: await loadCommandContext({ cwd: root, rootOverride: root }),
+      exchange,
+      envelope,
+      work_order: workOrder,
+    });
+    expect(
+      await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
+    ).toBe(0);
+    const appliedContext = await loadCommandContext({ cwd: root, rootOverride: root });
+    const appliedTask = await appliedContext.taskBackend.getTask(taskId);
+    expect(appliedTask?.sections?.Plan?.trim()).toBe(plan);
+    expect(
+      taskCentricAggregateFromExtensions(appliedTask?.extensions)?.current_plan?.proposal,
+    ).toEqual(envelope.result.task_plan_proposal);
     const journalPath = await resolveSupervisorExecutionEpisodePath({
       git_root: root,
       task_id: taskId,
@@ -843,7 +865,7 @@ describe("task advance effect recovery", () => {
   });
 
   it("rejects a late planning result when a different plan awaits approval", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
