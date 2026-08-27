@@ -1,0 +1,477 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts b/packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts
+index 1a10b3af4..610eae4b2 100644
+--- a/packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts
+@@ -1,20 +1,17 @@
++import { prepareContinuityPlan } from "./task-continuity.testkit.js";
++
+ import { describe, expect, it } from "vitest";
+ 
+ import { runCli } from "./run-cli.js";
+ import { agentTransitionId } from "../commands/task/agent-action-packet.js";
+-import {
+-  captureStdIO,
+-  defaultConfig,
+-  mkGitRepoRootWithBranch,
+-  writeConfig,
+-} from "@agentplane/testkit/cli-core-pr-flow";
+-import { installRunCliIntegrationHarness } from "@agentplane/testkit";
++import { captureStdIO, defaultConfig, writeConfig } from "@agentplane/testkit/cli-core-pr-flow";
++import { installRunCliIntegrationHarness, mkGitRepoRootWithCommit } from "@agentplane/testkit";
+ 
+ installRunCliIntegrationHarness();
+ 
+ describe("runCli direct task supervision", () => {
+   it("stops before starting an EXECUTOR when the plan still requires approval", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+     await writeConfig(root, config);
+@@ -45,24 +42,16 @@ describe("runCli direct task supervision", () => {
+       createIo.restore();
+     }
+ 
+-    expect(
+-      await runCli([
+-        "task",
+-        "plan",
+-        "set",
+-        taskId,
+-        "--text",
+-        "1. Exercise the direct supervisor approval boundary.\n2. Confirm no provider starts before approval.",
+-        "--updated-by",
+-        "PLANNER",
+-        "--root",
+-        root,
+-      ]),
+-    ).toBe(0);
++    await prepareContinuityPlan(
++      root,
++      taskId,
++      "Stop before executor until explicit plan approval.",
++      false,
++    );
+ 
+     const runIo = captureStdIO();
+     try {
+-      expect(await runCli(["task", "run", taskId, "--json", "--root", root])).toBe(0);
++      expect(await runCli(["task", "run", taskId, "--json", "--root", root]), runIo.stderr).toBe(0);
+       const payload = JSON.parse(runIo.stdout) as {
+         schema: string;
+         status: string;
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts b/packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts
+index a7730f1b6..58640f642 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts
+@@ -1,6 +1,8 @@
+ import { access, mkdir, readFile, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ 
++import { prepareContinuityPlan } from "./task-continuity.testkit.js";
++
+ import { describe, expect, it } from "vitest";
+ 
+ import { defaultConfig } from "@agentplaneorg/core/config";
+@@ -14,7 +16,7 @@ import { runCli } from "./run-cli.js";
+ import {
+   captureStdIO,
+   installRunCliIntegrationHarness,
+-  mkGitRepoRoot,
++  mkGitRepoRootWithCommit,
+   mkGitRepoRootWithBranch,
+   runCliSilent,
+   writeConfig,
+@@ -27,32 +29,11 @@ async function planAndStartTask(opts: {
+   taskId: string;
+   body: string;
+ }): Promise<void> {
+-  expect(
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      opts.taskId,
+-      "--text",
+-      "Exercise the task handoff and stale-runner recovery contract.",
+-      "--updated-by",
+-      "PLANNER",
+-      "--root",
+-      opts.root,
+-    ]),
+-  ).toBe(0);
+-  expect(
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "approve",
+-      opts.taskId,
+-      "--by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      opts.root,
+-    ]),
+-  ).toBe(0);
++  await prepareContinuityPlan(
++    opts.root,
++    opts.taskId,
++    "Exercise task handoff and stale-runner recovery.",
++  );
+   expect(
+     await runCliSilent([
+       "task",
+@@ -70,7 +51,7 @@ async function planAndStartTask(opts: {
+ 
+ describe("runCli task handoff and recovery", () => {
+   it("task reclaim records a deterministic handoff for a task awaiting a local agent", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithCommit();
+     await writeConfig(root, defaultConfig());
+ 
+     let taskId = "";
+@@ -137,7 +118,7 @@ describe("runCli task handoff and recovery", () => {
+   });
+ 
+   it("task reclaim cancels a stale running runner before recording handoff", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithCommit();
+     await writeConfig(root, defaultConfig());
+ 
+     let taskId = "";
+@@ -273,7 +254,7 @@ describe("runCli task handoff and recovery", () => {
+   }, 15_000);
+ 
+   it("task reclaim leaves an unclaimed stale running state non-terminal without a handoff", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithCommit();
+     await writeConfig(root, defaultConfig());
+ 
+     let taskId = "";
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts b/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts
+index ec93bd27c..f852fd8a9 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts
+@@ -1,6 +1,8 @@
+ import { mkdir, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ 
++import { prepareContinuityPlan } from "./task-continuity.testkit.js";
++
+ import { describe } from "vitest";
+ 
+ import {
+@@ -15,13 +17,13 @@ import {
+   expect,
+   extractTaskSuffix,
+   it,
+-  mkGitRepoRootWithBranch,
+   promisify,
+   runCli,
+   runCliSilent,
+   writeConfig,
+ } from "@agentplane/testkit/cli-core-pr-flow";
+ import { WORKFLOW_STATE_FINGERPRINT_POLICY } from "../commands/shared/workflow-step-fingerprint.js";
++import { mkGitRepoRootWithCommit } from "@agentplane/testkit";
+ 
+ async function writeRoutePolicies(root: string): Promise<void> {
+   const files = [
+@@ -96,7 +98,7 @@ async function readNextActionJson(root: string, taskId: string): Promise<NextAct
+ 
+ describe("task next-action JSON", () => {
+   it("stores branch_pr authority without changing the task branch before the authorized PR operation", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -109,19 +111,11 @@ describe("task next-action JSON", () => {
+     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Commit authority records before continuing the protected PR route.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
++    await prepareContinuityPlan(
+       root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++      taskId,
++      "Exercise the exact next-action authority and JSON contract.",
++    );
+     const branch = `task/${taskId}/authority-auto-commit`;
+     await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+     await runCliSilent([
+@@ -219,7 +213,7 @@ describe("task next-action JSON", () => {
+   });
+ 
+   it("prints snake_case fields while preserving camelCase aliases", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+@@ -227,19 +221,11 @@ describe("task next-action JSON", () => {
+     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+ 
+     const taskId = await createBranchPrTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Exercise next-action JSON contract.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
++    await prepareContinuityPlan(
+       root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++      taskId,
++      "Exercise the exact next-action authority and JSON contract.",
++    );
+ 
+     const io = captureStdIO();
+     try {
+@@ -332,7 +318,7 @@ describe("task next-action JSON", () => {
+   });
+ 
+   it("routes open user questions to task answer before plan approval", async () => {
+-    const root = await mkGitRepoRootWithBranch("main");
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-routing.test.ts b/packages/agentplane/src/cli/run-cli.core.task-routing.test.ts
+index 30b93a722..1c2cad838 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-routing.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-routing.test.ts
+@@ -3,6 +3,8 @@ import { realpath, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { promisify } from "node:util";
+ 
++import { prepareContinuityPlan } from "./task-continuity.testkit.js";
++
+ import { describe } from "vitest";
+ 
+ import {
+@@ -80,19 +82,13 @@ describe("runCli task execution routing", () => {
+     } finally {
+       taskIo.restore();
+     }
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Verify automatic route escalation.",
+-      "--updated-by",
+-      "PLANNER",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    const [initialCode, initialRoute] = await runJson<{
++      task: { execution_route: { selected_mode: string; reason_codes: string[] } };
++    }>(["task", "next-action", taskId, "--json", "--root", root]);
++    expect(initialCode).toBe(0);
++    expect(initialRoute.task.execution_route.selected_mode).toBe("branch_pr");
++    expect(initialRoute.task.execution_route.reason_codes).toContain("risk_publish");
++    await prepareContinuityPlan(root, taskId, "Verify publish-risk route escalation.");
+ 
+     const [code, payload] = await runJson<{
+       workflow_mode: string;
+@@ -102,7 +98,7 @@ describe("runCli task execution routing", () => {
+     expect(code).toBe(0);
+     expect(payload.workflow_mode).toBe("branch_pr");
+     expect(payload.task.execution_route.selected_mode).toBe("branch_pr");
+-    expect(payload.task.execution_route.reason_codes).toContain("risk_publish");
++    expect(payload.task.execution_route.reason_codes).toContain("effect_publish");
+     expect(payload.next_action.code).toBe("start_or_recover_worktree");
+ 
+     const worktreePath = path.join(
+diff --git a/packages/agentplane/src/cli/task-continuity.testkit.ts b/packages/agentplane/src/cli/task-continuity.testkit.ts
+new file mode 100644
+index 000000000..7dcd36a17
+--- /dev/null
++++ b/packages/agentplane/src/cli/task-continuity.testkit.ts
+@@ -0,0 +1,170 @@
++import { readFile, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { expect } from "vitest";
++import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++import type { TaskPlanProposal } from "@agentplaneorg/core/tasks";
++import { captureStdIO, runCliSilent } from "@agentplane/testkit";
++import { runCli } from "./run-cli.js";
++import { loadCommandContext, loadTaskFromContext } from "../commands/shared/task-backend.js";
++
++type PlanningPacket = {
++  transition_id: string;
++  state_fingerprint: string;
++  authority: { role: string };
++  exchange: {
++    directory: string;
++    work_order_ref: string;
++    result_path: string;
++    resume_argv: string[];
++  };
++};
++
++export async function prepareContinuityPlan(
++  root: string,
++  taskId: string,
++  objective: string,
++  approve = true,
++): Promise<void> {
++  let packet: PlanningPacket;
++  const io = captureStdIO();
++  try {
++    expect(
++      await runCli(["task", "advance", taskId, "--agent-json", "--root", root]),
++      io.stderr,
++    ).toBe(0);
++    packet = JSON.parse(io.stdout) as PlanningPacket;
++  } finally {
++    io.restore();
++  }
++  expect(packet.authority.role).toBe("PLANNER");
++  const workOrder = JSON.parse(
++    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
++  ) as AgentWorkOrderV2;
++  const baseline = workOrder.planning_context!.repository_snapshot;
++  const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
++  const task = await loadTaskFromContext({ ctx, taskId });
++  const { config } = ctx;
++  const commands: string[] = Array.isArray(task.verify)
++    ? task.verify.filter((value): value is string => typeof value === "string")
++    : [];
++  const checks = commands.map((command, index) => ({
++    id: `task-check-${index + 1}`,
++    kind: "deterministic" as const,
++    required: true,
++    capability: "task.verify",
++    command,
++  }));
++  const taskChecks =
++    checks.length > 0
++      ? checks
++      : [
++          {
++            id: "task-check",
++            kind: "deterministic" as const,
++            required: true,
++            capability: "task.verify",
++          },
++        ];
++  const criterion = {
++    id: "route-contract",
++    description: objective,
++    required: true,
++    check_ids: taskChecks.map((check) => check.id),
++  };
++  const validation = {
++    schema_version: 1 as const,
++    criteria: [criterion],
++    checks: taskChecks,
++    evidence_fingerprint: baseline.digest,
++  };
++  const proposal: TaskPlanProposal = {
++    schema_version: 1,
++    task_id: taskId,
++    planning_baseline: baseline,
++    work_items: {
++      schema_version: 1,
++      work_items: [
++        {
++          id: "exercise-route",
++          objective,
++          depends_on: [],
++          required_inputs: [],
++          expected_outputs: ["route-result"],
++          scope_roots: ["."],
++          acceptance_criteria: [criterion],
++          validation,
++          context: {
++            required_sources: [],
++            optional_sources: [],
++            symbol_hints: [],
++            max_bytes: 65_536,
++          },
++          risk: "low",
++          capabilities: ["task.verify"],
++          resource_claims: [{ kind: "workspace", resource: ".", mode: "write" }],
++          optional: false,
++          priority: 1,
++        },
++      ],
++    },
++    assumptions: [],
++    unresolved_questions: [],
++    top_level_validation: validation,
++  };
++  await writeFile(
++    packet.exchange.result_path,
++    JSON.stringify({
++      schema_version: 1,
++      kind: "agent_action_result",
++      task_id: taskId,
++      transition_id: packet.transition_id,
++      state_fingerprint: packet.state_fingerprint,
++      role: "PLANNER",
++      result: {
++        schema_version: 2,
++        kind: "agent_semantic_result",
++        work_order_id: workOrder.work_order_id,
++        status: "completed",
++        summary: objective,
++        findings: [],
++        uncertainty: [],
++        task_intent: {
++          task_kind: task.task_kind ?? "code",
++          mutation_scope: task.mutation_scope ?? "code",
++          risk_flags: task.risk_flags ?? [],
++          tags: task.tags,
++          ...(task.blueprint_request ? { blueprint_request: task.blueprint_request } : {}),
++          execution: {
++            schema_version: 2,
++            preferred_mode: config.workflow_mode,
++            scope_roots: ["."],
++            repository_effects: task.execution_contract?.declaration.repository_effects ?? [
++              "repository_write",
++              "source_code",
++            ],
++            external_effects: task.execution_contract?.declaration.external_effects ?? [],
++            requirements_uncertainty: "bounded",
++            implementation_uncertainty: "bounded",
++            reversibility: task.execution_contract?.declaration.reversibility ?? "reversible",
++            rationale: ["Exercise the configured route in an isolated local fixture."],
++          },
++        },
++        task_plan_proposal: proposal,
++      },
++    }),
++  );
++  const resumeIo = captureStdIO();
++  try {
++    expect(
++      await runCli([...packet.exchange.resume_argv.slice(1), "--root", root]),
++      resumeIo.stderr,
++    ).toBe(0);
++    expect(JSON.parse(resumeIo.stdout)).toMatchObject({ action: { kind: "approval_required" } });
++  } finally {
++    resumeIo.restore();
++  }
++  if (!approve) return;
++  expect(
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
++  ).toBe(0);
++}

@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The frozen diff changes only the four approved suites and one local helper. Production, global testkit, CI, policy, timeouts and task graph are unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/9e458f50f4a70613d2c4d7d41c1006bf431af26fd040c3649cf38af0ae39c0ac.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The helper requests the actual PLANNER work order, uses its repository snapshot in a typed proposal, preserves task kind, mutation, risk and declared effects, and resumes the exact exchange. It asserts approval_required rather than supplying inferred lifecycle state.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/9e458f50f4a70613d2c4d7d41c1006bf431af26fd040c3649cf38af0ae39c0ac.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The supervisor stop test submits a complete structured plan but does not approve it. It still asserts null executor/evaluator, approval_required, and matching transition/fingerprint between managed and external routes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/9e458f50f4a70613d2c4d7d41c1006bf431af26fd040c3649cf38af0ae39c0ac.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Handoff stale-claim cancellation, unclaimed refusal and branch snapshot precedence assertions are retained. JSON route authority/head immutability, aliases/fingerprints and user-question precedence remain unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/9e458f50f4a70613d2c4d7d41c1006bf431af26fd040c3649cf38af0ae39c0ac.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The publish-risk test retains risk_publish before structured planning and checks effect_publish after the typed declaration, while retaining branch_pr and worktree assertions. This tests both architectural stages rather than deleting the old safety contract.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/9e458f50f4a70613d2c4d7d41c1006bf431af26fd040c3649cf38af0ae39c0ac.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Frozen verification20260827170718338-d32fb33a649bef9e binds implementation56e4367136dd17997ced56fe2de81990e06cdb2a. Full CI passed in503011ms; all9focused cases passed in19591ms. Only CLI-owned PR/quality artifacts appeared during evaluation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/9e458f50f4a70613d2c4d7d41c1006bf431af26fd040c3649cf38af0ae39c0ac.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Local fixture qualification does not establish hosted exact-head readiness or release:prepublish readiness.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/9e458f50f4a70613d2c4d7d41c1006bf431af26fd040c3649cf38af0ae39c0ac.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
