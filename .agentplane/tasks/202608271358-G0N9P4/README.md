@@ -4,7 +4,7 @@ title: "Repair verification fixtures on integrated main 5fce04a8"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -28,6 +28,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-27T14:46:49.501Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "cf3fa3f9c8a628c46a62bb10b347ac1684668394"
+  blueprint_digest: "b1859a8987ab5370ba9bb6a9a47c5ec76b7d1cef936e10f53b3f4285459515d3"
+  evidence_refs:
+    - ".agentplane/tasks/202608271358-G0N9P4/quality/20260827-144308272-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608271358-G0N9P4/quality/20260827-144308272-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608271358-G0N9P4/quality/objects/sha256/777c538f21215f1399fa50862508b756510efedb76645600f61bf3f670794223.md"
+    - ".agentplane/tasks/202608271358-G0N9P4/quality/20260827-144308272-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608271358-G0N9P4/quality/20260827-144308272-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608271358-G0N9P4/quality/20260827-144308272-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608271358-G0N9P4/README.md"
+    - ".agentplane/tasks/202608271358-G0N9P4/quality/objects/sha256/2501149452aa79bbcf0f5915f02d7db1170a7c5b1117d25c3504628d5d3d60f1.patch"
+    - ".agentplane/tasks/202608271358-G0N9P4/quality/objects/sha256/2f9b84087cbe4076bce202e94828ba937a9e4172d1620f4d48a2c73dcd5991c6.json"
+    - ".agentplane/tasks/202608271358-G0N9P4/verification/20260827144238263-382161b49fad458b.json"
+    - ".agentplane/tasks/202608271358-G0N9P4/quality/objects/sha256/14513056fb48f13c0a2081399288b24ce14495e22af1134cff7f041d75a4cf96.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The six successful verification cases, four positive matrix cases and four incident verification cases now use the existing committed fixture. Their output, findings and incident promotion assertions remain unchanged. Argument-validation fixtures remain unborn."
+    - "Removing redundant configureGitUser calls is equivalent because the existing helper configures identity. No shared helper or product behavior changed."
+    - "The new runtime test removes synthetic execution extensions, uses a real unborn repository, requires git_base_identity_unavailable and compares the entire task before and after rejection. Existing zero-SHA, mismatched batch base and branch-floor cases remain."
+    - "The frozen diff contains exactly four approved test files. Concurrent work is in disjoint worktrees and paths. Supervisor-owned task artifacts are not additional implementation changes."
+    - "Frozen verification record 20260827144238263-382161b49fad458b binds both required commands to cf3fa3f9c8a628c46a62bb10b347ac1684668394. Full CI and 34 scoped tests passed. Lint, formatting and diff checks passed without relaxed gates."
+    - "Residual risk: The full release-specific broad sweep must still pass. This repair does not implement AP-CORE-013 canonical verification migration."
 execution_route:
   frozen: true
   reason_codes:
