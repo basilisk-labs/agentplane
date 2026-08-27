@@ -31,6 +31,9 @@ describe("runCli help snapshots (cli2)", () => {
     try {
       const code = await runCli(["help", "task", "new", "--compact"]);
       expect(code).toBe(0);
+      expect(io.stdout).toContain("--route <auto|direct|branch_pr>");
+      expect(io.stdout).toContain("default=auto");
+      expect(io.stdout).not.toContain("default=repository");
       expect(io.stdout).toMatchSnapshot();
     } finally {
       io.restore();

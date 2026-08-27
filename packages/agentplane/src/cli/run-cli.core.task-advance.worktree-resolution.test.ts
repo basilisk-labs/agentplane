@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, realpath, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
@@ -8,6 +8,7 @@ import {
   completeSupervisorExecutionEpisode,
   createSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
+  type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
 
 import {
@@ -89,6 +90,8 @@ async function writeHarnessGitignore(root: string): Promise<void> {
       "packages/agentplane/package.json",
       "packages/core/dist",
       "packages/core/package.json",
+      "packages/recipes/dist",
+      "packages/recipes/package.json",
       "website/node_modules",
       "",
     ].join("\n"),
@@ -160,6 +163,124 @@ async function returnAgentResult(root: string, taskId: string, resultPath: strin
   }
 }
 
+async function approveStructuredPlan(root: string, taskId: string): Promise<void> {
+  const packet = await readAgentPacket(root, taskId);
+  expect(packet.authority.role).toBe("PLANNER");
+  if (!packet.exchange) throw new Error("expected a planning exchange");
+  const workOrder = JSON.parse(
+    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
+  ) as AgentWorkOrderV2;
+  const criterion = {
+    id: "worktree-contract",
+    description: "Preserve the authoritative worktree and exact external-episode contract.",
+    required: true,
+    check_ids: ["task-check"],
+  };
+  const validation = {
+    schema_version: 1,
+    criteria: [criterion],
+    checks: [
+      { id: "task-check", kind: "deterministic", required: true, capability: "task.verify" },
+    ],
+    evidence_fingerprint: workOrder.planning_context!.repository_snapshot.digest,
+  };
+  const resultPath = path.join(packet.exchange.directory, "result.json");
+  await writeFile(
+    resultPath,
+    JSON.stringify({
+      schema_version: 1,
+      kind: "agent_action_result",
+      task_id: taskId,
+      transition_id: packet.transition_id,
+      state_fingerprint: packet.state_fingerprint,
+      role: "PLANNER",
+      result: {
+        schema_version: 2,
+        kind: "agent_semantic_result",
+        work_order_id: workOrder.work_order_id,
+        status: "completed",
+        summary: "Exercise the worktree contract through one approved structured WorkItem.",
+        findings: [],
+        uncertainty: [],
+        task_intent: {
+          task_kind: "code",
+          mutation_scope: "code",
+          risk_flags: [],
+          tags: ["code"],
+          execution: {
+            schema_version: 2,
+            preferred_mode: "branch_pr",
+            scope_roots: ["."],
+            repository_effects: ["repository_write", "source_code"],
+            external_effects: [],
+            requirements_uncertainty: "bounded",
+            implementation_uncertainty: "bounded",
+            reversibility: "reversible",
+            rationale: ["The fixture authorizes only local worktree payload changes."],
+          },
+        },
+        task_plan_proposal: {
+          schema_version: 1,
+          task_id: taskId,
+          planning_baseline: workOrder.planning_context!.repository_snapshot,
+          work_items: {
+            schema_version: 1,
+            work_items: [
+              {
+                id: "exercise-worktree",
+                objective: "Exercise the authoritative external-agent worktree.",
+                depends_on: [],
+                required_inputs: [],
+                expected_outputs: ["worktree-result"],
+                scope_roots: ["."],
+                acceptance_criteria: [criterion],
+                validation,
+                context: {
+                  required_sources: [],
+                  optional_sources: [],
+                  symbol_hints: [],
+                  max_bytes: 65_536,
+                },
+                risk: "low",
+                capabilities: ["task.verify"],
+                resource_claims: [{ kind: "workspace", resource: ".", mode: "write" }],
+                optional: false,
+                priority: 1,
+              },
+            ],
+          },
+          assumptions: [],
+          unresolved_questions: [],
+          top_level_validation: validation,
+        },
+      },
+    }),
+  );
+  const io = captureStdIO();
+  try {
+    expect(
+      await runCli([
+        "task",
+        "advance",
+        taskId,
+        "--result",
+        resultPath,
+        "--agent-json",
+        "--root",
+        root,
+      ]),
+      io.stderr,
+    ).toBe(0);
+    const approval = JSON.parse(io.stdout) as { action: { kind: string } };
+    expect(approval.action.kind).toBe("approval_required");
+  } finally {
+    io.restore();
+  }
+  expect(
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
+  ).toBe(0);
+}
+
 describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => {
   it("recovers a completed stale journal and replaces prior implementation metadata", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -168,22 +289,25 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
     await writeConfig(root, config);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     const taskId = await createTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Keep and commit the intended task-worktree change.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
     await writeHarnessGitignore(root);
+    await mkdir(path.join(root, "scripts"), { recursive: true });
+    await writeFile(
+      path.join(root, "scripts", "check-resolution.mjs"),
+      'import { readFileSync } from "node:fs";\nimport { strict as assert } from "node:assert";\nassert.equal(readFileSync("intended-resolution.txt", "utf8"), "keep\\n");\n',
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "package.json"),
+      JSON.stringify({ scripts: { "ci:local:full": "node scripts/check-resolution.mjs" } }),
+      "utf8",
+    );
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed worktree resolution"], { cwd: root });
+    await approveStructuredPlan(root, taskId);
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: approve structured worktree plan"], {
+      cwd: root,
+    });
 
     const slug = "external-resolution";
     const taskWorktree = path.join(root, ".agentplane", "worktrees", `${taskId}-${slug}`);
@@ -300,14 +424,21 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
     await createSupervisorEpisodeStore(journalPath).write(priorReady);
 
     const packet = await readAgentPacket(taskWorktree, taskId);
-    expect(packet.transition_id).toBe(
-      agentTransitionId("agent.task_worktree_resolution", packet.state_fingerprint),
-    );
+    expect(packet.authority.role).toBe("EXECUTOR");
     const resultPath = await writeCompletedResult(packet);
     if (!packet.exchange) throw new Error("expected task-worktree resolution exchange");
     const exchange = JSON.parse(
       await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8"),
     ) as ExternalAgentExchange;
+    expect(exchange).toMatchObject({
+      task_id: taskId,
+      transition_id: packet.transition_id,
+      state_fingerprint: packet.state_fingerprint,
+      role: "EXECUTOR",
+      purpose: "task_worktree_resolution",
+      checkout: await realpath(taskWorktree),
+      status: "issued",
+    });
     expect(exchange.baseline.changed_paths).toContain(` M .agentplane/tasks/${taskId}/README.md`);
     const accepted = await returnAgentResult(taskWorktree, taskId, resultPath);
     expect(accepted.code, accepted.stderr).toBe(0);
