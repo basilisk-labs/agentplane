@@ -22,7 +22,7 @@ Repair the demonstrated recovery gap for an OPEN GitHub PR whose exact aligned h
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T15:41:27.859Z
+- Updated: 2026-08-27T15:56:08.543Z
 - Branch: task/202608271538-T21JCA/recover-green-behind-prs-through-provider-branch
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
