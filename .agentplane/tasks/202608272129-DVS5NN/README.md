@@ -4,7 +4,7 @@ title: "Resolve protected integration handoffs from their owning checkout"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -26,41 +26,42 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-27T22:15:27.248Z"
+  updated_at: "2026-08-27T22:49:32.357Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-27T22:18:20.121Z"
+  updated_at: "2026-08-27T22:56:49.292Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 5 typed finding(s)."
-  evaluated_sha: "bd72b49eaf67bd2cfcf8170232d6c365de4c572c"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "db40fc44542cedbf516d4fef901c76bb73fe7aec"
   blueprint_digest: "44b77635db1ede03f74e71a46d3871a3ffc26b542d7f15c632f0216ebb67d1ff"
   evidence_refs:
-    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-221546909-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-221546909-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/64995aa9efc5768ea660988e9ba43483b102432f173bcb0e317f6c5aceb8532b.md"
-    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-221546909-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-221546909-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-221546909-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-221546909-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-225029023-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-225029023-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/66a0366e792c3c6f6412ab377fcfa5914c42c4c07faca68fb77c91f775308bcc.md"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-225029023-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-225029023-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-225029023-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608272129-DVS5NN/README.md"
     - ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/c02e0755b019de4aa5dfb3a951ef88f662edaf0f9406228ecfcf7796b35e8926.patch"
-    - ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/d1b062168c6836aa3cff504c7671df999bda4f936f05e17c7134c083d9316783.json"
-    - ".agentplane/tasks/202608272129-DVS5NN/verification/20260827221527248-6c523168c94bbe69.json"
+    - ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/24696939fbf64f33a360d05c5a93a4c555f4169c949953f59adbcff6f1556733.json"
+    - ".agentplane/tasks/202608272129-DVS5NN/verification/20260827224932357-3d64c0ebc10dc61a.json"
+    - ".agentplane/tasks/202608272129-DVS5NN/verification/20260827224932357-cea901acbe17c16f.json"
     - ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/276a5a3781c8fb8f8f6ee4d1e55952ab9fb07d70cc7bb3c390863a14fc413a4a.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "README.md still contains the PLANNER fallback scaffold in Verify Steps even though the approved WorkItem has concrete owner-readback, identity-and-recovery and bounded-verification criteria. The frozen evaluator acceptance explicitly requires replacing this scaffold when planning context is available. Replace it through the supported task-document operator route, retaining full CI and diff checks and naming the focused positive/negative/replay command and expected outcomes."
-    - "README.md Findings is empty. Record the proved missing-base-handoff cause, the owner-aware read-only repair, focused test results, independent local verification, and the two deferred diagnostic causes. Do not describe hosted checks, integration or release qualification as completed."
-    - "Code review: the new reader uses the registered base checkout without copying artifacts; valid generic local/direct hints remain available; task/owner mismatch, malformed records and conflicting protected identities fail closed. Existing PR/head/base/adoption-token eligibility remains unchanged. Tests cover repeated reads from both checkouts without changing heads, status or bytes, and the existing explicit-adoption test covers the following transition."
-    - "Verification wording clarification: the focused run passed all 83 tests with no skips. The broad core run has one pre-existing opt-in network packaging test skipped by its existing environment gate; no skip was introduced or changed by this diff."
-    - "Residual risk: Release prepublish and hosted integration are not covered by the local task checks."
+    - "Reviewed source remains the same seven-file diff c02e0755b019de4aa5dfb3a951ef88f662edaf0f9406228ecfcf7796b35e8926. The reader resolves the registered base owner without copying artifacts, validates protected identity, rejects malformed and conflicting copies, and preserves direct and ordinary local handoffs. Downstream PR/head/base/adoption-token and queue authority guards are unchanged."
+    - "The real-Git regression covers repeated show/resume from both checkouts without changing heads, status or artifact bytes. The existing explicit legacy adoption test covers the following transition. All 83 focused tests passed; no new skip or timeout relaxation was introduced."
+    - "The prior documentation findings are resolved: Verify Steps names the exact focused scenario and mandatory full CI, while Findings records the proved cause, evidence and two separate residual causes. All ten frozen evidence hashes match. The fresh supervisor verification record cea901acbe17c16f binds successful full checks to current db40fc44542cedbf516d4fef901c76bb73fe7aec and updated Verify Steps."
+    - "The observed-checks object retains earlier successful check tails under the existing stable-check identity behavior. Review uses the fresh supervisor verification record and the observed completed full run, not old tail timings as a new execution timestamp."
+    - "Residual risk: The incident verification-target mismatch and provider-neutral error wording remain separate follow-up causes, not covered or altered by this patch."
+    - "Residual risk: Local full CI is not final release prepublish qualification."
 execution_route:
   frozen: true
   reason_codes:
@@ -265,7 +266,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "bd72b49eaf67bd2cfcf8170232d6c365de4c572c"
+  hash: "db40fc44542cedbf516d4fef901c76bb73fe7aec"
   message: "🚧 DVS5NN task: apply external agent result"
 comments:
   -
@@ -280,6 +281,9 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Resume: resolved the documentation-only blocker through supported task doc set. Verify Steps now specifies the approved owner/identity/replay scenario and retains full CI; Findings records evidence and two deferred causes. Source code and required checks are unchanged. Request fresh supervisor verification and evaluation under the user-authorized refactoring operator exception."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: db40fc44542c. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -316,9 +320,23 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Resume: resolved the documentation-only blocker through supported task doc set. Verify Steps now specifies the approved owner/identity/replay scenario and retains full CI; Findings records evidence and two deferred causes. Source code and required checks are unchanged. Request fresh supervisor verification and evaluation under the user-authorized refactoring operator exception."
+  -
+    type: "status"
+    at: "2026-08-27T22:40:33.388Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: db40fc44542c. CLI accepted one state-bound external-agent semantic result."
+    commit: "db40fc44542cedbf516d4fef901c76bb73fe7aec"
+  -
+    type: "verify"
+    at: "2026-08-27T22:49:32.357Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-27T22:23:47.666Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-08-27T22:49:36.575Z"
+doc_updated_by: "SUPERVISOR"
 description: "Repair the reproduced protected-integration handoff reader/owner mismatch on main db908ae90dd32609c6d12454fe87166a08e6ec4e. The focused integration diagnostic has 12 passing and 3 failing tests; run-cli.core.pr-conflict-rework.test.ts:842 fails because the expected legacy adoption route is unavailable. Confirm the exact route and cause before changing behavior. The integration writer persists the handoff on the base checkout, while task route hydration redirects readers to the task worktree. Real task handoff show from a worktree also failed to find the base-owned INTEGRATOR artifact. Cover one complete scenario: persisted protected-base handoff, task-worktree route/show/resume reads, explicit legacy adoption where applicable, repeat read/recovery, and the next transition. Use existing task execution ownership and base resolution. Reject wrong task, branch, head, base, PR identity, malformed or ambiguous evidence. Preserve direct and worktree-local handoff behavior. Keep read-only probes non-mutating. Do not copy or rewrite lifecycle artifacts, introduce a new state store, relax authority or exact-identity guards, change required CI, alter release/Core order, or implement AP-CORE-013. Scope the smallest necessary shared handoff reader, route/PR-flow consumers, and regression tests through a structured plan. The other two diagnostic failures, incident verification target and provider-neutral error wording, are separate causes and are out of scope. Run focused positive/negative/replay tests and full mandatory CI. The user authorized autonomous refactoring and supported exact operator approvals; release publication remains separate."
 sections:
   Summary: |-
@@ -403,6 +421,78 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-27T22:49:32.357Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:59b43f773c61e4b8a6973da88719b5b90b899dc4169fa4a5351e038006f864eb, input_digest=sha256:231424a8056ddc2df279d7e4304a9ceaddf4c70616375ccbe220d3e592f09cbb
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608272129-DVS5NN Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608272129-DVS5NN Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608272129-DVS5NN Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608272129-DVS5NN Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608272129-DVS5NN Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608272129-DVS5NN Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608272129-DVS5NN Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608272129-DVS5NN-resolve-protected-integration-handoffs-from-thei/.agentplane/tasks/202608272129-DVS5NN/blueprint/resolved-snapshot.json
+    - old_digest: 44b77635db1ede03f74e71a46d3871a3ffc26b542d7f15c632f0216ebb67d1ff
+    - current_digest: 44b77635db1ede03f74e71a46d3871a3ffc26b542d7f15c632f0216ebb67d1ff
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608272129-DVS5NN
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608272129-DVS5NN
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -810,7 +900,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "bd72b49eaf67bd2cfcf8170232d6c365de4c572c"
+    hash: "db40fc44542cedbf516d4fef901c76bb73fe7aec"
   task_execution_context:
     base_ref: "main"
     base_sha: "db908ae90dd32609c6d12454fe87166a08e6ec4e"
@@ -913,6 +1003,78 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-27T22:49:32.357Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:59b43f773c61e4b8a6973da88719b5b90b899dc4169fa4a5351e038006f864eb, input_digest=sha256:231424a8056ddc2df279d7e4304a9ceaddf4c70616375ccbe220d3e592f09cbb
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608272129-DVS5NN Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608272129-DVS5NN Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608272129-DVS5NN Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608272129-DVS5NN Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608272129-DVS5NN Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608272129-DVS5NN Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608272129-DVS5NN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608272129-DVS5NN Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608272129-DVS5NN-resolve-protected-integration-handoffs-from-thei/.agentplane/tasks/202608272129-DVS5NN/blueprint/resolved-snapshot.json
+- old_digest: 44b77635db1ede03f74e71a46d3871a3ffc26b542d7f15c632f0216ebb67d1ff
+- current_digest: 44b77635db1ede03f74e71a46d3871a3ffc26b542d7f15c632f0216ebb67d1ff
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608272129-DVS5NN
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608272129-DVS5NN
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

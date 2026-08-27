@@ -22,7 +22,7 @@ Repair the reproduced protected-integration handoff reader/owner mismatch on mai
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-27T21:37:59.785Z
+- Updated: 2026-08-27T22:15:43.364Z
 - Branch: task/202608272129-DVS5NN/resolve-protected-integration-handoffs-from-thei
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
