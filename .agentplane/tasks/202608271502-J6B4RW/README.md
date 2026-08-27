@@ -1,10 +1,11 @@
 ---
 id: "202608271502-J6B4RW"
 title: "Align intake and query execution fixtures"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -60,6 +61,20 @@ quality_review:
     - "The frozen actual diff contains only five approved test files. Full CI passed on Node26 in577839ms and the supervisor repeated the24-test focused suite successfully."
     - "Verification record20260827154604703-18e8da1d3734f6ea binds the checks and contract to implementation23a18d80343f279497c47eba6699b86d2571aa73. No CI, timeout, policy, product or release metadata changes were made."
     - "Residual risk: Real hosted qualification remains a later mandatory lifecycle gate."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:13cdb8cf898d2c83789882ca945655c7279564d46fd140f508b6981e6f59047f"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-27T15:47:46.664Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -245,8 +260,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "23a18d80343f279497c47eba6699b86d2571aa73"
-  message: "🚧 J6B4RW task: apply external agent result"
+  hash: "7599cc8d1d39ac87d4c8a0f9dda0e4fb8bd9ec72"
+  message: "🚧 J6B4RW task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -254,6 +269,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 23a18d80343f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -276,9 +294,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-27T15:47:46.664Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "7599cc8d1d39ac87d4c8a0f9dda0e4fb8bd9ec72"
 doc_version: 3
-doc_updated_at: "2026-08-27T15:46:07.151Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-27T15:47:46.676Z"
+doc_updated_by: "CODER"
 description: "Repair ten reproduced failures across five intake and query test files on integrated main. Use the existing committed fixture only for execution-dependent scenarios. Preserve missing Verify Steps rejection, unsupported-check and invalid-intake negatives, executor-claim and observed-receipt refusal, branch verification versus closure, token telemetry equality, active-task sorting and dependency readiness, user questions, and read-only concurrent queries. If a query fixture lacks a canonical plan, assert the actual semantic-planning route instead of an obsolete pre-worktree route without weakening query invariants. Do not invent approval or verification evidence. Do not change production code, shared helpers, policy, timeouts, CI gates, release state or roadmap dependencies. Five-file scope is disjoint from current repair tasks and requires only merged GHHA0Q. Require focused tests and full CI."
 sections:
   Summary: |-
@@ -594,7 +620,34 @@ extensions:
       schema_version: 1
       task_id: "202608271502-J6B4RW"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608271502-J6B4RW"
+            - "git:23a18d80343f279497c47eba6699b86d2571aa73"
+          check_id: "scoped-tests"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.task-guided.test.ts packages/agentplane/src/cli/run-cli.core.tasks.user-create.test.ts packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts --pool=threads --maxWorkers=2"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T15:46:04.703Z"
+          repository_snapshot_digest: "sha256:5557b964918dc0fbc2f2ca0591c57f03edff3d681847fb56b37da3552d4fe27e"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608271502-J6B4RW"
+            - "git:23a18d80343f279497c47eba6699b86d2571aa73"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T15:46:04.703Z"
+          repository_snapshot_digest: "sha256:5557b964918dc0fbc2f2ca0591c57f03edff3d681847fb56b37da3552d4fe27e"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608271502-J6B4RW"
     intent:
       acceptance_criteria:
@@ -615,12 +668,12 @@ extensions:
 
         Repair ten reproduced failures across five intake and query test files on integrated main. Use the existing committed fixture only for execution-dependent scenarios. Preserve missing Verify Steps rejection, unsupported-check and invalid-intake negatives, executor-claim and observed-receipt refusal, branch verification versus closure, token telemetry equality, active-task sorting and dependency readiness, user questions, and read-only concurrent queries. If a query fixture lacks a canonical plan, assert the actual semantic-planning route instead of an obsolete pre-worktree route without weakening query invariants. Do not invent approval or verification evidence. Do not change production code, shared helpers, policy, timeouts, CI gates, release state or roadmap dependencies. Five-file scope is disjoint from current repair tasks and requires only merged GHHA0Q. Require focused tests and full CI.
       task_id: "202608271502-J6B4RW"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 12
     schema_version: 1
-    updated_at: "2026-08-27T15:46:08.306Z"
+    updated_at: "2026-08-27T15:47:46.664Z"
     work_items:
       repair-intake-query-fixtures:
         attempt: 1
@@ -698,11 +751,37 @@ extensions:
         previous_revision: 8
         schema_version: 1
         task_id: "202608271502-J6B4RW"
+      legacy-finish:202608271502-J6B4RW:2026-08-27T15:46:04.703Z:23a18d80343f279497c47eba6699b86d2571aa73:
+        aggregate_digest: "sha256:0b3f3b3aae439ee5f5805933a3438fa72b87d4e6c7baf4ed38cc67bae2165207"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-27T15:47:46.664Z"
+          cause_refs:
+            - "task-verification:202608271502-J6B4RW"
+            - "git:23a18d80343f279497c47eba6699b86d2571aa73"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b89a072095bb5d95fb3c3ada"
+          mutation_id: "legacy-finish:202608271502-J6B4RW:2026-08-27T15:46:04.703Z:23a18d80343f279497c47eba6699b86d2571aa73"
+          plan_digest: "sha256:223a51b467b533c6eac0d22d2f9891f44a67e5d6d58f6b4a98eed9acee1a60e4"
+          plan_revision: 1
+          repository_fingerprint: "sha256:5557b964918dc0fbc2f2ca0591c57f03edff3d681847fb56b37da3552d4fe27e"
+          schema_version: 1
+          task_id: "202608271502-J6B4RW"
+          task_revision: 9
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608271502-J6B4RW:2026-08-27T15:46:04.703Z:23a18d80343f279497c47eba6699b86d2571aa73"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202608271502-J6B4RW"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "23a18d80343f279497c47eba6699b86d2571aa73"
+    message: "🚧 J6B4RW task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "5fce04a8be14816be4cae236d2941dff7045e214"
@@ -819,3 +898,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:13cdb8cf898d2c83789882ca945655c7279564d46fd140f508b6981e6f59047f`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-27T15:47:46.664Z`
