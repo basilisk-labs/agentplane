@@ -6,7 +6,7 @@ Created: 2026-08-27T21:02:51.479Z
 
 - Task: `202608271659-AD3030`
 - Title: Preserve task identity in closeout and worktree fixtures
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608271659-AD3030/preserve-task-identity-in-closeout-and-worktree`
 - Canonical task record: `.agentplane/tasks/202608271659-AD3030/README.md`
 
