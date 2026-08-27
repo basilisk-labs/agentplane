@@ -2,10 +2,10 @@
 id: "202608271538-T21JCA"
 title: "Recover green behind PRs through provider branch update"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 41
 origin:
   system: "manual"
 depends_on:
@@ -23,7 +23,7 @@ plan_approval:
   note: "Manual operator compatibility under the user authorization to continue refactoring with all permissions and the renewed instruction to complete this recovery. The replan retains the current ten-file recovery scope and mandatory checks. Request the two projection paths through the supported scope-extension route before edits. No signed or host-originated receipt is asserted."
 verification:
   state: "pending"
-  updated_at: "2026-08-27T17:53:58.819Z"
+  updated_at: "2026-08-27T18:02:16.991Z"
   updated_by: "USER"
   note: "Invalidated by USER-approved execution scope extension."
   attempts: 1
@@ -105,6 +105,8 @@ execution_contract:
       - "release_metadata"
       - "security_boundary"
     writable_roots:
+      - "packages/agentplane/src/commands/pr/head-publication.test.ts"
+      - "packages/agentplane/src/commands/pr/head-publication.ts"
       - "packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts"
       - "packages/agentplane/src/commands/pr/provider-update-branch-local.ts"
       - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
@@ -123,6 +125,7 @@ execution_contract:
     preferred_mode: "branch_pr"
     rationale:
       - "Existing ten-file recovery scope; request exactly two projection paths before editing them."
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/pr/head-publication.test.ts,packages/agentplane/src/commands/pr/head-publication.ts"
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/shared/workflow-operation-prefix.ts,packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
     repository_effects:
       - "repository_write"
@@ -132,6 +135,8 @@ execution_contract:
     reversibility: "reversible"
     schema_version: 2
     scope_roots:
+      - "packages/agentplane/src/commands/pr/head-publication.test.ts"
+      - "packages/agentplane/src/commands/pr/head-publication.ts"
       - "packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts"
       - "packages/agentplane/src/commands/pr/provider-update-branch-local.ts"
       - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
@@ -166,6 +171,8 @@ execution_contract:
     contract:
       declared:
         components:
+          - "packages/agentplane/src/commands/pr/head-publication.test.ts"
+          - "packages/agentplane/src/commands/pr/head-publication.ts"
           - "packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts"
           - "packages/agentplane/src/commands/pr/provider-update-branch-local.ts"
           - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
@@ -193,7 +200,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:438e8617e71dad3e2a85a7401d36d940fc966857e775a6c65f63d90b879d94b2"
+      digest: "sha256:133c8110171c48cdbdf6caba4275993ef27fcca312dffa9cccf2bb9582e21e5d"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
         - "central_component:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
@@ -274,6 +281,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Recovery and executable continuation are implemented locally; 86 focused checks pass. Completing interrupted-after-fetch recovery without blocking new unpublished commits requires a local ancestry observation in publication status. Recommended action: Apply this exact scope extension, then issue a fresh EXECUTOR packet for the same WorkItem. Requested scope: roots=packages/agentplane/src/commands/pr/head-publication.test.ts,packages/agentplane/src/commands/pr/head-publication.ts; repository effects=unchanged; request digest=sha256:2e8384edad49f48daa0e8e190dbab1f6dabdfeec254c831739597316fc8f8e75. Agentplane receipt: external-agent-blocker/tr_79a902c369a97c92b3c8d7607da84ada/sha256:23fb57346c01616e464b8ea954936e7ad0bd67830b2cbb75aa7919de7c066157/sha256:2e8384edad49f48daa0e8e190dbab1f6dabdfeec254c831739597316fc8f8e75."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/pr/head-publication.test.ts, packages/agentplane/src/commands/pr/head-publication.ts; repository effects: unchanged."
 events:
   -
     type: "status"
@@ -607,6 +617,8 @@ extensions:
     status: "active"
     task_id: "202608271538-T21JCA"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-27T18:02:16.991Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:23fb57346c01616e464b8ea954936e7ad0bd67830b2cbb75aa7919de7c066157"
     kind: "task_scope_extension_request"
     request:
@@ -618,19 +630,19 @@ extensions:
         - "packages/agentplane/src/commands/pr/head-publication.ts"
     request_digest: "sha256:2e8384edad49f48daa0e8e190dbab1f6dabdfeec254c831739597316fc8f8e75"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_79a902c369a97c92b3c8d7607da84ada"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-08-27T17:53:58.819Z"
+        approved_at: "2026-08-27T18:02:16.991Z"
         approved_by: "USER"
-        approved_digest: "sha256:01a772829a978421cdc678208520c068e92134ce636e69017de6cd681875e7de"
+        approved_digest: "sha256:93ed6a118d2525ea9b9056323072b939d1d8b66fbed17c02fd2349af8db115ab"
         policy_facts:
-          - "state_bound_scope_extension:sha256:f7686d827c4bcdd9cd17444f5b11ab35c343dd37703a1b5892fd3ef908772dd8"
+          - "state_bound_scope_extension:sha256:2e8384edad49f48daa0e8e190dbab1f6dabdfeec254c831739597316fc8f8e75"
         state: "approved"
-      created_at: "2026-08-27T17:53:58.819Z"
-      digest: "sha256:01a772829a978421cdc678208520c068e92134ce636e69017de6cd681875e7de"
+      created_at: "2026-08-27T18:02:16.991Z"
+      digest: "sha256:93ed6a118d2525ea9b9056323072b939d1d8b66fbed17c02fd2349af8db115ab"
       proposal:
         assumptions:
           - "A provider read immediately after an accepted update may still show the old head."
@@ -770,8 +782,18 @@ extensions:
                   kind: "path"
                   mode: "write"
                   resource: "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/pr/head-publication.test.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/pr/head-publication.ts"
               risk: "medium"
               scope_roots:
+                - "packages/agentplane/src/commands/pr/head-publication.test.ts"
+                - "packages/agentplane/src/commands/pr/head-publication.ts"
                 - "packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts"
                 - "packages/agentplane/src/commands/pr/provider-update-branch-local.ts"
                 - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
@@ -808,10 +830,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:5c38d63e30adb0638d236ee091ba308222d59a1293d129e9c9c1a52459cecf84"
                 schema_version: 1
-      revision: 6
+      revision: 7
       schema_version: 1
       task_id: "202608271538-T21JCA"
-    event_cursor: 2
+    event_cursor: 3
     final_validation: null
     id: "202608271538-T21JCA"
     intent:
@@ -1756,9 +1778,199 @@ extensions:
         revision: 5
         schema_version: 1
         task_id: "202608271538-T21JCA"
-    revision: 33
+      -
+        approval:
+          approved_at: "2026-08-27T17:53:58.819Z"
+          approved_by: "USER"
+          approved_digest: "sha256:01a772829a978421cdc678208520c068e92134ce636e69017de6cd681875e7de"
+          policy_facts:
+            - "state_bound_scope_extension:sha256:f7686d827c4bcdd9cd17444f5b11ab35c343dd37703a1b5892fd3ef908772dd8"
+          state: "approved"
+        created_at: "2026-08-27T17:53:58.819Z"
+        digest: "sha256:01a772829a978421cdc678208520c068e92134ce636e69017de6cd681875e7de"
+        proposal:
+          assumptions:
+            - "A provider read immediately after an accepted update may still show the old head."
+            - "The post-effect base can advance; ancestry, not relaxed identity, must prove a permitted continuation."
+          planning_baseline:
+            captured_at: "2026-08-27T17:51:36.980Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:5c38d63e30adb0638d236ee091ba308222d59a1293d129e9c9c1a52459cecf84"
+            dirty_paths:
+              - ".agentplane/tasks/202608271538-T21JCA/README.md"
+              - ".agentplane/tasks/202608271538-T21JCA/pr/github-body.md"
+              - ".agentplane/tasks/202608271538-T21JCA/pr/github-title.txt"
+              - ".agentplane/tasks/202608271538-T21JCA/pr/meta.json"
+              - ".agentplane/tasks/202608271538-T21JCA/pr/review.md"
+              - ".agentplane/tasks/202608271538-T21JCA/verification/20260827175117746-40e332b32f5ff76b.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "8518b71c495e8dd1c4765dcb36cb7708d15c5205"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:33"
+          schema_version: 1
+          task_id: "202608271538-T21JCA"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1"
+                id: "scoped-tests"
+                kind: "deterministic"
+                required: true
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full-ci"
+                kind: "deterministic"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "scoped-tests"
+                  - "full-ci"
+                description: "Delayed provider observation and interrupted retry preserve exact identity and local files. A separately bound reconciliation-only route cannot repeat PUT or publish stale state. Regression-first tests cover the real failure and executable continuation. All existing tests and full CI remain required."
+                id: "update-recovery"
+                required: true
+            evidence_fingerprint: "sha256:5c38d63e30adb0638d236ee091ba308222d59a1293d129e9c9c1a52459cecf84"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "scoped-tests"
+                      - "full-ci"
+                    description: "Delayed provider observation and interrupted retry preserve exact identity and local files. A separately bound reconciliation-only route cannot repeat PUT or publish stale state. Regression-first tests cover the real failure and executable continuation. All existing tests and full CI remain required."
+                    id: "update-recovery"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 140000
+                  optional_sources: []
+                  required_sources:
+                    - "packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+                    - "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
+                    - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+                    - "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+                    - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+                    - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
+                    - "packages/agentplane/src/commands/pr/provider-update-branch-local.ts"
+                    - "packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts"
+                    - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+                    - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                  symbol_hints:
+                    - "providerUpdateBranchParams"
+                    - "updateProviderBranch"
+                    - "operationArgv"
+                depends_on: []
+                expected_outputs:
+                  - "artifact:provider-update-recovery-report"
+                id: "complete-provider-recovery"
+                objective: "Complete provider-update recovery across delayed readback and restart. Preserve exact identity, expected-head binding, ancestry and all local preservation checks. Route a mismatched hosted descendant to a separately bound reconciliation-only operation that can never repeat PUT or publish the old local head. Keep strict pre-effect base validation. Prove any post-effect base advance before accepting it. Cover immediate success, delayed observation, interruption, rerun and the next transition. Before changing command projection, request a bounded scope extension for shared/workflow-operation-projection.ts and shared/workflow-operation-prefix.ts; route through the existing managed task command instead of an unregistered pr update-branch command. Keep CI, policy, queue ownership and release/Core order unchanged."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/pr/provider-update-branch-local.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts"
+                  - "packages/agentplane/src/commands/pr/provider-update-branch-local.ts"
+                  - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
+                  - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+                  - "packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+                  - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+                  - "packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
+                  - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+                  - "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+                  - "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
+                  - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                  - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers=1"
+                      id: "scoped-tests"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-ci"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "scoped-tests"
+                        - "full-ci"
+                      description: "Delayed provider observation and interrupted retry preserve exact identity and local files. A separately bound reconciliation-only route cannot repeat PUT or publish stale state. Regression-first tests cover the real failure and executable continuation. All existing tests and full CI remain required."
+                      id: "update-recovery"
+                      required: true
+                  evidence_fingerprint: "sha256:5c38d63e30adb0638d236ee091ba308222d59a1293d129e9c9c1a52459cecf84"
+                  schema_version: 1
+        revision: 6
+        schema_version: 1
+        task_id: "202608271538-T21JCA"
+    revision: 34
     schema_version: 1
-    updated_at: "2026-08-27T17:53:58.819Z"
+    updated_at: "2026-08-27T18:02:16.991Z"
     work_items:
       complete-provider-recovery:
         attempt: 0
