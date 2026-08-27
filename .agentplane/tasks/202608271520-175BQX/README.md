@@ -1,10 +1,11 @@
 ---
 id: "202608271520-175BQX"
 title: "Modernize route-decision fixture prerequisites"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -60,6 +61,20 @@ quality_review:
     - "All existing downstream route expectations remain: provider confidence and no-default-provider-call checks, planning precedence, stale semantic verification versus lifecycle-only changes, direct terminal routes and explicit batch ownership."
     - "Frozen verification20260827163359452-f5a7fe6f4992aa43 binds implementationda6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc to full CI525884ms and32/32 focused tests44146ms. No skipped tests or baseline expansion is reported."
     - "Residual risk: Hosted exact-head checks and supported integration remain uncompleted; passing fixture tests are not release qualification."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:8326489c4df2fae4178e4d31870acafd831b9db4210b1ea1181f37567df3aff8"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-27T16:37:02.017Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -272,8 +287,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "da6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc"
-  message: "🚧 175BQX task: apply external agent result"
+  hash: "993d4327c7443ba88eb5f1aed89c04b637c0b637"
+  message: "🚧 175BQX task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -281,6 +296,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: da6bbcbac2fc. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -303,9 +321,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-27T16:37:02.017Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "993d4327c7443ba88eb5f1aed89c04b637c0b637"
 doc_version: 3
-doc_updated_at: "2026-08-27T16:34:01.831Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-27T16:37:02.041Z"
+doc_updated_by: "CODER"
 description: "Repair 29 freshly reproduced failures in seven route-decision CLI suites on main 2c9a2f59146c302c517524136e66abb902f92ba6. Provide real Git execution bases before task creation and structured semantic planning prerequisites for downstream routing scenarios. Add one narrowly scoped route-decision.testkit.ts helper if needed to submit real PLANNER results through the existing exchange. Preserve exact approval and provider boundaries, local-only versus remote evidence, quality freshness, semantic changes versus lifecycle-only commits, batch ownership, direct terminal routing, and no-provider-call assertions. Preserve planning-first negative scenarios. Do not relabel downstream safety expectations as planning failures. No production behavior, global fixture helper semantics, CI gates, timeouts, policy, release state or roadmap dependency changes. Require all scoped tests, lint, formatting, unchanged oversized-test baseline and full CI. This scope is disjoint from current fixture repairs."
 sections:
   Summary: |-
@@ -638,7 +664,34 @@ extensions:
       schema_version: 1
       task_id: "202608271520-175BQX"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608271520-175BQX"
+            - "git:da6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc"
+          check_id: "scoped-tests"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.remote-confidence.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts --pool=threads --maxWorkers=2"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T16:33:59.452Z"
+          repository_snapshot_digest: "sha256:20192cb0ac9f494bb91201231ce0254183e364dc6cd5ddcf7f7dd4d92bdfeb45"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608271520-175BQX"
+            - "git:da6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-27T16:33:59.452Z"
+          repository_snapshot_digest: "sha256:20192cb0ac9f494bb91201231ce0254183e364dc6cd5ddcf7f7dd4d92bdfeb45"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608271520-175BQX"
     intent:
       acceptance_criteria:
@@ -659,12 +712,12 @@ extensions:
 
         Repair 29 freshly reproduced failures in seven route-decision CLI suites on main 2c9a2f59146c302c517524136e66abb902f92ba6. Provide real Git execution bases before task creation and structured semantic planning prerequisites for downstream routing scenarios. Add one narrowly scoped route-decision.testkit.ts helper if needed to submit real PLANNER results through the existing exchange. Preserve exact approval and provider boundaries, local-only versus remote evidence, quality freshness, semantic changes versus lifecycle-only commits, batch ownership, direct terminal routing, and no-provider-call assertions. Preserve planning-first negative scenarios. Do not relabel downstream safety expectations as planning failures. No production behavior, global fixture helper semantics, CI gates, timeouts, policy, release state or roadmap dependency changes. Require all scoped tests, lint, formatting, unchanged oversized-test baseline and full CI. This scope is disjoint from current fixture repairs.
       task_id: "202608271520-175BQX"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 12
     schema_version: 1
-    updated_at: "2026-08-27T16:34:02.986Z"
+    updated_at: "2026-08-27T16:37:02.017Z"
     work_items:
       repair-routing-fixtures:
         attempt: 1
@@ -742,11 +795,37 @@ extensions:
         previous_revision: 8
         schema_version: 1
         task_id: "202608271520-175BQX"
+      legacy-finish:202608271520-175BQX:2026-08-27T16:33:59.452Z:da6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc:
+        aggregate_digest: "sha256:b350815f462f61b43d09cbf630c04776015a8a8199509fe2faf2b071bd8905b3"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-27T16:37:02.017Z"
+          cause_refs:
+            - "task-verification:202608271520-175BQX"
+            - "git:da6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_447ebcb78c7a02c7f8b207c4"
+          mutation_id: "legacy-finish:202608271520-175BQX:2026-08-27T16:33:59.452Z:da6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc"
+          plan_digest: "sha256:72ebe2b4b31b033a67b730cd6960b9da2efced9235a2ad8b23d72e44b0595f53"
+          plan_revision: 1
+          repository_fingerprint: "sha256:20192cb0ac9f494bb91201231ce0254183e364dc6cd5ddcf7f7dd4d92bdfeb45"
+          schema_version: 1
+          task_id: "202608271520-175BQX"
+          task_revision: 9
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608271520-175BQX:2026-08-27T16:33:59.452Z:da6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202608271520-175BQX"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "da6bbcbac2fc9b8a2b6e3a998c4e19525626c3fc"
+    message: "🚧 175BQX task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "2c9a2f59146c302c517524136e66abb902f92ba6"
@@ -863,3 +942,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:8326489c4df2fae4178e4d31870acafd831b9db4210b1ea1181f37567df3aff8`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-27T16:37:02.017Z`
