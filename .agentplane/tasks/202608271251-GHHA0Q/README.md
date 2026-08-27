@@ -1,10 +1,10 @@
 ---
 id: "202608271251-GHHA0Q"
 title: "Replace obsolete CLI test expectations with architecture-aligned contracts"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,11 @@ plan_approval:
   updated_by: "USER"
   note: "User instructed: Продолжай тогда, following the architecture-aligned test audit, and previously authorized autonomous in-scope work. This approval covers the four-file test-only slice, not skipped checks, product behavior changes, publication, or roadmap dependency changes."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-27T13:06:52.681Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -80,12 +80,26 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "verification:recorded-check-2:fail"
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
+      - "packages/agentplane/src/cli/run-cli.core.help-snap.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -118,22 +132,34 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:4a67c00b25789f69567fab83878ae91e8b86c19eb8299e6535693d6f570b4519"
+      digest: "sha256:dbc76853dba06e5b36a3f01387f30b6df3125c0d692688bdc971c9787af0cf66"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
         - "central_component:packages/agentplane/src/cli/run-cli.core.help-snap.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+        - "central_path:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.help-snap.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+        - "unknown_path:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
+          - "packages/agentplane/src/cli/run-cli.core.help-snap.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -164,6 +190,7 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-2"
 commit: null
 comments:
   -
@@ -172,6 +199,12 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: b2019d67041f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. All scoped tests pass. Required ci:local:full is blocked by five environment-dependent prompt test failures outside the four-file authority. No changes were made during this rework episode. Recommended action: Extend this approved test-modernization task to the two specified test files only. Clearset prompt-mode input inside their beforeEach hooks and restore the inherited value in afterEach. Preserve TTY mocking, explicit plain-mode checks, cancellation checks and all assertions. Add or parameterize checks proving both inherited modes cannot contaminate the interactive fixture. Do not alter production agent-mode, remove plain mode, unset parent runtime environment to evade CI, or weaken release gates. Then rerun both environment variants and full CI through the supervisor. Requested scope: roots=packages/agentplane/src/cli/prompts.test.ts,packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts; repository effects=tests; request digest=sha256:4c736da4891a551d6f4dad3d28802a3ae722984d3063746524af63afba0ea27f. Agentplane receipt: external-agent-blocker/tr_c4d1d6f511b30e9288174acf9922e983/sha256:f7c7d2a7d5511301c485977d5e762a41b56167bcbc3cef42b548d96db2e3ea60/sha256:4c736da4891a551d6f4dad3d28802a3ae722984d3063746524af63afba0ea27f."
 events:
   -
     type: "comment"
@@ -185,9 +218,30 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-27T13:00:27.793Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: b2019d67041f. CLI accepted one state-bound external-agent semantic result."
+    commit: "b2019d67041f6a90cf334e905ffc3dd94a9be63b"
+  -
+    type: "verify"
+    at: "2026-08-27T13:06:52.681Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-27T13:08:17.452Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. All scoped tests pass. Required ci:local:full is blocked by five environment-dependent prompt test failures outside the four-file authority. No changes were made during this rework episode. Recommended action: Extend this approved test-modernization task to the two specified test files only. Clearset prompt-mode input inside their beforeEach hooks and restore the inherited value in afterEach. Preserve TTY mocking, explicit plain-mode checks, cancellation checks and all assertions. Add or parameterize checks proving both inherited modes cannot contaminate the interactive fixture. Do not alter production agent-mode, remove plain mode, unset parent runtime environment to evade CI, or weaken release gates. Then rerun both environment variants and full CI through the supervisor. Requested scope: roots=packages/agentplane/src/cli/prompts.test.ts,packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts; repository effects=tests; request digest=sha256:4c736da4891a551d6f4dad3d28802a3ae722984d3063746524af63afba0ea27f. Agentplane receipt: external-agent-blocker/tr_c4d1d6f511b30e9288174acf9922e983/sha256:f7c7d2a7d5511301c485977d5e762a41b56167bcbc3cef42b548d96db2e3ea60/sha256:4c736da4891a551d6f4dad3d28802a3ae722984d3063746524af63afba0ea27f."
 doc_version: 3
-doc_updated_at: "2026-08-27T12:55:50.220Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-27T13:08:17.452Z"
+doc_updated_by: "SUPERVISOR"
 description: "Implement the approved test-audit first slice independently of the preserved 0.7.8 candidate. Correct the obsolete task-new route help snapshot and replace internal transition identity coupling only where the current issuance contract proves the old expectation obsolete. Preserve approval, replay, workspace isolation, provider, verification and release gates. Keep unborn-repository and canonical-plan fixture investigation explicit; do not blanket seed commits, skip tests, weaken required checks, change production lifecycle or alter roadmap dependencies. Initial scope is the help snapshot/test and the two task-advance identity tests, subject to exact PLANNER authority."
 sections:
   Summary: |-
@@ -204,6 +258,46 @@ sections:
     3. Retain mandatory repository and hosted checks. Full release:prepublish remains required for 0.7.8; this task does not qualify or publish that release.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-27T13:06:52.681Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6f7c22f11187f4e6615945c14619958e49fde3021520d38b5c6d54807062d1da, input_digest=sha256:f6627b5fffa20d92966571b8e9b5e17e02521bb416da49e33d0ac4b119057d5b
+
+    Details:
+
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608271251-GHHA0Q declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608271251-GHHA0Q declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271251-GHHA0Q-replace-obsolete-cli-test-expectations-with-arch/.agentplane/tasks/202608271251-GHHA0Q/blueprint/resolved-snapshot.json
+    - old_digest: f1b26b57f079cbc23ac19906eea9e1d366ecf04d70a161651377eaada92ae52b
+    - current_digest: f1b26b57f079cbc23ac19906eea9e1d366ecf04d70a161651377eaada92ae52b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608271251-GHHA0Q
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -233,6 +327,21 @@ extensions:
     scope_digest: "sha256:82370fdad3200a8a485bbc809710c71b53b1f734b6864500a8747f163ce4956b"
     status: "active"
     task_id: "202608271251-GHHA0Q"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:f7c7d2a7d5511301c485977d5e762a41b56167bcbc3cef42b548d96db2e3ea60"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "The mandatory full test run exposes a shared inherited-environment fixture flaw. A two-file test-only isolation fix is within the user's approved strategy and preserves all runtime and release guarantees."
+      repository_effects:
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/cli/prompts.test.ts"
+        - "packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts"
+    request_digest: "sha256:4c736da4891a551d6f4dad3d28802a3ae722984d3063746524af63afba0ea27f"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_c4d1d6f511b30e9288174acf9922e983"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -422,25 +531,84 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 6
+    revision: 12
     schema_version: 1
-    updated_at: "2026-08-27T12:55:37.441Z"
+    updated_at: "2026-08-27T13:06:55.809Z"
     work_items:
       modernize-test-contracts:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "modernize-test-contracts"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:7df000e7dc65389c5892cde94d39a94eca6abde4a08a2fbd3a101c94cbfa1573"
+            id: "artifact:modernized-cli-contract-tests"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608271251-GHHA0Q"
+              work_item_id: "modernize-test-contracts"
+            provenance:
+              - "sha256:216ab9b75ca77d699343b3d66273a90b894dc8c8d764a73e598f3f149f74419c"
+              - ".agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:201f5c0d849c85d8f08b8dcde3b93a89bdd1dc4307311a0d1e19339b9758a614"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json"
+              check_id: "scoped-tests"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-08-27T13:06:55.805Z"
+              repository_snapshot_digest: "sha256:201f5c0d849c85d8f08b8dcde3b93a89bdd1dc4307311a0d1e19339b9758a614"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608271251-GHHA0Q-executor-5865deee1457b6d7067f1499:
+        aggregate_digest: "sha256:9d1af224b57a7bc7ef900d27b8e3dadcbef31e01af52f519d5ecb4c0c2973171"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-27T13:06:55.809Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_ebb22ffb99abbfc59506bff0"
+          mutation_id: "external-result:work-order-202608271251-GHHA0Q-executor-5865deee1457b6d7067f1499"
+          plan_digest: "sha256:d3c4a3c4bbdab44234a565caee7d12f4d3e8a7d378d518461825f2b490f871a3"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608271251-GHHA0Q"
+          task_revision: 11
+          to: "COMPLETED"
+          work_item_id: "modernize-test-contracts"
+        mutation_id: "external-result:work-order-202608271251-GHHA0Q-executor-5865deee1457b6d7067f1499"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202608271251-GHHA0Q"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
   task_execution_context:
     base_ref: "main"
     base_sha: "74c39ba73325b0808c46bdd0accb46a5a6cf2c22"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "explicit"
   workflow_route_baseline:
     start_head_sha: "74c39ba73325b0808c46bdd0accb46a5a6cf2c22"
     version: 1
@@ -470,6 +638,46 @@ Update four test-owned files for current route help and external-episode contrac
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-27T13:06:52.681Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6f7c22f11187f4e6615945c14619958e49fde3021520d38b5c6d54807062d1da, input_digest=sha256:f6627b5fffa20d92966571b8e9b5e17e02521bb416da49e33d0ac4b119057d5b
+
+Details:
+
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608271251-GHHA0Q declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608271251-GHHA0Q declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608271251-GHHA0Q-replace-obsolete-cli-test-expectations-with-arch/.agentplane/tasks/202608271251-GHHA0Q/blueprint/resolved-snapshot.json
+- old_digest: f1b26b57f079cbc23ac19906eea9e1d366ecf04d70a161651377eaada92ae52b
+- current_digest: f1b26b57f079cbc23ac19906eea9e1d366ecf04d70a161651377eaada92ae52b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608271251-GHHA0Q
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

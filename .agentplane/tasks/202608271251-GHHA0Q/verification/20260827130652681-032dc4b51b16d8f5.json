@@ -1,0 +1,116 @@
+{
+  "details": "Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2\nResult: pass\nEvidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608271251-GHHA0Q declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608271251-GHHA0Q declared verification",
+  "digest": "sha256:032dc4b51b16d8f550a70c411d55d38696fbac8d9b7b7512e2546b511f48e23d",
+  "implementation_sha": "b2019d67041f6a90cf334e905ffc3dd94a9be63b",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:f6627b5fffa20d92966571b8e9b5e17e02521bb416da49e33d0ac4b119057d5b",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:50a59331e6846f01a894e6858d6e387d545b67a4162ccac675038c3392a0d375",
+      "digest": "sha256:f8cfa3f4564fe447aad84cace4b215d426f1de2b101cf947c30e32c923022827",
+      "references": [
+        {
+          "digest": "sha256:98171609a378bdb46efd7cfcc8ac802efbbf091d8fd33ca6e2ee987fc0e453bc",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:98171609a378bdb46efd7cfcc8ac802efbbf091d8fd33ca6e2ee987fc0e453bc",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608271251-GHHA0Q/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "74c39ba73325b0808c46bdd0accb46a5a6cf2c22",
+      "digest": "sha256:5f1930bfd6195be3d5bc49badc1a5227d70cd62dbc1c44f78a53cdfaf321bc23",
+      "primary_task_id": "202608271251-GHHA0Q",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608271251-GHHA0Q"
+      ]
+    },
+    "implementation": {
+      "base_sha": "74c39ba73325b0808c46bdd0accb46a5a6cf2c22",
+      "digest": "sha256:39e1bc09d7df10c7ab60519c04cee03317ef1a9e2b9d787649c008f6885f3186",
+      "strategy": "branch_diff",
+      "target_sha": "b2019d67041f6a90cf334e905ffc3dd94a9be63b"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:dbc76853dba06e5b36a3f01387f30b6df3125c0d692688bdc971c9787af0cf66",
+    "verify_steps_digest": "sha256:6f7c22f11187f4e6615945c14619958e49fde3021520d38b5c6d54807062d1da"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-08-27T13:06:52.681Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2. Expected: all scoped help and external-episode identity tests pass without skips.\n2. Run git diff --check and formatter checks on changed files. Expected: no errors.\n3. Retain mandatory repository and hosted checks. Full release:prepublish remains required for 0.7.8; this task does not qualify or publish that release.",
+  "scope_digest": "sha256:6f7c22f11187f4e6615945c14619958e49fde3021520d38b5c6d54807062d1da",
+  "task_id": "202608271251-GHHA0Q",
+  "verification_command": "agentplane verify 202608271251-GHHA0Q --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
