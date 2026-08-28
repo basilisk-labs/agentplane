@@ -1,0 +1,429 @@
+diff --git a/packages/agentplane/src/commands/task/verify-record-execute.ts b/packages/agentplane/src/commands/task/verify-record-execute.ts
+index 811e742cb..306a48e37 100644
+--- a/packages/agentplane/src/commands/task/verify-record-execute.ts
++++ b/packages/agentplane/src/commands/task/verify-record-execute.ts
+@@ -1,6 +1,7 @@
+ import { createHash } from "node:crypto";
+ import { mkdir, readFile, rm } from "node:fs/promises";
+ import path from "node:path";
++import { gitRevParse } from "@agentplaneorg/core/git";
+ 
+ import { canonicalizeJson, taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
+ 
+@@ -26,6 +27,7 @@ import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
+ import {
+   loadCommandContext,
+   loadTaskFromContext,
++  resolveTaskBranchFromContext,
+   type CommandContext,
+ } from "../shared/task-backend.js";
+ import { applyTaskMutation } from "../shared/task-mutation.js";
+@@ -163,14 +165,19 @@ async function recordVerificationResult(opts: {
+         const qualityReviewTaskIds = qualificationDependencies
+           ? [...new Set([...batchTaskIds, ...qualificationDependencies.dependencyTaskIds])]
+           : batchTaskIds;
++        const taskBranch =
++          workflowMode === "branch_pr"
++            ? await resolveTaskBranchFromContext({ ctx, taskId: current.id })
++            : null;
+         const evaluatedSha = await resolveQualityReviewTargetSha({
+           gitRoot: resolved.gitRoot,
+           workflowDir: config.paths.workflow_dir,
+           taskId: current.id,
+           taskIds: qualityReviewTaskIds,
+           lifecycleTaskIds: batchTaskIds,
+-          headSha: recordedTaskImplementationCommitSha(current),
+-          previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
++          headSha: taskBranch ? await gitRevParse(resolved.gitRoot, [taskBranch]) : undefined,
++          previousEvaluatedSha:
++            current.quality_review?.evaluated_sha ?? recordedTaskImplementationCommitSha(current),
+           workflowMode,
+         });
+         const observedChangedPaths = await resolveObservedVerificationChangedPaths({
+diff --git a/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts b/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
+index 8b0e0bc86..822c58367 100644
+--- a/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
++++ b/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
+@@ -10,6 +10,8 @@ import * as taskMutation from "../shared/task-mutation.js";
+ import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
+ import { cmdVerifyParsed } from "./verify-record.js";
+ import { resolveObservedVerificationChangedPaths } from "./verify-record-observed-changes.js";
++import { resolveEvaluatorReviewTarget } from "../evaluator/evaluator-qualification-review.js";
++import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+ import { mkGitRepoRootWithCommit, writeDefaultConfig } from "@agentplane/testkit";
+ import { execFileAsync } from "@agentplaneorg/core/process";
+ 
+@@ -229,98 +231,247 @@ describe("task verification durability", () => {
+     });
+   });
+ 
+-  it("strengthens a legacy branch task contract from the exact implementation diff", async () => {
+-    const root = await makeRepo();
+-    const taskId = "202602050900-V1F4D";
+-    mocks.writeJsonStableIfChanged.mockImplementation(async (filePath, value) => {
+-      const resolvedPath = String(filePath);
+-      await mkdir(path.dirname(resolvedPath), { recursive: true });
+-      await writeFile(resolvedPath, `${JSON.stringify(value)}\n`, "utf8");
+-      return true;
+-    });
+-    await addTask(root, taskId);
+-    const baseBranch = "main";
+-    await writeFile(path.join(root, "package.json"), '{"name":"contract-diff-fixture"}\n', "utf8");
+-    await execFileAsync("git", ["add", "package.json"], { cwd: root });
+-    await execFileAsync("git", ["commit", "-m", "test: seed contract diff fixture"], {
+-      cwd: root,
+-    });
+-    await execFileAsync("git", ["branch", "-M", baseBranch], { cwd: root });
+-    const taskBranch = `task/${taskId}/contract-diff`;
+-    await execFileAsync("git", ["config", "--local", "agentplane.baseBranch", baseBranch], {
+-      cwd: root,
+-    });
+-    await execFileAsync("git", ["checkout", "-b", taskBranch], { cwd: root });
+-    await mkdir(path.join(root, ".github", "workflows"), { recursive: true });
+-    await mkdir(path.join(root, "schemas"), { recursive: true });
+-    await writeFile(path.join(root, ".github", "workflows", "ci.yml"), "name: CI\n", "utf8");
+-    await writeFile(path.join(root, "schemas", "task.schema.json"), "{}\n", "utf8");
+-    await execFileAsync("git", ["add", ".github/workflows/ci.yml", "schemas/task.schema.json"], {
+-      cwd: root,
+-    });
+-    await execFileAsync("git", ["commit", "-m", "test: central implementation diff"], {
+-      cwd: root,
+-    });
+-    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+-    ctx.config.workflow_mode = "branch_pr";
+-    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+-    await mkdir(prDir, { recursive: true });
+-    await writeFile(
+-      path.join(prDir, "meta.json"),
+-      `${JSON.stringify({
+-        schema_version: 1,
+-        task_id: taskId,
+-        branch: taskBranch,
+-        base: baseBranch,
+-        created_at: "2026-02-05T09:00:00.000Z",
+-        updated_at: "2026-02-05T09:00:00.000Z",
+-        status: "OPEN",
+-      })}\n`,
+-      "utf8",
+-    );
+-    await writeFile(path.join(prDir, "review.md"), "# Review\n", "utf8");
++  it.each(["task", "base"] as const)(
++    "strengthens a legacy branch task contract from the %s checkout",
++    async (checkout) => {
++      const root = await makeRepo();
++      const taskId = "202602050900-V1F4D";
++      mocks.writeJsonStableIfChanged.mockImplementation(async (filePath, value) => {
++        const resolvedPath = String(filePath);
++        await mkdir(path.dirname(resolvedPath), { recursive: true });
++        await writeFile(resolvedPath, `${JSON.stringify(value)}\n`, "utf8");
++        return true;
++      });
++      await addTask(root, taskId);
++      const baseBranch = "main";
++      await execFileAsync("git", ["add", "-f", `.agentplane/tasks/${taskId}/README.md`], {
++        cwd: root,
++      });
++      await writeFile(
++        path.join(root, "package.json"),
++        '{"name":"contract-diff-fixture"}\n',
++        "utf8",
++      );
++      await execFileAsync("git", ["add", "package.json"], { cwd: root });
++      await execFileAsync("git", ["commit", "-m", "test: seed contract diff fixture"], {
++        cwd: root,
++      });
++      await execFileAsync("git", ["branch", "-M", baseBranch], { cwd: root });
++      const taskBranch = `task/${taskId}/contract-diff`;
++      await execFileAsync("git", ["config", "--local", "agentplane.baseBranch", baseBranch], {
++        cwd: root,
++      });
++      await execFileAsync("git", ["checkout", "-b", taskBranch], { cwd: root });
++      await mkdir(path.join(root, ".github", "workflows"), { recursive: true });
++      await mkdir(path.join(root, "schemas"), { recursive: true });
++      await writeFile(path.join(root, ".github", "workflows", "ci.yml"), "name: CI\n", "utf8");
++      await writeFile(path.join(root, "schemas", "task.schema.json"), "{}\n", "utf8");
++      await execFileAsync("git", ["add", ".github/workflows/ci.yml", "schemas/task.schema.json"], {
++        cwd: root,
++      });
++      await execFileAsync("git", ["commit", "-m", "test: central implementation diff"], {
++        cwd: root,
++      });
++      const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
++      ctx.config.workflow_mode = "branch_pr";
++      const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
++      await mkdir(prDir, { recursive: true });
++      await writeFile(
++        path.join(prDir, "meta.json"),
++        `${JSON.stringify({
++          schema_version: 1,
++          task_id: taskId,
++          branch: taskBranch,
++          base: baseBranch,
++          created_at: "2026-02-05T09:00:00.000Z",
++          updated_at: "2026-02-05T09:00:00.000Z",
++          status: "OPEN",
++        })}\n`,
++        "utf8",
++      );
++      await writeFile(path.join(prDir, "review.md"), "# Review\n", "utf8");
+ 
+-    await cmdVerifyParsed({
+-      ctx,
+-      cwd: root,
+-      rootOverride: undefined,
+-      taskId,
+-      state: "ok",
+-      by: "REVIEWER",
+-      note: "Full central-path checks passed.",
+-      details:
+-        "Command: bun test\nResult: pass\nEvidence: full suite passed\nScope: exact implementation diff",
+-      quiet: true,
+-    });
++      const { stdout: implementationOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++        cwd: root,
++      });
++      const implementationSha = implementationOutput.trim();
++      const initial = await ctx.taskBackend.getTask(taskId);
++      if (!initial) throw new Error("missing branch verification fixture");
++      await ctx.taskBackend.writeTask?.({
++        ...initial,
++        extensions: { ...initial.extensions, implementation_commit: { hash: implementationSha } },
++      });
++      await execFileAsync("git", ["add", "-f", `.agentplane/tasks/${taskId}`], { cwd: root });
++      await execFileAsync("git", ["commit", "-m", "test: persist task branch snapshot"], {
++        cwd: root,
++      });
++      const { stdout: taskHeadOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++        cwd: root,
++      });
++      if (checkout === "base") {
++        await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
++        await writeFile(path.join(root, "unrelated.ts"), "export const unrelated = true;\n");
++        await execFileAsync("git", ["add", "unrelated.ts"], { cwd: root });
++        await execFileAsync("git", ["commit", "-m", "test: independent base change"], {
++          cwd: root,
++        });
++      }
++      const { stdout: checkoutHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++        cwd: root,
++      });
+ 
+-    const task = await ctx.taskBackend.getTask(taskId);
+-    const contract = task?.execution_contract?.verification.contract;
+-    expect(task?.execution_contract?.observed.changed_paths).toEqual([
+-      ".github/workflows/ci.yml",
+-      "schemas/task.schema.json",
+-    ]);
+-    expect(contract).toMatchObject({
+-      observed: {
+-        changed_files: [".github/workflows/ci.yml", "schemas/task.schema.json"],
+-        changed_components: [".github", "schemas"],
+-      },
+-      requires_full_regression: true,
+-    });
+-    expect(contract?.selected_checks).toContain("full_regression");
+-    expect(contract?.selected_checks).toContain("hosted_integration");
+-    expect(contract?.escalation_reasons).toContain("central_path:.github/workflows/ci.yml");
+-    expect(contract?.escalation_reasons).toContain("central_path:schemas/task.schema.json");
+-    expect(contract?.escalation_reasons).toContain("effect_ci");
+-    expect(contract?.escalation_reasons).toContain("effect_schema");
++      const verify = () =>
++        cmdVerifyParsed({
++          ctx,
++          cwd: root,
++          rootOverride: undefined,
++          taskId,
++          state: "ok",
++          by: "REVIEWER",
++          note: "Full central-path checks passed.",
++          details:
++            "Command: bun test\nResult: pass\nEvidence: full suite passed\nScope: exact implementation diff",
++          quiet: true,
++        });
++      await verify();
++      await verify();
+ 
+-    const verificationDir = path.join(root, ".agentplane", "tasks", taskId, "verification");
+-    const [recordName] = await readdir(verificationDir);
+-    if (!recordName) throw new Error("missing verification record");
+-    const record = JSON.parse(await readFile(path.join(verificationDir, recordName), "utf8")) as {
+-      input?: { verification_contract_digest?: string };
+-    };
+-    expect(record.input?.verification_contract_digest).toBe(contract?.digest);
+-  });
++      const task = await ctx.taskBackend.getTask(taskId);
++      const contract = task?.execution_contract?.verification.contract;
++      expect(task?.execution_contract?.observed.changed_paths).toEqual([
++        ".github/workflows/ci.yml",
++        "schemas/task.schema.json",
++      ]);
++      expect(contract).toMatchObject({
++        observed: {
++          changed_files: [".github/workflows/ci.yml", "schemas/task.schema.json"],
++          changed_components: [".github", "schemas"],
++        },
++        requires_full_regression: true,
++      });
++      expect(contract?.selected_checks).toContain("full_regression");
++      expect(contract?.selected_checks).toContain("hosted_integration");
++      expect(contract?.escalation_reasons).toContain("central_path:.github/workflows/ci.yml");
++      expect(contract?.escalation_reasons).toContain("central_path:schemas/task.schema.json");
++      expect(contract?.escalation_reasons).toContain("effect_ci");
++      expect(contract?.escalation_reasons).toContain("effect_schema");
++
++      const verificationDir = path.join(root, ".agentplane", "tasks", taskId, "verification");
++      const recordNames = await readdir(verificationDir);
++      expect(recordNames).toHaveLength(2);
++      for (const recordName of recordNames) {
++        const record: unknown = JSON.parse(
++          await readFile(path.join(verificationDir, recordName), "utf8"),
++        );
++        expect(record).toMatchObject({
++          implementation_sha: implementationSha,
++          input: { verification_contract_digest: contract?.digest },
++        });
++      }
++      const currentHead = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
++      const currentTaskHead = await execFileAsync("git", ["rev-parse", taskBranch], { cwd: root });
++      expect(currentHead.stdout).toBe(checkoutHead);
++      expect(currentTaskHead.stdout).toBe(taskHeadOutput);
++    },
++  );
++
++  it.each(["policy", "lifecycle"] as const)(
++    "keeps verification and evaluator targets aligned after a %s commit",
++    async (change) => {
++      const root = await makeRepo();
++      const taskId = "202602050900-V1F4T";
++      await addTask(root, taskId);
++      const git = async (...args: string[]) => {
++        const result = await execFileAsync("git", args, { cwd: root });
++        return result.stdout.trim();
++      };
++      const baseSha = await git("rev-parse", "HEAD");
++      await writeFile(path.join(root, "feature.ts"), "export const feature = true;\n");
++      await git("add", "feature.ts");
++      await git("commit", "-m", "test: reviewed implementation");
++      const implementationSha = await git("rev-parse", "HEAD");
++      const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
++      ctx.config.workflow_mode = "direct";
++      const initial = await ctx.taskBackend.getTask(taskId);
++      if (!initial) throw new Error("missing target continuity fixture");
++      await ctx.taskBackend.writeTask?.({
++        ...initial,
++        extensions: {
++          ...initial.extensions,
++          implementation_commit: { hash: implementationSha },
++          workflow_route_baseline: { start_head_sha: baseSha },
++        },
++      });
++      mocks.writeJsonStableIfChanged.mockImplementation(async (filePath, value) => {
++        const resolvedPath = String(filePath);
++        await mkdir(path.dirname(resolvedPath), { recursive: true });
++        await writeFile(resolvedPath, `${JSON.stringify(value)}\n`, "utf8");
++        return true;
++      });
++      const verify = () =>
++        cmdVerifyParsed({
++          ctx,
++          cwd: root,
++          taskId,
++          state: "ok",
++          by: "REVIEWER",
++          note: "Target continuity checks passed.",
++          details:
++            "Command: bun test\nResult: pass\nEvidence: target continuity fixture passed\nScope: complete task diff",
++          quiet: true,
++        });
++      await verify();
++      const verificationDir = path.join(root, ".agentplane", "tasks", taskId, "verification");
++      const initialRecords = new Set(await readdir(verificationDir));
++      const policyPath = ".agentplane/policy/incidents.md";
++      if (change === "policy") {
++        await mkdir(path.dirname(path.join(root, policyPath)), { recursive: true });
++        await writeFile(path.join(root, policyPath), "# Recorded incident\n");
++        await git("add", "-f", policyPath);
++      } else {
++        const evidencePath = `.agentplane/tasks/${taskId}/evidence/closeout.json`;
++        await mkdir(path.dirname(path.join(root, evidencePath)), { recursive: true });
++        await writeFile(path.join(root, evidencePath), '{"kind":"closeout-evidence"}\n');
++        await git("add", "-f", evidencePath);
++      }
++      await git("commit", "-m", `test: ${change} after implementation`);
++      const changedHead = await git("rev-parse", "HEAD");
++      const expectedSha = change === "policy" ? changedHead : implementationSha;
++      const expectedPaths = change === "policy" ? [policyPath, "feature.ts"] : ["feature.ts"];
++      for (let attempt = 0; attempt < 2; attempt += 1) {
++        await verify();
++        const task = await ctx.taskBackend.getTask(taskId);
++        if (!task) throw new Error("missing verified target continuity fixture");
++        const execution = await resolveTaskExecutionContext({
++          ctx,
++          tasks: [task],
++          primaryTaskId: taskId,
++          authoritativeTaskSource: "base_checkout",
++        });
++        const review = await resolveEvaluatorReviewTarget({
++          ctx,
++          task,
++          reason: "preparation",
++          execution,
++        });
++        expect(review.evaluatedSha).toBe(expectedSha);
++        expect(task.execution_contract?.verification.contract?.observed.changed_files).toEqual(
++          expectedPaths,
++        );
++        expect(task.extensions?.implementation_commit).toEqual({ hash: implementationSha });
++        expect(await git("rev-parse", "HEAD")).toBe(changedHead);
++      }
++      const allRecords = await readdir(verificationDir);
++      const newRecords = allRecords.filter((name) => !initialRecords.has(name));
++      expect(newRecords).toHaveLength(2);
++      for (const name of newRecords) {
++        const record = JSON.parse(await readFile(path.join(verificationDir, name), "utf8")) as {
++          implementation_sha: string;
++        };
++        expect(record.implementation_sha).toBe(expectedSha);
++      }
++    },
++  );
+ 
+   it("observes the complete direct task diff from the frozen execution base", async () => {
+     const root = await makeRepo();
+diff --git a/packages/agentplane/src/commands/task/verify-record.unit.test.ts b/packages/agentplane/src/commands/task/verify-record.unit.test.ts
+index 6abc61dd5..eaa355ce6 100644
+--- a/packages/agentplane/src/commands/task/verify-record.unit.test.ts
++++ b/packages/agentplane/src/commands/task/verify-record.unit.test.ts
+@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => ({
+   loadTaskFromContext:
+     vi.fn<(opts: { ctx: CommandContext; taskId: string }) => Promise<TaskData>>(),
+   loadTaskCommandContext: vi.fn(),
++  resolveTaskBranchFromContext: vi.fn(),
+   resolveTaskExecutionContext: vi.fn(),
+   backendIsLocalFileBackend: vi.fn<(ctx: CommandContext) => boolean>(),
+   getTaskStore: vi.fn(),
+@@ -48,6 +49,7 @@ vi.mock("../shared/task-backend.js", () => ({
+   backendUsesLocalTaskStore: mocks.backendIsLocalFileBackend,
+   loadCommandContext: mocks.loadCommandContext,
+   loadTaskFromContext: mocks.loadTaskFromContext,
++  resolveTaskBranchFromContext: mocks.resolveTaskBranchFromContext,
+ }));
+ vi.mock("../shared/reconcile-check.js", () => ({
+   ensureReconciledBeforeMutation: mocks.ensureReconciledBeforeMutation,
+@@ -117,6 +119,7 @@ describe("task verify record (unit)", () => {
+         Promise.resolve(executionContext(ctx, primaryTaskId)),
+     );
+     mocks.resolveQualityReviewTargetSha.mockResolvedValue(null);
++    mocks.resolveTaskBranchFromContext.mockResolvedValue(null);
+ 
+     mocks.backendIsLocalFileBackend.mockReturnValue(false);
+     mocks.ensureReconciledBeforeMutation.mockResolvedValue();
+@@ -206,7 +209,7 @@ describe("task verify record (unit)", () => {
+     expect(writes.join("")).toContain("agentplane task findings add T-1");
+     expect(writes.join("")).toContain("--promote --external");
+     expect(mocks.resolveQualityReviewTargetSha).toHaveBeenCalledWith(
+-      expect.objectContaining({ headSha: "implementation-sha" }),
++      expect.objectContaining({ previousEvaluatedSha: "implementation-sha" }),
+     );
+     expect(writeTask.mock.calls[0]?.[0].extensions?.implementation_commit).toEqual({
+       hash: "implementation-sha",
