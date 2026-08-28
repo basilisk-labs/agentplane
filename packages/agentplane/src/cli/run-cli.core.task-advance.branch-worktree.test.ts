@@ -3,7 +3,7 @@ import { cp, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
-import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+import { taskCentricAggregateFromExtensions, taskCentricDigest } from "@agentplaneorg/core/tasks";
 import {
   createSupervisorExecutionEpisodeJournal,
   recoverSupervisorExecutionEpisodeJournal,
@@ -30,7 +30,6 @@ import {
 import { buildTaskRouteDecision } from "../commands/shared/route-decision.js";
 import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { writeFinishedTasks } from "../commands/task/finish-shared.js";
-import { TaskCentricBackendAdapter } from "../adapters/task-backend/task-centric-backend-adapter.js";
 import * as verification from "../commands/task/direct-task-verification.js";
 import * as projection from "../commands/task/task-centric-external-result.js";
 import {
@@ -443,7 +442,7 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
       replacementResult.result.findings = ["An unproved replacement claim."];
       replacementResult.result.uncertainty = [];
       await writeFile(fresh.exchange.result_path, JSON.stringify(replacementResult));
-      const recordedResult = vi.spyOn(TaskCentricBackendAdapter.prototype, "recordWorkItemResult");
+      const recordedResult = vi.spyOn(projection, "recordTaskCentricExternalResult");
       const resumeIo = captureStdIO();
       try {
         expect(
@@ -451,16 +450,36 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
           resumeIo.stderr,
         ).toBe(0);
         expect(recordedResult).toHaveBeenCalledOnce();
-        expect(recordedResult.mock.calls[0]?.[0].semantic_result).toMatchObject({
-          summary: resultFor(packet, workOrder).result.summary,
-          claims: resultFor(packet, workOrder).result.findings,
-          questions: resultFor(packet, workOrder).result.uncertainty,
-        });
+        expect(recordedResult.mock.calls[0]?.[0].semantic).toEqual(
+          resultFor(packet, workOrder).result,
+        );
       } finally {
         resumeIo.restore();
         recordedResult.mockRestore();
       }
       const completed = await ctx.taskBackend.getTask(taskId);
+      const completedAggregate = taskCentricAggregateFromExtensions(completed?.extensions);
+      const originalSemantic = resultFor(packet, workOrder).result;
+      expect(completedAggregate?.work_items["exercise-worktree"]?.output_manifests[0]?.digest).toBe(
+        taskCentricDigest({
+          id: "worktree-result",
+          result: {
+            schema_version: 1,
+            kind: "execute",
+            task_id: taskId,
+            plan_revision: completedAggregate?.current_plan?.revision,
+            plan_digest: completedAggregate?.current_plan?.digest,
+            work_item_id: "exercise-worktree",
+            context_digest:
+              freshOrder.planning_context?.digest ?? freshOrder.state_fingerprint.digest,
+            status: originalSemantic.status,
+            summary: originalSemantic.summary,
+            claims: originalSemantic.findings,
+            questions: originalSemantic.uncertainty,
+            artifacts: ["worktree-result"],
+          },
+        }),
+      );
       expect(
         taskCentricAggregateFromExtensions(completed?.extensions)?.work_items["exercise-worktree"]
           ?.state,

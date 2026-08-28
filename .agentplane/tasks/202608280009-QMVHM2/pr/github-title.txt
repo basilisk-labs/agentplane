@@ -1,1 +1,1 @@
-✅ QMVHM2 task: Recover interrupted verification-to-WorkItem completion without false DONE [202608280009-QMVHM2]
+🚧 QMVHM2 task: Recover interrupted verification-to-WorkItem completion without false DONE [202608280009-QMVHM2]
