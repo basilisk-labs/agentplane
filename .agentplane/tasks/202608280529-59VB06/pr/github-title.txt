@@ -1,1 +1,1 @@
-✅ 59VB06 task: Recover stale evaluator exchanges without accepting obsolete verdicts [202608280529-59VB06]
+🚧 59VB06 task: Recover stale evaluator exchanges without accepting obsolete verdicts [202608280529-59VB06]

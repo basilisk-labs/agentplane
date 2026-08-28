@@ -1,0 +1,101 @@
+{
+  "details": "Check: task_outcome\nCommand: bun x --no-install vitest run --config vitest.config.ts packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts -t \"additional task drift|worktree-applied\" --maxWorkers=1\nResult: fail\nEvidence: initial regression run returned three failures in 16.36s on published implementation 529b075e64085dfe47953ee63d949e89513a2422 with test-only additions. Both applied-review later-comment paths reached terminal DONE; base-checkout continuation retired the applied worktree review. The prior verification note abbreviated the test filter incorrectly; this entry supplies the exact executed command. The unpublished patch is saved and the source checkout restored for the scope-extension request.\nScope: the two review findings on PR #5866; hosted CI itself passed.",
+  "digest": "sha256:3ac5a4b484ed090d45e55fda265f303faa6a66b21a30a2b31b7e7c830510b665",
+  "implementation_sha": "75c6a199cc4068e497fb786e831a9b2bb34a7376",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:0ba832671e01c412587b49f4a287853d69502ddf4f5c2c58197ba4d5dc98dc47",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:be5f72017752d4d61eba7a08633ee3d1008be3d284ebcf15126467c238af97ca",
+      "digest": "sha256:5325371074ee8a4b41cbf9c7f2daeb49cccd91a7d913c5bbde62416c8af5112f",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "844eff36ba407436c26a3c63346b0dcc384ce2b5",
+      "digest": "sha256:eb46e07302fe568d919f17cd42ca6e7e27327c0aa2df78b6888e33acc4167878",
+      "primary_task_id": "202608280529-59VB06",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608280529-59VB06"
+      ]
+    },
+    "implementation": {
+      "base_sha": "844eff36ba407436c26a3c63346b0dcc384ce2b5",
+      "digest": "sha256:5ccfa40f65eb2c1691b7ee85f3f517093fa001b1745362dfd13db55b414b833c",
+      "strategy": "branch_diff",
+      "target_sha": "75c6a199cc4068e497fb786e831a9b2bb34a7376"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:8d9482d5e2305722d2b9bfcaa91278ed2b7c4e04becb7c4f00cdc1632c01d82a",
+    "verify_steps_digest": "sha256:e62b830b865b103d9e9ebc3046c670836db81e2157e23ae89899300c97bde172"
+  },
+  "kind": "task_verification_record",
+  "note": "Needs rework: exact regression-command correction; the same proved review defects remain unresolved.",
+  "recorded_at": "2026-08-28T16:16:39.959Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Reproduce stale quality_review continuation on the recorded base with real Git. Expected: an old evaluator result is rejected after changed input, and the current bug repeats the rejection before replacement can run.\n2. Run the scoped evaluator and external-agent recovery tests. Expected: fresh acceptance, preparation-owned artifact classification, genuine state drift, no-result and returned-result interruption, replacement, repeated continuation and next transition are covered. Historical result/evidence bytes remain unchanged, only one supervisor owns the task, and changed task/plan/HEAD/evidence/provider/authority cannot inherit an old verdict.\n3. Run `bun run ci:local:full`. Expected: all mandatory local checks pass without weaker assertions, skips, timeouts, policy or CI changes. Also run `git diff --check`; expected: no whitespace errors.\n4. Review the complete diff against the approved six-file scope and the required WorkItem contract. Expected: no new state store, manual lifecycle edits, simulated USER decisions, copied verdicts or false DONE. Return a scoped blocker before editing outside that bound.\n5. Preserve the proved cause, red/green evidence and remaining hosted integration boundaries in the semantic result and task Findings through supported routes. Exact-head GitHub checks, protected integration and terminal closure are required before delivery. Local checks do not qualify release 0.7.8.",
+  "scope_digest": "sha256:e62b830b865b103d9e9ebc3046c670836db81e2157e23ae89899300c97bde172",
+  "task_id": "202608280529-59VB06",
+  "verification_command": "agentplane task verify rework 202608280529-59VB06 --rework --by ORCHESTRATOR",
+  "verifier": "ORCHESTRATOR"
+}

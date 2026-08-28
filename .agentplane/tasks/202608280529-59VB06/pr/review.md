@@ -6,14 +6,14 @@ Created: 2026-08-28T05:33:24.733Z
 
 - Task: `202608280529-59VB06`
 - Title: Recover stale evaluator exchanges without accepting obsolete verdicts
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608280529-59VB06/recover-stale-evaluator-exchanges-without-accept`
 - Canonical task record: `.agentplane/tasks/202608280529-59VB06/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Needs rework: exact regression-command correction; the same proved review defects remain unresolved.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

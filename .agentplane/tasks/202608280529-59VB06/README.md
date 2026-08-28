@@ -2,10 +2,10 @@
 id: "202608280529-59VB06"
 title: "Recover stale evaluator exchanges without accepting obsolete verdicts"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "USER"
   note: "Operator action under the user authorization: all subsequent in-scope operations through release. Approve the bounded six-file stale evaluator recovery plan sha256:58812b3db6ab06361dbe577ea62bea6e3cfba5a562fcd105b79f6deaf2265059 as a proved required integration-path repair. Preserve exact freshness, immutable old results, all mandatory checks and release/Core order. No publication or architecture scope expansion."
 verification:
-  state: "ok"
-  updated_at: "2026-08-28T15:36:21.983Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-28T16:16:39.959Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Needs rework: exact regression-command correction; the same proved review defects remain unresolved."
+  attempts: 2
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -132,7 +132,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
       - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -148,7 +149,7 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
+        result: "fail"
       -
         id: "recorded-check-2"
         result: "pass"
@@ -257,9 +258,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "ef07d40750a0068fb211f43efa05162e5ca41ccb"
-  message: "🚧 59VB06 task: record external evaluator result"
+      - "verification_recovery:recorded-check-1"
+commit: null
 comments:
   -
     author: "CODER"
@@ -276,6 +276,12 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: user explicitly authorized all necessary actions through release 0.7.8. Reopen only this unmerged pre-merge DONE task for the reproduced PR #5866 review findings. Queue is rework; no merge, check, result or historical verdict is overridden. Preserve all evidence and the saved local patch. Continue the supported scope-extension route before restoring implementation changes."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. No source changes were made in this fresh episode. Request the two-path extension for the proved retirement-to-next-transition gap; the previous three-file partial patch is preserved below, not published or declared complete. Recommended action: Use the supported state-bound scope extension for the two named route paths, preserving the existing dirty patch and completed WorkItem history. Resume a fresh bounded episode. Do not merge PR #5866, overwrite old review results, weaken checks or introduce a new scheduler/state store. Requested scope: roots=packages/agentplane/src/commands/shared/quality-review-retirement.ts,packages/agentplane/src/commands/shared/route-decision-blockers.ts; repository effects=unchanged; request digest=sha256:ad75d78f5995850de23dcd8aa4b2299da430b89fa553d40232ea98897bec9a6c. Agentplane receipt: external-agent-blocker/tr_e7628ce202a47a70641bfe0576c7087a/sha256:71d857057f577b10b90ddd507b75ac608e78cde04a92713f64f2cee381d8336f/sha256:ad75d78f5995850de23dcd8aa4b2299da430b89fa553d40232ea98897bec9a6c."
 events:
   -
     type: "status"
@@ -326,9 +332,35 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "ef07d40750a0068fb211f43efa05162e5ca41ccb"
+  -
+    type: "status"
+    at: "2026-08-28T16:15:02.558Z"
+    author: "ORCHESTRATOR"
+    from: "DONE"
+    to: "DOING"
+    note: "Start: user explicitly authorized all necessary actions through release 0.7.8. Reopen only this unmerged pre-merge DONE task for the reproduced PR #5866 review findings. Queue is rework; no merge, check, result or historical verdict is overridden. Preserve all evidence and the saved local patch. Continue the supported scope-extension route before restoring implementation changes."
+  -
+    type: "verify"
+    at: "2026-08-28T16:16:11.883Z"
+    author: "ORCHESTRATOR"
+    state: "needs_rework"
+    note: "Needs rework: PR #5866 review defects are reproduced. Applied-review recovery can consume a verdict after later task drift and can read the wrong checkout; after retirement the next route still attempts closeout using the old PASS. Hosted CI passed, but the scoped acceptance regression fails. Preserve all previous evaluator opinions and verification records."
+  -
+    type: "verify"
+    at: "2026-08-28T16:16:39.959Z"
+    author: "ORCHESTRATOR"
+    state: "needs_rework"
+    note: "Needs rework: exact regression-command correction; the same proved review defects remain unresolved."
+  -
+    type: "status"
+    at: "2026-08-28T16:17:37.968Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. No source changes were made in this fresh episode. Request the two-path extension for the proved retirement-to-next-transition gap; the previous three-file partial patch is preserved below, not published or declared complete. Recommended action: Use the supported state-bound scope extension for the two named route paths, preserving the existing dirty patch and completed WorkItem history. Resume a fresh bounded episode. Do not merge PR #5866, overwrite old review results, weaken checks or introduce a new scheduler/state store. Requested scope: roots=packages/agentplane/src/commands/shared/quality-review-retirement.ts,packages/agentplane/src/commands/shared/route-decision-blockers.ts; repository effects=unchanged; request digest=sha256:ad75d78f5995850de23dcd8aa4b2299da430b89fa553d40232ea98897bec9a6c. Agentplane receipt: external-agent-blocker/tr_e7628ce202a47a70641bfe0576c7087a/sha256:71d857057f577b10b90ddd507b75ac608e78cde04a92713f64f2cee381d8336f/sha256:ad75d78f5995850de23dcd8aa4b2299da430b89fa553d40232ea98897bec9a6c."
 doc_version: 3
-doc_updated_at: "2026-08-28T15:40:29.354Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-28T16:17:37.997Z"
+doc_updated_by: "SUPERVISOR"
 description: "On integrated main 844eff36ba407436c26a3c63346b0dcc384ce2b5, continuation of DVS5NN PR #5862 is blocked by an issued quality_review exchange whose result is stale. The read-only evaluator prepared four task-owned evidence files while the legacy task was DONE, then exact result acceptance rejected the changed route fingerprint. Repeating task advance or task advance --replacement re-enters recoverPendingExternalAgentResult and rejects the same old result before replacement handling. The original result, frozen evidence and journal must remain intact. Reproduce the full sequence with real Git: evaluator issuance, preparation-owned artifacts, a genuine state change, stale result rejection, fresh packet recovery, retry and next transition. Separate framework-owned preparation changes from genuine task, plan, HEAD, provider or authority changes; do not weaken exact freshness or accept old verdicts for changed inputs. Use existing supervisor journal retirement and replacement mechanisms, with one owner and compare-and-swap guards. Preserve immutable historical results and required WorkItem completion. Prove ordinary evaluator acceptance, no-result and returned-result interruption recovery, repeated continuation, changed evidence rejection and no false DONE. Fix only the demonstrated bounded evaluator exchange/recovery cause. Do not modify task state or journals manually, create a new state store, bypass checks, change required CI, copy verdicts, or broaden release/Core architecture. DVS5NN and CFKR4P integration retain priority; CFKR4P full verification is running and must not be interrupted. This is a necessary authorized integration-path blocker, not new release scope. Release publication remains separately qualified. User has authorized all in-scope operations through release."
 sections:
   Summary: |-
@@ -491,6 +523,78 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-28T16:16:11.883Z — VERIFY — needs_rework
+
+    By: ORCHESTRATOR
+
+    Note: Needs rework: PR #5866 review defects are reproduced. Applied-review recovery can consume a verdict after later task drift and can read the wrong checkout; after retirement the next route still attempts closeout using the old PASS. Hosted CI passed, but the scoped acceptance regression fails. Preserve all previous evaluator opinions and verification records.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e62b830b865b103d9e9ebc3046c670836db81e2157e23ae89899300c97bde172, input_digest=sha256:c2e21ac19f1f3594d0632a9a5a07efcb2f90e135382031afbf04decd9068065e
+
+    Details:
+
+    Check: task_outcome
+    Command: bun x --no-install vitest run --config vitest.config.ts packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts -t additional --maxWorkers=1
+    Result: fail
+    Evidence: immutable external-agent result tr_9a2eea2bad002c864e3be06f05bfa905/5191ef7aeaa67186e3a37909238f75f649ddfa38086aecd893c787dba68374bc/result.json records the three initial real-Git failures and the later retirement-to-closeout failure. The temporary patch is saved for a fresh authorized episode, not published.
+    Scope: exact applied-review interruption, later state drift, authoritative checkout and following transition.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608280529-59VB06-recover-stale-evaluator-exchanges-without-accept/.agentplane/tasks/202608280529-59VB06/blueprint/resolved-snapshot.json
+    - old_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+    - current_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608280529-59VB06
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane finish 202608280529-59VB06 --author CODER --body 'Verified: pre-merge closure packet is ready for the task PR.' --result 'pre-merge closure' --commit 529b075e64085dfe47953ee63d949e89513a2422 --pre-merge-closure
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-08-28T16:16:39.959Z — VERIFY — needs_rework
+
+    By: ORCHESTRATOR
+
+    Note: Needs rework: exact regression-command correction; the same proved review defects remain unresolved.
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e62b830b865b103d9e9ebc3046c670836db81e2157e23ae89899300c97bde172, input_digest=sha256:0ba832671e01c412587b49f4a287853d69502ddf4f5c2c58197ba4d5dc98dc47
+
+    Details:
+
+    Check: task_outcome
+    Command: bun x --no-install vitest run --config vitest.config.ts packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts -t "additional task drift|worktree-applied" --maxWorkers=1
+    Result: fail
+    Evidence: initial regression run returned three failures in 16.36s on published implementation 529b075e64085dfe47953ee63d949e89513a2422 with test-only additions. Both applied-review later-comment paths reached terminal DONE; base-checkout continuation retired the applied worktree review. The prior verification note abbreviated the test filter incorrectly; this entry supplies the exact executed command. The unpublished patch is saved and the source checkout restored for the scope-extension request.
+    Scope: the two review findings on PR #5866; hosted CI itself passed.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608280529-59VB06-recover-stale-evaluator-exchanges-without-accept/.agentplane/tasks/202608280529-59VB06/blueprint/resolved-snapshot.json
+    - old_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+    - current_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608280529-59VB06
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -529,6 +633,20 @@ extensions:
     scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
     status: "active"
     task_id: "202608280529-59VB06"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:71d857057f577b10b90ddd507b75ac608e78cde04a92713f64f2cee381d8336f"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "The demonstrated retirement-to-next-transition failure is part of the already approved stale evaluator recovery contract. Its cause is the shared route freshness predicate, outside the current six-file authority. A small read-only helper can consult the existing exchange retirement identity without overwriting the historical evaluator verdict."
+      repository_effects: []
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/commands/shared/quality-review-retirement.ts"
+        - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+    request_digest: "sha256:ad75d78f5995850de23dcd8aa4b2299da430b89fa553d40232ea98897bec9a6c"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_e7628ce202a47a70641bfe0576c7087a"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -887,9 +1005,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "75c6a199cc4068e497fb786e831a9b2bb34a7376"
-    message: "🚧 59VB06 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "844eff36ba407436c26a3c63346b0dcc384ce2b5"
@@ -1050,6 +1165,78 @@ Command: git diff --check
 Result: pass
 Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-2
 Scope: branch_pr task 202608280529-59VB06 Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608280529-59VB06-recover-stale-evaluator-exchanges-without-accept/.agentplane/tasks/202608280529-59VB06/blueprint/resolved-snapshot.json
+- old_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+- current_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608280529-59VB06
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-28T16:16:11.883Z — VERIFY — needs_rework
+
+By: ORCHESTRATOR
+
+Note: Needs rework: PR #5866 review defects are reproduced. Applied-review recovery can consume a verdict after later task drift and can read the wrong checkout; after retirement the next route still attempts closeout using the old PASS. Hosted CI passed, but the scoped acceptance regression fails. Preserve all previous evaluator opinions and verification records.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e62b830b865b103d9e9ebc3046c670836db81e2157e23ae89899300c97bde172, input_digest=sha256:c2e21ac19f1f3594d0632a9a5a07efcb2f90e135382031afbf04decd9068065e
+
+Details:
+
+Check: task_outcome
+Command: bun x --no-install vitest run --config vitest.config.ts packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts -t additional --maxWorkers=1
+Result: fail
+Evidence: immutable external-agent result tr_9a2eea2bad002c864e3be06f05bfa905/5191ef7aeaa67186e3a37909238f75f649ddfa38086aecd893c787dba68374bc/result.json records the three initial real-Git failures and the later retirement-to-closeout failure. The temporary patch is saved for a fresh authorized episode, not published.
+Scope: exact applied-review interruption, later state drift, authoritative checkout and following transition.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608280529-59VB06-recover-stale-evaluator-exchanges-without-accept/.agentplane/tasks/202608280529-59VB06/blueprint/resolved-snapshot.json
+- old_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+- current_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608280529-59VB06
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane finish 202608280529-59VB06 --author CODER --body 'Verified: pre-merge closure packet is ready for the task PR.' --result 'pre-merge closure' --commit 529b075e64085dfe47953ee63d949e89513a2422 --pre-merge-closure
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-08-28T16:16:39.959Z — VERIFY — needs_rework
+
+By: ORCHESTRATOR
+
+Note: Needs rework: exact regression-command correction; the same proved review defects remain unresolved.
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e62b830b865b103d9e9ebc3046c670836db81e2157e23ae89899300c97bde172, input_digest=sha256:0ba832671e01c412587b49f4a287853d69502ddf4f5c2c58197ba4d5dc98dc47
+
+Details:
+
+Check: task_outcome
+Command: bun x --no-install vitest run --config vitest.config.ts packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts -t "additional task drift|worktree-applied" --maxWorkers=1
+Result: fail
+Evidence: initial regression run returned three failures in 16.36s on published implementation 529b075e64085dfe47953ee63d949e89513a2422 with test-only additions. Both applied-review later-comment paths reached terminal DONE; base-checkout continuation retired the applied worktree review. The prior verification note abbreviated the test filter incorrectly; this entry supplies the exact executed command. The unpublished patch is saved and the source checkout restored for the scope-extension request.
+Scope: the two review findings on PR #5866; hosted CI itself passed.
 
 BlueprintSnapshotRef:
 - state: current
