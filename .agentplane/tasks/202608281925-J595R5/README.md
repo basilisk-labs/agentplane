@@ -1,10 +1,10 @@
 ---
 id: "202608281925-J595R5"
 title: "Resume required WorkItems before branch pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -25,9 +25,9 @@ plan_approval:
   note: "USER explicitly approved plan_digest sha256:ba48113acb192e2e4520c7d52312f66819a1df3521b92f5b93d74f03fe77019b at state_fingerprint sha256:c2a1d3666de75287d29afe5e2aaf38c1b5067d8963ea7731ce4cd48dc7a0abab in the current conversation. Both values were re-read and match. Record as manual operator approval, without inventing host decision provenance."
 verification:
   state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  updated_at: "2026-08-28T20:18:32.624Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 execution_route:
   frozen: true
@@ -63,6 +63,7 @@ execution_contract:
     writable_roots:
       - "packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts"
       - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
@@ -73,6 +74,7 @@ execution_contract:
     rationale:
       - "Fix the observed release integration path through one isolated task worktree."
       - "Reuse existing canonical scheduling and immutable implementation recovery. Do not change completion or release authority."
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts; repository_effects=tests"
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -83,6 +85,7 @@ execution_contract:
     scope_roots:
       - "packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts"
       - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
@@ -110,6 +113,7 @@ execution_contract:
         components:
           - "packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts"
           - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
@@ -128,7 +132,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:b7df922b9dd52f066e5e5a1d8a60c4f7522e3892a58029b463621c334ad098fb"
+      digest: "sha256:eb880a722684c0af0083875e35e52f82455d0246339acadbd32c7191770237ee"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts"
         - "central_component:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
@@ -184,6 +188,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The required-work route and exact-output interrupted recovery implementation passed focused tests, but full CI exposed one evaluator calibration fixture outside the approved writable roots. Preserve its semantic assertions and authorize a narrow fixture correction before completion. Recommended action: Extend this task's writable roots by the exact evaluator calibration test file. Preserve the approved objective and all verification requirements. Prepare a completed WorkItem with its required output and assert that state before the existing positive/negative evaluation routing checks. Restore the preserved in-scope patch in a fresh episode and rerun focused tests and unchanged bun run ci:local:full. Requested scope: roots=packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts; repository effects=tests; request digest=sha256:839be54a6093dcbe0486a4e962309ff374e3c0c8f6e495017a40706db3ba099e. Agentplane receipt: external-agent-blocker/tr_5f0f490743fd146d7a4c9ea41e772e34/sha256:e856073ad309db7b3555d00954b7b248b3d990f7b8d7493579963cb8cefc34d0/sha256:839be54a6093dcbe0486a4e962309ff374e3c0c8f6e495017a40706db3ba099e."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts; repository effects: tests."
 events:
   -
     type: "status"
@@ -251,6 +258,8 @@ extensions:
     status: "active"
     task_id: "202608281925-J595R5"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-28T20:18:32.624Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:e856073ad309db7b3555d00954b7b248b3d990f7b8d7493579963cb8cefc34d0"
     kind: "task_scope_extension_request"
     request:
@@ -262,19 +271,19 @@ extensions:
         - "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
     request_digest: "sha256:839be54a6093dcbe0486a4e962309ff374e3c0c8f6e495017a40706db3ba099e"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_5f0f490743fd146d7a4c9ea41e772e34"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-08-28T20:00:10.160Z"
+        approved_at: "2026-08-28T20:18:32.624Z"
         approved_by: "USER"
-        approved_digest: "sha256:ba48113acb192e2e4520c7d52312f66819a1df3521b92f5b93d74f03fe77019b"
+        approved_digest: "sha256:b399fe110ca7c842a320c876fce80c3350c72c393de9daf2ec53e315b7db1e34"
         policy_facts:
-          - "manual_operator"
+          - "state_bound_scope_extension:sha256:839be54a6093dcbe0486a4e962309ff374e3c0c8f6e495017a40706db3ba099e"
         state: "approved"
-      created_at: "2026-08-28T19:28:10.215Z"
-      digest: "sha256:ba48113acb192e2e4520c7d52312f66819a1df3521b92f5b93d74f03fe77019b"
+      created_at: "2026-08-28T20:18:32.624Z"
+      digest: "sha256:b399fe110ca7c842a320c876fce80c3350c72c393de9daf2ec53e315b7db1e34"
       proposal:
         assumptions:
           - "Existing canonical WorkItem scheduling and recorded implementation recovery are sufficient once the route selects the correct semantic episode. If a proof requires changing those adapters, report a bounded extension before editing."
@@ -440,13 +449,18 @@ extensions:
                   kind: "workspace"
                   mode: "write"
                   resource: "."
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
               risk: "medium"
               scope_roots:
-                - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
-                - "packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
-                - "packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts"
                 - "packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts"
                 - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+                - "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
+                - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+                - "packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts"
+                - "packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
               validation:
                 checks:
                   -
@@ -481,10 +495,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:390b399f062763bcf50a9e95c908e876e976a9f38710439d06ce8a748bf971a8"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202608281925-J595R5"
-    event_cursor: 0
+    event_cursor: 1
     final_validation: null
     id: "202608281925-J595R5"
     intent:
@@ -508,10 +522,229 @@ extensions:
       task_id: "202608281925-J595R5"
     lifecycle: "ACTIVE"
     plan_amendments: []
-    plan_history: []
-    revision: 2
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-08-28T20:00:10.160Z"
+          approved_by: "USER"
+          approved_digest: "sha256:ba48113acb192e2e4520c7d52312f66819a1df3521b92f5b93d74f03fe77019b"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-08-28T19:28:10.215Z"
+        digest: "sha256:ba48113acb192e2e4520c7d52312f66819a1df3521b92f5b93d74f03fe77019b"
+        proposal:
+          assumptions:
+            - "Existing canonical WorkItem scheduling and recorded implementation recovery are sufficient once the route selects the correct semantic episode. If a proof requires changing those adapters, report a bounded extension before editing."
+            - "DONE branch recovery applies only to an unmerged task branch with fresh hosted state. Merged closure and cleanup stay separate."
+            - "The DVS5NN source patch and typed output must be preserved rather than manufactured again."
+          planning_baseline:
+            captured_at: "2026-08-28T19:25:51.276Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:390b399f062763bcf50a9e95c908e876e976a9f38710439d06ce8a748bf971a8"
+            dirty_paths:
+              - ".agentplane/tasks/202608210955-9SX2C6/README.md"
+              - ".agentplane/tasks/202608212244-Q3QMJR/README.md"
+              - ".agentplane/tasks/202608220034-FPEFRK/README.md"
+              - ".agentplane/tasks/202608220034-FPEFRK/blueprint/resolved-snapshot.json"
+              - ".agentplane/tasks/202608241434-129F8R/README.md"
+              - ".agentplane/tasks/202608241434-EH8E74/README.md"
+              - ".agentplane/tasks/202608241434-KCC9K4/README.md"
+              - ".agentplane/tasks/202608241434-QQNDGT/README.md"
+              - ".agentplane/tasks/202608241434-SFPD91/README.md"
+              - ".agentplane/tasks/202608241434-TA84WK/README.md"
+              - ".agentplane/tasks/202608241434-WVYA5T/README.md"
+              - ".agentplane/tasks/202608241435-40YZCE/README.md"
+              - ".agentplane/tasks/202608241435-73DA89/README.md"
+              - ".agentplane/tasks/202608241435-D001ET/README.md"
+              - ".agentplane/tasks/202608241435-HTV4K2/README.md"
+              - ".agentplane/tasks/202608241435-NDR0BX/README.md"
+              - ".agentplane/tasks/202608241435-RJXGHQ/README.md"
+              - ".agentplane/tasks/202608241435-W3DG6V/README.md"
+              - ".agentplane/tasks/202608241435-YSW0E0/README.md"
+              - ".agentplane/tasks/202608241436-2G9DA8/README.md"
+              - ".agentplane/tasks/202608241436-63W678/README.md"
+              - ".agentplane/tasks/202608241436-8PJKJP/README.md"
+              - ".agentplane/tasks/202608241436-99B067/README.md"
+              - ".agentplane/tasks/202608241436-A87Y59/README.md"
+              - ".agentplane/tasks/202608241436-DHPR5E/README.md"
+              - ".agentplane/tasks/202608241436-H60MCY/README.md"
+              - ".agentplane/tasks/202608241436-TX6TRF/README.md"
+              - ".agentplane/tasks/202608241436-W6A113/README.md"
+              - ".agentplane/tasks/202608241437-5YZ0N8/README.md"
+              - ".agentplane/tasks/202608241437-H5418M/README.md"
+              - ".agentplane/tasks/202608241437-SH3CDX/README.md"
+              - ".agentplane/tasks/202608241437-V8BA7Q/README.md"
+              - ".agentplane/tasks/202608241437-XY3950/README.md"
+              - ".agentplane/tasks/202608250007-P5BWP0/README.md"
+              - ".agentplane/tasks/202608250007-P5BWP0/blueprint/resolved-snapshot.json"
+              - ".agentplane/tasks/202608251038-42AC0D/README.md"
+              - ".agentplane/tasks/202608251053-QAZ236/README.md"
+              - ".agentplane/tasks/202608251706-V287W1/README.md"
+              - ".agentplane/tasks/202608251735-ZJ7YZE/README.md"
+              - ".agentplane/tasks/202608252233-JR4T47/README.md"
+              - ".agentplane/tasks/202608252234-4CKSWA/README.md"
+              - ".agentplane/tasks/202608252234-4CKSWA/blueprint/resolved-snapshot.json"
+              - ".agentplane/tasks/202608262032-MAJQ5E/README.md"
+              - ".agentplane/tasks/202608270848-0RAFH9/README.md"
+              - ".agentplane/tasks/202608270848-37XB2K/README.md"
+              - ".agentplane/tasks/202608270848-N28TBB/README.md"
+              - ".agentplane/tasks/202608270848-V32542/README.md"
+              - ".agentplane/tasks/202608271350-HVGQPQ/README.md"
+              - ".agentplane/tasks/202608281925-J595R5/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202608281925-J595R5"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                id: "mandatory-checks"
+                kind: "deterministic"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "mandatory-checks"
+                description: "A branch task with a required unfinished canonical WorkItem must not route directly to verification, quality, publication or pre-merge closure because an old implementation commit or pass record exists. Use the existing scheduler and implementation episode. Preserve pending dependencies, missing inputs and active work as non-mutable boundaries."
+                id: "route-required-work"
+                required: true
+              -
+                check_ids:
+                  - "mandatory-checks"
+                description: "A real-Git interrupted implementation with a persisted source commit and an immutable original semantic result resumes through task advance, restores the original typed WorkItem output exactly, reruns required checks and reaches fresh evaluation and the next closure transition. Repeated continuation must not reimplement code or overwrite completed output."
+                id: "recover-interrupted-output"
+                required: true
+              -
+                check_ids:
+                  - "mandatory-checks"
+                description: "Preserve task/plan/checkout/authority freshness, required completion guards, active-runner and dirty-worktree priority, legacy tasks without a canonical plan, optional-only remaining work and already merged hosted-close/cleanup behavior. Do not invent an additional scheduler, state store or approval bypass."
+                id: "preserve-guards"
+                required: true
+              -
+                check_ids:
+                  - "mandatory-checks"
+                description: "Run focused route and real-Git recovery suites, unchanged bun run ci:local:full, and git diff --check. Record the reproduced cause and distinguish local proof, exact-head hosted checks, integration and release qualification."
+                id: "verification"
+                required: true
+            evidence_fingerprint: "sha256:390b399f062763bcf50a9e95c908e876e976a9f38710439d06ce8a748bf971a8"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "mandatory-checks"
+                    description: "A branch task with a required unfinished canonical WorkItem must not route directly to verification, quality, publication or pre-merge closure because an old implementation commit or pass record exists. Use the existing scheduler and implementation episode. Preserve pending dependencies, missing inputs and active work as non-mutable boundaries."
+                    id: "route-required-work"
+                    required: true
+                  -
+                    check_ids:
+                      - "mandatory-checks"
+                    description: "A real-Git interrupted implementation with a persisted source commit and an immutable original semantic result resumes through task advance, restores the original typed WorkItem output exactly, reruns required checks and reaches fresh evaluation and the next closure transition. Repeated continuation must not reimplement code or overwrite completed output."
+                    id: "recover-interrupted-output"
+                    required: true
+                  -
+                    check_ids:
+                      - "mandatory-checks"
+                    description: "Preserve task/plan/checkout/authority freshness, required completion guards, active-runner and dirty-worktree priority, legacy tasks without a canonical plan, optional-only remaining work and already merged hosted-close/cleanup behavior. Do not invent an additional scheduler, state store or approval bypass."
+                    id: "preserve-guards"
+                    required: true
+                  -
+                    check_ids:
+                      - "mandatory-checks"
+                    description: "Run focused route and real-Git recovery suites, unchanged bun run ci:local:full, and git diff --check. Record the reproduced cause and distinguish local proof, exact-head hosted checks, integration and release qualification."
+                    id: "verification"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 180000
+                  optional_sources:
+                    - "packages/agentplane/src/commands/shared/workflow-step.testkit.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+                    - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+                    - "packages/agentplane/src/runner/usecases/agent-work-order-build.ts"
+                    - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+                    - "packages/agentplane/src/commands/task/finish-shared.ts"
+                    - "packages/core/src/tasks/task-centric/graph.ts"
+                  symbol_hints:
+                    - "branchStep"
+                    - "doneBranchStep"
+                    - "WorkItemScheduler"
+                    - "resolveRecordedImplementationRecovery"
+                depends_on: []
+                expected_outputs:
+                  - "required-work-recovery-proof"
+                id: "resume-required-work"
+                objective: "Route unfinished required branch WorkItems through existing implementation recovery before closure, and prove the entire interrupted-effect, exact-output, repeat-run and following-transition scenario."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "."
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+                  - "packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
+                  - "packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts"
+                  - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "mandatory-checks"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "mandatory-checks"
+                      description: "A branch task with a required unfinished canonical WorkItem must not route directly to verification, quality, publication or pre-merge closure because an old implementation commit or pass record exists. Use the existing scheduler and implementation episode. Preserve pending dependencies, missing inputs and active work as non-mutable boundaries."
+                      id: "route-required-work"
+                      required: true
+                    -
+                      check_ids:
+                        - "mandatory-checks"
+                      description: "A real-Git interrupted implementation with a persisted source commit and an immutable original semantic result resumes through task advance, restores the original typed WorkItem output exactly, reruns required checks and reaches fresh evaluation and the next closure transition. Repeated continuation must not reimplement code or overwrite completed output."
+                      id: "recover-interrupted-output"
+                      required: true
+                    -
+                      check_ids:
+                        - "mandatory-checks"
+                      description: "Preserve task/plan/checkout/authority freshness, required completion guards, active-runner and dirty-worktree priority, legacy tasks without a canonical plan, optional-only remaining work and already merged hosted-close/cleanup behavior. Do not invent an additional scheduler, state store or approval bypass."
+                      id: "preserve-guards"
+                      required: true
+                    -
+                      check_ids:
+                        - "mandatory-checks"
+                      description: "Run focused route and real-Git recovery suites, unchanged bun run ci:local:full, and git diff --check. Record the reproduced cause and distinguish local proof, exact-head hosted checks, integration and release qualification."
+                      id: "verification"
+                      required: true
+                  evidence_fingerprint: "sha256:390b399f062763bcf50a9e95c908e876e976a9f38710439d06ce8a748bf971a8"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202608281925-J595R5"
+    revision: 3
     schema_version: 1
-    updated_at: "2026-08-28T20:00:10.160Z"
+    updated_at: "2026-08-28T20:18:32.624Z"
     work_items:
       resume-required-work:
         attempt: 0

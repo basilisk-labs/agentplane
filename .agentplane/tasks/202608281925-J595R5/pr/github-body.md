@@ -15,8 +15,8 @@ Fix the reproduced release-integration blocker in DVS5NN/PR #5862 on main 3bcce2
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
