@@ -2,10 +2,10 @@
 id: "202608280529-59VB06"
 title: "Recover stale evaluator exchanges without accepting obsolete verdicts"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 41
 origin:
   system: "manual"
 depends_on: []
@@ -23,42 +23,41 @@ plan_approval:
   note: "Explicit user decision in this conversation: Одобряю план 202608280529-59VB06 с plan_digest sha256:0d04a3e6d19eb75132c6f3191567920cde106aa61825a6676713949bf2ef937a при state_fingerprint sha256:7588d89b430062a93113159c6ba2b5fccb471a730796eafbf2dce77d4e023721. Both identifiers matched the fresh supervisor packet before this operator command."
 verification:
   state: "ok"
-  updated_at: "2026-08-28T18:19:14.331Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  updated_at: "2026-08-28T18:50:32.879Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: fresh full local checks passed after the user-authorized documentation repair; operator recovery records current Verify Steps without changing source or copying an evaluator verdict."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-28T18:21:23.355Z"
+  updated_at: "2026-08-28T18:51:56.206Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 6 typed finding(s)."
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
   evaluated_sha: "290c44a524385cc95846a25baaee7af8b7e5d437"
   blueprint_digest: "c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291"
   evidence_refs:
-    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-181927875-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-181927875-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/64558883dc2735b263e90375f5bf6254311c06dfe032688cfeda608774af92e4.md"
-    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-181927875-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-181927875-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-181927875-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-181927875-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-185050324-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-185050324-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/305dc31ef93c8cc2c3f6b8002313ce558bba82f431df8b7b35991b3a1335bfb4.md"
+    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-185050324-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-185050324-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-185050324-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608280529-59VB06/README.md"
     - ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
-    - ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/b3b3f9229ace468303c32054dbfc08138f4e6822b464104b4d9180421de40844.json"
-    - ".agentplane/tasks/202608280529-59VB06/verification/20260828181914331-2b5187ee7edbae42.json"
+    - ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/f9a2f74389e1488cd06a9f00c9eb2086396f47f6f2dec4f25ee791723541a0e8.json"
+    - ".agentplane/tasks/202608280529-59VB06/verification/20260828185032879-7a1266da64904bc0.json"
     - ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/24745007b98bd3eb7178a157f3cff4cd03ec4dd7de00613fbd465e1c9d85fc99.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Documentation rework: the frozen task README Findings still describes implementation 75c6a199, four files, 46 tests, and retirement of only unapplied reviews. It omits the proved applied-review defects, authoritative checkout recovery, retired-review routing, implementation 290c44a524385cc95846a25baaee7af8b7e5d437, 103 focused tests and fresh verification 20260828181914331-2b5187ee7edbae42.json. This fails the explicit requirement to preserve current cause and red/green proof in Findings. Evidence: .agentplane/tasks/202608280529-59VB06/README.md"
-    - "The Verify Steps eight-file count conflicts with the already applied, state-bound nine-root scope refinement recorded in this same task. Correct the description to include shared/workflow-step-factory.ts without changing the approved semantic scope, mandatory commands, pass criteria or historical approval records. The actual code is inside the framework-authorized scope; this is documentation reconciliation, not a request for new implementation."
-    - "Code review: the frozen patch preserves the existing journal/lease CAS and old result bytes, resolves exchange.checkout for applied recovery, requires the exact reconstructed pre-review task and frozen inputs, and checks retirement before both direct and branch_pr closeout. Explicit-result return has the same applied-state guard. Tests cover before/after effect interruption, task/plan/HEAD/evidence/workspace/policy drift, immutable history, replacement and fresh review; legacy reviews without external work-order binding retain their prior path."
-    - "All nine frozen evidence hashes and the frozen WorkOrder digest match. Recorded CLI-owned verification is ok for implementation 290c44a524385cc95846a25baaee7af8b7e5d437; preserved declared-checks records ci:local:full exit 0 in 460507ms and git diff --check exit 0. This does not prove GitHub checks, integration, hosted closure or release qualification."
-    - "No source change is requested by this evaluation. Preserve completed WorkItem output manifest sha256:3928a1ef67e0f7f6d1ed46717abad1c648f724f5f8763b1985bba5bb7959c1f3 and the current implementation. Use the supported task-document recovery route; do not hand-edit task state or rewrite this review."
-    - "Residual risk: Exact-head hosted checks, review responses, protected integration and hosted closure remain pending."
+    - "The current task document reconciles both documentation findings: it identifies implementation 290c44a524385cc95846a25baaee7af8b7e5d437, applied-review and checkout causes, red/green recovery evidence, preserved completed WorkItem output, and pending hosted boundaries. Verify Steps names the already applied ninth root without weakening commands or criteria. Evidence: .agentplane/tasks/202608280529-59VB06/README.md"
+    - "The patch requires the authoritative exchange checkout, frozen WorkOrder and evidence identities, exact pre-review document reconstruction, expected revision change and permitted application commit before recovering an applied evaluator result. Explicit result return has the same guard. Retirement preserves immutable results and uses the existing lease and journal CAS; no alternate state owner is added. Evidence: .agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
+    - "The route changes prevent a retired review from authorizing closeout in direct and branch_pr flows. Real-Git tests assert rejection after task, plan, HEAD, evidence, workspace and policy drift; before/after application interruptions; base-checkout continuation; competing lease ownership; exchange-first retirement recovery; repeated issuance; fresh evaluation; and rejection of old replay. Existing legacy reviews without external WorkOrder binding retain their path. The patch does not relax CI or authorization guards. Evidence: .agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
+    - "All nine frozen evidence hashes and the WorkOrder hash match. The fresh operator-recorded verification covers the updated Verify Steps and exact source implementation after a new full run, with all selected check IDs represented. It records 4495 core tests passed, one pre-existing skip, 14 critical CLI groups, docs/site/workflows, platform and coverage checks. Source remains unchanged from 290c44a524385cc95846a25baaee7af8b7e5d437. Evidence: .agentplane/tasks/202608280529-59VB06/verification/20260828185032879-7a1266da64904bc0.json"
+    - "Residual risk: Exact published-head hosted checks and responses to the two PR #5866 review threads remain required before protected integration."
+    - "Residual risk: DVS5NN recovery and final release:prepublish are not proved by this task."
 token_usage:
   agent_runs: 6
   input_tokens: null
@@ -741,6 +740,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The only requested rework is the protected task README, which is outside this source-only semantic authority. No source or task files were changed. Return to the operator task-document recovery route. Recommended action: Update only Findings and the already superseded eight-file wording in Verify Steps using task doc set. Keep all checks, historical approvals/reviews and WorkItem results. Explicitly resume the task through the supported operator route, then request fresh evaluation. Do not change implementation or weaken required verification. Agentplane receipt: external-agent-blocker/tr_92737e91fc1c426d9c267b1f92619751/sha256:248e1dfab1664f46ee4284fcfb22e786d004242640be46d0457f259ef46cc213."
+  -
+    author: "ORCHESTRATOR"
+    body: "Resume: the user explicitly authorized operator reconciliation of Findings and Verify Steps and continuation through release 0.7.8. Both sections now describe implementation 290c44a524385cc95846a25baaee7af8b7e5d437, its recorded full verification and the already applied nine-root scope. No source, mandatory checks, pass criteria, previous review or completed WorkItem output changed. Request fresh evaluation through the supervisor."
 events:
   -
     type: "status"
@@ -852,9 +854,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The only requested rework is the protected task README, which is outside this source-only semantic authority. No source or task files were changed. Return to the operator task-document recovery route. Recommended action: Update only Findings and the already superseded eight-file wording in Verify Steps using task doc set. Keep all checks, historical approvals/reviews and WorkItem results. Explicitly resume the task through the supported operator route, then request fresh evaluation. Do not change implementation or weaken required verification. Agentplane receipt: external-agent-blocker/tr_92737e91fc1c426d9c267b1f92619751/sha256:248e1dfab1664f46ee4284fcfb22e786d004242640be46d0457f259ef46cc213."
+  -
+    type: "status"
+    at: "2026-08-28T18:40:33.117Z"
+    author: "ORCHESTRATOR"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume: the user explicitly authorized operator reconciliation of Findings and Verify Steps and continuation through release 0.7.8. Both sections now describe implementation 290c44a524385cc95846a25baaee7af8b7e5d437, its recorded full verification and the already applied nine-root scope. No source, mandatory checks, pass criteria, previous review or completed WorkItem output changed. Request fresh evaluation through the supervisor."
+  -
+    type: "verify"
+    at: "2026-08-28T18:50:32.879Z"
+    author: "ORCHESTRATOR"
+    state: "ok"
+    note: "Verified: fresh full local checks passed after the user-authorized documentation repair; operator recovery records current Verify Steps without changing source or copying an evaluator verdict."
 doc_version: 3
-doc_updated_at: "2026-08-28T18:21:54.004Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-28T18:51:56.240Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "On integrated main 844eff36ba407436c26a3c63346b0dcc384ce2b5, continuation of DVS5NN PR #5862 is blocked by an issued quality_review exchange whose result is stale. The read-only evaluator prepared four task-owned evidence files while the legacy task was DONE, then exact result acceptance rejected the changed route fingerprint. Repeating task advance or task advance --replacement re-enters recoverPendingExternalAgentResult and rejects the same old result before replacement handling. The original result, frozen evidence and journal must remain intact. Reproduce the full sequence with real Git: evaluator issuance, preparation-owned artifacts, a genuine state change, stale result rejection, fresh packet recovery, retry and next transition. Separate framework-owned preparation changes from genuine task, plan, HEAD, provider or authority changes; do not weaken exact freshness or accept old verdicts for changed inputs. Use existing supervisor journal retirement and replacement mechanisms, with one owner and compare-and-swap guards. Preserve immutable historical results and required WorkItem completion. Prove ordinary evaluator acceptance, no-result and returned-result interruption recovery, repeated continuation, changed evidence rejection and no false DONE. Fix only the demonstrated bounded evaluator exchange/recovery cause. Do not modify task state or journals manually, create a new state store, bypass checks, change required CI, copy verdicts, or broaden release/Core architecture. DVS5NN and CFKR4P integration retain priority; CFKR4P full verification is running and must not be interrupted. This is a necessary authorized integration-path blocker, not new release scope. Release publication remains separately qualified. User has authorized all in-scope operations through release."
 sections:
   Summary: |-
@@ -869,7 +884,7 @@ sections:
     1. Reproduce the PR #5866 applied-review recovery findings with real Git. Expected: later task mutation must not inherit an old verdict through either explicit result return or automatic continuation; base-checkout continuation must read the applied review in the task worktree.
     2. Run the focused evaluator, external-agent recovery and route freshness tests. Expected: ordinary acceptance, before-commit and after-commit interruption, authoritative checkout readback, later task/plan/HEAD/evidence/workspace/policy drift, retirement, replacement, repeated continuation, fresh evaluation and next closeout transition all preserve immutable history and prevent false DONE.
     3. Run `bun run ci:local:full` and `git diff --check`. Expected: all mandatory local checks pass without weaker checks, skips, timeouts, policy or CI changes. This is task verification, not final release prepublish qualification.
-    4. Review the complete diff against the new eight-file plan and the required follow-up WorkItem. Expected: the six original paths plus only shared/quality-review-retirement.ts and shared/route-decision-blockers.ts; no new state store, scheduler, copied verdict, manual journal edit, fabricated approval or release/Core change.
+    4. Review the complete diff against the approved nine-root scope, including the applied state-bound extension, and the required follow-up WorkItem. Expected: the six original paths plus shared/quality-review-retirement.ts, shared/route-decision-blockers.ts and shared/workflow-step-factory.ts; no new state store, scheduler, copied verdict, manual journal edit, fabricated approval or release/Core change.
     5. Preserve the cause, red/green proof, saved-patch recovery and remaining hosted boundaries in Findings through supported routes. Expected: old evaluator opinions remain unchanged, fresh evaluation and exact published-head GitHub checks pass, protected integration and terminal closure are confirmed before delivery.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
@@ -1173,20 +1188,90 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-28T18:50:32.879Z — VERIFY — ok
+
+    By: ORCHESTRATOR
+
+    Note: Verified: fresh full local checks passed after the user-authorized documentation repair; operator recovery records current Verify Steps without changing source or copying an evaluator verdict.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:352d2659b6307cc145b06aa74d33d6c6b8e9726ca17c27601fe3b260a0ca9772, input_digest=sha256:5a13fbd3ffd3907b38e5758581ec432c5227d73bedb0c74cb52363687bd56c8b
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: Observed fresh full run in this task worktree on HEAD ca5ba0edc81078700678a36eacabcb264d689af9 with user-authorized Findings and Verify Steps updates, exec session 28682, exit 0 on 2026-08-28 around 18:50Z. Core 605 files / 4495 tests passed with one pre-existing skip; all 14 critical CLI chunks passed; runtime 17, platform-critical 98 and guard coverage 101 tests passed; docs/site/workflow/architecture checks passed. This is new local task verification, not hosted or release qualification.
+    Scope: Updated task Verify Steps and unchanged implementation 290c44a524385cc95846a25baaee7af8b7e5d437.
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: Observed fresh full run in this task worktree on HEAD ca5ba0edc81078700678a36eacabcb264d689af9 with user-authorized Findings and Verify Steps updates, exec session 28682, exit 0 on 2026-08-28 around 18:50Z. Core 605 files / 4495 tests passed with one pre-existing skip; all 14 critical CLI chunks passed; runtime 17, platform-critical 98 and guard coverage 101 tests passed; docs/site/workflow/architecture checks passed. This is new local task verification, not hosted or release qualification.
+    Scope: Updated task Verify Steps and unchanged implementation 290c44a524385cc95846a25baaee7af8b7e5d437.
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: Observed fresh full run in this task worktree on HEAD ca5ba0edc81078700678a36eacabcb264d689af9 with user-authorized Findings and Verify Steps updates, exec session 28682, exit 0 on 2026-08-28 around 18:50Z. Core 605 files / 4495 tests passed with one pre-existing skip; all 14 critical CLI chunks passed; runtime 17, platform-critical 98 and guard coverage 101 tests passed; docs/site/workflow/architecture checks passed. This is new local task verification, not hosted or release qualification.
+    Scope: Updated task Verify Steps and unchanged implementation 290c44a524385cc95846a25baaee7af8b7e5d437.
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: Observed fresh full run in this task worktree on HEAD ca5ba0edc81078700678a36eacabcb264d689af9 with user-authorized Findings and Verify Steps updates, exec session 28682, exit 0 on 2026-08-28 around 18:50Z. Core 605 files / 4495 tests passed with one pre-existing skip; all 14 critical CLI chunks passed; runtime 17, platform-critical 98 and guard coverage 101 tests passed; docs/site/workflow/architecture checks passed. This is new local task verification, not hosted or release qualification.
+    Scope: Updated task Verify Steps and unchanged implementation 290c44a524385cc95846a25baaee7af8b7e5d437.
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: Observed fresh full run in this task worktree on HEAD ca5ba0edc81078700678a36eacabcb264d689af9 with user-authorized Findings and Verify Steps updates, exec session 28682, exit 0 on 2026-08-28 around 18:50Z. Core 605 files / 4495 tests passed with one pre-existing skip; all 14 critical CLI chunks passed; runtime 17, platform-critical 98 and guard coverage 101 tests passed; docs/site/workflow/architecture checks passed. This is new local task verification, not hosted or release qualification.
+    Scope: Updated task Verify Steps and unchanged implementation 290c44a524385cc95846a25baaee7af8b7e5d437.
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: Fresh command exited 0 after full CI in the same worktree.
+    Scope: Current task documentation changes.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608280529-59VB06-recover-stale-evaluator-exchanges-without-accept/.agentplane/tasks/202608280529-59VB06/blueprint/resolved-snapshot.json
+    - old_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+    - current_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608280529-59VB06
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: |-
-    Cause: pending quality_review recovery attempted old result acceptance before replacement handling. The previous planning/implementation retirement paths did not cover stale evaluator exchanges. Two real-Git regression cases failed on base 844eff36ba407436c26a3c63346b0dcc384ce2b5 before the fix and passed afterward.
+    Current cause and contract: PR #5866 identified two additional applied-review recovery defects. An already referenced evaluator result did not prove that the task still matched the evaluated state, and base-checkout continuation could read the applied review from the wrong checkout. Recovery must distinguish an interrupted, unchanged application from later task, plan, HEAD, evidence, workspace or policy drift.
 
-    Implementation: 75c6a199cc4068e497fb786e831a9b2bb34a7376 changes four approved source/test files. Recovery retains exact freshness and original work-order/intent digest checks, the existing lease and journal CAS. It preserves historical result and evidence bytes, retires only unapplied stale issued/result_received reviews, and uses existing replacement. Exchange-first retirement permits interrupted journal reconciliation. An already applied review resumes closeout without reapplication. No new state store, manual lifecycle edits, weaker checks or copied verdicts were introduced.
+    Current implementation: 290c44a524385cc95846a25baaee7af8b7e5d437 changes seven source/test files within the nine authorized roots. Applied-review continuity requires the authoritative exchange checkout, the frozen evaluator WorkOrder and evidence hashes, exact reconstruction of the pre-review task document with one expected revision change, and the permitted application commit identity. Later drift retires the old exchange through the existing lease and journal CAS. Both direct and branch_pr routing require a fresh evaluation after retirement. Repeated continuation, fresh result acceptance and the next transition reject old result replay and preserve historical result bytes. Legacy quality reviews without a frozen external evaluator WorkOrder do not consult the external exchange journal. No new state store, scheduler, copied verdict, manual journal edit or fabricated approval was introduced.
 
-    Local evidence: four focused files passed 46 tests in 61.40s. Cases cover missing and returned results, genuine drift, tampered work orders, competing lease ownership, interruption after exchange retirement and after review application, replacement/replay and late old-result rejection. Existing ordinary acceptance and implementation recovery cases remain passing. Scoped lint/type/format, hotspots and git diff --check passed. Recorded full verification 20260828060650926-cb1fbd290a69ab04.json is ok for implementation 75c6a199cc4068e497fb786e831a9b2bb34a7376; ci:local:full exited 0 in 526823ms. All nine frozen evaluator evidence hashes matched.
+    Scope and recovery: the original six-root scope was refined to eight roots, then AgentPlane applied the state-bound extension for shared/workflow-step-factory.ts as the ninth root. The direct next-transition regression demonstrated why that path was necessary. Partial work was preserved through the typed blocked result before the new packet was issued. The completed WorkItem recover-applied-review-continuity retains output manifest sha256:3928a1ef67e0f7f6d1ed46717abad1c648f724f5f8763b1985bba5bb7959c1f3.
 
-    Review: the first EVALUATOR requested this documentation-only update. No runtime defect was identified and no source change is required for that finding. This update is an operator action under the user authorization for all in-scope operations through release; it does not overwrite the recorded evaluator result.
+    Current local evidence: six focused test files passed 103 tests in 108.68s. Coverage includes ordinary acceptance, before-commit and after-commit interruption, authoritative checkout readback, task/plan/HEAD/evidence/workspace/policy drift, retirement, replacement, repeated continuation, fresh evaluation, next transition and late old-result rejection. Scoped lint, type checking, formatting, architecture, Knip, hotspots and git diff --check passed without relaxed checks. The final manual ci:local:full passed, including 4495 core tests across 605 files with one pre-existing skip and the required CLI, platform and documentation checks. AgentPlane then independently recorded full verification for implementation 290c44a524385cc95846a25baaee7af8b7e5d437 in verification/20260828181914331-2b5187ee7edbae42.json: result ok; ci:local:full exit 0 in 460507ms; git diff --check exit 0. All nine frozen evaluator evidence hashes and the frozen WorkOrder hash matched.
 
-    Remaining boundaries: obtain fresh evaluation after documentation recovery, pass exact-head hosted checks, integrate through the protected queue, confirm hosted closure, and then retry DVS5NN through a fresh main-runtime route. Local evidence does not prove delivery of DVS5NN and does not qualify release 0.7.8. Preserve the release/Core order and remeasure remaining release failures on the final integrated main.
+    Red/green history: the direct next-transition regression initially failed and required the ninth authorized source path. Intermediate full runs exposed lint/module-size issues and 21 legacy review-fixture failures caused by an overly broad external-journal lookup. The implementation narrowed that lookup to external evaluator WorkOrder references and added coverage; existing route fixtures and mandatory checks were not weakened. The final focused and both full runs passed. Earlier implementation 75c6a199cc4068e497fb786e831a9b2bb34a7376, its 46-test run and verification/20260828060650926-cb1fbd290a69ab04.json are historical evidence only; they do not establish the current applied-review contract.
+
+    Current evaluation and operator recovery: the latest EVALUATOR requested only reconciliation of Findings and Verify Steps with the current implementation, evidence and already authorized nine-root scope. It requested no source changes. The source-only EXECUTOR correctly stopped at the protected task README. The user explicitly authorized operator updates to these two sections and task resumption. This documentation update preserves previous evaluator opinions, approvals, verification history and the completed WorkItem output. It does not change mandatory commands or pass criteria.
+
+    Remaining boundaries: obtain fresh evaluation after this documentation recovery, publish the current PR head through the authorized route, address the two review threads, pass exact-head hosted checks, integrate through the protected queue and confirm hosted closure. The current implementation is not yet proved published, merged or closed. Then retry DVS5NN through a fresh integrated main-runtime route. Task ci:local:full is not final release:prepublish qualification. Preserve the release/Core order and remeasure the release residual on the final integrated main.
 extensions:
   agentplane.execution_grant:
     actor: "USER"
@@ -1978,7 +2063,7 @@ One follow-up WorkItem completes the proved applied-review interruption scenario
 1. Reproduce the PR #5866 applied-review recovery findings with real Git. Expected: later task mutation must not inherit an old verdict through either explicit result return or automatic continuation; base-checkout continuation must read the applied review in the task worktree.
 2. Run the focused evaluator, external-agent recovery and route freshness tests. Expected: ordinary acceptance, before-commit and after-commit interruption, authoritative checkout readback, later task/plan/HEAD/evidence/workspace/policy drift, retirement, replacement, repeated continuation, fresh evaluation and next closeout transition all preserve immutable history and prevent false DONE.
 3. Run `bun run ci:local:full` and `git diff --check`. Expected: all mandatory local checks pass without weaker checks, skips, timeouts, policy or CI changes. This is task verification, not final release prepublish qualification.
-4. Review the complete diff against the new eight-file plan and the required follow-up WorkItem. Expected: the six original paths plus only shared/quality-review-retirement.ts and shared/route-decision-blockers.ts; no new state store, scheduler, copied verdict, manual journal edit, fabricated approval or release/Core change.
+4. Review the complete diff against the approved nine-root scope, including the applied state-bound extension, and the required follow-up WorkItem. Expected: the six original paths plus shared/quality-review-retirement.ts, shared/route-decision-blockers.ts and shared/workflow-step-factory.ts; no new state store, scheduler, copied verdict, manual journal edit, fabricated approval or release/Core change.
 5. Preserve the cause, red/green proof, saved-patch recovery and remaining hosted boundaries in Findings through supported routes. Expected: old evaluator opinions remain unchanged, fresh evaluation and exact published-head GitHub checks pass, protected integration and terminal closure are confirmed before delivery.
 
 ## Verification
@@ -2284,6 +2369,72 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-28T18:50:32.879Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: fresh full local checks passed after the user-authorized documentation repair; operator recovery records current Verify Steps without changing source or copying an evaluator verdict.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:352d2659b6307cc145b06aa74d33d6c6b8e9726ca17c27601fe3b260a0ca9772, input_digest=sha256:5a13fbd3ffd3907b38e5758581ec432c5227d73bedb0c74cb52363687bd56c8b
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: Observed fresh full run in this task worktree on HEAD ca5ba0edc81078700678a36eacabcb264d689af9 with user-authorized Findings and Verify Steps updates, exec session 28682, exit 0 on 2026-08-28 around 18:50Z. Core 605 files / 4495 tests passed with one pre-existing skip; all 14 critical CLI chunks passed; runtime 17, platform-critical 98 and guard coverage 101 tests passed; docs/site/workflow/architecture checks passed. This is new local task verification, not hosted or release qualification.
+Scope: Updated task Verify Steps and unchanged implementation 290c44a524385cc95846a25baaee7af8b7e5d437.
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: Observed fresh full run in this task worktree on HEAD ca5ba0edc81078700678a36eacabcb264d689af9 with user-authorized Findings and Verify Steps updates, exec session 28682, exit 0 on 2026-08-28 around 18:50Z. Core 605 files / 4495 tests passed with one pre-existing skip; all 14 critical CLI chunks passed; runtime 17, platform-critical 98 and guard coverage 101 tests passed; docs/site/workflow/architecture checks passed. This is new local task verification, not hosted or release qualification.
+Scope: Updated task Verify Steps and unchanged implementation 290c44a524385cc95846a25baaee7af8b7e5d437.
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: Observed fresh full run in this task worktree on HEAD ca5ba0edc81078700678a36eacabcb264d689af9 with user-authorized Findings and Verify Steps updates, exec session 28682, exit 0 on 2026-08-28 around 18:50Z. Core 605 files / 4495 tests passed with one pre-existing skip; all 14 critical CLI chunks passed; runtime 17, platform-critical 98 and guard coverage 101 tests passed; docs/site/workflow/architecture checks passed. This is new local task verification, not hosted or release qualification.
+Scope: Updated task Verify Steps and unchanged implementation 290c44a524385cc95846a25baaee7af8b7e5d437.
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: Observed fresh full run in this task worktree on HEAD ca5ba0edc81078700678a36eacabcb264d689af9 with user-authorized Findings and Verify Steps updates, exec session 28682, exit 0 on 2026-08-28 around 18:50Z. Core 605 files / 4495 tests passed with one pre-existing skip; all 14 critical CLI chunks passed; runtime 17, platform-critical 98 and guard coverage 101 tests passed; docs/site/workflow/architecture checks passed. This is new local task verification, not hosted or release qualification.
+Scope: Updated task Verify Steps and unchanged implementation 290c44a524385cc95846a25baaee7af8b7e5d437.
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: Observed fresh full run in this task worktree on HEAD ca5ba0edc81078700678a36eacabcb264d689af9 with user-authorized Findings and Verify Steps updates, exec session 28682, exit 0 on 2026-08-28 around 18:50Z. Core 605 files / 4495 tests passed with one pre-existing skip; all 14 critical CLI chunks passed; runtime 17, platform-critical 98 and guard coverage 101 tests passed; docs/site/workflow/architecture checks passed. This is new local task verification, not hosted or release qualification.
+Scope: Updated task Verify Steps and unchanged implementation 290c44a524385cc95846a25baaee7af8b7e5d437.
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: Fresh command exited 0 after full CI in the same worktree.
+Scope: Current task documentation changes.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608280529-59VB06-recover-stale-evaluator-exchanges-without-accept/.agentplane/tasks/202608280529-59VB06/blueprint/resolved-snapshot.json
+- old_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+- current_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608280529-59VB06
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -2293,15 +2444,19 @@ DecisionContextRef:
 
 ## Findings
 
-Cause: pending quality_review recovery attempted old result acceptance before replacement handling. The previous planning/implementation retirement paths did not cover stale evaluator exchanges. Two real-Git regression cases failed on base 844eff36ba407436c26a3c63346b0dcc384ce2b5 before the fix and passed afterward.
+Current cause and contract: PR #5866 identified two additional applied-review recovery defects. An already referenced evaluator result did not prove that the task still matched the evaluated state, and base-checkout continuation could read the applied review from the wrong checkout. Recovery must distinguish an interrupted, unchanged application from later task, plan, HEAD, evidence, workspace or policy drift.
 
-Implementation: 75c6a199cc4068e497fb786e831a9b2bb34a7376 changes four approved source/test files. Recovery retains exact freshness and original work-order/intent digest checks, the existing lease and journal CAS. It preserves historical result and evidence bytes, retires only unapplied stale issued/result_received reviews, and uses existing replacement. Exchange-first retirement permits interrupted journal reconciliation. An already applied review resumes closeout without reapplication. No new state store, manual lifecycle edits, weaker checks or copied verdicts were introduced.
+Current implementation: 290c44a524385cc95846a25baaee7af8b7e5d437 changes seven source/test files within the nine authorized roots. Applied-review continuity requires the authoritative exchange checkout, the frozen evaluator WorkOrder and evidence hashes, exact reconstruction of the pre-review task document with one expected revision change, and the permitted application commit identity. Later drift retires the old exchange through the existing lease and journal CAS. Both direct and branch_pr routing require a fresh evaluation after retirement. Repeated continuation, fresh result acceptance and the next transition reject old result replay and preserve historical result bytes. Legacy quality reviews without a frozen external evaluator WorkOrder do not consult the external exchange journal. No new state store, scheduler, copied verdict, manual journal edit or fabricated approval was introduced.
 
-Local evidence: four focused files passed 46 tests in 61.40s. Cases cover missing and returned results, genuine drift, tampered work orders, competing lease ownership, interruption after exchange retirement and after review application, replacement/replay and late old-result rejection. Existing ordinary acceptance and implementation recovery cases remain passing. Scoped lint/type/format, hotspots and git diff --check passed. Recorded full verification 20260828060650926-cb1fbd290a69ab04.json is ok for implementation 75c6a199cc4068e497fb786e831a9b2bb34a7376; ci:local:full exited 0 in 526823ms. All nine frozen evaluator evidence hashes matched.
+Scope and recovery: the original six-root scope was refined to eight roots, then AgentPlane applied the state-bound extension for shared/workflow-step-factory.ts as the ninth root. The direct next-transition regression demonstrated why that path was necessary. Partial work was preserved through the typed blocked result before the new packet was issued. The completed WorkItem recover-applied-review-continuity retains output manifest sha256:3928a1ef67e0f7f6d1ed46717abad1c648f724f5f8763b1985bba5bb7959c1f3.
 
-Review: the first EVALUATOR requested this documentation-only update. No runtime defect was identified and no source change is required for that finding. This update is an operator action under the user authorization for all in-scope operations through release; it does not overwrite the recorded evaluator result.
+Current local evidence: six focused test files passed 103 tests in 108.68s. Coverage includes ordinary acceptance, before-commit and after-commit interruption, authoritative checkout readback, task/plan/HEAD/evidence/workspace/policy drift, retirement, replacement, repeated continuation, fresh evaluation, next transition and late old-result rejection. Scoped lint, type checking, formatting, architecture, Knip, hotspots and git diff --check passed without relaxed checks. The final manual ci:local:full passed, including 4495 core tests across 605 files with one pre-existing skip and the required CLI, platform and documentation checks. AgentPlane then independently recorded full verification for implementation 290c44a524385cc95846a25baaee7af8b7e5d437 in verification/20260828181914331-2b5187ee7edbae42.json: result ok; ci:local:full exit 0 in 460507ms; git diff --check exit 0. All nine frozen evaluator evidence hashes and the frozen WorkOrder hash matched.
 
-Remaining boundaries: obtain fresh evaluation after documentation recovery, pass exact-head hosted checks, integrate through the protected queue, confirm hosted closure, and then retry DVS5NN through a fresh main-runtime route. Local evidence does not prove delivery of DVS5NN and does not qualify release 0.7.8. Preserve the release/Core order and remeasure remaining release failures on the final integrated main.
+Red/green history: the direct next-transition regression initially failed and required the ninth authorized source path. Intermediate full runs exposed lint/module-size issues and 21 legacy review-fixture failures caused by an overly broad external-journal lookup. The implementation narrowed that lookup to external evaluator WorkOrder references and added coverage; existing route fixtures and mandatory checks were not weakened. The final focused and both full runs passed. Earlier implementation 75c6a199cc4068e497fb786e831a9b2bb34a7376, its 46-test run and verification/20260828060650926-cb1fbd290a69ab04.json are historical evidence only; they do not establish the current applied-review contract.
+
+Current evaluation and operator recovery: the latest EVALUATOR requested only reconciliation of Findings and Verify Steps with the current implementation, evidence and already authorized nine-root scope. It requested no source changes. The source-only EXECUTOR correctly stopped at the protected task README. The user explicitly authorized operator updates to these two sections and task resumption. This documentation update preserves previous evaluator opinions, approvals, verification history and the completed WorkItem output. It does not change mandatory commands or pass criteria.
+
+Remaining boundaries: obtain fresh evaluation after this documentation recovery, publish the current PR head through the authorized route, address the two review threads, pass exact-head hosted checks, integrate through the protected queue and confirm hosted closure. The current implementation is not yet proved published, merged or closed. Then retry DVS5NN through a fresh integrated main-runtime route. Task ci:local:full is not final release:prepublish qualification. Preserve the release/Core order and remeasure the release residual on the final integrated main.
 
 ## Token Usage
 

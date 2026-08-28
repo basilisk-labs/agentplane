@@ -13,7 +13,7 @@ Created: 2026-08-28T05:33:24.733Z
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: fresh full local checks passed after the user-authorized documentation repair; operator recovery records current Verify Steps without changing source or copying an evaluator verdict.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
