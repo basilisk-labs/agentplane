@@ -1,0 +1,257 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+index e08f6956c..692c56ef7 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+@@ -13,6 +13,7 @@ import {
+   writeConfig,
+ } from "@agentplane/testkit";
+ import { loadCommandContext } from "../commands/shared/task-backend.js";
++import { ensureRuntimeGitignore } from "../runtime/shared/runtime-gitignore.js";
+ import { recordedTaskImplementationCommitSha } from "../commands/shared/quality-review-target.js";
+ import * as verification from "../commands/task/direct-task-verification.js";
+ import { resolveRecordedImplementationRecovery } from "../commands/task/external-agent-implementation-recovery.js";
+@@ -83,12 +84,31 @@ async function commitFixture(root: string, message: string) {
+   await git("git", ["commit", "-m", message], { cwd: root });
+ }
+ 
+-async function completedFixture() {
++async function completedFixture(initialized = true) {
+   const root = await mkGitRepoRootWithBranch("main");
+   const config = defaultConfig();
+   config.workflow_mode = "branch_pr";
+   await writeConfig(root, config);
+   expect(await runCliSilent(["branch", "base", "set", "main", "--root", root])).toBe(0);
++  await cp(
++    path.join(process.cwd(), "packages/agentplane/assets/policy"),
++    path.join(root, ".agentplane/policy"),
++    { recursive: true },
++  );
++  await writeFile(
++    path.join(root, ".gitignore"),
++    ".agentplane/bin/\n.agentplane/cache.sqlite*\nagentplane-recipes\nnode_modules\npackages/\nwebsite/\n",
++  );
++  await writeFile(
++    path.join(root, "package.json"),
++    JSON.stringify({
++      scripts: { "test:critical": "node -e \"console.log('1 passed')\"" },
++    }),
++  );
++  if (initialized) {
++    await ensureRuntimeGitignore({ gitRoot: root });
++    await commitFixture(root, "test: seed evidence rework repository");
++  }
+   const created = await invoke(root, [
+     "task",
+     "new",
+@@ -107,23 +127,13 @@ async function completedFixture() {
+   ]);
+   expect(created.code, created.stderr).toBe(0);
+   const taskId = created.stdout.trim();
+-  await cp(
+-    path.join(process.cwd(), "packages/agentplane/assets/policy"),
+-    path.join(root, ".agentplane/policy"),
+-    { recursive: true },
+-  );
+-  await writeFile(
+-    path.join(root, ".gitignore"),
+-    (await readFile(path.join(root, ".gitignore"), "utf8")) +
+-      "\n.agentplane/bin/\n.agentplane/cache.sqlite*\nagentplane-recipes\nnode_modules\npackages/\nwebsite/\n",
+-  );
+-  await writeFile(
+-    path.join(root, "package.json"),
+-    JSON.stringify({
+-      scripts: { "test:critical": "node -e \"console.log('1 passed')\"" },
+-    }),
+-  );
+-  await commitFixture(root, "test: seed evidence rework repository");
++  const creationCtx = await loadCommandContext({ cwd: root, rootOverride: root });
++  const createdTask = await creationCtx.taskBackend.getTask(taskId);
++  const creationBase = createdTask?.extensions?.task_execution_context as
++    | Record<string, unknown>
++    | undefined;
++  expect(creationBase?.source).toBe(initialized ? "creation_checkout" : undefined);
++  if (!initialized) await commitFixture(root, "test: seed evidence rework repository");
+   const planning = await packet(root, taskId);
+   const planOrder = await order(planning);
+   await report(planning, "Recover only the exact approved implementation.", {
+@@ -151,7 +161,7 @@ async function completedFixture() {
+   expect(
+     await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
+   ).toBe(0);
+-  await commitFixture(root, "test: persist approved evidence rework plan");
++  if (!initialized) await commitFixture(root, "test: persist approved evidence rework plan");
+   const implementation = await packet(root, taskId);
+   const implementationOrder = await order(implementation);
+   const checkout = implementationOrder.state_fingerprint.worktree;
+@@ -166,6 +176,10 @@ async function completedFixture() {
+   const completed = await ctx.taskBackend.getTask(taskId);
+   if (!completed) throw new Error("missing completed fixture task");
+   expect(completed.verification?.state, JSON.stringify(completed.verification)).toBe("ok");
++  if (initialized) {
++    const { source: _source, ...identity } = creationBase!;
++    expect(completed.extensions?.task_execution_context).toEqual(identity);
++  }
+   const reviewOrder = await order(review);
+   expect(reviewOrder.role).toBe("EVALUATOR");
+   expect(
+@@ -230,10 +244,19 @@ async function completedFixture() {
+ }
+ 
+ describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
+-  it.each(["normal return", "interrupted proof refresh", "interrupted verification"])(
+-    "rechecks unchanged source after %s and preserves current claims",
+-    async (boundary) => {
+-      const f = await completedFixture();
++  it.each(
++    [true, false].flatMap((initialized) =>
++      ["normal return", "interrupted proof refresh", "interrupted verification"].map(
++        (boundary) => ({
++          initialized,
++          boundary,
++        }),
++      ),
++    ),
++  )(
++    "rechecks unchanged source after $boundary (initialized=$initialized) and preserves current claims",
++    async ({ boundary, initialized }) => {
++      const f = await completedFixture(initialized);
+       const originalBytes = await readFile(
+         path.join(f.implementation.exchange.directory, "exchange.json"),
+         "utf8",
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+index 541c9e9b7..08b165a19 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+@@ -3,6 +3,23 @@ import { renderTaskReadme } from "@agentplaneorg/core/tasks";
+ import { taskReadmesPreserveRecoveryContract } from "./external-agent-implementation-recovery.js";
+ 
+ const COMMIT = "a".repeat(40);
++const BASE_CONTEXT = {
++  schema_version: 1,
++  base_ref: "main",
++  base_sha: COMMIT,
++  repository_identity: "sha256:" + "c".repeat(64),
++};
++
++function contextReadme(context: Record<string, unknown>) {
++  const original = task();
++  return renderTaskReadme(
++    {
++      ...original,
++      extensions: { ...original.extensions, task_execution_context: context },
++    },
++    "## Summary\nApproved behavior.\n",
++  );
++}
+ 
+ function task() {
+   return {
+@@ -23,6 +40,65 @@ function task() {
+ }
+ 
+ describe("recorded implementation recovery contract", () => {
++  it("accepts only removal of creation-checkout provenance for the same valid identity", () => {
++    const before = contextReadme({ ...BASE_CONTEXT, source: "creation_checkout" });
++    const after = contextReadme(BASE_CONTEXT);
++    expect(taskReadmesPreserveRecoveryContract(before, after, COMMIT)).toBe(true);
++    expect(taskReadmesPreserveRecoveryContract(after, before, COMMIT)).toBe(false);
++    expect(taskReadmesPreserveRecoveryContract(before, before, COMMIT)).toBe(true);
++  });
++
++  it.each([
++    ["base_ref", "other"],
++    ["base_sha", "b".repeat(40)],
++    ["repository_identity", "sha256:" + "d".repeat(64)],
++    ["schema_version", 2],
++    ["source", "explicit"],
++    ["source", null],
++    ["unrecognized", true],
++  ])("rejects changed execution context %s=%s", (key, value) => {
++    expect(
++      taskReadmesPreserveRecoveryContract(
++        contextReadme({ ...BASE_CONTEXT, source: "creation_checkout" }),
++        contextReadme({ ...BASE_CONTEXT, [key as string]: value }),
++        COMMIT,
++      ),
++    ).toBe(false);
++  });
++
++  it.each([
++    ["base_ref", ""],
++    ["base_ref", " "],
++    ["base_sha", "not-a-commit"],
++    ["base_sha", "0".repeat(40)],
++    ["repository_identity", null],
++    ["repository_identity", "not-a-digest"],
++    ["schema_version", 2],
++    ["unrecognized", true],
++  ])("does not hide invalid or unknown context %s=%s behind provenance", (key, value) => {
++    const identity = { ...BASE_CONTEXT, [key as string]: value };
++    expect(
++      taskReadmesPreserveRecoveryContract(
++        contextReadme({ ...identity, source: "creation_checkout" }),
++        contextReadme(identity),
++        COMMIT,
++      ),
++    ).toBe(false);
++  });
++
++  it.each(["explicit", "legacy", "unknown", null])(
++    "does not remove unproved provenance %s",
++    (source) => {
++      expect(
++        taskReadmesPreserveRecoveryContract(
++          contextReadme({ ...BASE_CONTEXT, source }),
++          contextReadme(BASE_CONTEXT),
++          COMMIT,
++        ),
++      ).toBe(false);
++    },
++  );
++
+   it("allows Findings-only repair without accepting verification or authority changes", () => {
+     const before = task();
+     const original = renderTaskReadme(before, "## Findings\nMissing implementation evidence.\n");
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
+index 389912342..f717c7e10 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
+@@ -7,6 +7,7 @@ import {
+   renderTaskReadme,
+   setMarkdownSection,
+   taskCentricAggregateFromExtensions,
++  isGitObjectId,
+ } from "@agentplaneorg/core/tasks";
+ import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+ 
+@@ -166,6 +167,30 @@ export function taskReadmesPreserveRecoveryContract(
+   const next = parseTaskReadme(after);
+   const previousExtensions = original.frontmatter.extensions;
+   const nextExtensions = next.frontmatter.extensions;
++  if (isRecord(previousExtensions) && isRecord(nextExtensions)) {
++    const previous = previousExtensions.task_execution_context;
++    const current = nextExtensions.task_execution_context;
++    const identityKeys = ["schema_version", "base_ref", "base_sha", "repository_identity"];
++    if (
++      isRecord(previous) &&
++      isRecord(current) &&
++      previous.source === "creation_checkout" &&
++      !Object.hasOwn(current, "source") &&
++      previous.schema_version === 1 &&
++      typeof previous.base_ref === "string" &&
++      previous.base_ref.trim().length > 0 &&
++      typeof previous.base_sha === "string" &&
++      isGitObjectId(previous.base_sha) &&
++      typeof previous.repository_identity === "string" &&
++      /^sha256:[0-9a-f]{64}$/u.test(previous.repository_identity) &&
++      identityKeys.every((key) => previous[key] === current[key]) &&
++      Object.keys(previous).every((key) => key === "source" || identityKeys.includes(key)) &&
++      Object.keys(current).every((key) => identityKeys.includes(key))
++    ) {
++      // Verification omits creation provenance while preserving the exact execution identity.
++      Reflect.deleteProperty(previous, "source");
++    }
++  }
+   if (
+     isRecord(previousExtensions) &&
+     isRecord(nextExtensions) &&
