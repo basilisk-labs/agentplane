@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608280614-PCBY2N-017b35e69984991f8eff1e47",
+  "prepared_at": "2026-08-28T11:29:15.024Z",
+  "task": {
+    "id": "202608280614-PCBY2N",
+    "revision": 10,
+    "objective": "Recover task-level evidence rework after completed WorkItems\n\nRequired integration-path repair after QMVHM2 and CFKR4P are integrated on main e3550efba441765882f2507cfaf659e9a76d2f0b. Task 202608280529-59VB06 has a completed implementation WorkItem and passed full verification. Its evaluator requested only task Findings. The operator populated Findings through supported task commands and resumed DOING. A fresh task-level implementation_rework WorkOrder has work_item_id=null, preserves the existing code, and returns a completed documentation-only result. Acceptance rejects it with Completed implementation result produced no supervisor-observed workspace change. The immutable result is now received and must not be rewritten. resolveRecordedImplementationRecovery matches the prior implementation exchange WorkItem id to the new null id, while evidence-only rework also requires the recorded implementation to equal current metadata HEAD. Reproduce and repair only this task-level no-change documentation/evidence rework path. Require the same approved plan, scope, exact recorded implementation and ancestry, all required WorkItems completed, a validated historical result and original effect evidence, no unapproved source drift, and unchanged verification requirements. Preserve current rework findings as current claims; preserve original claims for interrupted WorkItem recovery. Rerun mandatory checks through the existing supervisor and obtain fresh evaluation. Cover interruption, replay, changed plan/authority/HEAD rejection and no false DONE. Do not hand-edit task/journal/evidence, reuse checks across different inputs without supported proof, weaken checks, invent a source change, or introduce a new state store or architecture program. Preserve blocked task 59VB06 and DVS5NN, keep one integration owner, and integrate this bounded repair before retrying them. The user authorized all in-scope operations through release. Release/Core order is unchanged. Prepopulate task Findings with observed diagnosis and pending evidence before implementation so this repair does not repeat the same documentation gap.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "git diff --check",
+      "- In scope: Required integration-path repair after QMVHM2 and CFKR4P are integrated on main e3550efba441765882f2507cfaf659e9a76d2f0b. Task 202608280529-59VB06 has a completed implementation WorkItem and passed full verification. Its evaluator requested only task Findings. The operator populated Findings through supported task commands and resumed DOING. A fresh task-level implementation_rework WorkOrder has work_item_id=null, preserves the existing code, and returns a completed documentation-only result. Acceptance rejects it with Completed implementation result produced no supervisor-observed workspace change. The immutable result is now received and must not be rewritten. resolveRecordedImplementationRecovery matches the prior implementation exchange WorkItem id to the new null id, while evidence-only rework also requires the recorded implementation to equal current metadata HEAD. Reproduce and repair only this task-level no-change documentation/evidence rework path. Require the same approved plan, scope, exact recorded implementation and ancestry, all required WorkItems completed, a validated historical result and original effect evidence, no unapproved source drift, and unchanged verification requirements. Preserve current rework findings as current claims; preserve original claims for interrupted WorkItem recovery. Rerun mandatory checks through the existing supervisor and obtain fresh evaluation. Cover interruption, replay, changed plan/authority/HEAD rejection and no false DONE. Do not hand-edit task/journal/evidence, reuse checks across different inputs without supported proof, weaken checks, invent a source change, or introduce a new state store or architecture program. Preserve blocked task 59VB06 and DVS5NN, keep one integration owner, and integrate this bounded repair before retrying them. The user authorized all in-scope operations through release. Release/Core order is unchanged. Prepopulate task Findings with observed diagnosis and pending evidence before implementation so this repair does not repeat the same documentation gap.\n- Out of scope: unrelated refactors not required for \"Recover task-level evidence rework after completed WorkItems\".",
+      "Repair one task-level evidence-only rework path after completed WorkItems without manufacturing a source change. Preserve exact historical implementation proof and current rework claims; rerun the existing verification and evaluation route.",
+      "1. Reproduce the task-level evidence-only rework failure with real Git after required WorkItem completion, evaluator documentation rework and an operator Findings update.\n2. Verify approved unchanged-source recovery uses validated historical implementation proof and preserves current task-level claims. Verify interrupted WorkItem recovery preserves its original claims. Rerun mandatory checks and obtain fresh evaluation.\n3. Reject changed plan, scope, authority, source HEAD, verification contract, incomplete WorkItems and missing or tampered proof. Cover interruption, replay and absence of false completion.\n4. Run focused recovery and real-Git tests, bun run ci:local:full, and git diff --check. Enforce the existing runtime and test size limits.\n5. Review the four approved source paths against the plan. Evidence and remaining limitations are recorded in typed semantic output and supervisor verification artifacts. Require exact-head hosted checks, protected integration and confirmed closure before calling this delivered."
+    ]
+  },
+  "evaluated_sha": "d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c",
+  "diff_base_sha": "e3550efba441765882f2507cfaf659e9a76d2f0b",
+  "blueprint_digest": "8ed52ea7ab931c3a714304c85770c51901595982c616c106ced834ed6ed4d978",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608280614-PCBY2N/quality/20260828-112915024-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:f7c7bd9d10b4cbba99ba2c714212307d0375a6e6f9f96f4754b1471d256dab81",
+    "prompt_path": ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/d14785f890fc8471120d4b446e0726677356828d07d89a361a0f44e435661c50.md",
+    "result_schema_path": ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608280614-PCBY2N/README.md",
+      "sha256": "sha256:6f3146b8766f3e3f820f64d041a773826bf52070fad446bfcadbb82e53df737f",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/167112d23a3809a69ce11c590bb2894d6d3e3faf1345fba7aff144166661a3df.patch",
+      "sha256": "sha256:167112d23a3809a69ce11c590bb2894d6d3e3faf1345fba7aff144166661a3df",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/8f90f782af46a966c76dd5da65e416c01cf3411622326198570c32a970fec3b3.json",
+      "sha256": "sha256:8f90f782af46a966c76dd5da65e416c01cf3411622326198570c32a970fec3b3",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608280614-PCBY2N/verification/20260828112857349-7df3e4f50a81c6b3.json",
+      "sha256": "sha256:1a25d32a761f44a5e8b84548fd9a1f9077dc57fe733a506dd775e50326b27607",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/b36787aabcc52d981eca63d4e3af434e33107ed9ccf1ae128be481174364df82.json",
+      "sha256": "sha256:b36787aabcc52d981eca63d4e3af434e33107ed9ccf1ae128be481174364df82",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
