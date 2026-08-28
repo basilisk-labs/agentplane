@@ -6,14 +6,14 @@ Created: 2026-08-28T00:15:41.154Z
 
 - Task: `202608280009-QMVHM2`
 - Title: Recover interrupted verification-to-WorkItem completion without false DONE
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608280009-QMVHM2/recover-interrupted-verification-to-workitem-com`
 - Canonical task record: `.agentplane/tasks/202608280009-QMVHM2/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,14 +29,14 @@ Created: 2026-08-28T00:15:41.154Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...n-cli.core.task-advance.branch-worktree.test.ts | 384 ++++++++++++++++++-
+ ...n-cli.core.task-advance.branch-worktree.test.ts | 403 +++++++++++++++++++-
  .../commands/task/direct-task-verification.test.ts |  69 ++++
  .../src/commands/task/direct-task-verification.ts  |   7 +-
  .../external-agent-implementation-authority.ts     | 123 ++++---
  .../external-agent-implementation-recovery.test.ts | 125 +++++++
  .../task/external-agent-implementation-recovery.ts | 405 +++++++++++++++++++++
  .../agentplane/src/commands/task/finish-shared.ts  |  13 +
- 7 files changed, 1066 insertions(+), 60 deletions(-)
+ 7 files changed, 1085 insertions(+), 60 deletions(-)
 ```
 
 </details>
