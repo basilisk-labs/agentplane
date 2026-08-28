@@ -12,8 +12,8 @@ Created: 2026-08-28T05:33:24.733Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Needs rework: exact regression-command correction; the same proved review defects remain unresolved.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,11 +29,15 @@ Created: 2026-08-28T05:33:24.733Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...li.core.task-advance.evaluator-recovery.test.ts | 363 +++++++++++++++++++++
- .../task/external-agent-evaluator-recovery.test.ts |  48 +++
- .../task/external-agent-evaluator-recovery.ts      | 120 +++++++
+ ...li.core.task-advance.evaluator-recovery.test.ts | 600 +++++++++++++++++++++
+ .../commands/shared/quality-review-retirement.ts   |  84 +++
+ .../src/commands/shared/route-decision-blockers.ts |  48 +-
+ .../src/commands/shared/workflow-step-factory.ts   |   4 +-
+ .../task/external-agent-evaluator-recovery.test.ts |  61 +++
+ .../task/external-agent-evaluator-recovery.ts      | 225 ++++++++
  .../task/external-agent-supervisor-recovery.ts     |   8 +
- 4 files changed, 539 insertions(+)
+ .../src/commands/task/external-agent-supervisor.ts |  17 +
+ 8 files changed, 1013 insertions(+), 34 deletions(-)
 ```
 
 </details>

@@ -44,6 +44,7 @@ import {
   finalizeCompletedExternalAgentExchange,
 } from "./external-agent-exchange-authority.js";
 import { usesExternalImplementationAuthority } from "./external-agent-purpose.js";
+import { isRecoverableAppliedEvaluatorResult } from "./external-agent-evaluator-recovery.js";
 import {
   applyAcceptedExternalAgentResult,
   isExternalAgentResultAlreadyApplied,
@@ -452,6 +453,22 @@ export async function acceptExternalAgentResult(opts: {
         decision: current,
         envelope,
       }));
+    if (
+      alreadyApplied &&
+      exchange.purpose === "quality_review" &&
+      !(await isRecoverableAppliedEvaluatorResult({
+        command: checkoutCommand,
+        exchange,
+        work_order: workOrder,
+        decision: current,
+      }))
+    ) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message:
+          "The applied evaluator result is stale after additional state drift; request a fresh action packet.",
+      });
+    }
     if (
       !alreadyApplied &&
       !usesExternalImplementationAuthority(exchange.purpose, workOrder.authority.sandbox)
