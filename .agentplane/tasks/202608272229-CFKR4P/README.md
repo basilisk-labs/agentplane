@@ -2,10 +2,10 @@
 id: "202608272229-CFKR4P"
 title: "Keep verification and review on the same semantic commit"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -262,6 +262,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: a87c4324423f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator requests only task Findings, but this code-only episode protects the task README and permits no lifecycle commands. No source modification is required. Recommended action: Use task doc set --section Findings to record the incident target cause, no-worktree task-branch regression and tests, current exact implementation and local proof, and separate provider-wording and QMVHM2 recovery follow-ups. Preserve source and verification, commit only the intended task documentation, then request a fresh supervisor packet. Agentplane receipt: external-agent-blocker/tr_42a94049d462e4bb7b9a318d9686593c/sha256:690349e3bf5900fff6e625c993f66f9353063f220887bfb7102af097410b1085."
 events:
   -
     type: "status"
@@ -306,8 +309,15 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-28T00:11:47.764Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator requests only task Findings, but this code-only episode protects the task README and permits no lifecycle commands. No source modification is required. Recommended action: Use task doc set --section Findings to record the incident target cause, no-worktree task-branch regression and tests, current exact implementation and local proof, and separate provider-wording and QMVHM2 recovery follow-ups. Preserve source and verification, commit only the intended task documentation, then request a fresh supervisor packet. Agentplane receipt: external-agent-blocker/tr_42a94049d462e4bb7b9a318d9686593c/sha256:690349e3bf5900fff6e625c993f66f9353063f220887bfb7102af097410b1085."
 doc_version: 3
-doc_updated_at: "2026-08-28T00:10:56.900Z"
+doc_updated_at: "2026-08-28T00:11:47.794Z"
 doc_updated_by: "SUPERVISOR"
 description: "On exact main 9ab453ac00d41ea0a58cdd02e84bd0456233b151, run-cli.core.pr-flow.integrate-merge.test.ts test 'integrate promotes structured external incident candidates into the incident registry' fails at prepareHostedIntegrateFixture -> recordVerificationOk -> evaluator with missing observed changed file .agentplane/policy/incidents.md. The neighboring finish-only incident scenario passes. Diagnose the complete implementation -> pre-merge closure/policy commit -> verification -> evaluator -> integration/replay chain. Current verify-record-execute pins the review resolver head to the recorded implementation, while evaluator resolves current HEAD; prove the cause with real-Git controls before changing this. Retain the existing semantic-target resolver, frozen execution base, unchanged lifecycle-only identity, and exact evaluated diff/authority guards. Fix the smallest product/fixture scope justified by the proof. Cover a reviewable post-implementation policy change, lifecycle-only metadata, repeat verification and stale evidence. Replace any internal-call expectation only with behavior-backed coverage. Do not omit incidents from observed evidence, relax checks, add skips/timeouts, rewrite artifacts, change actual policy or CI, create a new verification architecture or implement AP-CORE-013. Preserve full mandatory CI and release 0.7.8 -> Core order. Keep provider-neutral wording as a separate cause. Two existing changes DVS5NN and AD3030 have priority for integration; planning and bounded diagnosis may proceed while their checks run. User authorized autonomous refactoring and supported operator approvals; release publication is separate."
 sections:
