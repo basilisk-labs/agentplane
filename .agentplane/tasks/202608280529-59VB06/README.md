@@ -4,7 +4,7 @@ title: "Recover stale evaluator exchanges without accepting obsolete verdicts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -21,10 +21,10 @@ plan_approval:
   updated_by: "USER"
   note: "Operator action under the user authorization: all subsequent in-scope operations through release. Approve the bounded six-file stale evaluator recovery plan sha256:58812b3db6ab06361dbe577ea62bea6e3cfba5a562fcd105b79f6deaf2265059 as a proved required integration-path repair. Preserve exact freshness, immutable old results, all mandatory checks and release/Core order. No publication or architecture scope expansion."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-28T06:06:50.926Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -87,11 +87,40 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
+      - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -128,20 +157,29 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:a9fca92ec5fe8de90f5b1f11dd46ddc55c7f4f78eeddb8db9141eee3238966b0"
+      digest: "sha256:8d9482d5e2305722d2b9bfcaa91278ed2b7c4e04becb7c4f00cdc1632c01d82a"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
+          - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -173,11 +211,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "75c6a199cc4068e497fb786e831a9b2bb34a7376"
+  message: "🚧 59VB06 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 75c6a199cc40. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -186,9 +229,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-28T05:58:03.308Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 75c6a199cc40. CLI accepted one state-bound external-agent semantic result."
+    commit: "75c6a199cc4068e497fb786e831a9b2bb34a7376"
+  -
+    type: "verify"
+    at: "2026-08-28T06:06:50.926Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-28T05:33:24.408Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-28T06:06:53.240Z"
+doc_updated_by: "SUPERVISOR"
 description: "On integrated main 844eff36ba407436c26a3c63346b0dcc384ce2b5, continuation of DVS5NN PR #5862 is blocked by an issued quality_review exchange whose result is stale. The read-only evaluator prepared four task-owned evidence files while the legacy task was DONE, then exact result acceptance rejected the changed route fingerprint. Repeating task advance or task advance --replacement re-enters recoverPendingExternalAgentResult and rejects the same old result before replacement handling. The original result, frozen evidence and journal must remain intact. Reproduce the full sequence with real Git: evaluator issuance, preparation-owned artifacts, a genuine state change, stale result rejection, fresh packet recovery, retry and next transition. Separate framework-owned preparation changes from genuine task, plan, HEAD, provider or authority changes; do not weaken exact freshness or accept old verdicts for changed inputs. Use existing supervisor journal retirement and replacement mechanisms, with one owner and compare-and-swap guards. Preserve immutable historical results and required WorkItem completion. Prove ordinary evaluator acceptance, no-result and returned-result interruption recovery, repeated continuation, changed evidence rejection and no false DONE. Fix only the demonstrated bounded evaluator exchange/recovery cause. Do not modify task state or journals manually, create a new state store, bypass checks, change required CI, copy verdicts, or broaden release/Core architecture. DVS5NN and CFKR4P integration retain priority; CFKR4P full verification is running and must not be interrupted. This is a necessary authorized integration-path blocker, not new release scope. Release publication remains separately qualified. User has authorized all in-scope operations through release."
 sections:
   Summary: |-
@@ -207,6 +264,78 @@ sections:
     5. Preserve the proved cause, red/green evidence and remaining hosted integration boundaries in the semantic result and task Findings through supported routes. Exact-head GitHub checks, protected integration and terminal closure are required before delivery. Local checks do not qualify release 0.7.8.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-28T06:06:50.926Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e62b830b865b103d9e9ebc3046c670836db81e2157e23ae89899300c97bde172, input_digest=sha256:cbb277b1a0d54fbc6aa813390e84740a69249c762b03506d4b78890a9f86259a
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280529-59VB06 Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608280529-59VB06 Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280529-59VB06 Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608280529-59VB06 Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280529-59VB06 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280529-59VB06 Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608280529-59VB06 Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608280529-59VB06-recover-stale-evaluator-exchanges-without-accept/.agentplane/tasks/202608280529-59VB06/blueprint/resolved-snapshot.json
+    - old_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+    - current_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608280529-59VB06
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -480,25 +609,86 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 9
     schema_version: 1
-    updated_at: "2026-08-28T05:32:56.989Z"
+    updated_at: "2026-08-28T06:06:54.526Z"
     work_items:
       recover-stale-evaluator:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "recover-stale-evaluator"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:ad2ee89419275a1ff6b650eddeed47bae50226dcd32cf4909e1d01c895be3f9c"
+            id: "evaluator-recovery-proof"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608280529-59VB06"
+              work_item_id: "recover-stale-evaluator"
+            provenance:
+              - "sha256:ab3266fa596554f10760290fc63d30cf56cb2506667ff5a222491a5fa3ecba72"
+              - ".agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:41a37d574f40a6e9c8a60a1bcba8e9561a81f614bd81e2b9544e8c40c5d16fd1"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json"
+              check_id: "mandatory-checks"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-08-28T06:06:54.522Z"
+              repository_snapshot_digest: "sha256:41a37d574f40a6e9c8a60a1bcba8e9561a81f614bd81e2b9544e8c40c5d16fd1"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608280529-59VB06-executor-0fe686768035cb44c907a97d:
+        aggregate_digest: "sha256:9a18a9537846ef43aaec77ba08bf20eedcebb5fd1cfe6339728c46741dcba505"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-28T06:06:54.526Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_54e85dbb991fb6b27795d295"
+          mutation_id: "external-result:work-order-202608280529-59VB06-executor-0fe686768035cb44c907a97d"
+          plan_digest: "sha256:58812b3db6ab06361dbe577ea62bea6e3cfba5a562fcd105b79f6deaf2265059"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608280529-59VB06"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: "recover-stale-evaluator"
+        mutation_id: "external-result:work-order-202608280529-59VB06-executor-0fe686768035cb44c907a97d"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202608280529-59VB06"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "75c6a199cc4068e497fb786e831a9b2bb34a7376"
   task_execution_context:
     base_ref: "main"
     base_sha: "844eff36ba407436c26a3c63346b0dcc384ce2b5"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "844eff36ba407436c26a3c63346b0dcc384ce2b5"
     version: 1
@@ -530,6 +720,78 @@ One bounded WorkItem repairs the stale evaluator exchange recovery loop. Prove t
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-28T06:06:50.926Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e62b830b865b103d9e9ebc3046c670836db81e2157e23ae89899300c97bde172, input_digest=sha256:cbb277b1a0d54fbc6aa813390e84740a69249c762b03506d4b78890a9f86259a
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280529-59VB06 Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608280529-59VB06 Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280529-59VB06 Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608280529-59VB06 Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280529-59VB06 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280529-59VB06 Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608280529-59VB06 Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608280529-59VB06-recover-stale-evaluator-exchanges-without-accept/.agentplane/tasks/202608280529-59VB06/blueprint/resolved-snapshot.json
+- old_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+- current_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608280529-59VB06
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
