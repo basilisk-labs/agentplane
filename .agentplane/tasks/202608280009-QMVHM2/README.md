@@ -1,10 +1,11 @@
 ---
 id: "202608280009-QMVHM2"
 title: "Recover interrupted verification-to-WorkItem completion without false DONE"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,20 @@ quality_review:
     - "The unchanged 7-file focused command was rerun during this evaluation: 63 tests passed in 43.08 seconds. Reviewed tests cover both interruption boundaries, repeat execution, the next rework transition, stale or missing evidence and divergent result rejection, frozen-base changes, source relocation, and whole-task equality after rejected finish. The actual source diff is unchanged from the prior reviewed patch."
     - "Current tracked state is clean. The remaining untracked files are the four newly prepared evaluator evidence artifacts owned by AgentPlane. No product, policy, CI, release, or other task scope was changed during evaluation."
     - "Residual risk: The post-review provider and closure gates must still execute through their current authority. No local test result substitutes for hosted integration or final 0.7.8 release qualification."
+token_usage:
+  agent_runs: 5
+  input_tokens: null
+  journal_digest: "sha256:9c0e47b517f9d8279889bb184236ce2c56dc8a36996d1620bb5b3b637f0ea1f5"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-28T04:30:38.201Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -276,8 +291,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "6d952d932d8635833a8320a44279df306a6a06b2"
-  message: "🚧 QMVHM2 task: apply external agent result"
+  hash: "d0ed64e36dca61e1ce9326386fc7fc89db45eea1"
+  message: "🚧 QMVHM2 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -291,6 +306,9 @@ comments:
   -
     author: "CODER"
     body: "Resume: User approved the one-time operator documentation transition. | details: Verify Steps and Findings are populated in d600fac6c23a through supported task doc commands.; Source implementation and mandatory checks remain unchanged.; Return to the supervisor for fresh verification and evaluator review of the updated task input."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -333,8 +351,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-28T04:30:38.201Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "d0ed64e36dca61e1ce9326386fc7fc89db45eea1"
 doc_version: 3
-doc_updated_at: "2026-08-28T04:28:24.849Z"
+doc_updated_at: "2026-08-28T04:30:38.210Z"
 doc_updated_by: "CODER"
 description: "Repair the reproduced integration blocker on main e43acc5f72ba1f884966a16325d6dbc94fcb1f04. DVS5NN accepted and committed the cleanup at b577984d8418b4cb7fed521c14b6ab00bf773a93, then completed full checks, but verification persistence rejected a docs_contract mapping added by observed base history. Result application stopped before WorkItem projection. Supported TESTER verification and EVALUATOR PASS did not complete the READY WorkItem. finish then wrote legacy DONE before rejecting required_work_item_incomplete. CFKR4P also completed full checks for a task-level null-WorkItem rework but result application failed because all WorkItems were already completed. Preserve one complete scenario: accepted semantic result, exact implementation and plan binding, current mandatory verification, interruption, supported restart, exactly-once WorkItem projection, and finish without false completion. Diagnose the smallest repair before planning. Prefer existing exchange, verification and runtime receipts; do not add a parallel state store or generic replay subsystem. Preserve stale result rejection, plan and commit identity, missing-evidence rejection, approval gates and mandatory checks. Do not implement AP-CORE-012, AP-CORE-013 or AP-CORE-015 ahead of the approved graph; limit the change to this demonstrated integration recovery and prevention contract. Include real-Git positive, interruption, repeat, changed-plan/head and incomplete-WorkItem negative regressions. Keep DVS5NN and CFKR4P source scopes unchanged. No release publication or CI weakening. The user authorized autonomous completion and supported operator approvals. Stop on any unsupported authority or materially larger architectural scope."
 sections:
@@ -866,7 +892,34 @@ extensions:
       schema_version: 1
       task_id: "202608280009-QMVHM2"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608280009-QMVHM2"
+            - "git:6d952d932d8635833a8320a44279df306a6a06b2"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-08-28T04:28:22.482Z"
+          repository_snapshot_digest: "sha256:f4871e0ce6e14c61da5bc696446773e3aa0e1b423058159dca5fee0675cb6116"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608280009-QMVHM2"
+            - "git:6d952d932d8635833a8320a44279df306a6a06b2"
+          check_id: "diff-check"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-08-28T04:28:22.482Z"
+          repository_snapshot_digest: "sha256:f4871e0ce6e14c61da5bc696446773e3aa0e1b423058159dca5fee0675cb6116"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608280009-QMVHM2"
     intent:
       acceptance_criteria:
@@ -887,12 +940,12 @@ extensions:
 
         Repair the reproduced integration blocker on main e43acc5f72ba1f884966a16325d6dbc94fcb1f04. DVS5NN accepted and committed the cleanup at b577984d8418b4cb7fed521c14b6ab00bf773a93, then completed full checks, but verification persistence rejected a docs_contract mapping added by observed base history. Result application stopped before WorkItem projection. Supported TESTER verification and EVALUATOR PASS did not complete the READY WorkItem. finish then wrote legacy DONE before rejecting required_work_item_incomplete. CFKR4P also completed full checks for a task-level null-WorkItem rework but result application failed because all WorkItems were already completed. Preserve one complete scenario: accepted semantic result, exact implementation and plan binding, current mandatory verification, interruption, supported restart, exactly-once WorkItem projection, and finish without false completion. Diagnose the smallest repair before planning. Prefer existing exchange, verification and runtime receipts; do not add a parallel state store or generic replay subsystem. Preserve stale result rejection, plan and commit identity, missing-evidence rejection, approval gates and mandatory checks. Do not implement AP-CORE-012, AP-CORE-013 or AP-CORE-015 ahead of the approved graph; limit the change to this demonstrated integration recovery and prevention contract. Include real-Git positive, interruption, repeat, changed-plan/head and incomplete-WorkItem negative regressions. Keep DVS5NN and CFKR4P source scopes unchanged. No release publication or CI weakening. The user authorized autonomous completion and supported operator approvals. Stop on any unsupported authority or materially larger architectural scope.
       task_id: "202608280009-QMVHM2"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 17
     schema_version: 1
-    updated_at: "2026-08-28T01:13:07.846Z"
+    updated_at: "2026-08-28T04:30:38.201Z"
     work_items:
       recover-verified-implementation:
         attempt: 1
@@ -985,11 +1038,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608280009-QMVHM2"
+      legacy-finish:202608280009-QMVHM2:2026-08-28T04:28:22.482Z:6d952d932d8635833a8320a44279df306a6a06b2:
+        aggregate_digest: "sha256:3e2e7e570b2e533791c032ad811fe7be4ef299c79c923cab5335f114fcfbb796"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-28T04:30:38.201Z"
+          cause_refs:
+            - "task-verification:202608280009-QMVHM2"
+            - "git:6d952d932d8635833a8320a44279df306a6a06b2"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4de6961a0a69dc1f5e87949c"
+          mutation_id: "legacy-finish:202608280009-QMVHM2:2026-08-28T04:28:22.482Z:6d952d932d8635833a8320a44279df306a6a06b2"
+          plan_digest: "sha256:f1268d36bbb2c0c541cf3a769f5cbe3ad4b141236b5b4fa60d40af1580da45a1"
+          plan_revision: 1
+          repository_fingerprint: "sha256:f4871e0ce6e14c61da5bc696446773e3aa0e1b423058159dca5fee0675cb6116"
+          schema_version: 1
+          task_id: "202608280009-QMVHM2"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608280009-QMVHM2:2026-08-28T04:28:22.482Z:6d952d932d8635833a8320a44279df306a6a06b2"
+        next_revision: 17
+        previous_revision: 16
+        schema_version: 1
+        task_id: "202608280009-QMVHM2"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "6d952d932d8635833a8320a44279df306a6a06b2"
+    message: "🚧 QMVHM2 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "e43acc5f72ba1f884966a16325d6dbc94fcb1f04"
@@ -1198,3 +1277,16 @@ Local evidence: 63 focused tests passed. The full mandatory CI passed locally an
 Read-only probes of the existing DVS5NN and CFKR4P worktrees resolved their recorded implementation commits, respectively `b577984d8418b4cb7fed521c14b6ab00bf773a93` and `a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0`. The probes did not resume, integrate, or close either task.
 
 Remaining work: obtain current verification and evaluator acceptance for QMVHM2, publish through matching authority, pass exact-head hosted checks, integrate, and confirm closure. Then resume DVS5NN and CFKR4P through fresh supported routes. DVS5NN's partial legacy DONE is not delivery. Refresh the diagnostic remainder on exact main after integration; do not reuse the old failure count. Provider-neutral wording diagnostics remain separate. Final 0.7.8 qualification/publication and the approved subsequent Core graph remain separate; this repair neither qualifies a release nor reorders that graph.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/5` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:9c0e47b517f9d8279889bb184236ce2c56dc8a36996d1620bb5b3b637f0ea1f5`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-28T04:30:38.201Z`
