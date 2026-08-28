@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:d452b500775ae01783f4d7a703c80ac6e2c087a62304b4574917e81697f7547b",
   "pr_number": 5866,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5866",
+  "pre_merge_closure": {
+    "basis_commit": "ef07d40750a0068fb211f43efa05162e5ca41ccb",
+    "branch": "task/202608280529-59VB06/recover-stale-evaluator-exchanges-without-accept",
+    "pr_number": 5866,
+    "recorded_at": "2026-08-28T15:40:29.476Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
