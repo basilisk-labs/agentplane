@@ -22,7 +22,7 @@ On integrated main 2b0760edea02ef80eecc61e82d47fa2a21c691fc, PCBY2N is merged an
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-28T14:50:51.213Z
+- Updated: 2026-08-28T15:05:55.654Z
 - Branch: task/202608281151-WQ89A1/recover-evidence-rework-after-execution-base-pro
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
