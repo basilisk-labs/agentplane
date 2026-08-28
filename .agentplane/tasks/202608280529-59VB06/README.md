@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -28,36 +28,37 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-28T15:40:19.801Z"
+  updated_at: "2026-08-28T18:21:23.355Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "75c6a199cc4068e497fb786e831a9b2bb34a7376"
+  note: "EVALUATOR returned rework with 6 typed finding(s)."
+  evaluated_sha: "290c44a524385cc95846a25baaee7af8b7e5d437"
   blueprint_digest: "c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291"
   evidence_refs:
-    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-153633672-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-153633672-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/34b3e8375de5f18107ece3aea5f4b2af0c9ec6eec6bd7198fb9b886c82d91398.md"
-    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-153633672-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-153633672-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-153633672-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-181927875-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-181927875-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/64558883dc2735b263e90375f5bf6254311c06dfe032688cfeda608774af92e4.md"
+    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-181927875-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-181927875-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-181927875-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608280529-59VB06/quality/20260828-181927875-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608280529-59VB06/README.md"
-    - ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/85ab8a4388809a43346334532eaf5fea9f05ec0af3e6b17cced11cc3e28859fb.patch"
-    - ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/dffe78fab5abb3d7f0acea1c9b14f4cbfd56d68d836f90da49341774b928b834.json"
-    - ".agentplane/tasks/202608280529-59VB06/verification/20260828153621983-c6c6865d6eab595e.json"
+    - ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
+    - ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/b3b3f9229ace468303c32054dbfc08138f4e6822b464104b4d9180421de40844.json"
+    - ".agentplane/tasks/202608280529-59VB06/verification/20260828181914331-2b5187ee7edbae42.json"
     - ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/24745007b98bd3eb7178a157f3cff4cd03ec4dd7de00613fbd465e1c9d85fc99.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Reviewed the complete four-file patch 85ab8a4388809a43346334532eaf5fea9f05ec0af3e6b17cced11cc3e28859fb and recovery/application call sites. Source at HEAD 909f892f213b7ca908fc14d16745b928f5cf1d7a is unchanged from evaluated implementation 75c6a199cc4068e497fb786e831a9b2bb34a7376. All changes remain within the approved six-file scope."
-    - "Retirement requires an unapplied issued/result_received EVALUATOR quality_review exchange with changed exact fingerprint. The recovery revalidates the latest original intent and work-order digest under the existing supervisor lease, retires the exchange before the journal CAS, and preserves original result and evidence bytes. Already applied review uses existing idempotent closeout. No obsolete verdict is accepted or copied."
-    - "Inspected real-Git cases for stale missing/returned results, tampered work order, competing owner, interruption after exchange retirement, interruption after review application, replacement and replay, and late retired-result rejection. Existing ordinary acceptance and concurrent-commit stale rejection paths remain unchanged. The implementation does not create preparation-artifact freshness equivalence or bypass incomplete WorkItem gates."
-    - "Current Findings now contains the causal proof, red/green record, original implementation identity and remaining hosted boundaries. The required recover-stale-evaluator WorkItem remains COMPLETED with its preserved output manifest. This addresses the sole prior documentation defect without overwriting the earlier review."
-    - "All nine frozen evidence hashes match. Verification record 20260828153621983-c6c6865d6eab595e.json is ok for implementation 75c6a199cc4068e497fb786e831a9b2bb34a7376 and unchanged Verify Steps e62b830b865b103d9e9ebc3046c670836db81e2157e23ae89899300c97bde172. The referenced preserved declared-checks records ci:local:full exit 0 in 526823ms and git diff --check exit 0. Only four framework-prepared quality artifacts are untracked."
-    - "Residual risk: Exact published-head GitHub checks, protected integration, hosted close and final cleanup are still required. This review does not prove DVS5NN recovery or qualify release 0.7.8."
+    - "Documentation rework: the frozen task README Findings still describes implementation 75c6a199, four files, 46 tests, and retirement of only unapplied reviews. It omits the proved applied-review defects, authoritative checkout recovery, retired-review routing, implementation 290c44a524385cc95846a25baaee7af8b7e5d437, 103 focused tests and fresh verification 20260828181914331-2b5187ee7edbae42.json. This fails the explicit requirement to preserve current cause and red/green proof in Findings. Evidence: .agentplane/tasks/202608280529-59VB06/README.md"
+    - "The Verify Steps eight-file count conflicts with the already applied, state-bound nine-root scope refinement recorded in this same task. Correct the description to include shared/workflow-step-factory.ts without changing the approved semantic scope, mandatory commands, pass criteria or historical approval records. The actual code is inside the framework-authorized scope; this is documentation reconciliation, not a request for new implementation."
+    - "Code review: the frozen patch preserves the existing journal/lease CAS and old result bytes, resolves exchange.checkout for applied recovery, requires the exact reconstructed pre-review task and frozen inputs, and checks retirement before both direct and branch_pr closeout. Explicit-result return has the same applied-state guard. Tests cover before/after effect interruption, task/plan/HEAD/evidence/workspace/policy drift, immutable history, replacement and fresh review; legacy reviews without external work-order binding retain their prior path."
+    - "All nine frozen evidence hashes and the frozen WorkOrder digest match. Recorded CLI-owned verification is ok for implementation 290c44a524385cc95846a25baaee7af8b7e5d437; preserved declared-checks records ci:local:full exit 0 in 460507ms and git diff --check exit 0. This does not prove GitHub checks, integration, hosted closure or release qualification."
+    - "No source change is requested by this evaluation. Preserve completed WorkItem output manifest sha256:3928a1ef67e0f7f6d1ed46717abad1c648f724f5f8763b1985bba5bb7959c1f3 and the current implementation. Use the supported task-document recovery route; do not hand-edit task state or rewrite this review."
+    - "Residual risk: Exact-head hosted checks, review responses, protected integration and hosted closure remain pending."
 token_usage:
   agent_runs: 6
   input_tokens: null
@@ -842,7 +843,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-28T18:19:16.550Z"
+doc_updated_at: "2026-08-28T18:21:23.389Z"
 doc_updated_by: "SUPERVISOR"
 description: "On integrated main 844eff36ba407436c26a3c63346b0dcc384ce2b5, continuation of DVS5NN PR #5862 is blocked by an issued quality_review exchange whose result is stale. The read-only evaluator prepared four task-owned evidence files while the legacy task was DONE, then exact result acceptance rejected the changed route fingerprint. Repeating task advance or task advance --replacement re-enters recoverPendingExternalAgentResult and rejects the same old result before replacement handling. The original result, frozen evidence and journal must remain intact. Reproduce the full sequence with real Git: evaluator issuance, preparation-owned artifacts, a genuine state change, stale result rejection, fresh packet recovery, retry and next transition. Separate framework-owned preparation changes from genuine task, plan, HEAD, provider or authority changes; do not weaken exact freshness or accept old verdicts for changed inputs. Use existing supervisor journal retirement and replacement mechanisms, with one owner and compare-and-swap guards. Preserve immutable historical results and required WorkItem completion. Prove ordinary evaluator acceptance, no-result and returned-result interruption recovery, repeated continuation, changed evidence rejection and no false DONE. Fix only the demonstrated bounded evaluator exchange/recovery cause. Do not modify task state or journals manually, create a new state store, bypass checks, change required CI, copy verdicts, or broaden release/Core architecture. DVS5NN and CFKR4P integration retain priority; CFKR4P full verification is running and must not be interrupted. This is a necessary authorized integration-path blocker, not new release scope. Release publication remains separately qualified. User has authorized all in-scope operations through release."
 sections:
