@@ -2,10 +2,10 @@
 id: "202608272229-CFKR4P"
 title: "Keep verification and review on the same semantic commit"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -23,41 +23,40 @@ plan_approval:
   note: "Operator action under the user-authorized autonomous refactoring exception. Fresh plan sha256:824cd4fe3071eaa1b996c270fe96d2c82e446efeb7ea50af3713408465581342 and route sha256:d6f96ea39d71c019a4a014c470367719af35e9bca8ea376dbd7de93e53027366 reviewed. Four bounded verifier/test paths only; preserve all checks and authority guards; no release publication authority."
 verification:
   state: "ok"
-  updated_at: "2026-08-27T23:05:53.240Z"
+  updated_at: "2026-08-28T00:08:49.309Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-27T23:07:50.499Z"
+  updated_at: "2026-08-28T00:10:56.865Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "8faaaffd788fcdd84c7a1512a63c852174f78175"
+  note: "EVALUATOR returned rework with 4 typed finding(s)."
+  evaluated_sha: "a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0"
   blueprint_digest: "9365470d276e275ad8a5a0ffd6972bf7ad6d1d75750c245fea562d6ae7b551d2"
   evidence_refs:
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260827-230610775-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260827-230610775-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/5a91f816258fbfff2849f7bc6be1f7cf50e4796b2e269be89388b9c66f1d5c68.md"
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260827-230610775-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260827-230610775-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260827-230610775-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-000932160-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-000932160-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/8aa8430007db8b3269f6cb4f5d3aed2627eeadc552ce0127fbabae170ead8e9f.md"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-000932160-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-000932160-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-000932160-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-000932160-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608272229-CFKR4P/README.md"
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/3fa8c5a4ffd8708f6e96a21eba31edaf65882e1844c30c1e86c408070f957b5b.patch"
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/ddfa9158349dd8bc733f31959f4dd5b52edf19f263a2c56ebf3c0556d6f7eb98.json"
-    - ".agentplane/tasks/202608272229-CFKR4P/verification/20260827230553240-5454bb7d2f564299.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/11688b587a6c37b5298be891c8baca187f77e08c5986a1dc9f37e56709aa676e.patch"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/9a2d9706dbffd1b3e70f61ffedc1e700dd415cee709f8010108ced527e4dfdc5.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/verification/20260828000849309-6c255a4db5aae45c.json"
     - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/6f267ba300d86b30f5a46cb1b7eae0f2cb31b89dd4cf4c01d666f9423b309d5e.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Code review confirms the only product change removes the forced recorded-implementation head and uses that implementation solely as previousEvaluatedSha fallback, matching resolveEvaluatorReviewTarget. Existing ancestry validation, lifecycle-only filtering, frozen execution-base observation and exact-diff evaluator validation remain unchanged."
-    - "Real-Git regressions distinguish an actual policy commit from lifecycle-only generated evidence. They verify two repeated invocations, exact observed changed paths and durable verification targets, unchanged implementation extension and unchanged HEAD. The policy variant failed before the change, while the lifecycle control already passed. This supports the internal-call assertion change with behavior evidence."
-    - "The exact integrate-incident regression and neighboring finish control now pass within the 58-test focused run. Existing resolver tests retain nonancestor, unrelated-history and base-sync negative coverage. The fresh supervisor full run passed in 473512ms, including platform-critical 98/98, guard 101/101 and all 17 significant coverage targets. All nine frozen evidence hashes match."
-    - "The implementation result records the proved cause and separate provider-neutral wording remainder through the semantic-result route expressly allowed by Verify Steps. No actual policy, CI configuration, test timeout or artifact schema was changed. The hook recovery committed the intended task payload through the supported guarded CLI; no evidence was hand-edited."
-    - "Residual risk: Hosted checks, integration and terminal closeout remain to be completed."
-    - "Residual risk: Provider-neutral integrate-error wording is a separate unresolved diagnostic cause."
+    - "All nine frozen evidence hashes match. Current verification records the evaluated implementation a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0 with all selected checks. The full command completed before the separate null-WorkItem projection error. Retained historical command timing is not a new measurement."
+    - "The source uses the actual task branch head in branch_pr mode and current HEAD in direct mode, while preserving the previous semantic target as an anchor. Real-Git tests cover the reviewable policy commit, lifecycle-only drift, repeated verification, central-path escalation, and verification from base without a linked worktree while base advances independently. The reviewed source matches the 59 passing focused tests; no mandatory checks or timeouts were weakened."
+    - "The required acceptance step explicitly calls for the proved cause and provider-neutral wording remainder in task Findings. The frozen task document has an empty Findings section. Semantic exchange and quality evidence preserve the diagnostics, but the task handoff itself does not satisfy that explicit deliverable."
+    - "Residual risk: No source defect is identified in this review. Preserve the source and existing verification; record the proved cause, current proof and separate provider-neutral wording remainder through the supported task documentation route."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -248,8 +247,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "fea5ef88e37a9d149ce3bfd9370c94a1c854be96"
-  message: "🚧 CFKR4P task: record external evaluator result"
+  hash: "a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0"
+  message: "🚧 CFKR4P task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -260,6 +259,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a87c4324423f. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -290,9 +292,23 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "fea5ef88e37a9d149ce3bfd9370c94a1c854be96"
+  -
+    type: "status"
+    at: "2026-08-28T00:00:06.577Z"
+    author: "SUPERVISOR"
+    from: "DONE"
+    to: "DOING"
+    note: "Implementation committed: a87c4324423f. CLI accepted one state-bound external-agent semantic result."
+    commit: "a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0"
+  -
+    type: "verify"
+    at: "2026-08-28T00:08:49.309Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-27T23:07:59.857Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-28T00:10:56.900Z"
+doc_updated_by: "SUPERVISOR"
 description: "On exact main 9ab453ac00d41ea0a58cdd02e84bd0456233b151, run-cli.core.pr-flow.integrate-merge.test.ts test 'integrate promotes structured external incident candidates into the incident registry' fails at prepareHostedIntegrateFixture -> recordVerificationOk -> evaluator with missing observed changed file .agentplane/policy/incidents.md. The neighboring finish-only incident scenario passes. Diagnose the complete implementation -> pre-merge closure/policy commit -> verification -> evaluator -> integration/replay chain. Current verify-record-execute pins the review resolver head to the recorded implementation, while evaluator resolves current HEAD; prove the cause with real-Git controls before changing this. Retain the existing semantic-target resolver, frozen execution base, unchanged lifecycle-only identity, and exact evaluated diff/authority guards. Fix the smallest product/fixture scope justified by the proof. Cover a reviewable post-implementation policy change, lifecycle-only metadata, repeat verification and stale evidence. Replace any internal-call expectation only with behavior-backed coverage. Do not omit incidents from observed evidence, relax checks, add skips/timeouts, rewrite artifacts, change actual policy or CI, create a new verification architecture or implement AP-CORE-013. Preserve full mandatory CI and release 0.7.8 -> Core order. Keep provider-neutral wording as a separate cause. Two existing changes DVS5NN and AD3030 have priority for integration; planning and bounded diagnosis may proceed while their checks run. User authorized autonomous refactoring and supported operator approvals; release publication is separate."
 sections:
   Summary: |-
@@ -377,6 +393,78 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-28T00:08:49.309Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d68f18eca671b3ddacaa0fcad5341eefb5aa2fdf24bbc136ae40c4a98a8c404e, input_digest=sha256:8e02226c5064388f30e5156516ef69bbec17383e5e70c29a965f30b456339dee
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608272229-CFKR4P/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608272229-CFKR4P Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608272229-CFKR4P/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608272229-CFKR4P Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608272229-CFKR4P/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608272229-CFKR4P Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608272229-CFKR4P/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608272229-CFKR4P Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608272229-CFKR4P/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608272229-CFKR4P Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608272229-CFKR4P/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608272229-CFKR4P Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608272229-CFKR4P/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608272229-CFKR4P Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608272229-CFKR4P-keep-verification-and-review-on-the-same-semanti/.agentplane/tasks/202608272229-CFKR4P/blueprint/resolved-snapshot.json
+    - old_digest: 9365470d276e275ad8a5a0ffd6972bf7ad6d1d75750c245fea562d6ae7b551d2
+    - current_digest: 9365470d276e275ad8a5a0ffd6972bf7ad6d1d75750c245fea562d6ae7b551d2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608272229-CFKR4P
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608272229-CFKR4P
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -811,8 +899,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "8faaaffd788fcdd84c7a1512a63c852174f78175"
-    message: "🚧 CFKR4P task: apply external agent result"
+    hash: "a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0"
   task_execution_context:
     base_ref: "main"
     base_sha: "9ab453ac00d41ea0a58cdd02e84bd0456233b151"
@@ -915,6 +1002,78 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-28T00:08:49.309Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d68f18eca671b3ddacaa0fcad5341eefb5aa2fdf24bbc136ae40c4a98a8c404e, input_digest=sha256:8e02226c5064388f30e5156516ef69bbec17383e5e70c29a965f30b456339dee
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608272229-CFKR4P/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608272229-CFKR4P Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608272229-CFKR4P/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608272229-CFKR4P Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608272229-CFKR4P/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608272229-CFKR4P Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608272229-CFKR4P/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608272229-CFKR4P Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608272229-CFKR4P/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608272229-CFKR4P Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608272229-CFKR4P/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608272229-CFKR4P Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608272229-CFKR4P/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608272229-CFKR4P Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608272229-CFKR4P-keep-verification-and-review-on-the-same-semanti/.agentplane/tasks/202608272229-CFKR4P/blueprint/resolved-snapshot.json
+- old_digest: 9365470d276e275ad8a5a0ffd6972bf7ad6d1d75750c245fea562d6ae7b551d2
+- current_digest: 9365470d276e275ad8a5a0ffd6972bf7ad6d1d75750c245fea562d6ae7b551d2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608272229-CFKR4P
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608272229-CFKR4P
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
