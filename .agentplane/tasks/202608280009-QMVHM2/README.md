@@ -1,10 +1,10 @@
 ---
 id: "202608280009-QMVHM2"
 title: "Recover interrupted verification-to-WorkItem completion without false DONE"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -288,6 +288,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator requests only task documentation changes, but this episode permits source paths and explicitly protects .agentplane/tasks. No repository files were changed. A supported operator documentation transition is required. Recommended action: Use the supported operator documentation route to populate Verify Steps and Findings for QMVHM2, preserving implementation 6d952d932d8635833a8320a44279df306a6a06b2 and existing evidence. Do not widen the source scope or weaken checks. Then obtain a fresh supervisor packet and current verification/evaluation as required by the changed task document. Agentplane receipt: external-agent-blocker/tr_122e6aff5153db53896264cf27071709/sha256:594f02910384d5f5fd4f07de03fe8035586eadab8e36415c4d369a91f43c1075."
+  -
+    author: "CODER"
+    body: "Resume: User approved the one-time operator documentation transition. | details: Verify Steps and Findings are populated in d600fac6c23a through supported task doc commands.; Source implementation and mandatory checks remain unchanged.; Return to the supervisor for fresh verification and evaluator review of the updated task input."
 events:
   -
     type: "status"
@@ -317,9 +320,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator requests only task documentation changes, but this episode permits source paths and explicitly protects .agentplane/tasks. No repository files were changed. A supported operator documentation transition is required. Recommended action: Use the supported operator documentation route to populate Verify Steps and Findings for QMVHM2, preserving implementation 6d952d932d8635833a8320a44279df306a6a06b2 and existing evidence. Do not widen the source scope or weaken checks. Then obtain a fresh supervisor packet and current verification/evaluation as required by the changed task document. Agentplane receipt: external-agent-blocker/tr_122e6aff5153db53896264cf27071709/sha256:594f02910384d5f5fd4f07de03fe8035586eadab8e36415c4d369a91f43c1075."
+  -
+    type: "status"
+    at: "2026-08-28T04:19:49.217Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume: User approved the one-time operator documentation transition. | details: Verify Steps and Findings are populated in d600fac6c23a through supported task doc commands.; Source implementation and mandatory checks remain unchanged.; Return to the supervisor for fresh verification and evaluator review of the updated task input."
 doc_version: 3
-doc_updated_at: "2026-08-28T04:19:28.154Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-28T04:19:49.217Z"
+doc_updated_by: "CODER"
 description: "Repair the reproduced integration blocker on main e43acc5f72ba1f884966a16325d6dbc94fcb1f04. DVS5NN accepted and committed the cleanup at b577984d8418b4cb7fed521c14b6ab00bf773a93, then completed full checks, but verification persistence rejected a docs_contract mapping added by observed base history. Result application stopped before WorkItem projection. Supported TESTER verification and EVALUATOR PASS did not complete the READY WorkItem. finish then wrote legacy DONE before rejecting required_work_item_incomplete. CFKR4P also completed full checks for a task-level null-WorkItem rework but result application failed because all WorkItems were already completed. Preserve one complete scenario: accepted semantic result, exact implementation and plan binding, current mandatory verification, interruption, supported restart, exactly-once WorkItem projection, and finish without false completion. Diagnose the smallest repair before planning. Prefer existing exchange, verification and runtime receipts; do not add a parallel state store or generic replay subsystem. Preserve stale result rejection, plan and commit identity, missing-evidence rejection, approval gates and mandatory checks. Do not implement AP-CORE-012, AP-CORE-013 or AP-CORE-015 ahead of the approved graph; limit the change to this demonstrated integration recovery and prevention contract. Include real-Git positive, interruption, repeat, changed-plan/head and incomplete-WorkItem negative regressions. Keep DVS5NN and CFKR4P source scopes unchanged. No release publication or CI weakening. The user authorized autonomous completion and supported operator approvals. Stop on any unsupported authority or materially larger architectural scope."
 sections:
   Summary: |-
