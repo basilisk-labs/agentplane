@@ -273,7 +273,7 @@ export async function applyExternalImplementationResult(opts: {
   work_order: AgentWorkOrderV2;
   envelope: ExternalAgentResultEnvelope;
 }): Promise<void> {
-  const semantic = opts.envelope.result;
+  let semantic = opts.envelope.result;
   if (semantic.status !== "completed") {
     if (semantic.status === "blocked" && opts.decision.workflowMode === "branch_pr") {
       const alreadyRecorded = await isExternalBlockedResultRecorded({
@@ -362,6 +362,7 @@ export async function applyExternalImplementationResult(opts: {
       if (recovery) {
         implementationCommit = recovery.commit;
         recoveredExecutionBase = recovery.execution_base;
+        semantic = recovery.semantic;
         reusedRecordedImplementation = true;
       }
     }
