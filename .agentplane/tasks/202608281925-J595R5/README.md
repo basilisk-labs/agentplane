@@ -1,10 +1,11 @@
 ---
 id: "202608281925-J595R5"
 title: "Resume required WorkItems before branch pre-merge closure"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -61,6 +62,20 @@ quality_review:
     - "All nine frozen evidence hashes and the manifest matched before review; all nine still matched after the control checks. The exact-implementation verification records unchanged ci:local:full and git diff --check as passing. The read-only control on current source passed 59 tests across five suites in 21.94 seconds. The task README contains the required sections and explicit acceptance checks; its earlier recovery note is historical, with the fresh 20:50 verification record providing current committed-source proof."
     - "Residual risk: Require fresh exact-head hosted checks and confirmed integration/hosted closure before calling J595R5 delivered."
     - "Residual risk: Retry DVS5NN through its fresh route only after this implementation is integrated; qualify the final 0.7.8 release separately."
+token_usage:
+  agent_runs: 5
+  input_tokens: null
+  journal_digest: "sha256:f1537ccdf112d210e106b45d8379e68bd81c6a8d41502acb90c9c5429e762279"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-28T20:53:27.187Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -256,8 +271,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "3f1b5686f67e4fb38c47f12341a9ae790c87c055"
-  message: "🚧 J595R5 task: apply external agent result"
+  hash: "164581c8c447345b7b443a978bb731b2e960224c"
+  message: "🚧 J595R5 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -274,6 +289,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 3f1b5686f67e. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -317,9 +335,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-28T20:53:27.187Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "164581c8c447345b7b443a978bb731b2e960224c"
 doc_version: 3
-doc_updated_at: "2026-08-28T20:50:22.480Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-28T20:53:27.197Z"
+doc_updated_by: "CODER"
 description: "Fix the reproduced release-integration blocker in DVS5NN/PR #5862 on main 3bcce289091f5e6cbcb1dea87c2964c4f559259d. Its approved required remove-obsolete-handoff-reader WorkItem is READY with no outputs, while the concrete b577984d implementation and successful verification exist. After supported reopening and fresh evaluator acceptance the route offers task.pre_merge_close; finish rejects required_work_item_incomplete. flow repair has no deterministic repair. Route unfinished required WorkItems through the existing implementation/recovery episode before quality/publication/closure, with no fabricated source delta and no direct task-state edits. Cover the complete scenario: persisted implementation effect, interruption before WorkItem completion, normal restart, exact recovery of the original typed output, repeat restart, required verification/evaluation, and the following closure transition. Preserve completed WorkItem outputs, plan/checkout/authority freshness, dirty-worktree and active-runner guards, and already merged hosted-close/cleanup behavior. Use the existing canonical WorkItem scheduler and recorded implementation recovery; do not introduce another scheduler or state store. Do not weaken checks, completion guards or approvals; do not change release/Core order. Scope the smallest route/supervisor adapters and regression tests through a structured plan; request a supported scope extension only if reproduction proves more is required. USER authorized all necessary in-scope operations through release 0.7.8; this is an integration-path blocker, not a new architecture program."
 sections:
   Summary: |-
@@ -763,7 +789,23 @@ extensions:
       schema_version: 1
       task_id: "202608281925-J595R5"
     event_cursor: 1
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608281925-J595R5"
+            - "git:3f1b5686f67e4fb38c47f12341a9ae790c87c055"
+          check_id: "mandatory-checks"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-28T20:50:19.823Z"
+          repository_snapshot_digest: "sha256:17eaff06be4e66f7aec366cfa1c97c8f542c3d8bf8899f4c997469d2605f17f8"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608281925-J595R5"
     intent:
       acceptance_criteria:
@@ -784,7 +826,7 @@ extensions:
 
         Fix the reproduced release-integration blocker in DVS5NN/PR #5862 on main 3bcce289091f5e6cbcb1dea87c2964c4f559259d. Its approved required remove-obsolete-handoff-reader WorkItem is READY with no outputs, while the concrete b577984d implementation and successful verification exist. After supported reopening and fresh evaluator acceptance the route offers task.pre_merge_close; finish rejects required_work_item_incomplete. flow repair has no deterministic repair. Route unfinished required WorkItems through the existing implementation/recovery episode before quality/publication/closure, with no fabricated source delta and no direct task-state edits. Cover the complete scenario: persisted implementation effect, interruption before WorkItem completion, normal restart, exact recovery of the original typed output, repeat restart, required verification/evaluation, and the following closure transition. Preserve completed WorkItem outputs, plan/checkout/authority freshness, dirty-worktree and active-runner guards, and already merged hosted-close/cleanup behavior. Use the existing canonical WorkItem scheduler and recorded implementation recovery; do not introduce another scheduler or state store. Do not weaken checks, completion guards or approvals; do not change release/Core order. Scope the smallest route/supervisor adapters and regression tests through a structured plan; request a supported scope extension only if reproduction proves more is required. USER authorized all necessary in-scope operations through release 0.7.8; this is an integration-path blocker, not a new architecture program.
       task_id: "202608281925-J595R5"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1006,9 +1048,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608281925-J595R5"
-    revision: 11
+    revision: 19
     schema_version: 1
-    updated_at: "2026-08-28T20:38:10.337Z"
+    updated_at: "2026-08-28T20:53:27.187Z"
     work_items:
       resume-required-work:
         attempt: 1
@@ -1076,11 +1118,37 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202608281925-J595R5"
+      legacy-finish:202608281925-J595R5:2026-08-28T20:50:19.823Z:3f1b5686f67e4fb38c47f12341a9ae790c87c055:
+        aggregate_digest: "sha256:655e2f78d2ada3bfc77a0e66b352e4ab88de67f64a1d65dd1e65893f17c79bdf"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-28T20:53:27.187Z"
+          cause_refs:
+            - "task-verification:202608281925-J595R5"
+            - "git:3f1b5686f67e4fb38c47f12341a9ae790c87c055"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e3f0a7d70368f602ff055ce9"
+          mutation_id: "legacy-finish:202608281925-J595R5:2026-08-28T20:50:19.823Z:3f1b5686f67e4fb38c47f12341a9ae790c87c055"
+          plan_digest: "sha256:b399fe110ca7c842a320c876fce80c3350c72c393de9daf2ec53e315b7db1e34"
+          plan_revision: 2
+          repository_fingerprint: "sha256:17eaff06be4e66f7aec366cfa1c97c8f542c3d8bf8899f4c997469d2605f17f8"
+          schema_version: 1
+          task_id: "202608281925-J595R5"
+          task_revision: 11
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608281925-J595R5:2026-08-28T20:50:19.823Z:3f1b5686f67e4fb38c47f12341a9ae790c87c055"
+        next_revision: 19
+        previous_revision: 18
+        schema_version: 1
+        task_id: "202608281925-J595R5"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "3f1b5686f67e4fb38c47f12341a9ae790c87c055"
+    message: "🚧 J595R5 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -1280,3 +1348,16 @@ Verification: 59 focused tests in five files passed on the final source, togethe
 Recovery finding: the earlier blocked-return attempt left task artifacts staged. The implementation commit b76b10afde865eadfb3a0a1926f1b91d3411fcb3 therefore contains only task artifacts, and 6b3c0445c records implementation/verification evidence. The five actual source/test files remained uncommitted. The route correctly blocks on task_worktree_dirty. Preserve those files and the original WorkItem output sha256:ee1164ebc616c11ab1cc11e14833b10fd26ce5f30411b2f5b909fcbd926937fa. Prepare only the intended scoped files in the index at the operator recovery boundary, then let a fresh task_worktree_resolution episode commit and verify them. Do not treat either artifact-only commit as delivered source.
 
 No J595R5 hosted checks, merge, hosted closure, or release qualification are claimed. DVS5NN/PR #5862 recovery remains downstream of confirmed integration of this fix and a rebuilt main runtime. Keep release 0.7.8 qualification separate from all-Core completion and from this task's full CI.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/5` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:f1537ccdf112d210e106b45d8379e68bd81c6a8d41502acb90c9c5429e762279`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-28T20:53:27.187Z`

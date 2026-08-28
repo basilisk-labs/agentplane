@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:a5ffe7e553b8a6ab6e62965fc67b608560aa1898a7351fcc43690f53b14ff640",
   "pr_number": 5870,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5870",
+  "pre_merge_closure": {
+    "basis_commit": "164581c8c447345b7b443a978bb731b2e960224c",
+    "branch": "task/202608281925-J595R5/resume-required-workitems-before-branch-pre-merg",
+    "pr_number": 5870,
+    "recorded_at": "2026-08-28T20:53:27.328Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
