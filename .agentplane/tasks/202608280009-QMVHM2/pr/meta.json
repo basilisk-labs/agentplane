@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:19d774be61223acc5282820c9c67514fd29566f7dbd0760644883ef1a5c0cfad",
   "pr_number": 5865,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5865",
+  "pre_merge_closure": {
+    "basis_commit": "d0ed64e36dca61e1ce9326386fc7fc89db45eea1",
+    "branch": "task/202608280009-QMVHM2/recover-interrupted-verification-to-workitem-com",
+    "pr_number": 5865,
+    "recorded_at": "2026-08-28T04:30:38.333Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
