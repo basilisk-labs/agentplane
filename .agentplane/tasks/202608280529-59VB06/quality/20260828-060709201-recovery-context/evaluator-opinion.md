@@ -1,0 +1,25 @@
+# Semantic quality review: rework
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned rework with 6 typed finding(s).
+
+## Findings
+- Acceptance-1 is not fully satisfied: the frozen README has an empty Findings section, although Verify Steps item 5 explicitly requires the causal proof, red/green evidence and remaining hosted boundaries there. The semantic implementation result contains that information, but it does not populate the required task document.
+- Reviewed the complete frozen four-file diff 85ab8a4388809a43346334532eaf5fea9f05ec0af3e6b17cced11cc3e28859fb against base 844eff36ba407436c26a3c63346b0dcc384ce2b5 and implementation 75c6a199cc4068e497fb786e831a9b2bb34a7376. No source divergence from that implementation exists at current HEAD d5578fde140fee821c485bf2a5a94a705fa5e51c.
+- The new recovery path retains exact fingerprint inequality, original intent/work-order digest validation, lease ownership, CAS and immutable result/evidence history. It does not treat preparation-owned artifacts as blanket freshness equivalence and does not apply an obsolete verdict.
+- Positive and negative cases include ordinary acceptance via existing task-advance tests, missing and returned stale results, distinct replacement/replay, late retired-result rejection, interruption before journal CAS, already-applied review recovery, competing lease and tampered work order. No runtime defect was identified in this scoped review.
+- All nine frozen evidence hashes match. Recorded verification 20260828060650926-cb1fbd290a69ab04.json is ok for implementation 75c6a199cc4068e497fb786e831a9b2bb34a7376; full ci:local:full exited 0 in 526823ms and git diff --check passed. Earlier focused suites passed 46 tests; source is unchanged. These facts do not establish hosted integration or release qualification.
+- Residual risk: Task-local Findings is missing. Hosted exact-head checks, integration and terminal closure remain required after local rework.
+
+## Evidence
+- .agentplane/tasks/202608280529-59VB06/quality/objects/sha256/85ab8a4388809a43346334532eaf5fea9f05ec0af3e6b17cced11cc3e28859fb.patch
+
+## Missing Tests
+- none recorded
+
+## Hidden Assumptions
+- none recorded
+
+## Residual Risks
+- Documentation-only recovery: the authorized operator must populate this task's Findings through ap task doc set or task findings add with the already observed cause, red/green and full verification evidence, exact implementation identity and pending hosted boundaries. Preserve the approved six-file code scope, every check and existing evidence. Do not change runtime code to satisfy this documentation gap. Recompute the route after the supported documentation update; do not hand-edit task files or replay this verdict for changed evidence.
