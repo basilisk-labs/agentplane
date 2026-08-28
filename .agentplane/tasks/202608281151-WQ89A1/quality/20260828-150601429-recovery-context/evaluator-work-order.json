@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608281151-WQ89A1-3a5eed17d733f75a8fe46044",
+  "prepared_at": "2026-08-28T15:06:01.429Z",
+  "task": {
+    "id": "202608281151-WQ89A1",
+    "revision": 10,
+    "objective": "Recover evidence rework after execution-base provenance hydration\n\nOn integrated main 2b0760edea02ef80eecc61e82d47fa2a21c691fc, PCBY2N is merged and terminal, but the immutable received task-level evidence rework result for 202608280529-59VB06 still fails with Completed implementation result produced no supervisor-observed workspace change. Read-only comparison proves the remaining mismatch: the implementation README records task_execution_context.source=creation_checkout, while verify-record-execute.ts removes source when persisting the same schema_version, base_ref, base_sha and repository_identity. Removing only that field in an in-memory comparison makes both HEAD and working README preserve the recovery contract; no files were changed. Close this bounded recovery gap with a real-Git regression that starts from an actual creation-checkout context and exercises verification persistence, completed WorkItems, evaluator documentation rework, interruption/retry and the next fresh evaluator transition. Normalize only proved equivalent execution-base provenance in recovery; preserve exact base ref, SHA, repository identity, approved plan/grant/scope, immutable original result and proof, required fresh checks and no false DONE. Reject changed identity, unknown provenance/fields and invalid context. Do not blindly strip execution context, reuse old verification or verdicts, edit task/journal state, change CI, or extend release/Core architecture. Scope is external-agent-implementation-recovery.ts, its unit tests and run-cli.core.task-advance.evidence-rework.test.ts. Keep 59VB06 and DVS5NN intact and prioritize their integration after the fix. Findings and Verify Steps must be populated before implementation review through supported operator routes. This is a demonstrated required integration-path blocker, not a new release criterion.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "git diff --check",
+      "- In scope: On integrated main 2b0760edea02ef80eecc61e82d47fa2a21c691fc, PCBY2N is merged and terminal, but the immutable received task-level evidence rework result for 202608280529-59VB06 still fails with Completed implementation result produced no supervisor-observed workspace change. Read-only comparison proves the remaining mismatch: the implementation README records task_execution_context.source=creation_checkout, while verify-record-execute.ts removes source when persisting the same schema_version, base_ref, base_sha and repository_identity. Removing only that field in an in-memory comparison makes both HEAD and working README preserve the recovery contract; no files were changed. Close this bounded recovery gap with a real-Git regression that starts from an actual creation-checkout context and exercises verification persistence, completed WorkItems, evaluator documentation rework, interruption/retry and the next fresh evaluator transition. Normalize only proved equivalent execution-base provenance in recovery; preserve exact base ref, SHA, repository identity, approved plan/grant/scope, immutable original result and proof, required fresh checks and no false DONE. Reject changed identity, unknown provenance/fields and invalid context. Do not blindly strip execution context, reuse old verification or verdicts, edit task/journal state, change CI, or extend release/Core architecture. Scope is external-agent-implementation-recovery.ts, its unit tests and run-cli.core.task-advance.evidence-rework.test.ts. Keep 59VB06 and DVS5NN intact and prioritize their integration after the fix. Findings and Verify Steps must be populated before implementation review through supported operator routes. This is a demonstrated required integration-path blocker, not a new release criterion.\n- Out of scope: unrelated refactors not required for \"Recover evidence rework after execution-base provenance hydration\".",
+      "Recover the unchanged approved implementation after verification removes creation-checkout provenance from an otherwise identical execution base. Cover the actual initialized-repository lifecycle and retain exact authority and history guards.",
+      "1. Reproduce the initialized-repository creation-checkout execution context, verification persistence, completed WorkItems and Findings-only rework using real Git. Expected: before the fix the unchanged-source recovery fails because source=creation_checkout is removed by verification.\n2. Run scoped recovery unit and real-Git tests. Expected: only proved provenance-only equivalence succeeds; changed base ref, SHA, repository identity, invalid schema and unknown fields/provenance remain rejected alongside existing scope, plan, grant, proof and incomplete-WorkItem guards.\n3. Exercise ordinary continuation, interruptions before and after verification, repeated continuation and the next fresh evaluator transition. Expected: original result/proof bytes remain unchanged, no old verdict is copied, required checks rerun and no false DONE occurs.\n4. Run bun run ci:local:full and git diff --check with unchanged checks. Review the complete diff against the three approved files. Expected: no CI, schema, authority, lifecycle or release scope expansion.\n5. Return current evidence and residual gaps in the typed result. Findings records the initial cause and pending boundaries. Exact-head hosted checks, protected integration and terminal closure are required for delivery; release 0.7.8 qualification remains separate."
+    ]
+  },
+  "evaluated_sha": "3bcbff39f0ebe9bc381ff6230d1d55190914be84",
+  "diff_base_sha": "2b0760edea02ef80eecc61e82d47fa2a21c691fc",
+  "blueprint_digest": "94f5b2a0be0bc765475fc39cdeab2d5f9f337399de1c086b89b8e26edd719ffe",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608281151-WQ89A1/quality/20260828-150601429-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:adf523169c98413748a8daa5f122c2c060c38792906ad489af09908dee6b2ffd",
+    "prompt_path": ".agentplane/tasks/202608281151-WQ89A1/quality/objects/sha256/10cb032f0abf80e517280add04bb38fa45a38a4188077f4ec44801ba6bde1b60.md",
+    "result_schema_path": ".agentplane/tasks/202608281151-WQ89A1/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608281151-WQ89A1/README.md",
+      "sha256": "sha256:8cfd98c1fbaa846fc9dcd1df7daea49de33003b9c1573b31eac2398c0284f0c7",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608281151-WQ89A1/quality/objects/sha256/98f3e36b297b1437355f74e2067b979339e47078ca441a1b89e73b498e0029e9.patch",
+      "sha256": "sha256:98f3e36b297b1437355f74e2067b979339e47078ca441a1b89e73b498e0029e9",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608281151-WQ89A1/quality/objects/sha256/82ffda48c5bd3c808954f2b5392fefca5582063c40c2e392ae8e7400dca3a781.json",
+      "sha256": "sha256:82ffda48c5bd3c808954f2b5392fefca5582063c40c2e392ae8e7400dca3a781",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608281151-WQ89A1/verification/20260828150529537-22af9751a01470a1.json",
+      "sha256": "sha256:84d733018fb73fd754d1a5e8706613af58c3cb6a05dae21dc8c5be652dcfe5b8",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608281151-WQ89A1/quality/objects/sha256/43169d59cb987746b213286a613126ae2137afffaf804712307b1f2b3a741c91.json",
+      "sha256": "sha256:43169d59cb987746b213286a613126ae2137afffaf804712307b1f2b3a741c91",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
