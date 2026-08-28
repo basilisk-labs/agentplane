@@ -16,7 +16,12 @@ On integrated main 844eff36ba407436c26a3c63346b0dcc384ce2b5, continuation of DVS
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note:
+
+```text
+Verified: fresh full local checks passed after the user-authorized documentation repair; operator
+recovery records current Verify Steps without changing source or copying an evaluator verdict.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

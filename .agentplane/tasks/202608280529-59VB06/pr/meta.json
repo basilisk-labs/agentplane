@@ -3,7 +3,7 @@
   "branch": "task/202608280529-59VB06/recover-stale-evaluator-exchanges-without-accept",
   "created_at": "2026-08-28T05:33:24.733Z",
   "diffstat_sha256": "sha256:757616f5a3ebab6286e8ad569c2d680061a86c1339b5a2e4c8cece6c07e2b7f5",
-  "last_verified_at": "2026-08-28T18:19:14.331Z",
+  "last_verified_at": "2026-08-28T18:50:32.879Z",
   "last_verified_diffstat_sha256": "sha256:757616f5a3ebab6286e8ad569c2d680061a86c1339b5a2e4c8cece6c07e2b7f5",
   "pr_number": 5866,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5866",
