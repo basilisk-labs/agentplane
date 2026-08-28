@@ -2,10 +2,10 @@
 id: "202608280529-59VB06"
 title: "Recover stale evaluator exchanges without accepting obsolete verdicts"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 43
 origin:
   system: "manual"
 depends_on: []
@@ -59,9 +59,9 @@ quality_review:
     - "Residual risk: Exact published-head hosted checks and responses to the two PR #5866 review threads remain required before protected integration."
     - "Residual risk: DVS5NN recovery and final release:prepublish are not proved by this task."
 token_usage:
-  agent_runs: 6
+  agent_runs: 15
   input_tokens: null
-  journal_digest: "sha256:26fc17c6e5cdfab410cd849d2c9aa0ad194bd4ed1634018c31bafeadde6d3755"
+  journal_digest: "sha256:6f969edb54bf02f93dd5f4311ceeb920b5690dbbeed129c4e51e4bb254f825fe"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -71,7 +71,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-28T15:40:29.345Z"
+  updated_at: "2026-08-28T18:53:55.196Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -701,8 +701,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "290c44a524385cc95846a25baaee7af8b7e5d437"
-  message: "🚧 59VB06 task: apply external agent result"
+  hash: "0f021b5ae2688de1e9f07975be3e84c94246af3d"
+  message: "🚧 59VB06 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -743,6 +743,9 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Resume: the user explicitly authorized operator reconciliation of Findings and Verify Steps and continuation through release 0.7.8. Both sections now describe implementation 290c44a524385cc95846a25baaee7af8b7e5d437, its recorded full verification and the already applied nine-root scope. No source, mandatory checks, pass criteria, previous review or completed WorkItem output changed. Request fresh evaluation through the supervisor."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -867,9 +870,17 @@ events:
     author: "ORCHESTRATOR"
     state: "ok"
     note: "Verified: fresh full local checks passed after the user-authorized documentation repair; operator recovery records current Verify Steps without changing source or copying an evaluator verdict."
+  -
+    type: "status"
+    at: "2026-08-28T18:53:55.196Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "0f021b5ae2688de1e9f07975be3e84c94246af3d"
 doc_version: 3
-doc_updated_at: "2026-08-28T18:51:56.240Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-08-28T18:53:55.223Z"
+doc_updated_by: "CODER"
 description: "On integrated main 844eff36ba407436c26a3c63346b0dcc384ce2b5, continuation of DVS5NN PR #5862 is blocked by an issued quality_review exchange whose result is stale. The read-only evaluator prepared four task-owned evidence files while the legacy task was DONE, then exact result acceptance rejected the changed route fingerprint. Repeating task advance or task advance --replacement re-enters recoverPendingExternalAgentResult and rejects the same old result before replacement handling. The original result, frozen evidence and journal must remain intact. Reproduce the full sequence with real Git: evaluator issuance, preparation-owned artifacts, a genuine state change, stale result rejection, fresh packet recovery, retry and next transition. Separate framework-owned preparation changes from genuine task, plan, HEAD, provider or authority changes; do not weaken exact freshness or accept old verdicts for changed inputs. Use existing supervisor journal retirement and replacement mechanisms, with one owner and compare-and-swap guards. Preserve immutable historical results and required WorkItem completion. Prove ordinary evaluator acceptance, no-result and returned-result interruption recovery, repeated continuation, changed evidence rejection and no false DONE. Fix only the demonstrated bounded evaluator exchange/recovery cause. Do not modify task state or journals manually, create a new state store, bypass checks, change required CI, copy verdicts, or broaden release/Core architecture. DVS5NN and CFKR4P integration retain priority; CFKR4P full verification is running and must not be interrupted. This is a necessary authorized integration-path blocker, not new release scope. Release publication remains separately qualified. User has authorized all in-scope operations through release."
 sections:
   Summary: |-
@@ -1493,7 +1504,23 @@ extensions:
       schema_version: 1
       task_id: "202608280529-59VB06"
     event_cursor: 1
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608280529-59VB06"
+            - "git:290c44a524385cc95846a25baaee7af8b7e5d437"
+          check_id: "mandatory-checks"
+          command_identity: "task.verify"
+          detail: "Verified: fresh full local checks passed after the user-authorized documentation repair; operator recovery records current Verify Steps without changing source or copying an evaluator verdict."
+          exit_code: 0
+          observed_at: "2026-08-28T18:50:32.879Z"
+          repository_snapshot_digest: "sha256:f34b7cfe331393178f30be1e85d3cd3c29e6de61d7318f0e75a796a4ddde47e9"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608280529-59VB06"
     intent:
       acceptance_criteria:
@@ -1514,7 +1541,7 @@ extensions:
 
         On integrated main 844eff36ba407436c26a3c63346b0dcc384ce2b5, continuation of DVS5NN PR #5862 is blocked by an issued quality_review exchange whose result is stale. The read-only evaluator prepared four task-owned evidence files while the legacy task was DONE, then exact result acceptance rejected the changed route fingerprint. Repeating task advance or task advance --replacement re-enters recoverPendingExternalAgentResult and rejects the same old result before replacement handling. The original result, frozen evidence and journal must remain intact. Reproduce the full sequence with real Git: evaluator issuance, preparation-owned artifacts, a genuine state change, stale result rejection, fresh packet recovery, retry and next transition. Separate framework-owned preparation changes from genuine task, plan, HEAD, provider or authority changes; do not weaken exact freshness or accept old verdicts for changed inputs. Use existing supervisor journal retirement and replacement mechanisms, with one owner and compare-and-swap guards. Preserve immutable historical results and required WorkItem completion. Prove ordinary evaluator acceptance, no-result and returned-result interruption recovery, repeated continuation, changed evidence rejection and no false DONE. Fix only the demonstrated bounded evaluator exchange/recovery cause. Do not modify task state or journals manually, create a new state store, bypass checks, change required CI, copy verdicts, or broaden release/Core architecture. DVS5NN and CFKR4P integration retain priority; CFKR4P full verification is running and must not be interrupted. This is a necessary authorized integration-path blocker, not new release scope. Release publication remains separately qualified. User has authorized all in-scope operations through release.
       task_id: "202608280529-59VB06"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1910,9 +1937,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202608280529-59VB06"
-    revision: 34
+    revision: 43
     schema_version: 1
-    updated_at: "2026-08-28T18:19:22.631Z"
+    updated_at: "2026-08-28T18:53:55.196Z"
     work_items:
       recover-applied-review-continuity:
         attempt: 1
@@ -2028,11 +2055,37 @@ extensions:
         previous_revision: 16
         schema_version: 1
         task_id: "202608280529-59VB06"
+      legacy-finish:202608280529-59VB06:2026-08-28T18:50:32.879Z:290c44a524385cc95846a25baaee7af8b7e5d437:
+        aggregate_digest: "sha256:cb5b6f8155c264dc7d328856f0a3e8ff4e3f246d7ab24b731b6e859bcab6f139"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-28T18:53:55.196Z"
+          cause_refs:
+            - "task-verification:202608280529-59VB06"
+            - "git:290c44a524385cc95846a25baaee7af8b7e5d437"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_065c796ddce88a24a5946387"
+          mutation_id: "legacy-finish:202608280529-59VB06:2026-08-28T18:50:32.879Z:290c44a524385cc95846a25baaee7af8b7e5d437"
+          plan_digest: "sha256:fbc6e1809d234ebdd105589eeba43e95d3b152067f2be1a52e8243ffeb741bf8"
+          plan_revision: 3
+          repository_fingerprint: "sha256:f34b7cfe331393178f30be1e85d3cd3c29e6de61d7318f0e75a796a4ddde47e9"
+          schema_version: 1
+          task_id: "202608280529-59VB06"
+          task_revision: 34
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608280529-59VB06:2026-08-28T18:50:32.879Z:290c44a524385cc95846a25baaee7af8b7e5d437"
+        next_revision: 43
+        previous_revision: 42
+        schema_version: 1
+        task_id: "202608280529-59VB06"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "290c44a524385cc95846a25baaee7af8b7e5d437"
+    message: "🚧 59VB06 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "844eff36ba407436c26a3c63346b0dcc384ce2b5"
@@ -2461,12 +2514,12 @@ Remaining boundaries: obtain fresh evaluation after this documentation recovery,
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/6` agent runs
+- Completeness: `0/15` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:26fc17c6e5cdfab410cd849d2c9aa0ad194bd4ed1634018c31bafeadde6d3755`
+- Journal digest: `sha256:6f969edb54bf02f93dd5f4311ceeb920b5690dbbeed129c4e51e4bb254f825fe`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-28T15:40:29.345Z`
+- Updated at: `2026-08-28T18:53:55.196Z`
