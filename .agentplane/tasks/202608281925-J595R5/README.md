@@ -4,7 +4,7 @@ title: "Resume required WorkItems before branch pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -25,7 +25,7 @@ plan_approval:
   note: "USER explicitly approved plan_digest sha256:ba48113acb192e2e4520c7d52312f66819a1df3521b92f5b93d74f03fe77019b at state_fingerprint sha256:c2a1d3666de75287d29afe5e2aaf38c1b5067d8963ea7731ce4cd48dc7a0abab in the current conversation. Both values were re-read and match. Record as manual operator approval, without inventing host decision provenance."
 verification:
   state: "ok"
-  updated_at: "2026-08-28T20:38:06.851Z"
+  updated_at: "2026-08-28T20:50:19.823Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
@@ -91,10 +91,19 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results:
       -
         id: "recorded-check-1"
@@ -153,23 +162,36 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:eb880a722684c0af0083875e35e52f82455d0246339acadbd32c7191770237ee"
+      digest: "sha256:6743aedda734a0a3b9d11231c089a1e2ca71b3c3b252f87cca77f5f199c6fc91"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts"
         - "central_component:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -202,7 +224,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b76b10afde865eadfb3a0a1926f1b91d3411fcb3"
+  hash: "3f1b5686f67e4fb38c47f12341a9ae790c87c055"
   message: "🚧 J595R5 task: apply external agent result"
 comments:
   -
@@ -217,6 +239,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b76b10afde86. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 3f1b5686f67e. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -246,8 +271,22 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-28T20:42:20.848Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 3f1b5686f67e. CLI accepted one state-bound external-agent semantic result."
+    commit: "3f1b5686f67e4fb38c47f12341a9ae790c87c055"
+  -
+    type: "verify"
+    at: "2026-08-28T20:50:19.823Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-28T20:41:05.253Z"
+doc_updated_at: "2026-08-28T20:50:22.480Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the reproduced release-integration blocker in DVS5NN/PR #5862 on main 3bcce289091f5e6cbcb1dea87c2964c4f559259d. Its approved required remove-obsolete-handoff-reader WorkItem is READY with no outputs, while the concrete b577984d implementation and successful verification exist. After supported reopening and fresh evaluator acceptance the route offers task.pre_merge_close; finish rejects required_work_item_incomplete. flow repair has no deterministic repair. Route unfinished required WorkItems through the existing implementation/recovery episode before quality/publication/closure, with no fabricated source delta and no direct task-state edits. Cover the complete scenario: persisted implementation effect, interruption before WorkItem completion, normal restart, exact recovery of the original typed output, repeat restart, required verification/evaluation, and the following closure transition. Preserve completed WorkItem outputs, plan/checkout/authority freshness, dirty-worktree and active-runner guards, and already merged hosted-close/cleanup behavior. Use the existing canonical WorkItem scheduler and recorded implementation recovery; do not introduce another scheduler or state store. Do not weaken checks, completion guards or approvals; do not change release/Core order. Scope the smallest route/supervisor adapters and regression tests through a structured plan; request a supported scope extension only if reproduction proves more is required. USER authorized all necessary in-scope operations through release 0.7.8; this is an integration-path blocker, not a new architecture program."
 sections:
@@ -331,6 +370,78 @@ sections:
 
     DecisionContextRef:
     - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-28T20:50:19.823Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:471fd315227790fc72bafa687080a8061b974f1b022c068873103042113d706e, input_digest=sha256:9de7a5c7db96744adc85fda1812a2fd45b1b78c1ccb281933309c5e167646332
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608281925-J595R5 Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608281925-J595R5 Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608281925-J595R5 Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608281925-J595R5 Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608281925-J595R5 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608281925-J595R5 Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608281925-J595R5 Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608281925-J595R5-resume-required-workitems-before-branch-pre-merg/.agentplane/tasks/202608281925-J595R5/blueprint/resolved-snapshot.json
+    - old_digest: 3762f52078ff9d39702029c5a887c01cde3864a46ca9d510ba50c502b83c10dd
+    - current_digest: 3762f52078ff9d39702029c5a887c01cde3864a46ca9d510ba50c502b83c10dd
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608281925-J595R5
+
+    DecisionContextRef:
+    - operator_action: provider_action
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
@@ -937,7 +1048,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "b76b10afde865eadfb3a0a1926f1b91d3411fcb3"
+    hash: "3f1b5686f67e4fb38c47f12341a9ae790c87c055"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -1038,6 +1149,78 @@ BlueprintSnapshotRef:
 
 DecisionContextRef:
 - operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-28T20:50:19.823Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:471fd315227790fc72bafa687080a8061b974f1b022c068873103042113d706e, input_digest=sha256:9de7a5c7db96744adc85fda1812a2fd45b1b78c1ccb281933309c5e167646332
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608281925-J595R5 Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608281925-J595R5 Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608281925-J595R5 Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608281925-J595R5 Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608281925-J595R5 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608281925-J595R5 Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608281925-J595R5 Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608281925-J595R5-resume-required-workitems-before-branch-pre-merg/.agentplane/tasks/202608281925-J595R5/blueprint/resolved-snapshot.json
+- old_digest: 3762f52078ff9d39702029c5a887c01cde3864a46ca9d510ba50c502b83c10dd
+- current_digest: 3762f52078ff9d39702029c5a887c01cde3864a46ca9d510ba50c502b83c10dd
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608281925-J595R5
+
+DecisionContextRef:
+- operator_action: provider_action
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none

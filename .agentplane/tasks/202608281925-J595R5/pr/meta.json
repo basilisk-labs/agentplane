@@ -3,8 +3,8 @@
   "branch": "task/202608281925-J595R5/resume-required-workitems-before-branch-pre-merg",
   "created_at": "2026-08-28T20:00:19.477Z",
   "diffstat_sha256": "sha256:a5ffe7e553b8a6ab6e62965fc67b608560aa1898a7351fcc43690f53b14ff640",
-  "last_verified_at": "2026-08-28T20:38:06.851Z",
-  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": "2026-08-28T20:50:19.823Z",
+  "last_verified_diffstat_sha256": "sha256:a5ffe7e553b8a6ab6e62965fc67b608560aa1898a7351fcc43690f53b14ff640",
   "provider": {
     "hostname": "github.com",
     "kind": "github",

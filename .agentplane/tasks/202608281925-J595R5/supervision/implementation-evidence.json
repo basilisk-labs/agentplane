@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 3bcce289091f5e6cbcb1dea87c2964c4f559259d..b76b10afde865eadfb3a0a1926f1b91d3411fcb3",
+      "command": "git diff --check 6b3c0445c3ccb6e5599fb97eddac63a92d2cbeb6..3f1b5686f67e4fb38c47f12341a9ae790c87c055",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,124 +13,76 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3bcce289091f5e6cbcb1dea87c2964c4f559259d..b76b10afde865eadfb3a0a1926f1b91d3411fcb3",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 6b3c0445c3ccb6e5599fb97eddac63a92d2cbeb6..3f1b5686f67e4fb38c47f12341a9ae790c87c055",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202608281925-J595R5/README.md",
-        "A\t.agentplane/tasks/202608281925-J595R5/blueprint/resolved-snapshot.json",
-        "A\t.agentplane/tasks/202608281925-J595R5/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202608281925-J595R5/pr/github-body.md",
-        "A\t.agentplane/tasks/202608281925-J595R5/pr/github-title.txt",
-        "A\t.agentplane/tasks/202608281925-J595R5/pr/meta.json",
-        "A\t.agentplane/tasks/202608281925-J595R5/pr/review.md"
+        "M\t.agentplane/tasks/202608281925-J595R5/README.md",
+        "M\t.agentplane/tasks/202608281925-J595R5/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608281925-J595R5/pr/github-body.md",
+        "M\t.agentplane/tasks/202608281925-J595R5/pr/meta.json",
+        "M\t.agentplane/tasks/202608281925-J595R5/pr/review.md",
+        "A\tpackages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-branch.ts",
+        "A\tpackages/agentplane/src/commands/shared/workflow-step-required-work.test.ts",
+        "A\tpackages/agentplane/src/commands/shared/workflow-step-required-work.ts"
       ]
     },
     {
       "command": "git status --short --untracked-files=all",
       "id": "final-repository-status",
       "result": "pass",
-      "stdout": [
-        "M  .agentplane/tasks/202608281925-J595R5/README.md",
-        " M packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts",
-        " M packages/agentplane/src/commands/shared/workflow-step-branch.ts",
-        "?? packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts",
-        "?? packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts",
-        "?? packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
-      ]
+      "stdout": []
     }
   ],
-  "execution_base_commit": "3bcce289091f5e6cbcb1dea87c2964c4f559259d",
-  "implementation_commit": "b76b10afde865eadfb3a0a1926f1b91d3411fcb3",
+  "execution_base_commit": "6b3c0445c3ccb6e5599fb97eddac63a92d2cbeb6",
+  "implementation_commit": "3f1b5686f67e4fb38c47f12341a9ae790c87c055",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      "AM .agentplane/tasks/202608281925-J595R5/README.md",
-      "A  .agentplane/tasks/202608281925-J595R5/blueprint/resolved-snapshot.json",
-      "A  .agentplane/tasks/202608281925-J595R5/pr/diffstat.txt",
-      "A  .agentplane/tasks/202608281925-J595R5/pr/github-body.md",
-      "A  .agentplane/tasks/202608281925-J595R5/pr/github-title.txt",
-      "A  .agentplane/tasks/202608281925-J595R5/pr/meta.json",
-      "A  .agentplane/tasks/202608281925-J595R5/pr/review.md"
+      "MM .agentplane/tasks/202608281925-J595R5/README.md",
+      "A  packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts",
+      "M  packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts",
+      "M  packages/agentplane/src/commands/shared/workflow-step-branch.ts",
+      "A  packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts",
+      "A  packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
     ],
     "classification": [
       {
-        "classification": "introduced_during_execution",
-        "line": "M  .agentplane/tasks/202608281925-J595R5/README.md"
-      },
-      {
-        "classification": "introduced_during_execution",
-        "line": " M packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
-      },
-      {
-        "classification": "introduced_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/workflow-step-branch.ts"
-      },
-      {
-        "classification": "introduced_during_execution",
-        "line": "?? packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts"
-      },
-      {
-        "classification": "introduced_during_execution",
-        "line": "?? packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts"
-      },
-      {
-        "classification": "introduced_during_execution",
-        "line": "?? packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
+        "classification": "removed_during_execution",
+        "line": "MM .agentplane/tasks/202608281925-J595R5/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": "AM .agentplane/tasks/202608281925-J595R5/README.md"
+        "line": "A  packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts"
       },
       {
         "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202608281925-J595R5/blueprint/resolved-snapshot.json"
+        "line": "M  packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
       },
       {
         "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202608281925-J595R5/pr/diffstat.txt"
+        "line": "M  packages/agentplane/src/commands/shared/workflow-step-branch.ts"
       },
       {
         "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202608281925-J595R5/pr/github-body.md"
+        "line": "A  packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts"
       },
       {
         "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202608281925-J595R5/pr/github-title.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202608281925-J595R5/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202608281925-J595R5/pr/review.md"
+        "line": "A  packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
       }
     ],
-    "final": [
-      "M  .agentplane/tasks/202608281925-J595R5/README.md",
-      " M packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts",
-      " M packages/agentplane/src/commands/shared/workflow-step-branch.ts",
-      "?? packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts",
-      "?? packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts",
-      "?? packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
-    ],
-    "introduced_after_execution_baseline": [
-      "M  .agentplane/tasks/202608281925-J595R5/README.md",
-      " M packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts",
-      " M packages/agentplane/src/commands/shared/workflow-step-branch.ts",
-      "?? packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts",
-      "?? packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts",
-      "?? packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
-    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      "AM .agentplane/tasks/202608281925-J595R5/README.md",
-      "A  .agentplane/tasks/202608281925-J595R5/blueprint/resolved-snapshot.json",
-      "A  .agentplane/tasks/202608281925-J595R5/pr/diffstat.txt",
-      "A  .agentplane/tasks/202608281925-J595R5/pr/github-body.md",
-      "A  .agentplane/tasks/202608281925-J595R5/pr/github-title.txt",
-      "A  .agentplane/tasks/202608281925-J595R5/pr/meta.json",
-      "A  .agentplane/tasks/202608281925-J595R5/pr/review.md"
+      "MM .agentplane/tasks/202608281925-J595R5/README.md",
+      "A  packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts",
+      "M  packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts",
+      "M  packages/agentplane/src/commands/shared/workflow-step-branch.ts",
+      "A  packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts",
+      "A  packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
     ],
     "unchanged_from_execution_baseline": []
   },
