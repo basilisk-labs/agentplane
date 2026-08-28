@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608280009-QMVHM2/recover-interrupted-verification-to-workitem-com",
   "created_at": "2026-08-28T00:15:41.154Z",
-  "diffstat_sha256": "sha256:19d774be61223acc5282820c9c67514fd29566f7dbd0760644883ef1a5c0cfad",
+  "diffstat_sha256": "sha256:01a8f05b667424f3355f99c7ede7a6eb3fc238d629fda0af0a40a86ed73534ac",
   "last_verified_at": "2026-08-28T04:28:22.482Z",
   "last_verified_diffstat_sha256": "sha256:19d774be61223acc5282820c9c67514fd29566f7dbd0760644883ef1a5c0cfad",
   "pr_number": 5865,

@@ -8,7 +8,7 @@ import {
   setMarkdownSection,
   taskCentricAggregateFromExtensions,
 } from "@agentplaneorg/core/tasks";
-import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { isRecord } from "../../shared/guards.js";
@@ -262,7 +262,7 @@ export async function resolveRecordedImplementationRecovery(opts: {
   work_order: AgentWorkOrderV2;
   head: string | null;
   recorded_commit: string | null;
-}): Promise<{ commit: string; execution_base: string } | null> {
+}): Promise<{ commit: string; execution_base: string; semantic: AgentSemanticResult } | null> {
   const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
   const plan = aggregate?.current_plan;
   const root = opts.command.resolvedProject.gitRoot;
@@ -398,7 +398,7 @@ export async function resolveRecordedImplementationRecovery(opts: {
         externalAgentResultDigest(original) !== exchange.result_digest
       )
         continue;
-      return { commit, execution_base: base };
+      return { commit, execution_base: base, semantic: original.result };
     }
   }
   return null;

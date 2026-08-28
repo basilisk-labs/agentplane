@@ -29,14 +29,14 @@ Created: 2026-08-28T00:15:41.154Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...n-cli.core.task-advance.branch-worktree.test.ts | 370 ++++++++++++++++++-
+ ...n-cli.core.task-advance.branch-worktree.test.ts | 384 ++++++++++++++++++-
  .../commands/task/direct-task-verification.test.ts |  69 ++++
  .../src/commands/task/direct-task-verification.ts  |   7 +-
- .../external-agent-implementation-authority.ts     | 120 +++---
+ .../external-agent-implementation-authority.ts     | 123 ++++---
  .../external-agent-implementation-recovery.test.ts | 125 +++++++
  .../task/external-agent-implementation-recovery.ts | 405 +++++++++++++++++++++
  .../agentplane/src/commands/task/finish-shared.ts  |  13 +
- 7 files changed, 1050 insertions(+), 59 deletions(-)
+ 7 files changed, 1066 insertions(+), 60 deletions(-)
 ```
 
 </details>

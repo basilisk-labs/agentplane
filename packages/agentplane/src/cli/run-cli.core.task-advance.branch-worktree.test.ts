@@ -30,6 +30,7 @@ import {
 import { buildTaskRouteDecision } from "../commands/shared/route-decision.js";
 import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { writeFinishedTasks } from "../commands/task/finish-shared.js";
+import { TaskCentricBackendAdapter } from "../adapters/task-backend/task-centric-backend-adapter.js";
 import * as verification from "../commands/task/direct-task-verification.js";
 import * as projection from "../commands/task/task-centric-external-result.js";
 import {
@@ -283,8 +284,8 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
           work_order_id: order.work_order_id,
           status: "completed",
           summary: "The recorded implementation satisfies the approved WorkItem.",
-          findings: [],
-          uncertainty: [],
+          findings: ["The original implementation claim."],
+          uncertainty: ["The original implementation limitation."],
         },
       });
       await writeFile(packet.exchange.result_path, JSON.stringify(resultFor(packet, workOrder)));
@@ -397,6 +398,7 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
       expect(await resolveRecordedImplementationRecovery(recoveryOptions)).toEqual({
         commit: implementation,
         execution_base: workOrder.state_fingerprint.git_head,
+        semantic: resultFor(packet, workOrder).result,
       });
       expect(
         await resolveRecordedImplementationRecovery({
@@ -436,15 +438,27 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
       } finally {
         await writeFile(exchangePath, exchangeBefore);
       }
-      await writeFile(fresh.exchange.result_path, JSON.stringify(resultFor(fresh, freshOrder)));
+      const replacementResult = resultFor(fresh, freshOrder);
+      replacementResult.result.summary = "A replacement summary with no new implementation.";
+      replacementResult.result.findings = ["An unproved replacement claim."];
+      replacementResult.result.uncertainty = [];
+      await writeFile(fresh.exchange.result_path, JSON.stringify(replacementResult));
+      const recordedResult = vi.spyOn(TaskCentricBackendAdapter.prototype, "recordWorkItemResult");
       const resumeIo = captureStdIO();
       try {
         expect(
           await runCli([...fresh.exchange.resume_argv.slice(1), "--root", checkout]),
           resumeIo.stderr,
         ).toBe(0);
+        expect(recordedResult).toHaveBeenCalledOnce();
+        expect(recordedResult.mock.calls[0]?.[0].semantic_result).toMatchObject({
+          summary: resultFor(packet, workOrder).result.summary,
+          claims: resultFor(packet, workOrder).result.findings,
+          questions: resultFor(packet, workOrder).result.uncertainty,
+        });
       } finally {
         resumeIo.restore();
+        recordedResult.mockRestore();
       }
       const completed = await ctx.taskBackend.getTask(taskId);
       expect(
