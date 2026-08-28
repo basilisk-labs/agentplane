@@ -22,7 +22,7 @@ Required integration-path repair after QMVHM2 and CFKR4P are integrated on main 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-28T11:08:27.620Z
+- Updated: 2026-08-28T11:29:11.370Z
 - Branch: task/202608280614-PCBY2N/recover-task-level-evidence-rework-after-complet
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
