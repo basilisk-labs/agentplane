@@ -2,10 +2,10 @@
 id: "202608272229-CFKR4P"
 title: "Keep verification and review on the same semantic commit"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -61,9 +61,9 @@ quality_review:
     - "Residual risk: Publication, exact-head hosted checks, review resolution, integration and terminal closure remain required."
     - "Residual risk: The separate provider-neutral wording and DVS5NN stale evaluator recovery are not changed by this source patch."
 token_usage:
-  agent_runs: 3
+  agent_runs: 8
   input_tokens: null
-  journal_digest: "sha256:8b2db5799963f660674733196728ffb15e72d004f73469fb14813c713ec4faab"
+  journal_digest: "sha256:7ab16ec17e1da9654da60cef68af47b2e77dc17a0892578524251fc796e2b176"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -73,7 +73,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-27T23:07:59.846Z"
+  updated_at: "2026-08-28T05:39:28.449Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -250,8 +250,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0"
-  message: "🚧 CFKR4P task: apply external agent result"
+  hash: "9de551a05ca4fcb3ceece6c9014be29b4a46b610"
+  message: "🚧 CFKR4P task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -271,6 +271,9 @@ comments:
   -
     author: "CODER"
     body: "Resume: the documentation-only blocker is resolved in be810cddecb2 | details: Findings now records the proved cause, exact local evidence and separate residual boundaries. Implementation is unchanged. Recompute verification and evaluator routing."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -335,8 +338,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-28T05:39:28.449Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "9de551a05ca4fcb3ceece6c9014be29b4a46b610"
 doc_version: 3
-doc_updated_at: "2026-08-28T05:39:09.378Z"
+doc_updated_at: "2026-08-28T05:39:28.478Z"
 doc_updated_by: "CODER"
 description: "On exact main 9ab453ac00d41ea0a58cdd02e84bd0456233b151, run-cli.core.pr-flow.integrate-merge.test.ts test 'integrate promotes structured external incident candidates into the incident registry' fails at prepareHostedIntegrateFixture -> recordVerificationOk -> evaluator with missing observed changed file .agentplane/policy/incidents.md. The neighboring finish-only incident scenario passes. Diagnose the complete implementation -> pre-merge closure/policy commit -> verification -> evaluator -> integration/replay chain. Current verify-record-execute pins the review resolver head to the recorded implementation, while evaluator resolves current HEAD; prove the cause with real-Git controls before changing this. Retain the existing semantic-target resolver, frozen execution base, unchanged lifecycle-only identity, and exact evaluated diff/authority guards. Fix the smallest product/fixture scope justified by the proof. Cover a reviewable post-implementation policy change, lifecycle-only metadata, repeat verification and stale evidence. Replace any internal-call expectation only with behavior-backed coverage. Do not omit incidents from observed evidence, relax checks, add skips/timeouts, rewrite artifacts, change actual policy or CI, create a new verification architecture or implement AP-CORE-013. Preserve full mandatory CI and release 0.7.8 -> Core order. Keep provider-neutral wording as a separate cause. Two existing changes DVS5NN and AD3030 have priority for integration; planning and bounded diagnosis may proceed while their checks run. User authorized autonomous refactoring and supported operator approvals; release publication is separate."
 sections:
@@ -1010,6 +1021,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0"
+    message: "🚧 CFKR4P task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "9ab453ac00d41ea0a58cdd02e84bd0456233b151"
@@ -1284,12 +1296,12 @@ Separate residual causes: The provider-neutral error wording assertion in run-cl
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/3` agent runs
+- Completeness: `0/8` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:8b2db5799963f660674733196728ffb15e72d004f73469fb14813c713ec4faab`
+- Journal digest: `sha256:7ab16ec17e1da9654da60cef68af47b2e77dc17a0892578524251fc796e2b176`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-27T23:07:59.846Z`
+- Updated at: `2026-08-28T05:39:28.449Z`
