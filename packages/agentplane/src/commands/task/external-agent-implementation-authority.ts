@@ -59,10 +59,6 @@ function pathAllowed(value: string, allowed: readonly string[]): boolean {
   return allowed.some((root) => root === "." || value === root || value.startsWith(`${root}/`));
 }
 
-function implementationSubject(taskId: string): string {
-  return `🚧 ${taskId.split("-").at(-1)} task: apply external agent result`;
-}
-
 function hasChangedTaskArtifacts(statusLines: readonly string[], taskId: string): boolean {
   const prefix = `.agentplane/tasks/${taskId}/`;
   return statusLines.some((line) => pathFromStatusLine(line).startsWith(prefix));
@@ -353,6 +349,7 @@ export async function applyExternalImplementationResult(opts: {
     });
     if (observedChangedPaths.length === 0) {
       const recovery = await resolveRecordedImplementationRecovery({
+        purpose: semantic.plan_refinement ? undefined : opts.exchange.purpose,
         command: opts.command,
         task: taskAtReturn,
         work_order: opts.work_order,
@@ -362,7 +359,7 @@ export async function applyExternalImplementationResult(opts: {
       if (recovery) {
         implementationCommit = recovery.commit;
         recoveredExecutionBase = recovery.execution_base;
-        semantic = recovery.semantic;
+        semantic = recovery.semantic ?? semantic;
         reusedRecordedImplementation = true;
       }
     }
@@ -421,7 +418,7 @@ export async function applyExternalImplementationResult(opts: {
         ctx: opts.command,
         cwd: opts.exchange.checkout,
         taskId: opts.exchange.task_id,
-        message: implementationSubject(opts.exchange.task_id),
+        message: `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: apply external agent result`,
         close: false,
         allow: observedChangedPaths,
         autoAllow: false,
@@ -457,6 +454,7 @@ export async function applyExternalImplementationResult(opts: {
     exchange: opts.exchange,
     execution_base: recoveredExecutionBase,
     commit: implementationCommit,
+    preserve_recorded_evidence: reusedRecordedImplementation && !opts.work_order.task.work_item_id,
   });
   const implementation = recoveredEvidence
     ? { status: "ready" as const, evidence: recoveredEvidence }

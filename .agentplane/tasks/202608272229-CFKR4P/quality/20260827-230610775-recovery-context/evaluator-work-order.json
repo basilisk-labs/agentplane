@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608272229-CFKR4P-234350017801eb6245db103c",
+  "prepared_at": "2026-08-27T23:06:10.775Z",
+  "task": {
+    "id": "202608272229-CFKR4P",
+    "revision": 9,
+    "objective": "Keep verification and review on the same semantic commit\n\nOn exact main 9ab453ac00d41ea0a58cdd02e84bd0456233b151, run-cli.core.pr-flow.integrate-merge.test.ts test 'integrate promotes structured external incident candidates into the incident registry' fails at prepareHostedIntegrateFixture -> recordVerificationOk -> evaluator with missing observed changed file .agentplane/policy/incidents.md. The neighboring finish-only incident scenario passes. Diagnose the complete implementation -> pre-merge closure/policy commit -> verification -> evaluator -> integration/replay chain. Current verify-record-execute pins the review resolver head to the recorded implementation, while evaluator resolves current HEAD; prove the cause with real-Git controls before changing this. Retain the existing semantic-target resolver, frozen execution base, unchanged lifecycle-only identity, and exact evaluated diff/authority guards. Fix the smallest product/fixture scope justified by the proof. Cover a reviewable post-implementation policy change, lifecycle-only metadata, repeat verification and stale evidence. Replace any internal-call expectation only with behavior-backed coverage. Do not omit incidents from observed evidence, relax checks, add skips/timeouts, rewrite artifacts, change actual policy or CI, create a new verification architecture or implement AP-CORE-013. Preserve full mandatory CI and release 0.7.8 -> Core order. Keep provider-neutral wording as a separate cause. Two existing changes DVS5NN and AD3030 have priority for integration; planning and bounded diagnosis may proceed while their checks run. User authorized autonomous refactoring and supported operator approvals; release publication is separate.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "git diff --check",
+      "- In scope: On exact main 9ab453ac00d41ea0a58cdd02e84bd0456233b151, run-cli.core.pr-flow.integrate-merge.test.ts test 'integrate promotes structured external incident candidates into the incident registry' fails at prepareHostedIntegrateFixture -> recordVerificationOk -> evaluator with missing observed changed file .agentplane/policy/incidents.md. The neighboring finish-only incident scenario passes. Diagnose the complete implementation -> pre-merge closure/policy commit -> verification -> evaluator -> integration/replay chain. Current verify-record-execute pins the review resolver head to the recorded implementation, while evaluator resolves current HEAD; prove the cause with real-Git controls before changing this. Retain the existing semantic-target resolver, frozen execution base, unchanged lifecycle-only identity, and exact evaluated diff/authority guards. Fix the smallest product/fixture scope justified by the proof. Cover a reviewable post-implementation policy change, lifecycle-only metadata, repeat verification and stale evidence. Replace any internal-call expectation only with behavior-backed coverage. Do not omit incidents from observed evidence, relax checks, add skips/timeouts, rewrite artifacts, change actual policy or CI, create a new verification architecture or implement AP-CORE-013. Preserve full mandatory CI and release 0.7.8 -> Core order. Keep provider-neutral wording as a separate cause. Two existing changes DVS5NN and AD3030 have priority for integration; planning and bounded diagnosis may proceed while their checks run. User authorized autonomous refactoring and supported operator approvals; release publication is separate.\n- Out of scope: unrelated refactors not required for \"Keep verification and review on the same semantic commit\".",
+      "One bounded work item repairs the reproduced verification/evaluator target disagreement, with real-Git positive/lifecycle/replay controls and unchanged integration protection.",
+      "1. Reproduce the exact integrate incident failure on the recorded base before editing. Expected: evaluator refuses an observed contract missing the committed policy diff; the neighboring finish-only control passes.\n2. Run `node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts packages/agentplane/src/cli/run-cli.core.tasks.incidents.test.ts --pool=forks --maxWorkers=1`. Expected: every selected test passes. A real-Git regression proves verification and evaluator agree on a reviewable post-implementation commit, retain the original target for lifecycle-only drift, and preserve repeat verification, frozen-base diff coverage and stale-evidence rejection.\n3. Run `bun run ci:local:full`. Expected: all mandatory checks pass without added skips, weakened checks or longer timeouts. Do not equate local task checks with hosted or release qualification.\n4. Run `git diff --check`. Expected: no whitespace errors. Review the change against the approved bounded plan: no actual policy, CI, lifecycle artifact or new architecture changes.\n5. Record the proved cause, evidence and separate provider-neutral wording remainder in Findings through the supported operator or semantic-result route. Expected: no unsupported integration, closure or release claims."
+    ]
+  },
+  "evaluated_sha": "8faaaffd788fcdd84c7a1512a63c852174f78175",
+  "diff_base_sha": "9ab453ac00d41ea0a58cdd02e84bd0456233b151",
+  "blueprint_digest": "9365470d276e275ad8a5a0ffd6972bf7ad6d1d75750c245fea562d6ae7b551d2",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608272229-CFKR4P/quality/20260827-230610775-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:1c723de2abe34a2dffaa51dbb70c236d120b453519b419707d513a2595fb1659",
+    "prompt_path": ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/5a91f816258fbfff2849f7bc6be1f7cf50e4796b2e269be89388b9c66f1d5c68.md",
+    "result_schema_path": ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608272229-CFKR4P/README.md",
+      "sha256": "sha256:76fc194b52e21f97190799c8aa1622f7e1dd4d5387613011b52662cc2fe0dcbd",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/3fa8c5a4ffd8708f6e96a21eba31edaf65882e1844c30c1e86c408070f957b5b.patch",
+      "sha256": "sha256:3fa8c5a4ffd8708f6e96a21eba31edaf65882e1844c30c1e86c408070f957b5b",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/ddfa9158349dd8bc733f31959f4dd5b52edf19f263a2c56ebf3c0556d6f7eb98.json",
+      "sha256": "sha256:ddfa9158349dd8bc733f31959f4dd5b52edf19f263a2c56ebf3c0556d6f7eb98",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608272229-CFKR4P/verification/20260827230553240-5454bb7d2f564299.json",
+      "sha256": "sha256:34f91550db525a25c11dfce63b668382a686313d69a9e08aacc62fcb95d40157",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/6f267ba300d86b30f5a46cb1b7eae0f2cb31b89dd4cf4c01d666f9423b309d5e.json",
+      "sha256": "sha256:6f267ba300d86b30f5a46cb1b7eae0f2cb31b89dd4cf4c01d666f9423b309d5e",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

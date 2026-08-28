@@ -1,0 +1,49 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 11c25922472678c245cc69f39231c6059a03775c..a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 11c25922472678c245cc69f39231c6059a03775c..a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608272229-CFKR4P/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608272229-CFKR4P/pr/github-body.md",
+        "M\t.agentplane/tasks/202608272229-CFKR4P/pr/meta.json",
+        "M\t.agentplane/tasks/202608272229-CFKR4P/pr/review.md",
+        "M\tpackages/agentplane/src/commands/task/verify-record-execute.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.durability.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.unit.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "11c25922472678c245cc69f39231c6059a03775c",
+  "implementation_commit": "a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608272229-CFKR4P"
+}
