@@ -2,10 +2,10 @@
 id: "202608280009-QMVHM2"
 title: "Recover interrupted verification-to-WorkItem completion without false DONE"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -60,9 +60,9 @@ quality_review:
     - "Verify Steps and Findings remain populated with the bounded scenario and residual integration/release work. Since the evaluated source commit, only AgentPlane-owned task artifacts changed. The fresh local supervisor completed the null-WorkItem verification transition and issued this evaluator packet without the earlier WorkItem selection error."
     - "Residual risk: Exact-head hosted checks, review-thread resolution, integration and terminal closure remain required. Preserve the separate release qualification and publication boundary."
 token_usage:
-  agent_runs: 5
+  agent_runs: 8
   input_tokens: null
-  journal_digest: "sha256:9c0e47b517f9d8279889bb184236ce2c56dc8a36996d1620bb5b3b637f0ea1f5"
+  journal_digest: "sha256:96cf94f0249350e2c53de8107945ff138fd5986793589379b3eb5c4f54017432"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -72,7 +72,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-28T04:30:38.201Z"
+  updated_at: "2026-08-28T05:15:15.433Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -292,8 +292,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b2b852480454fa4c6a9c0ad7e39e5d51d4dd294e"
-  message: "🚧 QMVHM2 task: apply external agent result"
+  hash: "d4dd32914a1afc5690b0d877632369ec720f4722"
+  message: "🚧 QMVHM2 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -316,6 +316,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b2b852480454. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -394,9 +397,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-28T05:15:15.433Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "d4dd32914a1afc5690b0d877632369ec720f4722"
 doc_version: 3
-doc_updated_at: "2026-08-28T05:15:06.851Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-28T05:15:15.463Z"
+doc_updated_by: "CODER"
 description: "Repair the reproduced integration blocker on main e43acc5f72ba1f884966a16325d6dbc94fcb1f04. DVS5NN accepted and committed the cleanup at b577984d8418b4cb7fed521c14b6ab00bf773a93, then completed full checks, but verification persistence rejected a docs_contract mapping added by observed base history. Result application stopped before WorkItem projection. Supported TESTER verification and EVALUATOR PASS did not complete the READY WorkItem. finish then wrote legacy DONE before rejecting required_work_item_incomplete. CFKR4P also completed full checks for a task-level null-WorkItem rework but result application failed because all WorkItems were already completed. Preserve one complete scenario: accepted semantic result, exact implementation and plan binding, current mandatory verification, interruption, supported restart, exactly-once WorkItem projection, and finish without false completion. Diagnose the smallest repair before planning. Prefer existing exchange, verification and runtime receipts; do not add a parallel state store or generic replay subsystem. Preserve stale result rejection, plan and commit identity, missing-evidence rejection, approval gates and mandatory checks. Do not implement AP-CORE-012, AP-CORE-013 or AP-CORE-015 ahead of the approved graph; limit the change to this demonstrated integration recovery and prevention contract. Include real-Git positive, interruption, repeat, changed-plan/head and incomplete-WorkItem negative regressions. Keep DVS5NN and CFKR4P source scopes unchanged. No release publication or CI weakening. The user authorized autonomous completion and supported operator approvals. Stop on any unsupported authority or materially larger architectural scope."
 sections:
   Summary: |-
@@ -1210,6 +1221,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "b2b852480454fa4c6a9c0ad7e39e5d51d4dd294e"
+    message: "🚧 QMVHM2 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "e43acc5f72ba1f884966a16325d6dbc94fcb1f04"
@@ -1529,12 +1541,12 @@ Remaining work: obtain current verification and evaluator acceptance for QMVHM2,
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/5` agent runs
+- Completeness: `0/8` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:9c0e47b517f9d8279889bb184236ce2c56dc8a36996d1620bb5b3b637f0ea1f5`
+- Journal digest: `sha256:96cf94f0249350e2c53de8107945ff138fd5986793589379b3eb5c4f54017432`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-28T04:30:38.201Z`
+- Updated at: `2026-08-28T05:15:15.433Z`
