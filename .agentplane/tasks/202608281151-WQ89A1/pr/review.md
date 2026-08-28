@@ -6,7 +6,7 @@ Created: 2026-08-28T14:50:51.213Z
 
 - Task: `202608281151-WQ89A1`
 - Title: Recover evidence rework after execution-base provenance hydration
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608281151-WQ89A1/recover-evidence-rework-after-execution-base-pro`
 - Canonical task record: `.agentplane/tasks/202608281151-WQ89A1/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-28T14:50:51.213Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-28T14:50:51.213Z
+- Updated: 2026-08-28T15:05:55.654Z
 - Branch: task/202608281151-WQ89A1/recover-evidence-rework-after-execution-base-pro
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
