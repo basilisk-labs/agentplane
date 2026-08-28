@@ -7,6 +7,7 @@ import {
   renderTaskReadme,
   setMarkdownSection,
   taskCentricAggregateFromExtensions,
+  isGitObjectId,
 } from "@agentplaneorg/core/tasks";
 import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 
@@ -166,6 +167,30 @@ export function taskReadmesPreserveRecoveryContract(
   const next = parseTaskReadme(after);
   const previousExtensions = original.frontmatter.extensions;
   const nextExtensions = next.frontmatter.extensions;
+  if (isRecord(previousExtensions) && isRecord(nextExtensions)) {
+    const previous = previousExtensions.task_execution_context;
+    const current = nextExtensions.task_execution_context;
+    const identityKeys = ["schema_version", "base_ref", "base_sha", "repository_identity"];
+    if (
+      isRecord(previous) &&
+      isRecord(current) &&
+      previous.source === "creation_checkout" &&
+      !Object.hasOwn(current, "source") &&
+      previous.schema_version === 1 &&
+      typeof previous.base_ref === "string" &&
+      previous.base_ref.trim().length > 0 &&
+      typeof previous.base_sha === "string" &&
+      isGitObjectId(previous.base_sha) &&
+      typeof previous.repository_identity === "string" &&
+      /^sha256:[0-9a-f]{64}$/u.test(previous.repository_identity) &&
+      identityKeys.every((key) => previous[key] === current[key]) &&
+      Object.keys(previous).every((key) => key === "source" || identityKeys.includes(key)) &&
+      Object.keys(current).every((key) => identityKeys.includes(key))
+    ) {
+      // Verification omits creation provenance while preserving the exact execution identity.
+      Reflect.deleteProperty(previous, "source");
+    }
+  }
   if (
     isRecord(previousExtensions) &&
     isRecord(nextExtensions) &&
