@@ -1,10 +1,11 @@
 ---
 id: "202608280614-PCBY2N"
 title: "Recover task-level evidence rework after completed WorkItems"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -58,6 +59,20 @@ quality_review:
     - "Recorded verification 20260828112857349-7df3e4f50a81c6b3.json is ok for the exact implementation and approved Verify Steps. ci:local:full exited 0 in 462107ms, all five build/test groups passed, docs/workflows passed, platform-critical passed 98 tests, and significant coverage passed 101 tests and its 17-target guard. git diff --check exited 0. Focused recovery regression: 32 tests passed across four files."
     - "Findings and task-specific Verify Steps were populated before implementation and correctly delegate final observed evidence to semantic and supervisor artifacts. No documentation-only acceptance gap remains. No policy, required check, task graph, release metadata or unrelated task state changed."
     - "Residual risk: Exact-head hosted checks, protected integration and terminal hosted closure remain unconfirmed. The operational 59VB06/DVS5NN retries and release qualification must use fresh routes after this change is integrated."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:77b78e7becf42113506c88beae6b8f61a94b57a5d88e69f4b8c84b8a37a821d7"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-28T11:30:30.152Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -237,8 +252,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c"
-  message: "🚧 PCBY2N task: apply external agent result"
+  hash: "249741c5f324b649ac60fa48e58625f6ad7d57c4"
+  message: "🚧 PCBY2N task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -246,6 +261,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: d7a70b6aba1d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -268,9 +286,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-28T11:30:30.152Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "249741c5f324b649ac60fa48e58625f6ad7d57c4"
 doc_version: 3
-doc_updated_at: "2026-08-28T11:28:59.396Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-28T11:30:30.161Z"
+doc_updated_by: "CODER"
 description: "Required integration-path repair after QMVHM2 and CFKR4P are integrated on main e3550efba441765882f2507cfaf659e9a76d2f0b. Task 202608280529-59VB06 has a completed implementation WorkItem and passed full verification. Its evaluator requested only task Findings. The operator populated Findings through supported task commands and resumed DOING. A fresh task-level implementation_rework WorkOrder has work_item_id=null, preserves the existing code, and returns a completed documentation-only result. Acceptance rejects it with Completed implementation result produced no supervisor-observed workspace change. The immutable result is now received and must not be rewritten. resolveRecordedImplementationRecovery matches the prior implementation exchange WorkItem id to the new null id, while evidence-only rework also requires the recorded implementation to equal current metadata HEAD. Reproduce and repair only this task-level no-change documentation/evidence rework path. Require the same approved plan, scope, exact recorded implementation and ancestry, all required WorkItems completed, a validated historical result and original effect evidence, no unapproved source drift, and unchanged verification requirements. Preserve current rework findings as current claims; preserve original claims for interrupted WorkItem recovery. Rerun mandatory checks through the existing supervisor and obtain fresh evaluation. Cover interruption, replay, changed plan/authority/HEAD rejection and no false DONE. Do not hand-edit task/journal/evidence, reuse checks across different inputs without supported proof, weaken checks, invent a source change, or introduce a new state store or architecture program. Preserve blocked task 59VB06 and DVS5NN, keep one integration owner, and integrate this bounded repair before retrying them. The user authorized all in-scope operations through release. Release/Core order is unchanged. Prepopulate task Findings with observed diagnosis and pending evidence before implementation so this repair does not repeat the same documentation gap."
 sections:
   Summary: |-
@@ -607,7 +633,23 @@ extensions:
       schema_version: 1
       task_id: "202608280614-PCBY2N"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608280614-PCBY2N"
+            - "git:d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c"
+          check_id: "mandatory-checks"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-28T11:28:57.349Z"
+          repository_snapshot_digest: "sha256:4d7fc9e58f5a7b5ce582a7e05cc5f865bc069d4645bbe6098bd6311c129cead1"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608280614-PCBY2N"
     intent:
       acceptance_criteria:
@@ -628,12 +670,12 @@ extensions:
 
         Required integration-path repair after QMVHM2 and CFKR4P are integrated on main e3550efba441765882f2507cfaf659e9a76d2f0b. Task 202608280529-59VB06 has a completed implementation WorkItem and passed full verification. Its evaluator requested only task Findings. The operator populated Findings through supported task commands and resumed DOING. A fresh task-level implementation_rework WorkOrder has work_item_id=null, preserves the existing code, and returns a completed documentation-only result. Acceptance rejects it with Completed implementation result produced no supervisor-observed workspace change. The immutable result is now received and must not be rewritten. resolveRecordedImplementationRecovery matches the prior implementation exchange WorkItem id to the new null id, while evidence-only rework also requires the recorded implementation to equal current metadata HEAD. Reproduce and repair only this task-level no-change documentation/evidence rework path. Require the same approved plan, scope, exact recorded implementation and ancestry, all required WorkItems completed, a validated historical result and original effect evidence, no unapproved source drift, and unchanged verification requirements. Preserve current rework findings as current claims; preserve original claims for interrupted WorkItem recovery. Rerun mandatory checks through the existing supervisor and obtain fresh evaluation. Cover interruption, replay, changed plan/authority/HEAD rejection and no false DONE. Do not hand-edit task/journal/evidence, reuse checks across different inputs without supported proof, weaken checks, invent a source change, or introduce a new state store or architecture program. Preserve blocked task 59VB06 and DVS5NN, keep one integration owner, and integrate this bounded repair before retrying them. The user authorized all in-scope operations through release. Release/Core order is unchanged. Prepopulate task Findings with observed diagnosis and pending evidence before implementation so this repair does not repeat the same documentation gap.
       task_id: "202608280614-PCBY2N"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 10
+    revision: 13
     schema_version: 1
-    updated_at: "2026-08-28T11:29:00.632Z"
+    updated_at: "2026-08-28T11:30:30.152Z"
     work_items:
       recover-task-level-evidence-rework:
         attempt: 1
@@ -701,11 +743,37 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202608280614-PCBY2N"
+      legacy-finish:202608280614-PCBY2N:2026-08-28T11:28:57.349Z:d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c:
+        aggregate_digest: "sha256:dca9190ffd67c9db7657fa97a109840abf52413e6f79b4f9b83b2e8f031e6c72"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-28T11:30:30.152Z"
+          cause_refs:
+            - "task-verification:202608280614-PCBY2N"
+            - "git:d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_adffafb6bcf75aa2a035ed67"
+          mutation_id: "legacy-finish:202608280614-PCBY2N:2026-08-28T11:28:57.349Z:d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c"
+          plan_digest: "sha256:d8e65a8610611bded141cdd7467e57ca78b7096dc84a7f3c824fd6efdbfabef3"
+          plan_revision: 1
+          repository_fingerprint: "sha256:4d7fc9e58f5a7b5ce582a7e05cc5f865bc069d4645bbe6098bd6311c129cead1"
+          schema_version: 1
+          task_id: "202608280614-PCBY2N"
+          task_revision: 10
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608280614-PCBY2N:2026-08-28T11:28:57.349Z:d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202608280614-PCBY2N"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c"
+    message: "🚧 PCBY2N task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "e3550efba441765882f2507cfaf659e9a76d2f0b"
@@ -824,3 +892,16 @@ DecisionContextRef:
 ## Findings
 
 Observed on main e3550efba441765882f2507cfaf659e9a76d2f0b: task 59VB06 completed its implementation WorkItem and full local verification. After evaluator documentation-only rework and a supported operator Findings update, a fresh task-level result with work_item_id=null was rejected for no supervisor-observed workspace change. The historical exchange belongs to a non-null WorkItem, and the older evidence-only fallback requires current metadata HEAD to equal the implementation commit. This is a required integration-path blocker, not a release or Core architecture expansion. Implementation and new verification are pending at this planning boundary. Current test, source and review evidence will be retained in typed semantic results and supervisor-owned verification artifacts. Preserve all blocked-task results and proof bytes. Hosted publication, integration, closure and release are not yet claimed.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:77b78e7becf42113506c88beae6b8f61a94b57a5d88e69f4b8c84b8a37a821d7`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-28T11:30:30.152Z`
