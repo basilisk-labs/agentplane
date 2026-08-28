@@ -123,6 +123,19 @@ function assertTaskCanFinish(opts: {
   }
 
   ensureVerificationSatisfiedIfRequired(opts.task, opts.config);
+  const canonical = taskCentricAggregateFromExtensions(opts.task.extensions);
+  const incomplete = canonical?.current_plan?.proposal.work_items.work_items.filter(
+    (item) => !item.optional && canonical.work_items[item.id]?.state !== "COMPLETED",
+  );
+  if (incomplete?.length) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        "Task-centric completion is not eligible: " +
+        incomplete.map((item) => `required_work_item_incomplete:${item.id}`).join(", ") +
+        ".",
+    });
+  }
   const normalizedDoc = ensureDocSections(
     typeof opts.task.doc === "string" ? opts.task.doc : "",
     opts.config.tasks.doc.required_sections,
