@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -28,35 +28,38 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-28T00:10:56.865Z"
+  updated_at: "2026-08-28T05:39:09.348Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 4 typed finding(s)."
+  note: "EVALUATOR returned pass with 8 typed finding(s)."
   evaluated_sha: "a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0"
   blueprint_digest: "9365470d276e275ad8a5a0ffd6972bf7ad6d1d75750c245fea562d6ae7b551d2"
   evidence_refs:
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-000932160-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-000932160-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/8aa8430007db8b3269f6cb4f5d3aed2627eeadc552ce0127fbabae170ead8e9f.md"
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-000932160-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-000932160-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-000932160-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-000932160-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-053621063-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-053621063-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/56d54e34c6824aaf1a152fdfb629d730440df65d4686321e6cbb73d499cb85a2.md"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-053621063-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-053621063-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/20260828-053621063-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608272229-CFKR4P/README.md"
     - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/11688b587a6c37b5298be891c8baca187f77e08c5986a1dc9f37e56709aa676e.patch"
-    - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/9a2d9706dbffd1b3e70f61ffedc1e700dd415cee709f8010108ced527e4dfdc5.json"
-    - ".agentplane/tasks/202608272229-CFKR4P/verification/20260828000849309-6c255a4db5aae45c.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/be5d9b5a63f50769630a2f792d28e7a198ceee47d2693d131f4b4de1dbdf8317.json"
+    - ".agentplane/tasks/202608272229-CFKR4P/verification/20260828053605787-eca4721e74cf0d8e.json"
     - ".agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/6f267ba300d86b30f5a46cb1b7eae0f2cb31b89dd4cf4c01d666f9423b309d5e.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "All nine frozen evidence hashes match. Current verification records the evaluated implementation a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0 with all selected checks. The full command completed before the separate null-WorkItem projection error. Retained historical command timing is not a new measurement."
-    - "The source uses the actual task branch head in branch_pr mode and current HEAD in direct mode, while preserving the previous semantic target as an anchor. Real-Git tests cover the reviewable policy commit, lifecycle-only drift, repeated verification, central-path escalation, and verification from base without a linked worktree while base advances independently. The reviewed source matches the 59 passing focused tests; no mandatory checks or timeouts were weakened."
-    - "The required acceptance step explicitly calls for the proved cause and provider-neutral wording remainder in task Findings. The frozen task document has an empty Findings section. Semantic exchange and quality evidence preserve the diagnostics, but the task handoff itself does not satisfy that explicit deliverable."
-    - "Residual risk: No source defect is identified in this review. Preserve the source and existing verification; record the proved cause, current proof and separate provider-neutral wording remainder through the supported task documentation route."
+    - "All nine frozen evidence hashes match. Evaluated implementation a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0 and frozen base 9ab453ac00d41ea0a58cdd02e84bd0456233b151 match current verification 20260828053605787-eca4721e74cf0d8e.json recorded at 05:36:05.787Z. The successful supervisor continuation completed its required full checks before issuing this packet. The stable declared-check artifact retains historical tail text and timing, which is not presented as a fresh measurement."
+    - "Source now resolves the actual task branch head in branch_pr mode and current HEAD in direct mode, with the previous evaluated or recorded implementation as the existing semantic anchor. It does not omit reviewable incident-policy changes from observed verification evidence and does not rewrite the recorded implementation. Frozen base, central-path escalation and existing semantic-target guards remain unchanged."
+    - "The real-Git tests prove repeat verification from both task and base checkouts without a linked task worktree, including independent base changes and unchanged branch heads. Policy-after-implementation and lifecycle-only cases prove agreement between verifier and evaluator while retaining semantic identity for lifecycle artifacts."
+    - "The five-file focused suite was rerun for this evaluation: all 59 tests passed in 69.87 seconds. It covers the integration incident scenario, adjacent finish path, stale-evidence controls and target identity. No test, timeout, policy or required check was weakened."
+    - "The current task Findings is populated with the proved cause, branch-only review correction, local evidence and explicit hosted/release boundaries. This resolves the previous evaluator's documentation-only rework. Since implementation a87c432, the committed changes are confined to task-owned documentation and lifecycle evidence."
+    - "The updated main CLI recovered the interrupted implementation verification without creating a new source commit or fabricating a WorkItem. The resulting evaluator packet is task-level with no required implementation selected. This semantic review makes no hosted merge or terminal-closure claim."
+    - "Residual risk: Publication, exact-head hosted checks, review resolution, integration and terminal closure remain required."
+    - "Residual risk: The separate provider-neutral wording and DVS5NN stale evaluator recovery are not changed by this source patch."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -333,7 +336,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-28T05:36:07.846Z"
+doc_updated_at: "2026-08-28T05:39:09.378Z"
 doc_updated_by: "CODER"
 description: "On exact main 9ab453ac00d41ea0a58cdd02e84bd0456233b151, run-cli.core.pr-flow.integrate-merge.test.ts test 'integrate promotes structured external incident candidates into the incident registry' fails at prepareHostedIntegrateFixture -> recordVerificationOk -> evaluator with missing observed changed file .agentplane/policy/incidents.md. The neighboring finish-only incident scenario passes. Diagnose the complete implementation -> pre-merge closure/policy commit -> verification -> evaluator -> integration/replay chain. Current verify-record-execute pins the review resolver head to the recorded implementation, while evaluator resolves current HEAD; prove the cause with real-Git controls before changing this. Retain the existing semantic-target resolver, frozen execution base, unchanged lifecycle-only identity, and exact evaluated diff/authority guards. Fix the smallest product/fixture scope justified by the proof. Cover a reviewable post-implementation policy change, lifecycle-only metadata, repeat verification and stale evidence. Replace any internal-call expectation only with behavior-backed coverage. Do not omit incidents from observed evidence, relax checks, add skips/timeouts, rewrite artifacts, change actual policy or CI, create a new verification architecture or implement AP-CORE-013. Preserve full mandatory CI and release 0.7.8 -> Core order. Keep provider-neutral wording as a separate cause. Two existing changes DVS5NN and AD3030 have priority for integration; planning and bounded diagnosis may proceed while their checks run. User authorized autonomous refactoring and supported operator approvals; release publication is separate."
 sections:

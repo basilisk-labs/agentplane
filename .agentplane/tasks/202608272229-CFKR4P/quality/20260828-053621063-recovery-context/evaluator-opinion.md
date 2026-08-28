@@ -1,0 +1,27 @@
+# Semantic quality review: pass
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned pass with 8 typed finding(s).
+
+## Findings
+- All nine frozen evidence hashes match. Evaluated implementation a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0 and frozen base 9ab453ac00d41ea0a58cdd02e84bd0456233b151 match current verification 20260828053605787-eca4721e74cf0d8e.json recorded at 05:36:05.787Z. The successful supervisor continuation completed its required full checks before issuing this packet. The stable declared-check artifact retains historical tail text and timing, which is not presented as a fresh measurement.
+- Source now resolves the actual task branch head in branch_pr mode and current HEAD in direct mode, with the previous evaluated or recorded implementation as the existing semantic anchor. It does not omit reviewable incident-policy changes from observed verification evidence and does not rewrite the recorded implementation. Frozen base, central-path escalation and existing semantic-target guards remain unchanged.
+- The real-Git tests prove repeat verification from both task and base checkouts without a linked task worktree, including independent base changes and unchanged branch heads. Policy-after-implementation and lifecycle-only cases prove agreement between verifier and evaluator while retaining semantic identity for lifecycle artifacts.
+- The five-file focused suite was rerun for this evaluation: all 59 tests passed in 69.87 seconds. It covers the integration incident scenario, adjacent finish path, stale-evidence controls and target identity. No test, timeout, policy or required check was weakened.
+- The current task Findings is populated with the proved cause, branch-only review correction, local evidence and explicit hosted/release boundaries. This resolves the previous evaluator's documentation-only rework. Since implementation a87c432, the committed changes are confined to task-owned documentation and lifecycle evidence.
+- The updated main CLI recovered the interrupted implementation verification without creating a new source commit or fabricating a WorkItem. The resulting evaluator packet is task-level with no required implementation selected. This semantic review makes no hosted merge or terminal-closure claim.
+- Residual risk: Publication, exact-head hosted checks, review resolution, integration and terminal closure remain required.
+- Residual risk: The separate provider-neutral wording and DVS5NN stale evaluator recovery are not changed by this source patch.
+
+## Evidence
+- .agentplane/tasks/202608272229-CFKR4P/quality/objects/sha256/11688b587a6c37b5298be891c8baca187f77e08c5986a1dc9f37e56709aa676e.patch
+
+## Missing Tests
+- none recorded
+
+## Hidden Assumptions
+- none recorded
+
+## Residual Risks
+- none recorded
