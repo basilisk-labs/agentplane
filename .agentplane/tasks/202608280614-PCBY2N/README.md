@@ -4,7 +4,7 @@ title: "Recover task-level evidence rework after completed WorkItems"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -21,10 +21,10 @@ plan_approval:
   updated_by: "USER"
   note: "The user explicitly approved plan PCBY2N in this conversation with the affirmative response Даа to the specific plan confirmation question. Approved plan digest sha256:d8e65a8610611bded141cdd7467e57ca78b7096dc84a7f3c824fd6efdbfabef3; observed route fingerprint sha256:0aada06bfe08e7c84f0a36ffa99fd1fbcc251de6550848f9768639e348c209a0. Four-file scope and mandatory verification remain unchanged."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-28T11:28:57.349Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -83,11 +83,40 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -122,19 +151,28 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:394a618f2f939d290c66adb1fb00e07ddaf5057ac3429b2403d3c55f7ac0f99f"
+      digest: "sha256:a878b21b3942dc45a1bc9714f7e69c3bbd3a12c48513d379ac98f2943c82caa8"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -166,11 +204,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c"
+  message: "🚧 PCBY2N task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: d7a70b6aba1d. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -179,9 +222,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-28T11:21:14.427Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: d7a70b6aba1d. CLI accepted one state-bound external-agent semantic result."
+    commit: "d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c"
+  -
+    type: "verify"
+    at: "2026-08-28T11:28:57.349Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-28T11:08:27.484Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-28T11:28:59.396Z"
+doc_updated_by: "SUPERVISOR"
 description: "Required integration-path repair after QMVHM2 and CFKR4P are integrated on main e3550efba441765882f2507cfaf659e9a76d2f0b. Task 202608280529-59VB06 has a completed implementation WorkItem and passed full verification. Its evaluator requested only task Findings. The operator populated Findings through supported task commands and resumed DOING. A fresh task-level implementation_rework WorkOrder has work_item_id=null, preserves the existing code, and returns a completed documentation-only result. Acceptance rejects it with Completed implementation result produced no supervisor-observed workspace change. The immutable result is now received and must not be rewritten. resolveRecordedImplementationRecovery matches the prior implementation exchange WorkItem id to the new null id, while evidence-only rework also requires the recorded implementation to equal current metadata HEAD. Reproduce and repair only this task-level no-change documentation/evidence rework path. Require the same approved plan, scope, exact recorded implementation and ancestry, all required WorkItems completed, a validated historical result and original effect evidence, no unapproved source drift, and unchanged verification requirements. Preserve current rework findings as current claims; preserve original claims for interrupted WorkItem recovery. Rerun mandatory checks through the existing supervisor and obtain fresh evaluation. Cover interruption, replay, changed plan/authority/HEAD rejection and no false DONE. Do not hand-edit task/journal/evidence, reuse checks across different inputs without supported proof, weaken checks, invent a source change, or introduce a new state store or architecture program. Preserve blocked task 59VB06 and DVS5NN, keep one integration owner, and integrate this bounded repair before retrying them. The user authorized all in-scope operations through release. Release/Core order is unchanged. Prepopulate task Findings with observed diagnosis and pending evidence before implementation so this repair does not repeat the same documentation gap."
 sections:
   Summary: |-
@@ -200,6 +257,78 @@ sections:
     5. Review the four approved source paths against the plan. Evidence and remaining limitations are recorded in typed semantic output and supervisor verification artifacts. Require exact-head hosted checks, protected integration and confirmed closure before calling this delivered.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-28T11:28:57.349Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6800e08237fa51d0fbf5c26e109e05253639c40bda1bfed6da974e6a944633d9, input_digest=sha256:6edb64d27b895f1f7ade88e47f1b284a95dfead57d5dd212b40ff5870c881b11
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280614-PCBY2N Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608280614-PCBY2N Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280614-PCBY2N Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608280614-PCBY2N Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280614-PCBY2N Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280614-PCBY2N Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608280614-PCBY2N Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608280614-PCBY2N-recover-task-level-evidence-rework-after-complet/.agentplane/tasks/202608280614-PCBY2N/blueprint/resolved-snapshot.json
+    - old_digest: 8ed52ea7ab931c3a714304c85770c51901595982c616c106ced834ed6ed4d978
+    - current_digest: 8ed52ea7ab931c3a714304c85770c51901595982c616c106ced834ed6ed4d978
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608280614-PCBY2N
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -470,25 +599,86 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 10
     schema_version: 1
-    updated_at: "2026-08-28T11:08:02.340Z"
+    updated_at: "2026-08-28T11:29:00.632Z"
     work_items:
       recover-task-level-evidence-rework:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "recover-task-level-evidence-rework"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:85be95d318f6bca1ea19bc54cc90c836f149279de4ee68ba17d88ec9c79e308a"
+            id: "evidence-rework-proof"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608280614-PCBY2N"
+              work_item_id: "recover-task-level-evidence-rework"
+            provenance:
+              - "sha256:fece17f7bd22650967fb2b6a3dc236a9822bc0218da8878b5143c694454e4059"
+              - ".agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:244fb92a2f29fe0f7c5088c736734d94219922c4adb48fdb1c465321d91f56bb"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json"
+              check_id: "mandatory-checks"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-08-28T11:29:00.628Z"
+              repository_snapshot_digest: "sha256:244fb92a2f29fe0f7c5088c736734d94219922c4adb48fdb1c465321d91f56bb"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608280614-PCBY2N-executor-680862d35cabad2bf327c16d:
+        aggregate_digest: "sha256:20de28cbc1f6ffb1b004c40f2af5c8c64ba463715a9fda33161dcc68b122fa95"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-28T11:29:00.632Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_fb6676e09a28acf2286f2e0c"
+          mutation_id: "external-result:work-order-202608280614-PCBY2N-executor-680862d35cabad2bf327c16d"
+          plan_digest: "sha256:d8e65a8610611bded141cdd7467e57ca78b7096dc84a7f3c824fd6efdbfabef3"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608280614-PCBY2N"
+          task_revision: 9
+          to: "COMPLETED"
+          work_item_id: "recover-task-level-evidence-rework"
+        mutation_id: "external-result:work-order-202608280614-PCBY2N-executor-680862d35cabad2bf327c16d"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202608280614-PCBY2N"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c"
   task_execution_context:
     base_ref: "main"
     base_sha: "e3550efba441765882f2507cfaf659e9a76d2f0b"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "e3550efba441765882f2507cfaf659e9a76d2f0b"
     version: 1
@@ -520,6 +710,78 @@ Repair one task-level evidence-only rework path after completed WorkItems withou
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-28T11:28:57.349Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6800e08237fa51d0fbf5c26e109e05253639c40bda1bfed6da974e6a944633d9, input_digest=sha256:6edb64d27b895f1f7ade88e47f1b284a95dfead57d5dd212b40ff5870c881b11
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280614-PCBY2N Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608280614-PCBY2N Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280614-PCBY2N Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608280614-PCBY2N Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280614-PCBY2N Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280614-PCBY2N Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608280614-PCBY2N Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608280614-PCBY2N-recover-task-level-evidence-rework-after-complet/.agentplane/tasks/202608280614-PCBY2N/blueprint/resolved-snapshot.json
+- old_digest: 8ed52ea7ab931c3a714304c85770c51901595982c616c106ced834ed6ed4d978
+- current_digest: 8ed52ea7ab931c3a714304c85770c51901595982c616c106ced834ed6ed4d978
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608280614-PCBY2N
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
