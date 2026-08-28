@@ -1,10 +1,10 @@
 ---
 id: "202608280529-59VB06"
 title: "Recover stale evaluator exchanges without accepting obsolete verdicts"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -253,6 +253,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 75c6a199cc40. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Documentation-only review requires a supported operator task-document update. The executor code scope excludes protected task documentation; source code and all evidence are preserved. Recommended action: Under the user's explicit authorization for all in-scope operations through release, use ap task doc set 202608280529-59VB06 --section Findings with the existing cause, red/green evidence, implementation 75c6a199cc4068e497fb786e831a9b2bb34a7376, recorded full verification 20260828060650926-cb1fbd290a69ab04.json and pending hosted boundaries. Recompute the route. Preserve every source file and the existing evaluator verdict; do not hand-edit task files or create a new implementation scope. Agentplane receipt: external-agent-blocker/tr_233c458501205f8fcf291a79f52d7455/sha256:066cdd34d5c491956c6906b37d9f55a8467621594bea82b91deb0c02dda56d46."
 events:
   -
     type: "status"
@@ -275,8 +278,15 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-28T06:09:02.271Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Documentation-only review requires a supported operator task-document update. The executor code scope excludes protected task documentation; source code and all evidence are preserved. Recommended action: Under the user's explicit authorization for all in-scope operations through release, use ap task doc set 202608280529-59VB06 --section Findings with the existing cause, red/green evidence, implementation 75c6a199cc4068e497fb786e831a9b2bb34a7376, recorded full verification 20260828060650926-cb1fbd290a69ab04.json and pending hosted boundaries. Recompute the route. Preserve every source file and the existing evaluator verdict; do not hand-edit task files or create a new implementation scope. Agentplane receipt: external-agent-blocker/tr_233c458501205f8fcf291a79f52d7455/sha256:066cdd34d5c491956c6906b37d9f55a8467621594bea82b91deb0c02dda56d46."
 doc_version: 3
-doc_updated_at: "2026-08-28T06:06:53.240Z"
+doc_updated_at: "2026-08-28T06:09:02.271Z"
 doc_updated_by: "SUPERVISOR"
 description: "On integrated main 844eff36ba407436c26a3c63346b0dcc384ce2b5, continuation of DVS5NN PR #5862 is blocked by an issued quality_review exchange whose result is stale. The read-only evaluator prepared four task-owned evidence files while the legacy task was DONE, then exact result acceptance rejected the changed route fingerprint. Repeating task advance or task advance --replacement re-enters recoverPendingExternalAgentResult and rejects the same old result before replacement handling. The original result, frozen evidence and journal must remain intact. Reproduce the full sequence with real Git: evaluator issuance, preparation-owned artifacts, a genuine state change, stale result rejection, fresh packet recovery, retry and next transition. Separate framework-owned preparation changes from genuine task, plan, HEAD, provider or authority changes; do not weaken exact freshness or accept old verdicts for changed inputs. Use existing supervisor journal retirement and replacement mechanisms, with one owner and compare-and-swap guards. Preserve immutable historical results and required WorkItem completion. Prove ordinary evaluator acceptance, no-result and returned-result interruption recovery, repeated continuation, changed evidence rejection and no false DONE. Fix only the demonstrated bounded evaluator exchange/recovery cause. Do not modify task state or journals manually, create a new state store, bypass checks, change required CI, copy verdicts, or broaden release/Core architecture. DVS5NN and CFKR4P integration retain priority; CFKR4P full verification is running and must not be interrupted. This is a necessary authorized integration-path blocker, not new release scope. Release publication remains separately qualified. User has authorized all in-scope operations through release."
 sections:
