@@ -15,8 +15,8 @@ Repair the reproduced integration blocker on main e43acc5f72ba1f884966a16325d6db
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
