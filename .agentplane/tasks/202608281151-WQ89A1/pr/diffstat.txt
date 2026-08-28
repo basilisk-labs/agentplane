@@ -1,0 +1,4 @@
+ ...n-cli.core.task-advance.evidence-rework.test.ts | 69 +++++++++++++-------
+ .../external-agent-implementation-recovery.test.ts | 76 ++++++++++++++++++++++
+ .../task/external-agent-implementation-recovery.ts | 25 +++++++
+ 3 files changed, 147 insertions(+), 23 deletions(-)

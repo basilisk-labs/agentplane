@@ -13,6 +13,7 @@ import {
   writeConfig,
 } from "@agentplane/testkit";
 import { loadCommandContext } from "../commands/shared/task-backend.js";
+import { ensureRuntimeGitignore } from "../runtime/shared/runtime-gitignore.js";
 import { recordedTaskImplementationCommitSha } from "../commands/shared/quality-review-target.js";
 import * as verification from "../commands/task/direct-task-verification.js";
 import { resolveRecordedImplementationRecovery } from "../commands/task/external-agent-implementation-recovery.js";
@@ -83,12 +84,31 @@ async function commitFixture(root: string, message: string) {
   await git("git", ["commit", "-m", message], { cwd: root });
 }
 
-async function completedFixture() {
+async function completedFixture(initialized = true) {
   const root = await mkGitRepoRootWithBranch("main");
   const config = defaultConfig();
   config.workflow_mode = "branch_pr";
   await writeConfig(root, config);
   expect(await runCliSilent(["branch", "base", "set", "main", "--root", root])).toBe(0);
+  await cp(
+    path.join(process.cwd(), "packages/agentplane/assets/policy"),
+    path.join(root, ".agentplane/policy"),
+    { recursive: true },
+  );
+  await writeFile(
+    path.join(root, ".gitignore"),
+    ".agentplane/bin/\n.agentplane/cache.sqlite*\nagentplane-recipes\nnode_modules\npackages/\nwebsite/\n",
+  );
+  await writeFile(
+    path.join(root, "package.json"),
+    JSON.stringify({
+      scripts: { "test:critical": "node -e \"console.log('1 passed')\"" },
+    }),
+  );
+  if (initialized) {
+    await ensureRuntimeGitignore({ gitRoot: root });
+    await commitFixture(root, "test: seed evidence rework repository");
+  }
   const created = await invoke(root, [
     "task",
     "new",
@@ -107,23 +127,13 @@ async function completedFixture() {
   ]);
   expect(created.code, created.stderr).toBe(0);
   const taskId = created.stdout.trim();
-  await cp(
-    path.join(process.cwd(), "packages/agentplane/assets/policy"),
-    path.join(root, ".agentplane/policy"),
-    { recursive: true },
-  );
-  await writeFile(
-    path.join(root, ".gitignore"),
-    (await readFile(path.join(root, ".gitignore"), "utf8")) +
-      "\n.agentplane/bin/\n.agentplane/cache.sqlite*\nagentplane-recipes\nnode_modules\npackages/\nwebsite/\n",
-  );
-  await writeFile(
-    path.join(root, "package.json"),
-    JSON.stringify({
-      scripts: { "test:critical": "node -e \"console.log('1 passed')\"" },
-    }),
-  );
-  await commitFixture(root, "test: seed evidence rework repository");
+  const creationCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+  const createdTask = await creationCtx.taskBackend.getTask(taskId);
+  const creationBase = createdTask?.extensions?.task_execution_context as
+    | Record<string, unknown>
+    | undefined;
+  expect(creationBase?.source).toBe(initialized ? "creation_checkout" : undefined);
+  if (!initialized) await commitFixture(root, "test: seed evidence rework repository");
   const planning = await packet(root, taskId);
   const planOrder = await order(planning);
   await report(planning, "Recover only the exact approved implementation.", {
@@ -151,7 +161,7 @@ async function completedFixture() {
   expect(
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
   ).toBe(0);
-  await commitFixture(root, "test: persist approved evidence rework plan");
+  if (!initialized) await commitFixture(root, "test: persist approved evidence rework plan");
   const implementation = await packet(root, taskId);
   const implementationOrder = await order(implementation);
   const checkout = implementationOrder.state_fingerprint.worktree;
@@ -166,6 +176,10 @@ async function completedFixture() {
   const completed = await ctx.taskBackend.getTask(taskId);
   if (!completed) throw new Error("missing completed fixture task");
   expect(completed.verification?.state, JSON.stringify(completed.verification)).toBe("ok");
+  if (initialized) {
+    const { source: _source, ...identity } = creationBase!;
+    expect(completed.extensions?.task_execution_context).toEqual(identity);
+  }
   const reviewOrder = await order(review);
   expect(reviewOrder.role).toBe("EVALUATOR");
   expect(
@@ -230,10 +244,19 @@ async function completedFixture() {
 }
 
 describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
-  it.each(["normal return", "interrupted proof refresh", "interrupted verification"])(
-    "rechecks unchanged source after %s and preserves current claims",
-    async (boundary) => {
-      const f = await completedFixture();
+  it.each(
+    [true, false].flatMap((initialized) =>
+      ["normal return", "interrupted proof refresh", "interrupted verification"].map(
+        (boundary) => ({
+          initialized,
+          boundary,
+        }),
+      ),
+    ),
+  )(
+    "rechecks unchanged source after $boundary (initialized=$initialized) and preserves current claims",
+    async ({ boundary, initialized }) => {
+      const f = await completedFixture(initialized);
       const originalBytes = await readFile(
         path.join(f.implementation.exchange.directory, "exchange.json"),
         "utf8",

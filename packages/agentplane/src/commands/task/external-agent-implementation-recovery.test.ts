@@ -3,6 +3,23 @@ import { renderTaskReadme } from "@agentplaneorg/core/tasks";
 import { taskReadmesPreserveRecoveryContract } from "./external-agent-implementation-recovery.js";
 
 const COMMIT = "a".repeat(40);
+const BASE_CONTEXT = {
+  schema_version: 1,
+  base_ref: "main",
+  base_sha: COMMIT,
+  repository_identity: "sha256:" + "c".repeat(64),
+};
+
+function contextReadme(context: Record<string, unknown>) {
+  const original = task();
+  return renderTaskReadme(
+    {
+      ...original,
+      extensions: { ...original.extensions, task_execution_context: context },
+    },
+    "## Summary\nApproved behavior.\n",
+  );
+}
 
 function task() {
   return {
@@ -23,6 +40,65 @@ function task() {
 }
 
 describe("recorded implementation recovery contract", () => {
+  it("accepts only removal of creation-checkout provenance for the same valid identity", () => {
+    const before = contextReadme({ ...BASE_CONTEXT, source: "creation_checkout" });
+    const after = contextReadme(BASE_CONTEXT);
+    expect(taskReadmesPreserveRecoveryContract(before, after, COMMIT)).toBe(true);
+    expect(taskReadmesPreserveRecoveryContract(after, before, COMMIT)).toBe(false);
+    expect(taskReadmesPreserveRecoveryContract(before, before, COMMIT)).toBe(true);
+  });
+
+  it.each([
+    ["base_ref", "other"],
+    ["base_sha", "b".repeat(40)],
+    ["repository_identity", "sha256:" + "d".repeat(64)],
+    ["schema_version", 2],
+    ["source", "explicit"],
+    ["source", null],
+    ["unrecognized", true],
+  ])("rejects changed execution context %s=%s", (key, value) => {
+    expect(
+      taskReadmesPreserveRecoveryContract(
+        contextReadme({ ...BASE_CONTEXT, source: "creation_checkout" }),
+        contextReadme({ ...BASE_CONTEXT, [key as string]: value }),
+        COMMIT,
+      ),
+    ).toBe(false);
+  });
+
+  it.each([
+    ["base_ref", ""],
+    ["base_ref", " "],
+    ["base_sha", "not-a-commit"],
+    ["base_sha", "0".repeat(40)],
+    ["repository_identity", null],
+    ["repository_identity", "not-a-digest"],
+    ["schema_version", 2],
+    ["unrecognized", true],
+  ])("does not hide invalid or unknown context %s=%s behind provenance", (key, value) => {
+    const identity = { ...BASE_CONTEXT, [key as string]: value };
+    expect(
+      taskReadmesPreserveRecoveryContract(
+        contextReadme({ ...identity, source: "creation_checkout" }),
+        contextReadme(identity),
+        COMMIT,
+      ),
+    ).toBe(false);
+  });
+
+  it.each(["explicit", "legacy", "unknown", null])(
+    "does not remove unproved provenance %s",
+    (source) => {
+      expect(
+        taskReadmesPreserveRecoveryContract(
+          contextReadme({ ...BASE_CONTEXT, source }),
+          contextReadme(BASE_CONTEXT),
+          COMMIT,
+        ),
+      ).toBe(false);
+    },
+  );
+
   it("allows Findings-only repair without accepting verification or authority changes", () => {
     const before = task();
     const original = renderTaskReadme(before, "## Findings\nMissing implementation evidence.\n");
