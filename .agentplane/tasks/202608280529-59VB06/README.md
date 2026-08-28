@@ -1,10 +1,11 @@
 ---
 id: "202608280529-59VB06"
 title: "Recover stale evaluator exchanges without accepting obsolete verdicts"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,20 @@ quality_review:
     - "Current Findings now contains the causal proof, red/green record, original implementation identity and remaining hosted boundaries. The required recover-stale-evaluator WorkItem remains COMPLETED with its preserved output manifest. This addresses the sole prior documentation defect without overwriting the earlier review."
     - "All nine frozen evidence hashes match. Verification record 20260828153621983-c6c6865d6eab595e.json is ok for implementation 75c6a199cc4068e497fb786e831a9b2bb34a7376 and unchanged Verify Steps e62b830b865b103d9e9ebc3046c670836db81e2157e23ae89899300c97bde172. The referenced preserved declared-checks records ci:local:full exit 0 in 526823ms and git diff --check exit 0. Only four framework-prepared quality artifacts are untracked."
     - "Residual risk: Exact published-head GitHub checks, protected integration, hosted close and final cleanup are still required. This review does not prove DVS5NN recovery or qualify release 0.7.8."
+token_usage:
+  agent_runs: 6
+  input_tokens: null
+  journal_digest: "sha256:26fc17c6e5cdfab410cd849d2c9aa0ad194bd4ed1634018c31bafeadde6d3755"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-28T15:40:29.345Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -243,8 +258,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "75c6a199cc4068e497fb786e831a9b2bb34a7376"
-  message: "🚧 59VB06 task: apply external agent result"
+  hash: "ef07d40750a0068fb211f43efa05162e5ca41ccb"
+  message: "🚧 59VB06 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -258,6 +273,9 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: operator resolved the documentation-only blocker under the user authorization for all in-scope operations through release. Findings was populated through task doc set from existing evidence. Preserve source 75c6a199cc4068e497fb786e831a9b2bb34a7376, the recorded evaluator result and all checks; resume through a fresh semantic packet."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -300,9 +318,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-28T15:40:29.345Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "ef07d40750a0068fb211f43efa05162e5ca41ccb"
 doc_version: 3
-doc_updated_at: "2026-08-28T15:36:23.872Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-08-28T15:40:29.354Z"
+doc_updated_by: "CODER"
 description: "On integrated main 844eff36ba407436c26a3c63346b0dcc384ce2b5, continuation of DVS5NN PR #5862 is blocked by an issued quality_review exchange whose result is stale. The read-only evaluator prepared four task-owned evidence files while the legacy task was DONE, then exact result acceptance rejected the changed route fingerprint. Repeating task advance or task advance --replacement re-enters recoverPendingExternalAgentResult and rejects the same old result before replacement handling. The original result, frozen evidence and journal must remain intact. Reproduce the full sequence with real Git: evaluator issuance, preparation-owned artifacts, a genuine state change, stale result rejection, fresh packet recovery, retry and next transition. Separate framework-owned preparation changes from genuine task, plan, HEAD, provider or authority changes; do not weaken exact freshness or accept old verdicts for changed inputs. Use existing supervisor journal retirement and replacement mechanisms, with one owner and compare-and-swap guards. Preserve immutable historical results and required WorkItem completion. Prove ordinary evaluator acceptance, no-result and returned-result interruption recovery, repeated continuation, changed evidence rejection and no false DONE. Fix only the demonstrated bounded evaluator exchange/recovery cause. Do not modify task state or journals manually, create a new state store, bypass checks, change required CI, copy verdicts, or broaden release/Core architecture. DVS5NN and CFKR4P integration retain priority; CFKR4P full verification is running and must not be interrupted. This is a necessary authorized integration-path blocker, not new release scope. Release publication remains separately qualified. User has authorized all in-scope operations through release."
 sections:
   Summary: |-
@@ -723,7 +749,23 @@ extensions:
       schema_version: 1
       task_id: "202608280529-59VB06"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608280529-59VB06"
+            - "git:75c6a199cc4068e497fb786e831a9b2bb34a7376"
+          check_id: "mandatory-checks"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-28T15:36:21.983Z"
+          repository_snapshot_digest: "sha256:1775b2c5e26450b718a33a609f2f083117ceab3d3ec158c6af2b645c748a3c34"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608280529-59VB06"
     intent:
       acceptance_criteria:
@@ -744,12 +786,12 @@ extensions:
 
         On integrated main 844eff36ba407436c26a3c63346b0dcc384ce2b5, continuation of DVS5NN PR #5862 is blocked by an issued quality_review exchange whose result is stale. The read-only evaluator prepared four task-owned evidence files while the legacy task was DONE, then exact result acceptance rejected the changed route fingerprint. Repeating task advance or task advance --replacement re-enters recoverPendingExternalAgentResult and rejects the same old result before replacement handling. The original result, frozen evidence and journal must remain intact. Reproduce the full sequence with real Git: evaluator issuance, preparation-owned artifacts, a genuine state change, stale result rejection, fresh packet recovery, retry and next transition. Separate framework-owned preparation changes from genuine task, plan, HEAD, provider or authority changes; do not weaken exact freshness or accept old verdicts for changed inputs. Use existing supervisor journal retirement and replacement mechanisms, with one owner and compare-and-swap guards. Preserve immutable historical results and required WorkItem completion. Prove ordinary evaluator acceptance, no-result and returned-result interruption recovery, repeated continuation, changed evidence rejection and no false DONE. Fix only the demonstrated bounded evaluator exchange/recovery cause. Do not modify task state or journals manually, create a new state store, bypass checks, change required CI, copy verdicts, or broaden release/Core architecture. DVS5NN and CFKR4P integration retain priority; CFKR4P full verification is running and must not be interrupted. This is a necessary authorized integration-path blocker, not new release scope. Release publication remains separately qualified. User has authorized all in-scope operations through release.
       task_id: "202608280529-59VB06"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 17
     schema_version: 1
-    updated_at: "2026-08-28T06:06:54.526Z"
+    updated_at: "2026-08-28T15:40:29.345Z"
     work_items:
       recover-stale-evaluator:
         attempt: 1
@@ -817,11 +859,37 @@ extensions:
         previous_revision: 8
         schema_version: 1
         task_id: "202608280529-59VB06"
+      legacy-finish:202608280529-59VB06:2026-08-28T15:36:21.983Z:75c6a199cc4068e497fb786e831a9b2bb34a7376:
+        aggregate_digest: "sha256:e5f9599b685f4f6e68bd6d2308096c62a826946d51847c09fb44df507580a032"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-28T15:40:29.345Z"
+          cause_refs:
+            - "task-verification:202608280529-59VB06"
+            - "git:75c6a199cc4068e497fb786e831a9b2bb34a7376"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_8fc75b276b267c14f027da7e"
+          mutation_id: "legacy-finish:202608280529-59VB06:2026-08-28T15:36:21.983Z:75c6a199cc4068e497fb786e831a9b2bb34a7376"
+          plan_digest: "sha256:58812b3db6ab06361dbe577ea62bea6e3cfba5a562fcd105b79f6deaf2265059"
+          plan_revision: 1
+          repository_fingerprint: "sha256:1775b2c5e26450b718a33a609f2f083117ceab3d3ec158c6af2b645c748a3c34"
+          schema_version: 1
+          task_id: "202608280529-59VB06"
+          task_revision: 9
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608280529-59VB06:2026-08-28T15:36:21.983Z:75c6a199cc4068e497fb786e831a9b2bb34a7376"
+        next_revision: 17
+        previous_revision: 16
+        schema_version: 1
+        task_id: "202608280529-59VB06"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "75c6a199cc4068e497fb786e831a9b2bb34a7376"
+    message: "🚧 59VB06 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "844eff36ba407436c26a3c63346b0dcc384ce2b5"
@@ -1020,3 +1088,16 @@ Local evidence: four focused files passed 46 tests in 61.40s. Cases cover missin
 Review: the first EVALUATOR requested this documentation-only update. No runtime defect was identified and no source change is required for that finding. This update is an operator action under the user authorization for all in-scope operations through release; it does not overwrite the recorded evaluator result.
 
 Remaining boundaries: obtain fresh evaluation after documentation recovery, pass exact-head hosted checks, integrate through the protected queue, confirm hosted closure, and then retry DVS5NN through a fresh main-runtime route. Local evidence does not prove delivery of DVS5NN and does not qualify release 0.7.8. Preserve the release/Core order and remeasure remaining release failures on the final integrated main.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/6` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:26fc17c6e5cdfab410cd849d2c9aa0ad194bd4ed1634018c31bafeadde6d3755`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-28T15:40:29.345Z`
