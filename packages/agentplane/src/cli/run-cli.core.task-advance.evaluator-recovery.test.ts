@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { access, cp, readFile, writeFile } from "node:fs/promises";
+import { access, cp, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
@@ -12,11 +12,15 @@ import {
 } from "@agentplane/testkit";
 
 import { loadCommandContext } from "../commands/shared/task-backend.js";
+import { readWorkOrder } from "../commands/evaluator/evaluator-work-order.js";
+import { buildObservedGithubPrMeta, buildOpenedPrMeta } from "../commands/shared/pr-meta.js";
+import { readRoute } from "./run-cli.core.task-advance.testkit.js";
 import {
   resolveSupervisorExecutionEpisodePath,
   tryAcquireSupervisorExecutionLease,
 } from "../commands/shared/supervisor-execution-episode.js";
 import * as evaluatorApplication from "../commands/task/external-agent-evaluator.js";
+import * as guardedCommit from "../commands/guard/impl/commit.js";
 import * as exchangeArtifacts from "../commands/task/external-agent-exchange.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
@@ -91,13 +95,14 @@ async function resultFor(p: Packet, summary: string): Promise<string> {
 async function returnResult(root: string, p: Packet, file: string) {
   return await invoke(root, ["task", "advance", p.task_id, "--result", file, "--agent-json"]);
 }
-async function prepareEvaluator() {
-  const root = await mkGitRepoRootWithCommit();
+async function prepareEvaluator(branchPr = false) {
+  let root = await mkGitRepoRootWithCommit();
+  const baseRoot = root;
   await cp(path.join(process.cwd(), ".agentplane/policy"), path.join(root, ".agentplane/policy"), {
     recursive: true,
   });
   const config = defaultConfig();
-  config.workflow_mode = "direct";
+  config.workflow_mode = branchPr ? "branch_pr" : "direct";
   await writeConfig(root, config);
   await writeFile(
     path.join(root, "package.json"),
@@ -137,6 +142,53 @@ async function prepareEvaluator() {
   expect(planned.code, planned.stderr).toBe(0);
   const approved = await invoke(root, ["task", "plan", "approve", id, "--by", "ORCHESTRATOR"]);
   expect(approved.code, approved.stderr).toBe(0);
+  if (branchPr) {
+    await execFileAsync("git", ["branch", "-M", "main"], { cwd: root });
+    await invoke(root, ["branch", "base", "set", "main"]);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed branch review"], { cwd: root });
+    const branch = `task/${id}/review`;
+    root = path.join(baseRoot, ".agentplane", "worktrees", `${id}-review`);
+    await mkdir(path.dirname(root), { recursive: true });
+    await execFileAsync("git", ["worktree", "add", "-b", branch, root], { cwd: baseRoot });
+    const at = new Date().toISOString();
+    const head = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const meta = buildObservedGithubPrMeta({
+      meta: buildOpenedPrMeta({ taskId: id, branch, at, previousMeta: null, base: "main" }),
+      observed: {
+        prNumber: 1,
+        prUrl: "https://github.com/example/agentplane/pull/1",
+        status: "OPEN",
+        base: "main",
+        headSha: head.stdout.trim(),
+      },
+      at,
+    });
+    const metaPath = path.join(root, ".agentplane", "tasks", id, "pr", "meta.json");
+    await mkdir(path.dirname(metaPath), { recursive: true });
+    await writeFile(metaPath, JSON.stringify(meta), "utf8");
+    const route = await readRoute(root, id);
+    const request = route.workflow_step.request;
+    if (request?.type === "side_effect") {
+      const grant = await invoke(root, [
+        "task",
+        "authority",
+        "grant",
+        id,
+        "--operation",
+        request.operationId,
+        "--operation-digest",
+        request.operationDigest,
+        "--state-fingerprint",
+        request.stateFingerprintDigest,
+        "--state-scope-digest",
+        request.stateScopeDigest,
+        "--by",
+        "USER",
+      ]);
+      expect(grant.code, grant.stderr).toBe(0);
+    }
+  }
   const implementation = await packet(root, id);
   expect(implementation.authority.role).toBe("EXECUTOR");
   await writeFile(path.join(root, "implemented.txt"), "implementation\n", "utf8");
@@ -148,10 +200,184 @@ async function prepareEvaluator() {
   expect(implemented.code, implemented.stderr).toBe(0);
   const evaluator = JSON.parse(implemented.stdout) as Packet;
   expect(evaluator.authority.role).toBe("EVALUATOR");
-  return { root, id, evaluator };
+  return { root, baseRoot, id, evaluator };
 }
 
 describe("stale evaluator recovery", () => {
+  it.each([
+    ["advance", "task", false],
+    ["return", "task", false],
+    ["advance", "head", false],
+    ["return", "head", false],
+    ["advance", "evidence", false],
+    ["return", "evidence", false],
+    ["advance", "workspace", false],
+    ["return", "workspace", false],
+    ["advance", "plan", false],
+    ["return", "plan", false],
+    ["advance", "policy", false],
+    ["return", "policy", false],
+    ["advance", "task", true],
+  ] as const)(
+    "rejects additional drift after an applied review through %s with %s mutation (branch_pr=%s)",
+    async (mode, drift, branchPr) => {
+      const { root, id, evaluator } = await prepareEvaluator(branchPr);
+      const resultPath = await resultFor(evaluator, "Review before later task mutation.");
+      const beforeResult = await readFile(resultPath, "utf8");
+      const original = evaluatorApplication.applyExternalEvaluatorResult;
+      const application = vi
+        .spyOn(evaluatorApplication, "applyExternalEvaluatorResult")
+        .mockImplementationOnce(async (opts) => {
+          await original(opts);
+          throw new Error("Interrupted after review application.");
+        });
+      try {
+        const interrupted = await returnResult(root, evaluator, resultPath);
+        expect(interrupted.stderr).toContain("Interrupted after review application.");
+      } finally {
+        application.mockRestore();
+      }
+      switch (drift) {
+        case "task": {
+          const changed = await invoke(root, [
+            "task",
+            "comment",
+            id,
+            "--author",
+            "CODER",
+            "--body",
+            "A new observation after the applied review changes the task input.",
+          ]);
+          expect(changed.code, changed.stderr).toBe(0);
+
+          break;
+        }
+        case "plan": {
+          const changed = await invoke(root, [
+            "task",
+            "plan",
+            "set",
+            id,
+            "--updated-by",
+            "PLANNER",
+            "--text",
+            "A changed implementation plan requires a new evaluation.",
+          ]);
+          expect(changed.code, changed.stderr).toBe(0);
+
+          break;
+        }
+        case "policy": {
+          await writeFile(
+            path.join(root, ".agentplane/policy/dod.code.md"),
+            "# Revised code verification\n\nRequire independent replay evidence.\n",
+            "utf8",
+          );
+
+          break;
+        }
+        case "evidence": {
+          const exchange = JSON.parse(
+            await readFile(path.join(evaluator.exchange.directory, "exchange.json"), "utf8"),
+          ) as exchangeArtifacts.ExternalAgentExchange;
+          const order = readWorkOrder(
+            JSON.parse(await readFile(exchange.evaluator_work_order_ref!, "utf8")),
+          );
+          const diff = order.evidence.find((e) => e.kind === "actual_diff")!;
+          await writeFile(path.join(root, diff.path), "changed evidence\n", "utf8");
+
+          break;
+        }
+        default: {
+          await writeFile(
+            path.join(root, "implemented.txt"),
+            "Changed after the review.\n",
+            "utf8",
+          );
+          if (drift === "head") {
+            await execFileAsync("git", ["add", "implemented.txt"], { cwd: root });
+            await execFileAsync("git", ["commit", "-m", "test: later implementation"], {
+              cwd: root,
+            });
+          }
+        }
+      }
+      const recovery =
+        mode === "return"
+          ? await returnResult(root, evaluator, resultPath)
+          : await invoke(root, ["task", "advance", id, "--agent-json"]);
+      expect(recovery.code, recovery.stdout).not.toBe(0);
+      expect(recovery.stderr).toMatch(/stale|changed|drift/);
+      const context = await loadCommandContext({ cwd: root, rootOverride: root });
+      const recoveredTask = await context.taskBackend.getTask(id);
+      expect(recoveredTask?.status).not.toBe("DONE");
+      expect(await readFile(resultPath, "utf8")).toBe(beforeResult);
+      if (mode === "advance" && drift === "task") {
+        const replacement = await invoke(root, [
+          "task",
+          "advance",
+          id,
+          "--replacement",
+          "--agent-json",
+        ]);
+        expect(replacement.code, replacement.stderr).toBe(0);
+        const fresh = JSON.parse(replacement.stdout) as Packet;
+        expect(fresh.action.kind).toBe("agent_episode");
+        expect(fresh.authority.role).toBe("EVALUATOR");
+        const pendingTask = await context.taskBackend.getTask(id);
+        expect(pendingTask?.status).not.toBe("DONE");
+        expect(pendingTask?.quality_review).toEqual(recoveredTask?.quality_review);
+        const repeated = await packet(root, id);
+        expect(repeated.exchange.directory).toBe(fresh.exchange.directory);
+        const accepted = await returnResult(
+          root,
+          fresh,
+          await resultFor(fresh, "Fresh review after retirement."),
+        );
+        expect(accepted.code, accepted.stderr).toBe(0);
+        const freshTask = await context.taskBackend.getTask(id);
+        expect(freshTask?.quality_review?.state).toBe("pass");
+        expect(freshTask?.quality_review?.evidence_refs).not.toEqual(
+          recoveredTask?.quality_review?.evidence_refs,
+        );
+        const oldReplay = await returnResult(root, evaluator, resultPath);
+        expect(oldReplay.code).not.toBe(0);
+        expect(oldReplay.stderr).toContain("retired");
+        expect(await readFile(resultPath, "utf8")).toBe(beforeResult);
+      }
+    },
+  );
+
+  it("recovers a worktree-applied review when continuation starts in the base checkout", async () => {
+    const { root, baseRoot, id, evaluator } = await prepareEvaluator(true);
+    const resultPath = await resultFor(evaluator, "Recover the authoritative worktree review.");
+    const original = evaluatorApplication.applyExternalEvaluatorResult;
+    const application = vi
+      .spyOn(evaluatorApplication, "applyExternalEvaluatorResult")
+      .mockImplementationOnce(async (opts) => {
+        await original(opts);
+        throw new Error("Interrupted after worktree review application.");
+      });
+    try {
+      const interrupted = await returnResult(root, evaluator, resultPath);
+      expect(interrupted.stderr).toContain("Interrupted after worktree review application.");
+    } finally {
+      application.mockRestore();
+    }
+    const context = await loadCommandContext({ cwd: root, rootOverride: root });
+    const reviewedTask = await context.taskBackend.getTask(id);
+    const review = reviewedTask?.quality_review;
+    expect(review?.state).toBe("pass");
+    const recovered = await invoke(baseRoot, ["task", "advance", id, "--agent-json"]);
+    expect(recovered.code, recovered.stderr).toBe(0);
+    const exchange = await exchangeArtifacts.readExternalAgentExchange(
+      path.join(evaluator.exchange.directory, "exchange.json"),
+    );
+    expect(exchange?.status).toBe("consumed");
+    const recoveredTask = await context.taskBackend.getTask(id);
+    expect(recoveredTask?.quality_review).toEqual(review);
+  });
+
   it("rejects changed work-order evidence without retiring the bound intent", async () => {
     const { root, id, evaluator } = await prepareEvaluator();
     await resultFor(evaluator, "The old review must remain unaccepted.");
@@ -275,39 +501,50 @@ describe("stale evaluator recovery", () => {
     expect((JSON.parse(next.stdout) as Packet).transition_id).not.toBe(evaluator.transition_id);
   });
 
-  it("recovers a review applied before interruption instead of retiring or applying it twice", async () => {
-    const { root, id, evaluator } = await prepareEvaluator();
-    const resultPath = await resultFor(evaluator, "The fresh review is accepted exactly once.");
-    const original = evaluatorApplication.applyExternalEvaluatorResult;
-    const application = vi
-      .spyOn(evaluatorApplication, "applyExternalEvaluatorResult")
-      .mockImplementationOnce(async (opts) => {
-        await original(opts);
-        throw new Error("Interrupted after the evaluator effect was persisted.");
-      });
-    try {
-      const interrupted = await returnResult(root, evaluator, resultPath);
-      expect(interrupted.code).not.toBe(0);
-      expect(interrupted.stderr).toContain("Interrupted after the evaluator effect");
-      const context = await loadCommandContext({ cwd: root, rootOverride: root });
-      const reviewedTask = await context.taskBackend.getTask(id);
-      const review = reviewedTask?.quality_review;
-      expect(review?.state).toBe("pass");
-      const recovered = await invoke(root, ["task", "advance", id, "--agent-json"]);
-      expect(recovered.code, recovered.stderr).toBe(0);
-      expect((JSON.parse(recovered.stdout) as Packet).action.kind).toBe("terminal");
-      const recoveredTask = await context.taskBackend.getTask(id);
-      expect(recoveredTask?.quality_review).toEqual(review);
-      const exchange = JSON.parse(
-        await readFile(path.join(evaluator.exchange.directory, "exchange.json"), "utf8"),
-      ) as { status: string };
-      expect(exchange.status).toBe("consumed");
-      const repeated = await packet(root, id);
-      expect(repeated.action.kind).toBe("terminal");
-    } finally {
-      application.mockRestore();
-    }
-  });
+  it.each([false, true])(
+    "recovers an applied review exactly once with beforeCommit=%s",
+    async (beforeCommit) => {
+      const { root, id, evaluator } = await prepareEvaluator();
+      const resultPath = await resultFor(evaluator, "The fresh review is accepted exactly once.");
+      const original = evaluatorApplication.applyExternalEvaluatorResult;
+      const commit = beforeCommit
+        ? vi
+            .spyOn(guardedCommit, "cmdCommit")
+            .mockRejectedValueOnce(
+              new Error("Interrupted after the evaluator effect was persisted."),
+            )
+        : null;
+      const application = vi
+        .spyOn(evaluatorApplication, "applyExternalEvaluatorResult")
+        .mockImplementationOnce(async (opts) => {
+          await original(opts);
+          throw new Error("Interrupted after the evaluator effect was persisted.");
+        });
+      try {
+        const interrupted = await returnResult(root, evaluator, resultPath);
+        expect(interrupted.code).not.toBe(0);
+        expect(interrupted.stderr).toContain("Interrupted after the evaluator effect");
+        const context = await loadCommandContext({ cwd: root, rootOverride: root });
+        const reviewedTask = await context.taskBackend.getTask(id);
+        const review = reviewedTask?.quality_review;
+        expect(review?.state).toBe("pass");
+        const recovered = await invoke(root, ["task", "advance", id, "--agent-json"]);
+        expect(recovered.code, recovered.stderr).toBe(0);
+        expect((JSON.parse(recovered.stdout) as Packet).action.kind).toBe("terminal");
+        const recoveredTask = await context.taskBackend.getTask(id);
+        expect(recoveredTask?.quality_review).toEqual(review);
+        const exchange = JSON.parse(
+          await readFile(path.join(evaluator.exchange.directory, "exchange.json"), "utf8"),
+        ) as { status: string };
+        expect(exchange.status).toBe("consumed");
+        const repeated = await packet(root, id);
+        expect(repeated.action.kind).toBe("terminal");
+      } finally {
+        application.mockRestore();
+        commit?.mockRestore();
+      }
+    },
+  );
 
   it.each(["issued", "result_received"] as const)(
     "retires an unapplied %s review and reaches a fresh episode without rewriting its result",

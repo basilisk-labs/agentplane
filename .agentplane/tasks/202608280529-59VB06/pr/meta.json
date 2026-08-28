@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608280529-59VB06/recover-stale-evaluator-exchanges-without-accept",
   "created_at": "2026-08-28T05:33:24.733Z",
-  "diffstat_sha256": "sha256:d452b500775ae01783f4d7a703c80ac6e2c087a62304b4574917e81697f7547b",
+  "diffstat_sha256": "sha256:757616f5a3ebab6286e8ad569c2d680061a86c1339b5a2e4c8cece6c07e2b7f5",
   "last_verified_at": "2026-08-28T16:16:39.959Z",
   "last_verified_diffstat_sha256": "sha256:d452b500775ae01783f4d7a703c80ac6e2c087a62304b4574917e81697f7547b",
   "pr_number": 5866,
