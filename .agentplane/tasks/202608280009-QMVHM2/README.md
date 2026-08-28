@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -30,34 +30,35 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-28T04:30:28.296Z"
+  updated_at: "2026-08-28T05:15:06.818Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "d600fac6c23a05c6d14ebfb3c49c93fd5d36cc72"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "b2b852480454fa4c6a9c0ad7e39e5d51d4dd294e"
   blueprint_digest: "9f8313c431ef0435b9f5ea2458ec11f9f5ea1e66ec55c98afcb78fffe3c2d7e2"
   evidence_refs:
-    - ".agentplane/tasks/202608280009-QMVHM2/quality/20260828-042840647-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608280009-QMVHM2/quality/20260828-042840647-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/eeb6b4d935b7082e3a532d3520244220ada15bb93c7ca55a51e8d77134958539.md"
-    - ".agentplane/tasks/202608280009-QMVHM2/quality/20260828-042840647-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608280009-QMVHM2/quality/20260828-042840647-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608280009-QMVHM2/quality/20260828-042840647-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608280009-QMVHM2/quality/20260828-051322345-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608280009-QMVHM2/quality/20260828-051322345-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/1c71cb603799ea00dfe1eb4feba9eaaceb1ba54dcbf5d427df29019e0705cc88.md"
+    - ".agentplane/tasks/202608280009-QMVHM2/quality/20260828-051322345-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608280009-QMVHM2/quality/20260828-051322345-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608280009-QMVHM2/quality/20260828-051322345-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608280009-QMVHM2/README.md"
-    - ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/5379a6852a6d160cd1b996793dd260bf11f32c00c170218fea9dc0fff3a613e4.patch"
-    - ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/b2ffb42c3b91e00e03734e7dcf1aa3ef131732e1faccaedf4fa53f1310491c33.json"
-    - ".agentplane/tasks/202608280009-QMVHM2/verification/20260828042822482-e20218a743e953fb.json"
+    - ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/60f75a07ff5023ff166e4200c64265239501e2b3f6b37a021996dff717b5fbfe.patch"
+    - ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/66b158c9a1fbadd62b9ef4afac539b907e19606f24447f5afac1a180c96d1f76.json"
+    - ".agentplane/tasks/202608280009-QMVHM2/verification/20260828051308628-09a00b90b25d66f1.json"
     - ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/239c6f92bfea8b9963a7280e631c183681ae1af1934202231f1189ec01382189.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "All nine frozen evidence hashes match. The new verification record verification/20260828042822482-e20218a743e953fb.json reports successful mandatory checks and binds source 6d952d932d8635833a8320a44279df306a6a06b2, base e43acc5f72ba1f884966a16325d6dbc94fcb1f04, and updated Verify Steps digest a64bd7dbb74746d4ee85273b13f408d4c3085637a7306eaa738070743e9de038. The evaluator target d600fac6c23a05c6d14ebfb3c49c93fd5d36cc72 includes the documentation correction; git diff confirms no package source drift from the implementation."
-    - "Verify Steps now specifies both interruption boundaries, fresh continuation, exactly-once replay, next task-level rework, changed or missing proof rejection, observed-contract mapping, and no false DONE. Findings records the proved causes, original implementation, historical versus current proof, and remaining DVS5NN/CFKR4P and hosted/release work. The prior documentation-only rework is resolved without expanding source scope or weakening required checks."
-    - "Recovery checks the current approved plan and WorkItem state, exact implementation evidence and Git ancestry/path scope, preserved README contract, and the original validated exchange result digest. No-renames path proof rejects moving product source into managed artifacts. Existing historical exchanges remain immutable. Fresh checks run before canonical result projection. Task-level rework does not invent an already-completed WorkItem. Required-incomplete finish rejects before legacy DONE persistence, including force."
-    - "The unchanged 7-file focused command was rerun during this evaluation: 63 tests passed in 43.08 seconds. Reviewed tests cover both interruption boundaries, repeat execution, the next rework transition, stale or missing evidence and divergent result rejection, frozen-base changes, source relocation, and whole-task equality after rejected finish. The actual source diff is unchanged from the prior reviewed patch."
-    - "Current tracked state is clean. The remaining untracked files are the four newly prepared evaluator evidence artifacts owned by AgentPlane. No product, policy, CI, release, or other task scope was changed during evaluation."
-    - "Residual risk: The post-review provider and closure gates must still execute through their current authority. No local test result substitutes for hosted integration or final 0.7.8 release qualification."
+    - "All nine frozen evidence hashes match. Evaluated source b2b852480454fa4c6a9c0ad7e39e5d51d4dd294e and base e43acc5f72ba1f884966a16325d6dbc94fcb1f04 match the fresh verification record 20260828051308628-09a00b90b25d66f1.json. The unchanged full CI exited zero in 478269 ms, and git diff --check passed. Verify Steps digest a64bd7dbb74746d4ee85273b13f408d4c3085637a7306eaa738070743e9de038 is current."
+    - "The original recovery invariants remain enforced: approved plan and WorkItem identity, original result envelope and digest, exact implementation/base ancestry, current path scope and README contract, no source relocation disguised as artifacts, fresh required verification, immutable historical exchanges, exactly-once canonical projection and no required-incomplete legacy DONE."
+    - "The P1 defect is repaired at its data flow. resolveRecordedImplementationRecovery now returns the validated original semantic payload, and applyExternalImplementationResult projects that payload after verification. The replacement envelope remains the current execution boundary but its different summary, findings and uncertainty cannot be substituted as claims for the unchanged implementation."
+    - "Both real-Git interruption variants now submit altered replacement assertions and require the original semantic payload. They also verify the persisted output manifest digest against the original summary, claims and questions, retain historical-exchange byte equality and implementation identity, and test repeated continuation and the next task-level rework. The tests use the allowed command layer, not a direct adapter import. The architecture guard remains unchanged."
+    - "The exact seven-file focused suite was rerun during this evaluation: all 63 tests passed in 42.37 seconds. The previous layering failure remains historical evidence and is not relabelled as a pass. Current full verification and the separate five-test layering/recovery run cover the corrected test."
+    - "Verify Steps and Findings remain populated with the bounded scenario and residual integration/release work. Since the evaluated source commit, only AgentPlane-owned task artifacts changed. The fresh local supervisor completed the null-WorkItem verification transition and issued this evaluator packet without the earlier WorkItem selection error."
+    - "Residual risk: Exact-head hosted checks, review-thread resolution, integration and terminal closure remain required. Preserve the separate release qualification and publication boundary."
 token_usage:
   agent_runs: 5
   input_tokens: null
@@ -394,7 +395,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-28T05:13:10.888Z"
+doc_updated_at: "2026-08-28T05:15:06.851Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the reproduced integration blocker on main e43acc5f72ba1f884966a16325d6dbc94fcb1f04. DVS5NN accepted and committed the cleanup at b577984d8418b4cb7fed521c14b6ab00bf773a93, then completed full checks, but verification persistence rejected a docs_contract mapping added by observed base history. Result application stopped before WorkItem projection. Supported TESTER verification and EVALUATOR PASS did not complete the READY WorkItem. finish then wrote legacy DONE before rejecting required_work_item_incomplete. CFKR4P also completed full checks for a task-level null-WorkItem rework but result application failed because all WorkItems were already completed. Preserve one complete scenario: accepted semantic result, exact implementation and plan binding, current mandatory verification, interruption, supported restart, exactly-once WorkItem projection, and finish without false completion. Diagnose the smallest repair before planning. Prefer existing exchange, verification and runtime receipts; do not add a parallel state store or generic replay subsystem. Preserve stale result rejection, plan and commit identity, missing-evidence rejection, approval gates and mandatory checks. Do not implement AP-CORE-012, AP-CORE-013 or AP-CORE-015 ahead of the approved graph; limit the change to this demonstrated integration recovery and prevention contract. Include real-Git positive, interruption, repeat, changed-plan/head and incomplete-WorkItem negative regressions. Keep DVS5NN and CFKR4P source scopes unchanged. No release publication or CI weakening. The user authorized autonomous completion and supported operator approvals. Stop on any unsupported authority or materially larger architectural scope."
 sections:
