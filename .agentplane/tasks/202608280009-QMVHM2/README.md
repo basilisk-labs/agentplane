@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "USER"
   note: "Operator approval under the user-authorized autonomous refactoring exception. Exact prepared plan f1268d36bbb2c0c541cf3a769f5cbe3ad4b141236b5b4fa60d40af1580da45a1; bounded integration-recovery contract only. No release publication, Core graph reorder, new protocol or mandatory-check weakening."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-28T05:02:20.795Z"
+  state: "ok"
+  updated_at: "2026-08-28T05:13:08.628Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -150,8 +150,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
       - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -170,7 +169,7 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
       -
         id: "recorded-check-2"
         result: "pass"
@@ -291,8 +290,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-commit: null
+commit:
+  hash: "b2b852480454fa4c6a9c0ad7e39e5d51d4dd294e"
+  message: "🚧 QMVHM2 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -312,6 +312,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: df34180869c7. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: b2b852480454. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -376,8 +379,22 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-28T05:05:09.612Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: b2b852480454. CLI accepted one state-bound external-agent semantic result."
+    commit: "b2b852480454fa4c6a9c0ad7e39e5d51d4dd294e"
+  -
+    type: "verify"
+    at: "2026-08-28T05:13:08.628Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-28T05:02:23.367Z"
+doc_updated_at: "2026-08-28T05:13:10.888Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the reproduced integration blocker on main e43acc5f72ba1f884966a16325d6dbc94fcb1f04. DVS5NN accepted and committed the cleanup at b577984d8418b4cb7fed521c14b6ab00bf773a93, then completed full checks, but verification persistence rejected a docs_contract mapping added by observed base history. Result application stopped before WorkItem projection. Supported TESTER verification and EVALUATOR PASS did not complete the READY WorkItem. finish then wrote legacy DONE before rejecting required_work_item_incomplete. CFKR4P also completed full checks for a task-level null-WorkItem rework but result application failed because all WorkItems were already completed. Preserve one complete scenario: accepted semantic result, exact implementation and plan binding, current mandatory verification, interruption, supported restart, exactly-once WorkItem projection, and finish without false completion. Diagnose the smallest repair before planning. Prefer existing exchange, verification and runtime receipts; do not add a parallel state store or generic replay subsystem. Preserve stale result rejection, plan and commit identity, missing-evidence rejection, approval gates and mandatory checks. Do not implement AP-CORE-012, AP-CORE-013 or AP-CORE-015 ahead of the approved graph; limit the change to this demonstrated integration recovery and prevention contract. Include real-Git positive, interruption, repeat, changed-plan/head and incomplete-WorkItem negative regressions. Keep DVS5NN and CFKR4P source scopes unchanged. No release publication or CI weakening. The user authorized autonomous completion and supported operator approvals. Stop on any unsupported authority or materially larger architectural scope."
 sections:
@@ -564,6 +581,78 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-1
     Scope: branch_pr task 202608280009-QMVHM2 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608280009-QMVHM2-recover-interrupted-verification-to-workitem-com/.agentplane/tasks/202608280009-QMVHM2/blueprint/resolved-snapshot.json
+    - old_digest: 9f8313c431ef0435b9f5ea2458ec11f9f5ea1e66ec55c98afcb78fffe3c2d7e2
+    - current_digest: 9f8313c431ef0435b9f5ea2458ec11f9f5ea1e66ec55c98afcb78fffe3c2d7e2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608280009-QMVHM2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608280009-QMVHM2
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-28T05:13:08.628Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a64bd7dbb74746d4ee85273b13f408d4c3085637a7306eaa738070743e9de038, input_digest=sha256:888e62f18fea7faa3c3b64bb3692f126ad4a10ce35a9065d522828ea01ff93cf
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280009-QMVHM2 Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608280009-QMVHM2 Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280009-QMVHM2 Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608280009-QMVHM2 Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280009-QMVHM2 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280009-QMVHM2 Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608280009-QMVHM2 Verification Contract check task_outcome (2/2)
 
     BlueprintSnapshotRef:
     - state: current
@@ -1118,6 +1207,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "b2b852480454fa4c6a9c0ad7e39e5d51d4dd294e"
   task_execution_context:
     base_ref: "main"
     base_sha: "e43acc5f72ba1f884966a16325d6dbc94fcb1f04"
@@ -1321,6 +1412,78 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-1
 Scope: branch_pr task 202608280009-QMVHM2 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608280009-QMVHM2-recover-interrupted-verification-to-workitem-com/.agentplane/tasks/202608280009-QMVHM2/blueprint/resolved-snapshot.json
+- old_digest: 9f8313c431ef0435b9f5ea2458ec11f9f5ea1e66ec55c98afcb78fffe3c2d7e2
+- current_digest: 9f8313c431ef0435b9f5ea2458ec11f9f5ea1e66ec55c98afcb78fffe3c2d7e2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608280009-QMVHM2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608280009-QMVHM2
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-28T05:13:08.628Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a64bd7dbb74746d4ee85273b13f408d4c3085637a7306eaa738070743e9de038, input_digest=sha256:888e62f18fea7faa3c3b64bb3692f126ad4a10ce35a9065d522828ea01ff93cf
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280009-QMVHM2 Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608280009-QMVHM2 Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280009-QMVHM2 Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608280009-QMVHM2 Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280009-QMVHM2 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280009-QMVHM2 Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608280009-QMVHM2 Verification Contract check task_outcome (2/2)
 
 BlueprintSnapshotRef:
 - state: current
