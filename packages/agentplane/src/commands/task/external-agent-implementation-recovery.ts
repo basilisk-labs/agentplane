@@ -75,8 +75,41 @@ export async function refreshRecoveredImplementationEvidence(opts: {
   exchange: ExternalAgentExchange;
   execution_base: string | null;
   commit: string | null;
+  preserve_recorded_evidence?: boolean;
 }) {
   if (!opts.execution_base || !opts.commit) return null;
+  if (opts.preserve_recorded_evidence) {
+    // Reobserve Git without rewriting the historical effect with a new episode baseline.
+    const checks = await Promise.all(
+      [
+        ["diff", "--check", opts.execution_base, opts.commit, "--"],
+        ["diff", "--cached", "--check"],
+      ].map((args) =>
+        runProcess({
+          command: "git",
+          args,
+          cwd: opts.exchange.checkout,
+          env: gitProofEnv(),
+          reject: false,
+        }),
+      ),
+    );
+    const changed = await exactChangedPaths(
+      opts.exchange.checkout,
+      opts.execution_base,
+      opts.commit,
+    );
+    if (checks.some((check) => check.exitCode !== 0) || !changed)
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "Recorded implementation Git checks failed.",
+      });
+    return {
+      artifact_path: `${opts.command.config.paths.workflow_dir}/${opts.exchange.task_id}/supervision/implementation-evidence.json`,
+      implementation_commit: opts.commit,
+      changed_paths: changed,
+    };
+  }
   const evidence = await recordDirectImplementationEvidence({
     command: opts.command,
     cwd: opts.exchange.checkout,
@@ -255,6 +288,34 @@ async function directories(directory: string): Promise<string[]> {
   }
 }
 
+function completedWorkItemRecoveryReadme(markdown: string): string {
+  const parsed = parseTaskReadme(markdown);
+  const aggregate = parsed.frontmatter.extensions;
+  const runtime = isRecord(aggregate) ? aggregate["agentplane.task_centric"] : null;
+  if (isRecord(aggregate) && isRecord(runtime)) {
+    // Completion changes runtime evidence, not the approved plan or its authority.
+    for (const key of ["revision", "event_cursor", "updated_at", "final_validation"])
+      Reflect.deleteProperty(runtime, key);
+    if (isRecord(runtime.work_items)) {
+      for (const item of Object.values(runtime.work_items)) {
+        if (!isRecord(item)) continue;
+        for (const key of [
+          "state",
+          "revision",
+          "attempt",
+          "claim_id",
+          "output_manifests",
+          "validation_result",
+          "last_failure",
+        ])
+          Reflect.deleteProperty(item, key);
+      }
+    }
+    Reflect.deleteProperty(aggregate, "agentplane.task_centric_runtime");
+  }
+  return renderTaskReadme(parsed.frontmatter, parsed.body);
+}
+
 /** Recover only recorded implementation effects. Checks are executed again by the caller. */
 export async function resolveRecordedImplementationRecovery(opts: {
   command: CommandContext;
@@ -262,7 +323,12 @@ export async function resolveRecordedImplementationRecovery(opts: {
   work_order: AgentWorkOrderV2;
   head: string | null;
   recorded_commit: string | null;
-}): Promise<{ commit: string; execution_base: string; semantic: AgentSemanticResult } | null> {
+  purpose?: ExternalAgentExchange["purpose"];
+}): Promise<{
+  commit: string;
+  execution_base: string;
+  semantic: AgentSemanticResult | null;
+} | null> {
   const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
   const plan = aggregate?.current_plan;
   const root = opts.command.resolvedProject.gitRoot;
@@ -296,6 +362,12 @@ export async function resolveRecordedImplementationRecovery(opts: {
   )
     return null;
   const workItemId = opts.work_order.task.work_item_id ?? null;
+  const taskLevelRework =
+    workItemId === null &&
+    opts.purpose === "implementation_rework" &&
+    (opts.task.verification?.state === "needs_rework" ||
+      ["rework", "blocked"].includes(opts.task.quality_review?.state ?? ""));
+  if (workItemId === null && !taskLevelRework) return null;
   if (
     !plan ||
     !aggregate ||
@@ -338,7 +410,12 @@ export async function resolveRecordedImplementationRecovery(opts: {
   ]);
   if (
     currentReadmes.some(
-      (readme) => !taskReadmesPreserveRecoveryContract(committedReadme, readme, commit),
+      (readme) =>
+        !taskReadmesPreserveRecoveryContract(
+          taskLevelRework ? completedWorkItemRecoveryReadme(committedReadme) : committedReadme,
+          taskLevelRework ? completedWorkItemRecoveryReadme(readme) : readme,
+          commit,
+        ),
     )
   )
     return null;
@@ -385,7 +462,13 @@ export async function resolveRecordedImplementationRecovery(opts: {
       )
         continue;
       const issued = await readExternalAgentWorkOrder(path.join(directory, "work-order.json"));
-      if (issued.task.id !== opts.task.id || (issued.task.work_item_id ?? null) !== workItemId)
+      const originalItem = issued.task.work_item_id ?? null;
+      if (
+        issued.task.id !== opts.task.id ||
+        (taskLevelRework
+          ? originalItem !== null && aggregate.work_items[originalItem]?.state !== "COMPLETED"
+          : originalItem !== workItemId)
+      )
         continue;
       const original = validateExternalAgentResultEnvelope({
         raw: exchange.result,
@@ -398,7 +481,8 @@ export async function resolveRecordedImplementationRecovery(opts: {
         externalAgentResultDigest(original) !== exchange.result_digest
       )
         continue;
-      return { commit, execution_base: base, semantic: original.result };
+      // Task-level rework reports current claims. Interrupted WorkItems retain original claims.
+      return { commit, execution_base: base, semantic: taskLevelRework ? null : original.result };
     }
   }
   return null;

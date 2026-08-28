@@ -23,6 +23,43 @@ function task() {
 }
 
 describe("recorded implementation recovery contract", () => {
+  it("allows Findings-only repair without accepting verification or authority changes", () => {
+    const before = task();
+    const original = renderTaskReadme(before, "## Findings\nMissing implementation evidence.\n");
+    const repaired = "## Findings\nRecorded implementation; fresh checks remain required.\n";
+    expect(
+      taskReadmesPreserveRecoveryContract(original, renderTaskReadme(before, repaired), COMMIT),
+    ).toBe(true);
+    expect(
+      taskReadmesPreserveRecoveryContract(
+        original,
+        renderTaskReadme(
+          {
+            ...before,
+            verify: ["bun run weaker-check"],
+          },
+          repaired,
+        ),
+        COMMIT,
+      ),
+    ).toBe(false);
+    expect(
+      taskReadmesPreserveRecoveryContract(
+        original,
+        renderTaskReadme(
+          {
+            ...before,
+            extensions: {
+              ...before.extensions,
+              "agentplane.execution_grant": { status: "revoked" },
+            },
+          },
+          repaired,
+        ),
+        COMMIT,
+      ),
+    ).toBe(false);
+  });
   it("accepts execution-context hydration only for the already-frozen base", () => {
     const original = task();
     const before = {

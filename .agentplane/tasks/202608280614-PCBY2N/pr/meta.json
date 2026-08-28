@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608280614-PCBY2N/recover-task-level-evidence-rework-after-complet",
+  "created_at": "2026-08-28T11:08:27.620Z",
+  "diffstat_sha256": "sha256:b5fc899c0a5908390ba1046880bbaf2c2ce225d06d84c4bddab23d5a2c3f7ff3",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608280614-PCBY2N",
+  "updated_at": "2026-08-28T11:08:27.620Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
