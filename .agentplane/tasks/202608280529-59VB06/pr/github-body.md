@@ -15,8 +15,8 @@ On integrated main 844eff36ba407436c26a3c63346b0dcc384ce2b5, continuation of DVS
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
