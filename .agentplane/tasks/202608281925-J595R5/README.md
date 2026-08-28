@@ -4,7 +4,7 @@ title: "Resume required WorkItems before branch pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -29,6 +29,38 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-28T20:53:18.013Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "3f1b5686f67e4fb38c47f12341a9ae790c87c055"
+  blueprint_digest: "3762f52078ff9d39702029c5a887c01cde3864a46ca9d510ba50c502b83c10dd"
+  evidence_refs:
+    - ".agentplane/tasks/202608281925-J595R5/quality/20260828-205039516-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608281925-J595R5/quality/20260828-205039516-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608281925-J595R5/quality/objects/sha256/1c92f8018da5ed6177bb64f8e2b2c3c73ddafbeee525f012563a28d8dc51a056.md"
+    - ".agentplane/tasks/202608281925-J595R5/quality/20260828-205039516-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608281925-J595R5/quality/20260828-205039516-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608281925-J595R5/quality/20260828-205039516-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608281925-J595R5/README.md"
+    - ".agentplane/tasks/202608281925-J595R5/quality/objects/sha256/6edec9295131e1c733a5f52545fd8059198fa884ee0a9d5b46937b03ee32d0d9.patch"
+    - ".agentplane/tasks/202608281925-J595R5/quality/objects/sha256/6e438e83e78b595b6314a853431bf3a2eedad72f4eb0329318a802baf16b2301.json"
+    - ".agentplane/tasks/202608281925-J595R5/verification/20260828205019823-490e710f6f4bf5d7.json"
+    - ".agentplane/tasks/202608281925-J595R5/quality/objects/sha256/e4808869ed836666a58b863fadc7d258fae4f37e30f81ebde4dd1e9f59ea04c4.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The actual-diff evidence changes only the five approved source/test files plus task-owned artifacts. The required-work helper uses the existing WorkItemScheduler rather than deriving completion from an implementation commit or a previous pass. Incomplete unschedulable and in-flight work yields a non-mutating boundary. The existing dirty-worktree/runner checks remain before this helper; merged/closed and optional-only/completed/legacy routes are preserved."
+    - "DONE required-work continuation now requests a live provider refresh when only metadata or unavailable provider observation exists, before stale verification can hide the unfinished WorkItem. The added negative test proves this ordering. The included-batch helper is an unchanged extraction and the runtime module-size check remains unchanged."
+    - "The real-Git regression exercises the approved interrupted sequence rather than merely asserting a route name: source and checks persist, WorkItem completion is interrupted, normal CLI replacement resumes the same work, and the original semantic output digest and source SHA/bytes remain exact through repeat continuation, new evaluation and pre-merge closure. The calibration fixture records an output-bearing completed WorkItem through the existing adapter and retains both original evaluator-routing assertions."
+    - "The recovery context has been reconciled. Artifact-only commits b76b10a and 6b3c044 are not treated as source delivery. Frozen observed-checks and verification record 20260828205019823-490e710f6f4bf5d7 bind the real five-file implementation to 3f1b5686f67e4fb38c47f12341a9ae790c87c055, with final source checkout clean before evidence generation. Current HEAD changes after that SHA are task artifacts only. The original completed WorkItem digest ee1164ebc616c11ab1cc11e14833b10fd26ce5f30411b2f5b909fcbd926937fa was preserved."
+    - "All nine frozen evidence hashes and the manifest matched before review; all nine still matched after the control checks. The exact-implementation verification records unchanged ci:local:full and git diff --check as passing. The read-only control on current source passed 59 tests across five suites in 21.94 seconds. The task README contains the required sections and explicit acceptance checks; its earlier recovery note is historical, with the fresh 20:50 verification record providing current committed-source proof."
+    - "Residual risk: Require fresh exact-head hosted checks and confirmed integration/hosted closure before calling J595R5 delivered."
+    - "Residual risk: Retry DVS5NN through its fresh route only after this implementation is integrated; qualify the final 0.7.8 release separately."
 execution_route:
   frozen: true
   reason_codes:

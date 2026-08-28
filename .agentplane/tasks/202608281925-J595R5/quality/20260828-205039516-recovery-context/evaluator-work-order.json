@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608281925-J595R5-71820ddc55f638930f9bb7d9",
+  "prepared_at": "2026-08-28T20:50:39.516Z",
+  "task": {
+    "id": "202608281925-J595R5",
+    "revision": 16,
+    "objective": "Resume required WorkItems before branch pre-merge closure\n\nFix the reproduced release-integration blocker in DVS5NN/PR #5862 on main 3bcce289091f5e6cbcb1dea87c2964c4f559259d. Its approved required remove-obsolete-handoff-reader WorkItem is READY with no outputs, while the concrete b577984d implementation and successful verification exist. After supported reopening and fresh evaluator acceptance the route offers task.pre_merge_close; finish rejects required_work_item_incomplete. flow repair has no deterministic repair. Route unfinished required WorkItems through the existing implementation/recovery episode before quality/publication/closure, with no fabricated source delta and no direct task-state edits. Cover the complete scenario: persisted implementation effect, interruption before WorkItem completion, normal restart, exact recovery of the original typed output, repeat restart, required verification/evaluation, and the following closure transition. Preserve completed WorkItem outputs, plan/checkout/authority freshness, dirty-worktree and active-runner guards, and already merged hosted-close/cleanup behavior. Use the existing canonical WorkItem scheduler and recorded implementation recovery; do not introduce another scheduler or state store. Do not weaken checks, completion guards or approvals; do not change release/Core order. Scope the smallest route/supervisor adapters and regression tests through a structured plan; request a supported scope extension only if reproduction proves more is required. USER authorized all necessary in-scope operations through release 0.7.8; this is an integration-path blocker, not a new architecture program.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "git diff --check",
+      "- In scope: Fix the reproduced release-integration blocker in DVS5NN/PR #5862 on main 3bcce289091f5e6cbcb1dea87c2964c4f559259d. Its approved required remove-obsolete-handoff-reader WorkItem is READY with no outputs, while the concrete b577984d implementation and successful verification exist. After supported reopening and fresh evaluator acceptance the route offers task.pre_merge_close; finish rejects required_work_item_incomplete. flow repair has no deterministic repair. Route unfinished required WorkItems through the existing implementation/recovery episode before quality/publication/closure, with no fabricated source delta and no direct task-state edits. Cover the complete scenario: persisted implementation effect, interruption before WorkItem completion, normal restart, exact recovery of the original typed output, repeat restart, required verification/evaluation, and the following closure transition. Preserve completed WorkItem outputs, plan/checkout/authority freshness, dirty-worktree and active-runner guards, and already merged hosted-close/cleanup behavior. Use the existing canonical WorkItem scheduler and recorded implementation recovery; do not introduce another scheduler or state store. Do not weaken checks, completion guards or approvals; do not change release/Core order. Scope the smallest route/supervisor adapters and regression tests through a structured plan; request a supported scope extension only if reproduction proves more is required. USER authorized all necessary in-scope operations through release 0.7.8; this is an integration-path blocker, not a new architecture program.\n- Out of scope: unrelated refactors not required for \"Resume required WorkItems before branch pre-merge closure\".",
+      "One bounded WorkItem restores the required-work route before closure and proves interrupted implementation recovery end to end using existing scheduler and result recovery.",
+      "1. Run `bun run ci:local:full` without changing checks, thresholds, exclusions, or the declared verification contract. Expected: build, runtime, docs/schema, core, critical CLI, docs site, workflow lint, platform-critical tests, and significant coverage pass on the final candidate. Record the exact checkout and input; an earlier candidate pass is not current proof.\n2. Run `git diff --check`. Expected: no whitespace errors in the approved changes.\n3. Review the focused required-work route tests. Expected: unfinished required WorkItems precede verification, evaluation, publication, and closure; missing inputs, dependencies, active effects, dirty worktrees, runner ownership, plan approval, and DONE provider freshness remain guarded. Legacy, optional-only, completed, and merged cases retain their route.\n4. Review the real-Git interrupted-effect test. Expected: source and verification persist before the injected interruption; normal continuation recovers the exact original output digest, source SHA, and bytes; repeated continuation preserves them; fresh evaluation precedes pre-merge closure.\n5. Review the evaluator calibration test. Expected: the fixture uses the existing adapter to complete its WorkItem with its required output before evaluation; the positive evidence-gap and negative ordinary-blocked assertions remain intact and preserve that output.\n6. Confirm that the implementation commit actually contains the five scoped source/test files and that the task worktree has no unintended changes. Distinguish local verification, exact-head hosted checks, merge, and confirmed hosted closure. This task check is not release:prepublish."
+    ]
+  },
+  "evaluated_sha": "3f1b5686f67e4fb38c47f12341a9ae790c87c055",
+  "diff_base_sha": "3bcce289091f5e6cbcb1dea87c2964c4f559259d",
+  "blueprint_digest": "3762f52078ff9d39702029c5a887c01cde3864a46ca9d510ba50c502b83c10dd",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608281925-J595R5/quality/20260828-205039516-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:6d81000d5239a58cb928c624c72c3da41489a7d76c90146ff5e95b5c216ba628",
+    "prompt_path": ".agentplane/tasks/202608281925-J595R5/quality/objects/sha256/1c92f8018da5ed6177bb64f8e2b2c3c73ddafbeee525f012563a28d8dc51a056.md",
+    "result_schema_path": ".agentplane/tasks/202608281925-J595R5/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608281925-J595R5/README.md",
+      "sha256": "sha256:6187f0264fe19d843c95750be51956c61e62794854315210ba7b4572fba5d921",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608281925-J595R5/quality/objects/sha256/6edec9295131e1c733a5f52545fd8059198fa884ee0a9d5b46937b03ee32d0d9.patch",
+      "sha256": "sha256:6edec9295131e1c733a5f52545fd8059198fa884ee0a9d5b46937b03ee32d0d9",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608281925-J595R5/quality/objects/sha256/6e438e83e78b595b6314a853431bf3a2eedad72f4eb0329318a802baf16b2301.json",
+      "sha256": "sha256:6e438e83e78b595b6314a853431bf3a2eedad72f4eb0329318a802baf16b2301",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608281925-J595R5/verification/20260828205019823-490e710f6f4bf5d7.json",
+      "sha256": "sha256:cb15bd7887f60c3aba8b45a5b2578602d9f0f735e4e2b91afadabf50b6a4f5bb",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608281925-J595R5/quality/objects/sha256/e4808869ed836666a58b863fadc7d258fae4f37e30f81ebde4dd1e9f59ea04c4.json",
+      "sha256": "sha256:e4808869ed836666a58b863fadc7d258fae4f37e30f81ebde4dd1e9f59ea04c4",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
