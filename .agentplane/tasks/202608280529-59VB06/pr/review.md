@@ -6,7 +6,7 @@ Created: 2026-08-28T05:33:24.733Z
 
 - Task: `202608280529-59VB06`
 - Title: Recover stale evaluator exchanges without accepting obsolete verdicts
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608280529-59VB06/recover-stale-evaluator-exchanges-without-accept`
 - Canonical task record: `.agentplane/tasks/202608280529-59VB06/README.md`
 
