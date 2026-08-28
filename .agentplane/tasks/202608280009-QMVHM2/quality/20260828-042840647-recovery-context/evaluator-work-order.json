@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608280009-QMVHM2-9aefa2d65a2559bdcc02aa03",
+  "prepared_at": "2026-08-28T04:28:40.647Z",
+  "task": {
+    "id": "202608280009-QMVHM2",
+    "revision": 14,
+    "objective": "Recover interrupted verification-to-WorkItem completion without false DONE\n\nRepair the reproduced integration blocker on main e43acc5f72ba1f884966a16325d6dbc94fcb1f04. DVS5NN accepted and committed the cleanup at b577984d8418b4cb7fed521c14b6ab00bf773a93, then completed full checks, but verification persistence rejected a docs_contract mapping added by observed base history. Result application stopped before WorkItem projection. Supported TESTER verification and EVALUATOR PASS did not complete the READY WorkItem. finish then wrote legacy DONE before rejecting required_work_item_incomplete. CFKR4P also completed full checks for a task-level null-WorkItem rework but result application failed because all WorkItems were already completed. Preserve one complete scenario: accepted semantic result, exact implementation and plan binding, current mandatory verification, interruption, supported restart, exactly-once WorkItem projection, and finish without false completion. Diagnose the smallest repair before planning. Prefer existing exchange, verification and runtime receipts; do not add a parallel state store or generic replay subsystem. Preserve stale result rejection, plan and commit identity, missing-evidence rejection, approval gates and mandatory checks. Do not implement AP-CORE-012, AP-CORE-013 or AP-CORE-015 ahead of the approved graph; limit the change to this demonstrated integration recovery and prevention contract. Include real-Git positive, interruption, repeat, changed-plan/head and incomplete-WorkItem negative regressions. Keep DVS5NN and CFKR4P source scopes unchanged. No release publication or CI weakening. The user authorized autonomous completion and supported operator approvals. Stop on any unsupported authority or materially larger architectural scope.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "git diff --check",
+      "- In scope: Repair the reproduced integration blocker on main e43acc5f72ba1f884966a16325d6dbc94fcb1f04. DVS5NN accepted and committed the cleanup at b577984d8418b4cb7fed521c14b6ab00bf773a93, then completed full checks, but verification persistence rejected a docs_contract mapping added by observed base history. Result application stopped before WorkItem projection. Supported TESTER verification and EVALUATOR PASS did not complete the READY WorkItem. finish then wrote legacy DONE before rejecting required_work_item_incomplete. CFKR4P also completed full checks for a task-level null-WorkItem rework but result application failed because all WorkItems were already completed. Preserve one complete scenario: accepted semantic result, exact implementation and plan binding, current mandatory verification, interruption, supported restart, exactly-once WorkItem projection, and finish without false completion. Diagnose the smallest repair before planning. Prefer existing exchange, verification and runtime receipts; do not add a parallel state store or generic replay subsystem. Preserve stale result rejection, plan and commit identity, missing-evidence rejection, approval gates and mandatory checks. Do not implement AP-CORE-012, AP-CORE-013 or AP-CORE-015 ahead of the approved graph; limit the change to this demonstrated integration recovery and prevention contract. Include real-Git positive, interruption, repeat, changed-plan/head and incomplete-WorkItem negative regressions. Keep DVS5NN and CFKR4P source scopes unchanged. No release publication or CI weakening. The user authorized autonomous completion and supported operator approvals. Stop on any unsupported authority or materially larger architectural scope.\n- Out of scope: unrelated refactors not required for \"Recover interrupted verification-to-WorkItem completion without false DONE\".",
+      "Repair one interrupted implementation-to-completion scenario within the existing CLI-owned exchange and verification model. First reproduce the orphaned READY WorkItem, null-WorkItem rework failure and partial legacy DONE using real-Git task fixtures. Preserve the original accepted result and exact plan/implementation identity during supported continuation; use existing exchange and runtime receipts rather than a new store. Align the observed verification contract before recording command coverage. Keep task-level rework separate from a selected WorkItem. Check canonical completion eligibility before persisting legacy DONE. Cover successful execution, interruption after commit and verification, repeat continuation, next transition, stale plan/head/result and missing-evidence rejection. Run focused tests, unchanged full CI and diff check. Stop with a bounded scope-extension or blocker if safe recovery requires a new public protocol, a Core migration, or unsupported historical artifact mutation. Keep release/Core order and the two existing task source scopes unchanged.",
+      "1. Run the focused recovery suite:\n```bash\nbun x vitest run packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts --maxWorkers=1\n```\nExpected: all 63 scoped tests pass. Cover ordinary completion, interruption before verification and before WorkItem projection, fresh continuation, exactly-once replay, and the next task-level rework when all required WorkItems are already complete.\n\n2. Check rejection cases in that suite. Changed plan revision, commands, scope, authority, task body, implementation receipt, source content, frozen base, missing evidence, and a divergent original result digest must not become successful recovery. Moving source into managed artifacts must not hide a product change.\n\n3. Check the preserved contracts. The observed frozen diff must contribute required checks before verification evidence is mapped. Required-incomplete finish, including a forced attempt, must leave the entire task unchanged and must not record false DONE.\n\n4. Run the unchanged mandatory commands `bun run ci:local:full` and `git diff --check`. Expected: both pass with no skipped mandatory checks or relaxed timeouts, structural limits, or baselines. Record verification through the supervisor for the current task document and exact implementation input.\n\n5. Obtain a fresh evaluator decision, then follow the authorized provider route through exact-head required checks, integration, and confirmed closure. Local verification does not prove hosted integration and does not replace final release `release:prepublish`."
+    ]
+  },
+  "evaluated_sha": "d600fac6c23a05c6d14ebfb3c49c93fd5d36cc72",
+  "diff_base_sha": "e43acc5f72ba1f884966a16325d6dbc94fcb1f04",
+  "blueprint_digest": "9f8313c431ef0435b9f5ea2458ec11f9f5ea1e66ec55c98afcb78fffe3c2d7e2",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608280009-QMVHM2/quality/20260828-042840647-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:f7ed0002b094f2218737aa2abf0e5715d1d1737fcbc807e5ae6dfc16a6e430a5",
+    "prompt_path": ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/eeb6b4d935b7082e3a532d3520244220ada15bb93c7ca55a51e8d77134958539.md",
+    "result_schema_path": ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608280009-QMVHM2/README.md",
+      "sha256": "sha256:c2962873b1ce1e7ea25dee7045da9ef19e66abe048c31c1404e15d022845a4e4",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/5379a6852a6d160cd1b996793dd260bf11f32c00c170218fea9dc0fff3a613e4.patch",
+      "sha256": "sha256:5379a6852a6d160cd1b996793dd260bf11f32c00c170218fea9dc0fff3a613e4",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/b2ffb42c3b91e00e03734e7dcf1aa3ef131732e1faccaedf4fa53f1310491c33.json",
+      "sha256": "sha256:b2ffb42c3b91e00e03734e7dcf1aa3ef131732e1faccaedf4fa53f1310491c33",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608280009-QMVHM2/verification/20260828042822482-e20218a743e953fb.json",
+      "sha256": "sha256:48f7c95f27b5b91b61d5fa94f2322d1cfc0ab391bcf589984f56e47f723fd18b",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/239c6f92bfea8b9963a7280e631c183681ae1af1934202231f1189ec01382189.json",
+      "sha256": "sha256:239c6f92bfea8b9963a7280e631c183681ae1af1934202231f1189ec01382189",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

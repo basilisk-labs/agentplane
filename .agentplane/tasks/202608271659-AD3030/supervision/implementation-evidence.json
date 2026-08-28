@@ -1,0 +1,52 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check fbdb8c7315395733e8751c8bbb3b489b8baf9d52..cf8a8316396397bb7688b34fdcbf93c6ab86a249",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB fbdb8c7315395733e8751c8bbb3b489b8baf9d52..cf8a8316396397bb7688b34fdcbf93c6ab86a249",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608271659-AD3030/README.md"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "fbdb8c7315395733e8751c8bbb3b489b8baf9d52",
+  "implementation_commit": "cf8a8316396397bb7688b34fdcbf93c6ab86a249",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202608271659-AD3030/README.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608271659-AD3030/README.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202608271659-AD3030/README.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608271659-AD3030"
+}

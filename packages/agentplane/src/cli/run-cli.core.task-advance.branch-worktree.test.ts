@@ -2,7 +2,8 @@ import { execFile } from "node:child_process";
 import { cp, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { taskCentricAggregateFromExtensions, taskCentricDigest } from "@agentplaneorg/core/tasks";
 import {
   createSupervisorExecutionEpisodeJournal,
   recoverSupervisorExecutionEpisodeJournal,
@@ -28,6 +29,17 @@ import {
 } from "../commands/shared/supervisor-execution-episode.js";
 import { buildTaskRouteDecision } from "../commands/shared/route-decision.js";
 import { loadCommandContext } from "../commands/shared/task-backend.js";
+import { writeFinishedTasks } from "../commands/task/finish-shared.js";
+import * as verification from "../commands/task/direct-task-verification.js";
+import * as projection from "../commands/task/task-centric-external-result.js";
+import {
+  resolveQualityReviewTargetSha,
+  recordedTaskImplementationCommitSha,
+} from "../commands/shared/quality-review-target.js";
+import {
+  resolveRecordedImplementationRecovery,
+  taskReadmesPreserveRecoveryContract,
+} from "../commands/task/external-agent-implementation-recovery.js";
 import type { ExternalAgentExchange } from "../commands/task/external-agent-exchange.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
@@ -216,6 +228,395 @@ async function approveStructuredPlan(root: string, taskId: string): Promise<void
 }
 
 describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
+  it.each(["before verification", "before WorkItem projection"])(
+    "recovers an implementation interrupted %s through a fresh episode",
+    async (boundary) => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      const taskId = await createTask(root);
+      await cp(
+        path.join(process.cwd(), "packages/agentplane/assets/policy"),
+        path.join(root, ".agentplane/policy"),
+        { recursive: true },
+      );
+      const existingIgnore = await readFile(path.join(root, ".gitignore"), "utf8");
+      await writeFile(
+        path.join(root, ".gitignore"),
+        `${existingIgnore}\n.agentplane/bin/\n.agentplane/cache.sqlite*\nagentplane-recipes\nnode_modules\npackages/\nwebsite/\n`,
+      );
+      await writeFile(
+        path.join(root, "package.json"),
+        JSON.stringify({
+          scripts: { "test:critical": "node -e \"console.log('1 passed')\"" },
+        }),
+      );
+      await execFileAsync("git", ["add", ".agentplane", "package.json", ".gitignore"], {
+        cwd: root,
+      });
+      await execFileAsync("git", ["commit", "-m", "test: seed interrupted implementation"], {
+        cwd: root,
+      });
+      await approveStructuredPlan(root, taskId);
+      await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "test: persist approved plan"], { cwd: root });
+      const packet = await readAgentPacket(root, taskId);
+      if (!packet.exchange)
+        throw new Error(`missing implementation exchange: ${JSON.stringify(packet)}`);
+      const workOrder = JSON.parse(
+        await readFile(path.join(packet.exchange.directory, "work-order.json"), "utf8"),
+      ) as AgentWorkOrderV2;
+      const checkout = workOrder.state_fingerprint.worktree;
+      await writeFile(path.join(checkout, "feature.ts"), "export const feature = true;\n");
+      const resultFor = (p: AgentPacket, order: AgentWorkOrderV2) => ({
+        schema_version: 1,
+        kind: "agent_action_result",
+        task_id: taskId,
+        transition_id: p.transition_id,
+        state_fingerprint: p.state_fingerprint,
+        role: "EXECUTOR",
+        result: {
+          schema_version: 2,
+          kind: "agent_semantic_result",
+          work_order_id: order.work_order_id,
+          status: "completed",
+          summary: "The recorded implementation satisfies the approved WorkItem.",
+          findings: ["The original implementation claim."],
+          uncertainty: ["The original implementation limitation."],
+        },
+      });
+      await writeFile(packet.exchange.result_path, JSON.stringify(resultFor(packet, workOrder)));
+      const interruption =
+        boundary === "before verification"
+          ? vi
+              .spyOn(verification, "recordDirectTaskVerification")
+              .mockRejectedValueOnce(new Error("injected verification interruption"))
+          : vi
+              .spyOn(projection, "recordTaskCentricExternalResult")
+              .mockRejectedValueOnce(new Error("injected verification interruption"));
+      const interruptedIo = captureStdIO();
+      try {
+        expect(await runCli([...packet.exchange.resume_argv.slice(1), "--root", root])).not.toBe(0);
+        const status = await execFileAsync("git", ["status", "--short", "--untracked-files=all"], {
+          cwd: checkout,
+        });
+        expect(interruptedIo.stderr, status.stdout).toContain("injected verification interruption");
+        expect(interruption).toHaveBeenCalledOnce();
+      } finally {
+        interruptedIo.restore();
+        interruption.mockRestore();
+      }
+      const ctx = await loadCommandContext({ cwd: checkout, rootOverride: checkout });
+      const interrupted = await ctx.taskBackend.getTask(taskId);
+      expect(
+        taskCentricAggregateFromExtensions(interrupted?.extensions)?.work_items["exercise-worktree"]
+          ?.state,
+      ).toBe("READY");
+      const implementationOutput = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: checkout,
+      });
+      const implementation = implementationOutput.stdout.trim();
+      expect(
+        await runCliSilent([
+          "verify",
+          taskId,
+          "--rework",
+          "--by",
+          "TESTER",
+          "--repo-fixable",
+          "--note",
+          "Rework: verification was interrupted after the implementation commit.",
+          "--root",
+          checkout,
+        ]),
+      ).toBe(0);
+      expect(
+        await runCliSilent([
+          "commit",
+          taskId,
+          "--allow-tasks",
+          "-m",
+          `🚧 ${taskId.split("-").at(-1)} task: record interrupted verification recovery`,
+          "--root",
+          checkout,
+        ]),
+      ).toBe(0);
+      expect(
+        await runCliSilent(["task", "advance", taskId, "--agent-json", "--root", checkout]),
+      ).not.toBe(0);
+      const io = captureStdIO();
+      let fresh: AgentPacket;
+      try {
+        expect(
+          await runCli([
+            "task",
+            "advance",
+            taskId,
+            "--replacement",
+            "--agent-json",
+            "--root",
+            checkout,
+          ]),
+          io.stderr,
+        ).toBe(0);
+        fresh = JSON.parse(io.stdout) as AgentPacket;
+      } finally {
+        io.restore();
+      }
+      if (!fresh.exchange) throw new Error("missing fresh recovery exchange");
+      const freshOrder = JSON.parse(
+        await readFile(path.join(fresh.exchange.directory, "work-order.json"), "utf8"),
+      ) as AgentWorkOrderV2;
+      const recoveryTarget = await resolveQualityReviewTargetSha({
+        gitRoot: checkout,
+        workflowDir: ".agentplane/tasks",
+        taskId,
+        previousEvaluatedSha: implementation,
+        workflowMode: "branch_pr",
+      });
+      expect(recoveryTarget).toBe(implementation);
+      const currentRecoveryTask = await ctx.taskBackend.getTask(taskId);
+      if (!currentRecoveryTask) throw new Error("missing recovery task");
+      const recoveryOptions = {
+        command: ctx,
+        task: currentRecoveryTask,
+        work_order: freshOrder,
+        head: freshOrder.state_fingerprint.git_head,
+        recorded_commit: recordedTaskImplementationCommitSha(currentRecoveryTask),
+      };
+      const readmePath = `.agentplane/tasks/${taskId}/README.md`;
+      const oldReadme = await execFileAsync("git", ["show", `${implementation}:${readmePath}`], {
+        cwd: checkout,
+      });
+      const newReadme = await readFile(path.join(checkout, readmePath), "utf8");
+      expect(taskReadmesPreserveRecoveryContract(oldReadme.stdout, newReadme, implementation)).toBe(
+        true,
+      );
+      expect(await resolveRecordedImplementationRecovery(recoveryOptions)).toEqual({
+        commit: implementation,
+        execution_base: workOrder.state_fingerprint.git_head,
+        semantic: resultFor(packet, workOrder).result,
+      });
+      expect(
+        await resolveRecordedImplementationRecovery({
+          ...recoveryOptions,
+          recorded_commit: freshOrder.state_fingerprint.git_head,
+        }),
+      ).toBeNull();
+      const changedPlanTask = structuredClone(currentRecoveryTask);
+      const changedPlan = taskCentricAggregateFromExtensions(
+        changedPlanTask.extensions,
+      )?.current_plan;
+      if (!changedPlan) throw new Error("missing recovery plan");
+      Reflect.set(changedPlan, "revision", changedPlan.revision + 1);
+      expect(
+        await resolveRecordedImplementationRecovery({ ...recoveryOptions, task: changedPlanTask }),
+      ).toBeNull();
+      const evidencePath = path.join(
+        checkout,
+        ".agentplane/tasks",
+        taskId,
+        "supervision/implementation-evidence.json",
+      );
+      const evidenceBefore = await readFile(evidencePath, "utf8");
+      await writeFile(evidencePath, "{}");
+      try {
+        expect(await resolveRecordedImplementationRecovery(recoveryOptions)).toBeNull();
+      } finally {
+        await writeFile(evidencePath, evidenceBefore);
+      }
+      const exchangePath = path.join(packet.exchange.directory, "exchange.json");
+      const exchangeBefore = await readFile(exchangePath, "utf8");
+      const changedReceipt = JSON.parse(exchangeBefore) as ExternalAgentExchange;
+      changedReceipt.result_digest = `sha256:${"0".repeat(64)}`;
+      await writeFile(exchangePath, JSON.stringify(changedReceipt));
+      try {
+        expect(await resolveRecordedImplementationRecovery(recoveryOptions)).toBeNull();
+      } finally {
+        await writeFile(exchangePath, exchangeBefore);
+      }
+      const replacementResult = resultFor(fresh, freshOrder);
+      replacementResult.result.summary = "A replacement summary with no new implementation.";
+      replacementResult.result.findings = ["An unproved replacement claim."];
+      replacementResult.result.uncertainty = [];
+      await writeFile(fresh.exchange.result_path, JSON.stringify(replacementResult));
+      const recordedResult = vi.spyOn(projection, "recordTaskCentricExternalResult");
+      const resumeIo = captureStdIO();
+      try {
+        expect(
+          await runCli([...fresh.exchange.resume_argv.slice(1), "--root", checkout]),
+          resumeIo.stderr,
+        ).toBe(0);
+        expect(recordedResult).toHaveBeenCalledOnce();
+        expect(recordedResult.mock.calls[0]?.[0].semantic).toEqual(
+          resultFor(packet, workOrder).result,
+        );
+      } finally {
+        resumeIo.restore();
+        recordedResult.mockRestore();
+      }
+      const completed = await ctx.taskBackend.getTask(taskId);
+      const completedAggregate = taskCentricAggregateFromExtensions(completed?.extensions);
+      const originalSemantic = resultFor(packet, workOrder).result;
+      expect(completedAggregate?.work_items["exercise-worktree"]?.output_manifests[0]?.digest).toBe(
+        taskCentricDigest({
+          id: "worktree-result",
+          result: {
+            schema_version: 1,
+            kind: "execute",
+            task_id: taskId,
+            plan_revision: completedAggregate?.current_plan?.revision,
+            plan_digest: completedAggregate?.current_plan?.digest,
+            work_item_id: "exercise-worktree",
+            context_digest:
+              freshOrder.planning_context?.digest ?? freshOrder.state_fingerprint.digest,
+            status: originalSemantic.status,
+            summary: originalSemantic.summary,
+            claims: originalSemantic.findings,
+            questions: originalSemantic.uncertainty,
+            artifacts: ["worktree-result"],
+          },
+        }),
+      );
+      expect(
+        taskCentricAggregateFromExtensions(completed?.extensions)?.work_items["exercise-worktree"]
+          ?.state,
+      ).toBe("COMPLETED");
+      expect(completed?.extensions?.implementation_commit).toMatchObject({ hash: implementation });
+      expect(await readFile(exchangePath, "utf8")).toBe(exchangeBefore);
+      const after = await readFile(
+        path.join(checkout, ".agentplane/tasks", taskId, "README.md"),
+        "utf8",
+      );
+      expect(await runCliSilent([...fresh.exchange.resume_argv.slice(1), "--root", checkout])).toBe(
+        0,
+      );
+      expect(
+        await readFile(path.join(checkout, ".agentplane/tasks", taskId, "README.md"), "utf8"),
+      ).toBe(after);
+      if (boundary === "before verification") {
+        if (!completed) throw new Error("missing completed WorkItem task");
+        // Seed a task-level review outcome. No hosted PR is needed by this fixture.
+        await ctx.taskBackend.writeTask({
+          ...completed,
+          quality_review: {
+            state: "rework",
+            updated_at: new Date().toISOString(),
+            updated_by: "EVALUATOR",
+            provenance: "evaluator_supplied",
+            evaluated_sha: implementation,
+            blueprint_digest: null,
+            note: "Change the feature result to false.",
+            evidence_refs: [`.agentplane/tasks/${taskId}/quality/fixture/quality-report.json`],
+            findings: ["The task-level feature needs correction after all WorkItems completed."],
+          },
+        });
+        await execFileAsync("git", ["add", ".agentplane"], { cwd: checkout });
+        await execFileAsync("git", ["commit", "-m", "test: seed task-level review rework"], {
+          cwd: checkout,
+        });
+        const taskRework = await readAgentPacket(checkout, taskId);
+        if (!taskRework.exchange) throw new Error("missing task-level rework exchange");
+        const reworkOrder = JSON.parse(
+          await readFile(path.join(taskRework.exchange.directory, "work-order.json"), "utf8"),
+        ) as AgentWorkOrderV2;
+        expect(reworkOrder.task.work_item_id ?? null).toBeNull();
+        const beforeRework = await ctx.taskBackend.getTask(taskId);
+        expect(beforeRework?.verification?.state).toBe("ok");
+        const itemsBefore = taskCentricAggregateFromExtensions(
+          beforeRework?.extensions,
+        )?.work_items;
+        await writeFile(path.join(checkout, "feature.ts"), "export const feature = false;\n");
+        await writeFile(
+          taskRework.exchange.result_path,
+          JSON.stringify(resultFor(taskRework, reworkOrder)),
+        );
+        const reworkIo = captureStdIO();
+        try {
+          expect(
+            await runCli([...taskRework.exchange.resume_argv.slice(1), "--root", checkout]),
+            reworkIo.stderr,
+          ).toBe(0);
+        } finally {
+          reworkIo.restore();
+        }
+        const afterRework = await ctx.taskBackend.getTask(taskId);
+        expect(taskCentricAggregateFromExtensions(afterRework?.extensions)?.work_items).toEqual(
+          itemsBefore,
+        );
+        expect(afterRework?.verification?.state).toBe("ok");
+      }
+      if (boundary === "before WorkItem projection") {
+        await execFileAsync(
+          "git",
+          ["mv", "feature.ts", `.agentplane/tasks/${taskId}/pr/moved-source.ts`],
+          { cwd: checkout },
+        );
+      } else {
+        await writeFile(path.join(checkout, "feature.ts"), "export const feature = null;\n");
+        await execFileAsync("git", ["add", "feature.ts"], { cwd: checkout });
+      }
+      await execFileAsync("git", ["commit", "-m", "test: change implementation after recovery"], {
+        cwd: checkout,
+      });
+      const changedHead = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: checkout });
+      expect(
+        await resolveRecordedImplementationRecovery({
+          ...recoveryOptions,
+          head: changedHead.stdout.trim(),
+        }),
+      ).toBeNull();
+    },
+  );
+
+  it("does not persist DONE when a required WorkItem is incomplete", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root);
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed incomplete WorkItem"], { cwd: root });
+    await approveStructuredPlan(root, taskId);
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const task = await ctx.taskBackend.getTask(taskId);
+    if (!task) throw new Error("missing incomplete WorkItem task");
+    const headOutput = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const head = headOutput.stdout.trim();
+    await ctx.taskBackend.writeTask({
+      ...task,
+      status: "DOING",
+      verification: {
+        state: "ok",
+        attempts: 1,
+        updated_at: new Date().toISOString(),
+        updated_by: "TESTER",
+        note: "The task checks passed before WorkItem projection.",
+      },
+    });
+    const before = await ctx.taskBackend.getTask(taskId);
+    if (!before) throw new Error("missing prepared task");
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      await expect(
+        writeFinishedTasks({
+          ctx,
+          loadedTasks: [{ taskId, task: before }],
+          metaTaskId: taskId,
+          author: "CODER",
+          body: "Verified: candidate completion must retain WorkItem guards.",
+          force: attempt === 1,
+          resultProvided: true,
+          resultSummary: "candidate completion",
+          breaking: false,
+          taskCommitInfo: { hash: head, message: "test: implementation" },
+        }),
+      ).rejects.toThrow("required_work_item_incomplete:exercise-worktree");
+      expect(await ctx.taskBackend.getTask(taskId)).toEqual(before);
+    }
+  });
+
   it("advances once from the base checkout into one worktree-bound semantic episode", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

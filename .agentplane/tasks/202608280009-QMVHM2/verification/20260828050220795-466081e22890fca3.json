@@ -1,0 +1,109 @@
+{
+  "details": "Command: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608280009-QMVHM2 declared verification",
+  "digest": "sha256:466081e22890fca3a90f1024af3f3ca429828299625c819933a99bdf2c27431f",
+  "implementation_sha": "6d952d932d8635833a8320a44279df306a6a06b2",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:6c555578a83a01e65bf9101cedd9fc4943f58c82d39ba39b432de73163cbe892",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:345c2dc8940406cab00c08ff78606d63083aea37aa6365a55c4040e7c8416679",
+      "digest": "sha256:66c7516e42bd37c88d7ee99627e113c377595ea581db736bd3dc2c6021fd71c4",
+      "references": [
+        {
+          "digest": "sha256:0d51d64d85863a992f1cc02f213a3711e04c9ff9071300bb394ab9debeafd24e",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608280009-QMVHM2/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "e43acc5f72ba1f884966a16325d6dbc94fcb1f04",
+      "digest": "sha256:00e690fc46f692b9c214da4c2dc65598737ba635b26023bd32e22e9312b44304",
+      "primary_task_id": "202608280009-QMVHM2",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608280009-QMVHM2"
+      ]
+    },
+    "implementation": {
+      "base_sha": "e43acc5f72ba1f884966a16325d6dbc94fcb1f04",
+      "digest": "sha256:0a32d3d68183b5eb20af198121d2dadd724528e49bf8bfd485111b404f9283d0",
+      "strategy": "branch_diff",
+      "target_sha": "6d952d932d8635833a8320a44279df306a6a06b2"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:b505daddc15b3ef77b51838f7c9514d03986fee7d6627a79793a4f18037aa829",
+    "verify_steps_digest": "sha256:a64bd7dbb74746d4ee85273b13f408d4c3085637a7306eaa738070743e9de038"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-08-28T05:02:20.795Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run the focused recovery suite:\n```bash\nbun x vitest run packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts --maxWorkers=1\n```\nExpected: all 63 scoped tests pass. Cover ordinary completion, interruption before verification and before WorkItem projection, fresh continuation, exactly-once replay, and the next task-level rework when all required WorkItems are already complete.\n\n2. Check rejection cases in that suite. Changed plan revision, commands, scope, authority, task body, implementation receipt, source content, frozen base, missing evidence, and a divergent original result digest must not become successful recovery. Moving source into managed artifacts must not hide a product change.\n\n3. Check the preserved contracts. The observed frozen diff must contribute required checks before verification evidence is mapped. Required-incomplete finish, including a forced attempt, must leave the entire task unchanged and must not record false DONE.\n\n4. Run the unchanged mandatory commands `bun run ci:local:full` and `git diff --check`. Expected: both pass with no skipped mandatory checks or relaxed timeouts, structural limits, or baselines. Record verification through the supervisor for the current task document and exact implementation input.\n\n5. Obtain a fresh evaluator decision, then follow the authorized provider route through exact-head required checks, integration, and confirmed closure. Local verification does not prove hosted integration and does not replace final release `release:prepublish`.",
+  "scope_digest": "sha256:a64bd7dbb74746d4ee85273b13f408d4c3085637a7306eaa738070743e9de038",
+  "task_id": "202608280009-QMVHM2",
+  "verification_command": "agentplane verify 202608280009-QMVHM2 --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

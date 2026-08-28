@@ -1,0 +1,286 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts b/packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts
+index d4208e364..72cc43a4b 100644
+--- a/packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts
+@@ -4,7 +4,7 @@ import path from "node:path";
+ import { promisify } from "node:util";
+ import { afterEach, beforeEach, describe, expect, it } from "vitest";
+ import { defaultConfig } from "@agentplaneorg/core/config";
+-import { readTask } from "@agentplaneorg/core/tasks";
++import { parseTaskReadme, readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
+ 
+ import { runCli } from "./run-cli.js";
+ import {
+@@ -12,6 +12,7 @@ import {
+   commitAll,
+   configureGitUser,
+   mkGitRepoRoot,
++  mkGitRepoRootWithCommit,
+   registerAgentplaneHome,
+   runCliSilent,
+   silenceStdIO,
+@@ -66,25 +67,32 @@ async function linkSharedTaskBatch(root: string, primaryTaskId: string, included
+     [includedTaskId, "included"],
+   ] as const) {
+     const taskPath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+-    const current = await readFile(taskPath, "utf8");
+-    const frontmatterEnd = current.indexOf("\n---\n", 4);
+-    expect(frontmatterEnd).toBeGreaterThan(0);
+-    const extension = [
+-      "extensions:",
+-      "  branch_pr_batch:",
+-      '    base: "main"',
+-      '    branch: "task/shared/finish-multiple"',
+-      "    included_task_ids:",
+-      `      - "${includedTaskId}"`,
+-      `    primary_task_id: "${primaryTaskId}"`,
+-      `    role: "${role}"`,
+-      '    updated_at: "2026-08-01T00:00:00.000Z"',
+-    ].join("\n");
++    const current = parseTaskReadme(await readFile(taskPath, "utf8"));
++    const extensions = (current.frontmatter.extensions ?? {}) as Record<string, unknown>;
++    expect(extensions.task_execution_context).toBeDefined();
+     await writeFile(
+       taskPath,
+-      `${current.slice(0, frontmatterEnd)}\n${extension}${current.slice(frontmatterEnd)}`,
++      renderTaskReadme(
++        {
++          ...current.frontmatter,
++          extensions: {
++            ...extensions,
++            branch_pr_batch: {
++              base: "main",
++              branch: "task/shared/finish-multiple",
++              included_task_ids: [includedTaskId],
++              primary_task_id: primaryTaskId,
++              role,
++              updated_at: "2026-08-01T00:00:00.000Z",
++            },
++          },
++        },
++        current.body,
++      ),
+       "utf8",
+     );
++    const updated = parseTaskReadme(await readFile(taskPath, "utf8"));
++    expect(updated.frontmatter.extensions).toMatchObject(extensions);
+   }
+ }
+ 
+@@ -419,7 +427,7 @@ describe("runCli", () => {
+   );
+ 
+   it("finish supports multiple task ids", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithCommit();
+     const execFileAsync = promisify(execFile);
+     let taskA = "";
+     let taskB = "";
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts
+index 3864344b3..cd7d9314f 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts
+@@ -1,9 +1,10 @@
+ import { execFile } from "node:child_process";
+-import { writeFile } from "node:fs/promises";
++import { readFile, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { promisify } from "node:util";
+ import { describe, expect, it } from "vitest";
+ import { defaultConfig } from "@agentplaneorg/core/config";
++import { readTask } from "@agentplaneorg/core/tasks";
+ 
+ import { runCli } from "./run-cli.js";
+ import {
+@@ -23,7 +24,7 @@ const WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS = 180_000;
+ 
+ describe("runCli branch_pr start-ready routing", () => {
+   it(
+-    "reports worktree recovery from base when active README moved",
++    "starts only the owning worktree from base when active README moved",
+     async () => {
+       const root = await mkGitRepoRootWithBranch("main");
+       const config = defaultConfig();
+@@ -47,7 +48,7 @@ describe("runCli branch_pr start-ready routing", () => {
+             "--title",
+             "Base start-ready route",
+             "--description",
+-            "Base checkout should report worktree recovery after work start moves README.",
++            "Base checkout should route to the owning worktree after work start moves README.",
+             "--priority",
+             "med",
+             "--owner",
+@@ -94,6 +95,12 @@ describe("runCli branch_pr start-ready routing", () => {
+         await pathExists(path.join(worktreePath, ".agentplane", "tasks", taskId, "README.md")),
+       ).toBe(true);
+ 
++      const { stdout: baseHeadBefore } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++        cwd: root,
++      });
++      const before = await readTask({ cwd: worktreePath, rootOverride: worktreePath, taskId });
++      expect(before.frontmatter.status).toBe("TODO");
++      const startBody = "Start: route from base to the task-owned worktree.";
+       const io = captureStdIO();
+       try {
+         const code = await runCli([
+@@ -103,18 +110,30 @@ describe("runCli branch_pr start-ready routing", () => {
+           "--author",
+           "CODER",
+           "--body",
+-          "Start: attempt from base should report worktree recovery instead of raw IO failure.",
++          startBody,
+           "--root",
+           root,
+         ]);
+-        expect(code).toBe(2);
+-        expect(io.stderr).toContain("branch_pr worktree");
+-        expect(io.stderr).toContain(`${taskId}-base-start`);
+-        expect(io.stderr).toContain("next_action: agentplane task start-ready");
++        expect(code, io.stderr).toBe(0);
+         expect(io.stderr).not.toContain("ENOENT");
+       } finally {
+         io.restore();
+       }
++      const after = await readTask({ cwd: worktreePath, rootOverride: worktreePath, taskId });
++      expect(after.frontmatter.status).toBe("DOING");
++      expect(
++        await readFile(
++          path.join(worktreePath, ".agentplane", "tasks", taskId, "README.md"),
++          "utf8",
++        ),
++      ).toContain(startBody);
++      expect(await pathExists(path.join(root, ".agentplane", "tasks", taskId, "README.md"))).toBe(
++        false,
++      );
++      const { stdout: baseHeadAfter } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++        cwd: root,
++      });
++      expect(baseHeadAfter.trim()).toBe(baseHeadBefore.trim());
+     },
+     WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
+   );
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
+index 62ee6d31c..41f0f0c52 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
+@@ -40,6 +40,7 @@ import {
+   installRunCliIntegrationHarness,
+   runCliSilent,
+   mkGitRepoRoot,
++  mkGitRepoRootWithCommit,
+   mkGitRepoRootWithBranch,
+   mkTempDir,
+   pathExists,
+@@ -169,7 +170,7 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
+   });
+ 
+   it("work start requires --worktree in branch_pr mode", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+diff --git a/packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts b/packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts
+index aa826954e..58603fa8c 100644
+--- a/packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts
+@@ -5,6 +5,7 @@ import { promisify } from "node:util";
+ import { describe, expect, it } from "vitest";
+ 
+ import { defaultConfig } from "@agentplaneorg/core/config";
++import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
+ import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
+ 
+ import { runCli } from "./run-cli.js";
+@@ -30,22 +31,31 @@ async function addIncludedBatchExtension(opts: {
+   base?: string;
+ }): Promise<void> {
+   const taskPath = path.join(opts.root, ".agentplane", "tasks", opts.taskId, "README.md");
+-  const current = await readFile(taskPath, "utf8");
+-  const frontmatterEnd = current.indexOf("\n---\n", 4);
+-  expect(frontmatterEnd).toBeGreaterThan(0);
+-  const extension = [
+-    "extensions:",
+-    "  branch_pr_batch:",
+-    `    base: "${opts.base ?? "main"}"`,
+-    `    branch: "${opts.branch}"`,
+-    "    included_task_ids:",
+-    `      - "${opts.taskId}"`,
+-    `    primary_task_id: "${opts.primaryTaskId}"`,
+-    '    role: "included"',
+-    '    updated_at: "2026-05-23T00:00:00.000Z"',
+-  ].join("\n");
+-  const next = `${current.slice(0, frontmatterEnd)}\n${extension}${current.slice(frontmatterEnd)}`;
++  const current = parseTaskReadme(await readFile(taskPath, "utf8"));
++  const extensions = (current.frontmatter.extensions ?? {}) as Record<string, unknown>;
++  const next = renderTaskReadme(
++    {
++      ...current.frontmatter,
++      extensions: {
++        ...extensions,
++        branch_pr_batch: {
++          base: opts.base ?? "main",
++          branch: opts.branch,
++          included_task_ids: [opts.taskId],
++          primary_task_id: opts.primaryTaskId,
++          role: "included",
++          updated_at: "2026-05-23T00:00:00.000Z",
++        },
++      },
++    },
++    current.body,
++  );
+   await writeFile(taskPath, next, "utf8");
++  const updated = parseTaskReadme(await readFile(taskPath, "utf8"));
++  expect(updated.frontmatter.extensions).toMatchObject(extensions);
++  expect(
++    (updated.frontmatter.extensions as Record<string, unknown>).task_execution_context,
++  ).toEqual(extensions.task_execution_context);
+ }
+ 
+ async function writePrMeta(opts: {
+@@ -391,22 +401,31 @@ describe("runCli release tasks reconcile", { timeout: RELEASE_TASKS_RECONCILE_TI
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+     await execFileAsync("git", ["checkout", "-b", "main"], { cwd: root, env: cleanGitEnv() });
++    // Verification needs a real base. The negative condition is missing landed task metadata.
++    await execFileAsync("git", ["commit", "--allow-empty", "-m", "test: seed unresolved batch"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
+ 
+     const primaryTaskId = await createDocBackedTask(root, "Unresolved primary batch task");
+     const includedTaskId = await createDocBackedTask(root, "Unresolved included batch task");
+-    await runCliSilent(["task", "set-status", includedTaskId, "DOING", "--root", root]);
+-    await runCliSilent([
+-      "verify",
+-      includedTaskId,
+-      "--ok",
+-      "--by",
+-      "CODER",
+-      "--note",
+-      "verified included batch task",
+-      "--quiet",
+-      "--root",
+-      root,
+-    ]);
++    expect(
++      await runCliSilent(["task", "set-status", includedTaskId, "DOING", "--root", root]),
++    ).toBe(0);
++    expect(
++      await runCliSilent([
++        "verify",
++        includedTaskId,
++        "--ok",
++        "--by",
++        "CODER",
++        "--note",
++        "verified included batch task",
++        "--quiet",
++        "--root",
++        root,
++      ]),
++    ).toBe(0);
+     await addIncludedBatchExtension({
+       root,
+       taskId: includedTaskId,
