@@ -6,7 +6,7 @@ Created: 2026-08-28T00:15:41.154Z
 
 - Task: `202608280009-QMVHM2`
 - Title: Recover interrupted verification-to-WorkItem completion without false DONE
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608280009-QMVHM2/recover-interrupted-verification-to-workitem-com`
 - Canonical task record: `.agentplane/tasks/202608280009-QMVHM2/README.md`
 
