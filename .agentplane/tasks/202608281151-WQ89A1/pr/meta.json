@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:be6db62d675e512c5ef41d775a4750dfc609bb9755051c788a5f517e29b2e35b",
   "pr_number": 5869,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5869",
+  "pre_merge_closure": {
+    "basis_commit": "a9c61042f49dacdf21a7f9e27936b35f87802dd8",
+    "branch": "task/202608281151-WQ89A1/recover-evidence-rework-after-execution-base-pro",
+    "pr_number": 5869,
+    "recorded_at": "2026-08-28T15:07:18.446Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

@@ -1,10 +1,11 @@
 ---
 id: "202608281151-WQ89A1"
 title: "Recover evidence rework after execution-base provenance hydration"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -58,6 +59,20 @@ quality_review:
     - "Recorded verification 20260828150529537-22af9751a01470a1.json is ok for exact implementation 3bcbff39f0ebe9bc381ff6230d1d55190914be84 and Verify Steps digest sha256:fe3b67317a2fee4491f170cfa36bafd2e76c1e18ed69b0bc6fa43f9d64cb47a5. ci:local:full exited 0 in 476316ms; all five build/test groups, docs, workflows, platform-critical 98 tests and significant coverage 101 tests/17 targets passed. git diff --check exited 0. Focused final checks passed 75 tests in five files."
     - "Findings contains the demonstrated cause, scope and pending boundaries. Verify Steps explicitly routes fresh evidence to the semantic result and supervisor records. No documentation acceptance gap is present. The three approved files are the only source changes; required checks, CI, policies, schemas and release/Core ordering are unchanged."
     - "Residual risk: Exact-head hosted checks, protected integration and terminal closure remain required. Actual 59VB06 and DVS5NN continuation must use the integrated runtime and fresh routes. No release 0.7.8 qualification is claimed."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:8035c8f0b458e8a032c7ed05e67f77a4c82a40d6ec54d8481f6e32e39becf586"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-28T15:07:18.312Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -232,8 +247,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "3bcbff39f0ebe9bc381ff6230d1d55190914be84"
-  message: "🚧 WQ89A1 task: apply external agent result"
+  hash: "a9c61042f49dacdf21a7f9e27936b35f87802dd8"
+  message: "🚧 WQ89A1 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -241,6 +256,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 3bcbff39f0eb. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -263,9 +281,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-28T15:07:18.312Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "a9c61042f49dacdf21a7f9e27936b35f87802dd8"
 doc_version: 3
-doc_updated_at: "2026-08-28T15:05:31.724Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-28T15:07:18.321Z"
+doc_updated_by: "CODER"
 description: "On integrated main 2b0760edea02ef80eecc61e82d47fa2a21c691fc, PCBY2N is merged and terminal, but the immutable received task-level evidence rework result for 202608280529-59VB06 still fails with Completed implementation result produced no supervisor-observed workspace change. Read-only comparison proves the remaining mismatch: the implementation README records task_execution_context.source=creation_checkout, while verify-record-execute.ts removes source when persisting the same schema_version, base_ref, base_sha and repository_identity. Removing only that field in an in-memory comparison makes both HEAD and working README preserve the recovery contract; no files were changed. Close this bounded recovery gap with a real-Git regression that starts from an actual creation-checkout context and exercises verification persistence, completed WorkItems, evaluator documentation rework, interruption/retry and the next fresh evaluator transition. Normalize only proved equivalent execution-base provenance in recovery; preserve exact base ref, SHA, repository identity, approved plan/grant/scope, immutable original result and proof, required fresh checks and no false DONE. Reject changed identity, unknown provenance/fields and invalid context. Do not blindly strip execution context, reuse old verification or verdicts, edit task/journal state, change CI, or extend release/Core architecture. Scope is external-agent-implementation-recovery.ts, its unit tests and run-cli.core.task-advance.evidence-rework.test.ts. Keep 59VB06 and DVS5NN intact and prioritize their integration after the fix. Findings and Verify Steps must be populated before implementation review through supported operator routes. This is a demonstrated required integration-path blocker, not a new release criterion."
 sections:
   Summary: |-
@@ -625,7 +651,23 @@ extensions:
       schema_version: 1
       task_id: "202608281151-WQ89A1"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608281151-WQ89A1"
+            - "git:3bcbff39f0ebe9bc381ff6230d1d55190914be84"
+          check_id: "mandatory-checks"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-28T15:05:29.537Z"
+          repository_snapshot_digest: "sha256:951fa2649271286a272d0e85b577708f214a4901f7591120d20d18a32407333d"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608281151-WQ89A1"
     intent:
       acceptance_criteria:
@@ -646,12 +688,12 @@ extensions:
 
         On integrated main 2b0760edea02ef80eecc61e82d47fa2a21c691fc, PCBY2N is merged and terminal, but the immutable received task-level evidence rework result for 202608280529-59VB06 still fails with Completed implementation result produced no supervisor-observed workspace change. Read-only comparison proves the remaining mismatch: the implementation README records task_execution_context.source=creation_checkout, while verify-record-execute.ts removes source when persisting the same schema_version, base_ref, base_sha and repository_identity. Removing only that field in an in-memory comparison makes both HEAD and working README preserve the recovery contract; no files were changed. Close this bounded recovery gap with a real-Git regression that starts from an actual creation-checkout context and exercises verification persistence, completed WorkItems, evaluator documentation rework, interruption/retry and the next fresh evaluator transition. Normalize only proved equivalent execution-base provenance in recovery; preserve exact base ref, SHA, repository identity, approved plan/grant/scope, immutable original result and proof, required fresh checks and no false DONE. Reject changed identity, unknown provenance/fields and invalid context. Do not blindly strip execution context, reuse old verification or verdicts, edit task/journal state, change CI, or extend release/Core architecture. Scope is external-agent-implementation-recovery.ts, its unit tests and run-cli.core.task-advance.evidence-rework.test.ts. Keep 59VB06 and DVS5NN intact and prioritize their integration after the fix. Findings and Verify Steps must be populated before implementation review through supported operator routes. This is a demonstrated required integration-path blocker, not a new release criterion.
       task_id: "202608281151-WQ89A1"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 10
+    revision: 13
     schema_version: 1
-    updated_at: "2026-08-28T15:05:33.197Z"
+    updated_at: "2026-08-28T15:07:18.312Z"
     work_items:
       recover-base-provenance:
         attempt: 1
@@ -719,11 +761,37 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202608281151-WQ89A1"
+      legacy-finish:202608281151-WQ89A1:2026-08-28T15:05:29.537Z:3bcbff39f0ebe9bc381ff6230d1d55190914be84:
+        aggregate_digest: "sha256:67f60502ab0bc6aeb35c92a9178f8fa1d1f6196857ecca70b7e04435eb4258ef"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-28T15:07:18.312Z"
+          cause_refs:
+            - "task-verification:202608281151-WQ89A1"
+            - "git:3bcbff39f0ebe9bc381ff6230d1d55190914be84"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_38f3a73ecfa448c0c422b2f5"
+          mutation_id: "legacy-finish:202608281151-WQ89A1:2026-08-28T15:05:29.537Z:3bcbff39f0ebe9bc381ff6230d1d55190914be84"
+          plan_digest: "sha256:26170da8dfdfe4b526eee0cc9e3d8ff300df0d12129b1c3499891c0f3f6ce6f9"
+          plan_revision: 1
+          repository_fingerprint: "sha256:951fa2649271286a272d0e85b577708f214a4901f7591120d20d18a32407333d"
+          schema_version: 1
+          task_id: "202608281151-WQ89A1"
+          task_revision: 10
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608281151-WQ89A1:2026-08-28T15:05:29.537Z:3bcbff39f0ebe9bc381ff6230d1d55190914be84"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202608281151-WQ89A1"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "3bcbff39f0ebe9bc381ff6230d1d55190914be84"
+    message: "🚧 WQ89A1 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "2b0760edea02ef80eecc61e82d47fa2a21c691fc"
@@ -846,3 +914,16 @@ Observed on main 2b0760edea02ef80eecc61e82d47fa2a21c691fc after PCBY2N integrati
 Cause: task creation stores source=creation_checkout; verify-record-execute.ts persists the same execution base without that field. The existing real-Git fixture creates its task before an initial commit, so it misses this production shape. The approved task repairs only recovery comparison and the two existing test files, retaining exact identity and authority checks.
 
 Pending at planning: reproduce the red case with the actual initialized-repository shape, implement bounded equivalence, prove guarded recovery and retry, run focused checks and unchanged full CI, obtain fresh evaluation, pass exact-head hosted checks, integrate and confirm terminal closure. Implementer evidence will be returned through the semantic result and supervisor-owned records. These planning findings do not claim implementation, verification, integration or release readiness. After delivery, retry 59VB06 and then DVS5NN through the fresh integrated runtime; preserve their original exchanges and the release/Core order.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:8035c8f0b458e8a032c7ed05e67f77a4c82a40d6ec54d8481f6e32e39becf586`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-28T15:07:18.312Z`
