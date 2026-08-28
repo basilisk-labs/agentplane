@@ -2,10 +2,10 @@
 id: "202608280529-59VB06"
 title: "Recover stale evaluator exchanges without accepting obsolete verdicts"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "USER"
   note: "Explicit user decision in this conversation: Одобряю план 202608280529-59VB06 с plan_digest sha256:0d04a3e6d19eb75132c6f3191567920cde106aa61825a6676713949bf2ef937a при state_fingerprint sha256:7588d89b430062a93113159c6ba2b5fccb471a730796eafbf2dce77d4e023721. Both identifiers matched the fresh supervisor packet before this operator command."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-28T16:16:39.959Z"
-  updated_by: "ORCHESTRATOR"
-  note: "Needs rework: exact regression-command correction; the same proved review defects remain unresolved."
+  state: "pending"
+  updated_at: "2026-08-28T17:48:31.808Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 2
 quality_review:
   state: "pass"
@@ -108,6 +108,7 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
       - "packages/agentplane/src/commands/shared/quality-review-retirement.ts"
       - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
       - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
       - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
@@ -118,6 +119,7 @@ execution_contract:
     preferred_mode: "branch_pr"
     rationale:
       - "The pending scope request is exactly the missing retirement-to-next-transition portion of the existing approved recovery scenario."
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/shared/workflow-step-factory.ts"
       - "Use existing persisted exchanges and journal identity to invalidate only the retired review in route freshness. Do not overwrite old evaluator results or introduce another state owner."
     repository_effects:
       - "repository_write"
@@ -131,6 +133,7 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
       - "packages/agentplane/src/commands/shared/quality-review-retirement.ts"
       - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
       - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
       - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
@@ -161,6 +164,7 @@ execution_contract:
           - "packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
           - "packages/agentplane/src/commands/shared/quality-review-retirement.ts"
           - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
           - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
           - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
@@ -180,12 +184,13 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:4712e2786974bd88d2f0d324c263f406fbddac6fc9a80627bd8cea3889558780"
+      digest: "sha256:c8bbcc65a33ac9f0c234e70de8bcf43daca38fa468d5963a4ce53acff9bd2b1d"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/quality-review-retirement.ts"
         - "central_component:packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+        - "central_component:packages/agentplane/src/commands/shared/workflow-step-factory.ts"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -256,6 +261,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved applied-review recovery patch now passes the complete branch_pr replacement and fresh-review scenario, but the same direct scenario is blocked by its separate route reducer outside the eight-file scope. Preserve the patch below and request exactly one additional source path. No delivery or full CI success is claimed. Recommended action: Apply the exact one-path scope extension to the existing ready follow-up WorkItem. Do not replan the contract to include the path before applying the pending request, because that would recreate the no-op scope-extension blocker. Then issue a fresh executor packet, restore the saved patch and prove both direct and branch_pr next transitions before full CI. Requested scope: roots=packages/agentplane/src/commands/shared/workflow-step-factory.ts; repository effects=unchanged; request digest=sha256:9297efd3a06f597b3699179d1f73880103c8a0fd097c4ec78346d9f14171effa. Agentplane receipt: external-agent-blocker/tr_ebae2c43951764ffdc7c41f7b8c9182a/sha256:2b98ff7e25c08add9bf55324b45a6cbfd2d3852a4f2d2a7058c9664ed7ae3fc6/sha256:9297efd3a06f597b3699179d1f73880103c8a0fd097c4ec78346d9f14171effa."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/shared/workflow-step-factory.ts; repository effects: unchanged."
 events:
   -
     type: "status"
@@ -622,6 +630,8 @@ extensions:
     status: "active"
     task_id: "202608280529-59VB06"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-28T17:48:31.808Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:2b98ff7e25c08add9bf55324b45a6cbfd2d3852a4f2d2a7058c9664ed7ae3fc6"
     kind: "task_scope_extension_request"
     request:
@@ -632,19 +642,19 @@ extensions:
         - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
     request_digest: "sha256:9297efd3a06f597b3699179d1f73880103c8a0fd097c4ec78346d9f14171effa"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_ebae2c43951764ffdc7c41f7b8c9182a"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-08-28T17:41:47.637Z"
+        approved_at: "2026-08-28T17:48:31.808Z"
         approved_by: "USER"
-        approved_digest: "sha256:0d04a3e6d19eb75132c6f3191567920cde106aa61825a6676713949bf2ef937a"
+        approved_digest: "sha256:fbc6e1809d234ebdd105589eeba43e95d3b152067f2be1a52e8243ffeb741bf8"
         policy_facts:
-          - "manual_operator"
+          - "state_bound_scope_extension:sha256:9297efd3a06f597b3699179d1f73880103c8a0fd097c4ec78346d9f14171effa"
         state: "approved"
-      created_at: "2026-08-28T16:20:57.432Z"
-      digest: "sha256:0d04a3e6d19eb75132c6f3191567920cde106aa61825a6676713949bf2ef937a"
+      created_at: "2026-08-28T17:48:31.808Z"
+      digest: "sha256:fbc6e1809d234ebdd105589eeba43e95d3b152067f2be1a52e8243ffeb741bf8"
       proposal:
         assumptions:
           - "The previous plan remains immutable history; only this new WorkItem represents remaining work. Repository sources are context paths, not required_inputs."
@@ -763,16 +773,21 @@ extensions:
                   kind: "workspace"
                   mode: "write"
                   resource: "."
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
               risk: "medium"
               scope_roots:
-                - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
-                - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
-                - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
-                - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
-                - "packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
                 - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                - "packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
                 - "packages/agentplane/src/commands/shared/quality-review-retirement.ts"
                 - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+                - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+                - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
+                - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
+                - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+                - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
               validation:
                 checks:
                   -
@@ -807,10 +822,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:d841fa223c99f6ee435f11fa8ed292b0af9fb121ce300775a5fc57e875faf6e6"
                 schema_version: 1
-      revision: 2
+      revision: 3
       schema_version: 1
       task_id: "202608280529-59VB06"
-    event_cursor: 0
+    event_cursor: 1
     final_validation: null
     id: "202608280529-59VB06"
     intent:
@@ -1053,9 +1068,184 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608280529-59VB06"
-    revision: 18
+      -
+        approval:
+          approved_at: "2026-08-28T17:41:47.637Z"
+          approved_by: "USER"
+          approved_digest: "sha256:0d04a3e6d19eb75132c6f3191567920cde106aa61825a6676713949bf2ef937a"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-08-28T16:20:57.432Z"
+        digest: "sha256:0d04a3e6d19eb75132c6f3191567920cde106aa61825a6676713949bf2ef937a"
+        proposal:
+          assumptions:
+            - "The previous plan remains immutable history; only this new WorkItem represents remaining work. Repository sources are context paths, not required_inputs."
+            - "Use the existing exchange retirement identity. If additional public schema, authority, or architecture changes prove necessary, return a scoped blocker before editing."
+            - "The partial patch is not complete until the red next-transition regression and all mandatory checks pass. No published check result is reused for this new source input."
+          planning_baseline:
+            captured_at: "2026-08-28T16:20:11.440Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:d841fa223c99f6ee435f11fa8ed292b0af9fb121ce300775a5fc57e875faf6e6"
+            dirty_paths:
+              - ".agentplane/tasks/202608280529-59VB06/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "0a225a3a1263737ee770b43b838a2c7beb425242"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:23"
+          schema_version: 1
+          task_id: "202608280529-59VB06"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                id: "mandatory-checks"
+                kind: "deterministic"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "mandatory-checks"
+                description: "Recover a legitimately applied review from its authoritative checkout before and after its evidence commit. Reject later task, plan, HEAD, evidence, workspace or policy drift through both explicit result return and automatic continuation. Do not treat an evidence reference alone as freshness."
+                id: "applied-state"
+                required: true
+              -
+                check_ids:
+                  - "mandatory-checks"
+                description: "Retire stale applied review exchanges with the existing lease and journal CAS. Preserve old results and verdicts. On replacement and repeated continuation, the route must require a fresh EVALUATOR and must not reach closeout or DONE using the retired review. A subsequent fresh review must complete normally."
+                id: "next-transition"
+                required: true
+              -
+                check_ids:
+                  - "mandatory-checks"
+                description: "Keep one follow-up WorkItem with the exact eight paths. Preserve original completed work and plan history. No new scheduler, state store, authority primitive, CI weakening, copied evaluator verdict, or release/Core reorder."
+                id: "scope"
+                required: true
+              -
+                check_ids:
+                  - "mandatory-checks"
+                description: "Pass the focused real-Git evaluator/recovery suites, TypeScript, ESLint, formatting and git diff --check, then unchanged bun run ci:local:full. Preserve causal and red/green evidence in task Findings through the supported route. Exact-head hosted checks, protected integration and closure remain mandatory."
+                id: "verification"
+                required: true
+            evidence_fingerprint: "sha256:d841fa223c99f6ee435f11fa8ed292b0af9fb121ce300775a5fc57e875faf6e6"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "mandatory-checks"
+                    description: "Recover a legitimately applied review from its authoritative checkout before and after its evidence commit. Reject later task, plan, HEAD, evidence, workspace or policy drift through both explicit result return and automatic continuation. Do not treat an evidence reference alone as freshness."
+                    id: "applied-state"
+                    required: true
+                  -
+                    check_ids:
+                      - "mandatory-checks"
+                    description: "Retire stale applied review exchanges with the existing lease and journal CAS. Preserve old results and verdicts. On replacement and repeated continuation, the route must require a fresh EVALUATOR and must not reach closeout or DONE using the retired review. A subsequent fresh review must complete normally."
+                    id: "next-transition"
+                    required: true
+                  -
+                    check_ids:
+                      - "mandatory-checks"
+                    description: "Keep one follow-up WorkItem with the exact eight paths. Preserve original completed work and plan history. No new scheduler, state store, authority primitive, CI weakening, copied evaluator verdict, or release/Core reorder."
+                    id: "scope"
+                    required: true
+                  -
+                    check_ids:
+                      - "mandatory-checks"
+                    description: "Pass the focused real-Git evaluator/recovery suites, TypeScript, ESLint, formatting and git diff --check, then unchanged bun run ci:local:full. Preserve causal and red/green evidence in task Findings through the supported route. Exact-head hosted checks, protected integration and closure remain mandatory."
+                    id: "verification"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 180000
+                  optional_sources:
+                    - "packages/agentplane/src/commands/task/external-agent-evaluator.ts"
+                    - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
+                    - "packages/agentplane/src/commands/shared/quality-review-target.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+                    - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+                    - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
+                    - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                    - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+                  symbol_hints:
+                    - "recoverPendingExternalAgentResult"
+                    - "isExternalEvaluatorResultApplied"
+                    - "qualityReviewIsFreshForHead"
+                depends_on: []
+                expected_outputs:
+                  - "applied-review-continuity-proof"
+                id: "recover-applied-review-continuity"
+                objective: "Complete applied-review recovery through authoritative readback, later-drift rejection, retirement, replacement, fresh evaluation and safe closeout."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "."
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                  - "packages/agentplane/src/commands/shared/quality-review-retirement.ts"
+                  - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "mandatory-checks"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "mandatory-checks"
+                      description: "Recover a legitimately applied review from its authoritative checkout before and after its evidence commit. Reject later task, plan, HEAD, evidence, workspace or policy drift through both explicit result return and automatic continuation. Do not treat an evidence reference alone as freshness."
+                      id: "applied-state"
+                      required: true
+                    -
+                      check_ids:
+                        - "mandatory-checks"
+                      description: "Retire stale applied review exchanges with the existing lease and journal CAS. Preserve old results and verdicts. On replacement and repeated continuation, the route must require a fresh EVALUATOR and must not reach closeout or DONE using the retired review. A subsequent fresh review must complete normally."
+                      id: "next-transition"
+                      required: true
+                    -
+                      check_ids:
+                        - "mandatory-checks"
+                      description: "Keep one follow-up WorkItem with the exact eight paths. Preserve original completed work and plan history. No new scheduler, state store, authority primitive, CI weakening, copied evaluator verdict, or release/Core reorder."
+                      id: "scope"
+                      required: true
+                    -
+                      check_ids:
+                        - "mandatory-checks"
+                      description: "Pass the focused real-Git evaluator/recovery suites, TypeScript, ESLint, formatting and git diff --check, then unchanged bun run ci:local:full. Preserve causal and red/green evidence in task Findings through the supported route. Exact-head hosted checks, protected integration and closure remain mandatory."
+                      id: "verification"
+                      required: true
+                  evidence_fingerprint: "sha256:d841fa223c99f6ee435f11fa8ed292b0af9fb121ce300775a5fc57e875faf6e6"
+                  schema_version: 1
+        revision: 2
+        schema_version: 1
+        task_id: "202608280529-59VB06"
+    revision: 19
     schema_version: 1
-    updated_at: "2026-08-28T17:41:47.637Z"
+    updated_at: "2026-08-28T17:48:31.808Z"
     work_items:
       recover-applied-review-continuity:
         attempt: 0
