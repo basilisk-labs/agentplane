@@ -15,8 +15,8 @@ On integrated main 2b0760edea02ef80eecc61e82d47fa2a21c691fc, PCBY2N is merged an
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

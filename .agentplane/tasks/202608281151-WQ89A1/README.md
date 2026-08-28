@@ -4,7 +4,7 @@ title: "Recover evidence rework after execution-base provenance hydration"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -21,10 +21,10 @@ plan_approval:
   updated_by: "USER"
   note: "The user explicitly replied Да to the preceding question approving WQ89A1: bounded recovery comparison and regression tests in three files with unchanged checks and authority guards. Current plan_digest sha256:26170da8dfdfe4b526eee0cc9e3d8ff300df0d12129b1c3499891c0f3f6ce6f9 and state_fingerprint sha256:a7b91c761fb8c29e4ec6642a167f0c20fb56b8c3b9d42efe1b4b194d8b841835 were freshly checked before this operator recording. This records the actual user decision; it is not a host receipt or an expansion of release scope."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-28T15:05:29.537Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -81,11 +81,39 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -119,19 +147,27 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:d2a9c2b42976a1660b1b159e5844877964b81510e9a8514121c495d9f82ce377"
+      digest: "sha256:54f320469b996b47df8bd77937e9fb51f74336ba033ec1fdd8d2a6208eb51aa9"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -163,11 +199,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "3bcbff39f0ebe9bc381ff6230d1d55190914be84"
+  message: "🚧 WQ89A1 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 3bcbff39f0eb. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -176,9 +217,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-28T14:57:32.386Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 3bcbff39f0eb. CLI accepted one state-bound external-agent semantic result."
+    commit: "3bcbff39f0ebe9bc381ff6230d1d55190914be84"
+  -
+    type: "verify"
+    at: "2026-08-28T15:05:29.537Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-28T14:50:51.072Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-28T15:05:31.724Z"
+doc_updated_by: "SUPERVISOR"
 description: "On integrated main 2b0760edea02ef80eecc61e82d47fa2a21c691fc, PCBY2N is merged and terminal, but the immutable received task-level evidence rework result for 202608280529-59VB06 still fails with Completed implementation result produced no supervisor-observed workspace change. Read-only comparison proves the remaining mismatch: the implementation README records task_execution_context.source=creation_checkout, while verify-record-execute.ts removes source when persisting the same schema_version, base_ref, base_sha and repository_identity. Removing only that field in an in-memory comparison makes both HEAD and working README preserve the recovery contract; no files were changed. Close this bounded recovery gap with a real-Git regression that starts from an actual creation-checkout context and exercises verification persistence, completed WorkItems, evaluator documentation rework, interruption/retry and the next fresh evaluator transition. Normalize only proved equivalent execution-base provenance in recovery; preserve exact base ref, SHA, repository identity, approved plan/grant/scope, immutable original result and proof, required fresh checks and no false DONE. Reject changed identity, unknown provenance/fields and invalid context. Do not blindly strip execution context, reuse old verification or verdicts, edit task/journal state, change CI, or extend release/Core architecture. Scope is external-agent-implementation-recovery.ts, its unit tests and run-cli.core.task-advance.evidence-rework.test.ts. Keep 59VB06 and DVS5NN intact and prioritize their integration after the fix. Findings and Verify Steps must be populated before implementation review through supported operator routes. This is a demonstrated required integration-path blocker, not a new release criterion."
 sections:
   Summary: |-
@@ -197,6 +252,78 @@ sections:
     5. Return current evidence and residual gaps in the typed result. Findings records the initial cause and pending boundaries. Exact-head hosted checks, protected integration and terminal closure are required for delivery; release 0.7.8 qualification remains separate.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-28T15:05:29.537Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:fe3b67317a2fee4491f170cfa36bafd2e76c1e18ed69b0bc6fa43f9d64cb47a5, input_digest=sha256:8663aef770ac0e01d75b1a8e92ba4fb2b62f95c0d27cb7fb93f7be912bdb64a6
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608281151-WQ89A1 Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608281151-WQ89A1 Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608281151-WQ89A1 Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608281151-WQ89A1 Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608281151-WQ89A1 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608281151-WQ89A1 Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608281151-WQ89A1 Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608281151-WQ89A1-recover-evidence-rework-after-execution-base-pro/.agentplane/tasks/202608281151-WQ89A1/blueprint/resolved-snapshot.json
+    - old_digest: 94f5b2a0be0bc765475fc39cdeab2d5f9f337399de1c086b89b8e26edd719ffe
+    - current_digest: 94f5b2a0be0bc765475fc39cdeab2d5f9f337399de1c086b89b8e26edd719ffe
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608281151-WQ89A1
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -490,25 +617,86 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 10
     schema_version: 1
-    updated_at: "2026-08-28T14:50:16.090Z"
+    updated_at: "2026-08-28T15:05:33.197Z"
     work_items:
       recover-base-provenance:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "recover-base-provenance"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:611cb6b513485907a0c3b11436a1360d38144e71adf832278549b2f323e8841d"
+            id: "base-provenance-recovery-proof"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608281151-WQ89A1"
+              work_item_id: "recover-base-provenance"
+            provenance:
+              - "sha256:67437c8094ae31a4de68a92e62a0116641ed6e886dfcb9df7c129113326796d6"
+              - ".agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:b3089cf25b04fd21ae3673f928182311e6b224970795026e21af3c15532bb2f5"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json"
+              check_id: "mandatory-checks"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-08-28T15:05:33.192Z"
+              repository_snapshot_digest: "sha256:b3089cf25b04fd21ae3673f928182311e6b224970795026e21af3c15532bb2f5"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608281151-WQ89A1-executor-5e2235a5501c3f1c8941dfb4:
+        aggregate_digest: "sha256:7f658d1a1f54bc5a2dd8912a67d27601c239ac94697aafb88ea10788119ffa0c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-28T15:05:33.197Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_300377562887322b24f21665"
+          mutation_id: "external-result:work-order-202608281151-WQ89A1-executor-5e2235a5501c3f1c8941dfb4"
+          plan_digest: "sha256:26170da8dfdfe4b526eee0cc9e3d8ff300df0d12129b1c3499891c0f3f6ce6f9"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608281151-WQ89A1"
+          task_revision: 9
+          to: "COMPLETED"
+          work_item_id: "recover-base-provenance"
+        mutation_id: "external-result:work-order-202608281151-WQ89A1-executor-5e2235a5501c3f1c8941dfb4"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202608281151-WQ89A1"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "3bcbff39f0ebe9bc381ff6230d1d55190914be84"
   task_execution_context:
     base_ref: "main"
     base_sha: "2b0760edea02ef80eecc61e82d47fa2a21c691fc"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "2b0760edea02ef80eecc61e82d47fa2a21c691fc"
     version: 1
@@ -540,6 +728,78 @@ Recover the unchanged approved implementation after verification removes creatio
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-28T15:05:29.537Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:fe3b67317a2fee4491f170cfa36bafd2e76c1e18ed69b0bc6fa43f9d64cb47a5, input_digest=sha256:8663aef770ac0e01d75b1a8e92ba4fb2b62f95c0d27cb7fb93f7be912bdb64a6
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608281151-WQ89A1 Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608281151-WQ89A1 Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608281151-WQ89A1 Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608281151-WQ89A1 Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608281151-WQ89A1 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608281151-WQ89A1 Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608281151-WQ89A1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608281151-WQ89A1 Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608281151-WQ89A1-recover-evidence-rework-after-execution-base-pro/.agentplane/tasks/202608281151-WQ89A1/blueprint/resolved-snapshot.json
+- old_digest: 94f5b2a0be0bc765475fc39cdeab2d5f9f337399de1c086b89b8e26edd719ffe
+- current_digest: 94f5b2a0be0bc765475fc39cdeab2d5f9f337399de1c086b89b8e26edd719ffe
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608281151-WQ89A1
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

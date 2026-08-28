@@ -3,7 +3,8 @@
   "branch": "task/202608281151-WQ89A1/recover-evidence-rework-after-execution-base-pro",
   "created_at": "2026-08-28T14:50:51.213Z",
   "diffstat_sha256": "sha256:be6db62d675e512c5ef41d775a4750dfc609bb9755051c788a5f517e29b2e35b",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-28T15:05:29.537Z",
+  "last_verified_diffstat_sha256": "sha256:be6db62d675e512c5ef41d775a4750dfc609bb9755051c788a5f517e29b2e35b",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202608281151-WQ89A1",
   "updated_at": "2026-08-28T14:50:51.213Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
