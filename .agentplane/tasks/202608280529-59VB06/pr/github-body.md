@@ -22,7 +22,7 @@ On integrated main 844eff36ba407436c26a3c63346b0dcc384ce2b5, continuation of DVS
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-28T05:33:24.733Z
+- Updated: 2026-08-28T06:07:05.168Z
 - Branch: task/202608280529-59VB06/recover-stale-evaluator-exchanges-without-accept
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

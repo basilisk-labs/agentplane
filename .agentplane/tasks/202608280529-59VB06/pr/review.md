@@ -24,7 +24,7 @@ Created: 2026-08-28T05:33:24.733Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-28T05:33:24.733Z
+- Updated: 2026-08-28T06:07:05.168Z
 - Branch: task/202608280529-59VB06/recover-stale-evaluator-exchanges-without-accept
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
