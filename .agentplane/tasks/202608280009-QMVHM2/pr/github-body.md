@@ -16,13 +16,13 @@ Repair the reproduced integration blocker on main e43acc5f72ba1f884966a16325d6db
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-28T00:15:41.154Z
+- Updated: 2026-08-28T01:13:18.715Z
 - Branch: task/202608280009-QMVHM2/recover-interrupted-verification-to-workitem-com
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
