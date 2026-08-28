@@ -1,10 +1,10 @@
 ---
 id: "202608280529-59VB06"
 title: "Recover stale evaluator exchanges without accepting obsolete verdicts"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -22,7 +22,7 @@ plan_approval:
   note: "Operator action under the user authorization: all subsequent in-scope operations through release. Approve the bounded six-file stale evaluator recovery plan sha256:58812b3db6ab06361dbe577ea62bea6e3cfba5a562fcd105b79f6deaf2265059 as a proved required integration-path repair. Preserve exact freshness, immutable old results, all mandatory checks and release/Core order. No publication or architecture scope expansion."
 verification:
   state: "ok"
-  updated_at: "2026-08-28T06:06:50.926Z"
+  updated_at: "2026-08-28T15:36:21.983Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
@@ -256,6 +256,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Documentation-only review requires a supported operator task-document update. The executor code scope excludes protected task documentation; source code and all evidence are preserved. Recommended action: Under the user's explicit authorization for all in-scope operations through release, use ap task doc set 202608280529-59VB06 --section Findings with the existing cause, red/green evidence, implementation 75c6a199cc4068e497fb786e831a9b2bb34a7376, recorded full verification 20260828060650926-cb1fbd290a69ab04.json and pending hosted boundaries. Recompute the route. Preserve every source file and the existing evaluator verdict; do not hand-edit task files or create a new implementation scope. Agentplane receipt: external-agent-blocker/tr_233c458501205f8fcf291a79f52d7455/sha256:066cdd34d5c491956c6906b37d9f55a8467621594bea82b91deb0c02dda56d46."
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: operator resolved the documentation-only blocker under the user authorization for all in-scope operations through release. Findings was populated through task doc set from existing evidence. Preserve source 75c6a199cc4068e497fb786e831a9b2bb34a7376, the recorded evaluator result and all checks; resume through a fresh semantic packet."
 events:
   -
     type: "status"
@@ -285,9 +288,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Documentation-only review requires a supported operator task-document update. The executor code scope excludes protected task documentation; source code and all evidence are preserved. Recommended action: Under the user's explicit authorization for all in-scope operations through release, use ap task doc set 202608280529-59VB06 --section Findings with the existing cause, red/green evidence, implementation 75c6a199cc4068e497fb786e831a9b2bb34a7376, recorded full verification 20260828060650926-cb1fbd290a69ab04.json and pending hosted boundaries. Recompute the route. Preserve every source file and the existing evaluator verdict; do not hand-edit task files or create a new implementation scope. Agentplane receipt: external-agent-blocker/tr_233c458501205f8fcf291a79f52d7455/sha256:066cdd34d5c491956c6906b37d9f55a8467621594bea82b91deb0c02dda56d46."
+  -
+    type: "status"
+    at: "2026-08-28T06:09:51.875Z"
+    author: "ORCHESTRATOR"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Start: operator resolved the documentation-only blocker under the user authorization for all in-scope operations through release. Findings was populated through task doc set from existing evidence. Preserve source 75c6a199cc4068e497fb786e831a9b2bb34a7376, the recorded evaluator result and all checks; resume through a fresh semantic packet."
+  -
+    type: "verify"
+    at: "2026-08-28T15:36:21.983Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-28T06:09:02.271Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-28T15:36:23.872Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "On integrated main 844eff36ba407436c26a3c63346b0dcc384ce2b5, continuation of DVS5NN PR #5862 is blocked by an issued quality_review exchange whose result is stale. The read-only evaluator prepared four task-owned evidence files while the legacy task was DONE, then exact result acceptance rejected the changed route fingerprint. Repeating task advance or task advance --replacement re-enters recoverPendingExternalAgentResult and rejects the same old result before replacement handling. The original result, frozen evidence and journal must remain intact. Reproduce the full sequence with real Git: evaluator issuance, preparation-owned artifacts, a genuine state change, stale result rejection, fresh packet recovery, retry and next transition. Separate framework-owned preparation changes from genuine task, plan, HEAD, provider or authority changes; do not weaken exact freshness or accept old verdicts for changed inputs. Use existing supervisor journal retirement and replacement mechanisms, with one owner and compare-and-swap guards. Preserve immutable historical results and required WorkItem completion. Prove ordinary evaluator acceptance, no-result and returned-result interruption recovery, repeated continuation, changed evidence rejection and no false DONE. Fix only the demonstrated bounded evaluator exchange/recovery cause. Do not modify task state or journals manually, create a new state store, bypass checks, change required CI, copy verdicts, or broaden release/Core architecture. DVS5NN and CFKR4P integration retain priority; CFKR4P full verification is running and must not be interrupted. This is a necessary authorized integration-path blocker, not new release scope. Release publication remains separately qualified. User has authorized all in-scope operations through release."
 sections:
   Summary: |-
@@ -378,11 +394,92 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-28T15:36:21.983Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e62b830b865b103d9e9ebc3046c670836db81e2157e23ae89899300c97bde172, input_digest=sha256:cbb277b1a0d54fbc6aa813390e84740a69249c762b03506d4b78890a9f86259a
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280529-59VB06 Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608280529-59VB06 Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280529-59VB06 Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608280529-59VB06 Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280529-59VB06 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608280529-59VB06 Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608280529-59VB06 Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608280529-59VB06-recover-stale-evaluator-exchanges-without-accept/.agentplane/tasks/202608280529-59VB06/blueprint/resolved-snapshot.json
+    - old_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+    - current_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608280529-59VB06
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    Cause: pending quality_review recovery attempted old result acceptance before replacement handling. The previous planning/implementation retirement paths did not cover stale evaluator exchanges. Two real-Git regression cases failed on base 844eff36ba407436c26a3c63346b0dcc384ce2b5 before the fix and passed afterward.
+
+    Implementation: 75c6a199cc4068e497fb786e831a9b2bb34a7376 changes four approved source/test files. Recovery retains exact freshness and original work-order/intent digest checks, the existing lease and journal CAS. It preserves historical result and evidence bytes, retires only unapplied stale issued/result_received reviews, and uses existing replacement. Exchange-first retirement permits interrupted journal reconciliation. An already applied review resumes closeout without reapplication. No new state store, manual lifecycle edits, weaker checks or copied verdicts were introduced.
+
+    Local evidence: four focused files passed 46 tests in 61.40s. Cases cover missing and returned results, genuine drift, tampered work orders, competing lease ownership, interruption after exchange retirement and after review application, replacement/replay and late old-result rejection. Existing ordinary acceptance and implementation recovery cases remain passing. Scoped lint/type/format, hotspots and git diff --check passed. Recorded full verification 20260828060650926-cb1fbd290a69ab04.json is ok for implementation 75c6a199cc4068e497fb786e831a9b2bb34a7376; ci:local:full exited 0 in 526823ms. All nine frozen evaluator evidence hashes matched.
+
+    Review: the first EVALUATOR requested this documentation-only update. No runtime defect was identified and no source change is required for that finding. This update is an operator action under the user authorization for all in-scope operations through release; it does not overwrite the recorded evaluator result.
+
+    Remaining boundaries: obtain fresh evaluation after documentation recovery, pass exact-head hosted checks, integrate through the protected queue, confirm hosted closure, and then retry DVS5NN through a fresh main-runtime route. Local evidence does not prove delivery of DVS5NN and does not qualify release 0.7.8. Preserve the release/Core order and remeasure remaining release failures on the final integrated main.
 extensions:
   agentplane.execution_grant:
     actor: "USER"
@@ -834,6 +931,78 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-28T15:36:21.983Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e62b830b865b103d9e9ebc3046c670836db81e2157e23ae89899300c97bde172, input_digest=sha256:cbb277b1a0d54fbc6aa813390e84740a69249c762b03506d4b78890a9f86259a
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280529-59VB06 Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608280529-59VB06 Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280529-59VB06 Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608280529-59VB06 Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280529-59VB06 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608280529-59VB06 Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608280529-59VB06/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608280529-59VB06 Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608280529-59VB06-recover-stale-evaluator-exchanges-without-accept/.agentplane/tasks/202608280529-59VB06/blueprint/resolved-snapshot.json
+- old_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+- current_digest: c6da13dce7ff585cef2ca9db077cf272e1120eb0b815bd1bec84512759061291
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608280529-59VB06
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -842,3 +1011,13 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+Cause: pending quality_review recovery attempted old result acceptance before replacement handling. The previous planning/implementation retirement paths did not cover stale evaluator exchanges. Two real-Git regression cases failed on base 844eff36ba407436c26a3c63346b0dcc384ce2b5 before the fix and passed afterward.
+
+Implementation: 75c6a199cc4068e497fb786e831a9b2bb34a7376 changes four approved source/test files. Recovery retains exact freshness and original work-order/intent digest checks, the existing lease and journal CAS. It preserves historical result and evidence bytes, retires only unapplied stale issued/result_received reviews, and uses existing replacement. Exchange-first retirement permits interrupted journal reconciliation. An already applied review resumes closeout without reapplication. No new state store, manual lifecycle edits, weaker checks or copied verdicts were introduced.
+
+Local evidence: four focused files passed 46 tests in 61.40s. Cases cover missing and returned results, genuine drift, tampered work orders, competing lease ownership, interruption after exchange retirement and after review application, replacement/replay and late old-result rejection. Existing ordinary acceptance and implementation recovery cases remain passing. Scoped lint/type/format, hotspots and git diff --check passed. Recorded full verification 20260828060650926-cb1fbd290a69ab04.json is ok for implementation 75c6a199cc4068e497fb786e831a9b2bb34a7376; ci:local:full exited 0 in 526823ms. All nine frozen evaluator evidence hashes matched.
+
+Review: the first EVALUATOR requested this documentation-only update. No runtime defect was identified and no source change is required for that finding. This update is an operator action under the user authorization for all in-scope operations through release; it does not overwrite the recorded evaluator result.
+
+Remaining boundaries: obtain fresh evaluation after documentation recovery, pass exact-head hosted checks, integrate through the protected queue, confirm hosted closure, and then retry DVS5NN through a fresh main-runtime route. Local evidence does not prove delivery of DVS5NN and does not qualify release 0.7.8. Preserve the release/Core order and remeasure remaining release failures on the final integrated main.
