@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "All nine frozen evidence hashes match. The recorded verification binds implementation 6d952d932d8635833a8320a44279df306a6a06b2 to base e43acc5f72ba1f884966a16325d6dbc94fcb1f04 and every selected local check. The supervisor completed full checks and projected the required WorkItem without the original interrupted-completion failure.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/5379a6852a6d160cd1b996793dd260bf11f32c00c170218fea9dc0fff3a613e4.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The code preserves current episode validation, original result digest and WorkItem/approved-plan identity, exact implementation evidence and Git path scope. It accepts only proved same-task metadata changes, preserves original exchange records, retains the source commit and reruns current verification. The no-renames proof prevents source removal from being disguised as an artifact move. Task-level rework does not invent a WorkItem. Required-incomplete finish fails before legacy DONE persistence.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/5379a6852a6d160cd1b996793dd260bf11f32c00c170218fea9dc0fff3a613e4.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The final scoped tests cover both interruption boundaries, repetition, the next task-level rework transition, changed plan/code/authority/commands, missing evidence and divergent result digest, source relocation, and observed docs_contract coverage. Structural limits and existing mandatory checks remain unchanged. This review does not infer hosted integration or release qualification from local success.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/5379a6852a6d160cd1b996793dd260bf11f32c00c170218fea9dc0fff3a613e4.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The frozen task explicitly requires replacing the PLANNER fallback scaffold and recording residual follow-up in Findings. Verify Steps still contains that scaffold, and Findings is empty. The approved structured plan and semantic exchange carry the real scenario, but they do not satisfy these named task-document deliverables.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/5379a6852a6d160cd1b996793dd260bf11f32c00c170218fea9dc0fff3a613e4.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: No source correction is requested. Update only the task documentation through a supported authority route, preserving the current implementation and all required checks.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/5379a6852a6d160cd1b996793dd260bf11f32c00c170218fea9dc0fff3a613e4.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "recovery_context": "Documentation-only rework: replace the Verify Steps fallback with the approved scenario-specific checks (both interruption boundaries, replay/next transition, stale or missing evidence rejection, no false DONE, docs_contract mapping, mandatory full CI and diff check). Populate Findings with the proved causes, implementation 6d952d932d8635833a8320a44279df306a6a06b2, current local evidence and the pending DVS5NN/CFKR4P continuations plus hosted/release boundaries. Do not edit source, weaken checks, or manually change task/evidence state. Recompute the route after supported documentation changes."
+}
