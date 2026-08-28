@@ -4,7 +4,7 @@ title: "Recover task-level evidence rework after completed WorkItems"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -26,6 +26,38 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-28T11:30:21.668Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c"
+  blueprint_digest: "8ed52ea7ab931c3a714304c85770c51901595982c616c106ced834ed6ed4d978"
+  evidence_refs:
+    - ".agentplane/tasks/202608280614-PCBY2N/quality/20260828-112915024-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608280614-PCBY2N/quality/20260828-112915024-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/d14785f890fc8471120d4b446e0726677356828d07d89a361a0f44e435661c50.md"
+    - ".agentplane/tasks/202608280614-PCBY2N/quality/20260828-112915024-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608280614-PCBY2N/quality/20260828-112915024-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608280614-PCBY2N/quality/20260828-112915024-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608280614-PCBY2N/README.md"
+    - ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/167112d23a3809a69ce11c590bb2894d6d3e3faf1345fba7aff144166661a3df.patch"
+    - ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/8f90f782af46a966c76dd5da65e416c01cf3411622326198570c32a970fec3b3.json"
+    - ".agentplane/tasks/202608280614-PCBY2N/verification/20260828112857349-7df3e4f50a81c6b3.json"
+    - ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/b36787aabcc52d981eca63d4e3af434e33107ed9ccf1ae128be481174364df82.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Reviewed the full frozen diff 167112d23a3809a69ce11c590bb2894d6d3e3faf1345fba7aff144166661a3df for implementation d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c against e3550efba441765882f2507cfaf659e9a76d2f0b. All nine frozen evidence hashes match and source is unchanged at metadata HEAD 4bb3fe594827aee0703ba95df6a42ddf05981ce7."
+    - "The new path is limited to an explicit null-WorkItem implementation_rework with a rework verification/review state, an exact approved plan, all required WorkItems completed, recorded in-scope source effect, unchanged source ancestry and validated historical semantic result. Completion runtime data is excluded from contract comparison only in that path; plan, intent, grant, declaration and Verify Steps stay compared."
+    - "The caller preserves current task-level claims and continues to preserve original claims for interrupted WorkItem recovery. Historical implementation evidence is not rewritten with the replacement baseline. Git checks are reobserved and the normal declared verification and fresh evaluator routes remain required."
+    - "Real-Git tests cover original structured completion, typed evaluator rework, supported Findings update, fresh replacement, ordinary no-code return, interruption before verification, interruption after verification, stale/late-result rejection, idempotent replay and unchanged output/proof bytes. Negative cases reject invalid plan/approval, narrowed scope, changed Verify Steps, malformed effect evidence, tampered result digest, source HEAD drift and incomplete WorkItems. Existing interrupted WorkItem tests remain passing."
+    - "Recorded verification 20260828112857349-7df3e4f50a81c6b3.json is ok for the exact implementation and approved Verify Steps. ci:local:full exited 0 in 462107ms, all five build/test groups passed, docs/workflows passed, platform-critical passed 98 tests, and significant coverage passed 101 tests and its 17-target guard. git diff --check exited 0. Focused recovery regression: 32 tests passed across four files."
+    - "Findings and task-specific Verify Steps were populated before implementation and correctly delegate final observed evidence to semantic and supervisor artifacts. No documentation-only acceptance gap remains. No policy, required check, task graph, release metadata or unrelated task state changed."
+    - "Residual risk: Exact-head hosted checks, protected integration and terminal hosted closure remain unconfirmed. The operational 59VB06/DVS5NN retries and release qualification must use fresh routes after this change is integrated."
 execution_route:
   frozen: true
   reason_codes:
