@@ -27,7 +27,12 @@ Fix the reproduced release-integration blocker in DVS5NN/PR #5862 on main 3bcce2
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ ...run-cli.core.task-advance.required-work.test.ts | 276 +++++++++++++++++++++
+ .../evaluator-episode.calibration.test.ts          |  85 ++++++-
+ .../src/commands/shared/workflow-step-branch.ts    |  28 +--
+ .../shared/workflow-step-required-work.test.ts     | 221 +++++++++++++++++
+ .../commands/shared/workflow-step-required-work.ts |  99 ++++++++
+ 5 files changed, 688 insertions(+), 21 deletions(-)
 ```
 
 </details>

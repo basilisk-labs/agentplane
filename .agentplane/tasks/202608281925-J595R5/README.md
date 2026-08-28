@@ -4,7 +4,7 @@ title: "Resume required WorkItems before branch pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -24,10 +24,10 @@ plan_approval:
   updated_by: "USER"
   note: "USER explicitly approved plan_digest sha256:ba48113acb192e2e4520c7d52312f66819a1df3521b92f5b93d74f03fe77019b at state_fingerprint sha256:c2a1d3666de75287d29afe5e2aaf38c1b5067d8963ea7731ce4cd48dc7a0abab in the current conversation. Both values were re-read and match. Record as manual operator approval, without inventing host decision provenance."
 verification:
-  state: "pending"
-  updated_at: "2026-08-28T20:18:32.624Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
+  state: "ok"
+  updated_at: "2026-08-28T20:38:06.851Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -95,7 +95,28 @@ execution_contract:
     changed_paths: []
     external_effects: []
     repository_effects: []
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -180,7 +201,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "b76b10afde865eadfb3a0a1926f1b91d3411fcb3"
+  message: "🚧 J595R5 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -191,6 +214,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts; repository effects: tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: b76b10afde86. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -206,8 +232,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The required-work route and exact-output interrupted recovery implementation passed focused tests, but full CI exposed one evaluator calibration fixture outside the approved writable roots. Preserve its semantic assertions and authorize a narrow fixture correction before completion. Recommended action: Extend this task's writable roots by the exact evaluator calibration test file. Preserve the approved objective and all verification requirements. Prepare a completed WorkItem with its required output and assert that state before the existing positive/negative evaluation routing checks. Restore the preserved in-scope patch in a fresh episode and rerun focused tests and unchanged bun run ci:local:full. Requested scope: roots=packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts; repository effects=tests; request digest=sha256:839be54a6093dcbe0486a4e962309ff374e3c0c8f6e495017a40706db3ba099e. Agentplane receipt: external-agent-blocker/tr_5f0f490743fd146d7a4c9ea41e772e34/sha256:e856073ad309db7b3555d00954b7b248b3d990f7b8d7493579963cb8cefc34d0/sha256:839be54a6093dcbe0486a4e962309ff374e3c0c8f6e495017a40706db3ba099e."
+  -
+    type: "status"
+    at: "2026-08-28T20:30:47.313Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: b76b10afde86. CLI accepted one state-bound external-agent semantic result."
+    commit: "b76b10afde865eadfb3a0a1926f1b91d3411fcb3"
+  -
+    type: "verify"
+    at: "2026-08-28T20:38:06.851Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-28T20:18:07.711Z"
+doc_updated_at: "2026-08-28T20:41:05.253Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the reproduced release-integration blocker in DVS5NN/PR #5862 on main 3bcce289091f5e6cbcb1dea87c2964c4f559259d. Its approved required remove-obsolete-handoff-reader WorkItem is READY with no outputs, while the concrete b577984d implementation and successful verification exist. After supported reopening and fresh evaluator acceptance the route offers task.pre_merge_close; finish rejects required_work_item_incomplete. flow repair has no deterministic repair. Route unfinished required WorkItems through the existing implementation/recovery episode before quality/publication/closure, with no fabricated source delta and no direct task-state edits. Cover the complete scenario: persisted implementation effect, interruption before WorkItem completion, normal restart, exact recovery of the original typed output, repeat restart, required verification/evaluation, and the following closure transition. Preserve completed WorkItem outputs, plan/checkout/authority freshness, dirty-worktree and active-runner guards, and already merged hosted-close/cleanup behavior. Use the existing canonical WorkItem scheduler and recorded implementation recovery; do not introduce another scheduler or state store. Do not weaken checks, completion guards or approvals; do not change release/Core order. Scope the smallest route/supervisor adapters and regression tests through a structured plan; request a supported scope extension only if reproduction proves more is required. USER authorized all necessary in-scope operations through release 0.7.8; this is an integration-path blocker, not a new architecture program."
 sections:
@@ -220,19 +260,100 @@ sections:
     - Out of scope: unrelated refactors not required for "Resume required WorkItems before branch pre-merge closure".
   Plan: "One bounded WorkItem restores the required-work route before closure and proves interrupted implementation recovery end to end using existing scheduler and result recovery."
   Verify Steps: |-
-    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.
-    2. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.
-    3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-    4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+    1. Run `bun run ci:local:full` without changing checks, thresholds, exclusions, or the declared verification contract. Expected: build, runtime, docs/schema, core, critical CLI, docs site, workflow lint, platform-critical tests, and significant coverage pass on the final candidate. Record the exact checkout and input; an earlier candidate pass is not current proof.
+    2. Run `git diff --check`. Expected: no whitespace errors in the approved changes.
+    3. Review the focused required-work route tests. Expected: unfinished required WorkItems precede verification, evaluation, publication, and closure; missing inputs, dependencies, active effects, dirty worktrees, runner ownership, plan approval, and DONE provider freshness remain guarded. Legacy, optional-only, completed, and merged cases retain their route.
+    4. Review the real-Git interrupted-effect test. Expected: source and verification persist before the injected interruption; normal continuation recovers the exact original output digest, source SHA, and bytes; repeated continuation preserves them; fresh evaluation precedes pre-merge closure.
+    5. Review the evaluator calibration test. Expected: the fixture uses the existing adapter to complete its WorkItem with its required output before evaluation; the positive evidence-gap and negative ordinary-blocked assertions remain intact and preserve that output.
+    6. Confirm that the implementation commit actually contains the five scoped source/test files and that the task worktree has no unintended changes. Distinguish local verification, exact-head hosted checks, merge, and confirmed hosted closure. This task check is not release:prepublish.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-28T20:38:06.851Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:134795c74a27965abb7b952f8fa80265b2bca277d1a6c042b7f29a46cbcb39ae, input_digest=sha256:d881aaf8d60b05d219a0d14944e5107f5fa08e4a0a4d74b3518f2a800702f6df
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608281925-J595R5 Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608281925-J595R5 Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608281925-J595R5 Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608281925-J595R5 Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608281925-J595R5 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608281925-J595R5 Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608281925-J595R5 Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608281925-J595R5-resume-required-workitems-before-branch-pre-merg/.agentplane/tasks/202608281925-J595R5/blueprint/resolved-snapshot.json
+    - old_digest: 3762f52078ff9d39702029c5a887c01cde3864a46ca9d510ba50c502b83c10dd
+    - current_digest: 3762f52078ff9d39702029c5a887c01cde3864a46ca9d510ba50c502b83c10dd
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608281925-J595R5
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    Implemented the required-work route with the existing WorkItemScheduler and recorded implementation recovery. The real-Git regression preserves the original output digest and source through interruption, repeat continuation, evaluation, and pre-merge closure. DONE recovery now refreshes metadata-only provider state before verification. Existing batch prerequisite logic was extracted unchanged to keep the branch module under the unchanged 600-line limit.
+
+    The supported scope extension added only the evaluator calibration test. Its completed-implementation fixture now records an output-bearing completed WorkItem through TaskCentricBackendAdapter. Neither the positive deterministic-evidence-gap assertion nor the negative ordinary-blocked assertion was removed or weakened.
+
+    Verification: 59 focused tests in five files passed on the final source, together with TypeScript, ESLint, and git diff --check. CLI-owned declared checks at 2026-08-28T20:38 also passed unchanged ci:local:full (436340 ms) and git diff --check. These were executed with the final source still dirty; they are local working-tree proof, not exact committed-source or hosted proof.
+
+    Recovery finding: the earlier blocked-return attempt left task artifacts staged. The implementation commit b76b10afde865eadfb3a0a1926f1b91d3411fcb3 therefore contains only task artifacts, and 6b3c0445c records implementation/verification evidence. The five actual source/test files remained uncommitted. The route correctly blocks on task_worktree_dirty. Preserve those files and the original WorkItem output sha256:ee1164ebc616c11ab1cc11e14833b10fd26ce5f30411b2f5b909fcbd926937fa. Prepare only the intended scoped files in the index at the operator recovery boundary, then let a fresh task_worktree_resolution episode commit and verify them. Do not treat either artifact-only commit as delivered source.
+
+    No J595R5 hosted checks, merge, hosted closure, or release qualification are claimed. DVS5NN/PR #5862 recovery remains downstream of confirmed integration of this fix and a rebuilt main runtime. Keep release 0.7.8 qualification separate from all-Core completion and from this task's full CI.
 extensions:
   agentplane.execution_grant:
     actor: "USER"
@@ -742,25 +863,86 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608281925-J595R5"
-    revision: 3
+    revision: 11
     schema_version: 1
-    updated_at: "2026-08-28T20:18:32.624Z"
+    updated_at: "2026-08-28T20:38:10.337Z"
     work_items:
       resume-required-work:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "resume-required-work"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:ee1164ebc616c11ab1cc11e14833b10fd26ce5f30411b2f5b909fcbd926937fa"
+            id: "required-work-recovery-proof"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608281925-J595R5"
+              work_item_id: "resume-required-work"
+            provenance:
+              - "sha256:7636bbef92b0d8ec09cd8b6ce669473f9a89bc86195f4f07b5300939d114d4e8"
+              - ".agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:50fd62563f80f0d1e242b04404051b98fad508a71190ad171c0109660f37eb46"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json"
+              check_id: "mandatory-checks"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-08-28T20:38:10.332Z"
+              repository_snapshot_digest: "sha256:50fd62563f80f0d1e242b04404051b98fad508a71190ad171c0109660f37eb46"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608281925-J595R5-executor-d2aeac24b3cdc96eb8687d79:
+        aggregate_digest: "sha256:1d695ebbc0712228ad67640c2547791b29af1af3c2ae55c5c73720b264c1a382"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-28T20:38:10.337Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_78ecb8874591bde5a38a2531"
+          mutation_id: "external-result:work-order-202608281925-J595R5-executor-d2aeac24b3cdc96eb8687d79"
+          plan_digest: "sha256:b399fe110ca7c842a320c876fce80c3350c72c393de9daf2ec53e315b7db1e34"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608281925-J595R5"
+          task_revision: 10
+          to: "COMPLETED"
+          work_item_id: "resume-required-work"
+        mutation_id: "external-result:work-order-202608281925-J595R5-executor-d2aeac24b3cdc96eb8687d79"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202608281925-J595R5"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "b76b10afde865eadfb3a0a1926f1b91d3411fcb3"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
     version: 1
@@ -783,16 +965,88 @@ One bounded WorkItem restores the required-work route before closure and proves 
 
 ## Verify Steps
 
-PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.
-2. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.
-3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+1. Run `bun run ci:local:full` without changing checks, thresholds, exclusions, or the declared verification contract. Expected: build, runtime, docs/schema, core, critical CLI, docs site, workflow lint, platform-critical tests, and significant coverage pass on the final candidate. Record the exact checkout and input; an earlier candidate pass is not current proof.
+2. Run `git diff --check`. Expected: no whitespace errors in the approved changes.
+3. Review the focused required-work route tests. Expected: unfinished required WorkItems precede verification, evaluation, publication, and closure; missing inputs, dependencies, active effects, dirty worktrees, runner ownership, plan approval, and DONE provider freshness remain guarded. Legacy, optional-only, completed, and merged cases retain their route.
+4. Review the real-Git interrupted-effect test. Expected: source and verification persist before the injected interruption; normal continuation recovers the exact original output digest, source SHA, and bytes; repeated continuation preserves them; fresh evaluation precedes pre-merge closure.
+5. Review the evaluator calibration test. Expected: the fixture uses the existing adapter to complete its WorkItem with its required output before evaluation; the positive evidence-gap and negative ordinary-blocked assertions remain intact and preserve that output.
+6. Confirm that the implementation commit actually contains the five scoped source/test files and that the task worktree has no unintended changes. Distinguish local verification, exact-head hosted checks, merge, and confirmed hosted closure. This task check is not release:prepublish.
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-28T20:38:06.851Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:134795c74a27965abb7b952f8fa80265b2bca277d1a6c042b7f29a46cbcb39ae, input_digest=sha256:d881aaf8d60b05d219a0d14944e5107f5fa08e4a0a4d74b3518f2a800702f6df
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608281925-J595R5 Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608281925-J595R5 Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608281925-J595R5 Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608281925-J595R5 Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608281925-J595R5 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608281925-J595R5 Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608281925-J595R5/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608281925-J595R5 Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608281925-J595R5-resume-required-workitems-before-branch-pre-merg/.agentplane/tasks/202608281925-J595R5/blueprint/resolved-snapshot.json
+- old_digest: 3762f52078ff9d39702029c5a887c01cde3864a46ca9d510ba50c502b83c10dd
+- current_digest: 3762f52078ff9d39702029c5a887c01cde3864a46ca9d510ba50c502b83c10dd
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608281925-J595R5
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -801,3 +1055,13 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+Implemented the required-work route with the existing WorkItemScheduler and recorded implementation recovery. The real-Git regression preserves the original output digest and source through interruption, repeat continuation, evaluation, and pre-merge closure. DONE recovery now refreshes metadata-only provider state before verification. Existing batch prerequisite logic was extracted unchanged to keep the branch module under the unchanged 600-line limit.
+
+The supported scope extension added only the evaluator calibration test. Its completed-implementation fixture now records an output-bearing completed WorkItem through TaskCentricBackendAdapter. Neither the positive deterministic-evidence-gap assertion nor the negative ordinary-blocked assertion was removed or weakened.
+
+Verification: 59 focused tests in five files passed on the final source, together with TypeScript, ESLint, and git diff --check. CLI-owned declared checks at 2026-08-28T20:38 also passed unchanged ci:local:full (436340 ms) and git diff --check. These were executed with the final source still dirty; they are local working-tree proof, not exact committed-source or hosted proof.
+
+Recovery finding: the earlier blocked-return attempt left task artifacts staged. The implementation commit b76b10afde865eadfb3a0a1926f1b91d3411fcb3 therefore contains only task artifacts, and 6b3c0445c records implementation/verification evidence. The five actual source/test files remained uncommitted. The route correctly blocks on task_worktree_dirty. Preserve those files and the original WorkItem output sha256:ee1164ebc616c11ab1cc11e14833b10fd26ce5f30411b2f5b909fcbd926937fa. Prepare only the intended scoped files in the index at the operator recovery boundary, then let a fresh task_worktree_resolution episode commit and verify them. Do not treat either artifact-only commit as delivered source.
+
+No J595R5 hosted checks, merge, hosted closure, or release qualification are claimed. DVS5NN/PR #5862 recovery remains downstream of confirmed integration of this fix and a rebuilt main runtime. Keep release 0.7.8 qualification separate from all-Core completion and from this task's full CI.

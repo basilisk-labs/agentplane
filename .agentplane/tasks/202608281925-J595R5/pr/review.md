@@ -29,7 +29,12 @@ Created: 2026-08-28T20:00:19.477Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ ...run-cli.core.task-advance.required-work.test.ts | 276 +++++++++++++++++++++
+ .../evaluator-episode.calibration.test.ts          |  85 ++++++-
+ .../src/commands/shared/workflow-step-branch.ts    |  28 +--
+ .../shared/workflow-step-required-work.test.ts     | 221 +++++++++++++++++
+ .../commands/shared/workflow-step-required-work.ts |  99 ++++++++
+ 5 files changed, 688 insertions(+), 21 deletions(-)
 ```
 
 </details>

@@ -12,6 +12,10 @@ import { needsQualityEvidenceRefresh } from "./workflow-step-quality.js";
 import { integrationQueueStep } from "./workflow-step-integration-queue.js";
 import { providerUpdateBranchStep } from "./workflow-step-provider-update-branch.js";
 import {
+  primaryBatchVerificationStep,
+  requiredBranchWorkStep,
+} from "./workflow-step-required-work.js";
+import {
   approvalStep,
   branchImplementationStep,
   cliOperationStep,
@@ -44,26 +48,6 @@ function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
       "the structured task branch exists but its local head is unavailable; recover or fetch that branch before PR, closure, or integration operations",
     evidenceMissing: ["task_branch_head"],
     selectedBlocker: routeBlockerFor(state, "branch_head_missing"),
-  });
-}
-
-function primaryBatchVerificationStep(state: WorkflowRouteState): WorkflowStep | null {
-  if (state.batchOwnership.role !== "primary") return null;
-  const ownership = state.batchOwnership;
-  const pending = ownership.taskStates.find(
-    (task) => ownership.includedTaskIds.includes(task.id) && task.verification !== "ok",
-  );
-  if (!pending) return null;
-  return cliOperationStep({
-    state,
-    operationId: "batch.collect_included",
-    params: { taskId: pending.id },
-    code: "collect_included_verification",
-    summary: "collect verification for included batch tasks before final integration",
-    selectedBlocker: {
-      code: "included_batch_verification_pending",
-      summary: `included batch task ${pending.id} requires verification before primary PR mutation`,
-    },
   });
 }
 
@@ -179,6 +163,8 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
   }
   const recoveryStep = conflictReworkRouteStep(state) ?? providerUpdateBranchStep(state);
   if (recoveryStep) return recoveryStep;
+  const requiredWork = requiredBranchWorkStep(state);
+  if (requiredWork) return requiredWork;
   if (state.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
     return implementationReworkStep(state);
   }
@@ -498,6 +484,8 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "on_base_checkout"),
     });
   }
+  const requiredWork = requiredBranchWorkStep(state);
+  if (requiredWork) return requiredWork;
   if (
     state.task.verification?.state !== "ok" &&
     !(typeof state.task.commit?.hash === "string" && state.task.commit.hash.trim())
