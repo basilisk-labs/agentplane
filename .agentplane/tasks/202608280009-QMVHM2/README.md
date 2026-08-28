@@ -4,7 +4,7 @@ title: "Recover interrupted verification-to-WorkItem completion without false DO
 status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -318,7 +318,7 @@ events:
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator requests only task documentation changes, but this episode permits source paths and explicitly protects .agentplane/tasks. No repository files were changed. A supported operator documentation transition is required. Recommended action: Use the supported operator documentation route to populate Verify Steps and Findings for QMVHM2, preserving implementation 6d952d932d8635833a8320a44279df306a6a06b2 and existing evidence. Do not widen the source scope or weaken checks. Then obtain a fresh supervisor packet and current verification/evaluation as required by the changed task document. Agentplane receipt: external-agent-blocker/tr_122e6aff5153db53896264cf27071709/sha256:594f02910384d5f5fd4f07de03fe8035586eadab8e36415c4d369a91f43c1075."
 doc_version: 3
-doc_updated_at: "2026-08-28T01:16:16.156Z"
+doc_updated_at: "2026-08-28T04:19:28.154Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the reproduced integration blocker on main e43acc5f72ba1f884966a16325d6dbc94fcb1f04. DVS5NN accepted and committed the cleanup at b577984d8418b4cb7fed521c14b6ab00bf773a93, then completed full checks, but verification persistence rejected a docs_contract mapping added by observed base history. Result application stopped before WorkItem projection. Supported TESTER verification and EVALUATOR PASS did not complete the READY WorkItem. finish then wrote legacy DONE before rejecting required_work_item_incomplete. CFKR4P also completed full checks for a task-level null-WorkItem rework but result application failed because all WorkItems were already completed. Preserve one complete scenario: accepted semantic result, exact implementation and plan binding, current mandatory verification, interruption, supported restart, exactly-once WorkItem projection, and finish without false completion. Diagnose the smallest repair before planning. Prefer existing exchange, verification and runtime receipts; do not add a parallel state store or generic replay subsystem. Preserve stale result rejection, plan and commit identity, missing-evidence rejection, approval gates and mandatory checks. Do not implement AP-CORE-012, AP-CORE-013 or AP-CORE-015 ahead of the approved graph; limit the change to this demonstrated integration recovery and prevention contract. Include real-Git positive, interruption, repeat, changed-plan/head and incomplete-WorkItem negative regressions. Keep DVS5NN and CFKR4P source scopes unchanged. No release publication or CI weakening. The user authorized autonomous completion and supported operator approvals. Stop on any unsupported authority or materially larger architectural scope."
 sections:
@@ -331,11 +331,19 @@ sections:
     - Out of scope: unrelated refactors not required for "Recover interrupted verification-to-WorkItem completion without false DONE".
   Plan: "Repair one interrupted implementation-to-completion scenario within the existing CLI-owned exchange and verification model. First reproduce the orphaned READY WorkItem, null-WorkItem rework failure and partial legacy DONE using real-Git task fixtures. Preserve the original accepted result and exact plan/implementation identity during supported continuation; use existing exchange and runtime receipts rather than a new store. Align the observed verification contract before recording command coverage. Keep task-level rework separate from a selected WorkItem. Check canonical completion eligibility before persisting legacy DONE. Cover successful execution, interruption after commit and verification, repeat continuation, next transition, stale plan/head/result and missing-evidence rejection. Run focused tests, unchanged full CI and diff check. Stop with a bounded scope-extension or blocker if safe recovery requires a new public protocol, a Core migration, or unsupported historical artifact mutation. Keep release/Core order and the two existing task source scopes unchanged."
   Verify Steps: |-
-    PLANNER fallback scaffold for "Recover interrupted verification-to-WorkItem completion without false DONE". Replace with task-specific acceptance checks when PLANNER context is available.
+    1. Run the focused recovery suite:
+    ```bash
+    bun x vitest run packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts --maxWorkers=1
+    ```
+    Expected: all 63 scoped tests pass. Cover ordinary completion, interruption before verification and before WorkItem projection, fresh continuation, exactly-once replay, and the next task-level rework when all required WorkItems are already complete.
 
-    1. Review the requested outcome for "Recover interrupted verification-to-WorkItem completion without false DONE". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    2. Check rejection cases in that suite. Changed plan revision, commands, scope, authority, task body, implementation receipt, source content, frozen base, missing evidence, and a divergent original result digest must not become successful recovery. Moving source into managed artifacts must not hide a product change.
+
+    3. Check the preserved contracts. The observed frozen diff must contribute required checks before verification evidence is mapped. Required-incomplete finish, including a forced attempt, must leave the entire task unchanged and must not record false DONE.
+
+    4. Run the unchanged mandatory commands `bun run ci:local:full` and `git diff --check`. Expected: both pass with no skipped mandatory checks or relaxed timeouts, structural limits, or baselines. Record verification through the supervisor for the current task document and exact implementation input.
+
+    5. Obtain a fresh evaluator decision, then follow the authorized provider route through exact-head required checks, integration, and confirmed closure. Local verification does not prove hosted integration and does not replace final release `release:prepublish`.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-08-28T01:13:04.735Z — VERIFY — ok
@@ -414,7 +422,18 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    Implemented in source commit `6d952d932d8635833a8320a44279df306a6a06b2`, based on `e43acc5f72ba1f884966a16325d6dbc94fcb1f04`.
+
+    Proved causes: verification evidence mapping could stop before canonical WorkItem projection; task-level rework could try to select a nonexistent WorkItem after verification was already successful; finish could persist legacy DONE before checking required WorkItem completion.
+
+    The bounded repair uses existing exchanges, implementation receipts, the current approved plan, exact Git ancestry and path scope, and a preserved task contract. Recovery retains the original source commit and historical exchange bytes and reruns current checks. It adds no store, public protocol, or Core migration.
+
+    Local evidence: 63 focused tests passed. The full mandatory CI passed locally and again through the supervisor. The first local full run failed the unchanged module-size limit; extracting the recovery helper fixed that failure without raising the limit. Typecheck, ESLint, formatting, Knip, hotspot checks, and diff checks passed. Supervisor record `verification/20260828011304735-23f23a1652815c0c.json` binds the source commit and frozen base above to all selected local checks. These are historical results for the previous task-document input. Updating Verify Steps requires fresh routed verification; do not treat the previous input as equivalent.
+
+    Read-only probes of the existing DVS5NN and CFKR4P worktrees resolved their recorded implementation commits, respectively `b577984d8418b4cb7fed521c14b6ab00bf773a93` and `a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0`. The probes did not resume, integrate, or close either task.
+
+    Remaining work: obtain current verification and evaluator acceptance for QMVHM2, publish through matching authority, pass exact-head hosted checks, integrate, and confirm closure. Then resume DVS5NN and CFKR4P through fresh supported routes. DVS5NN's partial legacy DONE is not delivery. Refresh the diagnostic remainder on exact main after integration; do not reuse the old failure count. Provider-neutral wording diagnostics remain separate. Final 0.7.8 qualification/publication and the approved subsequent Core graph remain separate; this repair neither qualifies a release nor reorders that graph.
 extensions:
   agentplane.execution_grant:
     actor: "USER"
@@ -910,11 +929,19 @@ Repair one interrupted implementation-to-completion scenario within the existing
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Recover interrupted verification-to-WorkItem completion without false DONE". Replace with task-specific acceptance checks when PLANNER context is available.
+1. Run the focused recovery suite:
+```bash
+bun x vitest run packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts --maxWorkers=1
+```
+Expected: all 63 scoped tests pass. Cover ordinary completion, interruption before verification and before WorkItem projection, fresh continuation, exactly-once replay, and the next task-level rework when all required WorkItems are already complete.
 
-1. Review the requested outcome for "Recover interrupted verification-to-WorkItem completion without false DONE". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+2. Check rejection cases in that suite. Changed plan revision, commands, scope, authority, task body, implementation receipt, source content, frozen base, missing evidence, and a divergent original result digest must not become successful recovery. Moving source into managed artifacts must not hide a product change.
+
+3. Check the preserved contracts. The observed frozen diff must contribute required checks before verification evidence is mapped. Required-incomplete finish, including a forced attempt, must leave the entire task unchanged and must not record false DONE.
+
+4. Run the unchanged mandatory commands `bun run ci:local:full` and `git diff --check`. Expected: both pass with no skipped mandatory checks or relaxed timeouts, structural limits, or baselines. Record verification through the supervisor for the current task document and exact implementation input.
+
+5. Obtain a fresh evaluator decision, then follow the authorized provider route through exact-head required checks, integration, and confirmed closure. Local verification does not prove hosted integration and does not replace final release `release:prepublish`.
 
 ## Verification
 
@@ -999,3 +1026,15 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+Implemented in source commit `6d952d932d8635833a8320a44279df306a6a06b2`, based on `e43acc5f72ba1f884966a16325d6dbc94fcb1f04`.
+
+Proved causes: verification evidence mapping could stop before canonical WorkItem projection; task-level rework could try to select a nonexistent WorkItem after verification was already successful; finish could persist legacy DONE before checking required WorkItem completion.
+
+The bounded repair uses existing exchanges, implementation receipts, the current approved plan, exact Git ancestry and path scope, and a preserved task contract. Recovery retains the original source commit and historical exchange bytes and reruns current checks. It adds no store, public protocol, or Core migration.
+
+Local evidence: 63 focused tests passed. The full mandatory CI passed locally and again through the supervisor. The first local full run failed the unchanged module-size limit; extracting the recovery helper fixed that failure without raising the limit. Typecheck, ESLint, formatting, Knip, hotspot checks, and diff checks passed. Supervisor record `verification/20260828011304735-23f23a1652815c0c.json` binds the source commit and frozen base above to all selected local checks. These are historical results for the previous task-document input. Updating Verify Steps requires fresh routed verification; do not treat the previous input as equivalent.
+
+Read-only probes of the existing DVS5NN and CFKR4P worktrees resolved their recorded implementation commits, respectively `b577984d8418b4cb7fed521c14b6ab00bf773a93` and `a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0`. The probes did not resume, integrate, or close either task.
+
+Remaining work: obtain current verification and evaluator acceptance for QMVHM2, publish through matching authority, pass exact-head hosted checks, integrate, and confirm closure. Then resume DVS5NN and CFKR4P through fresh supported routes. DVS5NN's partial legacy DONE is not delivery. Refresh the diagnostic remainder on exact main after integration; do not reuse the old failure count. Provider-neutral wording diagnostics remain separate. Final 0.7.8 qualification/publication and the approved subsequent Core graph remain separate; this repair neither qualifies a release nor reorders that graph.
