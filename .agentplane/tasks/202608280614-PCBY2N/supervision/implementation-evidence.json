@@ -1,0 +1,98 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check e3550efba441765882f2507cfaf659e9a76d2f0b..d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB e3550efba441765882f2507cfaf659e9a76d2f0b..d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202608280614-PCBY2N/README.md",
+        "A\t.agentplane/tasks/202608280614-PCBY2N/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202608280614-PCBY2N/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202608280614-PCBY2N/pr/github-body.md",
+        "A\t.agentplane/tasks/202608280614-PCBY2N/pr/github-title.txt",
+        "A\t.agentplane/tasks/202608280614-PCBY2N/pr/meta.json",
+        "A\t.agentplane/tasks/202608280614-PCBY2N/pr/review.md",
+        "A\tpackages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "e3550efba441765882f2507cfaf659e9a76d2f0b",
+  "implementation_commit": "d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202608280614-PCBY2N/README.md",
+      "?? .agentplane/tasks/202608280614-PCBY2N/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202608280614-PCBY2N/pr/diffstat.txt",
+      "?? .agentplane/tasks/202608280614-PCBY2N/pr/github-body.md",
+      "?? .agentplane/tasks/202608280614-PCBY2N/pr/github-title.txt",
+      "?? .agentplane/tasks/202608280614-PCBY2N/pr/meta.json",
+      "?? .agentplane/tasks/202608280614-PCBY2N/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608280614-PCBY2N/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608280614-PCBY2N/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608280614-PCBY2N/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608280614-PCBY2N/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608280614-PCBY2N/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608280614-PCBY2N/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608280614-PCBY2N/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202608280614-PCBY2N/README.md",
+      "?? .agentplane/tasks/202608280614-PCBY2N/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202608280614-PCBY2N/pr/diffstat.txt",
+      "?? .agentplane/tasks/202608280614-PCBY2N/pr/github-body.md",
+      "?? .agentplane/tasks/202608280614-PCBY2N/pr/github-title.txt",
+      "?? .agentplane/tasks/202608280614-PCBY2N/pr/meta.json",
+      "?? .agentplane/tasks/202608280614-PCBY2N/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608280614-PCBY2N"
+}
