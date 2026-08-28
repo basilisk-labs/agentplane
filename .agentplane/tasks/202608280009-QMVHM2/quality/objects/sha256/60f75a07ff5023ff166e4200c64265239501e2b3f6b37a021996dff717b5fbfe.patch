@@ -1,0 +1,1320 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+index e1e660f8b..4a6bda6a2 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+@@ -2,7 +2,8 @@ import { execFile } from "node:child_process";
+ import { cp, readFile, rm, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { promisify } from "node:util";
+-import { describe, expect, it } from "vitest";
++import { describe, expect, it, vi } from "vitest";
++import { taskCentricAggregateFromExtensions, taskCentricDigest } from "@agentplaneorg/core/tasks";
+ import {
+   createSupervisorExecutionEpisodeJournal,
+   recoverSupervisorExecutionEpisodeJournal,
+@@ -28,6 +29,17 @@ import {
+ } from "../commands/shared/supervisor-execution-episode.js";
+ import { buildTaskRouteDecision } from "../commands/shared/route-decision.js";
+ import { loadCommandContext } from "../commands/shared/task-backend.js";
++import { writeFinishedTasks } from "../commands/task/finish-shared.js";
++import * as verification from "../commands/task/direct-task-verification.js";
++import * as projection from "../commands/task/task-centric-external-result.js";
++import {
++  resolveQualityReviewTargetSha,
++  recordedTaskImplementationCommitSha,
++} from "../commands/shared/quality-review-target.js";
++import {
++  resolveRecordedImplementationRecovery,
++  taskReadmesPreserveRecoveryContract,
++} from "../commands/task/external-agent-implementation-recovery.js";
+ import type { ExternalAgentExchange } from "../commands/task/external-agent-exchange.js";
+ import { defaultConfig } from "./core-imports.js";
+ import { runCli } from "./run-cli.js";
+@@ -216,6 +228,395 @@ async function approveStructuredPlan(root: string, taskId: string): Promise<void
+ }
+ 
+ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
++  it.each(["before verification", "before WorkItem projection"])(
++    "recovers an implementation interrupted %s through a fresh episode",
++    async (boundary) => {
++      const root = await mkGitRepoRootWithBranch("main");
++      const config = defaultConfig();
++      config.workflow_mode = "branch_pr";
++      await writeConfig(root, config);
++      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++      const taskId = await createTask(root);
++      await cp(
++        path.join(process.cwd(), "packages/agentplane/assets/policy"),
++        path.join(root, ".agentplane/policy"),
++        { recursive: true },
++      );
++      const existingIgnore = await readFile(path.join(root, ".gitignore"), "utf8");
++      await writeFile(
++        path.join(root, ".gitignore"),
++        `${existingIgnore}\n.agentplane/bin/\n.agentplane/cache.sqlite*\nagentplane-recipes\nnode_modules\npackages/\nwebsite/\n`,
++      );
++      await writeFile(
++        path.join(root, "package.json"),
++        JSON.stringify({
++          scripts: { "test:critical": "node -e \"console.log('1 passed')\"" },
++        }),
++      );
++      await execFileAsync("git", ["add", ".agentplane", "package.json", ".gitignore"], {
++        cwd: root,
++      });
++      await execFileAsync("git", ["commit", "-m", "test: seed interrupted implementation"], {
++        cwd: root,
++      });
++      await approveStructuredPlan(root, taskId);
++      await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
++      await execFileAsync("git", ["commit", "-m", "test: persist approved plan"], { cwd: root });
++      const packet = await readAgentPacket(root, taskId);
++      if (!packet.exchange)
++        throw new Error(`missing implementation exchange: ${JSON.stringify(packet)}`);
++      const workOrder = JSON.parse(
++        await readFile(path.join(packet.exchange.directory, "work-order.json"), "utf8"),
++      ) as AgentWorkOrderV2;
++      const checkout = workOrder.state_fingerprint.worktree;
++      await writeFile(path.join(checkout, "feature.ts"), "export const feature = true;\n");
++      const resultFor = (p: AgentPacket, order: AgentWorkOrderV2) => ({
++        schema_version: 1,
++        kind: "agent_action_result",
++        task_id: taskId,
++        transition_id: p.transition_id,
++        state_fingerprint: p.state_fingerprint,
++        role: "EXECUTOR",
++        result: {
++          schema_version: 2,
++          kind: "agent_semantic_result",
++          work_order_id: order.work_order_id,
++          status: "completed",
++          summary: "The recorded implementation satisfies the approved WorkItem.",
++          findings: ["The original implementation claim."],
++          uncertainty: ["The original implementation limitation."],
++        },
++      });
++      await writeFile(packet.exchange.result_path, JSON.stringify(resultFor(packet, workOrder)));
++      const interruption =
++        boundary === "before verification"
++          ? vi
++              .spyOn(verification, "recordDirectTaskVerification")
++              .mockRejectedValueOnce(new Error("injected verification interruption"))
++          : vi
++              .spyOn(projection, "recordTaskCentricExternalResult")
++              .mockRejectedValueOnce(new Error("injected verification interruption"));
++      const interruptedIo = captureStdIO();
++      try {
++        expect(await runCli([...packet.exchange.resume_argv.slice(1), "--root", root])).not.toBe(0);
++        const status = await execFileAsync("git", ["status", "--short", "--untracked-files=all"], {
++          cwd: checkout,
++        });
++        expect(interruptedIo.stderr, status.stdout).toContain("injected verification interruption");
++        expect(interruption).toHaveBeenCalledOnce();
++      } finally {
++        interruptedIo.restore();
++        interruption.mockRestore();
++      }
++      const ctx = await loadCommandContext({ cwd: checkout, rootOverride: checkout });
++      const interrupted = await ctx.taskBackend.getTask(taskId);
++      expect(
++        taskCentricAggregateFromExtensions(interrupted?.extensions)?.work_items["exercise-worktree"]
++          ?.state,
++      ).toBe("READY");
++      const implementationOutput = await execFileAsync("git", ["rev-parse", "HEAD"], {
++        cwd: checkout,
++      });
++      const implementation = implementationOutput.stdout.trim();
++      expect(
++        await runCliSilent([
++          "verify",
++          taskId,
++          "--rework",
++          "--by",
++          "TESTER",
++          "--repo-fixable",
++          "--note",
++          "Rework: verification was interrupted after the implementation commit.",
++          "--root",
++          checkout,
++        ]),
++      ).toBe(0);
++      expect(
++        await runCliSilent([
++          "commit",
++          taskId,
++          "--allow-tasks",
++          "-m",
++          `🚧 ${taskId.split("-").at(-1)} task: record interrupted verification recovery`,
++          "--root",
++          checkout,
++        ]),
++      ).toBe(0);
++      expect(
++        await runCliSilent(["task", "advance", taskId, "--agent-json", "--root", checkout]),
++      ).not.toBe(0);
++      const io = captureStdIO();
++      let fresh: AgentPacket;
++      try {
++        expect(
++          await runCli([
++            "task",
++            "advance",
++            taskId,
++            "--replacement",
++            "--agent-json",
++            "--root",
++            checkout,
++          ]),
++          io.stderr,
++        ).toBe(0);
++        fresh = JSON.parse(io.stdout) as AgentPacket;
++      } finally {
++        io.restore();
++      }
++      if (!fresh.exchange) throw new Error("missing fresh recovery exchange");
++      const freshOrder = JSON.parse(
++        await readFile(path.join(fresh.exchange.directory, "work-order.json"), "utf8"),
++      ) as AgentWorkOrderV2;
++      const recoveryTarget = await resolveQualityReviewTargetSha({
++        gitRoot: checkout,
++        workflowDir: ".agentplane/tasks",
++        taskId,
++        previousEvaluatedSha: implementation,
++        workflowMode: "branch_pr",
++      });
++      expect(recoveryTarget).toBe(implementation);
++      const currentRecoveryTask = await ctx.taskBackend.getTask(taskId);
++      if (!currentRecoveryTask) throw new Error("missing recovery task");
++      const recoveryOptions = {
++        command: ctx,
++        task: currentRecoveryTask,
++        work_order: freshOrder,
++        head: freshOrder.state_fingerprint.git_head,
++        recorded_commit: recordedTaskImplementationCommitSha(currentRecoveryTask),
++      };
++      const readmePath = `.agentplane/tasks/${taskId}/README.md`;
++      const oldReadme = await execFileAsync("git", ["show", `${implementation}:${readmePath}`], {
++        cwd: checkout,
++      });
++      const newReadme = await readFile(path.join(checkout, readmePath), "utf8");
++      expect(taskReadmesPreserveRecoveryContract(oldReadme.stdout, newReadme, implementation)).toBe(
++        true,
++      );
++      expect(await resolveRecordedImplementationRecovery(recoveryOptions)).toEqual({
++        commit: implementation,
++        execution_base: workOrder.state_fingerprint.git_head,
++        semantic: resultFor(packet, workOrder).result,
++      });
++      expect(
++        await resolveRecordedImplementationRecovery({
++          ...recoveryOptions,
++          recorded_commit: freshOrder.state_fingerprint.git_head,
++        }),
++      ).toBeNull();
++      const changedPlanTask = structuredClone(currentRecoveryTask);
++      const changedPlan = taskCentricAggregateFromExtensions(
++        changedPlanTask.extensions,
++      )?.current_plan;
++      if (!changedPlan) throw new Error("missing recovery plan");
++      Reflect.set(changedPlan, "revision", changedPlan.revision + 1);
++      expect(
++        await resolveRecordedImplementationRecovery({ ...recoveryOptions, task: changedPlanTask }),
++      ).toBeNull();
++      const evidencePath = path.join(
++        checkout,
++        ".agentplane/tasks",
++        taskId,
++        "supervision/implementation-evidence.json",
++      );
++      const evidenceBefore = await readFile(evidencePath, "utf8");
++      await writeFile(evidencePath, "{}");
++      try {
++        expect(await resolveRecordedImplementationRecovery(recoveryOptions)).toBeNull();
++      } finally {
++        await writeFile(evidencePath, evidenceBefore);
++      }
++      const exchangePath = path.join(packet.exchange.directory, "exchange.json");
++      const exchangeBefore = await readFile(exchangePath, "utf8");
++      const changedReceipt = JSON.parse(exchangeBefore) as ExternalAgentExchange;
++      changedReceipt.result_digest = `sha256:${"0".repeat(64)}`;
++      await writeFile(exchangePath, JSON.stringify(changedReceipt));
++      try {
++        expect(await resolveRecordedImplementationRecovery(recoveryOptions)).toBeNull();
++      } finally {
++        await writeFile(exchangePath, exchangeBefore);
++      }
++      const replacementResult = resultFor(fresh, freshOrder);
++      replacementResult.result.summary = "A replacement summary with no new implementation.";
++      replacementResult.result.findings = ["An unproved replacement claim."];
++      replacementResult.result.uncertainty = [];
++      await writeFile(fresh.exchange.result_path, JSON.stringify(replacementResult));
++      const recordedResult = vi.spyOn(projection, "recordTaskCentricExternalResult");
++      const resumeIo = captureStdIO();
++      try {
++        expect(
++          await runCli([...fresh.exchange.resume_argv.slice(1), "--root", checkout]),
++          resumeIo.stderr,
++        ).toBe(0);
++        expect(recordedResult).toHaveBeenCalledOnce();
++        expect(recordedResult.mock.calls[0]?.[0].semantic).toEqual(
++          resultFor(packet, workOrder).result,
++        );
++      } finally {
++        resumeIo.restore();
++        recordedResult.mockRestore();
++      }
++      const completed = await ctx.taskBackend.getTask(taskId);
++      const completedAggregate = taskCentricAggregateFromExtensions(completed?.extensions);
++      const originalSemantic = resultFor(packet, workOrder).result;
++      expect(completedAggregate?.work_items["exercise-worktree"]?.output_manifests[0]?.digest).toBe(
++        taskCentricDigest({
++          id: "worktree-result",
++          result: {
++            schema_version: 1,
++            kind: "execute",
++            task_id: taskId,
++            plan_revision: completedAggregate?.current_plan?.revision,
++            plan_digest: completedAggregate?.current_plan?.digest,
++            work_item_id: "exercise-worktree",
++            context_digest:
++              freshOrder.planning_context?.digest ?? freshOrder.state_fingerprint.digest,
++            status: originalSemantic.status,
++            summary: originalSemantic.summary,
++            claims: originalSemantic.findings,
++            questions: originalSemantic.uncertainty,
++            artifacts: ["worktree-result"],
++          },
++        }),
++      );
++      expect(
++        taskCentricAggregateFromExtensions(completed?.extensions)?.work_items["exercise-worktree"]
++          ?.state,
++      ).toBe("COMPLETED");
++      expect(completed?.extensions?.implementation_commit).toMatchObject({ hash: implementation });
++      expect(await readFile(exchangePath, "utf8")).toBe(exchangeBefore);
++      const after = await readFile(
++        path.join(checkout, ".agentplane/tasks", taskId, "README.md"),
++        "utf8",
++      );
++      expect(await runCliSilent([...fresh.exchange.resume_argv.slice(1), "--root", checkout])).toBe(
++        0,
++      );
++      expect(
++        await readFile(path.join(checkout, ".agentplane/tasks", taskId, "README.md"), "utf8"),
++      ).toBe(after);
++      if (boundary === "before verification") {
++        if (!completed) throw new Error("missing completed WorkItem task");
++        // Seed a task-level review outcome. No hosted PR is needed by this fixture.
++        await ctx.taskBackend.writeTask({
++          ...completed,
++          quality_review: {
++            state: "rework",
++            updated_at: new Date().toISOString(),
++            updated_by: "EVALUATOR",
++            provenance: "evaluator_supplied",
++            evaluated_sha: implementation,
++            blueprint_digest: null,
++            note: "Change the feature result to false.",
++            evidence_refs: [`.agentplane/tasks/${taskId}/quality/fixture/quality-report.json`],
++            findings: ["The task-level feature needs correction after all WorkItems completed."],
++          },
++        });
++        await execFileAsync("git", ["add", ".agentplane"], { cwd: checkout });
++        await execFileAsync("git", ["commit", "-m", "test: seed task-level review rework"], {
++          cwd: checkout,
++        });
++        const taskRework = await readAgentPacket(checkout, taskId);
++        if (!taskRework.exchange) throw new Error("missing task-level rework exchange");
++        const reworkOrder = JSON.parse(
++          await readFile(path.join(taskRework.exchange.directory, "work-order.json"), "utf8"),
++        ) as AgentWorkOrderV2;
++        expect(reworkOrder.task.work_item_id ?? null).toBeNull();
++        const beforeRework = await ctx.taskBackend.getTask(taskId);
++        expect(beforeRework?.verification?.state).toBe("ok");
++        const itemsBefore = taskCentricAggregateFromExtensions(
++          beforeRework?.extensions,
++        )?.work_items;
++        await writeFile(path.join(checkout, "feature.ts"), "export const feature = false;\n");
++        await writeFile(
++          taskRework.exchange.result_path,
++          JSON.stringify(resultFor(taskRework, reworkOrder)),
++        );
++        const reworkIo = captureStdIO();
++        try {
++          expect(
++            await runCli([...taskRework.exchange.resume_argv.slice(1), "--root", checkout]),
++            reworkIo.stderr,
++          ).toBe(0);
++        } finally {
++          reworkIo.restore();
++        }
++        const afterRework = await ctx.taskBackend.getTask(taskId);
++        expect(taskCentricAggregateFromExtensions(afterRework?.extensions)?.work_items).toEqual(
++          itemsBefore,
++        );
++        expect(afterRework?.verification?.state).toBe("ok");
++      }
++      if (boundary === "before WorkItem projection") {
++        await execFileAsync(
++          "git",
++          ["mv", "feature.ts", `.agentplane/tasks/${taskId}/pr/moved-source.ts`],
++          { cwd: checkout },
++        );
++      } else {
++        await writeFile(path.join(checkout, "feature.ts"), "export const feature = null;\n");
++        await execFileAsync("git", ["add", "feature.ts"], { cwd: checkout });
++      }
++      await execFileAsync("git", ["commit", "-m", "test: change implementation after recovery"], {
++        cwd: checkout,
++      });
++      const changedHead = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: checkout });
++      expect(
++        await resolveRecordedImplementationRecovery({
++          ...recoveryOptions,
++          head: changedHead.stdout.trim(),
++        }),
++      ).toBeNull();
++    },
++  );
++
++  it("does not persist DONE when a required WorkItem is incomplete", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    const taskId = await createTask(root);
++    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: seed incomplete WorkItem"], { cwd: root });
++    await approveStructuredPlan(root, taskId);
++    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
++    const task = await ctx.taskBackend.getTask(taskId);
++    if (!task) throw new Error("missing incomplete WorkItem task");
++    const headOutput = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
++    const head = headOutput.stdout.trim();
++    await ctx.taskBackend.writeTask({
++      ...task,
++      status: "DOING",
++      verification: {
++        state: "ok",
++        attempts: 1,
++        updated_at: new Date().toISOString(),
++        updated_by: "TESTER",
++        note: "The task checks passed before WorkItem projection.",
++      },
++    });
++    const before = await ctx.taskBackend.getTask(taskId);
++    if (!before) throw new Error("missing prepared task");
++    for (let attempt = 0; attempt < 2; attempt += 1) {
++      await expect(
++        writeFinishedTasks({
++          ctx,
++          loadedTasks: [{ taskId, task: before }],
++          metaTaskId: taskId,
++          author: "CODER",
++          body: "Verified: candidate completion must retain WorkItem guards.",
++          force: attempt === 1,
++          resultProvided: true,
++          resultSummary: "candidate completion",
++          breaking: false,
++          taskCommitInfo: { hash: head, message: "test: implementation" },
++        }),
++      ).rejects.toThrow("required_work_item_incomplete:exercise-worktree");
++      expect(await ctx.taskBackend.getTask(taskId)).toEqual(before);
++    }
++  });
++
+   it("advances once from the base checkout into one worktree-bound semantic episode", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.test.ts b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+index 57e503086..5842d28bb 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+@@ -5,6 +5,13 @@ import { afterEach, describe, expect, it, vi } from "vitest";
+ 
+ import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
+ import type { TaskData } from "../../backends/task-backend.js";
++import * as executionContext from "../../runtime/task-execution-context/index.js";
++import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
++import * as observedChanges from "./verify-record-observed-changes.js";
++import * as verifyRecord from "./verify-record.js";
++import * as reviewTarget from "../shared/quality-review-target.js";
++import * as processRunner from "@agentplaneorg/core/process";
++import { defaultConfig } from "../../cli/core-imports.js";
+ 
+ const mocks = { runProcess: vi.fn() };
+ const ORIGINAL_AGENT_MODE = process.env.AGENTPLANE_AGENT_MODE;
+@@ -15,6 +22,7 @@ import {
+   isTaskLevelVerificationReworkState,
+   parseDirectTaskCheck,
+   renderDirectTaskVerificationDetails,
++  recordDirectTaskVerification,
+   resolveEvidenceOnlyReworkCommit,
+   runDirectTaskVerification,
+ } from "./direct-task-verification.js";
+@@ -97,6 +105,64 @@ afterEach(async () => {
+ });
+ 
+ describe("direct task verification", () => {
++  it("maps checks from the frozen verification diff before persisting their evidence", async () => {
++    const repo = await root();
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    const task = {
++      id: TASK_ID,
++      tags: ["code"],
++      verify: ["bun run ci:local:full"],
++      task_kind: "code",
++      mutation_scope: "code",
++      extensions: {},
++    } as TaskData;
++    task.execution_contract = resolveTaskExecutionContract({
++      config,
++      task,
++      requestedMode: "branch_pr",
++    });
++    expect(task.execution_contract.verification.contract?.selected_checks).not.toContain(
++      "docs_contract",
++    );
++    const context = vi
++      .spyOn(executionContext, "resolveTaskExecutionContext")
++      .mockResolvedValue({} as never);
++    const target = vi
++      .spyOn(reviewTarget, "resolveQualityReviewTargetSha")
++      .mockResolvedValue("frozen-head");
++    const observed = vi
++      .spyOn(observedChanges, "resolveObservedVerificationChangedPaths")
++      .mockResolvedValue(["docs/contract.md"]);
++    const persist = vi.spyOn(verifyRecord, "cmdVerifyParsed").mockResolvedValue(0);
++    const process = vi
++      .spyOn(processRunner, "runProcess")
++      .mockResolvedValue({ exitCode: 0, stdout: "checks passed", stderr: "" } as never);
++    try {
++      const result = await recordDirectTaskVerification({
++        command: command(repo),
++        checkout: repo,
++        task,
++        work_order: { task: { id: TASK_ID } } as never,
++        workflow: "branch_pr",
++      });
++      expect(result.status).toBe("passed");
++      expect(result.checks[0]?.check_ids).toContain("docs_contract");
++      expect(persist.mock.calls[0]?.[0].details).toContain("Check: docs_contract");
++      expect(observed).toHaveBeenCalledWith(
++        expect.objectContaining({ evaluatedSha: "frozen-head" }),
++      );
++      expect(task.execution_contract.verification.contract?.selected_checks).not.toContain(
++        "docs_contract",
++      );
++    } finally {
++      context.mockRestore();
++      target.mockRestore();
++      observed.mockRestore();
++      persist.mockRestore();
++      process.mockRestore();
++    }
++  });
+   it("reuses only the exact unchanged implementation identity at a rework boundary", () => {
+     const eligible = {
+       purpose: "implementation" as const,
+@@ -128,6 +194,9 @@ describe("direct task verification", () => {
+     };
+ 
+     expect(isTaskLevelVerificationReworkState(eligible)).toBe(true);
++    expect(isTaskLevelVerificationReworkState({ ...eligible, task_verification_state: "ok" })).toBe(
++      true,
++    );
+     expect(isTaskLevelVerificationReworkState({ ...eligible, has_plan_refinement: true })).toBe(
+       false,
+     );
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.ts b/packages/agentplane/src/commands/task/direct-task-verification.ts
+index 851895ec8..27c4f1b15 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.ts
+@@ -12,6 +12,7 @@ import type { CommandContext, loadTaskFromContext } from "../shared/task-backend
+ 
+ import { CliError } from "../../shared/errors.js";
+ import { cmdVerifyParsed } from "./verify-record.js";
++import { resolveImplementationVerificationTask } from "./external-agent-implementation-recovery.js";
+ 
+ const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
+ const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
+@@ -111,7 +112,6 @@ export function isTaskLevelVerificationReworkState(opts: {
+     !opts.work_item_id &&
+     !opts.has_plan_refinement &&
+     opts.has_current_plan &&
+-    opts.task_verification_state === "needs_rework" &&
+     opts.all_required_work_items_completed
+   );
+ }
+@@ -123,6 +123,7 @@ export async function recordDirectTaskVerification(opts: {
+   work_order: AgentWorkOrderV2;
+   workflow: "direct" | "branch_pr";
+ }): Promise<DirectTaskVerificationResult> {
++  const verificationTask = await resolveImplementationVerificationTask(opts);
+   const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
+   const selectedWorkItem = aggregate?.current_plan?.proposal.work_items.work_items.find(
+     (item) => item.id === opts.work_order.task.work_item_id,
+@@ -132,7 +133,7 @@ export async function recordDirectTaskVerification(opts: {
+     : [];
+   const checks = await runDirectTaskVerification({
+     command: opts.command,
+-    task: opts.task,
++    task: verificationTask,
+     task_id: opts.task.id,
+     cwd: opts.checkout,
+     additional_commands: additionalCommands,
+@@ -150,7 +151,7 @@ export async function recordDirectTaskVerification(opts: {
+         ? "Verified: CLI-owned checks passed before independent EVALUATOR review."
+         : `Rework: ${checks.reason ?? "Declared implementation verification did not pass."}`,
+     details: renderDirectTaskVerificationDetails({
+-      task: opts.task,
++      task: verificationTask,
+       taskId: opts.task.id,
+       workflow: opts.workflow,
+       result: checks,
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+index 9b9c3c91c..a4dcce059 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+@@ -1,7 +1,6 @@
+ import path from "node:path";
+ 
+ import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+-import { runProcess } from "@agentplaneorg/core/process";
+ import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+ 
+ import { CliError } from "../../shared/errors.js";
+@@ -28,6 +27,12 @@ import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-im
+ import { cmdTaskComment } from "./comment.js";
+ import { cmdTaskSetStatus } from "./set-status.js";
+ import { recordObservedTaskExecutionContract } from "./task-execution-contract-observation.js";
++import {
++  resolveRecordedImplementationRecovery,
++  assertRecoverableImplementationCommit,
++  refreshRecoveredImplementationEvidence,
++} from "./external-agent-implementation-recovery.js";
++import { recordedTaskImplementationCommitSha } from "../shared/quality-review-target.js";
+ import { loadTaskFromContext } from "../shared/task-backend.js";
+ import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+ import {
+@@ -58,38 +63,6 @@ function implementationSubject(taskId: string): string {
+   return `🚧 ${taskId.split("-").at(-1)} task: apply external agent result`;
+ }
+ 
+-async function assertRecoverableImplementationCommit(opts: {
+-  cwd: string;
+-  baseline: string | null;
+-  commit: string;
+-  task_id: string;
+-}): Promise<void> {
+-  const subject = await runProcess({
+-    command: "git",
+-    args: ["show", "-s", "--format=%s", opts.commit],
+-    cwd: opts.cwd,
+-    reject: false,
+-  });
+-  const ancestry = opts.baseline
+-    ? await runProcess({
+-        command: "git",
+-        args: ["merge-base", "--is-ancestor", opts.baseline, opts.commit],
+-        cwd: opts.cwd,
+-        reject: false,
+-      })
+-    : null;
+-  if (
+-    subject.exitCode !== 0 ||
+-    subject.stdout.trim() !== implementationSubject(opts.task_id) ||
+-    (ancestry && ancestry.exitCode !== 0)
+-  ) {
+-    throw new CliError({
+-      code: "E_VALIDATION",
+-      message: "Git history changed outside the recoverable Agentplane implementation effect.",
+-    });
+-  }
+-}
+-
+ function hasChangedTaskArtifacts(statusLines: readonly string[], taskId: string): boolean {
+   const prefix = `.agentplane/tasks/${taskId}/`;
+   return statusLines.some((line) => pathFromStatusLine(line).startsWith(prefix));
+@@ -300,7 +273,7 @@ export async function applyExternalImplementationResult(opts: {
+   work_order: AgentWorkOrderV2;
+   envelope: ExternalAgentResultEnvelope;
+ }): Promise<void> {
+-  const semantic = opts.envelope.result;
++  let semantic = opts.envelope.result;
+   if (semantic.status !== "completed") {
+     if (semantic.status === "blocked" && opts.decision.workflowMode === "branch_pr") {
+       const alreadyRecorded = await isExternalBlockedResultRecorded({
+@@ -366,14 +339,43 @@ export async function applyExternalImplementationResult(opts: {
+     ? opts.decision.task.commit
+     : null;
+   let reusedRecordedImplementation = false;
++  let recoveredExecutionBase: string | null = null;
+   let observedChangedPaths: string[] | null = null;
+-  if (implementationCommit) {
+-    await assertRecoverableImplementationCommit({
+-      cwd: opts.exchange.checkout,
+-      baseline: opts.exchange.baseline.head,
+-      commit: implementationCommit,
+-      task_id: opts.exchange.task_id,
++  if (head === opts.exchange.baseline.head) {
++    implementationCommit = null;
++    observedChangedPaths = assertExternalImplementationReturnState({
++      exchange: opts.exchange,
++      work_order: opts.work_order,
++      current: opts.decision,
++      current_head: head,
++      current_status_lines: status?.lines ?? [],
++      require_changes: false,
+     });
++    if (observedChangedPaths.length === 0) {
++      const recovery = await resolveRecordedImplementationRecovery({
++        command: opts.command,
++        task: taskAtReturn,
++        work_order: opts.work_order,
++        head,
++        recorded_commit: recordedTaskImplementationCommitSha(taskAtReturn),
++      });
++      if (recovery) {
++        implementationCommit = recovery.commit;
++        recoveredExecutionBase = recovery.execution_base;
++        semantic = recovery.semantic;
++        reusedRecordedImplementation = true;
++      }
++    }
++  }
++  if (implementationCommit) {
++    if (!recoveredExecutionBase) {
++      await assertRecoverableImplementationCommit({
++        cwd: opts.exchange.checkout,
++        baseline: opts.exchange.baseline.head,
++        commit: implementationCommit,
++        task_id: opts.exchange.task_id,
++      });
++    }
+   } else if (head !== opts.exchange.baseline.head && head) {
+     await assertRecoverableImplementationCommit({
+       cwd: opts.exchange.checkout,
+@@ -442,30 +444,39 @@ export async function applyExternalImplementationResult(opts: {
+     | { base_sha?: unknown }
+     | undefined;
+   const recordedExecutionBase =
+-    typeof executionContext?.base_sha === "string" ? executionContext.base_sha.trim() : null;
++    recoveredExecutionBase ??
++    (typeof executionContext?.base_sha === "string" ? executionContext.base_sha.trim() : null);
+   if (reusedRecordedImplementation && !recordedExecutionBase) {
+     throw new CliError({
+       code: "E_VALIDATION",
+       message: "Evidence-only implementation rework is missing its recorded execution base.",
+     });
+   }
+-  const implementation = await prepareDirectImplementationEvidence({
++  const recoveredEvidence = await refreshRecoveredImplementationEvidence({
+     command: opts.command,
+-    cwd: opts.exchange.checkout,
+-    task_id: opts.exchange.task_id,
+-    execution_base_commit: reusedRecordedImplementation
+-      ? recordedExecutionBase
+-      : opts.exchange.baseline.head,
+-    execution_baseline_status: {
+-      command: "git status --short --untracked-files=all",
+-      lines: opts.exchange.baseline.changed_paths,
+-    },
+-    allowed_paths: [
+-      ...opts.work_order.authority.writable_roots,
+-      `.agentplane/tasks/${opts.exchange.task_id}`,
+-    ],
+-    observed_changed_paths: observedChangedPaths,
++    exchange: opts.exchange,
++    execution_base: recoveredExecutionBase,
++    commit: implementationCommit,
+   });
++  const implementation = recoveredEvidence
++    ? { status: "ready" as const, evidence: recoveredEvidence }
++    : await prepareDirectImplementationEvidence({
++        command: opts.command,
++        cwd: opts.exchange.checkout,
++        task_id: opts.exchange.task_id,
++        execution_base_commit: reusedRecordedImplementation
++          ? recordedExecutionBase
++          : opts.exchange.baseline.head,
++        execution_baseline_status: {
++          command: "git status --short --untracked-files=all",
++          lines: opts.exchange.baseline.changed_paths,
++        },
++        allowed_paths: [
++          ...opts.work_order.authority.writable_roots,
++          `.agentplane/tasks/${opts.exchange.task_id}`,
++        ],
++        observed_changed_paths: observedChangedPaths,
++      });
+   if (implementation.status !== "ready") {
+     throw new CliError({ code: "E_VALIDATION", message: implementation.reason });
+   }
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+new file mode 100644
+index 000000000..3e85b0690
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+@@ -0,0 +1,125 @@
++import { describe, expect, it } from "vitest";
++import { renderTaskReadme } from "@agentplaneorg/core/tasks";
++import { taskReadmesPreserveRecoveryContract } from "./external-agent-implementation-recovery.js";
++
++const COMMIT = "a".repeat(40);
++
++function task() {
++  return {
++    id: "202608280009-QMVHM2",
++    status: "DOING",
++    verify: ["bun run ci:local:full"],
++    execution_contract: {
++      declaration: { scope_roots: ["src"], repository_effects: ["source_code"] },
++      authority: { writable_roots: ["src"] },
++      observed: { changed_paths: ["src/feature.ts"] },
++      verification: { required_evidence: ["task_outcome"] },
++      reason_codes: ["declared"],
++    },
++    extensions: {
++      "agentplane.task_centric": { current_plan: { revision: 1, digest: "approved-plan" } },
++    },
++  };
++}
++
++describe("recorded implementation recovery contract", () => {
++  it("accepts execution-context hydration only for the already-frozen base", () => {
++    const original = task();
++    const before = {
++      ...original,
++      extensions: {
++        ...original.extensions,
++        workflow_route_baseline: { version: 1, start_head_sha: COMMIT },
++      },
++    };
++    for (const base of [COMMIT, "b".repeat(40)]) {
++      const after = {
++        ...before,
++        extensions: {
++          ...before.extensions,
++          task_execution_context: {
++            schema_version: 1,
++            base_ref: "main",
++            base_sha: base,
++            repository_identity: null,
++          },
++        },
++      };
++      expect(
++        taskReadmesPreserveRecoveryContract(
++          renderTaskReadme(before, "unchanged"),
++          renderTaskReadme(after, "unchanged"),
++          COMMIT,
++        ),
++      ).toBe(base === COMMIT);
++    }
++  });
++  it("allows CLI-observed verification and receipt drift without changing the approved contract", () => {
++    const before = task();
++    const after = {
++      ...before,
++      status: "DONE",
++      token_usage: { agent_runs: 2 },
++      execution_contract: {
++        ...before.execution_contract,
++        observed: { changed_paths: ["src/feature.ts", "docs/contract.md"] },
++        verification: { required_evidence: ["task_outcome", "docs_contract"] },
++        reason_codes: ["observed_documentation"],
++      },
++      extensions: {
++        ...before.extensions,
++        implementation_commit: { hash: COMMIT, message: "implementation" },
++      },
++    };
++    expect(
++      taskReadmesPreserveRecoveryContract(
++        renderTaskReadme(before, "## Summary\nApproved behavior.\n"),
++        renderTaskReadme(
++          after,
++          "## Summary\nApproved behavior.\n\n## Token Usage\nUpdated counters.\n",
++        ),
++        COMMIT,
++      ),
++    ).toBe(true);
++  });
++
++  it.each(["scope", "authority", "commands", "plan", "receipt", "body"])(
++    "rejects changed %s",
++    (change) => {
++      const before = task();
++      const after: Record<string, unknown> = structuredClone(before);
++      if (change === "scope")
++        after.execution_contract = {
++          ...before.execution_contract,
++          declaration: { scope_roots: ["other"] },
++        };
++      if (change === "authority")
++        after.execution_contract = {
++          ...before.execution_contract,
++          authority: { writable_roots: ["other"] },
++        };
++      if (change === "commands") after.verify = ["bun run weaker-check"];
++      if (change === "plan")
++        after.extensions = {
++          "agentplane.task_centric": { current_plan: { revision: 2, digest: "different-plan" } },
++        };
++      if (change === "receipt")
++        after.extensions = {
++          ...before.extensions,
++          implementation_commit: { hash: "b".repeat(40), message: "different implementation" },
++        };
++      expect(
++        taskReadmesPreserveRecoveryContract(
++          renderTaskReadme(before, "## Summary\nApproved behavior.\n"),
++          renderTaskReadme(
++            after,
++            change === "body"
++              ? "## Summary\nDifferent behavior.\n"
++              : "## Summary\nApproved behavior.\n",
++          ),
++          COMMIT,
++        ),
++      ).toBe(false);
++    },
++  );
++});
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
+new file mode 100644
+index 000000000..eb1623651
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
+@@ -0,0 +1,405 @@
++import { readFile, readdir } from "node:fs/promises";
++import path from "node:path";
++import { gitIsAncestor, gitShowFile, gitProofEnv } from "@agentplaneorg/core/git";
++import { runProcess } from "@agentplaneorg/core/process";
++import {
++  parseTaskReadme,
++  renderTaskReadme,
++  setMarkdownSection,
++  taskCentricAggregateFromExtensions,
++} from "@agentplaneorg/core/tasks";
++import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import { isRecord } from "../../shared/guards.js";
++import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
++import { recordDirectImplementationEvidence } from "./direct-task-finalization.js";
++import { CliError } from "../../shared/errors.js";
++import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
++import {
++  reconcileTaskExecutionContract,
++  resolveTaskExecutionContract,
++} from "../../runtime/task-routing/index.js";
++import {
++  recordedTaskImplementationCommitSha,
++  resolveQualityReviewTargetSha,
++  taskReadmesHaveOnlyLifecycleDrift,
++} from "../shared/quality-review-target.js";
++import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
++import { resolveObservedVerificationChangedPaths } from "./verify-record-observed-changes.js";
++import { isQualificationTask } from "./qualification-packet.js";
++import { resolveQualificationDependencyLeaves } from "./qualification-packet-dependencies.js";
++import {
++  externalAgentResultDigest,
++  readExternalAgentExchange,
++  readExternalAgentWorkOrder,
++  validateExternalAgentResultEnvelope,
++  type ExternalAgentExchange,
++} from "./external-agent-exchange.js";
++
++export async function assertRecoverableImplementationCommit(opts: {
++  cwd: string;
++  baseline: string | null;
++  commit: string;
++  task_id: string;
++}): Promise<void> {
++  const subject = await runProcess({
++    command: "git",
++    args: ["show", "-s", "--format=%s", opts.commit],
++    cwd: opts.cwd,
++    reject: false,
++  });
++  const ancestry = opts.baseline
++    ? await runProcess({
++        command: "git",
++        args: ["merge-base", "--is-ancestor", opts.baseline, opts.commit],
++        cwd: opts.cwd,
++        reject: false,
++      })
++    : null;
++  if (
++    subject.exitCode !== 0 ||
++    subject.stdout.trim() !==
++      `🚧 ${opts.task_id.split("-").at(-1)} task: apply external agent result` ||
++    (ancestry && ancestry.exitCode !== 0)
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Git history changed outside the recoverable Agentplane implementation effect.",
++    });
++  }
++}
++
++export async function refreshRecoveredImplementationEvidence(opts: {
++  command: CommandContext;
++  exchange: ExternalAgentExchange;
++  execution_base: string | null;
++  commit: string | null;
++}) {
++  if (!opts.execution_base || !opts.commit) return null;
++  const evidence = await recordDirectImplementationEvidence({
++    command: opts.command,
++    cwd: opts.exchange.checkout,
++    task_id: opts.exchange.task_id,
++    execution_base_commit: opts.execution_base,
++    implementation_commit: opts.commit,
++    execution_baseline_status: {
++      command: "git status --short --untracked-files=all",
++      lines: opts.exchange.baseline.changed_paths,
++    },
++  });
++  if (!evidence)
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "The CLI could not refresh recorded implementation Git evidence.",
++    });
++  return evidence;
++}
++
++function recoveryComparableReadme(
++  markdown: string,
++  commit: string,
++  current: boolean,
++): string | null {
++  const parsed = parseTaskReadme(markdown);
++  const fields = parsed.frontmatter;
++  Reflect.deleteProperty(fields, "token_usage");
++  if (isRecord(fields.execution_contract)) {
++    for (const key of ["observed", "verification", "reason_codes"])
++      Reflect.deleteProperty(fields.execution_contract, key);
++  }
++  if (isRecord(fields.extensions)) {
++    const receipt = fields.extensions.implementation_commit;
++    if (
++      receipt != null &&
++      (!isRecord(receipt) ||
++        typeof receipt.hash !== "string" ||
++        (current && receipt.hash !== commit) ||
++        Object.keys(receipt).some((key) => !["hash", "message"].includes(key)))
++    )
++      return null;
++    Reflect.deleteProperty(fields.extensions, "implementation_commit");
++  }
++  return renderTaskReadme(fields, setMarkdownSection(parsed.body, "Token Usage", ""));
++}
++
++/** This comparison does not reuse verification. The fresh route reruns the observed contract. */
++export function taskReadmesPreserveRecoveryContract(
++  before: string,
++  after: string,
++  commit: string,
++): boolean {
++  const original = parseTaskReadme(before);
++  const next = parseTaskReadme(after);
++  const previousExtensions = original.frontmatter.extensions;
++  const nextExtensions = next.frontmatter.extensions;
++  if (
++    isRecord(previousExtensions) &&
++    isRecord(nextExtensions) &&
++    previousExtensions.task_execution_context == null
++  ) {
++    const baseline = previousExtensions.workflow_route_baseline;
++    const context = nextExtensions.task_execution_context;
++    if (
++      isRecord(baseline) &&
++      isRecord(context) &&
++      context.schema_version === 1 &&
++      typeof baseline.start_head_sha === "string" &&
++      context.base_sha === baseline.start_head_sha &&
++      context.repository_identity == null &&
++      typeof context.base_ref === "string" &&
++      Object.keys(context).every((key) =>
++        ["schema_version", "base_ref", "base_sha", "repository_identity"].includes(key),
++      )
++    ) {
++      // Verification can materialize an already-frozen execution boundary after the commit.
++      previousExtensions.task_execution_context = context;
++    }
++  }
++  const previous = recoveryComparableReadme(
++    renderTaskReadme(original.frontmatter, original.body),
++    commit,
++    false,
++  );
++  const current = recoveryComparableReadme(after, commit, true);
++  return (
++    previous !== null && current !== null && taskReadmesHaveOnlyLifecycleDrift(previous, current)
++  );
++}
++
++async function exactChangedPaths(
++  root: string,
++  base: string,
++  head: string,
++): Promise<string[] | null> {
++  const diff = await runProcess({
++    command: "git",
++    args: [
++      "diff",
++      "--no-ext-diff",
++      "--no-textconv",
++      "--no-renames",
++      "--name-only",
++      "-z",
++      base,
++      head,
++      "--",
++    ],
++    cwd: root,
++    env: gitProofEnv(),
++    reject: false,
++  });
++  return diff.exitCode === 0 ? diff.stdout.split("\0").filter(Boolean) : null;
++}
++
++export async function resolveImplementationVerificationTask(opts: {
++  command: CommandContext;
++  checkout: string;
++  task: TaskData;
++  workflow: "direct" | "branch_pr";
++}): Promise<TaskData> {
++  const execution = await resolveTaskExecutionContext({
++    ctx: opts.command,
++    tasks: [opts.task],
++    primaryTaskId: opts.task.id,
++  });
++  const batchTaskIds = normalizeBranchPrBatchTaskIds(opts.task, opts.task.id);
++  const dependencies = isQualificationTask(opts.task)
++    ? await resolveQualificationDependencyLeaves({
++        taskId: opts.task.id,
++        loadTask: (id) => opts.command.taskBackend.getTask(id),
++      })
++    : null;
++  const taskIds = [...new Set([...batchTaskIds, ...(dependencies?.dependencyTaskIds ?? [])])];
++  const evaluatedSha = await resolveQualityReviewTargetSha({
++    gitRoot: opts.checkout,
++    workflowDir: opts.command.config.paths.workflow_dir,
++    taskId: opts.task.id,
++    taskIds,
++    lifecycleTaskIds: batchTaskIds,
++    previousEvaluatedSha: recordedTaskImplementationCommitSha(opts.task),
++    workflowMode: opts.workflow,
++  });
++  const changedPaths = await resolveObservedVerificationChangedPaths({
++    ctx: opts.command,
++    evaluatedSha,
++    taskId: opts.task.id,
++    artifactTaskIds: taskIds,
++    execution,
++  });
++  const verificationTask = {
++    ...opts.task,
++    execution_contract: reconcileTaskExecutionContract({
++      contract:
++        opts.task.execution_contract ??
++        resolveTaskExecutionContract({
++          config: opts.command.config,
++          task: opts.task,
++          requestedMode: opts.workflow,
++        }),
++      changed_paths: changedPaths,
++    }).contract,
++  };
++  return verificationTask;
++}
++
++async function directories(directory: string): Promise<string[]> {
++  try {
++    const entries = await readdir(directory, { withFileTypes: true });
++    return entries
++      .filter((entry) => entry.isDirectory())
++      .map((entry) => path.join(directory, entry.name));
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
++    throw error;
++  }
++}
++
++/** Recover only recorded implementation effects. Checks are executed again by the caller. */
++export async function resolveRecordedImplementationRecovery(opts: {
++  command: CommandContext;
++  task: TaskData;
++  work_order: AgentWorkOrderV2;
++  head: string | null;
++  recorded_commit: string | null;
++}): Promise<{ commit: string; execution_base: string; semantic: AgentSemanticResult } | null> {
++  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
++  const plan = aggregate?.current_plan;
++  const root = opts.command.resolvedProject.gitRoot;
++  const taskPrefix = `${opts.command.config.paths.workflow_dir}/${opts.task.id}/`;
++  let evidence: unknown;
++  try {
++    evidence = JSON.parse(
++      await readFile(
++        path.join(root, taskPrefix, "supervision/implementation-evidence.json"),
++        "utf8",
++      ),
++    );
++  } catch (error) {
++    if (error instanceof SyntaxError || (error as NodeJS.ErrnoException).code === "ENOENT")
++      return null;
++    throw error;
++  }
++  if (
++    !isRecord(evidence) ||
++    evidence.kind !== "direct_task_implementation_evidence" ||
++    evidence.task_id !== opts.task.id ||
++    typeof evidence.implementation_commit !== "string" ||
++    typeof evidence.execution_base_commit !== "string"
++  )
++    return null;
++  const commit = opts.recorded_commit ?? evidence.implementation_commit;
++  if (
++    evidence.implementation_commit !== commit ||
++    !/^[0-9a-f]{40}(?:[0-9a-f]{24})?$/u.test(commit) ||
++    !/^[0-9a-f]{40}(?:[0-9a-f]{24})?$/u.test(evidence.execution_base_commit)
++  )
++    return null;
++  const workItemId = opts.work_order.task.work_item_id ?? null;
++  if (
++    !plan ||
++    !aggregate ||
++    !commit ||
++    !opts.head ||
++    plan.approval.state !== "approved" ||
++    plan.approval.approved_digest !== plan.digest ||
++    opts.task.plan_approval?.state !== "approved"
++  ) {
++    return null;
++  }
++  if (workItemId) {
++    const item = aggregate.work_items[workItemId];
++    if (!item || !["READY", "REWORK_READY"].includes(item.state)) return null;
++  } else if (
++    plan.proposal.work_items.work_items.some(
++      (item) => !item.optional && aggregate.work_items[item.id]?.state !== "COMPLETED",
++    )
++  ) {
++    return null;
++  }
++  if (!(await gitIsAncestor(root, commit, opts.head))) return null;
++  const subsequentPaths = await exactChangedPaths(root, commit, opts.head);
++  const managed = ["pr/", "quality/", "blueprint/", "verification/", "evidence/", "supervision/"];
++  if (
++    !subsequentPaths ||
++    subsequentPaths.some(
++      (name) =>
++        !name.startsWith(taskPrefix) ||
++        (name !== `${taskPrefix}README.md` &&
++          !managed.some((directory) => name.startsWith(`${taskPrefix}${directory}`))),
++    )
++  )
++    return null;
++  const committedReadme = await gitShowFile(root, commit, `${taskPrefix}README.md`);
++  if (!committedReadme) return null;
++  const currentReadmes = await Promise.all([
++    gitShowFile(root, opts.head, `${taskPrefix}README.md`),
++    readFile(path.join(root, taskPrefix, "README.md"), "utf8"),
++  ]);
++  if (
++    currentReadmes.some(
++      (readme) => !taskReadmesPreserveRecoveryContract(committedReadme, readme, commit),
++    )
++  )
++    return null;
++  const frontmatter = parseTaskReadme(committedReadme).frontmatter;
++  const recordedPlan = taskCentricAggregateFromExtensions(
++    isRecord(frontmatter.extensions) ? frontmatter.extensions : undefined,
++  )?.current_plan;
++  if (recordedPlan?.digest !== plan.digest || recordedPlan.revision !== plan.revision) return null;
++
++  const base = evidence.execution_base_commit;
++  if (!(await gitIsAncestor(root, base, commit)) || base === commit) return null;
++  const diffNames = await exactChangedPaths(root, base, commit);
++  if (!diffNames) return null;
++  const changed = diffNames.filter((name) => !name.startsWith(taskPrefix));
++  const allowed = opts.work_order.authority.writable_roots.map((entry) =>
++    path.relative(root, path.resolve(root, entry)).replaceAll("\\", "/"),
++  );
++  if (
++    changed.length === 0 ||
++    changed.some(
++      (name) =>
++        !allowed.some((scope) => scope === "" || name === scope || name.startsWith(`${scope}/`)),
++    )
++  )
++    return null;
++
++  const exchangeRoot = path.join(
++    await resolveCommandGitCommonDir(opts.command),
++    "agentplane/external-agent",
++    opts.task.id,
++  );
++  for (const transition of await directories(exchangeRoot)) {
++    for (const directory of await directories(transition)) {
++      const exchange = await readExternalAgentExchange(path.join(directory, "exchange.json"));
++      if (
++        exchange?.task_id !== opts.task.id ||
++        exchange.baseline.head !== base ||
++        !["implementation", "implementation_rework"].includes(exchange.purpose) ||
++        !["result_received", "accepted", "consumed", "retired"].includes(exchange.status) ||
++        !exchange.result ||
++        !exchange.result_digest ||
++        path.resolve(exchange.checkout) !== path.resolve(root) ||
++        path.resolve(exchange.work_order_ref) !== path.join(directory, "work-order.json")
++      )
++        continue;
++      const issued = await readExternalAgentWorkOrder(path.join(directory, "work-order.json"));
++      if (issued.task.id !== opts.task.id || (issued.task.work_item_id ?? null) !== workItemId)
++        continue;
++      const original = validateExternalAgentResultEnvelope({
++        raw: exchange.result,
++        exchange,
++        work_order: issued,
++      });
++      if (
++        original.result.status !== "completed" ||
++        original.result.plan_refinement ||
++        externalAgentResultDigest(original) !== exchange.result_digest
++      )
++        continue;
++      return { commit, execution_base: base, semantic: original.result };
++    }
++  }
++  return null;
++}
+diff --git a/packages/agentplane/src/commands/task/finish-shared.ts b/packages/agentplane/src/commands/task/finish-shared.ts
+index 88e02b5a8..1cc165ca3 100644
+--- a/packages/agentplane/src/commands/task/finish-shared.ts
++++ b/packages/agentplane/src/commands/task/finish-shared.ts
+@@ -123,6 +123,19 @@ function assertTaskCanFinish(opts: {
+   }
+ 
+   ensureVerificationSatisfiedIfRequired(opts.task, opts.config);
++  const canonical = taskCentricAggregateFromExtensions(opts.task.extensions);
++  const incomplete = canonical?.current_plan?.proposal.work_items.work_items.filter(
++    (item) => !item.optional && canonical.work_items[item.id]?.state !== "COMPLETED",
++  );
++  if (incomplete?.length) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        "Task-centric completion is not eligible: " +
++        incomplete.map((item) => `required_work_item_incomplete:${item.id}`).join(", ") +
++        ".",
++    });
++  }
+   const normalizedDoc = ensureDocSections(
+     typeof opts.task.doc === "string" ? opts.task.doc : "",
+     opts.config.tasks.doc.required_sections,
