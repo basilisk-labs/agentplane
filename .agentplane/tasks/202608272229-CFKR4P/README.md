@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -317,7 +317,7 @@ events:
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator requests only task Findings, but this code-only episode protects the task README and permits no lifecycle commands. No source modification is required. Recommended action: Use task doc set --section Findings to record the incident target cause, no-worktree task-branch regression and tests, current exact implementation and local proof, and separate provider-wording and QMVHM2 recovery follow-ups. Preserve source and verification, commit only the intended task documentation, then request a fresh supervisor packet. Agentplane receipt: external-agent-blocker/tr_42a94049d462e4bb7b9a318d9686593c/sha256:690349e3bf5900fff6e625c993f66f9353063f220887bfb7102af097410b1085."
 doc_version: 3
-doc_updated_at: "2026-08-28T00:11:47.794Z"
+doc_updated_at: "2026-08-28T00:12:21.349Z"
 doc_updated_by: "SUPERVISOR"
 description: "On exact main 9ab453ac00d41ea0a58cdd02e84bd0456233b151, run-cli.core.pr-flow.integrate-merge.test.ts test 'integrate promotes structured external incident candidates into the incident registry' fails at prepareHostedIntegrateFixture -> recordVerificationOk -> evaluator with missing observed changed file .agentplane/policy/incidents.md. The neighboring finish-only incident scenario passes. Diagnose the complete implementation -> pre-merge closure/policy commit -> verification -> evaluator -> integration/replay chain. Current verify-record-execute pins the review resolver head to the recorded implementation, while evaluator resolves current HEAD; prove the cause with real-Git controls before changing this. Retain the existing semantic-target resolver, frozen execution base, unchanged lifecycle-only identity, and exact evaluated diff/authority guards. Fix the smallest product/fixture scope justified by the proof. Cover a reviewable post-implementation policy change, lifecycle-only metadata, repeat verification and stale evidence. Replace any internal-call expectation only with behavior-backed coverage. Do not omit incidents from observed evidence, relax checks, add skips/timeouts, rewrite artifacts, change actual policy or CI, create a new verification architecture or implement AP-CORE-013. Preserve full mandatory CI and release 0.7.8 -> Core order. Keep provider-neutral wording as a separate cause. Two existing changes DVS5NN and AD3030 have priority for integration; planning and bounded diagnosis may proceed while their checks run. User authorized autonomous refactoring and supported operator approvals; release publication is separate."
 sections:
@@ -485,7 +485,16 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    Cause: On base 9ab453ac00d41ea0a58cdd02e84bd0456233b151, verification pinned the recorded implementation while evaluator preparation inspected the current semantic head. A later reviewable incident-policy commit was omitted from observed verification paths. The integrate incident regression failed before the fix; the adjacent finish-only control passed.
+
+    Correction: Verification uses the actual task branch head for branch_pr, or current HEAD for direct mode, with the previous evaluated or recorded implementation as the existing resolver anchor. Lifecycle-only metadata retains semantic identity. Review PR #5863 identified the branch-without-worktree case; a real-Git control reproduced the empty observed diff from base before the fix. Both task and base checkouts now preserve exact implementation, repeated verification records, full central-path escalation and unchanged branch heads, including independent base changes.
+
+    Local evidence: 59 focused tests passed. Knip passed unchanged budgets (CLI 0/0; core compatibility 21/21). Full mandatory ci:local:full completed successfully on 2026-08-28 before the separate result-projection failure. The current verification record binds a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0. The CLI artifact refresh changed only task PR artifacts relative to 85aa823a8a42a7b70e6ef299f410a4245e048ac6. Historical timing and stdout retained by the stable artifact writer are not a new timing measurement.
+
+    Remaining boundaries: The updated PR head requires fresh GitHub checks, resolution of the addressed review thread, protected integration and confirmed closeout. No hosted, merged or release claim is made here.
+
+    Separate residual causes: The provider-neutral error wording assertion in run-cli.core.pr-flow.integrate-validation.test.ts is not changed by this task. The null-WorkItem result projection failure after passed checks and DVS5NN interrupted completion are tracked by 202608280009-QMVHM2. Neither is hidden by weakening checks. Release 0.7.8 publication remains separately authorized.
 extensions:
   agentplane.execution_grant:
     actor: "USER"
@@ -1098,6 +1107,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+Cause: On base 9ab453ac00d41ea0a58cdd02e84bd0456233b151, verification pinned the recorded implementation while evaluator preparation inspected the current semantic head. A later reviewable incident-policy commit was omitted from observed verification paths. The integrate incident regression failed before the fix; the adjacent finish-only control passed.
+
+Correction: Verification uses the actual task branch head for branch_pr, or current HEAD for direct mode, with the previous evaluated or recorded implementation as the existing resolver anchor. Lifecycle-only metadata retains semantic identity. Review PR #5863 identified the branch-without-worktree case; a real-Git control reproduced the empty observed diff from base before the fix. Both task and base checkouts now preserve exact implementation, repeated verification records, full central-path escalation and unchanged branch heads, including independent base changes.
+
+Local evidence: 59 focused tests passed. Knip passed unchanged budgets (CLI 0/0; core compatibility 21/21). Full mandatory ci:local:full completed successfully on 2026-08-28 before the separate result-projection failure. The current verification record binds a87c4324423fc65c3c7ea3b83ccc797ccc6f4fc0. The CLI artifact refresh changed only task PR artifacts relative to 85aa823a8a42a7b70e6ef299f410a4245e048ac6. Historical timing and stdout retained by the stable artifact writer are not a new timing measurement.
+
+Remaining boundaries: The updated PR head requires fresh GitHub checks, resolution of the addressed review thread, protected integration and confirmed closeout. No hosted, merged or release claim is made here.
+
+Separate residual causes: The provider-neutral error wording assertion in run-cli.core.pr-flow.integrate-validation.test.ts is not changed by this task. The null-WorkItem result projection failure after passed checks and DVS5NN interrupted completion are tracked by 202608280009-QMVHM2. Neither is hidden by weakening checks. Release 0.7.8 publication remains separately authorized.
 
 ## Token Usage
 
