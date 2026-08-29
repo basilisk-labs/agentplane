@@ -4,7 +4,7 @@ title: "Allow state-bound WorkItem implementation results to reopen DONE tasks"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -28,6 +28,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-29T09:16:26.238Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "9a474519a54992e1ddca14c10cef0b4f3b472da6"
+  blueprint_digest: "1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584"
+  evidence_refs:
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-091527574-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-091527574-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/8151ee2edd7f965a2ab2a99ae032f5bb0480bbd6b0920b6e390d19304e950091.md"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-091527574-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-091527574-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-091527574-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/README.md"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/4f0352c5d6a2182a46e1c6f73e77b5f2708ad05adf67f8236213cab6bf722e40.patch"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/094a699c910341a58afcb15c22105ae1b76587fcc875a385ab29d52916473829.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/verification/20260829091431764-e529c93dd7f5a93e.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/bf246ecc6aed6a80440a3a0197ee6a33faa53b12ac072fd16ecde736ee4d7a69.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "DONE reopening is authorized for implementation_rework and for ordinary implementation only when the issued work order carries a concrete work_item_id; non-DONE states and null-ID ordinary implementation remain rejected."
+    - "Task-centric scope extension preserves the existing exactly-one-schedulable-WorkItem path and accepts zero schedulable items only when every required WorkItem is COMPLETED; effect-in-doubt and ambiguous multi-item cases remain fail closed."
+    - "The frozen four-file diff stays within the approved execution scope and does not change schedulers, task stores, checks, policy, or release ordering."
+    - "Supervisor-owned verification passed bun run ci:local:full and git diff --check on the exact evaluated candidate; the focused regression set previously passed 35 tests."
+    - "Residual risk: Hosted checks and supported integration must still pass on the exact published PR head before the blocker is treated as integrated."
 execution_route:
   frozen: true
   reason_codes:
