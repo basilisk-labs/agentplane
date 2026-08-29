@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 55
+revision: 56
 origin:
   system: "manual"
 depends_on: []
@@ -31,32 +31,34 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-29T18:25:44.466Z"
+  updated_at: "2026-08-29T18:58:49.481Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "0a6fb3ab2ee1ae893f438f4c33a8b35cd053023d"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "b18c521a5ba0a033458675ea4957a228d04feb9a"
   blueprint_digest: "efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c"
   evidence_refs:
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-182509713-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-182509713-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/de7dbf9bc2b623c88ba3ae813c42951e54995cde51ca26406dd6b51bf6fb6653.md"
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-182509713-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-182509713-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-182509713-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-185822288-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-185822288-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/80da80d9c3d52d3e25efbebf8895def8aa6134897e7646a5ed91c95a5fb37eb7.md"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-185822288-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-185822288-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-185822288-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608291005-K5TG4D/README.md"
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/07880f19b498431ef1d30b34fe2764e8b0fc650f427c040a2f0edc42c28f3b77.patch"
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/7dc71118b2a8cd17ec7401ec0c3f4bdf02a52e16ca3172258eb6ae28fb15e051.json"
-    - ".agentplane/tasks/202608291005-K5TG4D/verification/20260829182451924-4a24553f3cae3f0f.json"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/2c17fdb65687181ba468e5cc9c2c3f984594a087910177a2a5891e3d95c0b2bb.patch"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/ebc86feacec7bdf43d9a1fdbf283a72e4634bef2dfceb9d03c2812644d0bc6fe.json"
+    - ".agentplane/tasks/202608291005-K5TG4D/verification/20260829185804313-ec46cd710c0a1ae8.json"
     - ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/03778a2ec59a89f86c77156b5c41749d8a0acbbdbda469294abad9d305f10155.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/dod.docs.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The prior verify-contract failure was limited to two missing generated social images and a stale social manifest."
-    - "The repository generator produced the ADR 0017 and clean-core specification PNGs and refreshed their manifest entries."
-    - "The full docs:site:check now passes: IA, generated references, typecheck, 232-image manifest validation, Docusaurus production build, navigation, and design-language checks."
-    - "All four required clean-core WorkItems remain completed with their output manifests and validation evidence."
-    - "Residual risk: The new hosted run must confirm verify-contract and all other required exact-head checks."
+    - "M0 is explicitly the only durable pre-integration task; local successor IDs are classified as prototypes and removed from the program graph and duplicate-closure instructions."
+    - "The bootstrap creates M1, M2, M3, and Root through ap task new with complete intent, ownership, tags, branch_pr routing, dependency edges, and verification commands."
+    - "Partial bootstrap recovery is fail-closed: it reuses exact-title/dependency records already created and forbids repeating successful creation."
+    - "The graph rewrite runs bootstrap before ap task active, dependency changes, or duplicate closure and uses only generated canonical identities."
+    - "The full documentation site verification and production build pass with current generated social assets."
+    - "Residual risk: The post-M0 operator must execute the bootstrap once and preserve generated IDs through AgentPlane task readback."
+    - "Residual risk: Hosted checks and the review conversation must be refreshed on the new exact head."
 token_usage:
   agent_runs: 16
   input_tokens: null
@@ -883,7 +885,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-29T18:58:06.513Z"
+doc_updated_at: "2026-08-29T18:58:49.503Z"
 doc_updated_by: "SUPERVISOR"
 description: "Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability."
 sections:
