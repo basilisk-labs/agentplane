@@ -1,6 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
 
-import { verificationChildEnv } from "./verify-log.js";
+import { describe, expect, it, vi } from "vitest";
+
+import { runShellCommand, verificationChildEnv } from "./verify-log.js";
 
 describe("verification child environment", () => {
   it("removes repository dotenv values and AgentPlane runtime handoff state", () => {
@@ -27,5 +31,28 @@ describe("verification child environment", () => {
     };
 
     expect(verificationChildEnv(source)).toEqual(source);
+  });
+
+  it("isolates dotenv values in the declared verification subprocess", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "agentplane-verify-env-"));
+    vi.stubEnv("AGENTPLANE_VERIFY_TEST_DOTENV", "repository-only");
+    vi.stubEnv("AGENTPLANE_VERIFY_TEST_PARENT", "explicit-parent");
+    vi.stubEnv(
+      "AGENTPLANE_DOTENV_LOADED_KEYS",
+      `${process.env.AGENTPLANE_DOTENV_LOADED_KEYS ?? ""},AGENTPLANE_VERIFY_TEST_DOTENV`,
+    );
+    try {
+      await writeFile(
+        path.join(root, "probe.cjs"),
+        "process.stdout.write(JSON.stringify({dotenv:process.env.AGENTPLANE_VERIFY_TEST_DOTENV,parent:process.env.AGENTPLANE_VERIFY_TEST_PARENT}));",
+      );
+      const result = await runShellCommand("node probe.cjs", root);
+      expect(result.code).toBe(0);
+      expect(JSON.parse(result.output)).toEqual({ parent: "explicit-parent" });
+      expect(process.env.AGENTPLANE_VERIFY_TEST_DOTENV).toBe("repository-only");
+    } finally {
+      vi.unstubAllEnvs();
+      await rm(root, { recursive: true, force: true });
+    }
   });
 });

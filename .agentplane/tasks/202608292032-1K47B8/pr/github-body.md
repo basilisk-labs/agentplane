@@ -28,7 +28,7 @@ Implement a pure deterministic Task and WorkItem kernel behind a new internal mo
 
 ```text
  depcruise.config.cjs                               |  13 +
- .../src/commands/shared/pr-meta/verify-log.test.ts |  31 +
+ .../src/commands/shared/pr-meta/verify-log.test.ts |  58 ++
  .../src/commands/shared/pr-meta/verify-log.ts      |   4 +
  packages/core/src/tasks/index.ts                   |   2 +
  packages/core/src/tasks/task-kernel/index.ts       |  23 +
@@ -38,7 +38,7 @@ Implement a pure deterministic Task and WorkItem kernel behind a new internal mo
  packages/core/src/tasks/task-kernel/kernel.ts      | 848 +++++++++++++++++++++
  packages/core/src/tasks/task-kernel/model.test.ts  | 108 +++
  packages/core/src/tasks/task-kernel/model.ts       | 367 +++++++++
- 11 files changed, 2382 insertions(+)
+ 11 files changed, 2409 insertions(+)
 ```
 
 </details>
