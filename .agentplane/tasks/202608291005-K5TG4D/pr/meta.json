@@ -3,8 +3,8 @@
   "branch": "task/202608291005-K5TG4D/specify-the-clean-task-kernel-and-migration-orac",
   "created_at": "2026-08-29T10:21:54.868Z",
   "diffstat_sha256": "sha256:02076aa707e1906507e3427d7f9c7eb63066408b0b58b36352e902c1280300f9",
-  "last_verified_at": "2026-08-29T17:23:03.993Z",
-  "last_verified_diffstat_sha256": "sha256:6c2362923b002f96f014b37063adb4bffd0022da6edbfe1c40f9acc2704768ea",
+  "last_verified_at": "2026-08-29T17:30:23.681Z",
+  "last_verified_diffstat_sha256": "sha256:02076aa707e1906507e3427d7f9c7eb63066408b0b58b36352e902c1280300f9",
   "pr_number": 5873,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5873",
   "provider": {
