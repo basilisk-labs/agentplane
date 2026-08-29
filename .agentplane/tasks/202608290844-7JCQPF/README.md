@@ -1,10 +1,10 @@
 ---
 id: "202608290844-7JCQPF"
 title: "Allow state-bound WorkItem implementation results to reopen DONE tasks"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -24,10 +24,10 @@ plan_approval:
   note: "User pre-authorized subsequent in-scope bootstrap recovery plans; approved plan deff35da with unchanged four-file scope and no external effects."
 verification:
   state: "needs_rework"
-  updated_at: "2026-08-29T12:15:18.627Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 2
+  updated_at: "2026-08-29T13:31:55.703Z"
+  updated_by: "TESTER"
+  note: "Rework: the real task-advance DONE recovery regression is absent from the committed candidate, and full local CI cannot pass because the proposed test location exceeds the oversized-test baseline. Move the regression into the existing branch-worktree integration fixture without a baseline exception."
+  attempts: 3
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -268,6 +268,12 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 52f1d7ccbc2c. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The missing real DONE recovery regression belongs in the existing branch-worktree integration fixture, which is outside the current writable scope. Recommended action: Add packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts to the approved WorkItem scope, then extend its interrupted projection scenario without adding a baseline exception. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts; repository effects=tests; request digest=sha256:d1b9c83a7ae6bd4b8386aefaee8e724c0b2d0aff61d0f1d28d87a4bb0e5a7744. Agentplane receipt: external-agent-blocker/tr_985eb547237c6a67b3ea391f11d6c377/sha256:40dcca04f7705db3f17f873f33dc33757401eaf76cc781d1afe4d12534e5282c/sha256:d1b9c83a7ae6bd4b8386aefaee8e724c0b2d0aff61d0f1d28d87a4bb0e5a7744."
 events:
   -
     type: "status"
@@ -345,9 +351,30 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-29T12:55:27.924Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 52f1d7ccbc2c. CLI accepted one state-bound external-agent semantic result."
+    commit: "52f1d7ccbc2ceae988b045c9516924a2a96954fd"
+  -
+    type: "verify"
+    at: "2026-08-29T13:31:55.703Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: the real task-advance DONE recovery regression is absent from the committed candidate, and full local CI cannot pass because the proposed test location exceeds the oversized-test baseline. Move the regression into the existing branch-worktree integration fixture without a baseline exception."
+  -
+    type: "status"
+    at: "2026-08-29T13:33:03.854Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The missing real DONE recovery regression belongs in the existing branch-worktree integration fixture, which is outside the current writable scope. Recommended action: Add packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts to the approved WorkItem scope, then extend its interrupted projection scenario without adding a baseline exception. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts; repository effects=tests; request digest=sha256:d1b9c83a7ae6bd4b8386aefaee8e724c0b2d0aff61d0f1d28d87a4bb0e5a7744. Agentplane receipt: external-agent-blocker/tr_985eb547237c6a67b3ea391f11d6c377/sha256:40dcca04f7705db3f17f873f33dc33757401eaf76cc781d1afe4d12534e5282c/sha256:d1b9c83a7ae6bd4b8386aefaee8e724c0b2d0aff61d0f1d28d87a4bb0e5a7744."
 doc_version: 3
-doc_updated_at: "2026-08-29T12:20:48.956Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-29T13:33:03.854Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering."
 sections:
   Summary: |-
@@ -538,6 +565,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-29T13:31:55.703Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: the real task-advance DONE recovery regression is absent from the committed candidate, and full local CI cannot pass because the proposed test location exceeds the oversized-test baseline. Move the regression into the existing branch-worktree integration fixture without a baseline exception.
+    Attempts: 3
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:c4c4ecc294526dbc1efeebfc92b97f75b181b9bf8b527940d4e489a39f983256
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+    - old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608290844-7JCQPF
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -575,6 +632,20 @@ extensions:
     scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
     status: "active"
     task_id: "202608290844-7JCQPF"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:40dcca04f7705db3f17f873f33dc33757401eaf76cc781d1afe4d12534e5282c"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "The acceptance criterion requires a real task-advance regression. Reusing the existing interrupted branch-worktree fixture avoids duplicated setup and preserves the oversized-test budget."
+      repository_effects:
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+    request_digest: "sha256:d1b9c83a7ae6bd4b8386aefaee8e724c0b2d0aff61d0f1d28d87a4bb0e5a7744"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_985eb547237c6a67b3ea391f11d6c377"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -1342,6 +1413,36 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
 Scope: branch_pr task 202608290844-7JCQPF declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+- old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608290844-7JCQPF
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-29T13:31:55.703Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: the real task-advance DONE recovery regression is absent from the committed candidate, and full local CI cannot pass because the proposed test location exceeds the oversized-test baseline. Move the regression into the existing branch-worktree integration fixture without a baseline exception.
+Attempts: 3
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:c4c4ecc294526dbc1efeebfc92b97f75b181b9bf8b527940d4e489a39f983256
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current
