@@ -15,8 +15,8 @@ Fix the supported recovery path exposed by 7JCQPF. In recordTaskCentricExternalR
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: blocked_external
+- Note: Rework: No executable declared verification checks are configured for this task.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,9 +27,9 @@ Fix the supported recovery path exposed by 7JCQPF. In recordTaskCentricExternalR
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../task/task-centric-external-result.test.ts      | 66 +++++++++++++++++++-
+ .../task/task-centric-external-result.test.ts      | 68 +++++++++++++++++++-
  .../commands/task/task-centric-external-result.ts  | 72 +++++++++++-----------
- 2 files changed, 100 insertions(+), 38 deletions(-)
+ 2 files changed, 102 insertions(+), 38 deletions(-)
 ```
 
 </details>

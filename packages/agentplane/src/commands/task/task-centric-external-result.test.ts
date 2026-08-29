@@ -222,6 +222,7 @@ describe("recordTaskCentricExternalResult", () => {
       }),
     });
     const command = { taskBackend: backend } as unknown as CommandContext;
+    const taskBeforeResult = structuredClone(backend.current());
     const revision = backend.current().revision;
 
     await expect(
@@ -267,6 +268,7 @@ describe("recordTaskCentricExternalResult", () => {
     expect(
       taskCentricAggregateFromExtensions(backend.current().extensions)?.plan_amendments,
     ).toEqual([]);
+    expect(backend.current()).toEqual(taskBeforeResult);
   });
 
   it("replays a null-ID result against its claimed WorkItem instead of the next item", async () => {
