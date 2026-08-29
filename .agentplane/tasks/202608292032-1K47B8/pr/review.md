@@ -12,8 +12,8 @@ Created: 2026-08-29T20:33:30.307Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run test:fast
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-29T20:33:30.307Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-29T20:33:30.307Z
+- Updated: 2026-08-29T22:04:21.476Z
 - Branch: task/202608292032-1K47B8/implement-the-isolated-canonical-task-kernel
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
