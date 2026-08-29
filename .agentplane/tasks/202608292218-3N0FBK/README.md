@@ -4,7 +4,7 @@ title: "Prevent branch closeout while required WorkItems are incomplete"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -28,6 +28,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-29T23:21:27.356Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "f6dae0b382002f07850fd1d5f343eda0b7da6f97"
+  blueprint_digest: "8b81c44d2d42ad42a5fd11120416523cc699aa4f3f26c2f8502e97d2f3e77a2c"
+  evidence_refs:
+    - ".agentplane/tasks/202608292218-3N0FBK/quality/20260829-232019133-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608292218-3N0FBK/quality/20260829-232019133-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608292218-3N0FBK/quality/objects/sha256/0746e6bf83a188f6678201af5c5c2e782aaaa0faebaf297aeaf0f1b9057cf4c2.md"
+    - ".agentplane/tasks/202608292218-3N0FBK/quality/20260829-232019133-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608292218-3N0FBK/quality/20260829-232019133-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608292218-3N0FBK/quality/20260829-232019133-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608292218-3N0FBK/README.md"
+    - ".agentplane/tasks/202608292218-3N0FBK/quality/objects/sha256/6508f2281bdb76c7a51465f00997415cbb1144f19fa37a27045d5eb8eeaa13cf.patch"
+    - ".agentplane/tasks/202608292218-3N0FBK/quality/objects/sha256/705fd23cea4f0661155d847cbe29aa51c0c7ce19052019f39df3424f3d34d10d.json"
+    - ".agentplane/tasks/202608292218-3N0FBK/verification/20260829232002016-276e3b6422ad5f09.json"
+    - ".agentplane/tasks/202608292218-3N0FBK/quality/objects/sha256/9f512f0819486738a0914d14aafef8ee94d25191007e8e94c679c6aedca6fbd9.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "A non-optional current-plan WorkItem is treated as incomplete for every runtime state other than COMPLETED, including READY, PLANNED, missing runtime state, claimed, running, failed, or blocked states."
+    - "The regression fixture proves stale commit, verification, and passing quality evidence cannot bypass a READY required WorkItem, while a COMPLETED WorkItem permits the existing closeout authority route."
+    - "The evaluator calibration fixture was correctly updated to complete its synthetic WorkItem before asserting the post-implementation quality route."
+    - "Supervisor-owned typecheck, focused integration tests, and the full local CI suite all passed at implementation commit f6dae0b382002f07850fd1d5f343eda0b7da6f97."
+    - "Residual risk: The route module remains close to the 600-line hotspot ceiling, so future edits may require a separate structural extraction."
 execution_route:
   frozen: true
   reason_codes:
