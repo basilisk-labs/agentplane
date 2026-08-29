@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check f1847d5a7d5d6924f57e1edef4aaeb722d4271d2..9c64a05efdbf8093f622505942a7af7ecf1955cd",
+      "command": "git diff --check 7659062ca50858f9a5cb5315b95c21ce6a58a8fe..0a6fb3ab2ee1ae893f438f4c33a8b35cd053023d",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB f1847d5a7d5d6924f57e1edef4aaeb722d4271d2..9c64a05efdbf8093f622505942a7af7ecf1955cd",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 7659062ca50858f9a5cb5315b95c21ce6a58a8fe..0a6fb3ab2ee1ae893f438f4c33a8b35cd053023d",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,9 @@
         "M\t.agentplane/tasks/202608291005-K5TG4D/pr/github-body.md",
         "M\t.agentplane/tasks/202608291005-K5TG4D/pr/meta.json",
         "M\t.agentplane/tasks/202608291005-K5TG4D/pr/review.md",
-        "M\tdocs/reference/clean-task-core-rebuild-spec.mdx"
+        "A\twebsite/static/img/social/docs/adr/0017-clean-task-core-rebuild.png",
+        "A\twebsite/static/img/social/docs/reference/clean-task-core-rebuild-spec.png",
+        "M\twebsite/static/img/social/manifest.json"
       ]
     },
     {
@@ -31,8 +33,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "f1847d5a7d5d6924f57e1edef4aaeb722d4271d2",
-  "implementation_commit": "9c64a05efdbf8093f622505942a7af7ecf1955cd",
+  "execution_base_commit": "7659062ca50858f9a5cb5315b95c21ce6a58a8fe",
+  "implementation_commit": "0a6fb3ab2ee1ae893f438f4c33a8b35cd053023d",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
