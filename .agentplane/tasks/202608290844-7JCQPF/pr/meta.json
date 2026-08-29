@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608290844-7JCQPF/allow-state-bound-workitem-implementation-result",
+  "created_at": "2026-08-29T08:47:59.220Z",
+  "diffstat_sha256": "sha256:c739f7c73ffc5de0ce3c4dc62e3a55d962934927951a3da39f5c94afffb7e6ca",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608290844-7JCQPF",
+  "updated_at": "2026-08-29T08:47:59.220Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
