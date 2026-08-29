@@ -69,11 +69,9 @@ export function requiresImplementationReworkReopen(opts: {
   task_status: string;
   work_item_id: string | null;
 }): boolean {
-  return (
-    opts.task_status === "DONE" &&
-    (opts.purpose === "implementation_rework" ||
-      (opts.purpose === "implementation" && Boolean(opts.work_item_id)))
-  );
+  if (opts.task_status !== "DONE") return false;
+  if (opts.purpose === "implementation_rework") return true;
+  return opts.purpose === "implementation" && Boolean(opts.work_item_id);
 }
 
 function recordedEvidenceOnlyReworkCommit(opts: {
@@ -483,6 +481,11 @@ export async function applyExternalImplementationResult(opts: {
   if (implementation.status !== "ready") {
     throw new CliError({ code: "E_VALIDATION", message: implementation.reason });
   }
+  const reopenDone = requiresImplementationReworkReopen({
+    purpose: opts.exchange.purpose,
+    task_status: opts.decision.task.status,
+    work_item_id: opts.work_order.task.work_item_id ?? null,
+  });
   if (opts.decision.task.commit !== implementation.evidence.implementation_commit) {
     await cmdTaskSetStatus({
       ctx: opts.command,
@@ -494,16 +497,8 @@ export async function applyExternalImplementationResult(opts: {
         `Implementation committed: ${implementation.evidence.implementation_commit.slice(0, 12)}. ` +
         "CLI accepted one state-bound external-agent semantic result.",
       commit: implementation.evidence.implementation_commit,
-      force: requiresImplementationReworkReopen({
-        purpose: opts.exchange.purpose,
-        task_status: opts.decision.task.status,
-        work_item_id: opts.work_order.task.work_item_id ?? null,
-      }),
-      yes: requiresImplementationReworkReopen({
-        purpose: opts.exchange.purpose,
-        task_status: opts.decision.task.status,
-        work_item_id: opts.work_order.task.work_item_id ?? null,
-      }),
+      force: reopenDone,
+      yes: reopenDone,
       commitFromComment: false,
       commitAllow: [],
       commitAutoAllow: false,
