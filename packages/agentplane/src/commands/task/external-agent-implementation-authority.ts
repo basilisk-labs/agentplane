@@ -67,8 +67,13 @@ function hasChangedTaskArtifacts(statusLines: readonly string[], taskId: string)
 export function requiresImplementationReworkReopen(opts: {
   purpose: ExternalAgentExchange["purpose"];
   task_status: string;
+  work_item_id: string | null;
 }): boolean {
-  return opts.purpose === "implementation_rework" && opts.task_status === "DONE";
+  return (
+    opts.task_status === "DONE" &&
+    (opts.purpose === "implementation_rework" ||
+      (opts.purpose === "implementation" && Boolean(opts.work_item_id)))
+  );
 }
 
 function recordedEvidenceOnlyReworkCommit(opts: {
@@ -492,10 +497,12 @@ export async function applyExternalImplementationResult(opts: {
       force: requiresImplementationReworkReopen({
         purpose: opts.exchange.purpose,
         task_status: opts.decision.task.status,
+        work_item_id: opts.work_order.task.work_item_id ?? null,
       }),
       yes: requiresImplementationReworkReopen({
         purpose: opts.exchange.purpose,
         task_status: opts.decision.task.status,
+        work_item_id: opts.work_order.task.work_item_id ?? null,
       }),
       commitFromComment: false,
       commitAllow: [],

@@ -219,21 +219,41 @@ describe("task advance effect recovery", () => {
     ).toEqual(["repository_effect:ci", "external_effect:network_read"]);
   });
 
-  it("reopens a closed task only for state-bound implementation rework", () => {
+  it("reopens a closed task only for state-bound implementation results", () => {
     expect(
       requiresImplementationReworkReopen({
         purpose: "implementation_rework",
         task_status: "DONE",
+        work_item_id: null,
       }),
     ).toBe(true);
     expect(
       requiresImplementationReworkReopen({
         purpose: "implementation_rework",
         task_status: "DOING",
+        work_item_id: null,
       }),
     ).toBe(false);
     expect(
-      requiresImplementationReworkReopen({ purpose: "implementation", task_status: "DONE" }),
+      requiresImplementationReworkReopen({
+        purpose: "implementation",
+        task_status: "DONE",
+        work_item_id: "required-work",
+      }),
+    ).toBe(true);
+    expect(
+      requiresImplementationReworkReopen({
+        purpose: "implementation",
+        task_status: "DONE",
+        work_item_id: null,
+      }),
+    ).toBe(false);
+    expect(
+      requiresImplementationReworkReopen({
+        purpose: "implementation",
+        task_status: "DOING",
+        work_item_id: "required-work",
+      }),
     ).toBe(false);
   });
 

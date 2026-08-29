@@ -205,11 +205,17 @@ function extendTaskCentricWorkItemScope(opts: {
     runtime: aggregate.work_items,
     active_leases: [],
   });
+  if (selected.length === 0) {
+    const allRequiredCompleted = currentPlan.proposal.work_items.work_items
+      .filter((item) => !item.optional)
+      .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
+    if (allRequiredCompleted) return aggregate;
+  }
   if (selected.length !== 1) {
     throw new CliError({
       code: "E_VALIDATION",
       message:
-        "Task-centric scope extension requires exactly one schedulable WorkItem for the approved retry.",
+        "Task-centric scope extension requires exactly one schedulable WorkItem for the approved retry unless every required WorkItem is completed.",
     });
   }
   const selectedId = selected[0]!.id;
