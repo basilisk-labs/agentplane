@@ -320,6 +320,12 @@ allows mutable legacy authority after M3.
 
 ## Milestone acceptance gates
 
+Each milestone gate emits a receipt bound to the milestone task, exact implementation SHA, plan
+digest, required check IDs, evidence digests, migration or replay corpus digest where applicable,
+rollback proof digest, hosted check identities, and decision timestamp. A missing, stale, skipped,
+or mismatched field fails the gate. Failure keeps the previous milestone authoritative, blocks graph
+advance, and selects that milestone's documented rollback or rework route.
+
 ### M0: specification
 
 - The code map names domain, adapters, effects, projections, tests, and legacy entry points.
@@ -406,6 +412,12 @@ discarded.
 | `202608241434-EH8E74` AP-CTX-005                | Retain      | Post-M3 context qualification gate                                                               |
 | `202608241437-H5418M` AP-KA-RESET-001           | Retain      | Starts only after M3 and AP-CTX-005                                                              |
 | `202608241437-SH3CDX` old roadmap root          | Absorb      | Replacement program root `202608291005-33PHG4`                                                   |
+
+The traceability oracle reads the frozen legacy roadmap task-ID set and compares it with the first
+column of this table. It fails on a missing ID, duplicate ID, unknown ID, disposition outside
+`Absorb` or `Retain`, missing replacement owner, or a retained dependency absent from the graph
+rewrite. The expected set and table set must be byte-for-byte stable after sorting; a newly
+discovered legacy requirement requires M0 amendment rather than an inferred disposition.
 
 Release bug fixes, open PR repair tasks, and the stopped task `202608290844-7JCQPF` are not roadmap
 duplicates. Preserve them in their existing state until separately resumed, integrated, or closed.
