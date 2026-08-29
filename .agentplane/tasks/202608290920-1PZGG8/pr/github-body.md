@@ -22,14 +22,14 @@ Fix the supported recovery path exposed by 7JCQPF. In recordTaskCentricExternalR
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-29T09:23:28.094Z
+- Updated: 2026-08-29T10:02:03.232Z
 - Branch: task/202608290920-1PZGG8/allow-task-centric-plan-refinement-before-workit
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../task/task-centric-external-result.test.ts      | 45 ++++++++++++++
+ .../task/task-centric-external-result.test.ts      | 66 +++++++++++++++++++-
  .../commands/task/task-centric-external-result.ts  | 72 +++++++++++-----------
- 2 files changed, 81 insertions(+), 36 deletions(-)
+ 2 files changed, 100 insertions(+), 38 deletions(-)
 ```
 
 </details>

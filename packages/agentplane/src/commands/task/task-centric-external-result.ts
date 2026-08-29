@@ -106,6 +106,15 @@ export async function recordTaskCentricExternalResult(opts: {
     };
   }
   const requestedId = opts.work_order.task.work_item_id ?? null;
+  const claimedIds = Object.values(aggregate.work_items)
+    .filter((item) => item.state === "CLAIMED")
+    .map((item) => item.id);
+  if (!requestedId && claimedIds.length > 1) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "A null-ID WorkItem result is ambiguous because multiple WorkItems are claimed.",
+    });
+  }
   const repository = createRepositorySnapshot({
     git: { kind: "commit", sha: opts.head!, ref: null },
     dirty_paths: [...opts.dirty_paths].toSorted(),
@@ -140,15 +149,6 @@ export async function recordTaskCentricExternalResult(opts: {
         ).length,
       };
     }
-  }
-  const claimedIds = Object.values(aggregate.work_items)
-    .filter((item) => item.state === "CLAIMED")
-    .map((item) => item.id);
-  if (!requestedId && claimedIds.length > 1) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "A null-ID WorkItem result is ambiguous because multiple WorkItems are claimed.",
-    });
   }
   const selected = requestedId
     ? aggregate.current_plan.proposal.work_items.work_items.find((item) => item.id === requestedId)
