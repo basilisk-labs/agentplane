@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 47
+revision: 48
 origin:
   system: "manual"
 depends_on: []
@@ -32,33 +32,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-29T13:58:49.036Z"
+  updated_at: "2026-08-29T15:46:23.204Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "a607a05c6e11b9be9f6084d2f800f798f7dc2628"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "019b64e46502d17f73e177d1ddca9d9d280487b0"
   blueprint_digest: "1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584"
   evidence_refs:
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-135755737-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-135755737-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/e292f4d015d55c072e7e21144fc8791343a332c84a64d49e6164ed43ac4537ca.md"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-135755737-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-135755737-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-135755737-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-154622554-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-154622554-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/8a9ba323a4f7313e683932e5a199789ec48f072e7b92129fab34109e8df996f6.md"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-154622554-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-154622554-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-154622554-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608290844-7JCQPF/README.md"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/eba6a62437a3e1722cad7b6d477654c71e7c4ecea013a52313e862621c811e58.patch"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/f5a5751e9d32d9d24fb39379371b7291cd6420c99d10ecf8f0283eb09e84094e.json"
-    - ".agentplane/tasks/202608290844-7JCQPF/verification/20260829135723903-1e369e8c538b8c1d.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/2258e008d9ba7a086ad71c563a02b042962c03b0c5c940f4ea42f62bbb0eb012.patch"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/e36dbbcacb05dd26f53c2a444202d9451db4063b531311834485b11970ed6072.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/verification/20260829145124375-d0d20769bc9e2777.json"
     - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/bf246ecc6aed6a80440a3a0197ee6a33faa53b12ac072fd16ecde736ee4d7a69.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The authority helper permits DONE reopen for implementation_rework and for ordinary implementation only when work_item_id is concrete; task-level ordinary implementation and all non-DONE cases remain false."
-    - "The real task-advance branch-worktree regression observes READY on interrupted projection, seeds premature DONE, replays the original result, and asserts DOING, verification=ok, and WorkItem COMPLETED."
-    - "Task-level scope extension preserves a fully completed plan and rejects zero schedulable selection when required work remains unfinished."
-    - "The persisted verification record covers affected integration tests, critical size and diff guards, the full local regression suite, and the task outcome."
-    - "Residual risk: The hosted PR head, hosted checks, merge result, and hosted-close state are not yet observed."
+    - "The authorization predicate is fail-closed for non-DONE tasks and for ordinary implementation without a concrete work_item_id."
+    - "The real task-advance regression exercises the interrupted WorkItem projection path, seeds premature DONE, resumes the exact result, and proves DOING plus COMPLETED projection."
+    - "The scope-extension adjustment only bypasses scheduler selection when every required WorkItem is already COMPLETED; unfinished unschedulable states still fail closed."
 token_usage:
   agent_runs: 13
   input_tokens: null
@@ -543,7 +541,7 @@ events:
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The dirty quality paths are incomplete generated artifacts from retired evaluator packets; they are unintended and must not be committed."
 doc_version: 3
-doc_updated_at: "2026-08-29T15:44:28.848Z"
+doc_updated_at: "2026-08-29T15:46:23.221Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering."
 sections:
