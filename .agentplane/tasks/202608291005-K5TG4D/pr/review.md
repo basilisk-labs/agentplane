@@ -30,8 +30,9 @@ Created: 2026-08-29T10:21:54.868Z
 
 ```text
  docs/adr/0017-clean-task-core-rebuild.md        |  95 ++++++
+ docs/adr/README.md                              |  37 ++-
  docs/reference/clean-task-core-rebuild-spec.mdx | 419 ++++++++++++++++++++++++
- 2 files changed, 514 insertions(+)
+ 3 files changed, 533 insertions(+), 18 deletions(-)
 ```
 
 </details>

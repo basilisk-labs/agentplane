@@ -18,21 +18,22 @@ Keep ADRs short. Prefer facts, decision, consequences, and follow-up over histor
 
 ## Index
 
-| ADR                                                      | Status   | Decision                                                                                                   |
-| -------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------- |
-| [0001](./0001-zod-config-parity.md)                      | Accepted | Treat config validation as Zod-sourced and use parity audit as a regression guard.                         |
-| [0002](./0002-adr-process.md)                            | Accepted | Use lightweight Markdown ADRs for cross-cutting refactor and dependency decisions.                         |
-| [0003](./0003-refactor-sequencing.md)                    | Accepted | Sequence remaining refactor work by drift risk first, then hotspot and tooling leverage.                   |
-| [0004](./0004-keep-custom-cli-stack.md)                  | Accepted | Keep the custom command catalog and parser instead of adopting Commander, Citty, or Oclif.                 |
-| [0005](./0005-defer-biome-migration.md)                  | Accepted | Defer Biome migration until rule parity and formatting churn risks are resolved.                           |
-| [0006](./0006-no-effect-fp-ts-migration.md)              | Accepted | Keep pragmatic TypeScript and avoid an Effect/fp-ts migration during this refactor cycle.                  |
-| [0007](./0007-freeze-yaml-parser-stack.md)               | Accepted | Keep `yaml` as the canonical YAML parser during the current refactor cycle.                                |
-| [0008](./0008-keep-yauzl-for-zip-validation.md)          | Accepted | Keep `yauzl` for ZIP validation because alternatives do not meet the measured size/risk bar.               |
-| [0009](./0009-recipes-index-signing-algorithm-policy.md) | Accepted | Keep Ed25519 as the only implemented recipes index signing algorithm behind an explicit verifier registry. |
-| [0010](./0010-core-root-export-compatibility.md)         | Accepted | Keep `@agentplaneorg/core` as a compatibility aggregate while internal runtime code uses subpath imports.  |
-| [0011](./0011-v0.3-surface-freeze.md)                    | Accepted | Freeze the v0.3 CLI, task lifecycle, config schema, and package surface until v0.4 migration planning.     |
-| [0012](./0012-v0.4-surface-transition.md)                | Accepted | Retire the root v0.3 freeze artifact from the v0.4 line while preserving it on the `0.3` branch.           |
-| [0013](./0013-zod-contract-ssot.md)                      | Accepted | Use Zod in `packages/core/src/**` as the single source of truth for durable repository contracts.          |
-| [0014](./0014-task-execution-authority.md)               | Accepted | Treat repository mode as policy and the resolved task route as lifecycle authority.                        |
-| [0015](./0015-task-workspace-isolation.md)               | Accepted | Isolate automated execution independently from whether a task uses a PR gate.                              |
-| [0016](./0016-serialized-direct-integration.md)          | Accepted | Run task execution in parallel while serializing mutation of the base branch.                              |
+| ADR                                                      | Status   | Decision                                                                                                          |
+| -------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------- |
+| [0001](./0001-zod-config-parity.md)                      | Accepted | Treat config validation as Zod-sourced and use parity audit as a regression guard.                                |
+| [0002](./0002-adr-process.md)                            | Accepted | Use lightweight Markdown ADRs for cross-cutting refactor and dependency decisions.                                |
+| [0003](./0003-refactor-sequencing.md)                    | Accepted | Sequence remaining refactor work by drift risk first, then hotspot and tooling leverage.                          |
+| [0004](./0004-keep-custom-cli-stack.md)                  | Accepted | Keep the custom command catalog and parser instead of adopting Commander, Citty, or Oclif.                        |
+| [0005](./0005-defer-biome-migration.md)                  | Accepted | Defer Biome migration until rule parity and formatting churn risks are resolved.                                  |
+| [0006](./0006-no-effect-fp-ts-migration.md)              | Accepted | Keep pragmatic TypeScript and avoid an Effect/fp-ts migration during this refactor cycle.                         |
+| [0007](./0007-freeze-yaml-parser-stack.md)               | Accepted | Keep `yaml` as the canonical YAML parser during the current refactor cycle.                                       |
+| [0008](./0008-keep-yauzl-for-zip-validation.md)          | Accepted | Keep `yauzl` for ZIP validation because alternatives do not meet the measured size/risk bar.                      |
+| [0009](./0009-recipes-index-signing-algorithm-policy.md) | Accepted | Keep Ed25519 as the only implemented recipes index signing algorithm behind an explicit verifier registry.        |
+| [0010](./0010-core-root-export-compatibility.md)         | Accepted | Keep `@agentplaneorg/core` as a compatibility aggregate while internal runtime code uses subpath imports.         |
+| [0011](./0011-v0.3-surface-freeze.md)                    | Accepted | Freeze the v0.3 CLI, task lifecycle, config schema, and package surface until v0.4 migration planning.            |
+| [0012](./0012-v0.4-surface-transition.md)                | Accepted | Retire the root v0.3 freeze artifact from the v0.4 line while preserving it on the `0.3` branch.                  |
+| [0013](./0013-zod-contract-ssot.md)                      | Accepted | Use Zod in `packages/core/src/**` as the single source of truth for durable repository contracts.                 |
+| [0014](./0014-task-execution-authority.md)               | Accepted | Treat repository mode as policy and the resolved task route as lifecycle authority.                               |
+| [0015](./0015-task-workspace-isolation.md)               | Accepted | Isolate automated execution independently from whether a task uses a PR gate.                                     |
+| [0016](./0016-serialized-direct-integration.md)          | Accepted | Run task execution in parallel while serializing mutation of the base branch.                                     |
+| [0017](./0017-clean-task-core-rebuild.md)                | Proposed | Build a pure canonical Task kernel behind compatibility adapters, then migrate and cut over with replay evidence. |
