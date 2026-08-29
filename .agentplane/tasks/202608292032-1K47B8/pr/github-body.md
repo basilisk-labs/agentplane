@@ -15,8 +15,8 @@ Implement a pure deterministic Task and WorkItem kernel behind a new internal mo
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
