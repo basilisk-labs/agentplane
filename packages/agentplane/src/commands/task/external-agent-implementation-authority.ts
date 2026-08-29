@@ -33,6 +33,7 @@ import {
   refreshRecoveredImplementationEvidence,
 } from "./external-agent-implementation-recovery.js";
 import { recordedTaskImplementationCommitSha } from "../shared/quality-review-target.js";
+import { requiresImplementationReworkReopen } from "../shared/task-scope-extension-request.js";
 import { loadTaskFromContext } from "../shared/task-backend.js";
 import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import {
@@ -62,16 +63,6 @@ function pathAllowed(value: string, allowed: readonly string[]): boolean {
 function hasChangedTaskArtifacts(statusLines: readonly string[], taskId: string): boolean {
   const prefix = `.agentplane/tasks/${taskId}/`;
   return statusLines.some((line) => pathFromStatusLine(line).startsWith(prefix));
-}
-
-export function requiresImplementationReworkReopen(opts: {
-  purpose: ExternalAgentExchange["purpose"];
-  task_status: string;
-  work_item_id: string | null;
-}): boolean {
-  if (opts.task_status !== "DONE") return false;
-  if (opts.purpose === "implementation_rework") return true;
-  return opts.purpose === "implementation" && Boolean(opts.work_item_id);
 }
 
 function recordedEvidenceOnlyReworkCommit(opts: {
@@ -481,10 +472,19 @@ export async function applyExternalImplementationResult(opts: {
   if (implementation.status !== "ready") {
     throw new CliError({ code: "E_VALIDATION", message: implementation.reason });
   }
+  const workItemId = opts.work_order.task.work_item_id ?? null;
+  const taskCentric = taskCentricAggregateFromExtensions(taskAtReturn.extensions);
+  const workItemIsRequired = Boolean(
+    workItemId &&
+    taskCentric?.current_plan?.proposal.work_items.work_items.some(
+      (item) => item.id === workItemId && !item.optional,
+    ),
+  );
   const reopenDone = requiresImplementationReworkReopen({
     purpose: opts.exchange.purpose,
     task_status: opts.decision.task.status,
-    work_item_id: opts.work_order.task.work_item_id ?? null,
+    work_item_id: workItemId,
+    work_item_is_required: workItemIsRequired,
   });
   if (opts.decision.task.commit !== implementation.evidence.implementation_commit) {
     await cmdTaskSetStatus({

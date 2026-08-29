@@ -20,6 +20,19 @@ import { isRecord } from "../../shared/guards.js";
 
 export const TASK_SCOPE_EXTENSION_REQUEST_KEY = "agentplane.scope_extension_request";
 
+export function requiresImplementationReworkReopen(opts: {
+  purpose: string;
+  task_status: string;
+  work_item_id: string | null;
+  work_item_is_required: boolean;
+}): boolean {
+  if (opts.task_status !== "DONE") return false;
+  if (opts.purpose === "implementation_rework") return true;
+  return (
+    opts.purpose === "implementation" && Boolean(opts.work_item_id) && opts.work_item_is_required
+  );
+}
+
 type NormalizedTaskScopeExtensionRequest = {
   schema_version: 1;
   scope_roots: string[];
@@ -200,17 +213,15 @@ function extendTaskCentricWorkItemScope(opts: {
   const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
   const currentPlan = aggregate?.current_plan;
   if (!aggregate || !currentPlan || opts.scopeRoots.length === 0) return aggregate;
+  const allRequiredCompleted = currentPlan.proposal.work_items.work_items
+    .filter((item) => !item.optional)
+    .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
+  if (allRequiredCompleted) return aggregate;
   const selected = new WorkItemScheduler(2).select({
     graph: currentPlan.proposal.work_items,
     runtime: aggregate.work_items,
     active_leases: [],
   });
-  if (selected.length === 0) {
-    const allRequiredCompleted = currentPlan.proposal.work_items.work_items
-      .filter((item) => !item.optional)
-      .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
-    if (allRequiredCompleted) return aggregate;
-  }
   if (selected.length !== 1) {
     throw new CliError({
       code: "E_VALIDATION",

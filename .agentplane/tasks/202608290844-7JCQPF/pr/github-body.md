@@ -15,12 +15,12 @@ Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task p
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Verified current head db3a023e6; its delta from the fully tested close commit is limited to
-framework-owned task evidence artifacts.
+Address unresolved PR #5871 review findings: optional WorkItems must not reopen DONE tasks or
+capture task-level rework; refresh verification evidence and resolve all review threads.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -32,14 +32,14 @@ framework-owned task evidence artifacts.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/policy/incidents.md                    |  1 +
- packages/agentplane/assets/policy/incidents.md     |  1 +
- ...n-cli.core.task-advance-effect-recovery.test.ts | 24 ++++++-
- ...n-cli.core.task-advance.branch-worktree.test.ts | 35 +++++++++
- .../shared/task-scope-extension-request.ts         |  8 ++-
- .../external-agent-implementation-authority.ts     | 20 +++---
- .../src/commands/task/scope-extend.test.ts         | 84 ++++++++++++++++++++++
- 7 files changed, 161 insertions(+), 12 deletions(-)
+ .agentplane/policy/incidents.md                    |   1 +
+ packages/agentplane/assets/policy/incidents.md     |   1 +
+ ...n-cli.core.task-advance-effect-recovery.test.ts |  23 +--
+ ...n-cli.core.task-advance.branch-worktree.test.ts |  35 +++++
+ .../shared/task-scope-extension-request.ts         |  19 ++-
+ .../external-agent-implementation-authority.ts     |  32 +++--
+ .../src/commands/task/scope-extend.test.ts         | 156 ++++++++++++++++++++-
+ 7 files changed, 225 insertions(+), 42 deletions(-)
 ```
 
 </details>
