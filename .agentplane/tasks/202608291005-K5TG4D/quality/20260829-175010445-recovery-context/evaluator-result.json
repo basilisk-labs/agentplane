@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "All four required WorkItems are COMPLETED and carry their declared semantic output manifests and validation results.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/8d06a0bda439bd3cbb2a6a861bb3d632c3591570cb548e661e456561e6ebd0e3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The code map identifies pure candidates, adapter and effect boundaries, test oracles, and legacy hotspots with source paths.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/8d06a0bda439bd3cbb2a6a861bb3d632c3591570cb548e661e456561e6ebd0e3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The kernel contract defines deterministic inputs, closed commands and results, fourteen invariants, forbidden dependencies, idempotency, authority, and executable vector and property-test oracles.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/8d06a0bda439bd3cbb2a6a861bb3d632c3591570cb548e661e456561e6ebd0e3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The migration contract defines source classes, exact output and receipt identities, quarantine, replay, dual-run, canary, cutover, guarded rollback, and legacy-deletion preconditions.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/8d06a0bda439bd3cbb2a6a861bb3d632c3591570cb548e661e456561e6ebd0e3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The traceability matrix covers every declared legacy family and root with exactly one Absorb or Retain disposition, while milestone gates have identity-bound receipts, failure stops, and rollback selection.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/8d06a0bda439bd3cbb2a6a861bb3d632c3591570cb548e661e456561e6ebd0e3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "ADR 0017 is present in the canonical ADR index, and docs IA, formatting, and whitespace checks pass.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/8d06a0bda439bd3cbb2a6a861bb3d632c3591570cb548e661e456561e6ebd0e3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Graph rewrite must use fresh task readback and stop on any legacy requirement absent from the frozen traceability set.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/8d06a0bda439bd3cbb2a6a861bb3d632c3591570cb548e661e456561e6ebd0e3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-8",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted integration must bind to the exact published and reviewed branch head.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/8d06a0bda439bd3cbb2a6a861bb3d632c3591570cb548e661e456561e6ebd0e3.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
