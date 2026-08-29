@@ -4,7 +4,7 @@ title: "Keep evaluator verification target aligned with the semantic quality-rev
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "USER"
   note: "Approved under the user standing authorization for all subsequent in-scope clean-core bootstrap plans; exact plan digest d0e0550350c6c8ec06d236ed52739081abfd1284c497dc42e5522c784a948b00."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-29T15:16:33.691Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -80,11 +80,35 @@ execution_contract:
       - "packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -117,16 +141,22 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:17922e5f92979f6e779e55af2af3da16e97bb8b08866bb5ef7c5cd20ebd05d46"
+      digest: "sha256:7711145967d6b6a80dfd06980f9d5e9be11a07e0c129ceda3541b17c056ca959"
       escalation_reasons: []
       execution_groups:
         - "core"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -157,11 +187,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "3cb29a0ae620b4eab93c2d10b406e193c95b2d6c"
+  message: "🚧 F5AN0W task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 3cb29a0ae620. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -170,9 +205,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-29T15:16:23.601Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 3cb29a0ae620. CLI accepted one state-bound external-agent semantic result."
+    commit: "3cb29a0ae620b4eab93c2d10b406e193c95b2d6c"
+  -
+    type: "verify"
+    at: "2026-08-29T15:16:33.691Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-29T15:12:35.292Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-29T15:16:35.588Z"
+doc_updated_by: "SUPERVISOR"
 description: "Keep evaluator verification target aligned with the semantic quality-review target across framework-owned task-artifact tail commits. Fix the confirmed bootstrap blocker where task verification correctly targets the latest reviewable commit but evaluator preparation prefers an older extensions.implementation_commit and rejects the current record as verification_implementation_changed. Preserve qualification-packet pinning. Add focused regression coverage proving task-artifact tail commits do not invalidate evaluator preparation."
 sections:
   Summary: |-
@@ -191,6 +240,72 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-29T15:16:33.691Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9a3ae7cba6d63b0b8d039831370f5969be00a48a0741edd2ab07f3fd0fabff9e, input_digest=sha256:e3b8b917b8b4e0416df9435a2fd388c0d3f1e14a32d46bb6b3805441b0d23b19
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291505-F5AN0W Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608291505-F5AN0W Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291505-F5AN0W Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608291505-F5AN0W Verification Contract check critical_paths (2/2)
+
+    Check: task_outcome
+    Command: bun vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291505-F5AN0W Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608291505-F5AN0W Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291505-F5AN0W-keep-evaluator-verification-target-aligned-with/.agentplane/tasks/202608291505-F5AN0W/blueprint/resolved-snapshot.json
+    - old_digest: 252424f5e68dfcf73361b2a05159ad590993b9090aff16433621b5705246d036
+    - current_digest: 252424f5e68dfcf73361b2a05159ad590993b9090aff16433621b5705246d036
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608291505-F5AN0W
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -461,25 +576,111 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 8
     schema_version: 1
-    updated_at: "2026-08-29T15:12:16.407Z"
+    updated_at: "2026-08-29T15:16:36.837Z"
     work_items:
       align-evaluator-verification-target:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "align-evaluator-verification-target"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:b1851bd7083577973a9481b1f0c5d5f1ee279dd151114166961f0a994e91ccd9"
+            id: "corrected evaluator verification target selection"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608291505-F5AN0W"
+              work_item_id: "align-evaluator-verification-target"
+            provenance:
+              - "sha256:68a74eddd431b224b085698b456702fc19c5fc662bb01e55740edf59bb144b9a"
+              - ".agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:174eaa69a6149a7a5caa9449e4b5832f469da6876b8af2c4eb4953c4b2be68b2"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:ad883bc7b598db2b2538ad731c80b764130d4e3f478f600bc34ad11dbf622fea"
+            id: "focused artifact-tail regression evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608291505-F5AN0W"
+              work_item_id: "align-evaluator-verification-target"
+            provenance:
+              - "sha256:68a74eddd431b224b085698b456702fc19c5fc662bb01e55740edf59bb144b9a"
+              - ".agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:174eaa69a6149a7a5caa9449e4b5832f469da6876b8af2c4eb4953c4b2be68b2"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json"
+              check_id: "focused_evaluator_target"
+              command_identity: "bun vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts"
+              detail: "Observed by bun vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts."
+              exit_code: 0
+              observed_at: "2026-08-29T15:16:36.833Z"
+              repository_snapshot_digest: "sha256:174eaa69a6149a7a5caa9449e4b5832f469da6876b8af2c4eb4953c4b2be68b2"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json"
+              check_id: "diff_integrity"
+              command_identity: "git diff --check"
+              detail: "Observed by git diff --check."
+              exit_code: 0
+              observed_at: "2026-08-29T15:16:36.833Z"
+              repository_snapshot_digest: "sha256:174eaa69a6149a7a5caa9449e4b5832f469da6876b8af2c4eb4953c4b2be68b2"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608291505-F5AN0W-executor-543d23f542851d652f37bd74:
+        aggregate_digest: "sha256:2e7095a5ad63ee4739113d9b8d3548c8c315ed5c6253c2b1569c66a04d90e847"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-29T15:16:36.837Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_e5592e2b4327151ff1371a1d"
+          mutation_id: "external-result:work-order-202608291505-F5AN0W-executor-543d23f542851d652f37bd74"
+          plan_digest: "sha256:d0e0550350c6c8ec06d236ed52739081abfd1284c497dc42e5522c784a948b00"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291505-F5AN0W"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "align-evaluator-verification-target"
+        mutation_id: "external-result:work-order-202608291505-F5AN0W-executor-543d23f542851d652f37bd74"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202608291505-F5AN0W"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "3cb29a0ae620b4eab93c2d10b406e193c95b2d6c"
   task_execution_context:
     base_ref: "main"
     base_sha: "57a22a308fd63147d95fe6a65733d02586cdc126"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "57a22a308fd63147d95fe6a65733d02586cdc126"
     version: 1
@@ -511,6 +712,72 @@ PLANNER fallback scaffold for "Keep evaluator verification target aligned with t
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-29T15:16:33.691Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9a3ae7cba6d63b0b8d039831370f5969be00a48a0741edd2ab07f3fd0fabff9e, input_digest=sha256:e3b8b917b8b4e0416df9435a2fd388c0d3f1e14a32d46bb6b3805441b0d23b19
+
+Details:
+
+Check: affected_unit_integration
+Command: bun vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291505-F5AN0W Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608291505-F5AN0W Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291505-F5AN0W Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608291505-F5AN0W Verification Contract check critical_paths (2/2)
+
+Check: task_outcome
+Command: bun vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291505-F5AN0W Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608291505-F5AN0W Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291505-F5AN0W-keep-evaluator-verification-target-aligned-with/.agentplane/tasks/202608291505-F5AN0W/blueprint/resolved-snapshot.json
+- old_digest: 252424f5e68dfcf73361b2a05159ad590993b9090aff16433621b5705246d036
+- current_digest: 252424f5e68dfcf73361b2a05159ad590993b9090aff16433621b5705246d036
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608291505-F5AN0W
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
