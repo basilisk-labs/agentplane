@@ -1,0 +1,804 @@
+---
+id: "202608291005-K5TG4D"
+title: "Specify the clean Task kernel and migration oracle"
+status: "DOING"
+priority: "high"
+owner: "PLANNER"
+revision: 6
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "clean-core-rebuild"
+  - "specification"
+task_kind: "docs"
+mutation_scope: "docs"
+verify:
+  - "bun run docs:ia:check"
+  - "bun run format:check"
+plan_approval:
+  state: "approved"
+  updated_at: "2026-08-29T10:21:44.005Z"
+  updated_by: "HOST:local:USER"
+  note: "host_user_decision=sha256:5f50c786906823fb6caca5472ce58e4d2ef197717143beb0bf3470717eace5de"
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
+execution_route:
+  frozen: true
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "repository_branch_pr_floor"
+  repository_mode: "branch_pr"
+  requested_mode: "branch_pr"
+  schema_version: 1
+  selected_mode: "branch_pr"
+execution_contract:
+  authority:
+    allowed_external_effects: []
+    allowed_repository_effects:
+      - "documentation"
+      - "repository_write"
+    forbidden_external_effects:
+      - "network_read"
+      - "external_write"
+      - "credentials"
+      - "publish"
+      - "deploy"
+      - "destructive_git"
+    forbidden_repository_effects:
+      - "source_code"
+      - "tests"
+      - "public_api"
+      - "schema"
+      - "dependencies"
+      - "ci"
+      - "release_metadata"
+      - "security_boundary"
+    writable_roots: []
+  declaration:
+    external_effects: []
+    implementation_uncertainty: "bounded"
+    preferred_mode: "branch_pr"
+    rationale:
+      - "legacy structured task fields mapped to the execution contract"
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+    requirements_uncertainty: "bounded"
+    reversibility: "reversible"
+    schema_version: 2
+    scope_roots: []
+  observed:
+    authority_violations: []
+    changed_components:
+      - "docs"
+    changed_paths:
+      - "docs/adr/0017-clean-task-core-rebuild.md"
+      - "docs/reference/clean-task-core-rebuild-spec.mdx"
+    external_effects: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+    verification_results: []
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "repository_branch_pr_floor"
+  repository_mode: "branch_pr"
+  safety:
+    approval_effects: []
+    requires_user_approval: false
+    requires_worktree: true
+  schema_version: 1
+  selected_mode: "branch_pr"
+  source: "legacy_compatibility"
+  verification:
+    contract:
+      declared:
+        components: []
+        evidence_requirements:
+          - "hosted_integration"
+          - "repository_effect:documentation"
+          - "repository_effect:repository_write"
+          - "task_outcome"
+        external_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
+        risk:
+          implementation_uncertainty: "bounded"
+          requirements_uncertainty: "bounded"
+          reversibility: "reversible"
+      digest: "sha256:8f8858b925770c05cc143d4be37900d94e2539fc6b04ae348e25c68566f3c766"
+      escalation_reasons: []
+      execution_groups:
+        - "docs-schema"
+        - "core"
+      observed:
+        changed_components:
+          - "docs"
+        changed_files:
+          - "docs/adr/0017-clean-task-core-rebuild.md"
+          - "docs/reference/clean-task-core-rebuild-spec.mdx"
+        external_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
+      phase: "task"
+      policy_floor:
+        monotonic_strengthening: true
+        pr_full_regression: true
+        unknown_or_central_full_regression: true
+      requires_full_regression: false
+      requires_real_e2e: false
+      schema_version: 2
+      selected_checks:
+        - "docs_contract"
+        - "hosted_integration"
+        - "task_outcome"
+      selector:
+        bucket: null
+        buckets: []
+        execution_mode: "semantic"
+        kind: "semantic"
+        lint_targets: []
+        reason: "execution_declaration"
+        run_cli_docs_check: false
+        selected_test_files: []
+        vitest_pool: "forks"
+      source: "execution_contract"
+    required_evidence:
+      - "hosted_integration"
+      - "repository_effect:documentation"
+      - "repository_effect:repository_write"
+      - "task_outcome"
+commit:
+  hash: "236f9d94d2bffa18e4a391dbd5e2f01a0c96f0c4"
+  message: "🚧 K5TG4D task: apply external agent result"
+comments:
+  -
+    author: "PLANNER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 236f9d94d2bf. CLI accepted one state-bound external-agent semantic result."
+events:
+  -
+    type: "status"
+    at: "2026-08-29T10:21:54.163Z"
+    author: "PLANNER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-29T10:28:25.932Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 236f9d94d2bf. CLI accepted one state-bound external-agent semantic result."
+    commit: "236f9d94d2bffa18e4a391dbd5e2f01a0c96f0c4"
+doc_version: 3
+doc_updated_at: "2026-08-29T10:28:25.932Z"
+doc_updated_by: "SUPERVISOR"
+description: "Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability."
+sections:
+  Summary: |-
+    Specify the clean Task kernel and migration oracle
+
+    Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability.
+  Scope: |-
+    - In scope: Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability.
+    - Out of scope: unrelated refactors not required for "Specify the clean Task kernel and migration oracle".
+  Plan: "Prepare a decision ADR and implementation specification for a staged clean Task kernel rebuild. Start with a source-backed code map, define a pure canonical kernel, specify compatibility and replay migration, and finish with a complete legacy-task traceability matrix and executable gates."
+  Verify Steps: |-
+    PLANNER fallback scaffold for "Specify the clean Task kernel and migration oracle". Replace with task-specific acceptance checks when PLANNER context is available.
+
+    1. Review the requested outcome for "Specify the clean Task kernel and migration oracle". Expected: the visible result matches ## Summary and stays inside approved scope.
+    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+extensions:
+  agentplane.execution_grant:
+    actor: "HOST:local:USER"
+    approval_evidence_digest: "sha256:5f50c786906823fb6caca5472ce58e4d2ef197717143beb0bf3470717eace5de"
+    approval_kind: "host_user_decision"
+    capabilities:
+      - "provider.merge"
+      - "provider.pr"
+      - "repository.integrate"
+      - "repository.write"
+      - "task.lifecycle"
+      - "task.scope.extend"
+    completion_contract_digest: "sha256:c16041dd9831e70f058eeaeeb9714afed884dbcb938e6734a0ee0f781506a2bf"
+    digest: "sha256:0808d410a02268efccc871526ce240d7cb30d23822bc6ae8f58b08434b1ea1ab"
+    grant_id: "8ea719ba-ad19-459f-8429-45f4885f12a5"
+    issued_at: "2026-08-29T10:21:44.005Z"
+    kind: "agentplane.execution_grant"
+    plan_digest: "sha256:c7978a4480be46d5ad21c7c0d033c4864a3486a1516ab5403212f0f3cd284692"
+    plan_revision: 2
+    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+    schema_version: 1
+    scope_digest: "sha256:cb7685d3adca039a80ab47777b617bbe0f2f4eb9f1783679bd96c9955a6470a7"
+    status: "active"
+    task_id: "202608291005-K5TG4D"
+  agentplane.task_centric:
+    current_plan:
+      approval:
+        approved_at: "2026-08-29T10:21:44.005Z"
+        approved_by: "HOST:local:USER"
+        approved_digest: "sha256:fca3574e5890b72574edaad0eb3366f67e12a7a9d94a7a2835ceca7cd90968de"
+        policy_facts:
+          - "host_user_decision"
+        state: "approved"
+      created_at: "2026-08-29T10:08:18.221Z"
+      digest: "sha256:fca3574e5890b72574edaad0eb3366f67e12a7a9d94a7a2835ceca7cd90968de"
+      proposal:
+        assumptions:
+          - "The public CLI and repository task format remain compatibility surfaces during M0-M2."
+          - "The new kernel is implemented in an isolated internal module and receives side effects only through adapters."
+          - "The current release work is preserved but does not mutate this task worktree."
+        planning_baseline:
+          captured_at: "2026-08-29T10:06:41.874Z"
+          config_digest: null
+          context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+          digest: "sha256:cd2711b3a71c2316fdfd333b7c3a642d1614a31f8c5a802409b758f4de5572d6"
+          dirty_paths:
+            - ".agentplane/tasks/202608210955-9SX2C6/README.md"
+            - ".agentplane/tasks/202608212244-Q3QMJR/README.md"
+            - ".agentplane/tasks/202608220034-FPEFRK/README.md"
+            - ".agentplane/tasks/202608220034-FPEFRK/blueprint/resolved-snapshot.json"
+            - ".agentplane/tasks/202608241434-129F8R/README.md"
+            - ".agentplane/tasks/202608241434-EH8E74/README.md"
+            - ".agentplane/tasks/202608241434-KCC9K4/README.md"
+            - ".agentplane/tasks/202608241434-QQNDGT/README.md"
+            - ".agentplane/tasks/202608241434-SFPD91/README.md"
+            - ".agentplane/tasks/202608241434-TA84WK/README.md"
+            - ".agentplane/tasks/202608241434-WVYA5T/README.md"
+            - ".agentplane/tasks/202608241435-40YZCE/README.md"
+            - ".agentplane/tasks/202608241435-73DA89/README.md"
+            - ".agentplane/tasks/202608241435-D001ET/README.md"
+            - ".agentplane/tasks/202608241435-HTV4K2/README.md"
+            - ".agentplane/tasks/202608241435-NDR0BX/README.md"
+            - ".agentplane/tasks/202608241435-RJXGHQ/README.md"
+            - ".agentplane/tasks/202608241435-W3DG6V/README.md"
+            - ".agentplane/tasks/202608241435-YSW0E0/README.md"
+            - ".agentplane/tasks/202608241436-2G9DA8/README.md"
+            - ".agentplane/tasks/202608241436-63W678/README.md"
+            - ".agentplane/tasks/202608241436-8PJKJP/README.md"
+            - ".agentplane/tasks/202608241436-99B067/README.md"
+            - ".agentplane/tasks/202608241436-A87Y59/README.md"
+            - ".agentplane/tasks/202608241436-DHPR5E/README.md"
+            - ".agentplane/tasks/202608241436-H60MCY/README.md"
+            - ".agentplane/tasks/202608241436-TX6TRF/README.md"
+            - ".agentplane/tasks/202608241436-W6A113/README.md"
+            - ".agentplane/tasks/202608241437-5YZ0N8/README.md"
+            - ".agentplane/tasks/202608241437-H5418M/README.md"
+            - ".agentplane/tasks/202608241437-SH3CDX/README.md"
+            - ".agentplane/tasks/202608241437-V8BA7Q/README.md"
+            - ".agentplane/tasks/202608241437-XY3950/README.md"
+            - ".agentplane/tasks/202608250007-P5BWP0/README.md"
+            - ".agentplane/tasks/202608250007-P5BWP0/blueprint/resolved-snapshot.json"
+            - ".agentplane/tasks/202608251038-42AC0D/README.md"
+            - ".agentplane/tasks/202608251053-QAZ236/README.md"
+            - ".agentplane/tasks/202608251706-V287W1/README.md"
+            - ".agentplane/tasks/202608251735-ZJ7YZE/README.md"
+            - ".agentplane/tasks/202608252233-JR4T47/README.md"
+            - ".agentplane/tasks/202608252234-4CKSWA/README.md"
+            - ".agentplane/tasks/202608252234-4CKSWA/blueprint/resolved-snapshot.json"
+            - ".agentplane/tasks/202608262032-MAJQ5E/README.md"
+            - ".agentplane/tasks/202608270848-0RAFH9/README.md"
+            - ".agentplane/tasks/202608270848-37XB2K/README.md"
+            - ".agentplane/tasks/202608270848-N28TBB/README.md"
+            - ".agentplane/tasks/202608270848-V32542/README.md"
+            - ".agentplane/tasks/202608271350-HVGQPQ/README.md"
+            - ".agentplane/tasks/202608291005-33PHG4/README.md"
+            - ".agentplane/tasks/202608291005-K5TG4D/README.md"
+            - ".agentplane/tasks/202608291006-0AJG13/README.md"
+            - ".agentplane/tasks/202608291006-255K66/README.md"
+            - ".agentplane/tasks/202608291006-2A6BJC/README.md"
+          git:
+            kind: "commit"
+            ref: null
+            sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
+          policy_digest: null
+          schema_version: 1
+          task_history_cursor: "task-revision:1"
+        schema_version: 1
+        task_id: "202608291005-K5TG4D"
+        top_level_validation:
+          checks:
+            -
+              capability: "task.verify"
+              command: "bun run docs:ia:check"
+              id: "docs-ia"
+              kind: "deterministic"
+              required: true
+            -
+              capability: "task.verify"
+              command: "bun run format:check"
+              id: "format"
+              kind: "deterministic"
+              required: true
+          criteria:
+            -
+              check_ids:
+                - "docs-ia"
+                - "format"
+              description: "The ADR and implementation specification together define the target kernel, code map, invariants, compatibility boundary, replay corpus, migration, rollback, cutover, and acceptance gates."
+              id: "spec-complete"
+              required: true
+            -
+              check_ids:
+                - "docs-ia"
+                - "format"
+              description: "All legacy Clean Core task families are mapped without silently dropping scope."
+              id: "legacy-mapped"
+              required: true
+            -
+              check_ids:
+                - "docs-ia"
+                - "format"
+              description: "Documentation structure and formatting checks pass."
+              id: "docs-valid"
+              required: true
+          evidence_fingerprint: "sha256:cd2711b3a71c2316fdfd333b7c3a642d1614a31f8c5a802409b758f4de5572d6"
+          schema_version: 1
+        unresolved_questions: []
+        work_items:
+          schema_version: 1
+          work_items:
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "docs-ia"
+                    - "format"
+                  description: "The code map names authoritative modules, adapter candidates, side-effect boundaries, test oracles, and legacy hotspots with source paths."
+                  id: "map-complete"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 300000
+                optional_sources:
+                  - "packages/core/src"
+                  - "packages/agentplane/src"
+                  - "packages/testkit/src"
+                required_sources:
+                  - "AGENTS.md"
+                  - ".agentplane/policy/dod.core.md"
+                  - ".agentplane/policy/dod.docs.md"
+                  - ".agentplane/tasks/202608241437-SH3CDX/README.md"
+                  - ".agentplane/tasks/202608251038-42AC0D/README.md"
+                  - "docs/adr/0003-refactor-sequencing.md"
+                  - "docs/adr/0014-task-execution-authority.md"
+                symbol_hints:
+                  - "Task"
+                  - "WorkItem"
+                  - "ExecutionGrant"
+                  - "next-action"
+                  - "task advance"
+              depends_on: []
+              expected_outputs:
+                - "artifact:code-map"
+              id: "inventory-and-map"
+              objective: "Inventory the current Task lifecycle, authority, persistence, projection, CLI, provider, migration, and test surfaces; produce a code ownership map and identify seams that can host a pure replacement kernel."
+              optional: false
+              priority: 1
+              required_inputs:
+                - "current repository source"
+                - "legacy Clean Core task records"
+              resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/adr/0017-clean-task-core-rebuild.md"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/reference/clean-task-core-rebuild-spec.mdx"
+              risk: "low"
+              scope_roots:
+                - "docs/adr/0017-clean-task-core-rebuild.md"
+                - "docs/reference/clean-task-core-rebuild-spec.mdx"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "bun run docs:ia:check"
+                    id: "docs-ia"
+                    kind: "deterministic"
+                    required: true
+                  -
+                    capability: "task.verify"
+                    command: "bun run format:check"
+                    id: "format"
+                    kind: "deterministic"
+                    required: true
+                criteria:
+                  -
+                    check_ids:
+                      - "docs-ia"
+                      - "format"
+                    description: "The code map names authoritative modules, adapter candidates, side-effect boundaries, test oracles, and legacy hotspots with source paths."
+                    id: "map-complete"
+                    required: true
+                evidence_fingerprint: "sha256:cd2711b3a71c2316fdfd333b7c3a642d1614a31f8c5a802409b758f4de5572d6"
+                schema_version: 1
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "docs-ia"
+                    - "format"
+                  description: "The specification separates pure deterministic kernel logic from filesystem, Git, provider, process, projection, and compatibility effects and defines executable invariants."
+                  id: "kernel-bounded"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 300000
+                optional_sources:
+                  - "packages/core/src"
+                  - "packages/agentplane/src"
+                  - "packages/testkit/src"
+                required_sources:
+                  - "AGENTS.md"
+                  - ".agentplane/policy/dod.core.md"
+                  - ".agentplane/policy/dod.docs.md"
+                  - ".agentplane/tasks/202608241437-SH3CDX/README.md"
+                  - ".agentplane/tasks/202608251038-42AC0D/README.md"
+                  - "docs/adr/0003-refactor-sequencing.md"
+                  - "docs/adr/0014-task-execution-authority.md"
+                symbol_hints:
+                  - "Task"
+                  - "WorkItem"
+                  - "ExecutionGrant"
+                  - "next-action"
+                  - "task advance"
+              depends_on:
+                - "inventory-and-map"
+              expected_outputs:
+                - "artifact:kernel-contract"
+              id: "kernel-contract"
+              objective: "Define the canonical Task and WorkItem kernel, state machine, typed commands and results, authority model, invariants, idempotency rules, and forbidden dependencies."
+              optional: false
+              priority: 2
+              required_inputs:
+                - "artifact:code-map"
+              resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/adr/0017-clean-task-core-rebuild.md"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/reference/clean-task-core-rebuild-spec.mdx"
+              risk: "medium"
+              scope_roots:
+                - "docs/adr/0017-clean-task-core-rebuild.md"
+                - "docs/reference/clean-task-core-rebuild-spec.mdx"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "bun run docs:ia:check"
+                    id: "docs-ia"
+                    kind: "deterministic"
+                    required: true
+                  -
+                    capability: "task.verify"
+                    command: "bun run format:check"
+                    id: "format"
+                    kind: "deterministic"
+                    required: true
+                criteria:
+                  -
+                    check_ids:
+                      - "docs-ia"
+                      - "format"
+                    description: "The specification separates pure deterministic kernel logic from filesystem, Git, provider, process, projection, and compatibility effects and defines executable invariants."
+                    id: "kernel-bounded"
+                    required: true
+                evidence_fingerprint: "sha256:cd2711b3a71c2316fdfd333b7c3a642d1614a31f8c5a802409b758f4de5572d6"
+                schema_version: 1
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "docs-ia"
+                    - "format"
+                  description: "The migration contract defines input classes, exact expected outputs, mismatch handling, rollback proof, cutover gates, and legacy deletion preconditions."
+                  id: "migration-safe"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 300000
+                optional_sources:
+                  - "packages/core/src"
+                  - "packages/agentplane/src"
+                  - "packages/testkit/src"
+                required_sources:
+                  - "AGENTS.md"
+                  - ".agentplane/policy/dod.core.md"
+                  - ".agentplane/policy/dod.docs.md"
+                  - ".agentplane/tasks/202608241437-SH3CDX/README.md"
+                  - ".agentplane/tasks/202608251038-42AC0D/README.md"
+                  - "docs/adr/0003-refactor-sequencing.md"
+                  - "docs/adr/0014-task-execution-authority.md"
+                symbol_hints:
+                  - "Task"
+                  - "WorkItem"
+                  - "ExecutionGrant"
+                  - "next-action"
+                  - "task advance"
+              depends_on:
+                - "kernel-contract"
+              expected_outputs:
+                - "artifact:migration-oracle"
+              id: "migration-oracle"
+              objective: "Define compatibility adapters, one-time migration, replay corpus selection, equivalence checks, dual-run or shadow-read policy, rollback receipts, and fail-closed behavior for unknown layouts."
+              optional: false
+              priority: 3
+              required_inputs:
+                - "artifact:kernel-contract"
+                - "artifact:code-map"
+              resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/adr/0017-clean-task-core-rebuild.md"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/reference/clean-task-core-rebuild-spec.mdx"
+              risk: "high"
+              scope_roots:
+                - "docs/adr/0017-clean-task-core-rebuild.md"
+                - "docs/reference/clean-task-core-rebuild-spec.mdx"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "bun run docs:ia:check"
+                    id: "docs-ia"
+                    kind: "deterministic"
+                    required: true
+                  -
+                    capability: "task.verify"
+                    command: "bun run format:check"
+                    id: "format"
+                    kind: "deterministic"
+                    required: true
+                criteria:
+                  -
+                    check_ids:
+                      - "docs-ia"
+                      - "format"
+                    description: "The migration contract defines input classes, exact expected outputs, mismatch handling, rollback proof, cutover gates, and legacy deletion preconditions."
+                    id: "migration-safe"
+                    required: true
+                evidence_fingerprint: "sha256:cd2711b3a71c2316fdfd333b7c3a642d1614a31f8c5a802409b758f4de5572d6"
+                schema_version: 1
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "docs-ia"
+                    - "format"
+                  description: "Every legacy roadmap item has exactly one disposition: absorbed by a replacement milestone, retained as an independent prerequisite, or explicitly rejected with rationale."
+                  id: "traceability-complete"
+                  required: true
+                -
+                  check_ids:
+                    - "docs-ia"
+                    - "format"
+                  description: "Each replacement milestone has deterministic checks, migration evidence, stop conditions, and rollback criteria."
+                  id: "gates-executable"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 300000
+                optional_sources:
+                  - "packages/core/src"
+                  - "packages/agentplane/src"
+                  - "packages/testkit/src"
+                required_sources:
+                  - "AGENTS.md"
+                  - ".agentplane/policy/dod.core.md"
+                  - ".agentplane/policy/dod.docs.md"
+                  - ".agentplane/tasks/202608241437-SH3CDX/README.md"
+                  - ".agentplane/tasks/202608251038-42AC0D/README.md"
+                  - "docs/adr/0003-refactor-sequencing.md"
+                  - "docs/adr/0014-task-execution-authority.md"
+                symbol_hints:
+                  - "Task"
+                  - "WorkItem"
+                  - "ExecutionGrant"
+                  - "next-action"
+                  - "task advance"
+              depends_on:
+                - "migration-oracle"
+              expected_outputs:
+                - "artifact:traceability-matrix"
+                - "artifact:acceptance-gates"
+              id: "traceability-and-gates"
+              objective: "Map every AP-AUTH, AP-APPROVAL, AP-GRANT, AP-DEPS, AP-SCOPE, AP-RUNTIME, AP-CORE, and root roadmap task to replacement milestone M0-M3; define acceptance gates and explicit residual work."
+              optional: false
+              priority: 4
+              required_inputs:
+                - "artifact:kernel-contract"
+                - "artifact:migration-oracle"
+                - "legacy task records"
+              resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/adr/0017-clean-task-core-rebuild.md"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/reference/clean-task-core-rebuild-spec.mdx"
+              risk: "medium"
+              scope_roots:
+                - "docs/adr/0017-clean-task-core-rebuild.md"
+                - "docs/reference/clean-task-core-rebuild-spec.mdx"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "bun run docs:ia:check"
+                    id: "docs-ia"
+                    kind: "deterministic"
+                    required: true
+                  -
+                    capability: "task.verify"
+                    command: "bun run format:check"
+                    id: "format"
+                    kind: "deterministic"
+                    required: true
+                criteria:
+                  -
+                    check_ids:
+                      - "docs-ia"
+                      - "format"
+                    description: "Every legacy roadmap item has exactly one disposition: absorbed by a replacement milestone, retained as an independent prerequisite, or explicitly rejected with rationale."
+                    id: "traceability-complete"
+                    required: true
+                  -
+                    check_ids:
+                      - "docs-ia"
+                      - "format"
+                    description: "Each replacement milestone has deterministic checks, migration evidence, stop conditions, and rollback criteria."
+                    id: "gates-executable"
+                    required: true
+                evidence_fingerprint: "sha256:cd2711b3a71c2316fdfd333b7c3a642d1614a31f8c5a802409b758f4de5572d6"
+                schema_version: 1
+      revision: 1
+      schema_version: 1
+      task_id: "202608291005-K5TG4D"
+    event_cursor: 0
+    final_validation: null
+    id: "202608291005-K5TG4D"
+    intent:
+      acceptance_criteria:
+        -
+          check_ids: []
+          description: "bun run docs:ia:check"
+          id: "legacy-1"
+          required: true
+        -
+          check_ids: []
+          description: "bun run format:check"
+          id: "legacy-2"
+          required: true
+      captured_at: "2026-08-29T10:05:43.981Z"
+      constraints: []
+      request: |-
+        Specify the clean Task kernel and migration oracle
+
+        Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability.
+      task_id: "202608291005-K5TG4D"
+    lifecycle: "ACTIVE"
+    plan_amendments: []
+    plan_history: []
+    revision: 2
+    schema_version: 1
+    updated_at: "2026-08-29T10:21:44.005Z"
+    work_items:
+      inventory-and-map:
+        attempt: 0
+        claim_id: null
+        id: "inventory-and-map"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
+      kernel-contract:
+        attempt: 0
+        claim_id: null
+        id: "kernel-contract"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "PLANNED"
+        validation_result: null
+      migration-oracle:
+        attempt: 0
+        claim_id: null
+        id: "migration-oracle"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "PLANNED"
+        validation_result: null
+      traceability-and-gates:
+        attempt: 0
+        claim_id: null
+        id: "traceability-and-gates"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "PLANNED"
+        validation_result: null
+  implementation_commit:
+    hash: "236f9d94d2bffa18e4a391dbd5e2f01a0c96f0c4"
+  task_execution_context:
+    base_ref: "main"
+    base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
+    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+    schema_version: 1
+    source: "creation_checkout"
+  workflow_route_baseline:
+    start_head_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
+    version: 1
+id_source: "generated"
+---
+## Summary
+
+Specify the clean Task kernel and migration oracle
+
+Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability.
+
+## Scope
+
+- In scope: Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability.
+- Out of scope: unrelated refactors not required for "Specify the clean Task kernel and migration oracle".
+
+## Plan
+
+Prepare a decision ADR and implementation specification for a staged clean Task kernel rebuild. Start with a source-backed code map, define a pure canonical kernel, specify compatibility and replay migration, and finish with a complete legacy-task traceability matrix and executable gates.
+
+## Verify Steps
+
+PLANNER fallback scaffold for "Specify the clean Task kernel and migration oracle". Replace with task-specific acceptance checks when PLANNER context is available.
+
+1. Review the requested outcome for "Specify the clean Task kernel and migration oracle". Expected: the visible result matches ## Summary and stays inside approved scope.
+2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings

@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608291005-K5TG4D/specify-the-clean-task-kernel-and-migration-orac",
+  "created_at": "2026-08-29T10:21:54.868Z",
+  "diffstat_sha256": "sha256:8b13d28a400c8e513495681ab0e5043ac0c843a891072f7493cfe99566ca2d2e",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608291005-K5TG4D",
+  "updated_at": "2026-08-29T10:21:54.868Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
