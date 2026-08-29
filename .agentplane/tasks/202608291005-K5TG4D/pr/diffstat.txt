@@ -1,4 +1,4 @@
  docs/adr/0017-clean-task-core-rebuild.md        |  95 ++++++
  docs/adr/README.md                              |  37 +-
- docs/reference/clean-task-core-rebuild-spec.mdx | 428 ++++++++++++++++++++++++
- 3 files changed, 542 insertions(+), 18 deletions(-)
+ docs/reference/clean-task-core-rebuild-spec.mdx | 434 ++++++++++++++++++++++++
+ 3 files changed, 548 insertions(+), 18 deletions(-)

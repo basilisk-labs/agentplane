@@ -394,6 +394,12 @@ output manifest and receipt, and advance the dependency graph in order. Task-lev
 eligible only after every required WorkItem reaches `COMPLETED`; an unbound or optional WorkItem
 result cannot substitute for that projection.
 
+The scheduler contract treats `required_inputs` as upstream output-manifest IDs. Repository source,
+legacy task records, policy, and other readable material belong in the WorkItem context manifest;
+they must not be encoded as `required_inputs`, because no producer can satisfy those narrative
+labels. A root WorkItem therefore has an empty `required_inputs` list, while dependent WorkItems
+name only outputs declared by their predecessors.
+
 ## Graph rewrite procedure
 
 After M0 is integrated:
