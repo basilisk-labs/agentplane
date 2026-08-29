@@ -22,7 +22,7 @@ Keep evaluator verification target aligned with the semantic quality-review targ
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-29T15:12:35.422Z
+- Updated: 2026-08-29T15:16:59.589Z
 - Branch: task/202608291505-F5AN0W/keep-evaluator-verification-target-aligned-with
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
