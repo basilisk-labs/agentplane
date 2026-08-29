@@ -1,5 +1,6 @@
  ...n-cli.core.task-advance-effect-recovery.test.ts | 24 ++++++-
+ ...n-cli.core.task-advance.branch-worktree.test.ts | 35 +++++++++
  .../shared/task-scope-extension-request.ts         |  8 ++-
  .../external-agent-implementation-authority.ts     | 20 +++---
  .../src/commands/task/scope-extend.test.ts         | 84 ++++++++++++++++++++++
- 4 files changed, 124 insertions(+), 12 deletions(-)
+ 5 files changed, 159 insertions(+), 12 deletions(-)

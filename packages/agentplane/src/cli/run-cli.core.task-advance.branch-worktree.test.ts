@@ -318,6 +318,41 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
         cwd: checkout,
       });
       const implementation = implementationOutput.stdout.trim();
+      if (boundary === "before WorkItem projection") {
+        if (!interrupted) throw new Error("missing interrupted WorkItem task");
+        await ctx.taskBackend.writeTask({ ...interrupted, status: "DONE" });
+        const prematurelyClosed = await ctx.taskBackend.getTask(taskId);
+        expect(prematurelyClosed?.status).toBe("DONE");
+        expect(
+          taskCentricAggregateFromExtensions(prematurelyClosed?.extensions)?.work_items[
+            "exercise-worktree"
+          ]?.state,
+        ).toBe("READY");
+        await execFileAsync("git", ["add", ".agentplane"], { cwd: checkout });
+        await execFileAsync("git", ["commit", "-m", "test: seed premature DONE recovery"], {
+          cwd: checkout,
+        });
+        const resumedIo = captureStdIO();
+        try {
+          expect(
+            await runCli([...packet.exchange.resume_argv.slice(1), "--root", checkout]),
+            resumedIo.stderr,
+          ).toBe(0);
+          expect((JSON.parse(resumedIo.stdout) as AgentPacket).action.kind).toBe(
+            "framework_transition",
+          );
+        } finally {
+          resumedIo.restore();
+        }
+        const recovered = await ctx.taskBackend.getTask(taskId);
+        expect(recovered?.status).toBe("DOING");
+        expect(recovered?.verification?.state).toBe("ok");
+        expect(
+          taskCentricAggregateFromExtensions(recovered?.extensions)?.work_items["exercise-worktree"]
+            ?.state,
+        ).toBe("COMPLETED");
+        return;
+      }
       expect(
         await runCliSilent([
           "verify",
