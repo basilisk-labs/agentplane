@@ -1,0 +1,216 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run ci:local:full",
+    "git diff --check"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
+        "packages/agentplane/src/commands/shared/task-scope-extension-request.ts",
+        "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        "packages/agentplane/src/commands/task/scope-extend.test.ts"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:documentation",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        ".agentplane",
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        ".agentplane/policy/incidents.md",
+        "packages/agentplane/assets/policy/incidents.md",
+        "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
+        "packages/agentplane/src/commands/shared/task-scope-extension-request.ts",
+        "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        "packages/agentplane/src/commands/task/scope-extend.test.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
+      "central_component:packages/agentplane/src/commands/shared/task-scope-extension-request.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:c7fb6e4e4cc1017cce72e86a88505d3794d8170fa476876fffea33ddd1120561"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-29T14:51:24.375Z",
+    "updated_by": "TESTER",
+    "note": "Verified current head db3a023e6; its delta from the fully tested close commit is limited to framework-owned task evidence artifacts."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608290844-7JCQPF/verification/20260829145124375-d0d20769bc9e2777.json",
+      "sha256": "sha256:cef548378d48f4c2eaa1a239b7bdbe6387a689889c2a27c3e361c468b8c0d16e"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check b930b84ffdfaf6f56be977e7fd19a80ef9a7bb61..a607a05c6e11b9be9f6084d2f800f798f7dc2628",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB b930b84ffdfaf6f56be977e7fd19a80ef9a7bb61..a607a05c6e11b9be9f6084d2f800f798f7dc2628",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608290844-7JCQPF/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608290844-7JCQPF/pr/github-body.md",
+          "M\t.agentplane/tasks/202608290844-7JCQPF/pr/meta.json",
+          "M\t.agentplane/tasks/202608290844-7JCQPF/pr/review.md",
+          "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": [
+          " M .agentplane/tasks/202608290844-7JCQPF/README.md",
+          " M .agentplane/tasks/202608290844-7JCQPF/pr/github-body.md",
+          " M .agentplane/tasks/202608290844-7JCQPF/pr/meta.json",
+          " M .agentplane/tasks/202608290844-7JCQPF/pr/review.md",
+          "?? .agentplane/tasks/202608290844-7JCQPF/verification/20260829142603828-ccd96a6a223662af.json"
+        ]
+      }
+    ],
+    "execution_base_commit": "b930b84ffdfaf6f56be977e7fd19a80ef9a7bb61",
+    "implementation_commit": "a607a05c6e11b9be9f6084d2f800f798f7dc2628",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M .agentplane/tasks/202608290844-7JCQPF/README.md",
+        " M .agentplane/tasks/202608290844-7JCQPF/pr/github-body.md",
+        " M .agentplane/tasks/202608290844-7JCQPF/pr/meta.json",
+        " M .agentplane/tasks/202608290844-7JCQPF/pr/review.md",
+        "?? .agentplane/tasks/202608290844-7JCQPF/verification/20260829142603828-ccd96a6a223662af.json"
+      ],
+      "classification": [
+        {
+          "classification": "preexisting_before_execution",
+          "line": " M .agentplane/tasks/202608290844-7JCQPF/README.md"
+        },
+        {
+          "classification": "preexisting_before_execution",
+          "line": " M .agentplane/tasks/202608290844-7JCQPF/pr/github-body.md"
+        },
+        {
+          "classification": "preexisting_before_execution",
+          "line": " M .agentplane/tasks/202608290844-7JCQPF/pr/meta.json"
+        },
+        {
+          "classification": "preexisting_before_execution",
+          "line": " M .agentplane/tasks/202608290844-7JCQPF/pr/review.md"
+        },
+        {
+          "classification": "preexisting_before_execution",
+          "line": "?? .agentplane/tasks/202608290844-7JCQPF/verification/20260829142603828-ccd96a6a223662af.json"
+        }
+      ],
+      "final": [
+        " M .agentplane/tasks/202608290844-7JCQPF/README.md",
+        " M .agentplane/tasks/202608290844-7JCQPF/pr/github-body.md",
+        " M .agentplane/tasks/202608290844-7JCQPF/pr/meta.json",
+        " M .agentplane/tasks/202608290844-7JCQPF/pr/review.md",
+        "?? .agentplane/tasks/202608290844-7JCQPF/verification/20260829142603828-ccd96a6a223662af.json"
+      ],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": [
+        " M .agentplane/tasks/202608290844-7JCQPF/README.md",
+        " M .agentplane/tasks/202608290844-7JCQPF/pr/github-body.md",
+        " M .agentplane/tasks/202608290844-7JCQPF/pr/meta.json",
+        " M .agentplane/tasks/202608290844-7JCQPF/pr/review.md",
+        "?? .agentplane/tasks/202608290844-7JCQPF/verification/20260829142603828-ccd96a6a223662af.json"
+      ]
+    },
+    "schema_version": 1,
+    "task_id": "202608290844-7JCQPF",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608290844-7JCQPF/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
