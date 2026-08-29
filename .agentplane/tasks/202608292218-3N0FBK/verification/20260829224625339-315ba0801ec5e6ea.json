@@ -1,0 +1,123 @@
+{
+  "details": "Command: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608292218-3N0FBK declared verification\n\nCommand: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608292218-3N0FBK declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3\nScope: branch_pr task 202608292218-3N0FBK declared verification",
+  "digest": "sha256:315ba0801ec5e6ea0622f7d5cb16e1e3639359f344dd5fbc05d6ebc9d9e5f6db",
+  "implementation_sha": "ac767de9db0d91cfb3ece989e1cf36e0a10eee2d",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:1e3a8160540728e12c4f36aefc620457772efd2be53d98a459581eed7700ee17",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:f463f9c613a601e42d289fa8b082f2e73dd8b7bd41ec77c1015a6af35a0e701d",
+      "digest": "sha256:5cddf17df51ed1b1346f87f9a1be54f16326498d1ee5b96ce8fcca603c782bc8",
+      "references": [
+        {
+          "digest": "sha256:23309fe0643e86fcdb2ab4c27e02c815b4225a361a7c0bdec5cd1cea2640e737",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:23309fe0643e86fcdb2ab4c27e02c815b4225a361a7c0bdec5cd1cea2640e737",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:23309fe0643e86fcdb2ab4c27e02c815b4225a361a7c0bdec5cd1cea2640e737",
+          "fragment": "check-3",
+          "path": ".agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "dbaf4bc2878eab7b50f8ea6d14179d8d91030159",
+      "digest": "sha256:2069ab76a01a06e6c653539f4d450f46b343abe64054fa86286090dd4d576726",
+      "primary_task_id": "202608292218-3N0FBK",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608292218-3N0FBK"
+      ]
+    },
+    "implementation": {
+      "base_sha": "dbaf4bc2878eab7b50f8ea6d14179d8d91030159",
+      "digest": "sha256:b4fc6e21c5cae8e1ba4e83a96a01fc50bd274bd701edef3ae4a3315fe7aa9fbe",
+      "strategy": "branch_diff",
+      "target_sha": "ac767de9db0d91cfb3ece989e1cf36e0a10eee2d"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:2aca6ef0963bee3a35c9ccfa6080aaa6097a7882ff5967335993980fbec2eea2",
+    "verify_steps_digest": "sha256:3fe794b0ab3823b6d1e9c301fca5b3def1d8d411a1faca2430333864dab15df1"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-08-29T22:46:25.339Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Prevent branch closeout while required WorkItems are incomplete\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Prevent branch closeout while required WorkItems are incomplete\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:3fe794b0ab3823b6d1e9c301fca5b3def1d8d411a1faca2430333864dab15df1",
+  "task_id": "202608292218-3N0FBK",
+  "verification_command": "agentplane verify 202608292218-3N0FBK --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

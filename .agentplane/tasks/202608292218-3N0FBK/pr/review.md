@@ -12,8 +12,8 @@ Created: 2026-08-29T22:21:11.540Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,10 @@ Created: 2026-08-29T22:21:11.540Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../evaluator-episode.calibration.test.ts          | 30 +++++++-
  .../src/commands/shared/workflow-step-branch.ts    | 12 +++
  .../commands/shared/workflow-step-quality.test.ts  | 85 ++++++++++++++++++++++
- 2 files changed, 97 insertions(+)
+ 3 files changed, 126 insertions(+), 1 deletion(-)
 ```
 
 </details>

@@ -2,7 +2,11 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { readTask } from "@agentplaneorg/core/tasks";
+import {
+  readTask,
+  taskCentricAggregateFromExtensions,
+  withTaskCentricAggregate,
+} from "@agentplaneorg/core/tasks";
 import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
@@ -397,6 +401,30 @@ describe("evaluator episode calibration", () => {
       task_id: taskId,
       objective: "Refresh deterministic evaluator evidence for the completed implementation.",
     });
+
+    const fixtureCommand = await loadCommandContext({ cwd: root, rootOverride: root });
+    const fixtureTask = await loadTaskFromContext({ ctx: fixtureCommand, taskId });
+    const fixtureAggregate = taskCentricAggregateFromExtensions(fixtureTask.extensions);
+    const fixtureWorkItem = fixtureAggregate?.work_items["runner-fixture"];
+    if (!fixtureAggregate || !fixtureWorkItem) throw new Error("Missing runner WorkItem fixture.");
+    await fixtureCommand.taskBackend.writeTask(
+      {
+        ...fixtureTask,
+        extensions: withTaskCentricAggregate(fixtureTask.extensions, {
+          ...fixtureAggregate,
+          revision: fixtureAggregate.revision + 1,
+          work_items: {
+            ...fixtureAggregate.work_items,
+            "runner-fixture": {
+              ...fixtureWorkItem,
+              state: "COMPLETED",
+              revision: fixtureWorkItem.revision + 1,
+            },
+          },
+        }),
+      },
+      { expectedRevision: fixtureTask.revision ?? 1 },
+    );
 
     const initialCommand = await loadCommandContext({ cwd: root, rootOverride: root });
     await applyTaskMutation({
