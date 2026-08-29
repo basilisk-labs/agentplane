@@ -4,7 +4,7 @@ title: "Implement the isolated canonical Task kernel"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on:
@@ -29,6 +29,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-29T22:14:53.562Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "57e3861d521c646f020aa27a8fbf9d8be3b480dc"
+  blueprint_digest: "dc2c028ecfd2cbd4e83e9c695b7c3697411141ca514ea82ca00e20848226929b"
+  evidence_refs:
+    - ".agentplane/tasks/202608292032-1K47B8/quality/20260829-221228710-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/20260829-221228710-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/95b210af54b40faac12625eb2e712a51b734ab5d29796b4091d4b8ed4ba80724.md"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/20260829-221228710-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/20260829-221228710-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/20260829-221228710-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608292032-1K47B8/README.md"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/057b4113ef6c1d87a6a0c3ac3c46939bd871e81dc4f3c1b80129869074842092.patch"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/a042c1178c6dc91f1dba1c8d49a4edcb23a1ace5fa440eb47fcbe4820e3aeb19.json"
+    - ".agentplane/tasks/202608292032-1K47B8/verification/20260829221218641-6fb97c97e2e96fa0.json"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/cdccd39e524d1c90764685a8edd6ed62359da3abd8661ae465fa779bd9f3d0f9.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The task-kernel production module imports only deterministic domain helpers and node:crypto; dependency-cruiser enforces the intended boundary against adapters, legacy task-centric projections, filesystem, process, provider, backend, CLI, clock, randomness, and environment implementations."
+    - "The reducer rejects stale revisions and fingerprints, missing or mismatched authority, illegal Task and WorkItem transitions, incomplete dependencies and outputs, stale validation identity, unresolved effects, and ineligible completion. Mutation receipts provide deterministic idempotent replay for an identical mutation ID and command digest."
+    - "The prepared Supervisor evidence records bun run arch:check, the declared model test, and bun run ci:local:full as passed. An independent focused evaluator run passed all 25 tests across model, kernel, invariants, and verificationChildEnv."
+    - "The verificationChildEnv regression fix removes values identified by AGENTPLANE_DOTENV_LOADED_KEYS and runtime handoff keys without mutating the source environment or removing explicit parent configuration."
+    - "Residual risk: Hosted checks must bind to the published current implementation head before merge or closure."
+    - "Residual risk: A later task should ensure replanning synchronizes execution_contract scope roots so accepted scope extensions do not remain displayed as authority violations."
 execution_route:
   frozen: true
   reason_codes:
