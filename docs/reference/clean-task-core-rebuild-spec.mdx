@@ -181,6 +181,14 @@ errors.
 14. **Determinism:** equivalent normalized inputs produce byte-identical state, events, reason codes,
     and receipts.
 
+Each invariant is executable through a table vector containing the canonical pre-state, command,
+actor, authority, repository fingerprint, expected `KernelResult`, expected event sequence, and
+post-state digest. Rejection vectors must assert a stable `KernelRejectionCode` and byte-identical
+aggregate. Acceptance vectors must assert revision monotonicity, event order, receipt identity, and
+deterministic replay. Property tests additionally generate illegal transition pairs, narrowed and
+widened authority, duplicate mutation IDs, stale fingerprints, missing manifests, and uncertain
+effects; any accepted counterexample blocks M1.
+
 ## Adapter contracts
 
 ### Persistence
