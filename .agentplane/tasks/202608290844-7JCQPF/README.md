@@ -1,10 +1,11 @@
 ---
 id: "202608290844-7JCQPF"
 title: "Allow state-bound WorkItem implementation results to reopen DONE tasks"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 42
 origin:
   system: "manual"
 depends_on: []
@@ -58,6 +59,20 @@ quality_review:
     - "Task-level scope extension preserves a fully completed plan and rejects zero schedulable selection when required work remains unfinished."
     - "The persisted verification record covers affected integration tests, critical size and diff guards, the full local regression suite, and the task outcome."
     - "Residual risk: The hosted PR head, hosted checks, merge result, and hosted-close state are not yet observed."
+token_usage:
+  agent_runs: 13
+  input_tokens: null
+  journal_digest: "sha256:f0b2bab684937e20690f84a9f20134efd946839da5eeaad9e3aae5f8598e43aa"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-29T14:37:49.085Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -270,8 +285,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "a607a05c6e11b9be9f6084d2f800f798f7dc2628"
-  message: "🚧 7JCQPF task: apply external agent result"
+  hash: "94b57b253f6a8189288089d80906b0489ae40106"
+  message: "🚧 7JCQPF task: record external implementation evidence"
 comments:
   -
     author: "CODER"
@@ -312,6 +327,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: a607a05c6e11. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -464,9 +482,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-29T14:37:49.085Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "94b57b253f6a8189288089d80906b0489ae40106"
 doc_version: 3
-doc_updated_at: "2026-08-29T14:36:23.879Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-29T14:37:49.096Z"
+doc_updated_by: "CODER"
 description: "Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering."
 sections:
   Summary: |-
@@ -1261,7 +1287,56 @@ extensions:
       schema_version: 1
       task_id: "202608290844-7JCQPF"
     event_cursor: 1
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608290844-7JCQPF"
+            - "git:a607a05c6e11b9be9f6084d2f800f798f7dc2628"
+          check_id: "check-task-advance"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=forks --maxWorkers=1"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-29T14:36:21.259Z"
+          repository_snapshot_digest: "sha256:4d6666ff0da8c86a15cf47015aeaa84256b0b2959d2a076e442dfc8f0a0dd062"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608290844-7JCQPF"
+            - "git:a607a05c6e11b9be9f6084d2f800f798f7dc2628"
+          check_id: "check-scope-extension"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/scope-extend.test.ts --pool=forks --maxWorkers=1"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-29T14:36:21.259Z"
+          repository_snapshot_digest: "sha256:4d6666ff0da8c86a15cf47015aeaa84256b0b2959d2a076e442dfc8f0a0dd062"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608290844-7JCQPF"
+            - "git:a607a05c6e11b9be9f6084d2f800f798f7dc2628"
+          check_id: "check-full"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-29T14:36:21.259Z"
+          repository_snapshot_digest: "sha256:4d6666ff0da8c86a15cf47015aeaa84256b0b2959d2a076e442dfc8f0a0dd062"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608290844-7JCQPF"
+            - "git:a607a05c6e11b9be9f6084d2f800f798f7dc2628"
+          check_id: "check-diff"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-29T14:36:21.259Z"
+          repository_snapshot_digest: "sha256:4d6666ff0da8c86a15cf47015aeaa84256b0b2959d2a076e442dfc8f0a0dd062"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608290844-7JCQPF"
     intent:
       acceptance_criteria:
@@ -1282,7 +1357,7 @@ extensions:
 
         Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering.
       task_id: "202608290844-7JCQPF"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1794,9 +1869,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202608290844-7JCQPF"
-    revision: 40
+    revision: 42
     schema_version: 1
-    updated_at: "2026-08-29T14:36:28.318Z"
+    updated_at: "2026-08-29T14:37:49.085Z"
     work_items:
       complete-done-workitem-recovery:
         attempt: 1
@@ -1939,6 +2014,31 @@ extensions:
         previous_revision: 39
         schema_version: 1
         task_id: "202608290844-7JCQPF"
+      legacy-finish:202608290844-7JCQPF:2026-08-29T14:36:21.259Z:a607a05c6e11b9be9f6084d2f800f798f7dc2628:
+        aggregate_digest: "sha256:e64a090621ae30fa98a40bab7e9f58a0886995ee9b03acfe95b9723adcc401d0"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-29T14:37:49.085Z"
+          cause_refs:
+            - "task-verification:202608290844-7JCQPF"
+            - "git:a607a05c6e11b9be9f6084d2f800f798f7dc2628"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9e91db32e0f598e0f161cdaf"
+          mutation_id: "legacy-finish:202608290844-7JCQPF:2026-08-29T14:36:21.259Z:a607a05c6e11b9be9f6084d2f800f798f7dc2628"
+          plan_digest: "sha256:386ba86b2f651b6407366cfc278552cc6ba6b53666bc0dd5acd3540639c61a33"
+          plan_revision: 3
+          repository_fingerprint: "sha256:4d6666ff0da8c86a15cf47015aeaa84256b0b2959d2a076e442dfc8f0a0dd062"
+          schema_version: 1
+          task_id: "202608290844-7JCQPF"
+          task_revision: 40
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608290844-7JCQPF:2026-08-29T14:36:21.259Z:a607a05c6e11b9be9f6084d2f800f798f7dc2628"
+        next_revision: 42
+        previous_revision: 41
+        schema_version: 1
+        task_id: "202608290844-7JCQPF"
       plan-refinement:work-order-202608290844-7JCQPF-executor-2ea942fb3e82d61103b568b7:
         aggregate_digest: "sha256:cc8c607ed33ce2e02757e7d2c53b41002097b0896c1afccfedfc97e95f36f282"
         event:
@@ -1968,6 +2068,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "a607a05c6e11b9be9f6084d2f800f798f7dc2628"
+    message: "🚧 7JCQPF task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -2517,3 +2618,16 @@ DecisionContextRef:
   IncidentScope: task-centric planning
   IncidentTags: work-item-inputs
   IncidentMatch: required_work_item_incomplete
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/13` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:f0b2bab684937e20690f84a9f20134efd946839da5eeaad9e3aae5f8598e43aa`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-29T14:37:49.085Z`

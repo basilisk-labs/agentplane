@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:830d6b3f39524628f4f5d81d599fc95978bb9704eed3727213e4c3a6edea473f",
   "pr_number": 5871,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5871",
+  "pre_merge_closure": {
+    "basis_commit": "94b57b253f6a8189288089d80906b0489ae40106",
+    "branch": "task/202608290844-7JCQPF/allow-state-bound-workitem-implementation-result",
+    "pr_number": 5871,
+    "recorded_at": "2026-08-29T14:37:49.276Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
