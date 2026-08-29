@@ -12,8 +12,8 @@ Created: 2026-08-29T10:21:54.868Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-29T10:21:54.868Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-29T10:21:54.868Z
+- Updated: 2026-08-29T10:29:18.078Z
 - Branch: task/202608291005-K5TG4D/specify-the-clean-task-kernel-and-migration-orac
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
