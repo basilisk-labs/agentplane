@@ -60,6 +60,8 @@ export {
 
 export { generateTaskId, TASK_ID_ALPHABET, timestampIdPrefix } from "./task-id.js";
 
+export * as taskKernel from "./task-kernel/index.js";
+
 export {
   EXECUTION_GRANT_EXTENSION_KEY,
   computeExecutionScopeDigest,

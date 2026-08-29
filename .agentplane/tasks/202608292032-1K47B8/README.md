@@ -1,0 +1,985 @@
+---
+id: "202608292032-1K47B8"
+title: "Implement the isolated canonical Task kernel"
+status: "DOING"
+priority: "high"
+owner: "CODER"
+revision: 4
+origin:
+  system: "manual"
+depends_on:
+  - "202608291005-K5TG4D"
+tags:
+  - "clean-core-rebuild"
+  - "kernel"
+task_kind: "code"
+mutation_scope: "code"
+blueprint_request: "code.branch_pr"
+verify:
+  - "bun run arch:check"
+  - "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts"
+plan_approval:
+  state: "approved"
+  updated_at: "2026-08-29T20:33:19.037Z"
+  updated_by: "USER"
+  note: "Standing user approval applies to this corrected execution intent and exact plan digest."
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
+execution_route:
+  frozen: true
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_public_api"
+    - "repository_branch_pr_floor"
+  repository_mode: "branch_pr"
+  requested_mode: "branch_pr"
+  schema_version: 1
+  selected_mode: "branch_pr"
+execution_contract:
+  authority:
+    allowed_external_effects: []
+    allowed_repository_effects:
+      - "public_api"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    forbidden_external_effects:
+      - "network_read"
+      - "external_write"
+      - "credentials"
+      - "publish"
+      - "deploy"
+      - "destructive_git"
+    forbidden_repository_effects:
+      - "documentation"
+      - "schema"
+      - "dependencies"
+      - "ci"
+      - "release_metadata"
+      - "security_boundary"
+    writable_roots:
+      - "depcruise.config.cjs"
+      - "packages/core/src/tasks/index.ts"
+      - "packages/core/src/tasks/task-centric"
+      - "packages/core/src/tasks/task-kernel"
+  declaration:
+    external_effects: []
+    implementation_uncertainty: "bounded"
+    preferred_mode: "branch_pr"
+    rationale:
+      - "Branch isolation and hosted integration are required by repository policy."
+      - "The approved M1 plan adds an internal kernel, its tests, and a namespaced core tasks export."
+    repository_effects:
+      - "public_api"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    requirements_uncertainty: "bounded"
+    reversibility: "reversible"
+    schema_version: 2
+    scope_roots:
+      - "depcruise.config.cjs"
+      - "packages/core/src/tasks/index.ts"
+      - "packages/core/src/tasks/task-centric"
+      - "packages/core/src/tasks/task-kernel"
+  observed:
+    authority_violations: []
+    changed_components: []
+    changed_paths: []
+    external_effects: []
+    repository_effects: []
+    verification_results: []
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_public_api"
+    - "repository_branch_pr_floor"
+  repository_mode: "branch_pr"
+  safety:
+    approval_effects: []
+    requires_user_approval: false
+    requires_worktree: true
+  schema_version: 1
+  selected_mode: "branch_pr"
+  source: "agent_declared"
+  verification:
+    contract:
+      declared:
+        components:
+          - "depcruise.config.cjs"
+          - "packages/core/src/tasks/index.ts"
+          - "packages/core/src/tasks/task-centric"
+          - "packages/core/src/tasks/task-kernel"
+        evidence_requirements:
+          - "hosted_integration"
+          - "repository_effect:public_api"
+          - "repository_effect:repository_write"
+          - "repository_effect:source_code"
+          - "repository_effect:tests"
+          - "task_outcome"
+        external_effects: []
+        repository_effects:
+          - "public_api"
+          - "repository_write"
+          - "source_code"
+          - "tests"
+        risk:
+          implementation_uncertainty: "bounded"
+          requirements_uncertainty: "bounded"
+          reversibility: "reversible"
+      digest: "sha256:10a47391d74be932cf4ac31cce43781bf79dac621a35389e6842bf5d04b0b709"
+      escalation_reasons:
+        - "central_component:packages/core/src/tasks/index.ts"
+        - "central_component:packages/core/src/tasks/task-centric"
+        - "central_component:packages/core/src/tasks/task-kernel"
+        - "effect_public_api"
+      execution_groups:
+        - "docs-schema"
+        - "core"
+        - "runtime"
+        - "cli"
+      observed:
+        changed_components: []
+        changed_files: []
+        external_effects: []
+        repository_effects: []
+      phase: "task"
+      policy_floor:
+        monotonic_strengthening: true
+        pr_full_regression: true
+        unknown_or_central_full_regression: true
+      requires_full_regression: true
+      requires_real_e2e: false
+      schema_version: 2
+      selected_checks:
+        - "affected_unit_integration"
+        - "critical_paths"
+        - "full_regression"
+        - "hosted_integration"
+        - "task_outcome"
+      selector:
+        bucket: null
+        buckets: []
+        execution_mode: "semantic"
+        kind: "semantic"
+        lint_targets: []
+        reason: "execution_declaration"
+        run_cli_docs_check: false
+        selected_test_files: []
+        vitest_pool: "forks"
+      source: "execution_contract"
+    required_evidence:
+      - "hosted_integration"
+      - "repository_effect:public_api"
+      - "repository_effect:repository_write"
+      - "repository_effect:source_code"
+      - "repository_effect:tests"
+      - "task_outcome"
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-08-29T20:33:30.155Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
+doc_version: 3
+doc_updated_at: "2026-08-29T20:33:30.155Z"
+doc_updated_by: "CODER"
+description: "Implement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged."
+sections:
+  Summary: |-
+    Implement the isolated canonical Task kernel
+
+    Implement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged.
+  Scope: |-
+    - In scope: Implement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged.
+    - Out of scope: unrelated refactors not required for "Implement the isolated canonical Task kernel".
+  Plan: "Prepared the corrected M1 plan and explicit execution intent for four ordered WorkItems: contract, reducer, invariants, and qualification."
+  Verify Steps: |-
+    PLANNER fallback scaffold for "Implement the isolated canonical Task kernel". Replace with task-specific acceptance checks when PLANNER context is available.
+
+    1. Review the requested outcome for "Implement the isolated canonical Task kernel". Expected: the visible result matches ## Summary and stays inside approved scope.
+    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+extensions:
+  agentplane.execution_grant:
+    actor: "USER"
+    approval_evidence_digest: null
+    approval_kind: "manual_operator"
+    capabilities:
+      - "provider.merge"
+      - "provider.pr"
+      - "repository.integrate"
+      - "repository.write"
+      - "task.lifecycle"
+      - "task.scope.extend"
+    completion_contract_digest: "sha256:d2dbeffb7a18a2aa14d9095ec35f3fa073d62f607cb5ca32fdc0f809ae5952ac"
+    digest: "sha256:394d61675b1da58400b9b962114b53eee059fba5d429cdebdf874d46ca7e0465"
+    grant_id: "06ef4363-81db-417c-961e-0e432ed5cd90"
+    issued_at: "2026-08-29T20:33:19.037Z"
+    kind: "agentplane.execution_grant"
+    plan_digest: "sha256:a752af1a7363aeccb30070385ac080119c00c8ed5762fb713470bac3a2000c68"
+    plan_revision: 2
+    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+    schema_version: 1
+    scope_digest: "sha256:1616ddcb213db7f09d7baf7bb8228589ff7160c875bcf927122c2747903a3935"
+    status: "active"
+    task_id: "202608292032-1K47B8"
+  agentplane.task_centric:
+    current_plan:
+      approval:
+        approved_at: "2026-08-29T20:33:19.037Z"
+        approved_by: "USER"
+        approved_digest: "sha256:cef2efdd6c79e86a763bdadaf7f1bd6c0635edfdfd265b4f37b83c2e5fed9dca"
+        policy_facts:
+          - "manual_operator"
+        state: "approved"
+      created_at: "2026-08-29T20:33:09.377Z"
+      digest: "sha256:cef2efdd6c79e86a763bdadaf7f1bd6c0635edfdfd265b4f37b83c2e5fed9dca"
+      proposal:
+        assumptions:
+          - "M1 introduces only an internal kernel boundary; adapter integration, persistence migration, dual-run, and production cutover remain M2/M3 work."
+          - "Existing public CLI behavior and serialized task compatibility remain unchanged throughout M1."
+        planning_baseline:
+          captured_at: "2026-08-29T20:32:17.851Z"
+          config_digest: null
+          context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+          digest: "sha256:9560a92fc58cba6830f1c84a09db181542b593cdf292bd7ef1f5ee473bf9227b"
+          dirty_paths:
+            - ".agentplane/tasks/202608210955-9SX2C6/README.md"
+            - ".agentplane/tasks/202608212244-Q3QMJR/README.md"
+            - ".agentplane/tasks/202608220034-FPEFRK/README.md"
+            - ".agentplane/tasks/202608220034-FPEFRK/blueprint/resolved-snapshot.json"
+            - ".agentplane/tasks/202608241434-129F8R/README.md"
+            - ".agentplane/tasks/202608241434-EH8E74/README.md"
+            - ".agentplane/tasks/202608241434-KCC9K4/README.md"
+            - ".agentplane/tasks/202608241434-QQNDGT/README.md"
+            - ".agentplane/tasks/202608241434-SFPD91/README.md"
+            - ".agentplane/tasks/202608241434-TA84WK/README.md"
+            - ".agentplane/tasks/202608241434-WVYA5T/README.md"
+            - ".agentplane/tasks/202608241435-40YZCE/README.md"
+            - ".agentplane/tasks/202608241435-73DA89/README.md"
+            - ".agentplane/tasks/202608241435-D001ET/README.md"
+            - ".agentplane/tasks/202608241435-HTV4K2/README.md"
+            - ".agentplane/tasks/202608241435-NDR0BX/README.md"
+            - ".agentplane/tasks/202608241435-RJXGHQ/README.md"
+            - ".agentplane/tasks/202608241435-W3DG6V/README.md"
+            - ".agentplane/tasks/202608241435-YSW0E0/README.md"
+            - ".agentplane/tasks/202608241436-2G9DA8/README.md"
+            - ".agentplane/tasks/202608241436-63W678/README.md"
+            - ".agentplane/tasks/202608241436-8PJKJP/README.md"
+            - ".agentplane/tasks/202608241436-99B067/README.md"
+            - ".agentplane/tasks/202608241436-A87Y59/README.md"
+            - ".agentplane/tasks/202608241436-DHPR5E/README.md"
+            - ".agentplane/tasks/202608241436-H60MCY/README.md"
+            - ".agentplane/tasks/202608241436-TX6TRF/README.md"
+            - ".agentplane/tasks/202608241436-W6A113/README.md"
+            - ".agentplane/tasks/202608241437-5YZ0N8/README.md"
+            - ".agentplane/tasks/202608241437-H5418M/README.md"
+            - ".agentplane/tasks/202608241437-SH3CDX/README.md"
+            - ".agentplane/tasks/202608241437-V8BA7Q/README.md"
+            - ".agentplane/tasks/202608241437-XY3950/README.md"
+            - ".agentplane/tasks/202608250007-P5BWP0/README.md"
+            - ".agentplane/tasks/202608250007-P5BWP0/blueprint/resolved-snapshot.json"
+            - ".agentplane/tasks/202608251038-42AC0D/README.md"
+            - ".agentplane/tasks/202608251053-QAZ236/README.md"
+            - ".agentplane/tasks/202608251706-V287W1/README.md"
+            - ".agentplane/tasks/202608251735-ZJ7YZE/README.md"
+            - ".agentplane/tasks/202608252233-JR4T47/README.md"
+            - ".agentplane/tasks/202608252234-4CKSWA/README.md"
+            - ".agentplane/tasks/202608252234-4CKSWA/blueprint/resolved-snapshot.json"
+            - ".agentplane/tasks/202608262032-MAJQ5E/README.md"
+            - ".agentplane/tasks/202608270848-0RAFH9/README.md"
+            - ".agentplane/tasks/202608270848-37XB2K/README.md"
+            - ".agentplane/tasks/202608270848-N28TBB/README.md"
+            - ".agentplane/tasks/202608270848-V32542/README.md"
+            - ".agentplane/tasks/202608271350-HVGQPQ/README.md"
+            - ".agentplane/tasks/202608291005-33PHG4/README.md"
+            - ".agentplane/tasks/202608291006-255K66/README.md"
+            - ".agentplane/tasks/202608291006-2A6BJC/README.md"
+            - ".agentplane/tasks/202608292032-1K47B8/README.md"
+          git:
+            kind: "commit"
+            ref: null
+            sha: "dbaf4bc2878eab7b50f8ea6d14179d8d91030159"
+          policy_digest: null
+          schema_version: 1
+          task_history_cursor: "task-revision:1"
+        schema_version: 1
+        task_id: "202608292032-1K47B8"
+        top_level_validation:
+          checks:
+            -
+              capability: "task.verify"
+              command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts"
+              id: "check-kernel-model"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 600000
+            -
+              capability: "task.verify"
+              command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts"
+              id: "check-kernel-reducer"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 600000
+            -
+              capability: "task.verify"
+              command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/invariants.test.ts"
+              id: "check-kernel-invariants"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 600000
+            -
+              capability: "task.verify"
+              command: "bun run arch:check"
+              id: "check-architecture"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 900000
+            -
+              capability: "task.verify"
+              command: "bun run test:fast"
+              id: "check-fast-suite"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 1800000
+            -
+              capability: "task.verify"
+              command: "bun run typecheck"
+              id: "check-typecheck"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 900000
+          criteria:
+            -
+              check_ids:
+                - "check-kernel-model"
+                - "check-kernel-reducer"
+                - "check-kernel-invariants"
+                - "check-architecture"
+              description: "The isolated canonical Task kernel implements the M1 contract and all fourteen mandatory invariants without adapter or legacy authority."
+              id: "criterion-m1-pure-kernel"
+              required: true
+            -
+              check_ids:
+                - "check-architecture"
+                - "check-fast-suite"
+                - "check-typecheck"
+              description: "bun run arch:check, bun run test:fast, and bun run typecheck pass on the exact implementation identity."
+              id: "criterion-m1-regression"
+              required: true
+          evidence_fingerprint: "sha256:1afc95aed168c1cf3daea19f41769872a6b1dd15e5502cf4428b671d6be2b087"
+          schema_version: 1
+        unresolved_questions: []
+        work_items:
+          schema_version: 1
+          work_items:
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "check-kernel-model"
+                    - "check-architecture"
+                  description: "The internal module defines a closed typed command/result/event contract without filesystem, process, Git, provider, backend, CLI, clock, randomness, environment, document, or legacy compatibility dependencies."
+                  id: "criterion-closed-contract"
+                  required: true
+                -
+                  check_ids:
+                    - "check-kernel-model"
+                  description: "Kernel evaluation inputs carry actor, authority, repository fingerprint, occurredAt, and mutationId explicitly; no free-text status authorizes a transition."
+                  id: "criterion-explicit-inputs"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 393216
+                optional_sources:
+                  - "packages/core/src/tasks/plan-execution-grant.ts"
+                  - "packages/core/src/tasks/task-centric/schema.ts"
+                required_sources:
+                  - "docs/reference/clean-task-core-rebuild-spec.mdx"
+                  - "packages/core/src/tasks/task-centric/model.ts"
+                  - "packages/core/src/tasks/task-centric/lifecycle.ts"
+                  - "packages/core/src/tasks/task-centric/graph.ts"
+                  - "packages/core/src/tasks/task-centric/policy.ts"
+                symbol_hints:
+                  - "TaskAggregate"
+                  - "TaskCommand"
+                  - "KernelInput"
+                  - "KernelResult"
+                  - "KernelRejectionCode"
+                  - "MutationReceipt"
+              depends_on: []
+              expected_outputs:
+                - "canonical-task-kernel-contract"
+              id: "define-kernel-domain-contract"
+              objective: "Create the internal canonical Task kernel domain model with immutable aggregate, closed command and event unions, stable rejection codes, receipts, actor and authority values, and adapter-supplied time and mutation identity."
+              optional: false
+              priority: 1
+              required_inputs: []
+              resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/core/src/tasks/task-kernel"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/core/src/tasks/task-centric"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/core/src/tasks/index.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "depcruise.config.cjs"
+              risk: "high"
+              scope_roots:
+                - "packages/core/src/tasks/task-kernel"
+                - "packages/core/src/tasks/task-centric"
+                - "packages/core/src/tasks/index.ts"
+                - "depcruise.config.cjs"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts"
+                    id: "check-kernel-model"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 600000
+                  -
+                    capability: "task.verify"
+                    command: "bun run arch:check"
+                    id: "check-architecture"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 900000
+                criteria:
+                  -
+                    check_ids:
+                      - "check-kernel-model"
+                      - "check-architecture"
+                    description: "The internal module defines a closed typed command/result/event contract without filesystem, process, Git, provider, backend, CLI, clock, randomness, environment, document, or legacy compatibility dependencies."
+                    id: "criterion-closed-contract"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-kernel-model"
+                    description: "Kernel evaluation inputs carry actor, authority, repository fingerprint, occurredAt, and mutationId explicitly; no free-text status authorizes a transition."
+                    id: "criterion-explicit-inputs"
+                    required: true
+                evidence_fingerprint: "sha256:005557cb530872a6c013727ce20a995e6b1ecf09415d93bb9dd5f5170a9d907c"
+                schema_version: 1
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "check-kernel-reducer"
+                  description: "Every accepted Task and WorkItem transition belongs to an explicit closed transition table and every expected conflict returns a stable rejection value without mutating the aggregate."
+                  id: "criterion-transition-table"
+                  required: true
+                -
+                  check_ids:
+                    - "check-kernel-reducer"
+                  description: "Plans, WorkItems, results, approvals, reviews, validation, effects, and completion enforce current revision, digest, fingerprint, and implementation identity bindings."
+                  id: "criterion-state-binding"
+                  required: true
+                -
+                  check_ids:
+                    - "check-kernel-reducer"
+                  description: "Repeating a mutationId returns the existing receipt with byte-identical aggregate, events, reason codes, and receipts and creates no second effect."
+                  id: "criterion-idempotency"
+                  required: true
+                -
+                  check_ids:
+                    - "check-kernel-reducer"
+                  description: "Completion requires the approved current plan, all required WorkItems and manifests, current final validation, and no pending or uncertain effects."
+                  id: "criterion-completion"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 524288
+                optional_sources:
+                  - "packages/core/src/tasks/task-centric/orchestrator.ts"
+                  - "packages/core/src/tasks/task-centric/digest.ts"
+                required_sources:
+                  - "packages/core/src/tasks/task-kernel"
+                  - "packages/core/src/tasks/task-centric/lifecycle.ts"
+                  - "packages/core/src/tasks/task-centric/graph.ts"
+                  - "packages/core/src/tasks/task-centric/policy.ts"
+                symbol_hints:
+                  - "reduceTaskCommand"
+                  - "transitionWorkItem"
+                  - "isTaskCompletionEligible"
+                  - "mutationId"
+                  - "stateFingerprint"
+              depends_on:
+                - "define-kernel-domain-contract"
+              expected_outputs:
+                - "deterministic-task-kernel-reducer"
+              id: "implement-deterministic-kernel-reducer"
+              objective: "Implement the pure deterministic reducer and legal transition policies for Task, plan, WorkItem graph, results, validation, effects, authority, idempotency, and completion."
+              optional: false
+              priority: 2
+              required_inputs:
+                - "canonical-task-kernel-contract"
+              resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/core/src/tasks/task-kernel"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/core/src/tasks/task-centric"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/core/src/tasks/index.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "depcruise.config.cjs"
+              risk: "high"
+              scope_roots:
+                - "packages/core/src/tasks/task-kernel"
+                - "packages/core/src/tasks/task-centric"
+                - "packages/core/src/tasks/index.ts"
+                - "depcruise.config.cjs"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts"
+                    id: "check-kernel-reducer"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 600000
+                criteria:
+                  -
+                    check_ids:
+                      - "check-kernel-reducer"
+                    description: "Every accepted Task and WorkItem transition belongs to an explicit closed transition table and every expected conflict returns a stable rejection value without mutating the aggregate."
+                    id: "criterion-transition-table"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-kernel-reducer"
+                    description: "Plans, WorkItems, results, approvals, reviews, validation, effects, and completion enforce current revision, digest, fingerprint, and implementation identity bindings."
+                    id: "criterion-state-binding"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-kernel-reducer"
+                    description: "Repeating a mutationId returns the existing receipt with byte-identical aggregate, events, reason codes, and receipts and creates no second effect."
+                    id: "criterion-idempotency"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-kernel-reducer"
+                    description: "Completion requires the approved current plan, all required WorkItems and manifests, current final validation, and no pending or uncertain effects."
+                    id: "criterion-completion"
+                    required: true
+                evidence_fingerprint: "sha256:d3b4a5906f91fc152680edab1a926bd560e15f2a4a720c6c9ac7686597c4b117"
+                schema_version: 1
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "check-kernel-invariants"
+                  description: "Child and replacement authority cannot exceed the active parent across repository, scope, effects, capabilities, resources, risk, reversibility, validation, policy, or completion dimensions; derived authority never gains USER provenance."
+                  id: "criterion-authority-subset"
+                  required: true
+                -
+                  check_ids:
+                    - "check-kernel-invariants"
+                  description: "A result targets exactly one Task and one WorkItem; required outputs and validation are required before WorkItem completion; readiness follows the canonical dependency graph."
+                  id: "criterion-workitem-output"
+                  required: true
+                -
+                  check_ids:
+                    - "check-kernel-invariants"
+                  description: "Unknown non-idempotent effects block replay until explicit readback or reconciliation resolves them."
+                  id: "criterion-effect-safety"
+                  required: true
+                -
+                  check_ids:
+                    - "check-kernel-invariants"
+                  description: "Documents, legacy status, verification text, PR metadata, and provider summaries cannot authorize kernel transitions."
+                  id: "criterion-projection-impotence"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 524288
+                optional_sources:
+                  - "packages/core/src/tasks/task-centric/ports.ts"
+                  - "packages/core/src/tasks/verification-contract.ts"
+                required_sources:
+                  - "packages/core/src/tasks/task-kernel"
+                  - "packages/core/src/tasks/task-centric/graph.ts"
+                  - "packages/core/src/tasks/task-centric/policy.ts"
+                  - "packages/core/src/tasks/plan-execution-grant.ts"
+                symbol_hints:
+                  - "ExecutionAuthority"
+                  - "authoritySubset"
+                  - "requiredOutputs"
+                  - "effectState"
+                  - "projection"
+              depends_on:
+                - "implement-deterministic-kernel-reducer"
+              expected_outputs:
+                - "kernel-invariant-policy-suite"
+              id: "enforce-authority-effects-and-projection-invariants"
+              objective: "Implement authority subset and user provenance rules, graph readiness, one-result targeting, validation identity, output integrity, uncertain-effect blocking, and projection impotence as kernel policies."
+              optional: false
+              priority: 3
+              required_inputs:
+                - "deterministic-task-kernel-reducer"
+              resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/core/src/tasks/task-kernel"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/core/src/tasks/task-centric"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/core/src/tasks/index.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "depcruise.config.cjs"
+              risk: "high"
+              scope_roots:
+                - "packages/core/src/tasks/task-kernel"
+                - "packages/core/src/tasks/task-centric"
+                - "packages/core/src/tasks/index.ts"
+                - "depcruise.config.cjs"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/invariants.test.ts"
+                    id: "check-kernel-invariants"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 600000
+                criteria:
+                  -
+                    check_ids:
+                      - "check-kernel-invariants"
+                    description: "Child and replacement authority cannot exceed the active parent across repository, scope, effects, capabilities, resources, risk, reversibility, validation, policy, or completion dimensions; derived authority never gains USER provenance."
+                    id: "criterion-authority-subset"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-kernel-invariants"
+                    description: "A result targets exactly one Task and one WorkItem; required outputs and validation are required before WorkItem completion; readiness follows the canonical dependency graph."
+                    id: "criterion-workitem-output"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-kernel-invariants"
+                    description: "Unknown non-idempotent effects block replay until explicit readback or reconciliation resolves them."
+                    id: "criterion-effect-safety"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-kernel-invariants"
+                    description: "Documents, legacy status, verification text, PR metadata, and provider summaries cannot authorize kernel transitions."
+                    id: "criterion-projection-impotence"
+                    required: true
+                evidence_fingerprint: "sha256:bb9aa97aa4eb56b67afd1c8542406c57866bd87708126acdce5c3e0a011e4080"
+                schema_version: 1
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "check-kernel-model"
+                    - "check-kernel-reducer"
+                    - "check-kernel-invariants"
+                  description: "Table vectors cover every legal transition and representative illegal edges with exact aggregate, event, receipt, rejection-code, event-order, and post-state digest assertions."
+                  id: "criterion-vector-coverage"
+                  required: true
+                -
+                  check_ids:
+                    - "check-kernel-invariants"
+                  description: "Generated cases reject illegal transitions, widened authority, duplicate mutations with changed payloads, stale fingerprints, missing manifests, and uncertain effects; deterministic replay is byte-identical."
+                  id: "criterion-property-coverage"
+                  required: true
+                -
+                  check_ids:
+                    - "check-architecture"
+                  description: "Architecture enforcement proves the kernel imports no filesystem, process, Git, provider, CLI, backend, task-document, clock, randomness, environment, or legacy conversion code."
+                  id: "criterion-import-boundary"
+                  required: true
+                -
+                  check_ids:
+                    - "check-fast-suite"
+                    - "check-typecheck"
+                    - "check-architecture"
+                  description: "Fast tests, typecheck, architecture checks, and existing task-centric behavior pass without changing the public CLI contract."
+                  id: "criterion-regression-suite"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 786432
+                optional_sources:
+                  - "vitest.config.ts"
+                  - "package.json"
+                required_sources:
+                  - "packages/core/src/tasks/task-kernel"
+                  - "depcruise.config.cjs"
+                  - "packages/core/src/tasks/task-centric/task-centric.test.ts"
+                  - "packages/core/src/tasks/task-centric/orchestrator.test.ts"
+                symbol_hints:
+                  - "forbidden"
+                  - "dependency-cruiser"
+                  - "KernelResult"
+                  - "KernelRejectionCode"
+              depends_on:
+                - "enforce-authority-effects-and-projection-invariants"
+              expected_outputs:
+                - "m1-kernel-qualification-receipt"
+              id: "qualify-isolated-kernel"
+              objective: "Add table vectors and generated invariant tests, enforce the kernel import boundary, and run the milestone acceptance suite while preserving existing public CLI behavior."
+              optional: false
+              priority: 4
+              required_inputs:
+                - "kernel-invariant-policy-suite"
+              resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/core/src/tasks/task-kernel"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/core/src/tasks/task-centric"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/core/src/tasks/index.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "depcruise.config.cjs"
+              risk: "high"
+              scope_roots:
+                - "packages/core/src/tasks/task-kernel"
+                - "packages/core/src/tasks/task-centric"
+                - "packages/core/src/tasks/index.ts"
+                - "depcruise.config.cjs"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts"
+                    id: "check-kernel-model"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 600000
+                  -
+                    capability: "task.verify"
+                    command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts"
+                    id: "check-kernel-reducer"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 600000
+                  -
+                    capability: "task.verify"
+                    command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/invariants.test.ts"
+                    id: "check-kernel-invariants"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 600000
+                  -
+                    capability: "task.verify"
+                    command: "bun run arch:check"
+                    id: "check-architecture"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 900000
+                  -
+                    capability: "task.verify"
+                    command: "bun run test:fast"
+                    id: "check-fast-suite"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 1800000
+                  -
+                    capability: "task.verify"
+                    command: "bun run typecheck"
+                    id: "check-typecheck"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 900000
+                criteria:
+                  -
+                    check_ids:
+                      - "check-kernel-model"
+                      - "check-kernel-reducer"
+                      - "check-kernel-invariants"
+                    description: "Table vectors cover every legal transition and representative illegal edges with exact aggregate, event, receipt, rejection-code, event-order, and post-state digest assertions."
+                    id: "criterion-vector-coverage"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-kernel-invariants"
+                    description: "Generated cases reject illegal transitions, widened authority, duplicate mutations with changed payloads, stale fingerprints, missing manifests, and uncertain effects; deterministic replay is byte-identical."
+                    id: "criterion-property-coverage"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-architecture"
+                    description: "Architecture enforcement proves the kernel imports no filesystem, process, Git, provider, CLI, backend, task-document, clock, randomness, environment, or legacy conversion code."
+                    id: "criterion-import-boundary"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-fast-suite"
+                      - "check-typecheck"
+                      - "check-architecture"
+                    description: "Fast tests, typecheck, architecture checks, and existing task-centric behavior pass without changing the public CLI contract."
+                    id: "criterion-regression-suite"
+                    required: true
+                evidence_fingerprint: "sha256:8bd8db621a0d6dd852c2375ed4fddb3836e4217681c9123aa9d6b76f3bdea4bf"
+                schema_version: 1
+      revision: 1
+      schema_version: 1
+      task_id: "202608292032-1K47B8"
+    event_cursor: 0
+    final_validation: null
+    id: "202608292032-1K47B8"
+    intent:
+      acceptance_criteria:
+        -
+          check_ids: []
+          description: "bun run arch:check"
+          id: "legacy-1"
+          required: true
+        -
+          check_ids: []
+          description: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts"
+          id: "legacy-2"
+          required: true
+      captured_at: "2026-08-29T20:32:03.292Z"
+      constraints: []
+      request: |-
+        Implement the isolated canonical Task kernel
+
+        Implement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged.
+      task_id: "202608292032-1K47B8"
+    lifecycle: "ACTIVE"
+    plan_amendments: []
+    plan_history: []
+    revision: 2
+    schema_version: 1
+    updated_at: "2026-08-29T20:33:19.037Z"
+    work_items:
+      define-kernel-domain-contract:
+        attempt: 0
+        claim_id: null
+        id: "define-kernel-domain-contract"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
+      enforce-authority-effects-and-projection-invariants:
+        attempt: 0
+        claim_id: null
+        id: "enforce-authority-effects-and-projection-invariants"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "PLANNED"
+        validation_result: null
+      implement-deterministic-kernel-reducer:
+        attempt: 0
+        claim_id: null
+        id: "implement-deterministic-kernel-reducer"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "PLANNED"
+        validation_result: null
+      qualify-isolated-kernel:
+        attempt: 0
+        claim_id: null
+        id: "qualify-isolated-kernel"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "PLANNED"
+        validation_result: null
+  task_execution_context:
+    base_ref: "main"
+    base_sha: "dbaf4bc2878eab7b50f8ea6d14179d8d91030159"
+    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+    schema_version: 1
+    source: "creation_checkout"
+  workflow_route_baseline:
+    start_head_sha: "dbaf4bc2878eab7b50f8ea6d14179d8d91030159"
+    version: 1
+id_source: "generated"
+---
+## Summary
+
+Implement the isolated canonical Task kernel
+
+Implement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged.
+
+## Scope
+
+- In scope: Implement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged.
+- Out of scope: unrelated refactors not required for "Implement the isolated canonical Task kernel".
+
+## Plan
+
+Prepared the corrected M1 plan and explicit execution intent for four ordered WorkItems: contract, reducer, invariants, and qualification.
+
+## Verify Steps
+
+PLANNER fallback scaffold for "Implement the isolated canonical Task kernel". Replace with task-specific acceptance checks when PLANNER context is available.
+
+1. Review the requested outcome for "Implement the isolated canonical Task kernel". Expected: the visible result matches ## Summary and stays inside approved scope.
+2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings
