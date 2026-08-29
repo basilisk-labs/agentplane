@@ -66,6 +66,14 @@ boundaries.
 | Tests and fixtures              | `packages/core/src/tasks/task-centric/*.test.ts`, CLI tests, `packages/testkit/src/**`              | Valuable behavior exists but many fixtures begin from synthetic legacy aggregates                                 | Kernel vectors, adapter contract tests, and migration/replay fixtures   |
 | Replay harness                  | `scripts/bench/agent-efficiency-replay-*` and replay evidence                                       | Existing harness measures agent flows, not complete Task-state migration equivalence                              | Reuse exact-anchor safety; add Task lifecycle replay corpus             |
 
+The pure candidates are `graph.ts` and the transition tables in `lifecycle.ts`. The effect boundary
+starts at backend, command, runner, Git, process, and provider code. Migration behavior is anchored
+by compatibility tests in `packages/core/src/tasks/task-centric/*.test.ts`; route, exchange, and
+recovery behavior is anchored by the task command and runner test suites. The principal legacy
+hotspots are `createLegacyTaskAggregate`, runtime `aggregateFrom`, distributed task-command routing,
+and fixtures that silently synthesize canonical state from legacy fields. M1 must preserve these
+oracles while removing their compatibility assumptions from the kernel.
+
 ### Target dependency rule
 
 The dependency direction is:

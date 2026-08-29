@@ -27,10 +27,10 @@ Produce the implementation specification, code ownership map, invariant catalog,
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/adr/0017-clean-task-core-rebuild.md        |  95 ++++++
+ docs/adr/0017-clean-task-core-rebuild.md        |  95 +++++
  docs/adr/README.md                              |  37 +-
- docs/reference/clean-task-core-rebuild-spec.mdx | 434 ++++++++++++++++++++++++
- 3 files changed, 548 insertions(+), 18 deletions(-)
+ docs/reference/clean-task-core-rebuild-spec.mdx | 442 ++++++++++++++++++++++++
+ 3 files changed, 556 insertions(+), 18 deletions(-)
 ```
 
 </details>
