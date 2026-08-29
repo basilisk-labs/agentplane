@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 
+import { authorityBindsCurrentState, validateWorkItemDefinitions } from "./invariants.js";
 import type {
   DomainEvent,
   EffectState,
@@ -72,6 +73,18 @@ const WORK_ITEM_ACTION_TRANSITIONS: Readonly<
   ],
 };
 
+const EFFECT_OBSERVE_TRANSITIONS: Readonly<
+  Record<EffectState, readonly ("APPLIED" | "NOT_APPLIED" | "IN_DOUBT")[]>
+> = {
+  PREPARED: ["APPLIED", "NOT_APPLIED", "IN_DOUBT"],
+  PENDING: ["APPLIED", "NOT_APPLIED", "IN_DOUBT"],
+  APPLIED: ["APPLIED"],
+  NOT_APPLIED: ["NOT_APPLIED"],
+  IN_DOUBT: ["APPLIED", "NOT_APPLIED", "IN_DOUBT"],
+  RECONCILED: [],
+  SUPERSEDED: [],
+};
+
 const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
   capture_intent: "intent_captured",
   propose_plan: "plan_proposed",
@@ -137,14 +150,18 @@ function requiredAuthority(input: KernelInput, workItemId: string | null): Kerne
   if (authority.task_id !== input.aggregate.id) {
     return rejected("AUTHORITY_TASK_MISMATCH", [authority.task_id, input.aggregate.id]);
   }
+  const currentPlan = input.aggregate.current_plan;
   if (
-    authority.repository_fingerprint !== input.repository_fingerprint ||
-    authority.repository_fingerprint !== input.command.expected_state_fingerprint
+    input.repository_fingerprint === null ||
+    !authorityBindsCurrentState(authority, {
+      task_id: input.aggregate.id,
+      plan_revision: currentPlan?.revision ?? null,
+      plan_digest: currentPlan?.digest ?? null,
+      repository_fingerprint: input.repository_fingerprint,
+      work_item_id: workItemId,
+    })
   ) {
-    return rejected("STALE_STATE_FINGERPRINT", [authority.repository_fingerprint]);
-  }
-  if (workItemId && authority.work_item_id !== null && authority.work_item_id !== workItemId) {
-    return rejected("AUTHORITY_SCOPE_EXCEEDED", [authority.work_item_id, workItemId]);
+    return rejected("AUTHORITY_SCOPE_EXCEEDED", [authority.digest]);
   }
   return null;
 }
@@ -178,6 +195,19 @@ function hasEveryExpectedOutput(
   });
 }
 
+function isSha256Digest(value: string): value is Sha256Digest {
+  return /^sha256:[0-9a-f]{64}$/u.test(value);
+}
+
+function outputManifestIsValid(manifest: OutputManifest): boolean {
+  return (
+    manifest.id.length > 0 &&
+    manifest.kind.length > 0 &&
+    isSha256Digest(manifest.digest) &&
+    isSha256Digest(manifest.repository_fingerprint)
+  );
+}
+
 function validationMatchesResult(
   validation: ValidationRecord | null,
   resultDigest: Sha256Digest | null,
@@ -193,7 +223,17 @@ function validationIdentityMatchesResult(
   validation: ValidationRecord,
   resultDigest: Sha256Digest | null,
 ): boolean {
-  return resultDigest !== null && validation.identity.implementation_identity === resultDigest;
+  const identity = validation.identity;
+  return (
+    resultDigest !== null &&
+    isSha256Digest(resultDigest) &&
+    identity.implementation_identity === resultDigest &&
+    identity.check_id.trim().length > 0 &&
+    isSha256Digest(identity.command_digest) &&
+    isSha256Digest(identity.toolchain_digest) &&
+    isSha256Digest(identity.environment_digest) &&
+    validation.evidence_digests.every((digest) => isSha256Digest(digest))
+  );
 }
 
 function refreshReadyItems(
@@ -276,6 +316,15 @@ function preconditions(input: KernelInput): KernelResult | null {
       input.command.expected_state_fingerprint,
       input.repository_fingerprint ?? "null",
     ]);
+  }
+  const uncertain = input.aggregate.effects.find((effect) => effect.state === "IN_DOUBT");
+  if (
+    uncertain &&
+    input.command.kind !== "observe_effect" &&
+    input.command.kind !== "reconcile_effect" &&
+    input.command.kind !== "supersede_effect"
+  ) {
+    return rejected("EFFECT_RECONCILIATION_REQUIRED", [uncertain.id], "reconcile_effect");
   }
   return requiredAuthority(input, authorityWorkItem(input.command));
 }
@@ -369,6 +418,10 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       if (Object.keys(aggregate.work_items).length > 0) {
         return rejected("ILLEGAL_TASK_TRANSITION", ["work_items_already_materialized"]);
       }
+      const graphIssues = validateWorkItemDefinitions(aggregate.current_plan.work_items);
+      if (graphIssues.length > 0) {
+        return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", graphIssues);
+      }
       const workItems = Object.fromEntries(
         aggregate.current_plan.work_items.map((definition) => [
           definition.id,
@@ -441,8 +494,12 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
         return rejected("ILLEGAL_WORK_ITEM_TRANSITION", [runtime.state, "RESULT_RECEIVED"]);
       }
       if (
+        !isSha256Digest(command.result_digest) ||
+        new Set(command.output_manifests.map((manifest) => manifest.id)).size !==
+          command.output_manifests.length ||
         command.output_manifests.some(
           (manifest) =>
+            !outputManifestIsValid(manifest) ||
             manifest.task_id !== aggregate.id ||
             manifest.plan_revision !== command.plan_revision ||
             manifest.work_item_id !== command.work_item_id ||
@@ -515,10 +572,21 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       break;
     }
     case "prepare_effect": {
-      if (aggregate.effects.some((effect) => effect.id === command.effect.id)) {
+      if (
+        aggregate.effects.some(
+          (effect) =>
+            effect.id === command.effect.id ||
+            effect.idempotency_key === command.effect.idempotency_key,
+        )
+      ) {
         return rejected("MUTATION_ID_CONFLICT", [command.effect.id]);
       }
-      if (command.effect.state !== "PREPARED") {
+      if (
+        command.effect.state !== "PREPARED" ||
+        !command.effect.id.trim() ||
+        !command.effect.idempotency_key.trim() ||
+        !isSha256Digest(command.effect.request_digest)
+      ) {
         return rejected("ILLEGAL_TASK_TRANSITION", ["effect", command.effect.state]);
       }
       next = {
@@ -531,6 +599,17 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
     case "observe_effect": {
       const index = aggregate.effects.findIndex((effect) => effect.id === command.effect_id);
       if (index === -1) return rejected("EFFECT_RECONCILIATION_REQUIRED", [command.effect_id]);
+      if (
+        !EFFECT_OBSERVE_TRANSITIONS[aggregate.effects[index]!.state].includes(
+          command.observed_state,
+        )
+      ) {
+        return rejected("EFFECT_RECONCILIATION_REQUIRED", [
+          command.effect_id,
+          aggregate.effects[index]!.state,
+          command.observed_state,
+        ]);
+      }
       const effects = [...aggregate.effects];
       effects[index] = {
         ...effects[index]!,
@@ -568,9 +647,14 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
     }
     case "supersede_effect": {
       const index = aggregate.effects.findIndex((effect) => effect.id === command.effect_id);
+      const replacement = aggregate.effects.find(
+        (effect) => effect.id === command.replacement_effect_id,
+      );
       if (
         index === -1 ||
-        !aggregate.effects.some((effect) => effect.id === command.replacement_effect_id)
+        aggregate.effects[index]!.state !== "IN_DOUBT" ||
+        replacement?.state !== "PREPARED" ||
+        replacement?.id === command.effect_id
       ) {
         return rejected("EFFECT_RECONCILIATION_REQUIRED", [command.effect_id]);
       }
@@ -705,3 +789,4 @@ export function isTaskCompletionEligible(
 
 export const TASK_TRANSITION_TABLE = TASK_TRANSITIONS;
 export const WORK_ITEM_TRANSITION_TABLE = WORK_ITEM_ACTION_TRANSITIONS;
+export const EFFECT_OBSERVE_TRANSITION_TABLE = EFFECT_OBSERVE_TRANSITIONS;

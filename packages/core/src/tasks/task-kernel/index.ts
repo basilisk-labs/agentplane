@@ -1,5 +1,18 @@
 export { EFFECT_STATES, KERNEL_REJECTION_CODES, TASK_STATES, WORK_ITEM_STATES } from "./model.js";
 export {
+  authorityBindsCurrentState,
+  compareExecutionAuthority,
+  PROJECTION_SOURCES,
+  projectionCannotAuthorize,
+  validateWorkItemDefinitions,
+} from "./invariants.js";
+export type {
+  AuthoritySubsetResult,
+  AuthoritySubsetViolation,
+  ProjectionSource,
+} from "./invariants.js";
+export {
+  EFFECT_OBSERVE_TRANSITION_TABLE,
   isTaskCompletionEligible,
   kernelDigest,
   reduceTaskCommand,

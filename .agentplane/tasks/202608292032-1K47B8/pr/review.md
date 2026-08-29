@@ -12,8 +12,8 @@ Created: 2026-08-29T20:33:30.307Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,12 +30,14 @@ Created: 2026-08-29T20:33:30.307Z
 
 ```text
  packages/core/src/tasks/index.ts                   |   2 +
- packages/core/src/tasks/task-kernel/index.ts       |   9 +
- packages/core/src/tasks/task-kernel/kernel.test.ts | 298 +++++++++
- packages/core/src/tasks/task-kernel/kernel.ts      | 707 +++++++++++++++++++++
- packages/core/src/tasks/task-kernel/model.test.ts  | 108 ++++
- packages/core/src/tasks/task-kernel/model.ts       | 365 +++++++++++
- 6 files changed, 1489 insertions(+)
+ packages/core/src/tasks/task-kernel/index.ts       |  22 +
+ .../core/src/tasks/task-kernel/invariants.test.ts  | 301 ++++++++
+ packages/core/src/tasks/task-kernel/invariants.ts  | 214 ++++++
+ packages/core/src/tasks/task-kernel/kernel.test.ts | 298 ++++++++
+ packages/core/src/tasks/task-kernel/kernel.ts      | 792 +++++++++++++++++++++
+ packages/core/src/tasks/task-kernel/model.test.ts  | 108 +++
+ packages/core/src/tasks/task-kernel/model.ts       | 365 ++++++++++
+ 8 files changed, 2102 insertions(+)
 ```
 
 </details>
