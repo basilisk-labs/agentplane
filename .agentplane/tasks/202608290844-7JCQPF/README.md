@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 46
+revision: 47
 origin:
   system: "manual"
 depends_on: []
@@ -352,6 +352,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The five dirty quality paths are incomplete generated artifacts from the evaluator packet that AgentPlane retired as stale; they are unintended and must not be committed."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The dirty quality paths are incomplete generated artifacts from retired evaluator packets; they are unintended and must not be committed."
 events:
   -
     type: "status"
@@ -534,8 +537,13 @@ events:
     at: "2026-08-29T15:42:39.259Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The five dirty quality paths are incomplete generated artifacts from the evaluator packet that AgentPlane retired as stale; they are unintended and must not be committed."
+  -
+    type: "comment"
+    at: "2026-08-29T15:44:28.812Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The dirty quality paths are incomplete generated artifacts from retired evaluator packets; they are unintended and must not be committed."
 doc_version: 3
-doc_updated_at: "2026-08-29T15:42:39.294Z"
+doc_updated_at: "2026-08-29T15:44:28.848Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering."
 sections:
