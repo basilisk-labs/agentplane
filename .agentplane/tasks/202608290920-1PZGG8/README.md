@@ -1,10 +1,11 @@
 ---
 id: "202608290920-1PZGG8"
 title: "Allow task-centric plan refinement before WorkItem selection"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 30
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,20 @@ quality_review:
     - "The ambiguity regression asserts unchanged revision, empty plan_amendments, and full task-record equality."
     - "Supervisor-owned verification is current and records focused tests, bun run ci:local:full, and git diff --check as passed on the recovery WorkItem."
     - "Residual risk: Hosted PR publication, provider checks, merge, and hosted close remain separate lifecycle gates."
+token_usage:
+  agent_runs: 11
+  input_tokens: null
+  journal_digest: "sha256:ee3858dd95f6eca0f0bfc7f8c6249802bbe20c5d20d1cfce3595da7e5df45b43"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-29T11:21:43.145Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -232,8 +247,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "04fa3a364009c33257e07b13d7fb21ac5d7b9fb2"
-  message: "🚧 1PZGG8 task: apply external agent result"
+  hash: "f4390b60599f08b7c703a3ca1796c42c372fe465"
+  message: "🚧 1PZGG8 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -259,6 +274,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 04fa3a364009. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -358,9 +376,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-29T11:21:43.145Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "f4390b60599f08b7c703a3ca1796c42c372fe465"
 doc_version: 3
-doc_updated_at: "2026-08-29T11:20:26.722Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-29T11:21:43.155Z"
+doc_updated_by: "CODER"
 description: "Fix the supported recovery path exposed by 7JCQPF. In recordTaskCentricExternalResult, when semantic.plan_refinement is present, record the refinement against the current approved plan before selecting or projecting a WorkItem result. If the refinement requires replan, return replan_required without requiring a schedulable WorkItem. Preserve normal WorkItem result selection, idempotency, validation, and fail-closed behavior when no refinement is present. Add focused tests for an unschedulable READY WorkItem whose refinement is still recorded, plus unchanged normal result behavior. This is an integration-path blocker for 7JCQPF and PR #5870; do not change release ordering, policy, scheduler semantics, or task stores."
 sections:
   Summary: |-
@@ -900,7 +926,45 @@ extensions:
       schema_version: 1
       task_id: "202608290920-1PZGG8"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608290920-1PZGG8"
+            - "git:04fa3a364009c33257e07b13d7fb21ac5d7b9fb2"
+          check_id: "check-focused-rework"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-29T11:20:24.099Z"
+          repository_snapshot_digest: "sha256:27c465fbc0c70d001a7f6e4f415c8a8b6130876b00a40eccbe91924d79fb27b2"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608290920-1PZGG8"
+            - "git:04fa3a364009c33257e07b13d7fb21ac5d7b9fb2"
+          check_id: "check-full-rework"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-29T11:20:24.099Z"
+          repository_snapshot_digest: "sha256:27c465fbc0c70d001a7f6e4f415c8a8b6130876b00a40eccbe91924d79fb27b2"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608290920-1PZGG8"
+            - "git:04fa3a364009c33257e07b13d7fb21ac5d7b9fb2"
+          check_id: "check-diff-rework"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-29T11:20:24.099Z"
+          repository_snapshot_digest: "sha256:27c465fbc0c70d001a7f6e4f415c8a8b6130876b00a40eccbe91924d79fb27b2"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608290920-1PZGG8"
     intent:
       acceptance_criteria: []
@@ -911,7 +975,7 @@ extensions:
 
         Fix the supported recovery path exposed by 7JCQPF. In recordTaskCentricExternalResult, when semantic.plan_refinement is present, record the refinement against the current approved plan before selecting or projecting a WorkItem result. If the refinement requires replan, return replan_required without requiring a schedulable WorkItem. Preserve normal WorkItem result selection, idempotency, validation, and fail-closed behavior when no refinement is present. Add focused tests for an unschedulable READY WorkItem whose refinement is still recorded, plus unchanged normal result behavior. This is an integration-path blocker for 7JCQPF and PR #5870; do not change release ordering, policy, scheduler semantics, or task stores.
       task_id: "202608290920-1PZGG8"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1153,9 +1217,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608290920-1PZGG8"
-    revision: 29
+    revision: 32
     schema_version: 1
-    updated_at: "2026-08-29T11:20:32.681Z"
+    updated_at: "2026-08-29T11:21:43.145Z"
     work_items:
       verify-evaluator-rework:
         attempt: 1
@@ -1281,6 +1345,31 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608290920-1PZGG8"
+      legacy-finish:202608290920-1PZGG8:2026-08-29T11:20:24.099Z:04fa3a364009c33257e07b13d7fb21ac5d7b9fb2:
+        aggregate_digest: "sha256:fac982a729c0307d0c56f8151f3ca111a59f586a0edc8ed5ad6cff5c5248aba0"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-29T11:21:43.145Z"
+          cause_refs:
+            - "task-verification:202608290920-1PZGG8"
+            - "git:04fa3a364009c33257e07b13d7fb21ac5d7b9fb2"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9a5b6e33f09b327dd1fe9ee5"
+          mutation_id: "legacy-finish:202608290920-1PZGG8:2026-08-29T11:20:24.099Z:04fa3a364009c33257e07b13d7fb21ac5d7b9fb2"
+          plan_digest: "sha256:3eaa9900eaed68996750a7af04241ac7b0341027794268553f57036f4b8f81fe"
+          plan_revision: 2
+          repository_fingerprint: "sha256:27c465fbc0c70d001a7f6e4f415c8a8b6130876b00a40eccbe91924d79fb27b2"
+          schema_version: 1
+          task_id: "202608290920-1PZGG8"
+          task_revision: 29
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608290920-1PZGG8:2026-08-29T11:20:24.099Z:04fa3a364009c33257e07b13d7fb21ac5d7b9fb2"
+        next_revision: 32
+        previous_revision: 31
+        schema_version: 1
+        task_id: "202608290920-1PZGG8"
       plan-refinement:work-order-202608290920-1PZGG8-executor-3e8675c71cf07eb42838889c:
         aggregate_digest: "sha256:5f8e664116f1f3307c9b027091c35c8c26fae8409168a7d1164c86d7d59c198f"
         event:
@@ -1310,6 +1399,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "04fa3a364009c33257e07b13d7fb21ac5d7b9fb2"
+    message: "🚧 1PZGG8 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -1642,3 +1732,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/11` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:ee3858dd95f6eca0f0bfc7f8c6249802bbe20c5d20d1cfce3595da7e5df45b43`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-29T11:21:43.145Z`
