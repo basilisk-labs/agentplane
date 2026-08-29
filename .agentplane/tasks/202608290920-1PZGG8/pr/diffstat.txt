@@ -1,0 +1,3 @@
+ .../task/task-centric-external-result.test.ts      | 68 +++++++++++++++++++-
+ .../commands/task/task-centric-external-result.ts  | 72 +++++++++++-----------
+ 2 files changed, 102 insertions(+), 38 deletions(-)

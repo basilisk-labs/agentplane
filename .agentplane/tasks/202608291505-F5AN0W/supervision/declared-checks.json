@@ -1,0 +1,35 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts",
+      "duration_ms": 9846,
+      "exit_code": 0,
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291505-F5AN0W-keep-evaluator-verification-target-aligned-with\n\n202605240900-EV16\n202605240900-EV17\n202605240900-EV18\n202605240900-EV19\n202605240900-EV25\n202605240900-ABCD\n202605240900-EV23\n202605240900-EV20\n202605240900-EV21\n202605240900-EV22\n\n Test Files  1 passed (1)\n      Tests  8 passed (8)\n   Start at  18:16:26\n   Duration  7.36s (transform 1.09s, setup 0ms, import 1.40s, tests 5.89s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "git diff --check",
+      "duration_ms": 33,
+      "exit_code": 0,
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202608291505-F5AN0W"
+}

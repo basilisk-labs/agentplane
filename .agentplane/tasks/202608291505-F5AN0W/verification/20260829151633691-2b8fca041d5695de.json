@@ -1,0 +1,116 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608291505-F5AN0W Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608291505-F5AN0W Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bun vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608291505-F5AN0W Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608291505-F5AN0W Verification Contract check critical_paths (2/2)\n\nCheck: task_outcome\nCommand: bun vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608291505-F5AN0W Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608291505-F5AN0W Verification Contract check task_outcome (2/2)",
+  "digest": "sha256:2b8fca041d5695de177749cfad60d75283432476daa737e1f8af859ec4688d5a",
+  "implementation_sha": "3cb29a0ae620b4eab93c2d10b406e193c95b2d6c",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:e3b8b917b8b4e0416df9435a2fd388c0d3f1e14a32d46bb6b3805441b0d23b19",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:062d5d34a85e93f796c59e56b84dfcb2f9d05147c511ea0fae99d640367eb3f4",
+      "digest": "sha256:dd2561c770eece723e0ee495c6c84cbdfa896bd5dcb79d6625f32785256de086",
+      "references": [
+        {
+          "digest": "sha256:dc0703c4fb21fba303af94ee44c2f7d26a640611308705b10ead83d647cabf8b",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:dc0703c4fb21fba303af94ee44c2f7d26a640611308705b10ead83d647cabf8b",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608291505-F5AN0W/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "57a22a308fd63147d95fe6a65733d02586cdc126",
+      "digest": "sha256:c6403c914dcbefae92c043d5e779dc3b9d5c0a5d9e725aa6645387b9cc83c035",
+      "primary_task_id": "202608291505-F5AN0W",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "auto",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608291505-F5AN0W"
+      ]
+    },
+    "implementation": {
+      "base_sha": "57a22a308fd63147d95fe6a65733d02586cdc126",
+      "digest": "sha256:b7a4eee9f5ef87ae108ca9e2a82741dd401ccf90bf3c5c4baaf4c44c5fde2e02",
+      "strategy": "branch_diff",
+      "target_sha": "3cb29a0ae620b4eab93c2d10b406e193c95b2d6c"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:7711145967d6b6a80dfd06980f9d5e9be11a07e0c129ceda3541b17c056ca959",
+    "verify_steps_digest": "sha256:9a3ae7cba6d63b0b8d039831370f5969be00a48a0741edd2ab07f3fd0fabff9e"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-29T15:16:33.691Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Keep evaluator verification target aligned with the semantic quality-review target across framework-owned task-artifact tail commits. Fix the confirmed bootstrap blocker where task verification correctly targets the latest reviewable commit but evaluator preparation prefers an older extensions.implementation_commit and rejects the current record as verification_implementation_changed. Preserve qualification-packet pinning. Add focused regression coverage proving task-artifact tail commits do not invalidate evaluator preparation.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Keep evaluator verification target aligned with the semantic quality-review target across framework-owned task-artifact tail commits. Fix the confirmed bootstrap blocker where task verification correctly targets the latest reviewable commit but evaluator preparation prefers an older extensions.implementation_commit and rejects the current record as verification_implementation_changed. Preserve qualification-packet pinning. Add focused regression coverage proving task-artifact tail commits do not invalidate evaluator preparation.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:9a3ae7cba6d63b0b8d039831370f5969be00a48a0741edd2ab07f3fd0fabff9e",
+  "task_id": "202608291505-F5AN0W",
+  "verification_command": "agentplane verify 202608291505-F5AN0W --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
