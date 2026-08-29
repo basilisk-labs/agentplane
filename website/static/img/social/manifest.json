@@ -133,6 +133,14 @@
       "svgSha256": "ec8b917bc39fa4dc8d2277a4b17ea496f627c35993f4bc29c33f79c396a399e8"
     },
     {
+      "route": "/docs/adr/0017-clean-task-core-rebuild",
+      "output": "static/img/social/docs/adr/0017-clean-task-core-rebuild.png",
+      "section": "Adr",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+      "title": "ADR 0017: Clean Task Core Rebuild",
+      "svgSha256": "832b6bc1228579d62c6fdc240e29450e7b9cea7add076d13869437bd6796ca4f"
+    },
+    {
       "route": "/docs/archive/v0-3/cli-bug-ledger-v0-3-x",
       "output": "static/img/social/docs/archive/v0-3/cli-bug-ledger-v0-3-x.png",
       "section": "Archive",
@@ -691,6 +699,14 @@
       "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Agent Change Records",
       "svgSha256": "f4d6e11a055629e797d635cf71fef51ec39dc7b65e1591e279d935b4ecd1d993"
+    },
+    {
+      "route": "/docs/reference/clean-task-core-rebuild-spec",
+      "output": "static/img/social/docs/reference/clean-task-core-rebuild-spec.png",
+      "section": "Reference",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+      "title": "Clean Task Core Rebuild Specification",
+      "svgSha256": "24649bd6ff50364be4a11194cc60396609f67aa239c086434bbbde444539c094"
     },
     {
       "route": "/docs/reference/cli",
