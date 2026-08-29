@@ -1,0 +1,153 @@
+diff --git a/packages/agentplane/src/commands/task/task-centric-external-result.test.ts b/packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+index fabc81ac6..9998719d9 100644
+--- a/packages/agentplane/src/commands/task/task-centric-external-result.test.ts
++++ b/packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+@@ -432,6 +432,51 @@ describe("recordTaskCentricExternalResult", () => {
+     ]);
+   });
+ 
++  it("records material refinement before selecting an unschedulable WorkItem", async () => {
++    const backend = memoryBackend(
++      initialTask(undefined, [{ id: "a", depends_on: [], required_inputs: ["missing-output"] }]),
++    );
++
++    await expect(
++      recordTaskCentricExternalResult({
++        command: { taskBackend: backend } as unknown as CommandContext,
++        work_order: workOrder(null, "work-unschedulable-refinement"),
++        semantic: {
++          ...semantic,
++          work_order_id: "work-unschedulable-refinement",
++          plan_refinement: {
++            description: "Remove an invalid produced-output dependency.",
++            scope_roots_added: [],
++            outputs_added: [],
++            acceptance_changed: false,
++            risk_changed: false,
++            external_effects_added: [],
++            dependencies_changed: true,
++            architecture_constraints_changed: false,
++            operations: ["clarify"],
++          },
++        },
++        verification: {
++          status: "passed",
++          artifact_path: ".agentplane/checks.json",
++          checks: [],
++          reason: null,
++        },
++        head: HEAD,
++        dirty_paths: [],
++      }),
++    ).resolves.toEqual({
++      state: "replan_required",
++      work_item_id: null,
++      remaining_required_work_items: 1,
++    });
++
++    const aggregate = taskCentricAggregateFromExtensions(backend.current().extensions)!;
++    expect(aggregate.lifecycle).toBe("PLANNING");
++    expect(aggregate.work_items.a?.state).toBe("READY");
++    expect(taskCentricReplanRequiredFromExtensions(backend.current().extensions)).toBe(true);
++  });
++
+   it("records local amendments without invalidating approval and routes material changes to replanning", async () => {
+     const verification = {
+       status: "passed" as const,
+diff --git a/packages/agentplane/src/commands/task/task-centric-external-result.ts b/packages/agentplane/src/commands/task/task-centric-external-result.ts
+index 32138b346..cee1f7102 100644
+--- a/packages/agentplane/src/commands/task/task-centric-external-result.ts
++++ b/packages/agentplane/src/commands/task/task-centric-external-result.ts
+@@ -28,7 +28,7 @@ export type TaskCentricExternalResultProjection =
+     }>
+   | Readonly<{
+       state: "replan_required";
+-      work_item_id: string;
++      work_item_id: string | null;
+       remaining_required_work_items: number;
+     }>;
+ 
+@@ -106,6 +106,41 @@ export async function recordTaskCentricExternalResult(opts: {
+     };
+   }
+   const requestedId = opts.work_order.task.work_item_id ?? null;
++  const repository = createRepositorySnapshot({
++    git: { kind: "commit", sha: opts.head!, ref: null },
++    dirty_paths: [...opts.dirty_paths].toSorted(),
++    policy_digest: opts.work_order.planning_context?.repository_snapshot.policy_digest ?? null,
++    config_digest: opts.work_order.planning_context?.repository_snapshot.config_digest ?? null,
++    context_digest:
++      (opts.work_order.planning_context?.digest as `sha256:${string}` | undefined) ?? null,
++    task_history_cursor: `task-revision:${String(raw.revision ?? aggregate.revision)}`,
++    captured_at: new Date().toISOString(),
++  });
++  const adapter = new TaskCentricBackendAdapter({
++    backend: opts.command.taskBackend,
++    observeRepository: () => Promise.resolve(repository),
++  });
++  let expectedRevision = raw.revision ?? aggregate.revision;
++  if (opts.semantic.plan_refinement) {
++    const refinement = await adapter.recordPlanRefinement({
++      task_id: aggregate.id,
++      refinement: opts.semantic.plan_refinement,
++      actor_id: `external:${opts.work_order.role}`,
++      at: repository.captured_at,
++      idempotency_key: `plan-refinement:${opts.work_order.work_order_id}`,
++    });
++    const refinedRaw = await opts.command.taskBackend.getTask(aggregate.id);
++    expectedRevision = refinedRaw?.revision ?? refinement.receipt.next_revision;
++    if (refinement.action === "replan_required") {
++      return {
++        state: "replan_required",
++        work_item_id: requestedId,
++        remaining_required_work_items: aggregate.current_plan.proposal.work_items.work_items.filter(
++          (item) => !item.optional && aggregate.work_items[item.id]?.state !== "COMPLETED",
++        ).length,
++      };
++    }
++  }
+   const claimedIds = Object.values(aggregate.work_items)
+     .filter((item) => item.state === "CLAIMED")
+     .map((item) => item.id);
+@@ -149,41 +184,6 @@ export async function recordTaskCentricExternalResult(opts: {
+       message: `WorkItem ${selected.id} cannot accept a semantic result from state ${runtime?.state ?? "missing"}.`,
+     });
+   }
+-  const repository = createRepositorySnapshot({
+-    git: { kind: "commit", sha: opts.head!, ref: null },
+-    dirty_paths: [...opts.dirty_paths].toSorted(),
+-    policy_digest: opts.work_order.planning_context?.repository_snapshot.policy_digest ?? null,
+-    config_digest: opts.work_order.planning_context?.repository_snapshot.config_digest ?? null,
+-    context_digest:
+-      (opts.work_order.planning_context?.digest as `sha256:${string}` | undefined) ?? null,
+-    task_history_cursor: `task-revision:${String(raw.revision ?? aggregate.revision)}`,
+-    captured_at: new Date().toISOString(),
+-  });
+-  const adapter = new TaskCentricBackendAdapter({
+-    backend: opts.command.taskBackend,
+-    observeRepository: () => Promise.resolve(repository),
+-  });
+-  let expectedRevision = raw.revision ?? aggregate.revision;
+-  if (opts.semantic.plan_refinement) {
+-    const refinement = await adapter.recordPlanRefinement({
+-      task_id: aggregate.id,
+-      refinement: opts.semantic.plan_refinement,
+-      actor_id: `external:${opts.work_order.role}`,
+-      at: repository.captured_at,
+-      idempotency_key: `plan-refinement:${opts.work_order.work_order_id}`,
+-    });
+-    const refinedRaw = await opts.command.taskBackend.getTask(aggregate.id);
+-    expectedRevision = refinedRaw?.revision ?? refinement.receipt.next_revision;
+-    if (refinement.action === "replan_required") {
+-      return {
+-        state: "replan_required",
+-        work_item_id: selected.id,
+-        remaining_required_work_items: aggregate.current_plan.proposal.work_items.work_items.filter(
+-          (item) => !item.optional && aggregate.work_items[item.id]?.state !== "COMPLETED",
+-        ).length,
+-      };
+-    }
+-  }
+   const evidence = selected.validation.checks.map((check) =>
+     evidenceForCheck({
+       check,
