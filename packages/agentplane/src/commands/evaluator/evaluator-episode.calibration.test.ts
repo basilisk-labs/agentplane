@@ -2,7 +2,12 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { readTask } from "@agentplaneorg/core/tasks";
+import {
+  readTask,
+  taskCentricAggregateFromExtensions,
+  taskCentricDigest,
+  type SemanticWorkResult,
+} from "@agentplaneorg/core/tasks";
 import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
@@ -34,6 +39,7 @@ import {
   resolveTaskExecutionContract,
 } from "../../runtime/task-routing/index.js";
 import { materializeRunnerTaskWorkItemFixture } from "../../runner/usecases/task-run-lifecycle.testkit.js";
+import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -63,6 +69,72 @@ async function commitTarget(root: string): Promise<void> {
   );
   await execFileAsync("git", ["add", "--", "src/evaluated.ts"], { cwd: root });
   await execFileAsync("git", ["commit", "-m", "feat: evaluator calibration target"], { cwd: root });
+}
+
+async function completeCalibrationWorkItem(root: string, taskId: string) {
+  const command = await loadCommandContext({ cwd: root, rootOverride: root });
+  const task = await loadTaskFromContext({ ctx: command, taskId });
+  const aggregate = taskCentricAggregateFromExtensions(task.extensions)!;
+  const plan = aggregate.current_plan!;
+  const work = plan.proposal.work_items.work_items[0]!;
+  const repository = plan.proposal.planning_baseline;
+  expect(await readFile(path.join(root, "src/evaluated.ts"), "utf8")).toBe(
+    "export const reviewed = true;\n",
+  );
+  const semantic: SemanticWorkResult = {
+    schema_version: 1,
+    kind: "execute",
+    task_id: taskId,
+    plan_revision: plan.revision,
+    plan_digest: plan.digest,
+    work_item_id: work.id,
+    context_digest: repository.digest,
+    status: "completed",
+    summary: "The committed calibration target is ready for evaluator evidence refresh.",
+    claims: ["The fixture source matches the committed calibration target."],
+    questions: [],
+    artifacts: work.expected_outputs,
+  };
+  const adapter = new TaskCentricBackendAdapter({
+    backend: command.taskBackend,
+    observeRepository: () => Promise.resolve(repository),
+  });
+  await adapter.recordWorkItemResult({
+    task_id: taskId,
+    expected_revision: task.revision!,
+    work_item_id: work.id,
+    semantic_result: semantic,
+    outputs: work.expected_outputs.map((id) => ({
+      schema_version: 1,
+      id,
+      kind: "semantic_output",
+      schema: "agentplane.semantic-output.v1",
+      digest: taskCentricDigest({ id, result: semantic }),
+      producer: {
+        task_id: taskId,
+        plan_revision: plan.revision,
+        work_item_id: work.id,
+        attempt: 1,
+      },
+      repository_snapshot_digest: repository.digest,
+      provenance: ["src/evaluated.ts"],
+    })),
+    validation: work.validation.checks.map((check) => ({
+      check_id: check.id,
+      status: "passed",
+      observed_at: repository.captured_at,
+      repository_snapshot_digest: repository.digest,
+      command_identity: null,
+      exit_code: 0,
+      artifact_refs: ["src/evaluated.ts"],
+      detail: "The calibration fixture source was read and matched its expected contents.",
+    })),
+    idempotency_key: "calibration-completed-implementation",
+  });
+  const completed = (await adapter.readTask(taskId))!.work_items[work.id]!;
+  expect(completed.state).toBe("COMPLETED");
+  expect(completed.output_manifests.map((output) => output.id)).toEqual(work.expected_outputs);
+  return completed;
 }
 
 async function prepare(
@@ -397,6 +469,7 @@ describe("evaluator episode calibration", () => {
       task_id: taskId,
       objective: "Refresh deterministic evaluator evidence for the completed implementation.",
     });
+    const completedWorkItem = await completeCalibrationWorkItem(root, taskId);
 
     const initialCommand = await loadCommandContext({ cwd: root, rootOverride: root });
     await applyTaskMutation({
@@ -443,6 +516,11 @@ describe("evaluator episode calibration", () => {
       }),
     });
     const persistedPositive = await loadTaskFromContext({ ctx: positive.command, taskId });
+    expect(
+      taskCentricAggregateFromExtensions(persistedPositive.extensions)?.work_items[
+        "runner-fixture"
+      ],
+    ).toEqual(completedWorkItem);
 
     expect(persistedPositive.quality_review).toMatchObject({
       recovery_reason: "deterministic_evidence_gap",
@@ -465,6 +543,11 @@ describe("evaluator episode calibration", () => {
       result: result(negative.prepared, "blocked"),
     });
     const persistedNegative = await loadTaskFromContext({ ctx: negative.command, taskId });
+    expect(
+      taskCentricAggregateFromExtensions(persistedNegative.extensions)?.work_items[
+        "runner-fixture"
+      ],
+    ).toEqual(completedWorkItem);
 
     expect(persistedNegative.quality_review).not.toHaveProperty("recovery_reason");
     expect(

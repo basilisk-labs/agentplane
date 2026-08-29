@@ -1,0 +1,213 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:local:full",
+    "git diff --check"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts",
+        "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts",
+        "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-branch.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts",
+        "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-branch.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts",
+      "central_component:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts",
+      "central_component:packages/agentplane/src/commands/shared/workflow-step-branch.ts",
+      "central_component:packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts",
+      "central_component:packages/agentplane/src/commands/shared/workflow-step-required-work.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:6743aedda734a0a3b9d11231c089a1e2ca71b3c3b252f87cca77f5f199c6fc91"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-28T20:50:19.823Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608281925-J595R5/verification/20260828205019823-490e710f6f4bf5d7.json",
+      "sha256": "sha256:cb15bd7887f60c3aba8b45a5b2578602d9f0f735e4e2b91afadabf50b6a4f5bb"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 6b3c0445c3ccb6e5599fb97eddac63a92d2cbeb6..3f1b5686f67e4fb38c47f12341a9ae790c87c055",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 6b3c0445c3ccb6e5599fb97eddac63a92d2cbeb6..3f1b5686f67e4fb38c47f12341a9ae790c87c055",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608281925-J595R5/README.md",
+          "M\t.agentplane/tasks/202608281925-J595R5/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608281925-J595R5/pr/github-body.md",
+          "M\t.agentplane/tasks/202608281925-J595R5/pr/meta.json",
+          "M\t.agentplane/tasks/202608281925-J595R5/pr/review.md",
+          "A\tpackages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts",
+          "M\tpackages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-step-branch.ts",
+          "A\tpackages/agentplane/src/commands/shared/workflow-step-required-work.test.ts",
+          "A\tpackages/agentplane/src/commands/shared/workflow-step-required-work.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "6b3c0445c3ccb6e5599fb97eddac63a92d2cbeb6",
+    "implementation_commit": "3f1b5686f67e4fb38c47f12341a9ae790c87c055",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        "MM .agentplane/tasks/202608281925-J595R5/README.md",
+        "A  packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts",
+        "M  packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts",
+        "M  packages/agentplane/src/commands/shared/workflow-step-branch.ts",
+        "A  packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts",
+        "A  packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": "MM .agentplane/tasks/202608281925-J595R5/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "A  packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "M  packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "M  packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "A  packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "A  packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        "MM .agentplane/tasks/202608281925-J595R5/README.md",
+        "A  packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts",
+        "M  packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts",
+        "M  packages/agentplane/src/commands/shared/workflow-step-branch.ts",
+        "A  packages/agentplane/src/commands/shared/workflow-step-required-work.test.ts",
+        "A  packages/agentplane/src/commands/shared/workflow-step-required-work.ts"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608281925-J595R5",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608281925-J595R5/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
