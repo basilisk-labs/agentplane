@@ -12,8 +12,8 @@ Created: 2026-08-29T10:21:54.868Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,8 +31,8 @@ Created: 2026-08-29T10:21:54.868Z
 ```text
  docs/adr/0017-clean-task-core-rebuild.md        |  95 +++++
  docs/adr/README.md                              |  37 +-
- docs/reference/clean-task-core-rebuild-spec.mdx | 459 ++++++++++++++++++++++++
- 3 files changed, 573 insertions(+), 18 deletions(-)
+ docs/reference/clean-task-core-rebuild-spec.mdx | 471 ++++++++++++++++++++++++
+ 3 files changed, 585 insertions(+), 18 deletions(-)
 ```
 
 </details>
