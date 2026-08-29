@@ -1,1 +1,1 @@
-🚧 7JCQPF task: Allow state-bound WorkItem implementation results to reopen DONE tasks [202608290844-7JCQPF]
+✅ 7JCQPF task: Allow state-bound WorkItem implementation results to reopen DONE tasks [202608290844-7JCQPF]

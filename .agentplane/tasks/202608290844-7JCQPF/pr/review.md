@@ -6,7 +6,7 @@ Created: 2026-08-29T08:47:59.220Z
 
 - Task: `202608290844-7JCQPF`
 - Title: Allow state-bound WorkItem implementation results to reopen DONE tasks
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608290844-7JCQPF/allow-state-bound-workitem-implementation-result`
 - Canonical task record: `.agentplane/tasks/202608290844-7JCQPF/README.md`
 
