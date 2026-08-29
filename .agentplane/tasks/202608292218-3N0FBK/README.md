@@ -4,7 +4,7 @@ title: "Prevent branch closeout while required WorkItems are incomplete"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:c19e38eb8e48f78702fb813eace7ab0c97821d1fb93b2bb8b175af439fb85847"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-29T22:46:25.339Z"
+  state: "blocked_external"
+  updated_at: "2026-08-29T23:05:55.501Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 2
+  attempts: 4
 execution_route:
   frozen: true
   reason_codes:
@@ -82,12 +82,29 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "verification:recorded-check-3:fail"
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -121,20 +138,29 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:f65d6168c5be21652bedfbfd4aa6933fe559290c76ad6a2e7186ab47577796fa"
+      digest: "sha256:020f87f3064d322d4a688df68f6b1b819bc61486df111b35abdcf04504374614"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -166,6 +192,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-3"
 commit: null
 comments:
   -
@@ -180,6 +207,15 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a025114ef3c0. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a025114ef3c0. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Start: resolve the recorded hotspot threshold blocker with a bounded route-state extraction."
 events:
   -
     type: "status"
@@ -223,8 +259,43 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-29T22:50:56.383Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a025114ef3c0. CLI accepted one state-bound external-agent semantic result."
+    commit: "a025114ef3c0b1f7b93380d2c957b18741c537b5"
+  -
+    type: "verify"
+    at: "2026-08-29T22:58:00.434Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-29T22:58:49.123Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a025114ef3c0. CLI accepted one state-bound external-agent semantic result."
+    commit: "a025114ef3c0b1f7b93380d2c957b18741c537b5"
+  -
+    type: "verify"
+    at: "2026-08-29T23:05:55.501Z"
+    author: "SUPERVISOR"
+    state: "blocked_external"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-29T23:07:18.612Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Start: resolve the recorded hotspot threshold blocker with a bounded route-state extraction."
 doc_version: 3
-doc_updated_at: "2026-08-29T22:48:01.909Z"
+doc_updated_at: "2026-08-29T23:07:18.612Z"
 doc_updated_by: "CODER"
 description: "Fix branch_pr route selection so an approved task with any incomplete required canonical WorkItem returns to the bounded EXECUTOR WorkItem episode before verification, quality review, PR publication, or pre-merge closure. Add a regression test for a task that has stale verification, quality review, and commit evidence while a required WorkItem remains READY or PLANNED."
 sections:
@@ -297,6 +368,96 @@ sections:
     Attempts: 2
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:3fe794b0ab3823b6d1e9c301fca5b3def1d8d411a1faca2430333864dab15df1, input_digest=sha256:1e3a8160540728e12c4f36aefc620457772efd2be53d98a459581eed7700ee17
+
+    Details:
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608292218-3N0FBK declared verification
+
+    Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608292218-3N0FBK declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608292218-3N0FBK declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608292218-3N0FBK-prevent-branch-closeout-while-required-workitems/.agentplane/tasks/202608292218-3N0FBK/blueprint/resolved-snapshot.json
+    - old_digest: 8b81c44d2d42ad42a5fd11120416523cc699aa4f3f26c2f8502e97d2f3e77a2c
+    - current_digest: 8b81c44d2d42ad42a5fd11120416523cc699aa4f3f26c2f8502e97d2f3e77a2c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608292218-3N0FBK
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-29T22:58:00.434Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 3
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:3fe794b0ab3823b6d1e9c301fca5b3def1d8d411a1faca2430333864dab15df1, input_digest=sha256:c19e168bc6d978b75882b375b71fef325a212089519b40a29eb23037953a3ab0
+
+    Details:
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608292218-3N0FBK declared verification
+
+    Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608292218-3N0FBK declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608292218-3N0FBK declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608292218-3N0FBK-prevent-branch-closeout-while-required-workitems/.agentplane/tasks/202608292218-3N0FBK/blueprint/resolved-snapshot.json
+    - old_digest: 8b81c44d2d42ad42a5fd11120416523cc699aa4f3f26c2f8502e97d2f3e77a2c
+    - current_digest: 8b81c44d2d42ad42a5fd11120416523cc699aa4f3f26c2f8502e97d2f3e77a2c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608292218-3N0FBK
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-29T23:05:55.501Z — VERIFY — blocked_external
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 4
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:3fe794b0ab3823b6d1e9c301fca5b3def1d8d411a1faca2430333864dab15df1, input_digest=sha256:4e09ca28ab351ba5df0f523847260312dbf1cd622874aea4ec97230ad6ab7891
 
     Details:
 
@@ -808,19 +969,89 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608292218-3N0FBK"
-    revision: 13
+    revision: 19
     schema_version: 1
-    updated_at: "2026-08-29T22:47:53.131Z"
+    updated_at: "2026-08-29T22:58:03.797Z"
     work_items:
       prioritize-incomplete-required-work-items:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "prioritize-incomplete-required-work-items"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:a325a651be54e0175b72aad093fb73cfcb8153d924ba2d25be55545a2ac28b50"
+            id: "branch-route-priority-fix"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608292218-3N0FBK"
+              work_item_id: "prioritize-incomplete-required-work-items"
+            provenance:
+              - "sha256:6d0a2699e4906fe22473bf58a57dad9eb96d04ac5fa7fee5dbff3f2c5d736175"
+              - ".agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:02a637a0705738879db6cdc97b7251127d184fc3a106434d50dfdefa6c267974"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:7bc6b500bfb69425ae1a20d992b3be2fecba3bd8906771cf14ae975d6704bd40"
+            id: "incomplete-workitem-regression-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608292218-3N0FBK"
+              work_item_id: "prioritize-incomplete-required-work-items"
+            provenance:
+              - "sha256:6d0a2699e4906fe22473bf58a57dad9eb96d04ac5fa7fee5dbff3f2c5d736175"
+              - ".agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:02a637a0705738879db6cdc97b7251127d184fc3a106434d50dfdefa6c267974"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:22afd7cefce8562b77d08a1bdd59e8de22ed00095512a8668ad9a7e0e35ef66c"
+            id: "calibration-fixture-alignment"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608292218-3N0FBK"
+              work_item_id: "prioritize-incomplete-required-work-items"
+            provenance:
+              - "sha256:6d0a2699e4906fe22473bf58a57dad9eb96d04ac5fa7fee5dbff3f2c5d736175"
+              - ".agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:02a637a0705738879db6cdc97b7251127d184fc3a106434d50dfdefa6c267974"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json"
+              check_id: "check-route-regression"
+              command_identity: "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-08-29T22:58:03.788Z"
+              repository_snapshot_digest: "sha256:02a637a0705738879db6cdc97b7251127d184fc3a106434d50dfdefa6c267974"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json"
+              check_id: "check-typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-08-29T22:58:03.788Z"
+              repository_snapshot_digest: "sha256:02a637a0705738879db6cdc97b7251127d184fc3a106434d50dfdefa6c267974"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
@@ -846,6 +1077,29 @@ extensions:
         mutation_id: "external-result:work-order-202608292218-3N0FBK-executor-15459b7cf7d93011334728cf"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202608292218-3N0FBK"
+      external-result:work-order-202608292218-3N0FBK-executor-37f690eee41d4957971ef93e:
+        aggregate_digest: "sha256:c028ae84ed318fb9d73d5a8248c416a11c093a219d12fa10a58ae6a5427b3eef"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-29T22:58:03.797Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_a4390ff9eb7edccd98477d4f"
+          mutation_id: "external-result:work-order-202608292218-3N0FBK-executor-37f690eee41d4957971ef93e"
+          plan_digest: "sha256:d3e3f89738c8623e63dfd2acee0e187bcc323d17676f456f031c6ff8ca11100c"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608292218-3N0FBK"
+          task_revision: 18
+          to: "COMPLETED"
+          work_item_id: "prioritize-incomplete-required-work-items"
+        mutation_id: "external-result:work-order-202608292218-3N0FBK-executor-37f690eee41d4957971ef93e"
+        next_revision: 19
+        previous_revision: 18
         schema_version: 1
         task_id: "202608292218-3N0FBK"
       plan-refinement:work-order-202608292218-3N0FBK-executor-fbc25c117934591ae019b38e:
@@ -966,6 +1220,96 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 2
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:3fe794b0ab3823b6d1e9c301fca5b3def1d8d411a1faca2430333864dab15df1, input_digest=sha256:1e3a8160540728e12c4f36aefc620457772efd2be53d98a459581eed7700ee17
+
+Details:
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608292218-3N0FBK declared verification
+
+Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608292218-3N0FBK declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608292218-3N0FBK declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608292218-3N0FBK-prevent-branch-closeout-while-required-workitems/.agentplane/tasks/202608292218-3N0FBK/blueprint/resolved-snapshot.json
+- old_digest: 8b81c44d2d42ad42a5fd11120416523cc699aa4f3f26c2f8502e97d2f3e77a2c
+- current_digest: 8b81c44d2d42ad42a5fd11120416523cc699aa4f3f26c2f8502e97d2f3e77a2c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608292218-3N0FBK
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-29T22:58:00.434Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 3
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:3fe794b0ab3823b6d1e9c301fca5b3def1d8d411a1faca2430333864dab15df1, input_digest=sha256:c19e168bc6d978b75882b375b71fef325a212089519b40a29eb23037953a3ab0
+
+Details:
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608292218-3N0FBK declared verification
+
+Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608292218-3N0FBK declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608292218-3N0FBK declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608292218-3N0FBK-prevent-branch-closeout-while-required-workitems/.agentplane/tasks/202608292218-3N0FBK/blueprint/resolved-snapshot.json
+- old_digest: 8b81c44d2d42ad42a5fd11120416523cc699aa4f3f26c2f8502e97d2f3e77a2c
+- current_digest: 8b81c44d2d42ad42a5fd11120416523cc699aa4f3f26c2f8502e97d2f3e77a2c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608292218-3N0FBK
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-29T23:05:55.501Z — VERIFY — blocked_external
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 4
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:3fe794b0ab3823b6d1e9c301fca5b3def1d8d411a1faca2430333864dab15df1, input_digest=sha256:4e09ca28ab351ba5df0f523847260312dbf1cd622874aea4ec97230ad6ab7891
 
 Details:
 
