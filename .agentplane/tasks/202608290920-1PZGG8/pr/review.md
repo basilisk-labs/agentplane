@@ -12,8 +12,8 @@ Created: 2026-08-29T09:23:28.094Z
 
 ## Verification
 
-- State: blocked_external
-- Note: Rework: No executable declared verification checks are configured for this task.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
