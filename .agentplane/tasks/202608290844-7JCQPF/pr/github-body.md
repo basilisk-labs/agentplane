@@ -16,7 +16,12 @@ Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task p
 ## Verification
 
 - State: ok
-- Note: Verified the current close commit after framework-owned incident promotion.
+- Note:
+
+```text
+Verified current head db3a023e6; its delta from the fully tested close commit is limited to
+framework-owned task evidence artifacts.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

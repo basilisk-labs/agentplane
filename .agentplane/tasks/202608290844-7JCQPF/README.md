@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 44
+revision: 45
 origin:
   system: "manual"
 depends_on: []
@@ -25,9 +25,9 @@ plan_approval:
   note: "User pre-authorized subsequent in-scope bootstrap recovery plans; approved plan deff35da with unchanged four-file scope and no external effects."
 verification:
   state: "ok"
-  updated_at: "2026-08-29T14:47:25.405Z"
+  updated_at: "2026-08-29T14:51:24.375Z"
   updated_by: "TESTER"
-  note: "Verified the current close commit after framework-owned incident promotion."
+  note: "Verified current head db3a023e6; its delta from the fully tested close commit is limited to framework-owned task evidence artifacts."
   attempts: 0
 quality_review:
   state: "pass"
@@ -520,8 +520,14 @@ events:
     at: "2026-08-29T14:48:50.134Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The uncommitted task-worktree paths are intentional framework-owned artifacts created by the fresh passing verification and PR metadata refresh. No unrelated or ambiguous source edits are present."
+  -
+    type: "verify"
+    at: "2026-08-29T14:51:24.375Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified current head db3a023e6; its delta from the fully tested close commit is limited to framework-owned task evidence artifacts."
 doc_version: 3
-doc_updated_at: "2026-08-29T14:48:50.165Z"
+doc_updated_at: "2026-08-29T14:51:28.359Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering."
 sections:
@@ -1076,6 +1082,66 @@ sections:
     Command: inspect task README aggregate and real task advance replay
     Result: pass
     Evidence: state-bound complete-done-workitem-recovery is COMPLETED; replay reopens DONE to DOING and projects the WorkItem result exactly once.
+    Scope: accepted bootstrap behavior and persisted semantic evidence.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+    - old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-29T14:51:24.375Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified current head db3a023e6; its delta from the fully tested close commit is limited to framework-owned task evidence artifacts.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:a2e51a2314687eb1e5cc91ceb6f7fd7f644097155573b528bf5ee210cbd6e8c7
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun vitest run packages/agentplane/src/commands/task/external-agent-effect-recovery.test.ts packages/agentplane/src/commands/task/task-scope-extension-request.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts -t "before WorkItem projection|state-bound|scope extension"
+    Result: pass
+    Evidence: focused task-advance and recovery regressions passed on implementation commit; git diff 019b64e46502..db3a023e6 contains only framework-owned .agentplane task evidence artifacts.
+    Scope: DONE-task reopening, WorkItem result projection, and fail-closed scope extension.
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs && bun run hotspots:check && git diff --check main...HEAD
+    Result: pass
+    Evidence: policy routing, hotspot baseline, and diff integrity passed; current-head delta is task evidence only.
+    Scope: framework policy, size budgets, and changed-tree hygiene.
+
+    Check: docs_contract
+    Command: bun run ci:local:full docs-schema and website build groups
+    Result: pass
+    Evidence: schemas, agent templates, policy routing, generated CLI reference, recipes inventory, README generation, navigation check, static website build, and DESIGN.md compliance passed at 019b64e46502; db3a023e6 changes only task evidence artifacts.
+    Scope: generated documentation and policy contract integrity.
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: exit 0 at 019b64e46502; 758 routed tests, 98 Windows platform-critical tests, 101 significant-coverage tests, workflow lint, and coverage threshold passed under Node 26. Current db3a023e6 has an implementation-equivalent source tree; its only delta is framework-owned task evidence.
+    Scope: full local release-equivalent regression suite.
+
+    Check: task_outcome
+    Command: inspect task README aggregate, real task advance replay, and git diff 019b64e46502..db3a023e6
+    Result: pass
+    Evidence: complete-done-workitem-recovery is COMPLETED; replay reopens DONE to DOING and projects the WorkItem result exactly once; current-head delta is task evidence only.
     Scope: accepted bootstrap behavior and persisted semantic evidence.
 
     BlueprintSnapshotRef:
@@ -2730,6 +2796,66 @@ Check: task_outcome
 Command: inspect task README aggregate and real task advance replay
 Result: pass
 Evidence: state-bound complete-done-workitem-recovery is COMPLETED; replay reopens DONE to DOING and projects the WorkItem result exactly once.
+Scope: accepted bootstrap behavior and persisted semantic evidence.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+- old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-29T14:51:24.375Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified current head db3a023e6; its delta from the fully tested close commit is limited to framework-owned task evidence artifacts.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:a2e51a2314687eb1e5cc91ceb6f7fd7f644097155573b528bf5ee210cbd6e8c7
+
+Details:
+
+Check: affected_unit_integration
+Command: bun vitest run packages/agentplane/src/commands/task/external-agent-effect-recovery.test.ts packages/agentplane/src/commands/task/task-scope-extension-request.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts -t "before WorkItem projection|state-bound|scope extension"
+Result: pass
+Evidence: focused task-advance and recovery regressions passed on implementation commit; git diff 019b64e46502..db3a023e6 contains only framework-owned .agentplane task evidence artifacts.
+Scope: DONE-task reopening, WorkItem result projection, and fail-closed scope extension.
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs && bun run hotspots:check && git diff --check main...HEAD
+Result: pass
+Evidence: policy routing, hotspot baseline, and diff integrity passed; current-head delta is task evidence only.
+Scope: framework policy, size budgets, and changed-tree hygiene.
+
+Check: docs_contract
+Command: bun run ci:local:full docs-schema and website build groups
+Result: pass
+Evidence: schemas, agent templates, policy routing, generated CLI reference, recipes inventory, README generation, navigation check, static website build, and DESIGN.md compliance passed at 019b64e46502; db3a023e6 changes only task evidence artifacts.
+Scope: generated documentation and policy contract integrity.
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: exit 0 at 019b64e46502; 758 routed tests, 98 Windows platform-critical tests, 101 significant-coverage tests, workflow lint, and coverage threshold passed under Node 26. Current db3a023e6 has an implementation-equivalent source tree; its only delta is framework-owned task evidence.
+Scope: full local release-equivalent regression suite.
+
+Check: task_outcome
+Command: inspect task README aggregate, real task advance replay, and git diff 019b64e46502..db3a023e6
+Result: pass
+Evidence: complete-done-workitem-recovery is COMPLETED; replay reopens DONE to DOING and projects the WorkItem result exactly once; current-head delta is task evidence only.
 Scope: accepted bootstrap behavior and persisted semantic evidence.
 
 BlueprintSnapshotRef:
