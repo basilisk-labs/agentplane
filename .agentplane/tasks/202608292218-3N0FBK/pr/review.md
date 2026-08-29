@@ -12,7 +12,7 @@ Created: 2026-08-29T22:21:11.540Z
 
 ## Verification
 
-- State: needs_rework
+- State: blocked_external
 - Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
@@ -30,9 +30,9 @@ Created: 2026-08-29T22:21:11.540Z
 
 ```text
  .../evaluator-episode.calibration.test.ts          | 30 +++++++-
- .../src/commands/shared/workflow-step-branch.ts    | 12 +++
+ .../src/commands/shared/workflow-step-branch.ts    | 57 +++++++--------
  .../commands/shared/workflow-step-quality.test.ts  | 85 ++++++++++++++++++++++
- 3 files changed, 126 insertions(+), 1 deletion(-)
+ 3 files changed, 142 insertions(+), 30 deletions(-)
 ```
 
 </details>
