@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -62,7 +62,7 @@ quality_review:
 token_usage:
   agent_runs: 8
   input_tokens: null
-  journal_digest: "sha256:2a93508be018d507b39d1c46ee230f601d5862eb5dd7269802dba06e666f68e0"
+  journal_digest: "sha256:3844627695bfd74e2bc0da44f2be58ec972b64a3d6af02dbec2b7c19c11ef45a"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -72,7 +72,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-29T23:21:35.924Z"
+  updated_at: "2026-08-29T23:38:37.475Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -258,8 +258,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "6e4f20db3b5dc60796ccd299b0bdf7cde7cb251b"
-  message: "🚧 3N0FBK task: record external evaluator result"
+  hash: "a3947c0f726db541aa1fc4a2982b49ec335ea76d"
+  message: "🧩 3N0FBK task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -285,6 +285,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: f6dae0b38200. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Start: classify and recover the unrelated hosted concurrency-test failure without widening the bootstrap fix."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -388,8 +394,23 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "6e4f20db3b5dc60796ccd299b0bdf7cde7cb251b"
+  -
+    type: "status"
+    at: "2026-08-29T23:38:21.739Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Start: classify and recover the unrelated hosted concurrency-test failure without widening the bootstrap fix."
+  -
+    type: "status"
+    at: "2026-08-29T23:38:37.475Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "a3947c0f726db541aa1fc4a2982b49ec335ea76d"
 doc_version: 3
-doc_updated_at: "2026-08-29T23:21:35.932Z"
+doc_updated_at: "2026-08-29T23:38:37.504Z"
 doc_updated_by: "CODER"
 description: "Fix branch_pr route selection so an approved task with any incomplete required canonical WorkItem returns to the bounded EXECUTOR WorkItem episode before verification, quality review, PR publication, or pre-merge closure. Add a regression test for a task that has stale verification, quality review, and commit evidence while a required WorkItem remains READY or PLANNED."
 sections:
@@ -1694,6 +1715,6 @@ DecisionContextRef:
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:2a93508be018d507b39d1c46ee230f601d5862eb5dd7269802dba06e666f68e0`
+- Journal digest: `sha256:3844627695bfd74e2bc0da44f2be58ec972b64a3d6af02dbec2b7c19c11ef45a`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-29T23:21:35.924Z`
+- Updated at: `2026-08-29T23:38:37.475Z`

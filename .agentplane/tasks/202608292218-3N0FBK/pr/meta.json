@@ -8,10 +8,10 @@
   "pr_number": 5878,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5878",
   "pre_merge_closure": {
-    "basis_commit": "6e4f20db3b5dc60796ccd299b0bdf7cde7cb251b",
+    "basis_commit": "a3947c0f726db541aa1fc4a2982b49ec335ea76d",
     "branch": "task/202608292218-3N0FBK/prevent-branch-closeout-while-required-workitems",
     "pr_number": 5878,
-    "recorded_at": "2026-08-29T23:21:36.056Z",
+    "recorded_at": "2026-08-29T23:38:37.555Z",
     "state": "closed_before_merge"
   },
   "provider": {

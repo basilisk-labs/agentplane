@@ -6,7 +6,7 @@ Created: 2026-08-29T22:21:11.540Z
 
 - Task: `202608292218-3N0FBK`
 - Title: Prevent branch closeout while required WorkItems are incomplete
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608292218-3N0FBK/prevent-branch-closeout-while-required-workitems`
 - Canonical task record: `.agentplane/tasks/202608292218-3N0FBK/README.md`
 
