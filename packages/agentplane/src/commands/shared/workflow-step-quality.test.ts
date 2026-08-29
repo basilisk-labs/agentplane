@@ -112,7 +112,92 @@ function deterministicEvidenceGapReview(evaluatedSha = resume.head_sha) {
   } satisfies NonNullable<TaskData["quality_review"]>;
 }
 
+function taskCentricExtensions(workItemState: "READY" | "COMPLETED") {
+  const digest = `sha256:${"a".repeat(64)}`;
+  return {
+    "agentplane.task_centric": {
+      schema_version: 1,
+      id: task.id,
+      revision: 4,
+      intent: {
+        task_id: task.id,
+        request: task.description,
+        constraints: [],
+        acceptance_criteria: [],
+        captured_at: "2026-07-25T00:00:00.000Z",
+      },
+      lifecycle: "ACTIVE",
+      current_plan: {
+        schema_version: 1,
+        task_id: task.id,
+        revision: 1,
+        digest,
+        proposal: {
+          work_items: {
+            work_items: [{ id: "required-route-fix", optional: false }],
+          },
+        },
+        approval: { state: "approved" },
+        created_at: "2026-07-25T00:00:00.000Z",
+      },
+      work_items: {
+        "required-route-fix": {
+          id: "required-route-fix",
+          state: workItemState,
+          revision: 1,
+          attempt: workItemState === "COMPLETED" ? 1 : 0,
+          claim_id: null,
+          output_manifests: [],
+          validation_result: null,
+          last_failure: null,
+        },
+      },
+      final_validation: null,
+      event_cursor: 1,
+      updated_at: "2026-07-25T00:00:00.000Z",
+    },
+  };
+}
+
 describe("quality evidence refresh route", () => {
+  it("returns to required WorkItem execution before downstream closeout", () => {
+    const verifiedTask = {
+      ...task,
+      commit: { hash: resume.head_sha, message: "feat: stale implementation evidence" },
+      verification: { state: "ok" as const, updated_at: "2026-07-25T00:10:00.000Z" },
+      quality_review: {
+        state: "pass" as const,
+        reviewed_by: "EVALUATOR",
+        reviewed_at: "2026-07-25T00:11:00.000Z",
+        summary: "The previously observed implementation passed review.",
+        evidence_refs: ["quality-report.json"],
+      },
+    };
+    const incomplete = reduceRouteState(
+      routeState({
+        task: { ...verifiedTask, extensions: taskCentricExtensions("READY") },
+        blockers: [{ code: "pre_merge_closure_missing", summary: "closure is pending" }],
+      }),
+    );
+    expect(incomplete).toMatchObject({
+      kind: "agent_episode",
+      phase: "branch_implementation",
+      episode: { purpose: "implementation", role: "CODER" },
+    });
+
+    const completed = reduceRouteState(
+      routeState({
+        task: { ...verifiedTask, extensions: taskCentricExtensions("COMPLETED") },
+        blockers: [{ code: "pre_merge_closure_missing", summary: "closure is pending" }],
+      }),
+    );
+    expect(completed).toMatchObject({
+      kind: "approval",
+      phase: "side_effect_authority_required",
+      request: { type: "side_effect" },
+    });
+  });
+
   it("refreshes deterministic evidence after a current EVALUATOR block without changing implementation", () => {
     const step = reduceRouteState(
       routeState({

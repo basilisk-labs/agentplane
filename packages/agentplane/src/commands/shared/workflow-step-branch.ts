@@ -1,3 +1,5 @@
+import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
@@ -30,6 +32,15 @@ import {
   workSlug,
   worktreeResolutionStep,
 } from "./workflow-step-factory.js";
+
+function hasIncompleteRequiredWorkItems(state: WorkflowRouteState): boolean {
+  const aggregate = taskCentricAggregateFromExtensions(state.task.extensions);
+  return (
+    aggregate?.current_plan?.proposal.work_items.work_items.some(
+      (item) => !item.optional && aggregate.work_items[item.id]?.state !== "COMPLETED",
+    ) ?? false
+  );
+}
 
 function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
   return terminalStep({
@@ -433,6 +444,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   }
   const recoveryStep = conflictReworkRouteStep(state) ?? providerUpdateBranchStep(state);
   if (recoveryStep) return recoveryStep;
+  if (hasIncompleteRequiredWorkItems(state)) return branchImplementationStep(state);
   if (
     state.taskWorktree?.state === "not_present" &&
     state.blockers.some((blocker) => blocker.code === "pr_meta_stale")
