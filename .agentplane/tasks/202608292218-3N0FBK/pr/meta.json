@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608292218-3N0FBK/prevent-branch-closeout-while-required-workitems",
+  "created_at": "2026-08-29T22:21:11.540Z",
+  "diffstat_sha256": "sha256:aaecc0f96c139d5b937a03c1a6292c75befe070f08ab753ad7f319ecced3c5ed",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608292218-3N0FBK",
+  "updated_at": "2026-08-29T22:21:11.540Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
