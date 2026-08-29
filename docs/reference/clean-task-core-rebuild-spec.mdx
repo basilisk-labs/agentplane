@@ -263,6 +263,15 @@ Dry-run reports every classification, proposed digest, ambiguity, and rollback c
 stops on any ambiguity or unsupported layout. Bulk migration is canary-first and does not continue
 after the first unexplained mismatch.
 
+Every applied migration emits a receipt containing the source digest, source class, migration
+version, canonical output digest, projection digest, backup digest and location, repository and
+backend identities, compare-and-swap revision, and the exact readback result. Rollback is authorized
+only when the current canonical digest and revision still equal the receipt output and the backup
+digest still matches. Otherwise rollback returns `state_changed_after_migration` or
+`backup_mismatch` without writing. Legacy deletion is forbidden until corpus replay, dual-run,
+canary migration, receipt idempotency, exact-byte rollback, and a post-cutover observation window
+all pass on the same implementation identity.
+
 ## Replay corpus manifest
 
 M2 must freeze inputs and expected normalized outputs for these families:
