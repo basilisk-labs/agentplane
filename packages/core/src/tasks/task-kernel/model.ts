@@ -233,6 +233,7 @@ type CommandEnvelope<K extends string, P extends object = object> = Readonly<
 
 export type TaskCommand =
   | CommandEnvelope<"capture_intent", { intent_digest: Sha256Digest }>
+  | CommandEnvelope<"transition_task", { action: "request_human" | "block" | "resume" | "cancel" }>
   | CommandEnvelope<"propose_plan", { plan: PlanRecord }>
   | CommandEnvelope<"reject_plan", { plan_revision: number; plan_digest: Sha256Digest }>
   | CommandEnvelope<
@@ -315,6 +316,7 @@ export type DomainEvent = Readonly<{
   id: string;
   kind:
     | "intent_captured"
+    | "task_transitioned"
     | "plan_proposed"
     | "plan_rejected"
     | "plan_approved"
