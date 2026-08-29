@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608290844-7JCQPF-fde2a1f1e84b733d4a2cfc2e",
+  "prepared_at": "2026-08-29T16:56:28.160Z",
+  "task": {
+    "id": "202608290844-7JCQPF",
+    "revision": 53,
+    "objective": "Allow state-bound WorkItem implementation results to reopen DONE tasks\n\nFix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "git diff --check",
+      "- In scope: Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering.\n- Out of scope: unrelated refactors not required for \"Allow state-bound WorkItem implementation results to reopen DONE tasks\".",
+      "Prepared a one-WorkItem recovery plan with no narrative required_inputs and an explicit real task-advance regression.",
+      "PLANNER fallback scaffold for \"Allow state-bound WorkItem implementation results to reopen DONE tasks\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow state-bound WorkItem implementation results to reopen DONE tasks\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "5b7ccd96d09c18e330c5b4f9c6e97725ffc7fd33",
+  "diff_base_sha": "3bcce289091f5e6cbcb1dea87c2964c4f559259d",
+  "blueprint_digest": "1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-165628160-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:e208f9f1ccf83f6c591a37af442e7286877c6939f4d657493da89e27f6e74260",
+    "prompt_path": ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/5a942fdbf7ae26d4b99cd24f9825b1a69678fafaf17cea7b1cb6739ea2315ec7.md",
+    "result_schema_path": ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608290844-7JCQPF/README.md",
+      "sha256": "sha256:b038d86a2c6c7f9f33bbe4cca301d4bd5dba4cf06cdac577596e636ff6f018d0",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/00cb8f6790a2d104fb8674882268758d2e941322ed8e92c3b5dc9e428fd8dce4.patch",
+      "sha256": "sha256:00cb8f6790a2d104fb8674882268758d2e941322ed8e92c3b5dc9e428fd8dce4",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/0ac40dd9a245bdd7a6904bf832c36d53c5e8cf0e6f16f59e6ecea9c0f6dd8abc.json",
+      "sha256": "sha256:0ac40dd9a245bdd7a6904bf832c36d53c5e8cf0e6f16f59e6ecea9c0f6dd8abc",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608290844-7JCQPF/verification/20260829165606401-4bf622d61e8adf7c.json",
+      "sha256": "sha256:abf7dd8030db030066c0e0515827500d38d62789399be08eab39c67f9b916938",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/bf246ecc6aed6a80440a3a0197ee6a33faa53b12ac072fd16ecde736ee4d7a69.json",
+      "sha256": "sha256:bf246ecc6aed6a80440a3a0197ee6a33faa53b12ac072fd16ecde736ee4d7a69",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

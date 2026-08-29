@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202608290844-7JCQPF/allow-state-bound-workitem-implementation-result",
+  "created_at": "2026-08-29T08:47:59.220Z",
+  "diffstat_sha256": "sha256:7e153ffe127acde1c8f9431f59eb678596948c441bd483d999ac9b6834f68bc6",
+  "last_verified_at": "2026-08-29T16:56:06.401Z",
+  "last_verified_diffstat_sha256": "sha256:7e153ffe127acde1c8f9431f59eb678596948c441bd483d999ac9b6834f68bc6",
+  "pr_number": 5871,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5871",
+  "pre_merge_closure": {
+    "basis_commit": "2fa93faf9b3b78193ff351db67390175231bbe6d",
+    "branch": "task/202608290844-7JCQPF/allow-state-bound-workitem-implementation-result",
+    "pr_number": 5871,
+    "recorded_at": "2026-08-29T17:02:27.543Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608290844-7JCQPF",
+  "updated_at": "2026-08-29T09:15:22.865Z",
+  "verify": {
+    "status": "pass"
+  }
+}

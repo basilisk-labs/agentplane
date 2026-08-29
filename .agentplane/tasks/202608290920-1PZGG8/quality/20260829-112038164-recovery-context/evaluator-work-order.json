@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608290920-1PZGG8-ee6001cfdac6ab42458902c1",
+  "prepared_at": "2026-08-29T11:20:38.164Z",
+  "task": {
+    "id": "202608290920-1PZGG8",
+    "revision": 29,
+    "objective": "Allow task-centric plan refinement before WorkItem selection\n\nFix the supported recovery path exposed by 7JCQPF. In recordTaskCentricExternalResult, when semantic.plan_refinement is present, record the refinement against the current approved plan before selecting or projecting a WorkItem result. If the refinement requires replan, return replan_required without requiring a schedulable WorkItem. Preserve normal WorkItem result selection, idempotency, validation, and fail-closed behavior when no refinement is present. Add focused tests for an unschedulable READY WorkItem whose refinement is still recorded, plus unchanged normal result behavior. This is an integration-path blocker for 7JCQPF and PR #5870; do not change release ordering, policy, scheduler semantics, or task stores.",
+    "acceptance_criteria": [
+      "- In scope: Fix the supported recovery path exposed by 7JCQPF. In recordTaskCentricExternalResult, when semantic.plan_refinement is present, record the refinement against the current approved plan before selecting or projecting a WorkItem result. If the refinement requires replan, return replan_required without requiring a schedulable WorkItem. Preserve normal WorkItem result selection, idempotency, validation, and fail-closed behavior when no refinement is present. Add focused tests for an unschedulable READY WorkItem whose refinement is still recorded, plus unchanged normal result behavior. This is an integration-path blocker for 7JCQPF and PR #5870; do not change release ordering, policy, scheduler semantics, or task stores.\n- Out of scope: unrelated refactors not required for \"Allow task-centric plan refinement before WorkItem selection\".",
+      "Prepared a one-WorkItem recovery plan that validates the evaluator rework on the current commit without widening scope.",
+      "PLANNER fallback scaffold for \"Allow task-centric plan refinement before WorkItem selection\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow task-centric plan refinement before WorkItem selection\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "04fa3a364009c33257e07b13d7fb21ac5d7b9fb2",
+  "diff_base_sha": "3bcce289091f5e6cbcb1dea87c2964c4f559259d",
+  "blueprint_digest": "8ea523d85b10d9639a2d3a53bac171c4c1c116ba1da4fa5f9db36607f1d0691e",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608290920-1PZGG8/quality/20260829-112038164-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:ac809766536fcde40c8c2159debd5dbfed9505a5c5125717f38d856c3f1ec595",
+    "prompt_path": ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/6ab11382be85eb26466f9d0685b65b522e69c1ff5b74c1f152d4cb04e06604ca.md",
+    "result_schema_path": ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608290920-1PZGG8/README.md",
+      "sha256": "sha256:b00fcb8be144cf7c500e059f2ec7862d840dd132b7c17338562bdbc219f5fe98",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/33ccc1d6b91deeda43925dda11bcb7871d4177f0b26d9f3f8f154203d618a3bf.patch",
+      "sha256": "sha256:33ccc1d6b91deeda43925dda11bcb7871d4177f0b26d9f3f8f154203d618a3bf",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/6ff4eeeac1fb74deb063645fd271923073c9a9756944f516b8d10fb36ad1dcfd.json",
+      "sha256": "sha256:6ff4eeeac1fb74deb063645fd271923073c9a9756944f516b8d10fb36ad1dcfd",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608290920-1PZGG8/verification/20260829112024099-2dc4de9558ceb003.json",
+      "sha256": "sha256:ab08f741dced3f5022f8c1125145ae5d6eb0d5a4befc66573ed6d131f383170c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/e35839039295af7993b80adfdaa63da9729d59a2955432cd06975115f9057010.json",
+      "sha256": "sha256:e35839039295af7993b80adfdaa63da9729d59a2955432cd06975115f9057010",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

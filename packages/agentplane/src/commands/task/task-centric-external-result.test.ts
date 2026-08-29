@@ -203,7 +203,7 @@ const semantic = {
 } as const satisfies AgentSemanticResult;
 
 describe("recordTaskCentricExternalResult", () => {
-  it("rejects a null-ID result when multiple WorkItems are claimed", async () => {
+  it("rejects an ambiguous null-ID local refinement before mutating the plan", async () => {
     const initial = initialTask(undefined, [
       { id: "a", depends_on: [], required_inputs: [] },
       { id: "b", depends_on: [], required_inputs: [] },
@@ -222,13 +222,28 @@ describe("recordTaskCentricExternalResult", () => {
       }),
     });
     const command = { taskBackend: backend } as unknown as CommandContext;
+    const taskBeforeResult = structuredClone(backend.current());
     const revision = backend.current().revision;
 
     await expect(
       recordTaskCentricExternalResult({
         command,
         work_order: workOrder(null, "work-ambiguous-claims"),
-        semantic: { ...semantic, work_order_id: "work-ambiguous-claims" },
+        semantic: {
+          ...semantic,
+          work_order_id: "work-ambiguous-claims",
+          plan_refinement: {
+            description: "Clarify the current step.",
+            scope_roots_added: [],
+            outputs_added: [],
+            acceptance_changed: false,
+            risk_changed: false,
+            external_effects_added: [],
+            dependencies_changed: false,
+            architecture_constraints_changed: false,
+            operations: ["clarify"],
+          },
+        },
         verification: {
           status: "passed",
           artifact_path: ".agentplane/checks.json",
@@ -250,6 +265,10 @@ describe("recordTaskCentricExternalResult", () => {
       b: { state: "CLAIMED", claim_id: "claim-b" },
       c: { state: "READY", claim_id: null },
     });
+    expect(
+      taskCentricAggregateFromExtensions(backend.current().extensions)?.plan_amendments,
+    ).toEqual([]);
+    expect(backend.current()).toEqual(taskBeforeResult);
   });
 
   it("replays a null-ID result against its claimed WorkItem instead of the next item", async () => {
@@ -430,6 +449,51 @@ describe("recordTaskCentricExternalResult", () => {
         detail: expect.stringContaining("was not observed") as unknown,
       }),
     ]);
+  });
+
+  it("records material refinement before selecting an unschedulable WorkItem", async () => {
+    const backend = memoryBackend(
+      initialTask(undefined, [{ id: "a", depends_on: [], required_inputs: ["missing-output"] }]),
+    );
+
+    await expect(
+      recordTaskCentricExternalResult({
+        command: { taskBackend: backend } as unknown as CommandContext,
+        work_order: workOrder(null, "work-unschedulable-refinement"),
+        semantic: {
+          ...semantic,
+          work_order_id: "work-unschedulable-refinement",
+          plan_refinement: {
+            description: "Remove an invalid produced-output dependency.",
+            scope_roots_added: [],
+            outputs_added: [],
+            acceptance_changed: false,
+            risk_changed: false,
+            external_effects_added: [],
+            dependencies_changed: true,
+            architecture_constraints_changed: false,
+            operations: ["clarify"],
+          },
+        },
+        verification: {
+          status: "passed",
+          artifact_path: ".agentplane/checks.json",
+          checks: [],
+          reason: null,
+        },
+        head: HEAD,
+        dirty_paths: [],
+      }),
+    ).resolves.toEqual({
+      state: "replan_required",
+      work_item_id: null,
+      remaining_required_work_items: 1,
+    });
+
+    const aggregate = taskCentricAggregateFromExtensions(backend.current().extensions)!;
+    expect(aggregate.lifecycle).toBe("PLANNING");
+    expect(aggregate.work_items.a?.state).toBe("READY");
+    expect(taskCentricReplanRequiredFromExtensions(backend.current().extensions)).toBe(true);
   });
 
   it("records local amendments without invalidating approval and routes material changes to replanning", async () => {

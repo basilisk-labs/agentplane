@@ -1,0 +1,101 @@
+{
+  "details": "",
+  "digest": "sha256:b669a1777bc069498c5a4ef8f65514f2ab230b2ea801a22940f1e54487769145",
+  "implementation_sha": "c9d0e2a977df6ce2156290bce5b9002a72a6e9c7",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:8712b04ad0872ab0ad667f1e4ba766ab10877f12d08ad5d95d5b2732252db6b0",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "3bcce289091f5e6cbcb1dea87c2964c4f559259d",
+      "digest": "sha256:7d76ba855abdeb5a7c39f6ca7b5486369ed8a4bd849fa5d50b29d40fa31a2d02",
+      "primary_task_id": "202608290920-1PZGG8",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "auto",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608290920-1PZGG8"
+      ]
+    },
+    "implementation": {
+      "base_sha": "3bcce289091f5e6cbcb1dea87c2964c4f559259d",
+      "digest": "sha256:35d9bd32ff02a1e1970114ebc37a4169e7b5e2eeccf61289ae0b0c788456fa9e",
+      "strategy": "branch_diff",
+      "target_sha": "c9d0e2a977df6ce2156290bce5b9002a72a6e9c7"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:82dcb6d6787c1347fcf408abe1c2f01f44e3041541f14ab3b8f8f76bb2661260",
+    "verify_steps_digest": "sha256:24870fce63c2455441b09f56243e72d224fcac20b52a9799326e9de05d62a231"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: No executable declared verification checks are configured for this task.",
+  "recorded_at": "2026-08-29T11:00:02.485Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Allow task-centric plan refinement before WorkItem selection\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow task-centric plan refinement before WorkItem selection\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:24870fce63c2455441b09f56243e72d224fcac20b52a9799326e9de05d62a231",
+  "task_id": "202608290920-1PZGG8",
+  "verification_command": "agentplane verify 202608290920-1PZGG8 --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
