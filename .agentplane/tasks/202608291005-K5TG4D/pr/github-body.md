@@ -15,8 +15,8 @@ Produce the implementation specification, code ownership map, invariant catalog,
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -29,8 +29,8 @@ Produce the implementation specification, code ownership map, invariant catalog,
 ```text
  docs/adr/0017-clean-task-core-rebuild.md        |  95 +++++
  docs/adr/README.md                              |  37 +-
- docs/reference/clean-task-core-rebuild-spec.mdx | 450 ++++++++++++++++++++++++
- 3 files changed, 564 insertions(+), 18 deletions(-)
+ docs/reference/clean-task-core-rebuild-spec.mdx | 459 ++++++++++++++++++++++++
+ 3 files changed, 573 insertions(+), 18 deletions(-)
 ```
 
 </details>
