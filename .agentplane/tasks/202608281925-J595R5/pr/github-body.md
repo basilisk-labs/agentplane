@@ -22,7 +22,7 @@ Fix the reproduced release-integration blocker in DVS5NN/PR #5862 on main 3bcce2
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-28T20:00:19.477Z
+- Updated: 2026-08-28T20:50:35.231Z
 - Branch: task/202608281925-J595R5/resume-required-workitems-before-branch-pre-merg
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
