@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608291005-K5TG4D",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-29T17:33:33.732Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 4 typed finding(s).",
+  "evaluated_sha": "034c1009b73a80a538405abfad43a33e69c9f4a0",
+  "blueprint_digest": "efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c",
+  "findings": [
+    "inventory-and-map is READY with no output manifest.",
+    "kernel-contract, migration-oracle, and traceability-and-gates remain PLANNED.",
+    "Task-level verification cannot substitute for required WorkItem completion under the approved recovery projection rule.",
+    "Residual risk: Closing or publishing before WorkItem projection would leave the task-centric plan internally incomplete."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/3bc81fab9e1463c5f3fc60e5327889cf576ad0e6813951c0f8f1c2aa2eb9ee55.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The legacy branch route treated a recorded task-level implementation commit as sufficient to enter evaluation after plan replacement."
+  ],
+  "residual_risks": [
+    "Issue inventory-and-map as the next state-bound EXECUTOR episode. Complete and validate each required WorkItem in dependency order before task-level evaluation and pre-merge closure."
+  ]
+}
