@@ -432,6 +432,124 @@ describe("direct task verification", () => {
     });
   });
 
+  it("runs a safe declared-check sequence in order without a shell", async () => {
+    const cwd = await root();
+    mocks.runProcess
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "generated", stderr: "" })
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "fresh", stderr: "" });
+    const check =
+      "bun run docs:readme-header:generate && bun run docs:readme-header:check";
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { verify: [check], task_kind: "code", mutation_scope: "code" },
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+
+    expect(result).toMatchObject({
+      status: "passed",
+      reason: null,
+      checks: [{ command: check, script: null, exit_code: 0, stdout_tail: "generated\nfresh" }],
+    });
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        command: "bun",
+        args: ["run", "docs:readme-header:generate"],
+      }),
+    );
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        command: "bun",
+        args: ["run", "docs:readme-header:check"],
+      }),
+    );
+  });
+
+  it("stops a sequence at its first failure and shares its timeout budget", async () => {
+    const cwd = await root();
+    mocks.runProcess
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "first", stderr: "" })
+      .mockResolvedValueOnce({ exitCode: 7, stdout: "", stderr: "second failed" });
+    const nowValues = [1000, 1000, 1250, 1250];
+    const check = "bun run first && bun run second && bun run should-not-run";
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { verify: [] },
+      task_id: TASK_ID,
+      cwd,
+      additional_commands: [{ command: check, timeout_ms: 1000 }],
+      allow_empty: true,
+      run_process: mocks.runProcess,
+      now: () => nowValues.shift() ?? 1250,
+    });
+
+    expect(result).toMatchObject({
+      status: "failed",
+      reason: `Declared check failed: ${check}`,
+      checks: [{ command: check, exit_code: 7, stderr_tail: "second failed" }],
+    });
+    expect(mocks.runProcess).toHaveBeenCalledTimes(2);
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ timeoutMs: 1000 }),
+    );
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ timeoutMs: 750 }),
+    );
+  });
+
+  it("rejects malformed or unsafe sequences before executing any segment", async () => {
+    const cwd = await root();
+    for (const check of [
+      "bun run first &&",
+      "&& bun run second",
+      "bun run first && && bun run second",
+      "bun run first&&bun run second",
+      "bun run first || bun run second",
+      "bun run first; bun run second",
+      "bun run first & bun run second",
+    ]) {
+      const result = await runDirectTaskVerification({
+        command: command(cwd),
+        task: { verify: [check] },
+        task_id: TASK_ID,
+        cwd,
+        run_process: mocks.runProcess,
+      });
+      expect(result).toMatchObject({
+        status: "unsupported",
+        reason: `Unsupported declared check: ${check}`,
+        checks: [],
+      });
+    }
+    expect(mocks.runProcess).not.toHaveBeenCalled();
+  });
+
+  it("does not treat quoted ampersands as a sequence separator", async () => {
+    const cwd = await root();
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "1 pass", stderr: "" });
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { verify: ["bun test 'a && b'"] },
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+
+    expect(result.status).toBe("passed");
+    expect(mocks.runProcess).toHaveBeenCalledOnce();
+    expect(mocks.runProcess).toHaveBeenCalledWith(
+      expect.objectContaining({ command: "bun", args: ["test", "a && b"] }),
+    );
+  });
+
   it("runs blocking WorkItem checks with their strictest timeout and skips optional-only checks", async () => {
     const cwd = await root();
     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "ok", stderr: "" });

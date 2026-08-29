@@ -1,0 +1,371 @@
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.test.ts b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+index 57e503086..065331c46 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+@@ -363,6 +363,124 @@ describe("direct task verification", () => {
+     });
+   });
+ 
++  it("runs a safe declared-check sequence in order without a shell", async () => {
++    const cwd = await root();
++    mocks.runProcess
++      .mockResolvedValueOnce({ exitCode: 0, stdout: "generated", stderr: "" })
++      .mockResolvedValueOnce({ exitCode: 0, stdout: "fresh", stderr: "" });
++    const check =
++      "bun run docs:readme-header:generate && bun run docs:readme-header:check";
++
++    const result = await runDirectTaskVerification({
++      command: command(cwd),
++      task: { verify: [check], task_kind: "code", mutation_scope: "code" },
++      task_id: TASK_ID,
++      cwd,
++      run_process: mocks.runProcess,
++    });
++
++    expect(result).toMatchObject({
++      status: "passed",
++      reason: null,
++      checks: [{ command: check, script: null, exit_code: 0, stdout_tail: "generated\nfresh" }],
++    });
++    expect(mocks.runProcess).toHaveBeenNthCalledWith(
++      1,
++      expect.objectContaining({
++        command: "bun",
++        args: ["run", "docs:readme-header:generate"],
++      }),
++    );
++    expect(mocks.runProcess).toHaveBeenNthCalledWith(
++      2,
++      expect.objectContaining({
++        command: "bun",
++        args: ["run", "docs:readme-header:check"],
++      }),
++    );
++  });
++
++  it("stops a sequence at its first failure and shares its timeout budget", async () => {
++    const cwd = await root();
++    mocks.runProcess
++      .mockResolvedValueOnce({ exitCode: 0, stdout: "first", stderr: "" })
++      .mockResolvedValueOnce({ exitCode: 7, stdout: "", stderr: "second failed" });
++    const nowValues = [1000, 1000, 1250, 1250];
++    const check = "bun run first && bun run second && bun run should-not-run";
++
++    const result = await runDirectTaskVerification({
++      command: command(cwd),
++      task: { verify: [] },
++      task_id: TASK_ID,
++      cwd,
++      additional_commands: [{ command: check, timeout_ms: 1000 }],
++      allow_empty: true,
++      run_process: mocks.runProcess,
++      now: () => nowValues.shift() ?? 1250,
++    });
++
++    expect(result).toMatchObject({
++      status: "failed",
++      reason: `Declared check failed: ${check}`,
++      checks: [{ command: check, exit_code: 7, stderr_tail: "second failed" }],
++    });
++    expect(mocks.runProcess).toHaveBeenCalledTimes(2);
++    expect(mocks.runProcess).toHaveBeenNthCalledWith(
++      1,
++      expect.objectContaining({ timeoutMs: 1000 }),
++    );
++    expect(mocks.runProcess).toHaveBeenNthCalledWith(
++      2,
++      expect.objectContaining({ timeoutMs: 750 }),
++    );
++  });
++
++  it("rejects malformed or unsafe sequences before executing any segment", async () => {
++    const cwd = await root();
++    for (const check of [
++      "bun run first &&",
++      "&& bun run second",
++      "bun run first && && bun run second",
++      "bun run first&&bun run second",
++      "bun run first || bun run second",
++      "bun run first; bun run second",
++      "bun run first & bun run second",
++    ]) {
++      const result = await runDirectTaskVerification({
++        command: command(cwd),
++        task: { verify: [check] },
++        task_id: TASK_ID,
++        cwd,
++        run_process: mocks.runProcess,
++      });
++      expect(result).toMatchObject({
++        status: "unsupported",
++        reason: `Unsupported declared check: ${check}`,
++        checks: [],
++      });
++    }
++    expect(mocks.runProcess).not.toHaveBeenCalled();
++  });
++
++  it("does not treat quoted ampersands as a sequence separator", async () => {
++    const cwd = await root();
++    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "1 pass", stderr: "" });
++
++    const result = await runDirectTaskVerification({
++      command: command(cwd),
++      task: { verify: ["bun test 'a && b'"] },
++      task_id: TASK_ID,
++      cwd,
++      run_process: mocks.runProcess,
++    });
++
++    expect(result.status).toBe("passed");
++    expect(mocks.runProcess).toHaveBeenCalledOnce();
++    expect(mocks.runProcess).toHaveBeenCalledWith(
++      expect.objectContaining({ command: "bun", args: ["test", "a && b"] }),
++    );
++  });
++
+   it("runs blocking WorkItem checks with their strictest timeout and skips optional-only checks", async () => {
+     const cwd = await root();
+     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "ok", stderr: "" });
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.ts b/packages/agentplane/src/commands/task/direct-task-verification.ts
+index 851895ec8..fa07e1f02 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.ts
+@@ -35,11 +35,7 @@ type DirectTaskCheck = {
+   stderr_tail: string;
+ };
+ 
+-type ParsedDirectTaskCheck = {
+-  executable: string;
+-  args: string[];
+-  script: string | null;
+-};
++type ParsedDirectTaskCheck = { executable: string; args: string[]; script: string | null };
+ 
+ export type DirectTaskVerificationResult = {
+   status: "passed" | "failed" | "unsupported";
+@@ -48,10 +44,7 @@ export type DirectTaskVerificationResult = {
+   reason: string | null;
+ };
+ 
+-type AdditionalDirectTaskCommand = Readonly<{
+-  command: string;
+-  timeout_ms?: number;
+-}>;
++type AdditionalDirectTaskCommand = Readonly<{ command: string; timeout_ms?: number }>;
+ 
+ export function blockingWorkItemCommands(validation: {
+   checks: readonly {
+@@ -212,14 +205,48 @@ export function renderDirectTaskVerificationDetails(opts: {
+     .join("\n\n");
+ }
+ 
+-function tail(value: string): string {
+-  return value.length <= CHECK_OUTPUT_LIMIT ? value : value.slice(-CHECK_OUTPUT_LIMIT);
+-}
++const tail = (value: string): string =>
++  value.length <= CHECK_OUTPUT_LIMIT ? value : value.slice(-CHECK_OUTPUT_LIMIT);
++
++const mergedOutput = (values: string[]): string => tail(values.filter(Boolean).join("\n"));
+ 
+ export function parseDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
+   return parseDeclaredTaskCheck(command);
+ }
+ 
++function parseDirectTaskCheckSequence(command: string): ParsedDirectTaskCheck[] | null {
++  const parsed: ParsedDirectTaskCheck[] = [];
++  let segmentStart = 0;
++  let quote: "'" | '"' | null = null;
++  for (let index = 0; index < command.length; index += 1) {
++    const char = command[index] ?? "";
++    if (quote) {
++      if (char === quote) quote = null;
++      else if (char === "\\" && quote === '"' && index + 1 < command.length) index += 1;
++      continue;
++    }
++    if (char === "'" || char === '"') {
++      quote = char;
++      continue;
++    }
++    if (char === "\\" && index + 1 < command.length) {
++      index += 1;
++      continue;
++    }
++    if (char !== "&" || command[index + 1] !== "&") continue;
++    const before = command[index - 1] ?? "";
++    const after = command[index + 2] ?? "";
++    if (!/\s/u.test(before) || !/\s/u.test(after)) return null;
++    const check = parseDirectTaskCheck(command.slice(segmentStart, index).trim());
++    if (!check) return null;
++    parsed.push(check);
++    index += 1;
++    segmentStart = index + 1;
++  }
++  const finalCheck = parseDirectTaskCheck(command.slice(segmentStart).trim());
++  return finalCheck ? [...parsed, finalCheck] : null;
++}
++
+ function directTaskCheckTimeoutMs(script: string | null): number {
+   return script === null
+     ? DEFAULT_CHECK_TIMEOUT_MS
+@@ -266,9 +293,7 @@ function selectedLocalChecks(task: Pick<TaskData, "execution_contract">): string
+   );
+ }
+ 
+-function isFullRegressionCommand(command: string): boolean {
+-  const parsed = parseDirectTaskCheck(command);
+-  if (!parsed) return false;
++function isFullRegressionCheck(parsed: ParsedDirectTaskCheck): boolean {
+   if (parsed.script === "ci:local:full") return true;
+   if (
+     ["npm", "pnpm", "yarn"].includes(parsed.executable) &&
+@@ -289,6 +314,10 @@ function isFullRegressionCommand(command: string): boolean {
+   return parsed.executable === "go" && parsed.args[0] === "test" && parsed.args.includes("./...");
+ }
+ 
++function isFullRegressionCommand(command: string): boolean {
++  return parseDirectTaskCheckSequence(command)?.some((parsed) => isFullRegressionCheck(parsed)) ?? false;
++}
++
+ function checkIdsForCommand(command: string, selectedChecks: readonly string[]): string[] {
+   if (isFullRegressionCommand(command)) return [...selectedChecks];
+   return selectedChecks.filter((checkId) => checkId !== "full_regression");
+@@ -421,11 +450,6 @@ async function writeCheckArtifact(opts: {
+   return relative;
+ }
+ 
+-/**
+- * Executes the same deterministic task-verify grammar enforced at mutation
+- * boundaries. The CLI never passes task text to a shell: every command is
+- * parsed into repository-bound argv and crosses the structured process boundary.
+- */
+ export async function runDirectTaskVerification(opts: {
+   command: CommandContext;
+   task: Pick<
+@@ -437,6 +461,7 @@ export async function runDirectTaskVerification(opts: {
+   additional_commands?: readonly AdditionalDirectTaskCommand[];
+   allow_empty?: boolean;
+   run_process?: typeof runProcess;
++  now?: () => number;
+ }): Promise<DirectTaskVerificationResult> {
+   const checks: DirectTaskCheck[] = [];
+   const commands = directTaskVerificationCommands(opts.task, opts.additional_commands);
+@@ -482,8 +507,8 @@ export async function runDirectTaskVerification(opts: {
+           package_scripts: rootPackage?.scripts ?? null,
+         })
+       : declaredCommand;
+-    const parsed = parseDirectTaskCheck(command);
+-    if (!parsed) {
++    const parsedSequence = parseDirectTaskCheckSequence(command);
++    if (!parsedSequence) {
+       const result = {
+         status: "unsupported" as const,
+         checks,
+@@ -491,55 +516,67 @@ export async function runDirectTaskVerification(opts: {
+       };
+       return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+     }
+-    const started = Date.now();
++    const now = opts.now ?? Date.now;
++    const started = now();
++    const timeoutBudgetMs =
++      additionalTimeouts.get(declaredCommand) ??
++      Math.max(...parsedSequence.map((parsed) => directTaskCheckTimeoutMs(parsed.script)));
++    const deadline = started + timeoutBudgetMs;
++    const stdout: string[] = [];
++    const stderr: string[] = [];
++    let exitCode: number | null = 0;
++    let zeroTests = false;
++    const completedCheck = (error?: unknown): DirectTaskCheck => ({
++      command,
++      ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
++      script: parsedSequence.length === 1 ? (parsedSequence[0]?.script ?? null) : null,
++      check_ids: checkIdsForCommand(command, selectedChecks),
++      exit_code: error ? null : exitCode,
++      duration_ms: Math.max(0, now() - started),
++      stdout_tail: mergedOutput(stdout),
++      stderr_tail: mergedOutput([
++        ...stderr,
++        ...(error ? [error instanceof Error ? error.message : "unknown process failure"] : []),
++      ]),
++    });
+     try {
+-      const executed = await (opts.run_process ?? runProcess)({
+-        command: parsed.executable,
+-        args: parsed.args,
+-        cwd: opts.cwd,
+-        env: verificationChildEnv(),
+-        timeoutMs:
+-          additionalTimeouts.get(declaredCommand) ?? directTaskCheckTimeoutMs(parsed.script),
+-        maxBuffer: 1024 * 1024,
+-        reject: false,
+-      });
+-      checks.push({
+-        command,
+-        ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
+-        script: parsed.script,
+-        check_ids: checkIdsForCommand(command, selectedChecks),
+-        exit_code: executed.exitCode,
+-        duration_ms: Math.max(0, Date.now() - started),
+-        stdout_tail: tail(executed.stdout),
+-        stderr_tail: tail(executed.stderr),
+-      });
+-      if (executed.exitCode !== 0) {
+-        const result = {
+-          status: "failed" as const,
+-          checks,
+-          reason: `Declared check failed: ${command}`,
+-        };
+-        return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
++      for (const parsed of parsedSequence) {
++        const remainingTimeoutMs = deadline - now();
++        if (remainingTimeoutMs <= 0) {
++          throw new Error(`Declared check exhausted its ${String(timeoutBudgetMs)}ms timeout budget.`);
++        }
++        const executed = await (opts.run_process ?? runProcess)({
++          command: parsed.executable,
++          args: parsed.args,
++          cwd: opts.cwd,
++          env: verificationChildEnv(),
++          timeoutMs: remainingTimeoutMs,
++          maxBuffer: 1024 * 1024,
++          reject: false,
++        });
++        stdout.push(executed.stdout);
++        stderr.push(executed.stderr);
++        exitCode = executed.exitCode;
++        zeroTests = bunTestReportedZeroTests({
++          parsed,
++          stdout: executed.stdout,
++          stderr: executed.stderr,
++        });
++        if (executed.exitCode !== 0 || zeroTests) break;
+       }
+-      if (bunTestReportedZeroTests({ parsed, stdout: executed.stdout, stderr: executed.stderr })) {
++      checks.push(completedCheck());
++      if (exitCode !== 0 || zeroTests) {
+         const result = {
+           status: "failed" as const,
+           checks,
+-          reason: `Declared bun test check executed zero tests: ${command}`,
++          reason: zeroTests
++            ? `Declared bun test check executed zero tests: ${command}`
++            : `Declared check failed: ${command}`,
+         };
+         return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+       }
+     } catch (error) {
+-      checks.push({
+-        command,
+-        ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
+-        script: parsed.script,
+-        check_ids: checkIdsForCommand(command, selectedChecks),
+-        exit_code: null,
+-        duration_ms: Math.max(0, Date.now() - started),
+-        stdout_tail: "",
+-        stderr_tail: error instanceof Error ? tail(error.message) : "unknown process failure",
+-      });
++      checks.push(completedCheck(error));
+       const result = {
+         status: "failed" as const,
+         checks,

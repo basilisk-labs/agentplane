@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The implementation validates every top-level whitespace-delimited literal && segment through the existing declared-check parser before starting any process; malformed segments and other shell operators remain unsupported.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608250402-QWP8S8/quality/objects/sha256/dba8ecb35875fe04c5d372a1adab993149aa045b0140a31043a28f2b29ab8ea8.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Sequence segments execute as structured argv in declaration order, stop on the first nonzero or zero-test result, and share one declared timeout budget.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608250402-QWP8S8/quality/objects/sha256/dba8ecb35875fe04c5d372a1adab993149aa045b0140a31043a28f2b29ab8ea8.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The focused tests cover successful ordering, fail-fast behavior, remaining-time propagation, rejection before execution, and quoted ampersands.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608250402-QWP8S8/quality/objects/sha256/dba8ecb35875fe04c5d372a1adab993149aa045b0140a31043a28f2b29ab8ea8.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Supervisor-owned evidence records passing critical tests, lint, focused tests, committed-diff checks, and a clean implementation snapshot for evaluated SHA a057e66401599ed9187032edd839b6e1511eca52.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608250402-QWP8S8/quality/objects/sha256/dba8ecb35875fe04c5d372a1adab993149aa045b0140a31043a28f2b29ab8ea8.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted integration must still pass for the published exact SHA before merge.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608250402-QWP8S8/quality/objects/sha256/dba8ecb35875fe04c5d372a1adab993149aa045b0140a31043a28f2b29ab8ea8.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
