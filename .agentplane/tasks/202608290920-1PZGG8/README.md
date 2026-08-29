@@ -4,7 +4,7 @@ title: "Allow task-centric plan refinement before WorkItem selection"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "HOST:slingshot:env_e_6a1ef5a7691083289addb82f53997126:USER"
   note: "host_user_decision=sha256:0268726170606a97f4887c0caf68358918008be50f7a9ae73adc4edc96a2fa0b"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-29T09:34:30.895Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -80,11 +80,44 @@ execution_contract:
       - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
+      - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -117,16 +150,22 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:ab41075f7a9f8af81055e2bf6e41ef6dd197638948bdc5b310ca58d08424a455"
+      digest: "sha256:82dcb6d6787c1347fcf408abe1c2f01f44e3041541f14ab3b8f8f76bb2661260"
       escalation_reasons: []
       execution_groups:
         - "core"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
+          - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -157,11 +196,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "4aede6beb635097fcd6f5a94fb60c37bc45dc09a"
+  message: "🚧 1PZGG8 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 4aede6beb635. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -170,9 +214,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-29T09:25:49.159Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 4aede6beb635. CLI accepted one state-bound external-agent semantic result."
+    commit: "4aede6beb635097fcd6f5a94fb60c37bc45dc09a"
+  -
+    type: "verify"
+    at: "2026-08-29T09:34:30.895Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-29T09:23:27.947Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-29T09:34:33.241Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix the supported recovery path exposed by 7JCQPF. In recordTaskCentricExternalResult, when semantic.plan_refinement is present, record the refinement against the current approved plan before selecting or projecting a WorkItem result. If the refinement requires replan, return replan_required without requiring a schedulable WorkItem. Preserve normal WorkItem result selection, idempotency, validation, and fail-closed behavior when no refinement is present. Add focused tests for an unschedulable READY WorkItem whose refinement is still recorded, plus unchanged normal result behavior. This is an integration-path blocker for 7JCQPF and PR #5870; do not change release ordering, policy, scheduler semantics, or task stores."
 sections:
   Summary: |-
@@ -191,6 +249,90 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-29T09:34:30.895Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24870fce63c2455441b09f56243e72d224fcac20b52a9799326e9de05d62a231, input_digest=sha256:0379f374b7e860d4b7161bc23cb2064a2872d58a2449ccad32607109515596b5
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check critical_paths (3/3)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check task_outcome (3/3)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290920-1PZGG8-allow-task-centric-plan-refinement-before-workit/.agentplane/tasks/202608290920-1PZGG8/blueprint/resolved-snapshot.json
+    - old_digest: 8ea523d85b10d9639a2d3a53bac171c4c1c116ba1da4fa5f9db36607f1d0691e
+    - current_digest: 8ea523d85b10d9639a2d3a53bac171c4c1c116ba1da4fa5f9db36607f1d0691e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608290920-1PZGG8
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -475,25 +617,121 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 8
     schema_version: 1
-    updated_at: "2026-08-29T09:23:17.423Z"
+    updated_at: "2026-08-29T09:34:34.313Z"
     work_items:
       refine-before-selection:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "refine-before-selection"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:dcd638340e44be148b1280d0d83219a2d9ded82bde24642cc08f9fe09d6113a0"
+            id: "refinement-before-selection behavior"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608290920-1PZGG8"
+              work_item_id: "refine-before-selection"
+            provenance:
+              - "sha256:74c247e3fa95cb3b964773f0db998694766f1b62069dc16c472d2f2c8c88053b"
+              - ".agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:799fd8402e021d1b5b7725a481ec2b545e16aa022652014c92742d3952883880"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:7f03820eaca9fe27623354191c0172e0635580d75115eb59eda3b7f1cdd5b807"
+            id: "focused regression evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608290920-1PZGG8"
+              work_item_id: "refine-before-selection"
+            provenance:
+              - "sha256:74c247e3fa95cb3b964773f0db998694766f1b62069dc16c472d2f2c8c88053b"
+              - ".agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:799fd8402e021d1b5b7725a481ec2b545e16aa022652014c92742d3952883880"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json"
+              check_id: "check-focused"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-08-29T09:34:34.304Z"
+              repository_snapshot_digest: "sha256:799fd8402e021d1b5b7725a481ec2b545e16aa022652014c92742d3952883880"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json"
+              check_id: "check-full"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-29T09:34:34.304Z"
+              repository_snapshot_digest: "sha256:799fd8402e021d1b5b7725a481ec2b545e16aa022652014c92742d3952883880"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json"
+              check_id: "check-diff"
+              command_identity: "git diff --check"
+              detail: "Observed by git diff --check."
+              exit_code: 0
+              observed_at: "2026-08-29T09:34:34.304Z"
+              repository_snapshot_digest: "sha256:799fd8402e021d1b5b7725a481ec2b545e16aa022652014c92742d3952883880"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608290920-1PZGG8-executor-d827f9c36c4124f5b9128d60:
+        aggregate_digest: "sha256:28f561cdb465e12431f810e15518a9d4431d0fc0311e91cdbb0c66b9addf1eaa"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-29T09:34:34.313Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_01ae401db02775e7b7f7412f"
+          mutation_id: "external-result:work-order-202608290920-1PZGG8-executor-d827f9c36c4124f5b9128d60"
+          plan_digest: "sha256:7f565d70cda39bcf352b1043b604939aaa83c8bd2728f93d9a109db6093a3721"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608290920-1PZGG8"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "refine-before-selection"
+        mutation_id: "external-result:work-order-202608290920-1PZGG8-executor-d827f9c36c4124f5b9128d60"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202608290920-1PZGG8"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "4aede6beb635097fcd6f5a94fb60c37bc45dc09a"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
     version: 1
@@ -525,6 +763,90 @@ PLANNER fallback scaffold for "Allow task-centric plan refinement before WorkIte
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-29T09:34:30.895Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24870fce63c2455441b09f56243e72d224fcac20b52a9799326e9de05d62a231, input_digest=sha256:0379f374b7e860d4b7161bc23cb2064a2872d58a2449ccad32607109515596b5
+
+Details:
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check critical_paths (3/3)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check task_outcome (3/3)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290920-1PZGG8-allow-task-centric-plan-refinement-before-workit/.agentplane/tasks/202608290920-1PZGG8/blueprint/resolved-snapshot.json
+- old_digest: 8ea523d85b10d9639a2d3a53bac171c4c1c116ba1da4fa5f9db36607f1d0691e
+- current_digest: 8ea523d85b10d9639a2d3a53bac171c4c1c116ba1da4fa5f9db36607f1d0691e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608290920-1PZGG8
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
