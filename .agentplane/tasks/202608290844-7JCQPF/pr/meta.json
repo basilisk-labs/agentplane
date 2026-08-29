@@ -8,10 +8,10 @@
   "pr_number": 5871,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5871",
   "pre_merge_closure": {
-    "basis_commit": "94b57b253f6a8189288089d80906b0489ae40106",
+    "basis_commit": "c75df360718b4012e3a3defec60196d46822ca88",
     "branch": "task/202608290844-7JCQPF/allow-state-bound-workitem-implementation-result",
     "pr_number": 5871,
-    "recorded_at": "2026-08-29T14:37:49.276Z",
+    "recorded_at": "2026-08-29T15:47:33.320Z",
     "state": "closed_before_merge"
   },
   "provider": {

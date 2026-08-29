@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 48
+revision: 49
 origin:
   system: "manual"
 depends_on: []
@@ -58,9 +58,9 @@ quality_review:
     - "The real task-advance regression exercises the interrupted WorkItem projection path, seeds premature DONE, resumes the exact result, and proves DOING plus COMPLETED projection."
     - "The scope-extension adjustment only bypasses scheduler selection when every required WorkItem is already COMPLETED; unfinished unschedulable states still fail closed."
 token_usage:
-  agent_runs: 13
+  agent_runs: 18
   input_tokens: null
-  journal_digest: "sha256:f0b2bab684937e20690f84a9f20134efd946839da5eeaad9e3aae5f8598e43aa"
+  journal_digest: "sha256:3aa6c5c3da652dae883bf111dbb87c428d382902600ed1757f2f13ecc4aeed04"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -70,7 +70,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-29T14:37:49.085Z"
+  updated_at: "2026-08-29T15:47:33.231Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -299,8 +299,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "94b57b253f6a8189288089d80906b0489ae40106"
-  message: "🚧 7JCQPF task: record external implementation evidence"
+  hash: "c75df360718b4012e3a3defec60196d46822ca88"
+  message: "🚧 7JCQPF task: record current evaluator result"
 comments:
   -
     author: "CODER"
@@ -353,6 +353,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The dirty quality paths are incomplete generated artifacts from retired evaluator packets; they are unintended and must not be committed."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -540,9 +543,17 @@ events:
     at: "2026-08-29T15:44:28.812Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The dirty quality paths are incomplete generated artifacts from retired evaluator packets; they are unintended and must not be committed."
+  -
+    type: "status"
+    at: "2026-08-29T15:47:33.231Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "c75df360718b4012e3a3defec60196d46822ca88"
 doc_version: 3
-doc_updated_at: "2026-08-29T15:46:23.221Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-29T15:47:33.262Z"
+doc_updated_by: "CODER"
 description: "Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering."
 sections:
   Summary: |-
@@ -2237,8 +2248,8 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "a607a05c6e11b9be9f6084d2f800f798f7dc2628"
-    message: "🚧 7JCQPF task: apply external agent result"
+    hash: "019b64e46502d17f73e177d1ddca9d9d280487b0"
+    message: "🚧 7JCQPF task: pre-merge closure"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -2912,12 +2923,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/13` agent runs
+- Completeness: `0/18` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:f0b2bab684937e20690f84a9f20134efd946839da5eeaad9e3aae5f8598e43aa`
+- Journal digest: `sha256:3aa6c5c3da652dae883bf111dbb87c428d382902600ed1757f2f13ecc4aeed04`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-29T14:37:49.085Z`
+- Updated at: `2026-08-29T15:47:33.231Z`
