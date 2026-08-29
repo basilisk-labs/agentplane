@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:0527de42e3c62b7fa2806534ad25255fad2a3d1f6b69f3c84955bbcc7a58f1bf",
   "pr_number": 5874,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5874",
+  "pre_merge_closure": {
+    "basis_commit": "30f4ed40d07018273525fcbce4610ee02c6aef0c",
+    "branch": "task/202608291505-F5AN0W/keep-evaluator-verification-target-aligned-with",
+    "pr_number": 5874,
+    "recorded_at": "2026-08-29T15:17:52.911Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

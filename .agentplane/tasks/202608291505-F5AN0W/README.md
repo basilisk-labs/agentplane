@@ -1,10 +1,11 @@
 ---
 id: "202608291505-F5AN0W"
 title: "Keep evaluator verification target aligned with the semantic quality-review target across framework-owned task-artifact tail commits. Fix the confirmed bootstrap blocker where task verification correctly targets the latest reviewable commit but evaluator preparation prefers an older extensions.implementation_commit and rejects the current record as verification_implementation_changed. Preserve qualification-packet pinning. Add focused regression coverage proving task-artifact tail commits do not invalidate evaluator preparation."
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -56,6 +57,20 @@ quality_review:
     - "The regression constructs an older recorded implementation, a later semantic commit, and a lifecycle-only task-artifact tail, then proves evaluator preparation accepts the verification record for the later semantic commit."
     - "Focused coverage passed with 8 tests and git diff --check passed."
     - "Residual risk: Full local CI and hosted exact-head checks remain formal downstream gates."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:4ee2354ae7cecba29a857a501029a80ef26019a08e96481c2d2fd2baaa4d532c"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-29T15:17:52.774Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -217,8 +232,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "3cb29a0ae620b4eab93c2d10b406e193c95b2d6c"
-  message: "🚧 F5AN0W task: apply external agent result"
+  hash: "30f4ed40d07018273525fcbce4610ee02c6aef0c"
+  message: "🚧 F5AN0W task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -226,6 +241,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 3cb29a0ae620. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -248,9 +266,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-29T15:17:52.774Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "30f4ed40d07018273525fcbce4610ee02c6aef0c"
 doc_version: 3
-doc_updated_at: "2026-08-29T15:16:35.588Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-29T15:17:52.782Z"
+doc_updated_by: "CODER"
 description: "Keep evaluator verification target aligned with the semantic quality-review target across framework-owned task-artifact tail commits. Fix the confirmed bootstrap blocker where task verification correctly targets the latest reviewable commit but evaluator preparation prefers an older extensions.implementation_commit and rejects the current record as verification_implementation_changed. Preserve qualification-packet pinning. Add focused regression coverage proving task-artifact tail commits do not invalidate evaluator preparation."
 sections:
   Summary: |-
@@ -591,7 +617,45 @@ extensions:
       schema_version: 1
       task_id: "202608291505-F5AN0W"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608291505-F5AN0W"
+            - "git:3cb29a0ae620b4eab93c2d10b406e193c95b2d6c"
+          check_id: "focused_evaluator_target"
+          command_identity: "bun vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-29T15:16:33.691Z"
+          repository_snapshot_digest: "sha256:57a874a1cdf6a62456af776c6c41bd06246feed1172a6083d243d94d2d6448f8"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608291505-F5AN0W"
+            - "git:3cb29a0ae620b4eab93c2d10b406e193c95b2d6c"
+          check_id: "diff_integrity"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-29T15:16:33.691Z"
+          repository_snapshot_digest: "sha256:57a874a1cdf6a62456af776c6c41bd06246feed1172a6083d243d94d2d6448f8"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608291505-F5AN0W"
+            - "git:3cb29a0ae620b4eab93c2d10b406e193c95b2d6c"
+          check_id: "full_regression"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-29T15:16:33.691Z"
+          repository_snapshot_digest: "sha256:57a874a1cdf6a62456af776c6c41bd06246feed1172a6083d243d94d2d6448f8"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608291505-F5AN0W"
     intent:
       acceptance_criteria: []
@@ -602,12 +666,12 @@ extensions:
 
         Keep evaluator verification target aligned with the semantic quality-review target across framework-owned task-artifact tail commits. Fix the confirmed bootstrap blocker where task verification correctly targets the latest reviewable commit but evaluator preparation prefers an older extensions.implementation_commit and rejects the current record as verification_implementation_changed. Preserve qualification-packet pinning. Add focused regression coverage proving task-artifact tail commits do not invalidate evaluator preparation.
       task_id: "202608291505-F5AN0W"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 11
     schema_version: 1
-    updated_at: "2026-08-29T15:16:36.837Z"
+    updated_at: "2026-08-29T15:17:52.774Z"
     work_items:
       align-evaluator-verification-target:
         attempt: 1
@@ -700,11 +764,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608291505-F5AN0W"
+      legacy-finish:202608291505-F5AN0W:2026-08-29T15:16:33.691Z:3cb29a0ae620b4eab93c2d10b406e193c95b2d6c:
+        aggregate_digest: "sha256:4aacb43b1d6fbcec2e4987db66d4a602070fa98d1c7dd199c7a664d10e6a37f1"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-29T15:17:52.774Z"
+          cause_refs:
+            - "task-verification:202608291505-F5AN0W"
+            - "git:3cb29a0ae620b4eab93c2d10b406e193c95b2d6c"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3593d2d1ca8ddcddf196e789"
+          mutation_id: "legacy-finish:202608291505-F5AN0W:2026-08-29T15:16:33.691Z:3cb29a0ae620b4eab93c2d10b406e193c95b2d6c"
+          plan_digest: "sha256:d0e0550350c6c8ec06d236ed52739081abfd1284c497dc42e5522c784a948b00"
+          plan_revision: 1
+          repository_fingerprint: "sha256:57a874a1cdf6a62456af776c6c41bd06246feed1172a6083d243d94d2d6448f8"
+          schema_version: 1
+          task_id: "202608291505-F5AN0W"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608291505-F5AN0W:2026-08-29T15:16:33.691Z:3cb29a0ae620b4eab93c2d10b406e193c95b2d6c"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202608291505-F5AN0W"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "3cb29a0ae620b4eab93c2d10b406e193c95b2d6c"
+    message: "🚧 F5AN0W task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "57a22a308fd63147d95fe6a65733d02586cdc126"
@@ -815,3 +905,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:4ee2354ae7cecba29a857a501029a80ef26019a08e96481c2d2fd2baaa4d532c`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-29T15:17:52.774Z`
