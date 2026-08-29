@@ -12,8 +12,8 @@ Created: 2026-08-29T09:23:28.094Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: blocked_external
+- Note: Rework: No executable declared verification checks are configured for this task.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,9 @@ Created: 2026-08-29T09:23:28.094Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../task/task-centric-external-result.test.ts      | 66 +++++++++++++++++++-
+ .../task/task-centric-external-result.test.ts      | 68 +++++++++++++++++++-
  .../commands/task/task-centric-external-result.ts  | 72 +++++++++++-----------
- 2 files changed, 100 insertions(+), 38 deletions(-)
+ 2 files changed, 102 insertions(+), 38 deletions(-)
 ```
 
 </details>
