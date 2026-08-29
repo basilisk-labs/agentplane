@@ -4,7 +4,7 @@ title: "Keep evaluator verification target aligned with the semantic quality-rev
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -27,6 +27,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-29T15:17:44.500Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "3cb29a0ae620b4eab93c2d10b406e193c95b2d6c"
+  blueprint_digest: "252424f5e68dfcf73361b2a05159ad590993b9090aff16433621b5705246d036"
+  evidence_refs:
+    - ".agentplane/tasks/202608291505-F5AN0W/quality/20260829-151703472-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608291505-F5AN0W/quality/20260829-151703472-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608291505-F5AN0W/quality/objects/sha256/41553f2e37d02a2a9ed9c27741445e29255fbfcc80aa18d77feafed25fb17fd8.md"
+    - ".agentplane/tasks/202608291505-F5AN0W/quality/20260829-151703472-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608291505-F5AN0W/quality/20260829-151703472-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608291505-F5AN0W/quality/20260829-151703472-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608291505-F5AN0W/README.md"
+    - ".agentplane/tasks/202608291505-F5AN0W/quality/objects/sha256/3be09f0b87c195e91069dbd310c3854392dd52abe1630e89c3c0b44acfd4f669.patch"
+    - ".agentplane/tasks/202608291505-F5AN0W/quality/objects/sha256/4ed68c6fd1d0c009d994cd956e8cb679ed2f606ddcae63c2e86222ac1634e772.json"
+    - ".agentplane/tasks/202608291505-F5AN0W/verification/20260829151633691-2b8fca041d5695de.json"
+    - ".agentplane/tasks/202608291505-F5AN0W/quality/objects/sha256/34de800803c95065a60ed554ec20ee9e458e08e3eba91b1e37ed7a5fc6939a61.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The production change only reorders the non-qualification fallbacks: evaluatedSha precedes recordedTaskImplementationCommitSha."
+    - "The regression constructs an older recorded implementation, a later semantic commit, and a lifecycle-only task-artifact tail, then proves evaluator preparation accepts the verification record for the later semantic commit."
+    - "Focused coverage passed with 8 tests and git diff --check passed."
+    - "Residual risk: Full local CI and hosted exact-head checks remain formal downstream gates."
 execution_route:
   frozen: true
   reason_codes:

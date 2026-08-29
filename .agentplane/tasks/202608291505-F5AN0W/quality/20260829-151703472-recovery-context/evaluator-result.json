@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The production change only reorders the non-qualification fallbacks: evaluatedSha precedes recordedTaskImplementationCommitSha.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291505-F5AN0W/quality/objects/sha256/3be09f0b87c195e91069dbd310c3854392dd52abe1630e89c3c0b44acfd4f669.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The regression constructs an older recorded implementation, a later semantic commit, and a lifecycle-only task-artifact tail, then proves evaluator preparation accepts the verification record for the later semantic commit.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291505-F5AN0W/quality/objects/sha256/3be09f0b87c195e91069dbd310c3854392dd52abe1630e89c3c0b44acfd4f669.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Focused coverage passed with 8 tests and git diff --check passed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291505-F5AN0W/quality/objects/sha256/3be09f0b87c195e91069dbd310c3854392dd52abe1630e89c3c0b44acfd4f669.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: Full local CI and hosted exact-head checks remain formal downstream gates.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291505-F5AN0W/quality/objects/sha256/3be09f0b87c195e91069dbd310c3854392dd52abe1630e89c3c0b44acfd4f669.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "resolveEvaluatorReviewTarget remains the canonical semantic-target selector for ordinary tasks."
+  ]
+}

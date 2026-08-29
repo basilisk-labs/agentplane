@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608291505-F5AN0W",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-29T15:17:44.500Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 4 typed finding(s).",
+  "evaluated_sha": "3cb29a0ae620b4eab93c2d10b406e193c95b2d6c",
+  "blueprint_digest": "252424f5e68dfcf73361b2a05159ad590993b9090aff16433621b5705246d036",
+  "findings": [
+    "The production change only reorders the non-qualification fallbacks: evaluatedSha precedes recordedTaskImplementationCommitSha.",
+    "The regression constructs an older recorded implementation, a later semantic commit, and a lifecycle-only task-artifact tail, then proves evaluator preparation accepts the verification record for the later semantic commit.",
+    "Focused coverage passed with 8 tests and git diff --check passed.",
+    "Residual risk: Full local CI and hosted exact-head checks remain formal downstream gates."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608291505-F5AN0W/quality/objects/sha256/3be09f0b87c195e91069dbd310c3854392dd52abe1630e89c3c0b44acfd4f669.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "resolveEvaluatorReviewTarget remains the canonical semantic-target selector for ordinary tasks."
+  ],
+  "residual_risks": []
+}
