@@ -12,8 +12,8 @@ Created: 2026-08-29T08:47:59.220Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Address unresolved PR #5871 review findings: optional WorkItems must not reopen DONE tasks or capture task-level rework; refresh verification evidence and resolve all review threads.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
