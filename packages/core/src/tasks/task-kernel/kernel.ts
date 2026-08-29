@@ -25,12 +25,51 @@ const TASK_TRANSITIONS: Readonly<Record<TaskState, readonly TaskState[]>> = {
   PLANNING: ["AWAITING_PLAN_APPROVAL", "CANCELLED"],
   AWAITING_PLAN_APPROVAL: ["PLANNING", "ACTIVE", "CANCELLED"],
   ACTIVE: ["FINAL_VALIDATION", "HUMAN_REQUIRED", "BLOCKED", "EFFECT_IN_DOUBT", "CANCELLED"],
-  FINAL_VALIDATION: ["ACTIVE", "COMPLETED", "BLOCKED", "EFFECT_IN_DOUBT", "CANCELLED"],
+  FINAL_VALIDATION: [
+    "ACTIVE",
+    "COMPLETED",
+    "HUMAN_REQUIRED",
+    "BLOCKED",
+    "EFFECT_IN_DOUBT",
+    "CANCELLED",
+  ],
   COMPLETED: [],
   HUMAN_REQUIRED: ["ACTIVE", "BLOCKED", "CANCELLED"],
   BLOCKED: ["ACTIVE", "HUMAN_REQUIRED", "CANCELLED"],
-  EFFECT_IN_DOUBT: ["ACTIVE", "BLOCKED", "CANCELLED"],
+  EFFECT_IN_DOUBT: ["ACTIVE"],
   CANCELLED: [],
+};
+
+const TASK_ACTION_TRANSITIONS: Readonly<
+  Record<
+    Extract<TaskCommand, { kind: "transition_task" }>["action"],
+    readonly (readonly [TaskState, TaskState])[]
+  >
+> = {
+  request_human: [
+    ["ACTIVE", "HUMAN_REQUIRED"],
+    ["FINAL_VALIDATION", "HUMAN_REQUIRED"],
+    ["BLOCKED", "HUMAN_REQUIRED"],
+  ],
+  block: [
+    ["ACTIVE", "BLOCKED"],
+    ["FINAL_VALIDATION", "BLOCKED"],
+    ["HUMAN_REQUIRED", "BLOCKED"],
+  ],
+  resume: [
+    ["FINAL_VALIDATION", "ACTIVE"],
+    ["HUMAN_REQUIRED", "ACTIVE"],
+    ["BLOCKED", "ACTIVE"],
+  ],
+  cancel: [
+    ["CAPTURED", "CANCELLED"],
+    ["PLANNING", "CANCELLED"],
+    ["AWAITING_PLAN_APPROVAL", "CANCELLED"],
+    ["ACTIVE", "CANCELLED"],
+    ["FINAL_VALIDATION", "CANCELLED"],
+    ["HUMAN_REQUIRED", "CANCELLED"],
+    ["BLOCKED", "CANCELLED"],
+  ],
 };
 
 const WORK_ITEM_ACTION_TRANSITIONS: Readonly<
@@ -87,6 +126,7 @@ const EFFECT_OBSERVE_TRANSITIONS: Readonly<
 
 const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
   capture_intent: "intent_captured",
+  transition_task: "task_transitioned",
   propose_plan: "plan_proposed",
   reject_plan: "plan_rejected",
   approve_plan: "plan_approved",
@@ -347,6 +387,21 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
         revision: aggregate.revision + 1,
         state: "PLANNING",
         intent_digest: command.intent_digest,
+      };
+      break;
+    }
+    case "transition_task": {
+      const transition = TASK_ACTION_TRANSITIONS[command.action].find(
+        ([from]) => from === aggregate.state,
+      );
+      if (!transition) {
+        return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, command.action]);
+      }
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        state: transition[1],
+        final_validation: command.action === "resume" ? null : aggregate.final_validation,
       };
       break;
     }
@@ -788,5 +843,6 @@ export function isTaskCompletionEligible(
 }
 
 export const TASK_TRANSITION_TABLE = TASK_TRANSITIONS;
+export const TASK_ACTION_TRANSITION_TABLE = TASK_ACTION_TRANSITIONS;
 export const WORK_ITEM_TRANSITION_TABLE = WORK_ITEM_ACTION_TRANSITIONS;
 export const EFFECT_OBSERVE_TRANSITION_TABLE = EFFECT_OBSERVE_TRANSITIONS;

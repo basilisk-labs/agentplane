@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  EFFECT_OBSERVE_TRANSITION_TABLE,
   isTaskCompletionEligible,
   kernelDigest,
   reduceTaskCommand,
+  TASK_ACTION_TRANSITION_TABLE,
   TASK_TRANSITION_TABLE,
   WORK_ITEM_TRANSITION_TABLE,
 } from "./kernel.js";
@@ -15,8 +17,10 @@ import type {
   Sha256Digest,
   TaskAggregate,
   TaskCommand,
+  TaskState,
   ValidationRecord,
   WorkItemRuntime,
+  WorkItemState,
 } from "./model.js";
 
 const fingerprint = kernelDigest("repository-state");
@@ -171,6 +175,146 @@ describe("canonical task kernel reducer", () => {
     ]);
   });
 
+  it("maps every declared Task edge to an executable kernel operation", () => {
+    const covered = new Set<string>();
+    for (const transitions of Object.values(TASK_ACTION_TRANSITION_TABLE)) {
+      for (const [from, to] of transitions) covered.add(`${from}->${to}`);
+    }
+    for (const edge of [
+      "CAPTURED->PLANNING",
+      "PLANNING->AWAITING_PLAN_APPROVAL",
+      "AWAITING_PLAN_APPROVAL->PLANNING",
+      "AWAITING_PLAN_APPROVAL->ACTIVE",
+      "ACTIVE->FINAL_VALIDATION",
+      "ACTIVE->EFFECT_IN_DOUBT",
+      "FINAL_VALIDATION->COMPLETED",
+      "FINAL_VALIDATION->EFFECT_IN_DOUBT",
+      "EFFECT_IN_DOUBT->ACTIVE",
+    ]) {
+      covered.add(edge);
+    }
+    const declared = Object.entries(TASK_TRANSITION_TABLE).flatMap(([from, targets]) =>
+      targets.map((to) => `${from}->${to}`),
+    );
+    expect([...covered].toSorted()).toEqual(declared.toSorted());
+  });
+
+  it("executes every explicit Task action vector with exact event and receipt ordering", () => {
+    for (const [action, transitions] of Object.entries(TASK_ACTION_TRANSITION_TABLE)) {
+      for (const [index, [from, to]] of transitions.entries()) {
+        const state = aggregate({ state: from });
+        const command: Extract<TaskCommand, { kind: "transition_task" }> = {
+          kind: "transition_task",
+          task_id: state.id,
+          expected_task_revision: state.revision,
+          expected_state_fingerprint: fingerprint,
+          action: action as Extract<TaskCommand, { kind: "transition_task" }>["action"],
+        };
+        const result = reduceTaskCommand(input(state, command, `task-${action}-${index}`));
+        expect(result.kind).toBe("accepted");
+        if (result.kind !== "accepted") continue;
+        expect(result.aggregate.state).toBe(to);
+        expect(result.aggregate.revision).toBe(state.revision + 1);
+        expect(result.events.map((event) => event.kind)).toEqual(["task_transitioned"]);
+        expect(result.receipts).toHaveLength(1);
+        expect(result.receipts[0]).toMatchObject({
+          before_revision: state.revision,
+          after_revision: state.revision + 1,
+        });
+      }
+    }
+  });
+
+  it("executes every WorkItem action vector with exact event and receipt ordering", () => {
+    for (const [action, transitions] of Object.entries(WORK_ITEM_TRANSITION_TABLE)) {
+      for (const [index, [from, to]] of transitions.entries()) {
+        const baseRuntime = runtime(from);
+        const preparedRuntime: WorkItemRuntime =
+          action === "complete"
+            ? {
+                ...baseRuntime,
+                result_digest: resultDigest,
+                output_manifests: [manifest()],
+                validation: validation(resultDigest),
+              }
+            : baseRuntime;
+        const state = aggregate({ work_items: { kernel: preparedRuntime } });
+        const command = transitionCommand(
+          state,
+          action as Extract<TaskCommand, { kind: "transition_work_item" }>["action"],
+        );
+        const result = reduceTaskCommand(input(state, command, `work-item-${action}-${index}`));
+        expect(result.kind).toBe("accepted");
+        if (result.kind !== "accepted") continue;
+        expect(result.aggregate.work_items.kernel?.state).toBe(to);
+        expect(result.events.map((event) => event.kind)).toEqual(["work_item_transitioned"]);
+        expect(result.receipts).toHaveLength(1);
+      }
+    }
+  });
+
+  it("rejects every WorkItem edge outside the closed action table", () => {
+    const states: readonly WorkItemState[] = [
+      "PLANNED",
+      "READY",
+      "CLAIMED",
+      "EXECUTING",
+      "RESULT_RECEIVED",
+      "INSPECTING",
+      "VALIDATING",
+      "REWORK_READY",
+      "COMPLETED",
+      "BLOCKED",
+      "EFFECT_IN_DOUBT",
+      "CANCELLED",
+    ];
+    for (const [action, transitions] of Object.entries(WORK_ITEM_TRANSITION_TABLE)) {
+      const allowed = new Set(transitions.map(([from]) => from));
+      for (const from of states.filter((state) => !allowed.has(state))) {
+        const state = aggregate({ work_items: { kernel: runtime(from) } });
+        const command = transitionCommand(
+          state,
+          action as Extract<TaskCommand, { kind: "transition_work_item" }>["action"],
+        );
+        const result = reduceTaskCommand(input(state, command, `illegal-${action}-${from}`));
+        expect(result).toMatchObject({ kind: "rejected", code: "ILLEGAL_WORK_ITEM_TRANSITION" });
+        expect(state.work_items.kernel?.state).toBe(from);
+      }
+    }
+  });
+
+  it("rejects every Task action edge outside the closed action table", () => {
+    const states = Object.keys(TASK_TRANSITION_TABLE) as TaskState[];
+    for (const [action, transitions] of Object.entries(TASK_ACTION_TRANSITION_TABLE)) {
+      const allowed = new Set(transitions.map(([from]) => from));
+      for (const from of states.filter((state) => !allowed.has(state))) {
+        const state = aggregate({ state: from });
+        const command: Extract<TaskCommand, { kind: "transition_task" }> = {
+          kind: "transition_task",
+          task_id: state.id,
+          expected_task_revision: state.revision,
+          expected_state_fingerprint: fingerprint,
+          action: action as Extract<TaskCommand, { kind: "transition_task" }>["action"],
+        };
+        const result = reduceTaskCommand(input(state, command, `illegal-task-${action}-${from}`));
+        expect(result).toMatchObject({ kind: "rejected", code: "ILLEGAL_TASK_TRANSITION" });
+        expect(state.state).toBe(from);
+      }
+    }
+  });
+
+  it("publishes closed effect observation transitions", () => {
+    expect(EFFECT_OBSERVE_TRANSITION_TABLE).toEqual({
+      PREPARED: ["APPLIED", "NOT_APPLIED", "IN_DOUBT"],
+      PENDING: ["APPLIED", "NOT_APPLIED", "IN_DOUBT"],
+      APPLIED: ["APPLIED"],
+      NOT_APPLIED: ["NOT_APPLIED"],
+      IN_DOUBT: ["APPLIED", "NOT_APPLIED", "IN_DOUBT"],
+      RECONCILED: [],
+      SUPERSEDED: [],
+    });
+  });
+
   it("rejects stale commands before changing aggregate state", () => {
     const state = aggregate();
     const command = { ...transitionCommand(state, "claim"), expected_task_revision: 6 };
@@ -195,6 +339,20 @@ describe("canonical task kernel reducer", () => {
       expect(replay.aggregate).toBe(first.aggregate);
       expect(replay.receipts).toEqual(first.receipts);
     }
+  });
+
+  it("rejects reuse of a mutation identity with a changed command", () => {
+    const state = aggregate();
+    const command = transitionCommand(state, "claim");
+    const first = reduceTaskCommand(input(state, command));
+    expect(first.kind).toBe("accepted");
+    if (first.kind !== "accepted") return;
+
+    const changed = { ...command, claim_id: "different-claim" };
+    expect(reduceTaskCommand(input(first.aggregate, changed))).toMatchObject({
+      kind: "rejected",
+      code: "MUTATION_ID_CONFLICT",
+    });
   });
 
   it("binds accepted results and validation to the active WorkItem attempt", () => {

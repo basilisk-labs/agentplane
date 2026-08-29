@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -296,6 +298,19 @@ describe("canonical task kernel invariants", () => {
         facts: [source],
         required_action: "supply_execution_authority",
       });
+    }
+  });
+
+  it("keeps production kernel modules outside capability and compatibility boundaries", () => {
+    const sources = ["model.ts", "invariants.ts", "kernel.ts", "index.ts"]
+      .map((name) => readFileSync(new URL(name, import.meta.url), "utf8"))
+      .join("\n");
+    for (const forbidden of [
+      /from ["']node:(?:fs|process|child_process|os|timers)/u,
+      /from ["'][^"']*(?:task-centric|compatibility|adapter|backend|provider|cli|task-doc)/u,
+      /\b(?:randomUUID|Math\.random|Date\.now|process\.env)\b/u,
+    ]) {
+      expect(sources).not.toMatch(forbidden);
     }
   });
 });
