@@ -4,7 +4,7 @@ title: "Allow state-bound WorkItem implementation results to reopen DONE tasks"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: "User pre-authorized subsequent in-scope bootstrap recovery plans; approved plan deff35da with unchanged four-file scope and no external effects."
 verification:
   state: "ok"
-  updated_at: "2026-08-29T13:57:23.903Z"
-  updated_by: "TESTER"
-  note: "Verified at implementation commit a607a05c6 with focused and full local evidence."
+  updated_at: "2026-08-29T14:25:22.018Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
   state: "pass"
@@ -117,7 +117,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
       - "packages/agentplane/src/commands/task/scope-extend.test.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -144,6 +145,18 @@ execution_contract:
       -
         id: "recorded-check-4"
         result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -237,6 +250,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:verification-record"
 commit:
   hash: "a607a05c6e11b9be9f6084d2f800f798f7dc2628"
   message: "🚧 7JCQPF task: apply external agent result"
@@ -271,6 +285,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts; repository effects: tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a607a05c6e11. CLI accepted one state-bound external-agent semantic result."
   -
     author: "SUPERVISOR"
     body: "Implementation committed: a607a05c6e11. CLI accepted one state-bound external-agent semantic result."
@@ -386,8 +403,28 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified at implementation commit a607a05c6 with focused and full local evidence."
+  -
+    type: "verify"
+    at: "2026-08-29T14:03:19.538Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: implementation commit and passing checks are recorded, but WorkItem complete-done-workitem-recovery remains READY because result projection was interrupted. Recover the recorded state-bound result and complete the concrete WorkItem before pre-merge closure."
+  -
+    type: "status"
+    at: "2026-08-29T14:04:26.768Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a607a05c6e11. CLI accepted one state-bound external-agent semantic result."
+    commit: "a607a05c6e11b9be9f6084d2f800f798f7dc2628"
+  -
+    type: "verify"
+    at: "2026-08-29T14:25:22.018Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-08-29T13:57:25.115Z"
+doc_updated_at: "2026-08-29T14:25:23.289Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering."
 sections:
@@ -643,6 +680,108 @@ sections:
     Result: pass
     Evidence: the real task-advance flow reopens premature DONE to DOING, preserves verification=ok, and marks the concrete WorkItem COMPLETED.
     Scope: required task outcome and acceptance criteria.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+    - old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608290844-7JCQPF
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-29T14:03:19.538Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: implementation commit and passing checks are recorded, but WorkItem complete-done-workitem-recovery remains READY because result projection was interrupted. Recover the recorded state-bound result and complete the concrete WorkItem before pre-merge closure.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:d86fe5badfc0b0bdcc32808cd98561f91380bdb541bb70c91f41968cbca2f8e1
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+    - old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane finish 202608290844-7JCQPF --author CODER --body 'Verified: pre-merge closure packet is ready for the task PR.' --result 'pre-merge closure' --commit fe58828d632a3d1779bc1ab1baa2526f048e087e --pre-merge-closure
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-08-29T14:25:22.018Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:7d6d03fd6f12961c43c219b5624a03c723be689eff8372d1a628e761f20ac4e0
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check task_outcome (2/2)
 
     BlueprintSnapshotRef:
     - state: current
@@ -1794,6 +1933,108 @@ Command: inspect final branch-worktree recovery assertions at implementation com
 Result: pass
 Evidence: the real task-advance flow reopens premature DONE to DOING, preserves verification=ok, and marks the concrete WorkItem COMPLETED.
 Scope: required task outcome and acceptance criteria.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+- old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608290844-7JCQPF
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-29T14:03:19.538Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: implementation commit and passing checks are recorded, but WorkItem complete-done-workitem-recovery remains READY because result projection was interrupted. Recover the recorded state-bound result and complete the concrete WorkItem before pre-merge closure.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:d86fe5badfc0b0bdcc32808cd98561f91380bdb541bb70c91f41968cbca2f8e1
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+- old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane finish 202608290844-7JCQPF --author CODER --body 'Verified: pre-merge closure packet is ready for the task PR.' --result 'pre-merge closure' --commit fe58828d632a3d1779bc1ab1baa2526f048e087e --pre-merge-closure
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-08-29T14:25:22.018Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:7d6d03fd6f12961c43c219b5624a03c723be689eff8372d1a628e761f20ac4e0
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check task_outcome (2/2)
 
 BlueprintSnapshotRef:
 - state: current
