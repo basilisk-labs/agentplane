@@ -4,7 +4,7 @@ title: "Prevent branch closeout while required WorkItems are incomplete"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:c19e38eb8e48f78702fb813eace7ab0c97821d1fb93b2bb8b175af439fb85847"
 verification:
-  state: "blocked_external"
-  updated_at: "2026-08-29T23:05:55.501Z"
+  state: "ok"
+  updated_at: "2026-08-29T23:20:02.016Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 4
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -82,8 +82,7 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
   observed:
-    authority_violations:
-      - "verification:recorded-check-3:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -100,11 +99,32 @@ execution_contract:
         id: "recorded-check-1"
         result: "pass"
       -
+        id: "recorded-check-10"
+        result: "pass"
+      -
         id: "recorded-check-2"
         result: "pass"
       -
         id: "recorded-check-3"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -192,8 +212,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-3"
-commit: null
+commit:
+  hash: "f6dae0b382002f07850fd1d5f343eda0b7da6f97"
+  message: "🚧 3N0FBK task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -216,6 +237,9 @@ comments:
   -
     author: "CODER"
     body: "Start: resolve the recorded hotspot threshold blocker with a bounded route-state extraction."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f6dae0b38200. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -294,9 +318,23 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Start: resolve the recorded hotspot threshold blocker with a bounded route-state extraction."
+  -
+    type: "status"
+    at: "2026-08-29T23:12:21.034Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: f6dae0b38200. CLI accepted one state-bound external-agent semantic result."
+    commit: "f6dae0b382002f07850fd1d5f343eda0b7da6f97"
+  -
+    type: "verify"
+    at: "2026-08-29T23:20:02.016Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-29T23:07:18.612Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-29T23:20:04.090Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix branch_pr route selection so an approved task with any incomplete required canonical WorkItem returns to the bounded EXECUTOR WorkItem episode before verification, quality review, PR publication, or pre-merge closure. Add a regression test for a task that has stale verification, quality review, and commit evidence while a required WorkItem remains READY or PLANNED."
 sections:
   Summary: |-
@@ -475,6 +513,96 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3
     Scope: branch_pr task 202608292218-3N0FBK declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608292218-3N0FBK-prevent-branch-closeout-while-required-workitems/.agentplane/tasks/202608292218-3N0FBK/blueprint/resolved-snapshot.json
+    - old_digest: 8b81c44d2d42ad42a5fd11120416523cc699aa4f3f26c2f8502e97d2f3e77a2c
+    - current_digest: 8b81c44d2d42ad42a5fd11120416523cc699aa4f3f26c2f8502e97d2f3e77a2c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608292218-3N0FBK
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-29T23:20:02.016Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:3fe794b0ab3823b6d1e9c301fca5b3def1d8d411a1faca2430333864dab15df1, input_digest=sha256:ee18946de2221c3c6d98b88afb53fd2087a039d4675ea25f647e7d629fa4c5ed
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608292218-3N0FBK Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608292218-3N0FBK Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608292218-3N0FBK Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608292218-3N0FBK Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608292218-3N0FBK Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608292218-3N0FBK Verification Contract check critical_paths (3/3)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608292218-3N0FBK Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608292218-3N0FBK Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608292218-3N0FBK Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608292218-3N0FBK Verification Contract check task_outcome (3/3)
 
     BlueprintSnapshotRef:
     - state: current
@@ -1131,6 +1259,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "f6dae0b382002f07850fd1d5f343eda0b7da6f97"
   task_execution_context:
     base_ref: "main"
     base_sha: "dbaf4bc2878eab7b50f8ea6d14179d8d91030159"
@@ -1327,6 +1457,96 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3
 Scope: branch_pr task 202608292218-3N0FBK declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608292218-3N0FBK-prevent-branch-closeout-while-required-workitems/.agentplane/tasks/202608292218-3N0FBK/blueprint/resolved-snapshot.json
+- old_digest: 8b81c44d2d42ad42a5fd11120416523cc699aa4f3f26c2f8502e97d2f3e77a2c
+- current_digest: 8b81c44d2d42ad42a5fd11120416523cc699aa4f3f26c2f8502e97d2f3e77a2c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608292218-3N0FBK
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-29T23:20:02.016Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:3fe794b0ab3823b6d1e9c301fca5b3def1d8d411a1faca2430333864dab15df1, input_digest=sha256:ee18946de2221c3c6d98b88afb53fd2087a039d4675ea25f647e7d629fa4c5ed
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608292218-3N0FBK Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608292218-3N0FBK Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608292218-3N0FBK Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608292218-3N0FBK Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608292218-3N0FBK Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608292218-3N0FBK Verification Contract check critical_paths (3/3)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608292218-3N0FBK Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608292218-3N0FBK Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608292218-3N0FBK Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608292218-3N0FBK/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608292218-3N0FBK Verification Contract check task_outcome (3/3)
 
 BlueprintSnapshotRef:
 - state: current
