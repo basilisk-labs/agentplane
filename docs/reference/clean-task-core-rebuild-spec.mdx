@@ -385,6 +385,15 @@ discarded.
 Release bug fixes, open PR repair tasks, and the stopped task `202608290844-7JCQPF` are not roadmap
 duplicates. Preserve them in their existing state until separately resumed, integrated, or closed.
 
+### Recovery projection rule
+
+When a legacy task-level implementation already produced outputs for an approved WorkItem graph,
+recovery must not infer Task completion from those files or from task-level verification. It must
+bind each existing output to the matching required WorkItem, validate that WorkItem, persist its
+output manifest and receipt, and advance the dependency graph in order. Task-level closure becomes
+eligible only after every required WorkItem reaches `COMPLETED`; an unbound or optional WorkItem
+result cannot substitute for that projection.
+
 ## Graph rewrite procedure
 
 After M0 is integrated:

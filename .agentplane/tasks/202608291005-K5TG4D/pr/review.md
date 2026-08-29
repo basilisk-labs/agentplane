@@ -12,8 +12,8 @@ Created: 2026-08-29T10:21:54.868Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Recover the approved task-centric plan: four required WorkItems remain incomplete despite task-level docs and verification evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,9 +30,9 @@ Created: 2026-08-29T10:21:54.868Z
 
 ```text
  docs/adr/0017-clean-task-core-rebuild.md        |  95 ++++++
- docs/adr/README.md                              |  37 ++-
- docs/reference/clean-task-core-rebuild-spec.mdx | 419 ++++++++++++++++++++++++
- 3 files changed, 533 insertions(+), 18 deletions(-)
+ docs/adr/README.md                              |  37 +-
+ docs/reference/clean-task-core-rebuild-spec.mdx | 428 ++++++++++++++++++++++++
+ 3 files changed, 542 insertions(+), 18 deletions(-)
 ```
 
 </details>
