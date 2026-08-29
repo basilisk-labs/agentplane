@@ -4,7 +4,7 @@ title: "Specify the clean Task kernel and migration oracle"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:5f50c786906823fb6caca5472ce58e4d2ef197717143beb0bf3470717eace5de"
 verification:
-  state: "ok"
-  updated_at: "2026-08-29T10:40:04.712Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-29T17:19:51.260Z"
+  updated_by: "USER"
+  note: "Recover the approved task-centric plan: four required WorkItems remain incomplete despite task-level docs and verification evidence."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -104,7 +104,8 @@ execution_contract:
     schema_version: 2
     scope_roots: []
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "docs"
     changed_paths:
@@ -140,6 +141,9 @@ execution_contract:
       -
         id: "recorded-check-8"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -212,9 +216,8 @@ execution_contract:
       - "repository_effect:documentation"
       - "repository_effect:repository_write"
       - "task_outcome"
-commit:
-  hash: "a11f7bc5dd26ca540854e7e550e5930e3b69c734"
-  message: "🚧 K5TG4D task: apply external agent result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "PLANNER"
@@ -267,8 +270,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "verify"
+    at: "2026-08-29T17:19:51.260Z"
+    author: "USER"
+    state: "needs_rework"
+    note: "Recover the approved task-centric plan: four required WorkItems remain incomplete despite task-level docs and verification evidence."
 doc_version: 3
-doc_updated_at: "2026-08-29T10:40:09.099Z"
+doc_updated_at: "2026-08-29T17:19:53.046Z"
 doc_updated_by: "SUPERVISOR"
 description: "Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability."
 sections:
@@ -523,6 +532,38 @@ sections:
     - repeat_allowed: false
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
+
+    ### 2026-08-29T17:19:51.260Z — VERIFY — needs_rework
+
+    By: USER
+
+    Note: Recover the approved task-centric plan: four required WorkItems remain incomplete despite task-level docs and verification evidence.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:be2f267bdef19b7ce29cab2131cb3154cfd9b7c8ca67bc83fdf7de8e85fa4dad, input_digest=sha256:ca294d3b771cd021781e2fa1d6d45d39ee418bde84975718918e04c8b1af724f
+
+    Details:
+
+    Complete inventory-and-map, kernel-contract, migration-oracle, and traceability-and-gates through fresh state-bound semantic episodes before pre-merge closure.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291005-K5TG4D-specify-the-clean-task-kernel-and-migration-orac/.agentplane/tasks/202608291005-K5TG4D/blueprint/resolved-snapshot.json
+    - old_digest: efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c
+    - current_digest: efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608291005-K5TG4D
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane finish 202608291005-K5TG4D --author PLANNER --body 'Verified: pre-merge closure packet is ready for the task PR.' --result 'pre-merge closure' --commit 84e3af962e1386afcbf12b32a37f5cd2bd5bfd78 --pre-merge-closure
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -1077,8 +1118,6 @@ extensions:
         revision: 1
         state: "PLANNED"
         validation_result: null
-  implementation_commit:
-    hash: "a11f7bc5dd26ca540854e7e550e5930e3b69c734"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -1350,6 +1389,38 @@ DecisionContextRef:
 - repeat_allowed: false
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
+
+### 2026-08-29T17:19:51.260Z — VERIFY — needs_rework
+
+By: USER
+
+Note: Recover the approved task-centric plan: four required WorkItems remain incomplete despite task-level docs and verification evidence.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:be2f267bdef19b7ce29cab2131cb3154cfd9b7c8ca67bc83fdf7de8e85fa4dad, input_digest=sha256:ca294d3b771cd021781e2fa1d6d45d39ee418bde84975718918e04c8b1af724f
+
+Details:
+
+Complete inventory-and-map, kernel-contract, migration-oracle, and traceability-and-gates through fresh state-bound semantic episodes before pre-merge closure.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291005-K5TG4D-specify-the-clean-task-kernel-and-migration-orac/.agentplane/tasks/202608291005-K5TG4D/blueprint/resolved-snapshot.json
+- old_digest: efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c
+- current_digest: efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608291005-K5TG4D
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane finish 202608291005-K5TG4D --author PLANNER --body 'Verified: pre-merge closure packet is ready for the task PR.' --result 'pre-merge closure' --commit 84e3af962e1386afcbf12b32a37f5cd2bd5bfd78 --pre-merge-closure
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
 
 <!-- END VERIFICATION RESULTS -->
 

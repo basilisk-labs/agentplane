@@ -1,0 +1,101 @@
+{
+  "details": "Complete inventory-and-map, kernel-contract, migration-oracle, and traceability-and-gates through fresh state-bound semantic episodes before pre-merge closure.",
+  "digest": "sha256:f6b36db68eb2b50bb5f3663611ba50b7e9bcbc96f6ab88c6f91d9a05c4865bd9",
+  "implementation_sha": "a11f7bc5dd26ca540854e7e550e5930e3b69c734",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:ca294d3b771cd021781e2fa1d6d45d39ee418bde84975718918e04c8b1af724f",
+    "environment": {
+      "digest": "sha256:bd3e1dd33c56a55ada826e76effcfd88c4413ce5d9d5c11c442cb2a94959023c",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": "1",
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:091ec9d3569161c3906acf15a0ad0588e1de533566bfed1e785ebaf4d1f3c3c9",
+      "digest": "sha256:18c77cf30d00fab1c2d61acdfd3e630045ce8ed66c96c1c433d77c386db7463b",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "3bcce289091f5e6cbcb1dea87c2964c4f559259d",
+      "digest": "sha256:0827ef6ed96c898419d987e50c0a5dc1b37213dd3c1d189c826e116cd6d7b003",
+      "primary_task_id": "202608291005-K5TG4D",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608291005-K5TG4D"
+      ]
+    },
+    "implementation": {
+      "base_sha": "3bcce289091f5e6cbcb1dea87c2964c4f559259d",
+      "digest": "sha256:9bf3f5c9b6940c53747f0a8a6f2cef7a48770eacbec8f28babcd43dc80f75d0c",
+      "strategy": "branch_diff",
+      "target_sha": "a11f7bc5dd26ca540854e7e550e5930e3b69c734"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:f8350ed36e19591e59a8c2c94d4f2a1f3f3b1978657011fe8956fa86d458e9dd",
+    "verify_steps_digest": "sha256:be2f267bdef19b7ce29cab2131cb3154cfd9b7c8ca67bc83fdf7de8e85fa4dad"
+  },
+  "kind": "task_verification_record",
+  "note": "Recover the approved task-centric plan: four required WorkItems remain incomplete despite task-level docs and verification evidence.",
+  "recorded_at": "2026-08-29T17:19:51.260Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Inspect docs/adr/0017-clean-task-core-rebuild.md and docs/reference/clean-task-core-rebuild-spec.mdx. Expected: they define the staged program, source-backed code map, pure kernel boundary, mandatory invariants, adapter contracts, deterministic migration and rollback, replay corpus, dual-run cutover, and milestone gates.\n2. Inspect the legacy roadmap traceability table. Expected: every AP-AUTH, AP-APPROVAL, AP-GRANT, AP-DEPS, AP-SCOPE, AP-RUNTIME, AP-CORE, AP-CTX, AP-KA, and old root task has exactly one Absorb or Retain disposition with replacement ownership.\n3. Inspect docs/adr/README.md. Expected: ADR 0017 is present in the canonical index and links to the decision record.\n4. Run bun run docs:ia:check. Expected: documentation IA, sidebar coverage, and current path references pass.\n5. Run bun run format:check. Expected: all matched files use Prettier formatting.\n6. Run git diff --check. Expected: no whitespace errors.\n7. Compare the delivered documents against Scope and record any residual implementation choices or graph exceptions in Findings. Expected: open edges are explicit and no legacy requirement is silently dropped.",
+  "scope_digest": "sha256:be2f267bdef19b7ce29cab2131cb3154cfd9b7c8ca67bc83fdf7de8e85fa4dad",
+  "task_id": "202608291005-K5TG4D",
+  "verification_command": "agentplane task verify rework 202608291005-K5TG4D --rework --by USER",
+  "verifier": "USER"
+}
