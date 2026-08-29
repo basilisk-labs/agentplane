@@ -4,7 +4,7 @@ title: "Implement the isolated canonical Task kernel"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -93,6 +93,8 @@ execution_contract:
     changed_paths:
       - "packages/core/src/tasks/index.ts"
       - "packages/core/src/tasks/task-kernel/index.ts"
+      - "packages/core/src/tasks/task-kernel/kernel.test.ts"
+      - "packages/core/src/tasks/task-kernel/kernel.ts"
       - "packages/core/src/tasks/task-kernel/model.test.ts"
       - "packages/core/src/tasks/task-kernel/model.ts"
     external_effects: []
@@ -106,6 +108,15 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
         result: "pass"
       -
         id: "recorded-check-2"
@@ -168,13 +179,15 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:e5a8a2483cc6b959568b087569eca4ec32145df7387c35b0be81ed5b2cd7115c"
+      digest: "sha256:6abe7706c6e80244c6f759ff4167368397613ca72273cd5d84fcf47b7d6a842f"
       escalation_reasons:
         - "central_component:packages/core/src/tasks/index.ts"
         - "central_component:packages/core/src/tasks/task-centric"
         - "central_component:packages/core/src/tasks/task-kernel"
         - "central_path:packages/core/src/tasks/index.ts"
         - "central_path:packages/core/src/tasks/task-kernel/index.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/kernel.test.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/kernel.ts"
         - "central_path:packages/core/src/tasks/task-kernel/model.test.ts"
         - "central_path:packages/core/src/tasks/task-kernel/model.ts"
         - "effect_public_api"
@@ -189,6 +202,8 @@ execution_contract:
         changed_files:
           - "packages/core/src/tasks/index.ts"
           - "packages/core/src/tasks/task-kernel/index.ts"
+          - "packages/core/src/tasks/task-kernel/kernel.test.ts"
+          - "packages/core/src/tasks/task-kernel/kernel.ts"
           - "packages/core/src/tasks/task-kernel/model.test.ts"
           - "packages/core/src/tasks/task-kernel/model.ts"
         external_effects: []
@@ -236,6 +251,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 0f4a0d1f5d18. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: ab29385a10a1. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -258,8 +276,22 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-29T20:53:47.101Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: ab29385a10a1. CLI accepted one state-bound external-agent semantic result."
+    commit: "ab29385a10a1cf3d142653fe459cec12a6199cb1"
+  -
+    type: "verify"
+    at: "2026-08-29T21:01:40.898Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-29T20:43:22.028Z"
+doc_updated_at: "2026-08-29T21:01:43.107Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged."
 sections:
@@ -349,6 +381,114 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-3
     Scope: branch_pr task 202608292032-1K47B8 Verification Contract check task_outcome (3/3)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608292032-1K47B8-implement-the-isolated-canonical-task-kernel/.agentplane/tasks/202608292032-1K47B8/blueprint/resolved-snapshot.json
+    - old_digest: dc2c028ecfd2cbd4e83e9c695b7c3697411141ca514ea82ca00e20848226929b
+    - current_digest: dc2c028ecfd2cbd4e83e9c695b7c3697411141ca514ea82ca00e20848226929b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608292032-1K47B8
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-29T21:01:40.898Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:509ac1522bea3472392f8734b7b7c1f34ee7accd92341278f59c5ee0f5270a2b, input_digest=sha256:15c2531619d92b3b77f8b50cbdb63defb9d54d52836084bf43d14bdae94d0995
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run arch:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608292032-1K47B8 Verification Contract check affected_unit_integration (1/4)
+
+    Check: affected_unit_integration
+    Command: bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608292032-1K47B8 Verification Contract check affected_unit_integration (2/4)
+
+    Check: affected_unit_integration
+    Command: bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608292032-1K47B8 Verification Contract check affected_unit_integration (3/4)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608292032-1K47B8 Verification Contract check affected_unit_integration (4/4)
+
+    Check: critical_paths
+    Command: bun run arch:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608292032-1K47B8 Verification Contract check critical_paths (1/4)
+
+    Check: critical_paths
+    Command: bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608292032-1K47B8 Verification Contract check critical_paths (2/4)
+
+    Check: critical_paths
+    Command: bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608292032-1K47B8 Verification Contract check critical_paths (3/4)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608292032-1K47B8 Verification Contract check critical_paths (4/4)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608292032-1K47B8 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run arch:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608292032-1K47B8 Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608292032-1K47B8 Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608292032-1K47B8 Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608292032-1K47B8 Verification Contract check task_outcome (4/4)
 
     BlueprintSnapshotRef:
     - state: current
@@ -1055,9 +1195,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 12
     schema_version: 1
-    updated_at: "2026-08-29T20:43:33.969Z"
+    updated_at: "2026-08-29T21:01:44.417Z"
     work_items:
       define-kernel-domain-contract:
         attempt: 1
@@ -1118,14 +1258,44 @@ extensions:
         state: "PLANNED"
         validation_result: null
       implement-deterministic-kernel-reducer:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "implement-deterministic-kernel-reducer"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:d75f415c0156ba72ccfb35bef44d370f39003060c77928ef60190b68cf5d96fe"
+            id: "deterministic-task-kernel-reducer"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608292032-1K47B8"
+              work_item_id: "implement-deterministic-kernel-reducer"
+            provenance:
+              - "sha256:603044ae240c75cbca75841fcabf7f13e1e0e5c6a148f697b1e4425bfebd62fe"
+              - ".agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:1dcd861a751c2490253fd1b845561593d644a94becd5c81d11b5124cca237ed7"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json"
+              check_id: "check-kernel-reducer"
+              command_identity: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts"
+              detail: "Observed by bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts."
+              exit_code: 0
+              observed_at: "2026-08-29T21:01:44.411Z"
+              repository_snapshot_digest: "sha256:1dcd861a751c2490253fd1b845561593d644a94becd5c81d11b5124cca237ed7"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       qualify-isolated-kernel:
         attempt: 0
         claim_id: null
@@ -1139,6 +1309,29 @@ extensions:
     checkpoints: []
     leases: []
     mutation_receipts:
+      external-result:work-order-202608292032-1K47B8-executor-57f344eeb2d34341fa77143d:
+        aggregate_digest: "sha256:ffc3a7b99de1cde01df81dc46a4727377aa3a8ff81b0d3e3e08bd0e838f65532"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-29T21:01:44.417Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_073c0544e548b00b8451c8c3"
+          mutation_id: "external-result:work-order-202608292032-1K47B8-executor-57f344eeb2d34341fa77143d"
+          plan_digest: "sha256:cef2efdd6c79e86a763bdadaf7f1bd6c0635edfdfd265b4f37b83c2e5fed9dca"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608292032-1K47B8"
+          task_revision: 11
+          to: "COMPLETED"
+          work_item_id: "implement-deterministic-kernel-reducer"
+        mutation_id: "external-result:work-order-202608292032-1K47B8-executor-57f344eeb2d34341fa77143d"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202608292032-1K47B8"
       external-result:work-order-202608292032-1K47B8-executor-b1a6107dfc6496d5ce139229:
         aggregate_digest: "sha256:7cd03cbba4886db9b473705a7e568ce2ac6b42079e1b8a2c68e1dcdd5e5c11a0"
         event:
@@ -1166,7 +1359,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "0f4a0d1f5d18039907d40a9b6a38d6eb83ee7cb9"
+    hash: "ab29385a10a1cf3d142653fe459cec12a6199cb1"
   task_execution_context:
     base_ref: "main"
     base_sha: "dbaf4bc2878eab7b50f8ea6d14179d8d91030159"
@@ -1273,6 +1466,114 @@ Command: bun run ci:local:full
 Result: pass
 Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-3
 Scope: branch_pr task 202608292032-1K47B8 Verification Contract check task_outcome (3/3)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608292032-1K47B8-implement-the-isolated-canonical-task-kernel/.agentplane/tasks/202608292032-1K47B8/blueprint/resolved-snapshot.json
+- old_digest: dc2c028ecfd2cbd4e83e9c695b7c3697411141ca514ea82ca00e20848226929b
+- current_digest: dc2c028ecfd2cbd4e83e9c695b7c3697411141ca514ea82ca00e20848226929b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608292032-1K47B8
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-29T21:01:40.898Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:509ac1522bea3472392f8734b7b7c1f34ee7accd92341278f59c5ee0f5270a2b, input_digest=sha256:15c2531619d92b3b77f8b50cbdb63defb9d54d52836084bf43d14bdae94d0995
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run arch:check
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608292032-1K47B8 Verification Contract check affected_unit_integration (1/4)
+
+Check: affected_unit_integration
+Command: bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608292032-1K47B8 Verification Contract check affected_unit_integration (2/4)
+
+Check: affected_unit_integration
+Command: bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608292032-1K47B8 Verification Contract check affected_unit_integration (3/4)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608292032-1K47B8 Verification Contract check affected_unit_integration (4/4)
+
+Check: critical_paths
+Command: bun run arch:check
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608292032-1K47B8 Verification Contract check critical_paths (1/4)
+
+Check: critical_paths
+Command: bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608292032-1K47B8 Verification Contract check critical_paths (2/4)
+
+Check: critical_paths
+Command: bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608292032-1K47B8 Verification Contract check critical_paths (3/4)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608292032-1K47B8 Verification Contract check critical_paths (4/4)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608292032-1K47B8 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run arch:check
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608292032-1K47B8 Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608292032-1K47B8 Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608292032-1K47B8 Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608292032-1K47B8 Verification Contract check task_outcome (4/4)
 
 BlueprintSnapshotRef:
 - state: current
