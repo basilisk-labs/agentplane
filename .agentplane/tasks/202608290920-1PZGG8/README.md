@@ -4,7 +4,7 @@ title: "Allow task-centric plan refinement before WorkItem selection"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 25
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "USER"
   note: "User explicitly approved plan 3eaa9900 in the current Codex conversation."
 verification:
-  state: "blocked_external"
-  updated_at: "2026-08-29T11:00:02.485Z"
+  state: "ok"
+  updated_at: "2026-08-29T11:20:24.099Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: No executable declared verification checks are configured for this task."
-  attempts: 4
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
@@ -232,7 +232,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "04fa3a364009c33257e07b13d7fb21ac5d7b9fb2"
+  message: "🚧 1PZGG8 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -255,6 +257,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 04fa3a364009. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -340,9 +345,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-29T11:12:23.376Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 04fa3a364009. CLI accepted one state-bound external-agent semantic result."
+    commit: "04fa3a364009c33257e07b13d7fb21ac5d7b9fb2"
+  -
+    type: "verify"
+    at: "2026-08-29T11:20:24.099Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-29T11:10:04.748Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-29T11:20:26.722Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix the supported recovery path exposed by 7JCQPF. In recordTaskCentricExternalResult, when semantic.plan_refinement is present, record the refinement against the current approved plan before selecting or projecting a WorkItem result. If the refinement requires replan, return replan_required without requiring a schedulable WorkItem. Preserve normal WorkItem result selection, idempotency, validation, and fail-closed behavior when no refinement is present. Add focused tests for an unschedulable READY WorkItem whose refinement is still recorded, plus unchanged normal result behavior. This is an integration-path blocker for 7JCQPF and PR #5870; do not change release ordering, policy, scheduler semantics, or task stores."
 sections:
   Summary: |-
@@ -545,6 +564,90 @@ sections:
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24870fce63c2455441b09f56243e72d224fcac20b52a9799326e9de05d62a231, input_digest=sha256:8712b04ad0872ab0ad667f1e4ba766ab10877f12d08ad5d95d5b2732252db6b0
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290920-1PZGG8-allow-task-centric-plan-refinement-before-workit/.agentplane/tasks/202608290920-1PZGG8/blueprint/resolved-snapshot.json
+    - old_digest: 8ea523d85b10d9639a2d3a53bac171c4c1c116ba1da4fa5f9db36607f1d0691e
+    - current_digest: 8ea523d85b10d9639a2d3a53bac171c4c1c116ba1da4fa5f9db36607f1d0691e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608290920-1PZGG8
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608290920-1PZGG8
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-29T11:20:24.099Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24870fce63c2455441b09f56243e72d224fcac20b52a9799326e9de05d62a231, input_digest=sha256:b70eb33a25f7d28c7597b2a7bed1b0aabd52c39e1d4299ace48e13a2f69158b2
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check critical_paths (3/3)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check task_outcome (3/3)
 
     BlueprintSnapshotRef:
     - state: current
@@ -1051,23 +1154,111 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608290920-1PZGG8"
-    revision: 23
+    revision: 29
     schema_version: 1
-    updated_at: "2026-08-29T11:09:57.120Z"
+    updated_at: "2026-08-29T11:20:32.681Z"
     work_items:
       verify-evaluator-rework:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "verify-evaluator-rework"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:2368d6da62edc83d53a7256361b03e5cb6c64df5f869d9e732b4449cfa5385d6"
+            id: "evaluator rework behavior"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608290920-1PZGG8"
+              work_item_id: "verify-evaluator-rework"
+            provenance:
+              - "sha256:189f436b066ba383aa5e3ca9f8600b692099f3af0f65bd969154abab7b7bb514"
+              - ".agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:ed9684027b5e658480b832c62b047bf5578134dc976da338fe172c0eabce1cd8"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:aedf05520d5fd6358889638e17500fd9f4b109247b0b21d59ab7e2a8d7b7a184"
+            id: "fresh focused and full verification evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608290920-1PZGG8"
+              work_item_id: "verify-evaluator-rework"
+            provenance:
+              - "sha256:189f436b066ba383aa5e3ca9f8600b692099f3af0f65bd969154abab7b7bb514"
+              - ".agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:ed9684027b5e658480b832c62b047bf5578134dc976da338fe172c0eabce1cd8"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json"
+              check_id: "check-focused-rework"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-08-29T11:20:32.674Z"
+              repository_snapshot_digest: "sha256:ed9684027b5e658480b832c62b047bf5578134dc976da338fe172c0eabce1cd8"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json"
+              check_id: "check-full-rework"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-29T11:20:32.674Z"
+              repository_snapshot_digest: "sha256:ed9684027b5e658480b832c62b047bf5578134dc976da338fe172c0eabce1cd8"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json"
+              check_id: "check-diff-rework"
+              command_identity: "git diff --check"
+              detail: "Observed by git diff --check."
+              exit_code: 0
+              observed_at: "2026-08-29T11:20:32.674Z"
+              repository_snapshot_digest: "sha256:ed9684027b5e658480b832c62b047bf5578134dc976da338fe172c0eabce1cd8"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
     mutation_receipts:
+      external-result:work-order-202608290920-1PZGG8-executor-06ea16939a349e584e9ca082:
+        aggregate_digest: "sha256:136028fb723ba972b51c9d684b64874669c2c15765efc1eebd8c7d4d55a227a7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-29T11:20:32.681Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_591ca07072351f42feb53c0d"
+          mutation_id: "external-result:work-order-202608290920-1PZGG8-executor-06ea16939a349e584e9ca082"
+          plan_digest: "sha256:3eaa9900eaed68996750a7af04241ac7b0341027794268553f57036f4b8f81fe"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608290920-1PZGG8"
+          task_revision: 28
+          to: "COMPLETED"
+          work_item_id: "verify-evaluator-rework"
+        mutation_id: "external-result:work-order-202608290920-1PZGG8-executor-06ea16939a349e584e9ca082"
+        next_revision: 29
+        previous_revision: 28
+        schema_version: 1
+        task_id: "202608290920-1PZGG8"
       external-result:work-order-202608290920-1PZGG8-executor-d827f9c36c4124f5b9128d60:
         aggregate_digest: "sha256:28f561cdb465e12431f810e15518a9d4431d0fc0311e91cdbb0c66b9addf1eaa"
         event:
@@ -1118,6 +1309,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "04fa3a364009c33257e07b13d7fb21ac5d7b9fb2"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -1338,6 +1531,90 @@ Attempts: 4
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24870fce63c2455441b09f56243e72d224fcac20b52a9799326e9de05d62a231, input_digest=sha256:8712b04ad0872ab0ad667f1e4ba766ab10877f12d08ad5d95d5b2732252db6b0
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290920-1PZGG8-allow-task-centric-plan-refinement-before-workit/.agentplane/tasks/202608290920-1PZGG8/blueprint/resolved-snapshot.json
+- old_digest: 8ea523d85b10d9639a2d3a53bac171c4c1c116ba1da4fa5f9db36607f1d0691e
+- current_digest: 8ea523d85b10d9639a2d3a53bac171c4c1c116ba1da4fa5f9db36607f1d0691e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608290920-1PZGG8
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608290920-1PZGG8
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-29T11:20:24.099Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:24870fce63c2455441b09f56243e72d224fcac20b52a9799326e9de05d62a231, input_digest=sha256:b70eb33a25f7d28c7597b2a7bed1b0aabd52c39e1d4299ace48e13a2f69158b2
+
+Details:
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check critical_paths (3/3)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/task-centric-external-result.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608290920-1PZGG8/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608290920-1PZGG8 Verification Contract check task_outcome (3/3)
 
 BlueprintSnapshotRef:
 - state: current

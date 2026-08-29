@@ -15,8 +15,8 @@ Fix the supported recovery path exposed by 7JCQPF. In recordTaskCentricExternalR
 
 ## Verification
 
-- State: blocked_external
-- Note: Rework: No executable declared verification checks are configured for this task.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
