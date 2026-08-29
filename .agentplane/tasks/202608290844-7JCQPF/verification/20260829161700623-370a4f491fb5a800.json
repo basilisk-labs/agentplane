@@ -1,0 +1,103 @@
+{
+  "details": "GitHub review threads PRRT_kwDORCLmJM6dYvl4, PRRT_kwDORCLmJM6dYvl6, PRRT_kwDORCLmJM6dYvl7. The first is outdated but requires an evidence-backed response; the latter two require code and regression-test changes.",
+  "digest": "sha256:370a4f491fb5a8002bfb906003f18da2019af0d7a2d0699eabfb1012b8796c25",
+  "implementation_sha": "019b64e46502d17f73e177d1ddca9d9d280487b0",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:d86655dd3f0ceebdcc79b93814f23f85d71564eb87d1d48b971b12767fbe6d9f",
+    "environment": {
+      "digest": "sha256:bd3e1dd33c56a55ada826e76effcfd88c4413ce5d9d5c11c442cb2a94959023c",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": "1",
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:97a9d0f0fa0964c739381c3694e9d04c4c225316f54637d0affc863542ae7168",
+      "digest": "sha256:ffc7783fe26704cb93968b4a9d00bd64f7a1b85437fc327b03a40cf428ad24b6",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "3bcce289091f5e6cbcb1dea87c2964c4f559259d",
+      "digest": "sha256:f9496d4bf99cc2e1620ea8d556d25cb98b27509e9b77badbe676adecd3dd5503",
+      "primary_task_id": "202608290844-7JCQPF",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "observed_path_outside_scope:.agentplane/policy/incidents.md",
+        "observed_path_outside_scope:packages/agentplane/assets/policy/incidents.md",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608290844-7JCQPF"
+      ]
+    },
+    "implementation": {
+      "base_sha": "3bcce289091f5e6cbcb1dea87c2964c4f559259d",
+      "digest": "sha256:22604714104951e4e2a983c87ba52747697887e4a7af814e8a836eee2defbe0f",
+      "strategy": "branch_diff",
+      "target_sha": "019b64e46502d17f73e177d1ddca9d9d280487b0"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:c7fb6e4e4cc1017cce72e86a88505d3794d8170fa476876fffea33ddd1120561",
+    "verify_steps_digest": "sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5"
+  },
+  "kind": "task_verification_record",
+  "note": "Address unresolved PR #5871 review findings: optional WorkItems must not reopen DONE tasks or capture task-level rework; refresh verification evidence and resolve all review threads.",
+  "recorded_at": "2026-08-29T16:17:00.623Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Allow state-bound WorkItem implementation results to reopen DONE tasks\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow state-bound WorkItem implementation results to reopen DONE tasks\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5",
+  "task_id": "202608290844-7JCQPF",
+  "verification_command": "agentplane task verify rework 202608290844-7JCQPF --rework --by USER",
+  "verifier": "USER"
+}

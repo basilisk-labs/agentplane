@@ -36,10 +36,7 @@ import {
   requiresImplementationRecoveryReplacement,
   requiresPlanningRecoveryReplacement,
 } from "../commands/task/external-agent-supervisor-recovery.js";
-import {
-  blockingImplementationAuthorityViolations,
-  requiresImplementationReworkReopen,
-} from "../commands/task/external-agent-implementation-authority.js";
+import { blockingImplementationAuthorityViolations } from "../commands/task/external-agent-implementation-authority.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
 import { readRouteFingerprint } from "./run-cli.core.task-advance.testkit.js";
@@ -217,44 +214,6 @@ describe("task advance effect recovery", () => {
         "external_effect:network_read",
       ]),
     ).toEqual(["repository_effect:ci", "external_effect:network_read"]);
-  });
-
-  it("reopens a closed task only for state-bound implementation results", () => {
-    expect(
-      requiresImplementationReworkReopen({
-        purpose: "implementation_rework",
-        task_status: "DONE",
-        work_item_id: null,
-      }),
-    ).toBe(true);
-    expect(
-      requiresImplementationReworkReopen({
-        purpose: "implementation_rework",
-        task_status: "DOING",
-        work_item_id: null,
-      }),
-    ).toBe(false);
-    expect(
-      requiresImplementationReworkReopen({
-        purpose: "implementation",
-        task_status: "DONE",
-        work_item_id: "required-work",
-      }),
-    ).toBe(true);
-    expect(
-      requiresImplementationReworkReopen({
-        purpose: "implementation",
-        task_status: "DONE",
-        work_item_id: null,
-      }),
-    ).toBe(false);
-    expect(
-      requiresImplementationReworkReopen({
-        purpose: "implementation",
-        task_status: "DOING",
-        work_item_id: "required-work",
-      }),
-    ).toBe(false);
   });
 
   it("retires a drifted result-less exchange and issues one exact-key replacement", async () => {

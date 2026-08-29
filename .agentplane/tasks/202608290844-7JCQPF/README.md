@@ -2,10 +2,10 @@
 id: "202608290844-7JCQPF"
 title: "Allow state-bound WorkItem implementation results to reopen DONE tasks"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 49
+revision: 50
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,11 @@ plan_approval:
   updated_by: "USER"
   note: "User pre-authorized subsequent in-scope bootstrap recovery plans; approved plan deff35da with unchanged four-file scope and no external effects."
 verification:
-  state: "ok"
-  updated_at: "2026-08-29T14:51:24.375Z"
-  updated_by: "TESTER"
-  note: "Verified current head db3a023e6; its delta from the fully tested close commit is limited to framework-owned task evidence artifacts."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-29T16:17:00.623Z"
+  updated_by: "USER"
+  note: "Address unresolved PR #5871 review findings: optional WorkItems must not reopen DONE tasks or capture task-level rework; refresh verification evidence and resolve all review threads."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -298,9 +298,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit:
-  hash: "c75df360718b4012e3a3defec60196d46822ca88"
-  message: "🚧 7JCQPF task: record current evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -551,8 +549,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "c75df360718b4012e3a3defec60196d46822ca88"
+  -
+    type: "verify"
+    at: "2026-08-29T16:17:00.623Z"
+    author: "USER"
+    state: "needs_rework"
+    note: "Address unresolved PR #5871 review findings: optional WorkItems must not reopen DONE tasks or capture task-level rework; refresh verification evidence and resolve all review threads."
 doc_version: 3
-doc_updated_at: "2026-08-29T15:47:33.262Z"
+doc_updated_at: "2026-08-29T16:17:05.764Z"
 doc_updated_by: "CODER"
 description: "Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering."
 sections:
@@ -1168,6 +1172,38 @@ sections:
     Result: pass
     Evidence: complete-done-workitem-recovery is COMPLETED; replay reopens DONE to DOING and projects the WorkItem result exactly once; current-head delta is task evidence only.
     Scope: accepted bootstrap behavior and persisted semantic evidence.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+    - old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-29T16:17:00.623Z — VERIFY — needs_rework
+
+    By: USER
+
+    Note: Address unresolved PR #5871 review findings: optional WorkItems must not reopen DONE tasks or capture task-level rework; refresh verification evidence and resolve all review threads.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:d86655dd3f0ceebdcc79b93814f23f85d71564eb87d1d48b971b12767fbe6d9f
+
+    Details:
+
+    GitHub review threads PRRT_kwDORCLmJM6dYvl4, PRRT_kwDORCLmJM6dYvl6, PRRT_kwDORCLmJM6dYvl7. The first is outdated but requires an evidence-backed response; the latter two require code and regression-test changes.
 
     BlueprintSnapshotRef:
     - state: current
@@ -2247,9 +2283,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "019b64e46502d17f73e177d1ddca9d9d280487b0"
-    message: "🚧 7JCQPF task: pre-merge closure"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -2882,6 +2915,38 @@ Command: inspect task README aggregate, real task advance replay, and git diff 0
 Result: pass
 Evidence: complete-done-workitem-recovery is COMPLETED; replay reopens DONE to DOING and projects the WorkItem result exactly once; current-head delta is task evidence only.
 Scope: accepted bootstrap behavior and persisted semantic evidence.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+- old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-29T16:17:00.623Z — VERIFY — needs_rework
+
+By: USER
+
+Note: Address unresolved PR #5871 review findings: optional WorkItems must not reopen DONE tasks or capture task-level rework; refresh verification evidence and resolve all review threads.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:d86655dd3f0ceebdcc79b93814f23f85d71564eb87d1d48b971b12767fbe6d9f
+
+Details:
+
+GitHub review threads PRRT_kwDORCLmJM6dYvl4, PRRT_kwDORCLmJM6dYvl6, PRRT_kwDORCLmJM6dYvl7. The first is outdated but requires an evidence-backed response; the latter two require code and regression-test changes.
 
 BlueprintSnapshotRef:
 - state: current
