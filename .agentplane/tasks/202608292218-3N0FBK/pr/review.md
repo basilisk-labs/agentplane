@@ -6,7 +6,7 @@ Created: 2026-08-29T22:21:11.540Z
 
 - Task: `202608292218-3N0FBK`
 - Title: Prevent branch closeout while required WorkItems are incomplete
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608292218-3N0FBK/prevent-branch-closeout-while-required-workitems`
 - Canonical task record: `.agentplane/tasks/202608292218-3N0FBK/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-29T22:21:11.540Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-29T22:21:11.540Z
+- Updated: 2026-08-29T23:20:15.351Z
 - Branch: task/202608292218-3N0FBK/prevent-branch-closeout-while-required-workitems
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
