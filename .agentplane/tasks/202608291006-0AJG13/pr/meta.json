@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608291006-0AJG13/implement-the-isolated-canonical-task-kernel",
+  "created_at": "2026-08-29T19:21:49.507Z",
+  "diffstat_sha256": "sha256:2311244b1a6392148ef86964939f2b7515e09b046c81e4eb18cfd49a9f31bb6b",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608291006-0AJG13",
+  "updated_at": "2026-08-29T19:21:49.507Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

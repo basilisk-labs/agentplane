@@ -1,0 +1,4 @@
+ packages/core/src/tasks/task-kernel/index.ts      |   2 +
+ packages/core/src/tasks/task-kernel/model.test.ts | 102 ++++++
+ packages/core/src/tasks/task-kernel/model.ts      | 365 ++++++++++++++++++++++
+ 3 files changed, 469 insertions(+)
