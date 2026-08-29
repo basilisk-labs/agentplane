@@ -2,10 +2,10 @@
 id: "202608290844-7JCQPF"
 title: "Allow state-bound WorkItem implementation results to reopen DONE tasks"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 54
+revision: 55
 origin:
   system: "manual"
 depends_on: []
@@ -60,9 +60,9 @@ quality_review:
     - "CLI-owned verification record 20260829165606401-4bf622d61e8adf7c targets implementation SHA 5b7ccd96d09c18e330c5b4f9c6e97725ffc7fd33 and records bun run ci:local:full plus git diff --check as passing."
     - "Residual risk: Hosted PR checks and merge remain provider-owned gates after this local semantic verdict."
 token_usage:
-  agent_runs: 18
+  agent_runs: 20
   input_tokens: null
-  journal_digest: "sha256:3aa6c5c3da652dae883bf111dbb87c428d382902600ed1757f2f13ecc4aeed04"
+  journal_digest: "sha256:f53569e941d84e69a595c3bc60e4bc4fb690b7a8145fac97df1b7c6d82241bde"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -72,7 +72,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-29T15:47:33.231Z"
+  updated_at: "2026-08-29T17:02:27.493Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -577,8 +577,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "5b7ccd96d09c18e330c5b4f9c6e97725ffc7fd33"
-  message: "🚧 7JCQPF task: apply external agent result"
+  hash: "2fa93faf9b3b78193ff351db67390175231bbe6d"
+  message: "🚧 7JCQPF task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -637,6 +637,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 5b7ccd96d09c. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -852,9 +855,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-29T17:02:27.493Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "2fa93faf9b3b78193ff351db67390175231bbe6d"
 doc_version: 3
-doc_updated_at: "2026-08-29T17:02:06.984Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-29T17:02:27.508Z"
+doc_updated_by: "CODER"
 description: "Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering."
 sections:
   Summary: |-
@@ -2666,6 +2677,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "5b7ccd96d09c18e330c5b4f9c6e97725ffc7fd33"
+    message: "🚧 7JCQPF task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -3455,12 +3467,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/18` agent runs
+- Completeness: `0/20` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:3aa6c5c3da652dae883bf111dbb87c428d382902600ed1757f2f13ecc4aeed04`
+- Journal digest: `sha256:f53569e941d84e69a595c3bc60e4bc4fb690b7a8145fac97df1b7c6d82241bde`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-29T15:47:33.231Z`
+- Updated at: `2026-08-29T17:02:27.493Z`
