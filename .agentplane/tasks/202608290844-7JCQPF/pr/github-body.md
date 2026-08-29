@@ -15,14 +15,19 @@ Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task p
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note:
+
+```text
+Task-centric completion is blocked because the approved WorkItem required_inputs are narrative
+evidence labels rather than produced output IDs; refine the plan before pre-merge closure.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-29T08:47:59.220Z
+- Updated: 2026-08-29T09:15:22.865Z
 - Branch: task/202608290844-7JCQPF/allow-state-bound-workitem-implementation-result
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
