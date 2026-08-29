@@ -12,8 +12,8 @@ Created: 2026-08-29T10:21:54.868Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted review P1 requires durable successor-task bootstrap.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
