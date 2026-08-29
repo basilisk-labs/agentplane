@@ -4,7 +4,7 @@ title: "Allow state-bound WorkItem implementation results to reopen DONE tasks"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 40
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: "User pre-authorized subsequent in-scope bootstrap recovery plans; approved plan deff35da with unchanged four-file scope and no external effects."
 verification:
   state: "ok"
-  updated_at: "2026-08-29T14:25:22.018Z"
+  updated_at: "2026-08-29T14:36:21.259Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
   state: "pass"
@@ -137,6 +137,18 @@ execution_contract:
         id: "recorded-check-1"
         result: "pass"
       -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
         id: "recorded-check-2"
         result: "pass"
       -
@@ -153,6 +165,12 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
         result: "pass"
       -
         id: "verification-record"
@@ -291,6 +309,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: a607a05c6e11. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a607a05c6e11. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -423,8 +444,28 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "verify"
+    at: "2026-08-29T14:26:03.828Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: formal verification passed, but concrete WorkItem complete-done-workitem-recovery remains READY because the EXECUTOR result was not projected. Issue and consume a fresh state-bound implementation_rework result."
+  -
+    type: "status"
+    at: "2026-08-29T14:26:45.124Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a607a05c6e11. CLI accepted one state-bound external-agent semantic result."
+    commit: "a607a05c6e11b9be9f6084d2f800f798f7dc2628"
+  -
+    type: "verify"
+    at: "2026-08-29T14:36:21.259Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-29T14:25:23.289Z"
+doc_updated_at: "2026-08-29T14:36:23.879Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering."
 sections:
@@ -782,6 +823,144 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-2
     Scope: branch_pr task 202608290844-7JCQPF Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+    - old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608290844-7JCQPF
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-29T14:26:03.828Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: formal verification passed, but concrete WorkItem complete-done-workitem-recovery remains READY because the EXECUTOR result was not projected. Issue and consume a fresh state-bound implementation_rework result.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:d86fe5badfc0b0bdcc32808cd98561f91380bdb541bb70c91f41968cbca2f8e1
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+    - old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-29T14:36:21.259Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:97cae1acb40c59fc3e05138f63a13587eb8896c9da3bb3154c33cce6d9c4aef0
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check affected_unit_integration (1/4)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check affected_unit_integration (2/4)
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check affected_unit_integration (3/4)
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/scope-extend.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check affected_unit_integration (4/4)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check critical_paths (1/4)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check critical_paths (2/4)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check critical_paths (3/4)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/scope-extend.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check critical_paths (4/4)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/scope-extend.test.ts --pool=forks --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608290844-7JCQPF Verification Contract check task_outcome (4/4)
 
     BlueprintSnapshotRef:
     - state: current
@@ -1615,23 +1794,151 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202608290844-7JCQPF"
-    revision: 20
+    revision: 40
     schema_version: 1
-    updated_at: "2026-08-29T13:33:20.461Z"
+    updated_at: "2026-08-29T14:36:28.318Z"
     work_items:
       complete-done-workitem-recovery:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "complete-done-workitem-recovery"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:a32482e3be4d5430160012aeee31c20589e89ef48041d2a36755c08019189341"
+            id: "state-bound DONE reopen authority"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202608290844-7JCQPF"
+              work_item_id: "complete-done-workitem-recovery"
+            provenance:
+              - "sha256:b930ba0fcbf34138b9a9416ce70843c79d727e47591a67a39471133ddff5389d"
+              - ".agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:5b17ae336361a68989d4dd3db6dcd45a4072c743deb595a774604cd66c5dae76"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:c5a31ad05a3ea81c21987d3f325ea4e81199035dd5d6f723fbb1372e49e8fa6d"
+            id: "real task-advance recovery regression"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202608290844-7JCQPF"
+              work_item_id: "complete-done-workitem-recovery"
+            provenance:
+              - "sha256:b930ba0fcbf34138b9a9416ce70843c79d727e47591a67a39471133ddff5389d"
+              - ".agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:5b17ae336361a68989d4dd3db6dcd45a4072c743deb595a774604cd66c5dae76"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:c4ba5c5bdbcc710f92e78f21e7c5ac2308676aa9b48dfe962664c6fe254eba42"
+            id: "task-level scope-extension recovery"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202608290844-7JCQPF"
+              work_item_id: "complete-done-workitem-recovery"
+            provenance:
+              - "sha256:b930ba0fcbf34138b9a9416ce70843c79d727e47591a67a39471133ddff5389d"
+              - ".agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:5b17ae336361a68989d4dd3db6dcd45a4072c743deb595a774604cd66c5dae76"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:3814d0656ae102baada785989119d1d9d486266d9a5f7588233ecfa56ba10efa"
+            id: "fresh verification evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202608290844-7JCQPF"
+              work_item_id: "complete-done-workitem-recovery"
+            provenance:
+              - "sha256:b930ba0fcbf34138b9a9416ce70843c79d727e47591a67a39471133ddff5389d"
+              - ".agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:5b17ae336361a68989d4dd3db6dcd45a4072c743deb595a774604cd66c5dae76"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json"
+              check_id: "check-task-advance"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=forks --maxWorkers=1"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=forks --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-08-29T14:36:28.311Z"
+              repository_snapshot_digest: "sha256:5b17ae336361a68989d4dd3db6dcd45a4072c743deb595a774604cd66c5dae76"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json"
+              check_id: "check-scope-extension"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/scope-extend.test.ts --pool=forks --maxWorkers=1"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/scope-extend.test.ts --pool=forks --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-08-29T14:36:28.311Z"
+              repository_snapshot_digest: "sha256:5b17ae336361a68989d4dd3db6dcd45a4072c743deb595a774604cd66c5dae76"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json"
+              check_id: "check-full"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-29T14:36:28.311Z"
+              repository_snapshot_digest: "sha256:5b17ae336361a68989d4dd3db6dcd45a4072c743deb595a774604cd66c5dae76"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json"
+              check_id: "check-diff"
+              command_identity: "git diff --check"
+              detail: "Observed by git diff --check."
+              exit_code: 0
+              observed_at: "2026-08-29T14:36:28.311Z"
+              repository_snapshot_digest: "sha256:5b17ae336361a68989d4dd3db6dcd45a4072c743deb595a774604cd66c5dae76"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
     mutation_receipts:
+      external-result:work-order-202608290844-7JCQPF-executor-c1ed987383da92bf2fbe47e0:
+        aggregate_digest: "sha256:a9792b301b3f6cdaf6e15f5debc17da527295c1ed3406f1ec707b5e455954ba8"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-29T14:36:28.318Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_1e91bddd5612fc35fa05dfe5"
+          mutation_id: "external-result:work-order-202608290844-7JCQPF-executor-c1ed987383da92bf2fbe47e0"
+          plan_digest: "sha256:386ba86b2f651b6407366cfc278552cc6ba6b53666bc0dd5acd3540639c61a33"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608290844-7JCQPF"
+          task_revision: 39
+          to: "COMPLETED"
+          work_item_id: "complete-done-workitem-recovery"
+        mutation_id: "external-result:work-order-202608290844-7JCQPF-executor-c1ed987383da92bf2fbe47e0"
+        next_revision: 40
+        previous_revision: 39
+        schema_version: 1
+        task_id: "202608290844-7JCQPF"
       plan-refinement:work-order-202608290844-7JCQPF-executor-2ea942fb3e82d61103b568b7:
         aggregate_digest: "sha256:cc8c607ed33ce2e02757e7d2c53b41002097b0896c1afccfedfc97e95f36f282"
         event:
@@ -2035,6 +2342,144 @@ Command: git diff --check
 Result: pass
 Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-2
 Scope: branch_pr task 202608290844-7JCQPF Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+- old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608290844-7JCQPF
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-29T14:26:03.828Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: formal verification passed, but concrete WorkItem complete-done-workitem-recovery remains READY because the EXECUTOR result was not projected. Issue and consume a fresh state-bound implementation_rework result.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:d86fe5badfc0b0bdcc32808cd98561f91380bdb541bb70c91f41968cbca2f8e1
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+- old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-29T14:36:21.259Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:97cae1acb40c59fc3e05138f63a13587eb8896c9da3bb3154c33cce6d9c4aef0
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check affected_unit_integration (1/4)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check affected_unit_integration (2/4)
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check affected_unit_integration (3/4)
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/scope-extend.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check affected_unit_integration (4/4)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check critical_paths (1/4)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check critical_paths (2/4)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check critical_paths (3/4)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/scope-extend.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check critical_paths (4/4)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/scope-extend.test.ts --pool=forks --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608290844-7JCQPF Verification Contract check task_outcome (4/4)
 
 BlueprintSnapshotRef:
 - state: current
