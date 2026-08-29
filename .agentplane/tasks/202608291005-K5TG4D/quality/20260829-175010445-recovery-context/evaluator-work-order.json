@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608291005-K5TG4D-4576a4f7f21abf1ffc88bbcd",
+  "prepared_at": "2026-08-29T17:50:10.445Z",
+  "task": {
+    "id": "202608291005-K5TG4D",
+    "revision": 43,
+    "objective": "Specify the clean Task kernel and migration oracle\n\nProduce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability.",
+    "acceptance_criteria": [
+      "bun run docs:ia:check",
+      "bun run format:check",
+      "- In scope: Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability.\n- Out of scope: unrelated refactors not required for \"Specify the clean Task kernel and migration oracle\".",
+      "Revised the approved WorkItem graph so required_inputs contains only output-manifest dependencies and root scheduling is executable.",
+      "1. Inspect docs/adr/0017-clean-task-core-rebuild.md and docs/reference/clean-task-core-rebuild-spec.mdx. Expected: they define the staged program, source-backed code map, pure kernel boundary, mandatory invariants, adapter contracts, deterministic migration and rollback, replay corpus, dual-run cutover, and milestone gates.\n2. Inspect the legacy roadmap traceability table. Expected: every AP-AUTH, AP-APPROVAL, AP-GRANT, AP-DEPS, AP-SCOPE, AP-RUNTIME, AP-CORE, AP-CTX, AP-KA, and old root task has exactly one Absorb or Retain disposition with replacement ownership.\n3. Inspect docs/adr/README.md. Expected: ADR 0017 is present in the canonical index and links to the decision record.\n4. Run bun run docs:ia:check. Expected: documentation IA, sidebar coverage, and current path references pass.\n5. Run bun run format:check. Expected: all matched files use Prettier formatting.\n6. Run git diff --check. Expected: no whitespace errors.\n7. Compare the delivered documents against Scope and record any residual implementation choices or graph exceptions in Findings. Expected: open edges are explicit and no legacy requirement is silently dropped."
+    ]
+  },
+  "evaluated_sha": "9c64a05efdbf8093f622505942a7af7ecf1955cd",
+  "diff_base_sha": "3bcce289091f5e6cbcb1dea87c2964c4f559259d",
+  "blueprint_digest": "efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-175010445-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:d356d4a51839adf90e66d4cef96c4f1ce7e679acc7d702c9daf5cc1c30566c4d",
+    "prompt_path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/525c6509aac711b4d08c0090cc345b850ddebc82785837269bf692ee7e0f3136.md",
+    "result_schema_path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608291005-K5TG4D/README.md",
+      "sha256": "sha256:0828d124f884acb85acf84216f477f24c24416cc656e5deadd6ab353decfd47f",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/8d06a0bda439bd3cbb2a6a861bb3d632c3591570cb548e661e456561e6ebd0e3.patch",
+      "sha256": "sha256:8d06a0bda439bd3cbb2a6a861bb3d632c3591570cb548e661e456561e6ebd0e3",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/73eb709075c74a980968c0120a0294a67f005c9c2ff4ce66b7d285a631ceec90.json",
+      "sha256": "sha256:73eb709075c74a980968c0120a0294a67f005c9c2ff4ce66b7d285a631ceec90",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608291005-K5TG4D/verification/20260829174953384-9a1611a4242d4cd2.json",
+      "sha256": "sha256:a8b0524625c7adb24f4834856fbdd3f28618cda48bec5126565c937696c7f6f3",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/03778a2ec59a89f86c77156b5c41749d8a0acbbdbda469294abad9d305f10155.json",
+      "sha256": "sha256:03778a2ec59a89f86c77156b5c41749d8a0acbbdbda469294abad9d305f10155",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.docs.md",
+      "sha256": "sha256:67cf60d5b18640db0c0141b9a6fea266f6cf89aecc8e7bda542e43ab7b4ef0ea",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}
