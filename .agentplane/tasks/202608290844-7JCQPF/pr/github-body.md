@@ -15,13 +15,8 @@ Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task p
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Address unresolved PR #5871 review findings: optional WorkItems must not reopen DONE tasks or
-capture task-level rework; refresh verification evidence and resolve all review threads.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
