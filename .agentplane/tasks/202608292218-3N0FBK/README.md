@@ -1,10 +1,11 @@
 ---
 id: "202608292218-3N0FBK"
 title: "Prevent branch closeout while required WorkItems are incomplete"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -58,6 +59,20 @@ quality_review:
     - "The evaluator calibration fixture was correctly updated to complete its synthetic WorkItem before asserting the post-implementation quality route."
     - "Supervisor-owned typecheck, focused integration tests, and the full local CI suite all passed at implementation commit f6dae0b382002f07850fd1d5f343eda0b7da6f97."
     - "Residual risk: The route module remains close to the 600-line hotspot ceiling, so future edits may require a separate structural extraction."
+token_usage:
+  agent_runs: 8
+  input_tokens: null
+  journal_digest: "sha256:2a93508be018d507b39d1c46ee230f601d5862eb5dd7269802dba06e666f68e0"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-29T23:21:35.924Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -243,8 +258,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "f6dae0b382002f07850fd1d5f343eda0b7da6f97"
-  message: "🚧 3N0FBK task: apply external agent result"
+  hash: "6e4f20db3b5dc60796ccd299b0bdf7cde7cb251b"
+  message: "🚧 3N0FBK task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -270,6 +285,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: f6dae0b38200. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -362,9 +380,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-29T23:21:35.924Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "6e4f20db3b5dc60796ccd299b0bdf7cde7cb251b"
 doc_version: 3
-doc_updated_at: "2026-08-29T23:20:04.090Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-29T23:21:35.932Z"
+doc_updated_by: "CODER"
 description: "Fix branch_pr route selection so an approved task with any incomplete required canonical WorkItem returns to the bounded EXECUTOR WorkItem episode before verification, quality review, PR publication, or pre-merge closure. Add a regression test for a task that has stale verification, quality review, and commit evidence while a required WorkItem remains READY or PLANNED."
 sections:
   Summary: |-
@@ -884,7 +910,34 @@ extensions:
       schema_version: 1
       task_id: "202608292218-3N0FBK"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608292218-3N0FBK"
+            - "git:f6dae0b382002f07850fd1d5f343eda0b7da6f97"
+          check_id: "check-route-regression"
+          command_identity: "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-29T23:20:02.016Z"
+          repository_snapshot_digest: "sha256:df4b55bdf6b4070a9bfd329f1e4b0c443a7f6d179127a341825cfedd99b213ea"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608292218-3N0FBK"
+            - "git:f6dae0b382002f07850fd1d5f343eda0b7da6f97"
+          check_id: "check-typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-29T23:20:02.016Z"
+          repository_snapshot_digest: "sha256:df4b55bdf6b4070a9bfd329f1e4b0c443a7f6d179127a341825cfedd99b213ea"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608292218-3N0FBK"
     intent:
       acceptance_criteria:
@@ -905,7 +958,7 @@ extensions:
 
         Fix branch_pr route selection so an approved task with any incomplete required canonical WorkItem returns to the bounded EXECUTOR WorkItem episode before verification, quality review, PR publication, or pre-merge closure. Add a regression test for a task that has stale verification, quality review, and commit evidence while a required WorkItem remains READY or PLANNED.
       task_id: "202608292218-3N0FBK"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1127,9 +1180,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608292218-3N0FBK"
-    revision: 19
+    revision: 29
     schema_version: 1
-    updated_at: "2026-08-29T22:58:03.797Z"
+    updated_at: "2026-08-29T23:21:35.924Z"
     work_items:
       prioritize-incomplete-required-work-items:
         attempt: 1
@@ -1260,6 +1313,31 @@ extensions:
         previous_revision: 18
         schema_version: 1
         task_id: "202608292218-3N0FBK"
+      legacy-finish:202608292218-3N0FBK:2026-08-29T23:20:02.016Z:f6dae0b382002f07850fd1d5f343eda0b7da6f97:
+        aggregate_digest: "sha256:09626f12e4ae23bfada21d6df4b5fdebbd1f83985a62256845d862b9769de451"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-29T23:21:35.924Z"
+          cause_refs:
+            - "task-verification:202608292218-3N0FBK"
+            - "git:f6dae0b382002f07850fd1d5f343eda0b7da6f97"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_00133a52c93ec8902835b81e"
+          mutation_id: "legacy-finish:202608292218-3N0FBK:2026-08-29T23:20:02.016Z:f6dae0b382002f07850fd1d5f343eda0b7da6f97"
+          plan_digest: "sha256:d3e3f89738c8623e63dfd2acee0e187bcc323d17676f456f031c6ff8ca11100c"
+          plan_revision: 2
+          repository_fingerprint: "sha256:df4b55bdf6b4070a9bfd329f1e4b0c443a7f6d179127a341825cfedd99b213ea"
+          schema_version: 1
+          task_id: "202608292218-3N0FBK"
+          task_revision: 19
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608292218-3N0FBK:2026-08-29T23:20:02.016Z:f6dae0b382002f07850fd1d5f343eda0b7da6f97"
+        next_revision: 29
+        previous_revision: 28
+        schema_version: 1
+        task_id: "202608292218-3N0FBK"
       plan-refinement:work-order-202608292218-3N0FBK-executor-fbc25c117934591ae019b38e:
         aggregate_digest: "sha256:3ba3a0de6bad0c00f60e4f6e2fd97d87335ffd2487dcc37f534a9f2712ceeca9"
         event:
@@ -1291,6 +1369,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "f6dae0b382002f07850fd1d5f343eda0b7da6f97"
+    message: "🚧 3N0FBK task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "dbaf4bc2878eab7b50f8ea6d14179d8d91030159"
@@ -1605,3 +1684,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/8` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:2a93508be018d507b39d1c46ee230f601d5862eb5dd7269802dba06e666f68e0`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-29T23:21:35.924Z`
