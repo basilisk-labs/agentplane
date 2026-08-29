@@ -13,7 +13,7 @@ Created: 2026-08-29T08:47:59.220Z
 ## Verification
 
 - State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- Note: Rework: the real task-advance DONE recovery regression is absent from the committed candidate, and full local CI cannot pass because the proposed test location exceeds the oversized-test baseline. Move the regression into the existing branch-worktree integration fixture without a baseline exception.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

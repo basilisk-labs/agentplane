@@ -16,7 +16,14 @@ Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task p
 ## Verification
 
 - State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- Note:
+
+```text
+Rework: the real task-advance DONE recovery regression is absent from the committed candidate, and
+full local CI cannot pass because the proposed test location exceeds the oversized-test baseline.
+Move the regression into the existing branch-worktree integration fixture without a baseline
+exception.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
