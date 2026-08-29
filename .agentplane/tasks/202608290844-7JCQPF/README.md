@@ -1,10 +1,10 @@
 ---
 id: "202608290844-7JCQPF"
 title: "Allow state-bound WorkItem implementation results to reopen DONE tasks"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-29T09:14:31.764Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-29T09:18:15.695Z"
+  updated_by: "REVIEWER"
+  note: "Task-centric completion is blocked because the approved WorkItem required_inputs are narrative evidence labels rather than produced output IDs; refine the plan before pre-merge closure."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -114,7 +114,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
       - "packages/agentplane/src/commands/task/scope-extend.test.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -149,6 +150,9 @@ execution_contract:
       -
         id: "recorded-check-7"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -238,9 +242,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "788c7ed1ec2aa26ee88aa589c0c5db128b649496"
-  message: "🚧 7JCQPF task: apply external agent result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -251,6 +254,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 788c7ed1ec2a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Blocked by the task-centric result projection order: the current plan cannot accept a refinement because WorkItem selection fails before plan_refinement is recorded. Recommended action: Create and integrate a narrow blocker that records semantic.plan_refinement before WorkItem selection and returns replan_required without projecting a WorkItem result; then rebuild the runtime and resume this task from a fresh packet. Agentplane receipt: external-agent-blocker/tr_60ad750bf1d4cb201d3c3c07cfb828d8/sha256:025b509821fc4dd45dc9897b60c289d4499ab110b16fbe7a1b093e4f2747bae9."
 events:
   -
     type: "status"
@@ -287,8 +293,21 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "verify"
+    at: "2026-08-29T09:18:15.695Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "Task-centric completion is blocked because the approved WorkItem required_inputs are narrative evidence labels rather than produced output IDs; refine the plan before pre-merge closure."
+  -
+    type: "status"
+    at: "2026-08-29T09:19:42.718Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Blocked by the task-centric result projection order: the current plan cannot accept a refinement because WorkItem selection fails before plan_refinement is recorded. Recommended action: Create and integrate a narrow blocker that records semantic.plan_refinement before WorkItem selection and returns replan_required without projecting a WorkItem result; then rebuild the runtime and resume this task from a fresh packet. Agentplane receipt: external-agent-blocker/tr_60ad750bf1d4cb201d3c3c07cfb828d8/sha256:025b509821fc4dd45dc9897b60c289d4499ab110b16fbe7a1b093e4f2747bae9."
 doc_version: 3
-doc_updated_at: "2026-08-29T09:14:34.134Z"
+doc_updated_at: "2026-08-29T09:19:42.718Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering."
 sections:
@@ -415,11 +434,49 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-29T09:18:15.695Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: Task-centric completion is blocked because the approved WorkItem required_inputs are narrative evidence labels rather than produced output IDs; refine the plan before pre-merge closure.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:c4c4ecc294526dbc1efeebfc92b97f75b181b9bf8b527940d4e489a39f983256
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+    - old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane finish 202608290844-7JCQPF --author CODER --body 'Verified: pre-merge closure packet is ready for the task PR.' --result 'pre-merge closure' --commit b8ec469a7231ede40943b84c4bbe5193153efeac --pre-merge-closure
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: The required WorkItem remains READY but WorkItemScheduler reports no schedulable item because every required_inputs label is absent from output manifests.
+      Impact: External semantic result cannot be projected to the WorkItem, and task finish rejects required_work_item_incomplete.
+      Resolution: Refine the current plan so the independent WorkItem has no produced-output dependencies; retain its required evidence as context and acceptance criteria.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
+      IncidentScope: task-centric planning
+      IncidentTags: work-item-inputs
+      IncidentMatch: required_work_item_incomplete
 extensions:
   agentplane.execution_grant:
     actor: "USER"
@@ -749,8 +806,6 @@ extensions:
         revision: 1
         state: "READY"
         validation_result: null
-  implementation_commit:
-    hash: "788c7ed1ec2aa26ee88aa589c0c5db128b649496"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -894,6 +949,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-29T09:18:15.695Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: Task-centric completion is blocked because the approved WorkItem required_inputs are narrative evidence labels rather than produced output IDs; refine the plan before pre-merge closure.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:c4c4ecc294526dbc1efeebfc92b97f75b181b9bf8b527940d4e489a39f983256
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+- old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane finish 202608290844-7JCQPF --author CODER --body 'Verified: pre-merge closure packet is ready for the task PR.' --result 'pre-merge closure' --commit b8ec469a7231ede40943b84c4bbe5193153efeac --pre-merge-closure
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -902,3 +987,12 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: The required WorkItem remains READY but WorkItemScheduler reports no schedulable item because every required_inputs label is absent from output manifests.
+  Impact: External semantic result cannot be projected to the WorkItem, and task finish rejects required_work_item_incomplete.
+  Resolution: Refine the current plan so the independent WorkItem has no produced-output dependencies; retain its required evidence as context and acceptance criteria.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
+  IncidentScope: task-centric planning
+  IncidentTags: work-item-inputs
+  IncidentMatch: required_work_item_incomplete

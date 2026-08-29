@@ -3,7 +3,7 @@
   "branch": "task/202608290844-7JCQPF/allow-state-bound-workitem-implementation-result",
   "created_at": "2026-08-29T08:47:59.220Z",
   "diffstat_sha256": "sha256:e7241d903add613507b8fe9ef9e9f87b8d7204215c658ce36ddf90a22cf7cd6f",
-  "last_verified_at": "2026-08-29T09:14:31.764Z",
+  "last_verified_at": "2026-08-29T09:18:15.695Z",
   "last_verified_diffstat_sha256": "sha256:e7241d903add613507b8fe9ef9e9f87b8d7204215c658ce36ddf90a22cf7cd6f",
   "pr_number": 5871,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5871",
@@ -20,6 +20,6 @@
   "task_id": "202608290844-7JCQPF",
   "updated_at": "2026-08-29T09:15:22.865Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }
