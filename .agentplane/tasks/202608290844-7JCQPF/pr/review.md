@@ -12,8 +12,8 @@ Created: 2026-08-29T08:47:59.220Z
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: ok
+- Note: Verified at implementation commit a607a05c6 with focused and full local evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

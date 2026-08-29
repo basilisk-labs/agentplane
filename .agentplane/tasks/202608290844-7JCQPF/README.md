@@ -4,7 +4,7 @@ title: "Allow state-bound WorkItem implementation results to reopen DONE tasks"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -23,41 +23,41 @@ plan_approval:
   updated_by: "USER"
   note: "User pre-authorized subsequent in-scope bootstrap recovery plans; approved plan deff35da with unchanged four-file scope and no external effects."
 verification:
-  state: "pending"
-  updated_at: "2026-08-29T13:33:20.461Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 3
+  state: "ok"
+  updated_at: "2026-08-29T13:57:23.903Z"
+  updated_by: "TESTER"
+  note: "Verified at implementation commit a607a05c6 with focused and full local evidence."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-29T09:16:26.238Z"
+  updated_at: "2026-08-29T13:58:49.036Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "9a474519a54992e1ddca14c10cef0b4f3b472da6"
+  evaluated_sha: "a607a05c6e11b9be9f6084d2f800f798f7dc2628"
   blueprint_digest: "1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584"
   evidence_refs:
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-091527574-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-091527574-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/8151ee2edd7f965a2ab2a99ae032f5bb0480bbd6b0920b6e390d19304e950091.md"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-091527574-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-091527574-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-091527574-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-135755737-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-135755737-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/e292f4d015d55c072e7e21144fc8791343a332c84a64d49e6164ed43ac4537ca.md"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-135755737-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-135755737-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-135755737-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608290844-7JCQPF/README.md"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/4f0352c5d6a2182a46e1c6f73e77b5f2708ad05adf67f8236213cab6bf722e40.patch"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/094a699c910341a58afcb15c22105ae1b76587fcc875a385ab29d52916473829.json"
-    - ".agentplane/tasks/202608290844-7JCQPF/verification/20260829091431764-e529c93dd7f5a93e.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/eba6a62437a3e1722cad7b6d477654c71e7c4ecea013a52313e862621c811e58.patch"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/f5a5751e9d32d9d24fb39379371b7291cd6420c99d10ecf8f0283eb09e84094e.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/verification/20260829135723903-1e369e8c538b8c1d.json"
     - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/bf246ecc6aed6a80440a3a0197ee6a33faa53b12ac072fd16ecde736ee4d7a69.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "DONE reopening is authorized for implementation_rework and for ordinary implementation only when the issued work order carries a concrete work_item_id; non-DONE states and null-ID ordinary implementation remain rejected."
-    - "Task-centric scope extension preserves the existing exactly-one-schedulable-WorkItem path and accepts zero schedulable items only when every required WorkItem is COMPLETED; effect-in-doubt and ambiguous multi-item cases remain fail closed."
-    - "The frozen four-file diff stays within the approved execution scope and does not change schedulers, task stores, checks, policy, or release ordering."
-    - "Supervisor-owned verification passed bun run ci:local:full and git diff --check on the exact evaluated candidate; the focused regression set previously passed 35 tests."
-    - "Residual risk: Hosted checks and supported integration must still pass on the exact published PR head before the blocker is treated as integrated."
+    - "The authority helper permits DONE reopen for implementation_rework and for ordinary implementation only when work_item_id is concrete; task-level ordinary implementation and all non-DONE cases remain false."
+    - "The real task-advance branch-worktree regression observes READY on interrupted projection, seeds premature DONE, replays the original result, and asserts DOING, verification=ok, and WorkItem COMPLETED."
+    - "Task-level scope extension preserves a fully completed plan and rejects zero schedulable selection when required work remains unfinished."
+    - "The persisted verification record covers affected integration tests, critical size and diff guards, the full local regression suite, and the task outcome."
+    - "Residual risk: The hosted PR head, hosted checks, merge result, and hosted-close state are not yet observed."
 execution_route:
   frozen: true
   reason_codes:
@@ -122,6 +122,7 @@ execution_contract:
       - "packages/agentplane"
     changed_paths:
       - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
       - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
       - "packages/agentplane/src/commands/task/scope-extend.test.ts"
@@ -130,7 +131,19 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -166,12 +179,13 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:43ee610e4f70de5035fc12320c481c23f022a9984337f9da9a6def9ce48cdedc"
+      digest: "sha256:7e3fb43ce78474c12b5492f0bcc9437d17179e3ba2a307a3ecb65b345a37b9db"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
       execution_groups:
         - "docs-schema"
@@ -183,6 +197,7 @@ execution_contract:
           - "packages/agentplane"
         changed_files:
           - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
           - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
           - "packages/agentplane/src/commands/task/scope-extend.test.ts"
@@ -222,7 +237,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "a607a05c6e11b9be9f6084d2f800f798f7dc2628"
+  message: "🚧 7JCQPF task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -254,6 +271,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts; repository effects: tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a607a05c6e11. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -352,8 +372,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The missing real DONE recovery regression belongs in the existing branch-worktree integration fixture, which is outside the current writable scope. Recommended action: Add packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts to the approved WorkItem scope, then extend its interrupted projection scenario without adding a baseline exception. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts; repository effects=tests; request digest=sha256:d1b9c83a7ae6bd4b8386aefaee8e724c0b2d0aff61d0f1d28d87a4bb0e5a7744. Agentplane receipt: external-agent-blocker/tr_985eb547237c6a67b3ea391f11d6c377/sha256:40dcca04f7705db3f17f873f33dc33757401eaf76cc781d1afe4d12534e5282c/sha256:d1b9c83a7ae6bd4b8386aefaee8e724c0b2d0aff61d0f1d28d87a4bb0e5a7744."
+  -
+    type: "status"
+    at: "2026-08-29T13:43:41.227Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a607a05c6e11. CLI accepted one state-bound external-agent semantic result."
+    commit: "a607a05c6e11b9be9f6084d2f800f798f7dc2628"
+  -
+    type: "verify"
+    at: "2026-08-29T13:57:23.903Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified at implementation commit a607a05c6 with focused and full local evidence."
 doc_version: 3
-doc_updated_at: "2026-08-29T13:33:03.854Z"
+doc_updated_at: "2026-08-29T13:57:25.115Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering."
 sections:
@@ -555,6 +589,60 @@ sections:
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:c4c4ecc294526dbc1efeebfc92b97f75b181b9bf8b527940d4e489a39f983256
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+    - old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608290844-7JCQPF
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-29T13:57:23.903Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified at implementation commit a607a05c6 with focused and full local evidence.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:0db0dac6afc7a80d68ca15b8ad210455a9591bbb43c7e2bf5229d0dcece06242
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts -t recovers-an-implementation-interrupted
+    Result: pass
+    Evidence: 2 matching parameterized recovery cases passed.
+    Scope: interrupted verification and WorkItem projection recovery, including premature DONE replay.
+
+    Check: critical_paths
+    Command: bun run hotspots:check && git diff --check
+    Result: pass
+    Evidence: runtime hotspot threshold, oversized-test baseline, and whitespace checks passed; branch-worktree test is 905 lines.
+    Scope: state-bound authority and repository size and diff guards.
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: full-fast runtime, docs-schema, core, CLI, docs site, workflow lint, platform-critical, and significant coverage groups passed.
+    Scope: full local regression suite.
+
+    Check: task_outcome
+    Command: inspect final branch-worktree recovery assertions at implementation commit a607a05c6
+    Result: pass
+    Evidence: the real task-advance flow reopens premature DONE to DOING, preserves verification=ok, and marks the concrete WorkItem COMPLETED.
+    Scope: required task outcome and acceptance criteria.
 
     BlueprintSnapshotRef:
     - state: current
@@ -1432,6 +1520,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "a607a05c6e11b9be9f6084d2f800f798f7dc2628"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -1650,6 +1740,60 @@ Attempts: 3
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:c4c4ecc294526dbc1efeebfc92b97f75b181b9bf8b527940d4e489a39f983256
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608290844-7JCQPF-allow-state-bound-workitem-implementation-result/.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json
+- old_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- current_digest: 1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608290844-7JCQPF
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608290844-7JCQPF
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-29T13:57:23.903Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified at implementation commit a607a05c6 with focused and full local evidence.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5, input_digest=sha256:0db0dac6afc7a80d68ca15b8ad210455a9591bbb43c7e2bf5229d0dcece06242
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts -t recovers-an-implementation-interrupted
+Result: pass
+Evidence: 2 matching parameterized recovery cases passed.
+Scope: interrupted verification and WorkItem projection recovery, including premature DONE replay.
+
+Check: critical_paths
+Command: bun run hotspots:check && git diff --check
+Result: pass
+Evidence: runtime hotspot threshold, oversized-test baseline, and whitespace checks passed; branch-worktree test is 905 lines.
+Scope: state-bound authority and repository size and diff guards.
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: full-fast runtime, docs-schema, core, CLI, docs site, workflow lint, platform-critical, and significant coverage groups passed.
+Scope: full local regression suite.
+
+Check: task_outcome
+Command: inspect final branch-worktree recovery assertions at implementation commit a607a05c6
+Result: pass
+Evidence: the real task-advance flow reopens premature DONE to DOING, preserves verification=ok, and marks the concrete WorkItem COMPLETED.
+Scope: required task outcome and acceptance criteria.
 
 BlueprintSnapshotRef:
 - state: current
