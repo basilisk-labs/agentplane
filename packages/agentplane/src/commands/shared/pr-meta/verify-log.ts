@@ -3,6 +3,7 @@ import path from "node:path";
 import type { Readable } from "node:stream";
 
 import { startProcess } from "@agentplaneorg/core/process";
+import { isDotEnvLoadedKey } from "../../../shared/env.js";
 import { resolveDeclaredTaskCheck } from "../declared-check.js";
 
 export { resolveCommandInvocation as resolveShellInvocation } from "../declared-check.js";
@@ -22,6 +23,9 @@ const VERIFY_RUNTIME_ENV_KEYS = [
 export function verificationChildEnv(source: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
   const env = { ...source };
   for (const key of VERIFY_RUNTIME_ENV_KEYS) delete env[key];
+  for (const key of Object.keys(env)) {
+    if (key === "AGENTPLANE_DOTENV_LOADED_KEYS" || isDotEnvLoadedKey(key, source)) delete env[key];
+  }
   return env;
 }
 
