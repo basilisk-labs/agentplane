@@ -1,0 +1,103 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun vitest run packages/agentplane/src/commands/task/external-agent-effect-recovery.test.ts packages/agentplane/src/commands/task/task-scope-extension-request.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts -t \"before WorkItem projection|state-bound|scope extension\"\nResult: pass\nEvidence: focused task-advance and recovery regressions passed against 019b64e46502d17f73e177d1ddca9d9d280487b0.\nScope: DONE-task reopening, WorkItem result projection, and fail-closed scope extension.\n\nCheck: critical_paths\nCommand: node .agentplane/policy/check-routing.mjs && bun run hotspots:check && git diff --check main...HEAD\nResult: pass\nEvidence: policy routing, hotspot baseline, and diff integrity passed.\nScope: framework policy, size budgets, and changed-tree hygiene.\n\nCheck: docs_contract\nCommand: bun run ci:local:full docs-schema and website build groups\nResult: pass\nEvidence: schemas, agent templates, policy routing, generated CLI reference, recipes inventory, README generation, navigation check, static website build, and DESIGN.md compliance passed.\nScope: generated documentation and policy contract integrity.\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: exit 0; 758 routed tests, 98 Windows platform-critical tests, 101 significant-coverage tests, workflow lint, and coverage threshold passed under Node 26.\nScope: full local release-equivalent regression suite.\n\nCheck: task_outcome\nCommand: inspect task README aggregate and real task advance replay\nResult: pass\nEvidence: state-bound complete-done-workitem-recovery is COMPLETED; replay reopens DONE to DOING and projects the WorkItem result exactly once.\nScope: accepted bootstrap behavior and persisted semantic evidence.",
+  "digest": "sha256:280eceee3679149d2385de0584e2e8eb702fbe6e21cfea581c2bca4e814286f8",
+  "implementation_sha": "019b64e46502d17f73e177d1ddca9d9d280487b0",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:ecc6f605ce045ce5d52f5a7a6bca57dfbcfa775e55e20b8061b5bfce301ae456",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e6060c1244450ec855cf2846487fd6733981420712bca7bb0bffe894342424bc",
+      "digest": "sha256:c5e892a0ae3be70b3dbc30c3c5323edf447f41d55efce3432876169655e865b8",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "3bcce289091f5e6cbcb1dea87c2964c4f559259d",
+      "digest": "sha256:f9496d4bf99cc2e1620ea8d556d25cb98b27509e9b77badbe676adecd3dd5503",
+      "primary_task_id": "202608290844-7JCQPF",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "observed_path_outside_scope:.agentplane/policy/incidents.md",
+        "observed_path_outside_scope:packages/agentplane/assets/policy/incidents.md",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608290844-7JCQPF"
+      ]
+    },
+    "implementation": {
+      "base_sha": "3bcce289091f5e6cbcb1dea87c2964c4f559259d",
+      "digest": "sha256:22604714104951e4e2a983c87ba52747697887e4a7af814e8a836eee2defbe0f",
+      "strategy": "branch_diff",
+      "target_sha": "019b64e46502d17f73e177d1ddca9d9d280487b0"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:c7fb6e4e4cc1017cce72e86a88505d3794d8170fa476876fffea33ddd1120561",
+    "verify_steps_digest": "sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified the current close commit after framework-owned incident promotion.",
+  "recorded_at": "2026-08-29T14:47:25.405Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Allow state-bound WorkItem implementation results to reopen DONE tasks\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow state-bound WorkItem implementation results to reopen DONE tasks\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:74bc71d1fb6ca09710b85ab633754729be01c4b436816a1ddd37c7ed405007b5",
+  "task_id": "202608290844-7JCQPF",
+  "verification_command": "agentplane task verify ok 202608290844-7JCQPF --ok --by TESTER",
+  "verifier": "TESTER"
+}
