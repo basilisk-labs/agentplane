@@ -1,10 +1,10 @@
 ---
 id: "202608290844-7JCQPF"
 title: "Allow state-bound WorkItem implementation results to reopen DONE tasks"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,10 @@ plan_approval:
   updated_by: "USER"
   note: "User pre-authorized subsequent in-scope bootstrap recovery plans; approved plan deff35da with unchanged four-file scope and no external effects."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-29T13:31:55.703Z"
-  updated_by: "TESTER"
-  note: "Rework: the real task-advance DONE recovery regression is absent from the committed candidate, and full local CI cannot pass because the proposed test location exceeds the oversized-test baseline. Move the regression into the existing branch-worktree integration fixture without a baseline exception."
+  state: "pending"
+  updated_at: "2026-08-29T13:33:20.461Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 3
 quality_review:
   state: "pass"
@@ -91,6 +91,7 @@ execution_contract:
       - "security_boundary"
     writable_roots:
       - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
       - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
       - "packages/agentplane/src/commands/task/scope-extend.test.ts"
@@ -101,6 +102,7 @@ execution_contract:
     rationale:
       - "A branch PR preserves independent review and hosted integration evidence."
       - "The changes are limited to state-bound authority and scope-extension recovery required by the unresolved PR review."
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts; repository_effects=tests"
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -110,13 +112,12 @@ execution_contract:
     schema_version: 2
     scope_roots:
       - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
       - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
       - "packages/agentplane/src/commands/task/scope-extend.test.ts"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -129,31 +130,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "fail"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "verification-record"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -170,6 +147,7 @@ execution_contract:
       declared:
         components:
           - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
           - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
           - "packages/agentplane/src/commands/task/scope-extend.test.ts"
@@ -188,9 +166,10 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:a60c7e406ff3d84a3cfbb374c90ef674be13d996fa85b13ecac07e1ad884a90c"
+      digest: "sha256:43ee610e4f70de5035fc12320c481c23f022a9984337f9da9a6def9ce48cdedc"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+        - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
@@ -243,8 +222,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -274,6 +251,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The missing real DONE recovery regression belongs in the existing branch-worktree integration fixture, which is outside the current writable scope. Recommended action: Add packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts to the approved WorkItem scope, then extend its interrupted projection scenario without adding a baseline exception. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts; repository effects=tests; request digest=sha256:d1b9c83a7ae6bd4b8386aefaee8e724c0b2d0aff61d0f1d28d87a4bb0e5a7744. Agentplane receipt: external-agent-blocker/tr_985eb547237c6a67b3ea391f11d6c377/sha256:40dcca04f7705db3f17f873f33dc33757401eaf76cc781d1afe4d12534e5282c/sha256:d1b9c83a7ae6bd4b8386aefaee8e724c0b2d0aff61d0f1d28d87a4bb0e5a7744."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts; repository effects: tests."
 events:
   -
     type: "status"
@@ -609,30 +589,9 @@ sections:
       IncidentTags: work-item-inputs
       IncidentMatch: required_work_item_incomplete
 extensions:
-  agentplane.execution_grant:
-    actor: "USER"
-    approval_evidence_digest: null
-    approval_kind: "manual_operator"
-    capabilities:
-      - "provider.merge"
-      - "provider.pr"
-      - "repository.integrate"
-      - "repository.write"
-      - "task.lifecycle"
-      - "task.scope.extend"
-    completion_contract_digest: "sha256:5e92819bd74eddaea1263831a1e1730c6e414d44222c2f1b8ff0ca4e42bf7cef"
-    digest: "sha256:d9880c99642bf285c65c3cc87c3b39b447322ad4b1ae108bcbee40980ab4c525"
-    grant_id: "24df898e-7449-4811-859d-b82fc41f0a48"
-    issued_at: "2026-08-29T12:19:19.387Z"
-    kind: "agentplane.execution_grant"
-    plan_digest: "sha256:bd1670bdb16f32a8876c25fe4df7a3ff3387ec8c43ce3f00718713995bb7712b"
-    plan_revision: 19
-    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
-    schema_version: 1
-    scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
-    status: "active"
-    task_id: "202608290844-7JCQPF"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-29T13:33:20.461Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:40dcca04f7705db3f17f873f33dc33757401eaf76cc781d1afe4d12534e5282c"
     kind: "task_scope_extension_request"
     request:
@@ -644,19 +603,19 @@ extensions:
         - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
     request_digest: "sha256:d1b9c83a7ae6bd4b8386aefaee8e724c0b2d0aff61d0f1d28d87a4bb0e5a7744"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_985eb547237c6a67b3ea391f11d6c377"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-08-29T12:19:19.387Z"
+        approved_at: "2026-08-29T13:33:20.461Z"
         approved_by: "USER"
-        approved_digest: "sha256:deff35dade5353d3416aab0b0699aa1a7b4336e9931408be56abb73ea7b4445d"
+        approved_digest: "sha256:386ba86b2f651b6407366cfc278552cc6ba6b53666bc0dd5acd3540639c61a33"
         policy_facts:
-          - "manual_operator"
+          - "state_bound_scope_extension:sha256:d1b9c83a7ae6bd4b8386aefaee8e724c0b2d0aff61d0f1d28d87a4bb0e5a7744"
         state: "approved"
-      created_at: "2026-08-29T12:19:04.517Z"
-      digest: "sha256:deff35dade5353d3416aab0b0699aa1a7b4336e9931408be56abb73ea7b4445d"
+      created_at: "2026-08-29T13:33:20.461Z"
+      digest: "sha256:386ba86b2f651b6407366cfc278552cc6ba6b53666bc0dd5acd3540639c61a33"
       proposal:
         assumptions:
           - "The authority and scope-extension implementation already evaluated as PASS remains valid."
@@ -822,9 +781,14 @@ extensions:
                   kind: "path"
                   mode: "write"
                   resource: "packages/agentplane/src/commands/task/scope-extend.test.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
               risk: "medium"
               scope_roots:
                 - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
                 - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
                 - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
                 - "packages/agentplane/src/commands/task/scope-extend.test.ts"
@@ -887,10 +851,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:9af630a5682dcde112c0d8f853a2e83724a49d7a5c6abdb098bbdaafc7eca5bd"
                 schema_version: 1
-      revision: 2
+      revision: 3
       schema_version: 1
       task_id: "202608290844-7JCQPF"
-    event_cursor: 0
+    event_cursor: 1
     final_validation: null
     id: "202608290844-7JCQPF"
     intent:
@@ -1181,9 +1145,252 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608290844-7JCQPF"
-    revision: 19
+      -
+        approval:
+          approved_at: "2026-08-29T12:19:19.387Z"
+          approved_by: "USER"
+          approved_digest: "sha256:deff35dade5353d3416aab0b0699aa1a7b4336e9931408be56abb73ea7b4445d"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-08-29T12:19:04.517Z"
+        digest: "sha256:deff35dade5353d3416aab0b0699aa1a7b4336e9931408be56abb73ea7b4445d"
+        proposal:
+          assumptions:
+            - "The authority and scope-extension implementation already evaluated as PASS remains valid."
+            - "The missing real task-advance regression can be added within the existing four-file execution scope."
+          planning_baseline:
+            captured_at: "2026-08-29T12:15:59.263Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:9af630a5682dcde112c0d8f853a2e83724a49d7a5c6abdb098bbdaafc7eca5bd"
+            dirty_paths:
+              - ".agentplane/tasks/202608290844-7JCQPF/README.md"
+              - ".agentplane/tasks/202608290844-7JCQPF/pr/github-body.md"
+              - ".agentplane/tasks/202608290844-7JCQPF/pr/meta.json"
+              - ".agentplane/tasks/202608290844-7JCQPF/pr/review.md"
+              - ".agentplane/tasks/202608290844-7JCQPF/supervision/declared-checks.json"
+              - ".agentplane/tasks/202608290844-7JCQPF/supervision/implementation-evidence.json"
+              - ".agentplane/tasks/202608290844-7JCQPF/verification/20260829121518627-935aca8b41573d83.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "fceb51632800e2d9b8d87cca8a8f2ff0dccb7b14"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:18"
+          schema_version: 1
+          task_id: "202608290844-7JCQPF"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=forks --maxWorkers=1"
+                id: "check-task-advance"
+                kind: "deterministic"
+                required: true
+              -
+                capability: "task.verify"
+                command: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/scope-extend.test.ts --pool=forks --maxWorkers=1"
+                id: "check-scope-extension"
+                kind: "deterministic"
+                required: true
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "check-full"
+                kind: "deterministic"
+                required: true
+              -
+                capability: "task.verify"
+                command: "git diff --check"
+                id: "check-diff"
+                kind: "deterministic"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "check-task-advance"
+                description: "A real task advance flow accepts an implementation result bound to a concrete required WorkItem on a DONE task, reopens the task, completes the WorkItem, and proceeds to verification."
+                id: "criterion-real-recovery"
+                required: true
+              -
+                check_ids:
+                  - "check-task-advance"
+                description: "Implementation rework remains allowed, ordinary task-level implementation without work_item_id remains rejected, and non-DONE tasks are not force-reopened."
+                id: "criterion-authority-boundary"
+                required: true
+              -
+                check_ids:
+                  - "check-scope-extension"
+                description: "Task-level scope extension accepts zero schedulable items only when every required WorkItem is completed and remains fail-closed for effect-in-doubt or ambiguous unfinished work."
+                id: "criterion-scope-recovery"
+                required: true
+              -
+                check_ids:
+                  - "check-full"
+                description: "The full local CI passes on the final candidate."
+                id: "criterion-full"
+                required: true
+              -
+                check_ids:
+                  - "check-diff"
+                description: "The final patch contains no whitespace errors."
+                id: "criterion-diff"
+                required: true
+            evidence_fingerprint: "sha256:9af630a5682dcde112c0d8f853a2e83724a49d7a5c6abdb098bbdaafc7eca5bd"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-task-advance"
+                    description: "A real task advance flow accepts an implementation result bound to a concrete required WorkItem on a DONE task, reopens the task, completes the WorkItem, and proceeds to verification."
+                    id: "criterion-real-recovery"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-task-advance"
+                    description: "Implementation rework remains allowed, ordinary task-level implementation without work_item_id remains rejected, and non-DONE tasks are not force-reopened."
+                    id: "criterion-authority-boundary"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-scope-extension"
+                    description: "Task-level scope extension accepts zero schedulable items only when every required WorkItem is completed and remains fail-closed for effect-in-doubt or ambiguous unfinished work."
+                    id: "criterion-scope-recovery"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-full"
+                    description: "The full local CI passes on the final candidate."
+                    id: "criterion-full"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-diff"
+                    description: "The final patch contains no whitespace errors."
+                    id: "criterion-diff"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 98304
+                  optional_sources:
+                    - "packages/agentplane/src/cli/run-cli.core.task-advance.required-work.test.ts"
+                  required_sources:
+                    - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                    - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                    - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+                    - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+                  symbol_hints:
+                    - "requiresImplementationReworkReopen"
+                    - "applyExternalImplementationResult"
+                    - "applyApprovedTaskScopeExtension"
+                    - "extendTaskCentricWorkItemScope"
+                depends_on: []
+                expected_outputs:
+                  - "state-bound DONE reopen authority"
+                  - "real task-advance recovery regression"
+                  - "task-level scope-extension recovery"
+                  - "fresh verification evidence"
+                id: "complete-done-workitem-recovery"
+                objective: "Complete the state-bound DONE recovery by adding the missing real task-advance regression and retaining the already implemented authority and scope-extension behavior."
+                optional: false
+                priority: 100
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/scope-extend.test.ts"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                  - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                  - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=forks --maxWorkers=1"
+                      id: "check-task-advance"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/scope-extend.test.ts --pool=forks --maxWorkers=1"
+                      id: "check-scope-extension"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "check-full"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "git diff --check"
+                      id: "check-diff"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-task-advance"
+                      description: "A real task advance flow accepts an implementation result bound to a concrete required WorkItem on a DONE task, reopens the task, completes the WorkItem, and proceeds to verification."
+                      id: "criterion-real-recovery"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-task-advance"
+                      description: "Implementation rework remains allowed, ordinary task-level implementation without work_item_id remains rejected, and non-DONE tasks are not force-reopened."
+                      id: "criterion-authority-boundary"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-scope-extension"
+                      description: "Task-level scope extension accepts zero schedulable items only when every required WorkItem is completed and remains fail-closed for effect-in-doubt or ambiguous unfinished work."
+                      id: "criterion-scope-recovery"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-full"
+                      description: "The full local CI passes on the final candidate."
+                      id: "criterion-full"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-diff"
+                      description: "The final patch contains no whitespace errors."
+                      id: "criterion-diff"
+                      required: true
+                  evidence_fingerprint: "sha256:9af630a5682dcde112c0d8f853a2e83724a49d7a5c6abdb098bbdaafc7eca5bd"
+                  schema_version: 1
+        revision: 2
+        schema_version: 1
+        task_id: "202608290844-7JCQPF"
+    revision: 20
     schema_version: 1
-    updated_at: "2026-08-29T12:19:19.387Z"
+    updated_at: "2026-08-29T13:33:20.461Z"
     work_items:
       complete-done-workitem-recovery:
         attempt: 0
