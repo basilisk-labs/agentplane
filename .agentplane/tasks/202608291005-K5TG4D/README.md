@@ -4,7 +4,7 @@ title: "Specify the clean Task kernel and migration oracle"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 39
+revision: 43
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "HOST:codex-local:USER"
   note: "host_user_decision=sha256:dc7e5b408504000e2c2c3b5c76d7725538da930ea5f28e69cbfa313849295295"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-29T17:49:53.384Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -186,7 +186,9 @@ execution_contract:
       - "repository_effect:repository_write"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "9c64a05efdbf8093f622505942a7af7ecf1955cd"
+  message: "🚧 K5TG4D task: apply external agent result"
 comments:
   -
     author: "PLANNER"
@@ -215,6 +217,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b4d979d36d45. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 9c64a05efdbf. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -340,8 +345,22 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-29T17:49:05.913Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 9c64a05efdbf. CLI accepted one state-bound external-agent semantic result."
+    commit: "9c64a05efdbf8093f622505942a7af7ecf1955cd"
+  -
+    type: "verify"
+    at: "2026-08-29T17:49:53.384Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-29T17:46:26.385Z"
+doc_updated_at: "2026-08-29T17:49:57.232Z"
 doc_updated_by: "SUPERVISOR"
 description: "Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability."
 sections:
@@ -949,6 +968,84 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:be2f267bdef19b7ce29cab2131cb3154cfd9b7c8ca67bc83fdf7de8e85fa4dad, input_digest=sha256:267f5789d7a55aa11860cc5cd4659c9474b9ed25d0cb7bda8f6f66d489435505
+
+    Details:
+
+    Check: docs_contract
+    Command: bun run docs:ia:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291005-K5TG4D Verification Contract check docs_contract (1/4)
+
+    Check: docs_contract
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608291005-K5TG4D Verification Contract check docs_contract (2/4)
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608291005-K5TG4D Verification Contract check docs_contract (3/4)
+
+    Check: docs_contract
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608291005-K5TG4D Verification Contract check docs_contract (4/4)
+
+    Check: task_outcome
+    Command: bun run docs:ia:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291005-K5TG4D Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608291005-K5TG4D Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608291005-K5TG4D Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608291005-K5TG4D Verification Contract check task_outcome (4/4)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291005-K5TG4D-specify-the-clean-task-kernel-and-migration-orac/.agentplane/tasks/202608291005-K5TG4D/blueprint/resolved-snapshot.json
+    - old_digest: efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c
+    - current_digest: efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608291005-K5TG4D
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608291005-K5TG4D
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-29T17:49:53.384Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:be2f267bdef19b7ce29cab2131cb3154cfd9b7c8ca67bc83fdf7de8e85fa4dad, input_digest=sha256:78a6f7b304bf307dcad63735e63009e869168465a95d2946ea4b45df36c985aa
 
     Details:
 
@@ -1934,9 +2031,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608291005-K5TG4D"
-    revision: 39
+    revision: 43
     schema_version: 1
-    updated_at: "2026-08-29T17:46:31.676Z"
+    updated_at: "2026-08-29T17:50:01.802Z"
     work_items:
       inventory-and-map:
         attempt: 1
@@ -2086,14 +2183,69 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       traceability-and-gates:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "traceability-and-gates"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:966ceaccf770885749e74a09b1f5402c99b27f19cd2ccc2996590a70f6160a47"
+            id: "artifact:traceability-matrix"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608291005-K5TG4D"
+              work_item_id: "traceability-and-gates"
+            provenance:
+              - "sha256:9ee8feab8b276764e39bce395574028c86fe571f3439042f1656b470d2fb88a9"
+              - ".agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:03c9a75770601c37d79ef13c15b7855533cf853a4a10828b5900b78725fecdac"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:198f242cce48c88d35020201a579e144d4abd676e7951b57ded6237298be8a43"
+            id: "artifact:acceptance-gates"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608291005-K5TG4D"
+              work_item_id: "traceability-and-gates"
+            provenance:
+              - "sha256:9ee8feab8b276764e39bce395574028c86fe571f3439042f1656b470d2fb88a9"
+              - ".agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:03c9a75770601c37d79ef13c15b7855533cf853a4a10828b5900b78725fecdac"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json"
+              check_id: "docs-ia"
+              command_identity: "bun run docs:ia:check"
+              detail: "Observed by bun run docs:ia:check."
+              exit_code: 0
+              observed_at: "2026-08-29T17:50:01.783Z"
+              repository_snapshot_digest: "sha256:03c9a75770601c37d79ef13c15b7855533cf853a4a10828b5900b78725fecdac"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json"
+              check_id: "format"
+              command_identity: "bun run format:check"
+              detail: "Observed by bun run format:check."
+              exit_code: 0
+              observed_at: "2026-08-29T17:50:01.783Z"
+              repository_snapshot_digest: "sha256:03c9a75770601c37d79ef13c15b7855533cf853a4a10828b5900b78725fecdac"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
@@ -2167,6 +2319,29 @@ extensions:
         previous_revision: 30
         schema_version: 1
         task_id: "202608291005-K5TG4D"
+      external-result:work-order-202608291005-K5TG4D-executor-63016f6aff1c492f54785a3a:
+        aggregate_digest: "sha256:c39e658406bdadbf5e7abce0d2d2d9c310366fed39b1d26936215cf715b358d7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-29T17:50:01.802Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_e9cd77eaa02dc2ce8ef3c615"
+          mutation_id: "external-result:work-order-202608291005-K5TG4D-executor-63016f6aff1c492f54785a3a"
+          plan_digest: "sha256:12d3809e7d5c5ad9edf3ae31e4120171813189a8fd41ecad0a76b05082b94cbf"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291005-K5TG4D"
+          task_revision: 42
+          to: "COMPLETED"
+          work_item_id: "traceability-and-gates"
+        mutation_id: "external-result:work-order-202608291005-K5TG4D-executor-63016f6aff1c492f54785a3a"
+        next_revision: 43
+        previous_revision: 42
+        schema_version: 1
+        task_id: "202608291005-K5TG4D"
       plan-refinement:work-order-202608291005-K5TG4D-executor-09639596deab99c5e272bbfd:
         aggregate_digest: "sha256:e9d5a851b5a57b2f0ba3abfc5f1d385c6e01743e0cd97329c6f0a8a243a9594b"
         event:
@@ -2218,7 +2393,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "b4d979d36d45344a18daab546986d66cf756e6a2"
+    hash: "9c64a05efdbf8093f622505942a7af7ecf1955cd"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -2843,6 +3018,84 @@ Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:be2f267bdef19b7ce29cab2131cb3154cfd9b7c8ca67bc83fdf7de8e85fa4dad, input_digest=sha256:267f5789d7a55aa11860cc5cd4659c9474b9ed25d0cb7bda8f6f66d489435505
+
+Details:
+
+Check: docs_contract
+Command: bun run docs:ia:check
+Result: pass
+Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291005-K5TG4D Verification Contract check docs_contract (1/4)
+
+Check: docs_contract
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608291005-K5TG4D Verification Contract check docs_contract (2/4)
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608291005-K5TG4D Verification Contract check docs_contract (3/4)
+
+Check: docs_contract
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608291005-K5TG4D Verification Contract check docs_contract (4/4)
+
+Check: task_outcome
+Command: bun run docs:ia:check
+Result: pass
+Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291005-K5TG4D Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608291005-K5TG4D Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608291005-K5TG4D Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608291005-K5TG4D/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608291005-K5TG4D Verification Contract check task_outcome (4/4)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291005-K5TG4D-specify-the-clean-task-kernel-and-migration-orac/.agentplane/tasks/202608291005-K5TG4D/blueprint/resolved-snapshot.json
+- old_digest: efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c
+- current_digest: efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608291005-K5TG4D
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608291005-K5TG4D
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-29T17:49:53.384Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:be2f267bdef19b7ce29cab2131cb3154cfd9b7c8ca67bc83fdf7de8e85fa4dad, input_digest=sha256:78a6f7b304bf307dcad63735e63009e869168465a95d2946ea4b45df36c985aa
 
 Details:
 
