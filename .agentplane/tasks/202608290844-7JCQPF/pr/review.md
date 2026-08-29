@@ -13,7 +13,7 @@ Created: 2026-08-29T08:47:59.220Z
 ## Verification
 
 - State: ok
-- Note: Verified the current close commit after framework-owned incident promotion.
+- Note: Verified current head db3a023e6; its delta from the fully tested close commit is limited to framework-owned task evidence artifacts.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
