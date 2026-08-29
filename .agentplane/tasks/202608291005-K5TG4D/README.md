@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 49
+revision: 50
 origin:
   system: "manual"
 depends_on: []
@@ -31,35 +31,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-29T17:50:54.990Z"
+  updated_at: "2026-08-29T18:25:44.466Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 8 typed finding(s)."
-  evaluated_sha: "9c64a05efdbf8093f622505942a7af7ecf1955cd"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "0a6fb3ab2ee1ae893f438f4c33a8b35cd053023d"
   blueprint_digest: "efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c"
   evidence_refs:
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-175010445-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-175010445-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/525c6509aac711b4d08c0090cc345b850ddebc82785837269bf692ee7e0f3136.md"
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-175010445-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-175010445-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-175010445-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-182509713-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-182509713-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/de7dbf9bc2b623c88ba3ae813c42951e54995cde51ca26406dd6b51bf6fb6653.md"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-182509713-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-182509713-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-182509713-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608291005-K5TG4D/README.md"
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/8d06a0bda439bd3cbb2a6a861bb3d632c3591570cb548e661e456561e6ebd0e3.patch"
-    - ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/73eb709075c74a980968c0120a0294a67f005c9c2ff4ce66b7d285a631ceec90.json"
-    - ".agentplane/tasks/202608291005-K5TG4D/verification/20260829174953384-9a1611a4242d4cd2.json"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/07880f19b498431ef1d30b34fe2764e8b0fc650f427c040a2f0edc42c28f3b77.patch"
+    - ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/7dc71118b2a8cd17ec7401ec0c3f4bdf02a52e16ca3172258eb6ae28fb15e051.json"
+    - ".agentplane/tasks/202608291005-K5TG4D/verification/20260829182451924-4a24553f3cae3f0f.json"
     - ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/03778a2ec59a89f86c77156b5c41749d8a0acbbdbda469294abad9d305f10155.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/dod.docs.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "All four required WorkItems are COMPLETED and carry their declared semantic output manifests and validation results."
-    - "The code map identifies pure candidates, adapter and effect boundaries, test oracles, and legacy hotspots with source paths."
-    - "The kernel contract defines deterministic inputs, closed commands and results, fourteen invariants, forbidden dependencies, idempotency, authority, and executable vector and property-test oracles."
-    - "The migration contract defines source classes, exact output and receipt identities, quarantine, replay, dual-run, canary, cutover, guarded rollback, and legacy-deletion preconditions."
-    - "The traceability matrix covers every declared legacy family and root with exactly one Absorb or Retain disposition, while milestone gates have identity-bound receipts, failure stops, and rollback selection."
-    - "ADR 0017 is present in the canonical ADR index, and docs IA, formatting, and whitespace checks pass."
-    - "Residual risk: Graph rewrite must use fresh task readback and stop on any legacy requirement absent from the frozen traceability set."
-    - "Residual risk: Hosted integration must bind to the exact published and reviewed branch head."
+    - "The prior verify-contract failure was limited to two missing generated social images and a stale social manifest."
+    - "The repository generator produced the ADR 0017 and clean-core specification PNGs and refreshed their manifest entries."
+    - "The full docs:site:check now passes: IA, generated references, typecheck, 232-image manifest validation, Docusaurus production build, navigation, and design-language checks."
+    - "All four required clean-core WorkItems remain completed with their output manifests and validation evidence."
+    - "Residual risk: The new hosted run must confirm verify-contract and all other required exact-head checks."
 token_usage:
   agent_runs: 14
   input_tokens: null
@@ -852,7 +849,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-29T18:24:54.592Z"
+doc_updated_at: "2026-08-29T18:25:44.487Z"
 doc_updated_by: "SUPERVISOR"
 description: "Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability."
 sections:
