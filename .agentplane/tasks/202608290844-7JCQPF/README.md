@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 53
+revision: 54
 origin:
   system: "manual"
 depends_on: []
@@ -32,31 +32,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-29T15:46:23.204Z"
+  updated_at: "2026-08-29T17:02:06.966Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 3 typed finding(s)."
-  evaluated_sha: "019b64e46502d17f73e177d1ddca9d9d280487b0"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "5b7ccd96d09c18e330c5b4f9c6e97725ffc7fd33"
   blueprint_digest: "1bb097fc1b123cf9b94f10d140a5799db5354fc6a23efe5943d948dcf1c09584"
   evidence_refs:
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-154622554-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-154622554-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/8a9ba323a4f7313e683932e5a199789ec48f072e7b92129fab34109e8df996f6.md"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-154622554-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-154622554-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-154622554-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-165628160-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-165628160-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/5a942fdbf7ae26d4b99cd24f9825b1a69678fafaf17cea7b1cb6739ea2315ec7.md"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-165628160-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-165628160-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/20260829-165628160-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608290844-7JCQPF/README.md"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/2258e008d9ba7a086ad71c563a02b042962c03b0c5c940f4ea42f62bbb0eb012.patch"
-    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/e36dbbcacb05dd26f53c2a444202d9451db4063b531311834485b11970ed6072.json"
-    - ".agentplane/tasks/202608290844-7JCQPF/verification/20260829145124375-d0d20769bc9e2777.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/00cb8f6790a2d104fb8674882268758d2e941322ed8e92c3b5dc9e428fd8dce4.patch"
+    - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/0ac40dd9a245bdd7a6904bf832c36d53c5e8cf0e6f16f59e6ecea9c0f6dd8abc.json"
+    - ".agentplane/tasks/202608290844-7JCQPF/verification/20260829165606401-4bf622d61e8adf7c.json"
     - ".agentplane/tasks/202608290844-7JCQPF/quality/objects/sha256/bf246ecc6aed6a80440a3a0197ee6a33faa53b12ac072fd16ecde736ee4d7a69.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The authorization predicate is fail-closed for non-DONE tasks and for ordinary implementation without a concrete work_item_id."
-    - "The real task-advance regression exercises the interrupted WorkItem projection path, seeds premature DONE, resumes the exact result, and proves DOING plus COMPLETED projection."
-    - "The scope-extension adjustment only bypasses scheduler selection when every required WorkItem is already COMPLETED; unfinished unschedulable states still fail closed."
+    - "The implementation fails closed when work_item_id is missing, unknown to the approved plan, or bound to an optional WorkItem."
+    - "The scope-extension path returns the unchanged task-centric aggregate as soon as all required WorkItems are completed, even when an optional WorkItem remains READY."
+    - "The test matrix covers task-level rework, required WorkItem reopen, optional WorkItem denial, optional-ready scope extension, and the critical task-centric lifecycle."
+    - "CLI-owned verification record 20260829165606401-4bf622d61e8adf7c targets implementation SHA 5b7ccd96d09c18e330c5b4f9c6e97725ffc7fd33 and records bun run ci:local:full plus git diff --check as passing."
+    - "Residual risk: Hosted PR checks and merge remain provider-owned gates after this local semantic verdict."
 token_usage:
   agent_runs: 18
   input_tokens: null
@@ -851,7 +853,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-29T16:56:08.352Z"
+doc_updated_at: "2026-08-29T17:02:06.984Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering."
 sections:
