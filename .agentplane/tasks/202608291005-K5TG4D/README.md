@@ -2,10 +2,10 @@
 id: "202608291005-K5TG4D"
 title: "Specify the clean Task kernel and migration oracle"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 51
+revision: 52
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "HOST:codex-local:USER"
   note: "host_user_decision=sha256:dc7e5b408504000e2c2c3b5c76d7725538da930ea5f28e69cbfa313849295295"
 verification:
-  state: "ok"
-  updated_at: "2026-08-29T18:24:51.924Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-29T18:41:21.098Z"
+  updated_by: "USER"
+  note: "Hosted review P1 requires durable successor-task bootstrap."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -647,9 +647,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit:
-  hash: "e468c786ae64f21361756461953a56eba9f320f7"
-  message: "🚧 K5TG4D task: record external evaluator result"
+commit: null
 comments:
   -
     author: "PLANNER"
@@ -859,8 +857,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "e468c786ae64f21361756461953a56eba9f320f7"
+  -
+    type: "verify"
+    at: "2026-08-29T18:41:21.098Z"
+    author: "USER"
+    state: "needs_rework"
+    note: "Hosted review P1 requires durable successor-task bootstrap."
 doc_version: 3
-doc_updated_at: "2026-08-29T18:26:26.250Z"
+doc_updated_at: "2026-08-29T18:41:26.411Z"
 doc_updated_by: "PLANNER"
 description: "Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability."
 sections:
@@ -1766,6 +1770,38 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608291005-K5TG4D
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-29T18:41:21.098Z — VERIFY — needs_rework
+
+    By: USER
+
+    Note: Hosted review P1 requires durable successor-task bootstrap.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:be2f267bdef19b7ce29cab2131cb3154cfd9b7c8ca67bc83fdf7de8e85fa4dad, input_digest=sha256:26703be7de41eacdda8953d80813a6598dd0298211bff6ada75d368cf773e8e7
+
+    Details:
+
+    The root, M1, M2, and M3 task records referenced by the specification are absent from the Git tree in a clean checkout. Revise the specification and graph rewrite so successor tasks are created through AgentPlane from durable symbolic definitions before ap task active or dependency rewrites rely on them; do not treat primary-checkout-only prototypes as integrated task truth.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291005-K5TG4D-specify-the-clean-task-kernel-and-migration-orac/.agentplane/tasks/202608291005-K5TG4D/blueprint/resolved-snapshot.json
+    - old_digest: efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c
+    - current_digest: efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608291005-K5TG4D
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -3100,9 +3136,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "0a6fb3ab2ee1ae893f438f4c33a8b35cd053023d"
-    message: "🚧 K5TG4D task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -4025,6 +4058,38 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608291005-K5TG4D
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-29T18:41:21.098Z — VERIFY — needs_rework
+
+By: USER
+
+Note: Hosted review P1 requires durable successor-task bootstrap.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:be2f267bdef19b7ce29cab2131cb3154cfd9b7c8ca67bc83fdf7de8e85fa4dad, input_digest=sha256:26703be7de41eacdda8953d80813a6598dd0298211bff6ada75d368cf773e8e7
+
+Details:
+
+The root, M1, M2, and M3 task records referenced by the specification are absent from the Git tree in a clean checkout. Revise the specification and graph rewrite so successor tasks are created through AgentPlane from durable symbolic definitions before ap task active or dependency rewrites rely on them; do not treat primary-checkout-only prototypes as integrated task truth.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291005-K5TG4D-specify-the-clean-task-kernel-and-migration-orac/.agentplane/tasks/202608291005-K5TG4D/blueprint/resolved-snapshot.json
+- old_digest: efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c
+- current_digest: efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608291005-K5TG4D
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
