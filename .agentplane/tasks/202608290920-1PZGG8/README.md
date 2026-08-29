@@ -4,7 +4,7 @@ title: "Allow task-centric plan refinement before WorkItem selection"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -28,36 +28,35 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-29T10:03:24.516Z"
+  updated_at: "2026-08-29T11:21:33.767Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 5 typed finding(s)."
-  evaluated_sha: "4aede6beb635097fcd6f5a94fb60c37bc45dc09a"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "04fa3a364009c33257e07b13d7fb21ac5d7b9fb2"
   blueprint_digest: "8ea523d85b10d9639a2d3a53bac171c4c1c116ba1da4fa5f9db36607f1d0691e"
   evidence_refs:
-    - ".agentplane/tasks/202608290920-1PZGG8/quality/20260829-100207338-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608290920-1PZGG8/quality/20260829-100207338-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/de714e1ae1e5247163e5007b3fe727baf606367028fdd58ebcb9f94f7333b4d9.md"
-    - ".agentplane/tasks/202608290920-1PZGG8/quality/20260829-100207338-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608290920-1PZGG8/quality/20260829-100207338-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608290920-1PZGG8/quality/20260829-100207338-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608290920-1PZGG8/quality/20260829-100207338-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608290920-1PZGG8/quality/20260829-112038164-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608290920-1PZGG8/quality/20260829-112038164-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/6ab11382be85eb26466f9d0685b65b522e69c1ff5b74c1f152d4cb04e06604ca.md"
+    - ".agentplane/tasks/202608290920-1PZGG8/quality/20260829-112038164-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608290920-1PZGG8/quality/20260829-112038164-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608290920-1PZGG8/quality/20260829-112038164-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608290920-1PZGG8/README.md"
-    - ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/6238bed33ff5edad09db6bb76534efbfd68babd7775a75c0db7b0b53a128a033.patch"
-    - ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/5bf18a85abd14fe0a9a2152613220bc2ad006608710b4b329837619185c0189d.json"
-    - ".agentplane/tasks/202608290920-1PZGG8/verification/20260829093430895-6606b487cced4039.json"
+    - ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/33ccc1d6b91deeda43925dda11bcb7871d4177f0b26d9f3f8f154203d618a3bf.patch"
+    - ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/6ff4eeeac1fb74deb063645fd271923073c9a9756944f516b8d10fb36ad1dcfd.json"
+    - ".agentplane/tasks/202608290920-1PZGG8/verification/20260829112024099-2dc4de9558ceb003.json"
     - ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/e35839039295af7993b80adfdaa63da9729d59a2955432cd06975115f9057010.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The intended material-refinement case is correctly recorded before WorkItem selection and returns replan_required with a nullable work_item_id."
-    - "The claimedIds ambiguity check moved implicitly after recordPlanRefinement. A local amendment paired with a null-ID result and multiple claimed WorkItems can now mutate plan amendments before the same call rejects as ambiguous."
-    - "Compute and reject multiple claimed WorkItems before recording refinement, while retaining material refinement before actual WorkItem selection."
-    - "Add a regression proving an ambiguous null-ID local refinement leaves task revision and plan amendments unchanged."
-    - "The prepared verification evidence does not record the task plan's declared bun run ci:local:full check; exact full-regression evidence remains required before PASS."
+    - "The source moves WorkItem selection after plan-refinement handling while preserving the early multiple-claimed-WorkItem ambiguity guard."
+    - "The regression covers an unschedulable material refinement and returns replan_required with work_item_id null."
+    - "The ambiguity regression asserts unchanged revision, empty plan_amendments, and full task-record equality."
+    - "Supervisor-owned verification is current and records focused tests, bun run ci:local:full, and git diff --check as passed on the recovery WorkItem."
+    - "Residual risk: Hosted PR publication, provider checks, merge, and hosted close remain separate lifecycle gates."
 execution_route:
   frozen: true
   reason_codes:
