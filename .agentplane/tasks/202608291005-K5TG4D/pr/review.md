@@ -6,7 +6,7 @@ Created: 2026-08-29T10:21:54.868Z
 
 - Task: `202608291005-K5TG4D`
 - Title: Specify the clean Task kernel and migration oracle
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608291005-K5TG4D/specify-the-clean-task-kernel-and-migration-orac`
 - Canonical task record: `.agentplane/tasks/202608291005-K5TG4D/README.md`
 
