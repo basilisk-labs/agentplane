@@ -6,14 +6,14 @@ Created: 2026-08-29T08:47:59.220Z
 
 - Task: `202608290844-7JCQPF`
 - Title: Allow state-bound WorkItem implementation results to reopen DONE tasks
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608290844-7JCQPF/allow-state-bound-workitem-implementation-result`
 - Canonical task record: `.agentplane/tasks/202608290844-7JCQPF/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified the current close commit after framework-owned incident promotion.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,12 +29,14 @@ Created: 2026-08-29T08:47:59.220Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |  1 +
+ packages/agentplane/assets/policy/incidents.md     |  1 +
  ...n-cli.core.task-advance-effect-recovery.test.ts | 24 ++++++-
  ...n-cli.core.task-advance.branch-worktree.test.ts | 35 +++++++++
  .../shared/task-scope-extension-request.ts         |  8 ++-
  .../external-agent-implementation-authority.ts     | 20 +++---
  .../src/commands/task/scope-extend.test.ts         | 84 ++++++++++++++++++++++
- 5 files changed, 159 insertions(+), 12 deletions(-)
+ 7 files changed, 161 insertions(+), 12 deletions(-)
 ```
 
 </details>
