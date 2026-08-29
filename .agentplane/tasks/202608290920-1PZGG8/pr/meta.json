@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:b3fd4cc6236140455d6d3ea6d94588919a9ece1c03441a594b3775ab26bdef0c",
   "pr_number": 5872,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5872",
+  "pre_merge_closure": {
+    "basis_commit": "f4390b60599f08b7c703a3ca1796c42c372fe465",
+    "branch": "task/202608290920-1PZGG8/allow-task-centric-plan-refinement-before-workit",
+    "pr_number": 5872,
+    "recorded_at": "2026-08-29T11:21:43.285Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
