@@ -12,8 +12,8 @@ Created: 2026-08-29T08:47:59.220Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: the real task-advance DONE recovery regression is absent from the committed candidate, and full local CI cannot pass because the proposed test location exceeds the oversized-test baseline. Move the regression into the existing branch-worktree integration fixture without a baseline exception.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,10 +30,11 @@ Created: 2026-08-29T08:47:59.220Z
 
 ```text
  ...n-cli.core.task-advance-effect-recovery.test.ts | 24 ++++++-
+ ...n-cli.core.task-advance.branch-worktree.test.ts | 35 +++++++++
  .../shared/task-scope-extension-request.ts         |  8 ++-
  .../external-agent-implementation-authority.ts     | 20 +++---
  .../src/commands/task/scope-extend.test.ts         | 84 ++++++++++++++++++++++
- 4 files changed, 124 insertions(+), 12 deletions(-)
+ 5 files changed, 159 insertions(+), 12 deletions(-)
 ```
 
 </details>
