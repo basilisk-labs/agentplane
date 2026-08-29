@@ -6,7 +6,7 @@ Created: 2026-08-29T09:23:28.094Z
 
 - Task: `202608290920-1PZGG8`
 - Title: Allow task-centric plan refinement before WorkItem selection
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608290920-1PZGG8/allow-task-centric-plan-refinement-before-workit`
 - Canonical task record: `.agentplane/tasks/202608290920-1PZGG8/README.md`
 

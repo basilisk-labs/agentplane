@@ -1,1 +1,1 @@
-🚧 1PZGG8 task: Allow task-centric plan refinement before WorkItem selection [202608290920-1PZGG8]
+✅ 1PZGG8 task: Allow task-centric plan refinement before WorkItem selection [202608290920-1PZGG8]
