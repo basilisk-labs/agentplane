@@ -16,7 +16,7 @@ Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task p
 ## Verification
 
 - State: ok
-- Note: Verified at implementation commit a607a05c6 with focused and full local evidence.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
