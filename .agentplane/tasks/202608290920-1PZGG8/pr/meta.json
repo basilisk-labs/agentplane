@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608290920-1PZGG8/allow-task-centric-plan-refinement-before-workit",
+  "created_at": "2026-08-29T09:23:28.094Z",
+  "diffstat_sha256": "sha256:4312479956e8bf0f0556caf99e1046b08495e83adc725c7ee7033edafb685e97",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608290920-1PZGG8",
+  "updated_at": "2026-08-29T09:23:28.094Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -28,7 +28,7 @@ export type TaskCentricExternalResultProjection =
     }>
   | Readonly<{
       state: "replan_required";
-      work_item_id: string;
+      work_item_id: string | null;
       remaining_required_work_items: number;
     }>;
 
@@ -106,6 +106,41 @@ export async function recordTaskCentricExternalResult(opts: {
     };
   }
   const requestedId = opts.work_order.task.work_item_id ?? null;
+  const repository = createRepositorySnapshot({
+    git: { kind: "commit", sha: opts.head!, ref: null },
+    dirty_paths: [...opts.dirty_paths].toSorted(),
+    policy_digest: opts.work_order.planning_context?.repository_snapshot.policy_digest ?? null,
+    config_digest: opts.work_order.planning_context?.repository_snapshot.config_digest ?? null,
+    context_digest:
+      (opts.work_order.planning_context?.digest as `sha256:${string}` | undefined) ?? null,
+    task_history_cursor: `task-revision:${String(raw.revision ?? aggregate.revision)}`,
+    captured_at: new Date().toISOString(),
+  });
+  const adapter = new TaskCentricBackendAdapter({
+    backend: opts.command.taskBackend,
+    observeRepository: () => Promise.resolve(repository),
+  });
+  let expectedRevision = raw.revision ?? aggregate.revision;
+  if (opts.semantic.plan_refinement) {
+    const refinement = await adapter.recordPlanRefinement({
+      task_id: aggregate.id,
+      refinement: opts.semantic.plan_refinement,
+      actor_id: `external:${opts.work_order.role}`,
+      at: repository.captured_at,
+      idempotency_key: `plan-refinement:${opts.work_order.work_order_id}`,
+    });
+    const refinedRaw = await opts.command.taskBackend.getTask(aggregate.id);
+    expectedRevision = refinedRaw?.revision ?? refinement.receipt.next_revision;
+    if (refinement.action === "replan_required") {
+      return {
+        state: "replan_required",
+        work_item_id: requestedId,
+        remaining_required_work_items: aggregate.current_plan.proposal.work_items.work_items.filter(
+          (item) => !item.optional && aggregate.work_items[item.id]?.state !== "COMPLETED",
+        ).length,
+      };
+    }
+  }
   const claimedIds = Object.values(aggregate.work_items)
     .filter((item) => item.state === "CLAIMED")
     .map((item) => item.id);
@@ -148,41 +183,6 @@ export async function recordTaskCentricExternalResult(opts: {
       code: "E_VALIDATION",
       message: `WorkItem ${selected.id} cannot accept a semantic result from state ${runtime?.state ?? "missing"}.`,
     });
-  }
-  const repository = createRepositorySnapshot({
-    git: { kind: "commit", sha: opts.head!, ref: null },
-    dirty_paths: [...opts.dirty_paths].toSorted(),
-    policy_digest: opts.work_order.planning_context?.repository_snapshot.policy_digest ?? null,
-    config_digest: opts.work_order.planning_context?.repository_snapshot.config_digest ?? null,
-    context_digest:
-      (opts.work_order.planning_context?.digest as `sha256:${string}` | undefined) ?? null,
-    task_history_cursor: `task-revision:${String(raw.revision ?? aggregate.revision)}`,
-    captured_at: new Date().toISOString(),
-  });
-  const adapter = new TaskCentricBackendAdapter({
-    backend: opts.command.taskBackend,
-    observeRepository: () => Promise.resolve(repository),
-  });
-  let expectedRevision = raw.revision ?? aggregate.revision;
-  if (opts.semantic.plan_refinement) {
-    const refinement = await adapter.recordPlanRefinement({
-      task_id: aggregate.id,
-      refinement: opts.semantic.plan_refinement,
-      actor_id: `external:${opts.work_order.role}`,
-      at: repository.captured_at,
-      idempotency_key: `plan-refinement:${opts.work_order.work_order_id}`,
-    });
-    const refinedRaw = await opts.command.taskBackend.getTask(aggregate.id);
-    expectedRevision = refinedRaw?.revision ?? refinement.receipt.next_revision;
-    if (refinement.action === "replan_required") {
-      return {
-        state: "replan_required",
-        work_item_id: selected.id,
-        remaining_required_work_items: aggregate.current_plan.proposal.work_items.work_items.filter(
-          (item) => !item.optional && aggregate.work_items[item.id]?.state !== "COMPLETED",
-        ).length,
-      };
-    }
   }
   const evidence = selected.validation.checks.map((check) =>
     evidenceForCheck({
