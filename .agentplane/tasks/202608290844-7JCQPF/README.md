@@ -1,10 +1,10 @@
 ---
 id: "202608290844-7JCQPF"
 title: "Allow state-bound WorkItem implementation results to reopen DONE tasks"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -257,6 +257,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Blocked by the task-centric result projection order: the current plan cannot accept a refinement because WorkItem selection fails before plan_refinement is recorded. Recommended action: Create and integrate a narrow blocker that records semantic.plan_refinement before WorkItem selection and returns replan_required without projecting a WorkItem result; then rebuild the runtime and resume this task from a fresh packet. Agentplane receipt: external-agent-blocker/tr_60ad750bf1d4cb201d3c3c07cfb828d8/sha256:025b509821fc4dd45dc9897b60c289d4499ab110b16fbe7a1b093e4f2747bae9."
+  -
+    author: "CODER"
+    body: "Resume: prerequisite PR #5872 merged at 57a22a308fd63147d95fe6a65733d02586cdc126 and Task Hosted Close passed; continue the approved recovery plan from a fresh packet."
 events:
   -
     type: "status"
@@ -306,9 +309,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Blocked by the task-centric result projection order: the current plan cannot accept a refinement because WorkItem selection fails before plan_refinement is recorded. Recommended action: Create and integrate a narrow blocker that records semantic.plan_refinement before WorkItem selection and returns replan_required without projecting a WorkItem result; then rebuild the runtime and resume this task from a fresh packet. Agentplane receipt: external-agent-blocker/tr_60ad750bf1d4cb201d3c3c07cfb828d8/sha256:025b509821fc4dd45dc9897b60c289d4499ab110b16fbe7a1b093e4f2747bae9."
+  -
+    type: "status"
+    at: "2026-08-29T11:45:42.541Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume: prerequisite PR #5872 merged at 57a22a308fd63147d95fe6a65733d02586cdc126 and Task Hosted Close passed; continue the approved recovery plan from a fresh packet."
 doc_version: 3
-doc_updated_at: "2026-08-29T09:19:42.718Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-29T11:45:42.541Z"
+doc_updated_by: "CODER"
 description: "Fix the confirmed PR #5870 review blocker without weakening ordinary DONE-task protections. When an approved required WorkItem is scheduled on a DONE task and purpose=implementation produces a new commit, authorize DONE to DOING only when the work order is bound to a concrete work_item_id. Preserve implementation_rework behavior and keep ordinary task-level implementation unable to reopen DONE. Add unit coverage and a real task-advance regression proving the new WorkItem result completes and proceeds to verification. This task is a prerequisite for resuming J595R5 integration; do not change schedulers, task stores, checks, or release ordering."
 sections:
   Summary: |-

@@ -71,6 +71,7 @@ export function requiresImplementationReworkReopen(opts: {
 }): boolean {
   if (opts.task_status !== "DONE") return false;
   if (opts.purpose === "implementation_rework") return true;
+  // Ordinary implementation may reopen DONE only when the approved plan binds it to one WorkItem.
   return opts.purpose === "implementation" && Boolean(opts.work_item_id);
 }
 

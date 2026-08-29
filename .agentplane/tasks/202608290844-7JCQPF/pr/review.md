@@ -31,9 +31,9 @@ Created: 2026-08-29T08:47:59.220Z
 ```text
  ...n-cli.core.task-advance-effect-recovery.test.ts | 24 ++++++-
  .../shared/task-scope-extension-request.ts         |  8 ++-
- .../external-agent-implementation-authority.ts     | 20 +++---
+ .../external-agent-implementation-authority.ts     | 21 +++---
  .../src/commands/task/scope-extend.test.ts         | 84 ++++++++++++++++++++++
- 4 files changed, 124 insertions(+), 12 deletions(-)
+ 4 files changed, 125 insertions(+), 12 deletions(-)
 ```
 
 </details>
