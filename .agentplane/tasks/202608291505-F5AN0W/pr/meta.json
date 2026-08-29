@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608291505-F5AN0W/keep-evaluator-verification-target-aligned-with",
+  "created_at": "2026-08-29T15:12:35.422Z",
+  "diffstat_sha256": "sha256:0527de42e3c62b7fa2806534ad25255fad2a3d1f6b69f3c84955bbcc7a58f1bf",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608291505-F5AN0W",
+  "updated_at": "2026-08-29T15:12:35.422Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

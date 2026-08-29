@@ -385,6 +385,12 @@ describe("evaluator runtime evidence", () => {
     await writeDefaultConfig(root);
     const taskId = "202605240900-EV19";
     await addTask(root, taskId);
+    const recordedImplementationSha = await commitPath(
+      root,
+      "src/recorded-implementation.ts",
+      "export const recordedImplementation = true;\n",
+      "feat: recorded implementation",
+    );
     const sourceSha = await commitPath(root, "src/evaluated.ts");
     const lifecycleArtifact = path.join(
       root,
@@ -432,7 +438,16 @@ describe("evaluator runtime evidence", () => {
     if (!evaluator) throw new Error("Missing recovery-context evaluator fixture.");
     const prepared = await prepareEvaluatorReview({
       ctx: command,
-      task,
+      task: {
+        ...task,
+        extensions: {
+          ...task.extensions,
+          implementation_commit: {
+            hash: recordedImplementationSha,
+            message: "feat: recorded implementation",
+          },
+        },
+      },
       evaluator,
       provenance: "evaluator_supplied",
     });
