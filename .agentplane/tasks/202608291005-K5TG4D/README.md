@@ -1,10 +1,11 @@
 ---
 id: "202608291005-K5TG4D"
 title: "Specify the clean Task kernel and migration oracle"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 44
+revision: 46
 origin:
   system: "manual"
 depends_on: []
@@ -59,6 +60,20 @@ quality_review:
     - "ADR 0017 is present in the canonical ADR index, and docs IA, formatting, and whitespace checks pass."
     - "Residual risk: Graph rewrite must use fresh task readback and stop on any legacy requirement absent from the frozen traceability set."
     - "Residual risk: Hosted integration must bind to the exact published and reviewed branch head."
+token_usage:
+  agent_runs: 14
+  input_tokens: null
+  journal_digest: "sha256:239fdccb782e642949ec54020c320b7c82c95c532ceabc50ca4b562b912555e9"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-29T17:52:52.290Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -219,8 +234,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "9c64a05efdbf8093f622505942a7af7ecf1955cd"
-  message: "🚧 K5TG4D task: apply external agent result"
+  hash: "e4b7ab8b1c5b1f491d0f1a9f08dca61861ab163c"
+  message: "🚧 K5TG4D task: record external evaluator result"
 comments:
   -
     author: "PLANNER"
@@ -252,6 +267,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 9c64a05efdbf. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "PLANNER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -391,9 +409,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-29T17:52:52.290Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "e4b7ab8b1c5b1f491d0f1a9f08dca61861ab163c"
 doc_version: 3
-doc_updated_at: "2026-08-29T17:49:57.232Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-29T17:52:52.317Z"
+doc_updated_by: "PLANNER"
 description: "Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability."
 sections:
   Summary: |-
@@ -1581,7 +1607,34 @@ extensions:
       schema_version: 1
       task_id: "202608291005-K5TG4D"
     event_cursor: 1
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608291005-K5TG4D"
+            - "git:9c64a05efdbf8093f622505942a7af7ecf1955cd"
+          check_id: "docs-ia"
+          command_identity: "bun run docs:ia:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-29T17:49:53.384Z"
+          repository_snapshot_digest: "sha256:76b0ee8d9a0ac27cccccabf663363881d8ee3f4afad38efd57b44178310a2c0d"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608291005-K5TG4D"
+            - "git:9c64a05efdbf8093f622505942a7af7ecf1955cd"
+          check_id: "format"
+          command_identity: "bun run format:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-29T17:49:53.384Z"
+          repository_snapshot_digest: "sha256:76b0ee8d9a0ac27cccccabf663363881d8ee3f4afad38efd57b44178310a2c0d"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608291005-K5TG4D"
     intent:
       acceptance_criteria:
@@ -1602,7 +1655,7 @@ extensions:
 
         Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability.
       task_id: "202608291005-K5TG4D"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -2063,9 +2116,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608291005-K5TG4D"
-    revision: 43
+    revision: 46
     schema_version: 1
-    updated_at: "2026-08-29T17:50:01.802Z"
+    updated_at: "2026-08-29T17:52:52.290Z"
     work_items:
       inventory-and-map:
         attempt: 1
@@ -2374,6 +2427,31 @@ extensions:
         previous_revision: 42
         schema_version: 1
         task_id: "202608291005-K5TG4D"
+      legacy-finish:202608291005-K5TG4D:2026-08-29T17:49:53.384Z:9c64a05efdbf8093f622505942a7af7ecf1955cd:
+        aggregate_digest: "sha256:1eb7043cb154f6a53af5e865a592b1c43f8e16012495335b3d91b25f5dccafbb"
+        event:
+          actor_id: "PLANNER"
+          at: "2026-08-29T17:52:52.290Z"
+          cause_refs:
+            - "task-verification:202608291005-K5TG4D"
+            - "git:9c64a05efdbf8093f622505942a7af7ecf1955cd"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_615d7d99a5ae83c6ff05a57f"
+          mutation_id: "legacy-finish:202608291005-K5TG4D:2026-08-29T17:49:53.384Z:9c64a05efdbf8093f622505942a7af7ecf1955cd"
+          plan_digest: "sha256:12d3809e7d5c5ad9edf3ae31e4120171813189a8fd41ecad0a76b05082b94cbf"
+          plan_revision: 2
+          repository_fingerprint: "sha256:76b0ee8d9a0ac27cccccabf663363881d8ee3f4afad38efd57b44178310a2c0d"
+          schema_version: 1
+          task_id: "202608291005-K5TG4D"
+          task_revision: 43
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608291005-K5TG4D:2026-08-29T17:49:53.384Z:9c64a05efdbf8093f622505942a7af7ecf1955cd"
+        next_revision: 46
+        previous_revision: 45
+        schema_version: 1
+        task_id: "202608291005-K5TG4D"
       plan-refinement:work-order-202608291005-K5TG4D-executor-09639596deab99c5e272bbfd:
         aggregate_digest: "sha256:e9d5a851b5a57b2f0ba3abfc5f1d385c6e01743e0cd97329c6f0a8a243a9594b"
         event:
@@ -2426,6 +2504,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "9c64a05efdbf8093f622505942a7af7ecf1955cd"
+    message: "🚧 K5TG4D task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -3206,3 +3285,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/14` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:239fdccb782e642949ec54020c320b7c82c95c532ceabc50ca4b562b912555e9`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-29T17:52:52.290Z`
