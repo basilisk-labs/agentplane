@@ -2,10 +2,10 @@
 id: "202608291005-K5TG4D"
 title: "Specify the clean Task kernel and migration oracle"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 50
+revision: 51
 origin:
   system: "manual"
 depends_on: []
@@ -58,9 +58,9 @@ quality_review:
     - "All four required clean-core WorkItems remain completed with their output manifests and validation evidence."
     - "Residual risk: The new hosted run must confirm verify-contract and all other required exact-head checks."
 token_usage:
-  agent_runs: 14
+  agent_runs: 16
   input_tokens: null
-  journal_digest: "sha256:239fdccb782e642949ec54020c320b7c82c95c532ceabc50ca4b562b912555e9"
+  journal_digest: "sha256:aa68af1b6e04a9edd42d73399407b3e72fe9873b930a517bd358cc707e8da0b1"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -70,7 +70,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-29T17:52:52.290Z"
+  updated_at: "2026-08-29T18:26:26.234Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -648,8 +648,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "0a6fb3ab2ee1ae893f438f4c33a8b35cd053023d"
-  message: "🚧 K5TG4D task: apply external agent result"
+  hash: "e468c786ae64f21361756461953a56eba9f320f7"
+  message: "🚧 K5TG4D task: record external evaluator result"
 comments:
   -
     author: "PLANNER"
@@ -687,6 +687,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 0a6fb3ab2ee1. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "PLANNER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -848,9 +851,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-29T18:26:26.234Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "e468c786ae64f21361756461953a56eba9f320f7"
 doc_version: 3
-doc_updated_at: "2026-08-29T18:25:44.487Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-29T18:26:26.250Z"
+doc_updated_by: "PLANNER"
 description: "Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability."
 sections:
   Summary: |-
@@ -3091,6 +3102,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "0a6fb3ab2ee1ae893f438f4c33a8b35cd053023d"
+    message: "🚧 K5TG4D task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -4031,12 +4043,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/14` agent runs
+- Completeness: `0/16` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:239fdccb782e642949ec54020c320b7c82c95c532ceabc50ca4b562b912555e9`
+- Journal digest: `sha256:aa68af1b6e04a9edd42d73399407b3e72fe9873b930a517bd358cc707e8da0b1`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-29T17:52:52.290Z`
+- Updated at: `2026-08-29T18:26:26.234Z`
