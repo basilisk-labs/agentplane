@@ -15,8 +15,8 @@ Produce the implementation specification, code ownership map, invariant catalog,
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Hosted review P1 requires durable successor-task bootstrap.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,13 +27,13 @@ Produce the implementation specification, code ownership map, invariant catalog,
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/adr/0017-clean-task-core-rebuild.md           |  95 +++++
+ docs/adr/0017-clean-task-core-rebuild.md           |  95 ++++
  docs/adr/README.md                                 |  37 +-
- docs/reference/clean-task-core-rebuild-spec.mdx    | 471 +++++++++++++++++++++
+ docs/reference/clean-task-core-rebuild-spec.mdx    | 490 +++++++++++++++++++++
  .../docs/adr/0017-clean-task-core-rebuild.png      | Bin 0 -> 62805 bytes
  .../reference/clean-task-core-rebuild-spec.png     | Bin 0 -> 65880 bytes
  website/static/img/social/manifest.json            |  16 +
- 6 files changed, 601 insertions(+), 18 deletions(-)
+ 6 files changed, 620 insertions(+), 18 deletions(-)
 ```
 
 </details>

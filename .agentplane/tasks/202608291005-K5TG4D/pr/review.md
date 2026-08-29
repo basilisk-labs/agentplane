@@ -6,14 +6,14 @@ Created: 2026-08-29T10:21:54.868Z
 
 - Task: `202608291005-K5TG4D`
 - Title: Specify the clean Task kernel and migration oracle
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608291005-K5TG4D/specify-the-clean-task-kernel-and-migration-orac`
 - Canonical task record: `.agentplane/tasks/202608291005-K5TG4D/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Hosted review P1 requires durable successor-task bootstrap.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,13 +29,13 @@ Created: 2026-08-29T10:21:54.868Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/adr/0017-clean-task-core-rebuild.md           |  95 +++++
+ docs/adr/0017-clean-task-core-rebuild.md           |  95 ++++
  docs/adr/README.md                                 |  37 +-
- docs/reference/clean-task-core-rebuild-spec.mdx    | 471 +++++++++++++++++++++
+ docs/reference/clean-task-core-rebuild-spec.mdx    | 490 +++++++++++++++++++++
  .../docs/adr/0017-clean-task-core-rebuild.png      | Bin 0 -> 62805 bytes
  .../reference/clean-task-core-rebuild-spec.png     | Bin 0 -> 65880 bytes
  website/static/img/social/manifest.json            |  16 +
- 6 files changed, 601 insertions(+), 18 deletions(-)
+ 6 files changed, 620 insertions(+), 18 deletions(-)
 ```
 
 </details>
