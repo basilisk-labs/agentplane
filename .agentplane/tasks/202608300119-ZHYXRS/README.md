@@ -1,10 +1,11 @@
 ---
 id: "202608300119-ZHYXRS"
 title: "Preserve WorkItem results during plan reapproval and recover evidence-only implementation"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,20 @@ quality_review:
     - "Supervisor core tests (443) and full local CI passed for the evaluated implementation. No blocking code or verification defects found."
     - "Residual risk: Already-reset historical WorkItems require explicit requalification; this fix intentionally does not reconstruct lost state."
     - "Residual risk: PR checks, merge and hosted close are not established by this local review."
+token_usage:
+  agent_runs: 6
+  input_tokens: null
+  journal_digest: "sha256:2c4146665c944cf66537daa655abd1db29135abbb7b6df5acd07b105b2ef4bad"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-30T01:43:10.640Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -230,8 +245,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "403edee0581fa08fb661c60487dcde7bd2f5bd88"
-  message: "🚧 ZHYXRS task: apply external agent result"
+  hash: "d24316765b3d9073e4aa876ec90620624b18977c"
+  message: "🚧 ZHYXRS task: record external evaluator result"
 comments:
   -
     author: "PLANNER"
@@ -245,6 +260,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 403edee0581f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "comment"
@@ -286,9 +304,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-30T01:43:10.640Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "d24316765b3d9073e4aa876ec90620624b18977c"
 doc_version: 3
-doc_updated_at: "2026-08-30T01:41:08.632Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-30T01:43:10.651Z"
+doc_updated_by: "CODER"
 description: "Unblock the approved Clean Task Core rebuild M1 task 202608292032-1K47B8. Diagnose repeated plan approval resetting existing WorkItem runtime and evidence-only recovery rejecting already committed valid implementation. Preserve same-plan WorkItem state and output validation without allowing changed plans, stale identities, or unauthorized effects to reuse results. Add bounded regression coverage for both positive recovery and fail-closed behavior. Scope packages/core/src/tasks/task-centric and packages/agentplane/src/commands/task. Do not edit task state by hand or weaken authority checks. Deliver through verified branch PR and hosted close, then resume M1."
 sections:
   Summary: |-
@@ -649,7 +675,34 @@ extensions:
       schema_version: 1
       task_id: "202608300119-ZHYXRS"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608300119-ZHYXRS"
+            - "git:403edee0581fa08fb661c60487dcde7bd2f5bd88"
+          check_id: "core"
+          command_identity: "bun run test:project core"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T01:41:06.431Z"
+          repository_snapshot_digest: "sha256:e7f091081b910c5046815c48678e69812e82419f58940428360b5cbd04e6a150"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608300119-ZHYXRS"
+            - "git:403edee0581fa08fb661c60487dcde7bd2f5bd88"
+          check_id: "full"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T01:41:06.431Z"
+          repository_snapshot_digest: "sha256:e7f091081b910c5046815c48678e69812e82419f58940428360b5cbd04e6a150"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608300119-ZHYXRS"
     intent:
       acceptance_criteria:
@@ -670,12 +723,12 @@ extensions:
 
         Unblock the approved Clean Task Core rebuild M1 task 202608292032-1K47B8. Diagnose repeated plan approval resetting existing WorkItem runtime and evidence-only recovery rejecting already committed valid implementation. Preserve same-plan WorkItem state and output validation without allowing changed plans, stale identities, or unauthorized effects to reuse results. Add bounded regression coverage for both positive recovery and fail-closed behavior. Scope packages/core/src/tasks/task-centric and packages/agentplane/src/commands/task. Do not edit task state by hand or weaken authority checks. Deliver through verified branch PR and hosted close, then resume M1.
       task_id: "202608300119-ZHYXRS"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 15
+    revision: 18
     schema_version: 1
-    updated_at: "2026-08-30T01:41:09.806Z"
+    updated_at: "2026-08-30T01:43:10.640Z"
     work_items:
       preserve-reapproval-evidence:
         attempt: 2
@@ -776,11 +829,37 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202608300119-ZHYXRS"
+      legacy-finish:202608300119-ZHYXRS:2026-08-30T01:41:06.431Z:403edee0581fa08fb661c60487dcde7bd2f5bd88:
+        aggregate_digest: "sha256:108045258d7e0c18e7fba116439a37927190f63ea9afd76f6cb7319b293d1109"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-30T01:43:10.640Z"
+          cause_refs:
+            - "task-verification:202608300119-ZHYXRS"
+            - "git:403edee0581fa08fb661c60487dcde7bd2f5bd88"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_11d59e17798904ed13524cc8"
+          mutation_id: "legacy-finish:202608300119-ZHYXRS:2026-08-30T01:41:06.431Z:403edee0581fa08fb661c60487dcde7bd2f5bd88"
+          plan_digest: "sha256:55b0da86d389ffee572af9276c362405a7b4f98e4af18f479e5f981f175581a4"
+          plan_revision: 1
+          repository_fingerprint: "sha256:e7f091081b910c5046815c48678e69812e82419f58940428360b5cbd04e6a150"
+          schema_version: 1
+          task_id: "202608300119-ZHYXRS"
+          task_revision: 15
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608300119-ZHYXRS:2026-08-30T01:41:06.431Z:403edee0581fa08fb661c60487dcde7bd2f5bd88"
+        next_revision: 18
+        previous_revision: 17
+        schema_version: 1
+        task_id: "202608300119-ZHYXRS"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "403edee0581fa08fb661c60487dcde7bd2f5bd88"
+    message: "🚧 ZHYXRS task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "71519a0e675d7d460d27e7c5aea87d1f2363b9e2"
@@ -940,3 +1019,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/6` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:2c4146665c944cf66537daa655abd1db29135abbb7b6df5acd07b105b2ef4bad`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-30T01:43:10.640Z`
