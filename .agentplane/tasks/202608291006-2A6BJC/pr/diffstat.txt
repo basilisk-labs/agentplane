@@ -1,5 +1,5 @@
  docs/developer/harness-dev.mdx                     |   85 +
- .../task-backend/kernel-backend-adapter.test.ts    |  562 ++
+ .../task-backend/kernel-backend-adapter.test.ts    |  587 ++
  .../task-backend/kernel-backend-adapter.ts         |  193 +
  .../task-backend/kernel-migration-source.ts        |  161 +
  .../adapters/task-backend/kernel-migration.test.ts |  336 +
@@ -33,4 +33,4 @@
  scripts/bench/capture-kernel-migration-replay.ts   |  191 +
  scripts/bench/capture-kernel-replay.ts             |  181 +
  scripts/bench/qualify-kernel-replay.mjs            |  146 +
- 35 files changed, 13797 insertions(+), 1 deletion(-)
+ 35 files changed, 13822 insertions(+), 1 deletion(-)

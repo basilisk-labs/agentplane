@@ -13,7 +13,7 @@ Created: 2026-08-30T04:09:19.506Z
 ## Verification
 
 - State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- Note: Recover the failed no-change refinement return. Request a fresh bounded implementation episode to qualify adapter capability refusal and return the missing compatibility artifact scope refinement. Preserve prior implementation.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,7 +30,7 @@ Created: 2026-08-30T04:09:19.506Z
 
 ```text
  docs/developer/harness-dev.mdx                     |   85 +
- .../task-backend/kernel-backend-adapter.test.ts    |  562 ++
+ .../task-backend/kernel-backend-adapter.test.ts    |  587 ++
  .../task-backend/kernel-backend-adapter.ts         |  193 +
  .../task-backend/kernel-migration-source.ts        |  161 +
  .../adapters/task-backend/kernel-migration.test.ts |  336 +
@@ -64,7 +64,7 @@ Created: 2026-08-30T04:09:19.506Z
  scripts/bench/capture-kernel-migration-replay.ts   |  191 +
  scripts/bench/capture-kernel-replay.ts             |  181 +
  scripts/bench/qualify-kernel-replay.mjs            |  146 +
- 35 files changed, 13797 insertions(+), 1 deletion(-)
+ 35 files changed, 13822 insertions(+), 1 deletion(-)
 ```
 
 </details>

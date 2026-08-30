@@ -182,6 +182,31 @@ describe("canonical kernel persistence boundary", () => {
     expect(write).not.toHaveBeenCalled();
   });
 
+  it.each([
+    { supports_task_revisions: false },
+    { supports_revision_guarded_writes: false },
+    { atomic_task_record: false },
+    { canonical_source: "remote" as const, reads_from_projection_by_default: true },
+  ])(
+    "refuses execution after capability downgrade %j without changing durable bytes",
+    async (downgrade) => {
+      const { root, adapter, backend } = await fixture();
+      await adapter.create(task(), input());
+      const readme = path.join(root, taskId, "README.md");
+      const before = await readFile(readme);
+      Object.defineProperty(backend, "capabilities", {
+        value: { ...backend.capabilities, ...downgrade },
+      });
+      const write = vi.spyOn(backend, "writeTask");
+      expect(await adapter.execute({ ...input(), mutation_id: "after-downgrade" })).toMatchObject({
+        kind: "unavailable",
+        code: "backend_capability_missing",
+      });
+      expect(write).not.toHaveBeenCalled();
+      expect(await readFile(readme)).toEqual(before);
+    },
+  );
+
   it("resolves a response lost after commit using independent readback", async () => {
     const { adapter, backend } = await fixture();
     const original = backend.writeTask.bind(backend);
