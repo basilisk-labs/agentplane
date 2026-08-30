@@ -2,9 +2,9 @@
   "base": "main",
   "branch": "task/202608291006-255K66/cut-over-to-the-canonical-task-kernel-and-retire",
   "created_at": "2026-08-30T21:48:11.941Z",
-  "diffstat_sha256": "sha256:0159d9b2986954c37dc2a72761b66e364959b23c16c6dcf6c8cbfbeb09f8bc7e",
-  "last_verified_at": "2026-08-30T22:13:21.915Z",
-  "last_verified_diffstat_sha256": "sha256:f8319a3da45d42009b04c9cd30d2297a5a8264070233b80a31e362304d66ac63",
+  "diffstat_sha256": "sha256:cc4b3a7a3adf7f0b264bdc79156957d791ebcb1810a2934e8c1c5b94873aae22",
+  "last_verified_at": "2026-08-30T22:26:29.048Z",
+  "last_verified_diffstat_sha256": "sha256:0159d9b2986954c37dc2a72761b66e364959b23c16c6dcf6c8cbfbeb09f8bc7e",
   "provider": {
     "hostname": "github.com",
     "kind": "github",

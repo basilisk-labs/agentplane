@@ -17,7 +17,7 @@ should describe day-to-day repository operation and link to generated user comma
 - [Architecture](./architecture)
 - [Project layout](./project-layout)
 - [Module topology](./module-topology)
-- [Canonical Task cutover](./clean-task-core-cutover)
+- [Canonical Task cutover](#canonical-task-cutover)
 - [CLI contract](./cli-contract)
 - [CLI help JSON](./cli-help-json)
 - [Workflow contract](./workflow-contract)
@@ -198,3 +198,101 @@ script launchers. Replacing either runtime under an unchanged PATH invalidates p
 when the outer runner script is unchanged. Runtime digests are computed from bytes for each
 observation; file metadata alone is not a freshness proof. The Node selector reads the normalized
 PATH first, so an explicit profile path wins over inherited manager locations.
+
+## Canonical Task cutover
+
+### Scope and current boundary
+
+Task `202608291006-255K66` implements M3 from the
+[rebuild specification](../reference/clean-task-core-rebuild-spec).
+Its approved planning baseline is `36741ce5160d452ca9660a388241cb4da32f842a`.
+The first WorkItem changes read projections only. It does not migrate records, transfer the
+controller, enable canonical writes, dispatch effects, or satisfy final M3 acceptance.
+
+### Read contract
+
+`commands/task/kernel-read.ts` is the shared command boundary for canonical status, brief,
+next-action, readiness, active selection, and show. It reuses `readKernelRecord`,
+`projectKernelTask`, and `readKernelNextAction`.
+
+| Stored input                  | Read behavior                                                                                     |
+| ----------------------------- | ------------------------------------------------------------------------------------------------- |
+| Canonical record              | Validate repository identity and record invariants; derive state and next action from the kernel. |
+| Archived record               | Return an explicit read-only archive view; exclude it from active work.                           |
+| Malformed canonical extension | Report invalid canonical data; never fall back to legacy status.                                  |
+| Missing record                | Report a missing read; do not invent a Task aggregate.                                            |
+| Unmigrated legacy record      | Keep the existing legacy inspection route until explicit migration.                               |
+| Inaccessible backend          | Propagate the error; do not classify it as missing.                                               |
+
+Canonical status, brief, and next-action JSON expose `source`, `record_kind`, `task`,
+`ready`, `next_action`, and read-only `authority`. These commands do not prepare a legacy
+WorkOrder. `show` retains its existing canonical output shape.
+Readiness means that the kernel selects a claimable WorkItem. Planning and blocked Tasks are not
+reported ready merely because the legacy dependency list is empty.
+Active selection reads canonical state before filtering legacy status. Its
+`dependency_readiness.state=kernel_work_items` distinguishes the canonical WorkItem graph from
+legacy inter-Task dependencies. It does not reinterpret one graph as the other.
+
+No read projection grants authority or supplies an executable mutation command.
+Without a current implementation fingerprint, final-validation routing returns
+`kernel_repository_fingerprint_required`. It cannot claim completion from stale validation.
+Logical repository identity inspection cannot create identity files in an unborn repository.
+The existing `ready` missing-task contract is preserved: it prints the unknown-task warning and
+returns exit code 2. The typed missing read does not create a synthetic aggregate.
+
+### Production owner map
+
+Paths below are relative to `packages/agentplane/src`, except the pure core.
+
+| Responsibility                     | Current owner                                                                                                                | Required cutover owner                                                                         |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Pure transitions and invariants    | `packages/core/src/tasks/task-kernel`                                                                                        | Same kernel; no platform imports.                                                              |
+| Durable record and atomic mutation | `adapters/task-backend/kernel-record.ts`, `kernel-backend-adapter.ts`                                                        | One canonical record and mutation receipt.                                                     |
+| Command read projections           | `commands/task/kernel-read.ts`                                                                                               | Shared validated kernel read.                                                                  |
+| Synthetic runtime and aggregate    | `adapters/task-backend/task-centric-backend-runtime.ts`                                                                      | Remove mutable `runtimeFrom`/`aggregateFrom` legacy construction after controller transfer.    |
+| Plan and approval                  | `commands/task/plan.ts`, `plan-shared.ts`, `plan-approve.command.ts`                                                         | Canonical plan commands and authority comparison.                                              |
+| WorkItem result application        | `commands/task/task-centric-external-result.ts`, `external-agent-result-application.ts`                                      | One canonical result admission service.                                                        |
+| Route and WorkOrder preparation    | `commands/shared/route-decision.ts`, `runner/usecases/agent-work-order.ts`                                                   | Kernel next action plus separately admitted effects.                                           |
+| Verification and completion        | `commands/task/verify-record-execute.ts`, `finish-execute.ts`, `shared/transitions.ts`                                       | Kernel validation identity and completion predicates.                                          |
+| CLI and managed controller         | `commands/task/advance.command.ts`, `external-agent-supervisor.ts`, `branch-task-supervisor.ts`, `direct-task-supervisor.ts` | Shared canonical application service.                                                          |
+| External effects                   | `adapters/task-backend/kernel-effect-dispatch.ts`, `kernel-observations.ts`                                                  | Intent, dispatch, readback and reconciliation with exact identity.                             |
+| Migration and replay               | `adapters/task-backend/kernel-migration.ts`, `kernel-replay.ts`                                                              | Explicit receipt-bound migration with byte-exact rollback.                                     |
+| Remaining legacy display consumers | Task list, search, export and formatting consumers                                                                           | Inspect separately during retirement; retain only non-authoritative compatibility projections. |
+
+The planning-base recovery helper landed after the frozen M3 planning baseline in PR #5883.
+Its legacy runtime inspection must also be considered when the final integrated import inventory is
+computed. A frozen worktree inventory alone is insufficient retirement evidence.
+
+### Ordered gates and rollback
+
+| Order | WorkItem                 | Gate before proceeding                                                                                  | Rollback boundary                                                                                                 |
+| ----- | ------------------------ | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| 1     | `m3-projections`         | Canonical reads ignore contradictory legacy fields; missing, archive and corruption cases are explicit. | Revert read wiring only; no stored bytes changed.                                                                 |
+| 2     | `m3-lifecycle`           | Creation, plan, approval, claims and results pass the same local/cloud fake contract.                   | Stop new canonical mutation; restore the recorded controller/state checkpoint. Never synthesize legacy authority. |
+| 3     | `m3-effects`             | Validation, evaluator, Git, PR, merge and cleanup use admitted effects and observed receipts.           | Reconcile uncertain effects before any retry or rollback.                                                         |
+| 4     | `m3-task-classes`        | Direct, branch PR, context, release and batch use the same service.                                     | Restore the class checkpoint only after pending effects are resolved.                                             |
+| 5     | `m3-crash-migration`     | Every specified crash boundary passes; real repository corpus migration has receipts.                   | Restore exact source bytes from verified migration backups.                                                       |
+| 6     | `m3-self-hosting`        | Twenty real sequential Tasks complete without manual state edits or duplicated effects.                 | Use the recorded controller-transfer receipt and reconcile in-flight work.                                        |
+| 7     | `m3-retirement`          | Production import audit finds no prohibited mutable legacy authority.                                   | Revert code only against the corresponding compatible state checkpoint.                                           |
+| 8     | `m3-final-qualification` | Three clean release drills, full CI and hosted exact-head checks agree on identities.                   | Keep delivery blocked on any missing or stale proof.                                                              |
+
+Each later gate must record its own concrete checkpoint, evidence digests and restore readback.
+This table defines the required rollback boundaries; it is not a claim that those receipts exist.
+Stable release publication is outside this Task's approval.
+
+### Projection-stage verification
+
+The focused command and identity suites passed 15 tests across five files, including a real CLI
+readback that preserves exact Task README bytes. Typecheck, changed-source ESLint, architecture
+checks, documentation IA, and all eight lifecycle invariants passed.
+The first full CI attempt exposed a forbidden test-layer import and the missing-task exit-code
+regression. Both were corrected without changing the guards or assertions. The 30-test control run
+covers the source-layering guard, existing workflow behavior, canonical reads, and real CLI readback.
+
+The broader `run-cli.core.task-next-action-json.test.ts` probe has one existing failing case:
+`stores branch_pr authority without changing the task branch before the authorized PR operation`.
+It expects `approval.pr.open` but receives `agent.branch_implementation`. The same failure was
+reproduced on unmodified `main` at `e16259bf9666e02c2099df5c5b21c43d8e90c1ca`.
+This is not a passing verification result. The lifecycle stage must reconcile the fixture with real
+WorkItem completion before final M3 qualification. No required check or expected assertion was
+removed or weakened.
