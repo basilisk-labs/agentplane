@@ -6,7 +6,7 @@ Created: 2026-08-29T20:33:30.307Z
 
 - Task: `202608292032-1K47B8`
 - Title: Implement the isolated canonical Task kernel
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608292032-1K47B8/implement-the-isolated-canonical-task-kernel`
 - Canonical task record: `.agentplane/tasks/202608292032-1K47B8/README.md`
 
