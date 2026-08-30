@@ -1,10 +1,11 @@
 ---
 id: "202608291006-2A6BJC"
 title: "Add compatibility adapters and replay migration"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 81
+revision: 83
 origin:
   system: "manual"
 depends_on:
@@ -61,6 +62,20 @@ quality_review:
     - "The implementation preserves legacy production authority until the next milestone. It introduces explicit migration and read adapters rather than claiming a production cutover. Changes to immutable effect publication and check-artifact freshness address reproduced recovery defects and retain their negative/concurrency regressions."
     - "Residual risk: Provider qualification uses explicit fakes. Required hosted exact-head checks, supervised integration and hosted closure remain mandatory before M2 delivery."
     - "Residual risk: Repository-wide migration, legacy removal,20sequentialself-hostingTasks and3release drills are M3 acceptance and are not satisfied by this review."
+token_usage:
+  agent_runs: 24
+  input_tokens: null
+  journal_digest: "sha256:279230bcd5ba79c4c78f4ebe21ebbf6f3c95e10f3c24ffc68da1be3a8b636de0"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-30T15:17:11.548Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -2476,8 +2491,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "2d298871cf8d20ca5b35c3d0a311cdd3be5f83c5"
-  message: "🚧 2A6BJC task: apply external agent result"
+  hash: "cb7c6115667e2e5a49bd9456235b4aa79187f0a6"
+  message: "🚧 2A6BJC task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -2542,6 +2557,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 2d298871cf8d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -2801,9 +2819,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-30T15:17:11.548Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "cb7c6115667e2e5a49bd9456235b4aa79187f0a6"
 doc_version: 3
-doc_updated_at: "2026-08-30T14:13:37.647Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-30T15:17:11.557Z"
+doc_updated_by: "CODER"
 description: "Connect legacy CLI and repository surfaces to the canonical Task kernel through explicit adapters. Add one-time migration, dual-read or shadow execution where needed, exact replay fixtures, state equivalence checks, rollback receipts, and fail-closed handling for unknown legacy layouts."
 sections:
   Summary: |-
@@ -5882,7 +5908,67 @@ extensions:
       schema_version: 1
       task_id: "202608291006-2A6BJC"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608291006-2A6BJC"
+            - "git:2d298871cf8d20ca5b35c3d0a311cdd3be5f83c5"
+          check_id: "m2-architecture"
+          command_identity: "bun run arch:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T14:13:35.067Z"
+          repository_snapshot_digest: "sha256:842b4ed4d4811036f9b9b29a80cbb15f086695d9b8ca2d7f563c31461cfc6c7b"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608291006-2A6BJC"
+            - "git:2d298871cf8d20ca5b35c3d0a311cdd3be5f83c5"
+          check_id: "m2-invariants"
+          command_identity: "bun run lifecycle:invariants"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T14:13:35.067Z"
+          repository_snapshot_digest: "sha256:842b4ed4d4811036f9b9b29a80cbb15f086695d9b8ca2d7f563c31461cfc6c7b"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608291006-2A6BJC"
+            - "git:2d298871cf8d20ca5b35c3d0a311cdd3be5f83c5"
+          check_id: "m2-tests"
+          command_identity: "bun run test:fast"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T14:13:35.067Z"
+          repository_snapshot_digest: "sha256:842b4ed4d4811036f9b9b29a80cbb15f086695d9b8ca2d7f563c31461cfc6c7b"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608291006-2A6BJC"
+            - "git:2d298871cf8d20ca5b35c3d0a311cdd3be5f83c5"
+          check_id: "m2-types"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T14:13:35.067Z"
+          repository_snapshot_digest: "sha256:842b4ed4d4811036f9b9b29a80cbb15f086695d9b8ca2d7f563c31461cfc6c7b"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608291006-2A6BJC"
+            - "git:2d298871cf8d20ca5b35c3d0a311cdd3be5f83c5"
+          check_id: "m2-diff"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T14:13:35.067Z"
+          repository_snapshot_digest: "sha256:842b4ed4d4811036f9b9b29a80cbb15f086695d9b8ca2d7f563c31461cfc6c7b"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608291006-2A6BJC"
     intent:
       acceptance_criteria:
@@ -5913,7 +5999,7 @@ extensions:
 
         Connect legacy CLI and repository surfaces to the canonical Task kernel through explicit adapters. Add one-time migration, dual-read or shadow execution where needed, exact replay fixtures, state equivalence checks, rollback receipts, and fail-closed handling for unknown legacy layouts.
       task_id: "202608291006-2A6BJC"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -7930,9 +8016,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202608291006-2A6BJC"
-    revision: 80
+    revision: 83
     schema_version: 1
-    updated_at: "2026-08-30T14:13:39.340Z"
+    updated_at: "2026-08-30T15:17:11.548Z"
     work_items:
       m2-boundaries:
         attempt: 2
@@ -8624,6 +8710,31 @@ extensions:
         previous_revision: 40
         schema_version: 1
         task_id: "202608291006-2A6BJC"
+      legacy-finish:202608291006-2A6BJC:2026-08-30T14:13:35.067Z:2d298871cf8d20ca5b35c3d0a311cdd3be5f83c5:
+        aggregate_digest: "sha256:0dd7037238bb39cd729ec378cd15e00ffeab301ca887d463f99a70fc73484714"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-30T15:17:11.548Z"
+          cause_refs:
+            - "task-verification:202608291006-2A6BJC"
+            - "git:2d298871cf8d20ca5b35c3d0a311cdd3be5f83c5"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2cb5e8c966f9f418457273a3"
+          mutation_id: "legacy-finish:202608291006-2A6BJC:2026-08-30T14:13:35.067Z:2d298871cf8d20ca5b35c3d0a311cdd3be5f83c5"
+          plan_digest: "sha256:8e32060f888533284a0d0235807cc97a6cad53aa4e1f9d48d24ec527928ae634"
+          plan_revision: 4
+          repository_fingerprint: "sha256:842b4ed4d4811036f9b9b29a80cbb15f086695d9b8ca2d7f563c31461cfc6c7b"
+          schema_version: 1
+          task_id: "202608291006-2A6BJC"
+          task_revision: 80
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608291006-2A6BJC:2026-08-30T14:13:35.067Z:2d298871cf8d20ca5b35c3d0a311cdd3be5f83c5"
+        next_revision: 83
+        previous_revision: 82
+        schema_version: 1
+        task_id: "202608291006-2A6BJC"
       plan-refinement:work-order-202608291006-2A6BJC-executor-6bf30d85c336a125b18a0fd0:
         aggregate_digest: "sha256:4bc463339a8f02e34c3a520886a02ea7976e2ea1fafcb276f90e76d8bc3dfc5f"
         event:
@@ -8703,6 +8814,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "2d298871cf8d20ca5b35c3d0a311cdd3be5f83c5"
+    message: "🚧 2A6BJC task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -10858,3 +10970,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/24` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:279230bcd5ba79c4c78f4ebe21ebbf6f3c95e10f3c24ffc68da1be3a8b636de0`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-30T15:17:11.548Z`
