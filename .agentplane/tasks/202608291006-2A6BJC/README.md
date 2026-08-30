@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 86
+revision: 87
 origin:
   system: "manual"
 depends_on:
@@ -34,34 +34,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-30T15:01:19.666Z"
+  updated_at: "2026-08-30T15:54:02.295Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 8 typed finding(s)."
-  evaluated_sha: "2d298871cf8d20ca5b35c3d0a311cdd3be5f83c5"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "1e07dd534c782e6ca325623af332e1f0ded85651"
   blueprint_digest: "de01a169a7c1ba12da99c26a1e9c03024b28e8ea88f99c10758e30b1a931abc9"
   evidence_refs:
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-145833922-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-145833922-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/ad4db6fe609ea05d7c37bdf4703f1a726fb223bfb639aba561b5cc45c89f26e8.md"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-145833922-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-145833922-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-145833922-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-154200518-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-154200518-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/69ba533f85b17f5fadf64fde36b6756376ed1c6db4c9ed34e3e0c22dcaa6b4a4.md"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-154200518-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-154200518-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-154200518-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608291006-2A6BJC/README.md"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/bb7ca667de0a6a650c7bb8e78dace169ed03183cbcfadfe286039f71413dac59.patch"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/ff805619e2a2261e933967df1ed6d1f3c66f8523f0f0de372c3b654ed256d7dd.json"
-    - ".agentplane/tasks/202608291006-2A6BJC/verification/20260830141335067-681b24fdea02d27c.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/aff44745199a43c468c32a725f0f63f664689e6d6e16a8c52558fd260ed3c6d1.patch"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/a4cf59fda65a3e671077194e5c6531d5b59a4dcf5bd71b965b96fedb09b5a162.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/verification/20260830153956664-b3aeb2467dce7ece.json"
     - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/beedd395f8c752c2788d7739e0c540e8e1fa9200654d224fcd4c08c39aced7d1.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "Migration follows the approved explicit mapping: active legacy records enter PLANNING without invented approval or WorkItems; terminal records become read-only archives. Ambiguous input categories, unsupported schemas and unreconciled runtime state are refused."
-    - "The byte-store boundary preserves exact backups under containment/no-follow checks and guarded transactions. Apply independently reads back the output. Rollback revalidates receipt identity, backup bytes and unchanged canonical output before CAS. It cannot roll back a later Task revision."
-    - "Canonical persistence checks backend capabilities, repository identity and task revisions. Lost-write readback proves durability but never fresh dispatch ownership. The durable begin_effect transition and counted concurrent-start regression prevent duplicate provider dispatch."
-    - "Validation and review adapters bind evidence to Task, approved plan, WorkItem, implementation and repository state. Operational metadata does not invalidate semantic evidence; changed result identity does. These adapters do not complete lifecycle transitions themselves."
-    - "The frozen twelve-family corpus executes saved inputs, checks source and payload digests, and compares exact histories, receipts, projections, effects and route codes. Crash observations retain independent old origins. The isolated driver rejects source leakage, unanchored helpers and incomplete test execution."
-    - "The implementation preserves legacy production authority until the next milestone. It introduces explicit migration and read adapters rather than claiming a production cutover. Changes to immutable effect publication and check-artifact freshness address reproduced recovery defects and retain their negative/concurrency regressions."
-    - "Residual risk: Provider qualification uses explicit fakes. Required hosted exact-head checks, supervised integration and hosted closure remain mandatory before M2 delivery."
-    - "Residual risk: Repository-wide migration, legacy removal,20sequentialself-hostingTasks and3release drills are M3 acceptance and are not satisfied by this review."
+    - "The semantic conflict resolution only relocates existing documentation. The complete line multiset is preserved. Its three-way comparison with the frozen merge base and protected main preserves both the Task adapter section and runtime documentation with no conflict."
+    - "Both overlapping verification source/test paths merge without conflict. The combined content retains runtime infrastructure classification and the M2 correction that persists actual rerun observations. No test, threshold, lifecycle rule, or trust boundary is weakened."
+    - "The current implementation differs from the previously reviewed 2d298871 code only in documentation ordering, excluding framework-owned Task artifacts. The adapter durability, migration backup/CAS/rollback, explicit legacy quarantine, effect admission, uncertain dispatch handling and immutable corpus implementations are unchanged."
+    - "Re-inspection of effect dispatch confirms that only fresh committed PENDING admission calls the provider. Replayed admission and uncertain responses require observation instead of another dispatch. The current exact-anchor replay qualification covers the frozen negative and concurrent cases."
+    - "The work stays inside M2. Production cutover, repository-wide migration, retirement, twenty real self-hosting Tasks, and three release drills remain M3 gates. Fake provider replay is not evidence of those outcomes."
+    - "Residual risk: M3 must enforce the production writer boundary and complete real self-hosting and release qualification before the root refactoring task can close."
+    - "Residual risk: The general test suite contains one skipped test. The separate isolated replay qualification completed every reported test."
 token_usage:
   agent_runs: 24
   input_tokens: null
@@ -2845,7 +2844,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-30T15:40:00.433Z"
+doc_updated_at: "2026-08-30T15:54:02.355Z"
 doc_updated_by: "SUPERVISOR"
 description: "Connect legacy CLI and repository surfaces to the canonical Task kernel through explicit adapters. Add one-time migration, dual-read or shadow execution where needed, exact replay fixtures, state equivalence checks, rollback receipts, and fail-closed handling for unknown legacy layouts."
 sections:
