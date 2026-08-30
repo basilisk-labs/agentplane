@@ -1,10 +1,11 @@
 ---
 id: "202608292032-1K47B8"
 title: "Implement the isolated canonical Task kernel"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 77
+revision: 79
 origin:
   system: "manual"
 depends_on:
@@ -60,6 +61,20 @@ quality_review:
     - "Qualification receipt separates historical work from current authority and references current source hashes plus supervisor-owned exact implementation/check identities. The kernel remains deterministic and isolated; provider/CLI behavior is unchanged."
     - "Residual risk: Hosted PR publication, exact-head required checks, merge and Task Hosted Close are still pending delivery gates. M2 must not start until those gates complete."
     - "Residual risk: M2 remains responsible for untrusted input validation, persistence and provider adapters around the typed kernel."
+token_usage:
+  agent_runs: 26
+  input_tokens: null
+  journal_digest: "sha256:61db20777e166dcbd2c94367dd81b85697ff77d9136c98ce0a125e02b552d892"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-30T03:20:06.529Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -336,8 +351,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "f4570f15d13b9c88c3ef0d4f8e457fe7525c9b3a"
-  message: "🚧 1K47B8 task: apply external agent result"
+  hash: "dea2cc09b5ed426496c80db10c12530f0123ace4"
+  message: "🚧 1K47B8 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -402,6 +417,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: f4570f15d13b. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -629,9 +647,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-30T03:20:06.529Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "dea2cc09b5ed426496c80db10c12530f0123ace4"
 doc_version: 3
-doc_updated_at: "2026-08-30T03:14:58.123Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-30T03:20:06.540Z"
+doc_updated_by: "CODER"
 description: "Implement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged."
 sections:
   Summary: |-
@@ -2187,7 +2213,34 @@ extensions:
       schema_version: 1
       task_id: "202608292032-1K47B8"
     event_cursor: 1
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608292032-1K47B8"
+            - "git:f4570f15d13b9c88c3ef0d4f8e457fe7525c9b3a"
+          check_id: "architecture"
+          command_identity: "bun run arch:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T03:14:55.405Z"
+          repository_snapshot_digest: "sha256:c34073eb9e74e95de046c9dafbba148bb3b748289ac7cddb148d17228080d66d"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608292032-1K47B8"
+            - "git:f4570f15d13b9c88c3ef0d4f8e457fe7525c9b3a"
+          check_id: "full"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T03:14:55.405Z"
+          repository_snapshot_digest: "sha256:c34073eb9e74e95de046c9dafbba148bb3b748289ac7cddb148d17228080d66d"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608292032-1K47B8"
     intent:
       acceptance_criteria:
@@ -2208,7 +2261,7 @@ extensions:
 
         Implement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged.
       task_id: "202608292032-1K47B8"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -3452,9 +3505,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202608292032-1K47B8"
-    revision: 61
+    revision: 79
     schema_version: 1
-    updated_at: "2026-08-30T01:49:51.529Z"
+    updated_at: "2026-08-30T03:20:06.529Z"
     work_items:
       qualify-current-m1-contract:
         attempt: 1
@@ -3670,6 +3723,31 @@ extensions:
         previous_revision: 60
         schema_version: 1
         task_id: "202608292032-1K47B8"
+      legacy-finish:202608292032-1K47B8:2026-08-30T03:14:55.405Z:f4570f15d13b9c88c3ef0d4f8e457fe7525c9b3a:
+        aggregate_digest: "sha256:381310f2b853b06ba56bdf2119d84ce454a4470f93cbed4414c895d559e39c37"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-30T03:20:06.529Z"
+          cause_refs:
+            - "task-verification:202608292032-1K47B8"
+            - "git:f4570f15d13b9c88c3ef0d4f8e457fe7525c9b3a"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_401364d4b422c6558eafadc1"
+          mutation_id: "legacy-finish:202608292032-1K47B8:2026-08-30T03:14:55.405Z:f4570f15d13b9c88c3ef0d4f8e457fe7525c9b3a"
+          plan_digest: "sha256:c5237eeab87dd5383649ba7fea824a6d05807e4cad894affc5898ff43037c27a"
+          plan_revision: 4
+          repository_fingerprint: "sha256:c34073eb9e74e95de046c9dafbba148bb3b748289ac7cddb148d17228080d66d"
+          schema_version: 1
+          task_id: "202608292032-1K47B8"
+          task_revision: 61
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608292032-1K47B8:2026-08-30T03:14:55.405Z:f4570f15d13b9c88c3ef0d4f8e457fe7525c9b3a"
+        next_revision: 79
+        previous_revision: 78
+        schema_version: 1
+        task_id: "202608292032-1K47B8"
       plan-refinement:work-order-202608292032-1K47B8-executor-7d56b9b9e0e2b63c79688859:
         aggregate_digest: "sha256:baa737d86d9439d4a739356c66368c35e45d60d52ae04c7ce579ce30f5c14d1f"
         event:
@@ -3700,6 +3778,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "f4570f15d13b9c88c3ef0d4f8e457fe7525c9b3a"
+    message: "🚧 1K47B8 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "dbaf4bc2878eab7b50f8ea6d14179d8d91030159"
@@ -5096,3 +5175,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/26` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:61db20777e166dcbd2c94367dd81b85697ff77d9136c98ce0a125e02b552d892`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-30T03:20:06.529Z`
