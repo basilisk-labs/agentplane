@@ -1,0 +1,103 @@
+{
+  "details": null,
+  "digest": "sha256:5d4cdf9a599f48d8709be114ca94a79092143aee51b18aab753c1154addbcf35",
+  "implementation_sha": "753ed95d1d782fe03e1aec40f72508750ee84c2a",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:e49d9f4477570375add0bdc023ae9eae5b4b342d731ab246ea8849a0e9a2f2e9",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "36741ce5160d452ca9660a388241cb4da32f842a",
+      "digest": "sha256:6576fef12f00a44695ddd70e6fe98d6de2b32b22780ffb042c986c859df21a91",
+      "primary_task_id": "202608301851-5W3XW6",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_public_api",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608301851-5W3XW6"
+      ]
+    },
+    "implementation": {
+      "base_sha": "36741ce5160d452ca9660a388241cb4da32f842a",
+      "digest": "sha256:0fb02f95c7881f7336863a5985e374e1fe0c97d4ee00a718da1004ebc78bae50",
+      "strategy": "branch_diff",
+      "target_sha": "753ed95d1d782fe03e1aec40f72508750ee84c2a"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:5f41826b667cd5a67efe174b209ce7e858caddee50968352b285ca232f62b953",
+    "verify_steps_digest": "sha256:d9a2b1806b690cbefd91d020ef39915ec1c9bdbe00cb131dc7a044c63418182f"
+  },
+  "kind": "task_verification_record",
+  "note": "Address PR 5883 review threads 3890385746 and 3890385749: parse NUL-delimited normalized Git paths for custom workflow directories, and reserve capacity for the in-flight atomic publication candidate. Preserve recovery guards and add focused regressions.",
+  "recorded_at": "2026-08-30T20:53:55.533Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Recover unstarted task worktrees pinned before the approved planning baseline\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Recover unstarted task worktrees pinned before the approved planning baseline\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:d9a2b1806b690cbefd91d020ef39915ec1c9bdbe00cb131dc7a044c63418182f",
+  "task_id": "202608301851-5W3XW6",
+  "verification_command": "agentplane task verify rework 202608301851-5W3XW6 --rework --by REVIEWER",
+  "verifier": "REVIEWER"
+}

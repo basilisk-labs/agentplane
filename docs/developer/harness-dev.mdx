@@ -222,7 +222,8 @@ reconcile the recorded base without repeating the Git effect. After a process cr
 any orphaned native publication candidate against the same Task revision, plan, repository and Git
 identities. It archives the exact bytes under the common Git directory at
 `agentplane/planning-base-recovery/<task-id>/` before removing that candidate from the worktree.
-Unknown or changed candidates remain untouched and block recovery. Explicit base pins, divergent history,
+Recovery accepts up to eight verified orphan candidates and reserves one additional slot for the
+current native publication. Unknown or changed candidates remain untouched and block recovery. Explicit base pins, divergent history,
 started work and unknown artifacts fail closed. The command does not fetch, publish, weaken checks,
 or start a runner. After recovery, bootstrap the framework runtime if its source changed, then request
 a fresh `task advance --agent-json` packet.

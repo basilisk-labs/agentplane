@@ -1,6 +1,6 @@
 import path from "node:path";
 import { lstat, readdir } from "node:fs/promises";
-import { gitEnv, listWorktrees, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
+import { GitContext, gitEnv, listWorktrees, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import {
   createTaskPlanRevision,
@@ -117,7 +117,11 @@ export async function recoverWorkPlanningBase(opts: {
   const repositoryIdentity = await resolveLogicalRepositoryIdentity({ git_root: root, task });
   if (!base.repository_identity || base.repository_identity !== repositoryIdentity)
     refuse("repository identity mismatch");
-  const readme = `${ctx.config.paths.workflow_dir}/${task.id}/README.md`;
+  const workflowDir = path
+    .relative(root, path.resolve(root, ctx.config.paths.workflow_dir))
+    .split(path.sep)
+    .join("/");
+  const readme = path.posix.join(workflowDir, task.id, "README.md");
   const taskDir = path.dirname(path.join(root, readme));
   const stat = await lstat(path.join(root, readme));
   if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1)
@@ -159,24 +163,30 @@ export async function recoverWorkPlanningBase(opts: {
     plan_digest: plan.digest,
   };
   // A never-started worktree has only its transported README. Reject unknown artifacts.
-  const assertPristine = async () => {
+  const assertPristine = async (publicationInFlight = false) => {
     const entries = await readdir(taskDir);
     const temps = entries.filter((name) => /^README\.md\.tmp-[a-f0-9]{32}$/.test(name));
-    if (temps.length > 8 || entries.some((name) => name !== "README.md" && !temps.includes(name)))
+    if (
+      temps.length > (publicationInFlight ? 9 : 8) ||
+      entries.some((name) => name !== "README.md" && !temps.includes(name))
+    )
       refuse("Task execution artifacts already exist");
     const candidates = await Promise.all(
       temps.map((name) => readPlanningBaseCandidate(root, path.join(taskDir, name), identity)),
     );
-    const status = await git(root, ["status", "--porcelain=v1", "--untracked-files=all"]);
-    const allowed = new Set([
-      `?? ${readme}`,
-      ...temps.map((name) => `?? ${path.posix.dirname(readme)}/${name}`),
-      `?? ${ctx.config.paths.workflow_dir}/.${task.id}.README.md.lock`,
+    // A new context reads one fresh NUL-delimited status snapshot on each guarded check.
+    const gitContext = new GitContext({ gitRoot: root });
+    const [changed, untracked] = await Promise.all([
+      gitContext.statusChangedPaths(),
+      gitContext.statusUntrackedPaths(),
     ]);
-    const unexpected = status
-      .split("\n")
-      .filter(Boolean)
-      .filter((line) => !allowed.has(line));
+    const untrackedPaths = new Set(untracked);
+    const allowed = new Set([
+      readme,
+      ...temps.map((name) => path.posix.join(path.posix.dirname(readme), name)),
+      path.posix.join(workflowDir, `.${task.id}.README.md.lock`),
+    ]);
+    const unexpected = changed.filter((file) => !untrackedPaths.has(file) || !allowed.has(file));
     if (unexpected.length > 0)
       refuse(`tracked or unrelated untracked changes exist: ${unexpected.slice(0, 8).join(", ")}`);
     // Git must not replace the transported Task document during the fast-forward.
@@ -213,7 +223,7 @@ export async function recoverWorkPlanningBase(opts: {
   // If Git lands but publication is interrupted, the original Task and approved plan still
   // bind both SHAs. A fresh inspection can reconcile HEAD=target without another Git effect.
   await backend.writeTaskWithReceipt(next, { expectedRevision: task.revision }, async () => {
-    const candidates = await assertPristine();
+    const candidates = await assertPristine(true);
     if (candidates.length !== orphans.length + 1) refuse("unexpected Task publication candidates");
     const commonDir = await git(root, ["rev-parse", "--path-format=absolute", "--git-common-dir"]);
     for (const candidate of orphans)
@@ -242,7 +252,7 @@ export async function recoverWorkPlanningBase(opts: {
       await git(root, ["merge", "--ff-only", "--no-edit", "--no-overwrite-ignore", target]);
     if ((await git(root, ["rev-parse", "HEAD"])) !== target)
       refuse("Git advancement is not confirmed");
-    await assertPristine();
+    await assertPristine(true);
     await assertNoRunner();
   });
   return { ...identity, token, status: "applied" };

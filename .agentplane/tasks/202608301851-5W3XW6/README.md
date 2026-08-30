@@ -2,10 +2,10 @@
 id: "202608301851-5W3XW6"
 title: "Recover unstarted task worktrees pinned before the approved planning baseline"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +25,11 @@ plan_approval:
   updated_by: "USER"
   note: "User authorized necessary bootstrap fixes and all in-scope plans for completion of the clean core refactor. This bounded recovery unblocks M3 without changing dependencies or bypassing gates."
 verification:
-  state: "ok"
-  updated_at: "2026-08-30T20:15:30.164Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-30T20:53:55.533Z"
+  updated_by: "REVIEWER"
+  note: "Address PR 5883 review threads 3890385746 and 3890385749: parse NUL-delimited normalized Git paths for custom workflow directories, and reserve capacity for the in-flight atomic publication candidate. Preserve recovery guards and add focused regressions."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -146,7 +146,8 @@ execution_contract:
       - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "docs"
       - "packages/agentplane"
@@ -246,6 +247,9 @@ execution_contract:
       -
         id: "recorded-check-9"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -362,9 +366,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "bcf2f38f73d05fc2878983c72ca0a4a9e2f066c2"
-  message: "🚧 5W3XW6 task: record external evaluator result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -482,8 +485,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "bcf2f38f73d05fc2878983c72ca0a4a9e2f066c2"
+  -
+    type: "verify"
+    at: "2026-08-30T20:53:55.533Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "Address PR 5883 review threads 3890385746 and 3890385749: parse NUL-delimited normalized Git paths for custom workflow directories, and reserve capacity for the in-flight atomic publication candidate. Preserve recovery guards and add focused regressions."
 doc_version: 3
-doc_updated_at: "2026-08-30T20:21:53.872Z"
+doc_updated_at: "2026-08-30T20:54:00.483Z"
 doc_updated_by: "CODER"
 description: "M3 Task 202608291006-255K66 has an approved plan captured at 36741ce5160d452ca9660a388241cb4da32f842a but native worktree preparation used creation base 3bcce289091f5e6cbcb1dea87c2964c4f559259d. Its dependency Tasks are absent from that old tree, so advance waits forever. Add a bounded native operator recovery for an unstarted task workspace that verifies approved plan identity, exact old/new Git ancestry, clean source state, Task ownership and absence of active runners or provider effects before fast-forwarding to the approved plan baseline. Preserve the Task, plan, dependencies, history and unrelated artifacts. Never auto-reanchor explicitly pinned bases, started work or divergent histories. Test negative guards and the real dependency-after-planning scenario. This is a prerequisite bootstrap recovery within the authorized clean core refactor."
 sections:
@@ -939,6 +948,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608301851-5W3XW6
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-30T20:53:55.533Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: Address PR 5883 review threads 3890385746 and 3890385749: parse NUL-delimited normalized Git paths for custom workflow directories, and reserve capacity for the in-flight atomic publication candidate. Preserve recovery guards and add focused regressions.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d9a2b1806b690cbefd91d020ef39915ec1c9bdbe00cb131dc7a044c63418182f, input_digest=sha256:e49d9f4477570375add0bdc023ae9eae5b4b342d731ab246ea8849a0e9a2f2e9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608301851-5W3XW6-recover-unstarted-task-worktrees-pinned-before-t/.agentplane/tasks/202608301851-5W3XW6/blueprint/resolved-snapshot.json
+    - old_digest: c4fe4f9395dc1a16d9d0e045fcc7079e8e2b42ab4cd182ea5e32873dbb3bd649
+    - current_digest: c4fe4f9395dc1a16d9d0e045fcc7079e8e2b42ab4cd182ea5e32873dbb3bd649
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608301851-5W3XW6
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1869,9 +1908,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "753ed95d1d782fe03e1aec40f72508750ee84c2a"
-    message: "🚧 5W3XW6 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
@@ -2344,6 +2380,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608301851-5W3XW6
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-30T20:53:55.533Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: Address PR 5883 review threads 3890385746 and 3890385749: parse NUL-delimited normalized Git paths for custom workflow directories, and reserve capacity for the in-flight atomic publication candidate. Preserve recovery guards and add focused regressions.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d9a2b1806b690cbefd91d020ef39915ec1c9bdbe00cb131dc7a044c63418182f, input_digest=sha256:e49d9f4477570375add0bdc023ae9eae5b4b342d731ab246ea8849a0e9a2f2e9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608301851-5W3XW6-recover-unstarted-task-worktrees-pinned-before-t/.agentplane/tasks/202608301851-5W3XW6/blueprint/resolved-snapshot.json
+- old_digest: c4fe4f9395dc1a16d9d0e045fcc7079e8e2b42ab4cd182ea5e32873dbb3bd649
+- current_digest: c4fe4f9395dc1a16d9d0e045fcc7079e8e2b42ab4cd182ea5e32873dbb3bd649
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608301851-5W3XW6
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
