@@ -21,9 +21,16 @@ subprocess fix. Qualification found and corrected authority defects in the kerne
    now require valid upstream outputs.
 7. The completion reducer disagreed with the eligibility predicate when WorkItem
    validation was missing or stale. Both paths now use the same eligibility rule.
+8. Effect observation and supersession could leave a Task stuck in uncertainty;
+   reconciliation could resume while other effects remained uncertain. All three
+   operations now derive Task recovery state from the remaining effects.
+9. Terminal Tasks accepted new mutations. They now reject new commands while
+   preserving replay of an existing mutation receipt.
+10. Effect preparation ignored effect authority and Task execution phase. It now
+    requires an exact matching external-effect grant and an active execution phase.
 
 New regression tests reproduced these defects before the fixes. After correction,
-the focused kernel and subprocess suite passes 54 tests across four files.
+the focused kernel and subprocess suite passes 61 tests across four files.
 The kernel still uses only deterministic inputs; it does not read wall-clock time,
 the filesystem, environment, Git, providers, or compatibility projections.
 
@@ -32,7 +39,7 @@ Current source SHA-256 identities:
 | Path                                                                 | SHA-256                                                            |
 | -------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | `packages/core/src/tasks/task-kernel/model.ts`                       | `5fba68db83e0623be556146ddcc0b8dfed1ddd4d6bd74ccaa1338614542472fe` |
-| `packages/core/src/tasks/task-kernel/kernel.ts`                      | `73a345d0f34cc980594b01adf843f05900f240e3669690d9b461fb2241c1a019` |
+| `packages/core/src/tasks/task-kernel/kernel.ts`                      | `9471bfd146a4d49605f7e76ae087f7907ee08044cf85d0b47addd605d8fcea06` |
 | `packages/core/src/tasks/task-kernel/invariants.ts`                  | `aa07195830ad05fc7ea957fd5993a1b3daf13723eac146ee1fc42ef96f852555` |
 | `packages/core/src/tasks/task-kernel/index.ts`                       | `3f69df84a74372f3a28d16a5816414e6abd69980368d0fe74b0d038de0429c10` |
 | `packages/agentplane/src/commands/shared/pr-meta/verify-log.ts`      | `84025fe05b1220f35fa2282246a83b3948a0baf08ea57475bcab3735a187b47a` |
