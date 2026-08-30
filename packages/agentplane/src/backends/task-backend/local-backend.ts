@@ -73,6 +73,7 @@ async function assertTaskDeletionPathUnchanged(opts: {
 export class LocalBackend implements TaskBackend {
   id = "local";
   capabilities = {
+    atomic_task_record: true,
     canonical_source: "local",
     projection: "canonical",
     projection_read_mode: "native",

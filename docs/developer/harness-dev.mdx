@@ -54,3 +54,32 @@ then verify the repo-local handoff with:
 node packages/agentplane/bin/agentplane.js runtime explain
 agentplane runtime explain
 ```
+
+## Staged canonical Task adapter
+
+`KernelBackendAdapter` is the M2 boundary for the isolated `taskKernel`. The backend stores one
+`task_kernel` extension containing the aggregate, ordered events, mutation receipts and record
+digest in its existing atomic Task record. It does not introduce a second independently mutable
+Task store. A backend must declare whole-record atomicity and revision-guarded writes. Cached
+remote reads cannot qualify as canonical readback. The local implementation reuses the Task README
+transaction. Cloud behavior is qualified against a CAS fake before any production cutover.
+
+Reads distinguish missing, canonical, archived, legacy-unmigrated and malformed records. Creation
+calls the kernel with explicit intent and authority. Mutation never converts legacy status into a
+canonical aggregate. A repeated command returns its existing receipt. A changed command with the
+same mutation ID is rejected. Every write requires independent digest readback; a lost response
+is reconciled by reading, and an unavailable readback remains `write_in_doubt`.
+
+`task show` renders canonical records through `projectKernelTask`. Archived records remain read
+only. The old Task-centric adapter refuses records bearing the new extension, including malformed
+ones. Legacy records continue on their existing path until the M2 replay gate and M3 cutover.
+
+Validation, evaluator and provider observation parsers bind evidence to the exact Task, plan,
+WorkItem, implementation, check, environment or effect request. They return observations, not
+completion decisions. Evaluator PASS is not deterministic verification. The application supervisor
+must submit an authorized command to the kernel before persisting a transition.
+
+The adapter tests cover real local atomic writes, cloud-fake CAS equivalence, concurrent creation,
+response loss, missing readback, idempotency conflicts, malformed state and projection isolation.
+Migration backups, rollback receipts, the full replay corpus and production cutover have separate
+milestone gates; these adapter tests do not prove those gates.
