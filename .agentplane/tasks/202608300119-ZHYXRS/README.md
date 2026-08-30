@@ -4,7 +4,7 @@ title: "Preserve WorkItem results during plan reapproval and recover evidence-on
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -26,6 +26,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-30T01:43:01.189Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "403edee0581fa08fb661c60487dcde7bd2f5bd88"
+  blueprint_digest: "4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd"
+  evidence_refs:
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-014145339-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-014145339-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/7bd203cf9dcbd8fd7fb54c71fb43608d75f904771948104bd6fb5e32111922c3.md"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-014145339-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-014145339-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-014145339-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608300119-ZHYXRS/README.md"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/e4594a5165434d84043609c114251fb1d166c7612623342d185fb34239acfb29.patch"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/68cd886e72e9a681f60c9770ffb31cc09b30751c52abfe3b9d62753ed744f3e9.json"
+    - ".agentplane/tasks/202608300119-ZHYXRS/verification/20260830014106431-a78ca4036e517933.json"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/0ae8f7054187226c4378474e61a236b83e14b480899aed7def309c417740ebc8.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "All nine frozen evidence hashes match. The actual three-file diff is confined to approved scope."
+    - "Repeated materialization returns the unchanged aggregate only after exact current approval/revision/proposal and complete WorkItem identity checks. Claims, attempts, outputs, validation, lifecycle and revision are therefore preserved atomically."
+    - "Tests exercise all twelve WorkItem runtime states, partial and extra runtime, conflicting plan/approval, and fresh-plan materialization. Recovery tests retain rejection for changed effects and WorkItem identity."
+    - "Supervisor core tests (443) and full local CI passed for the evaluated implementation. No blocking code or verification defects found."
+    - "Residual risk: Already-reset historical WorkItems require explicit requalification; this fix intentionally does not reconstruct lost state."
+    - "Residual risk: PR checks, merge and hosted close are not established by this local review."
 execution_route:
   frozen: true
   reason_codes:
