@@ -15,14 +15,8 @@ M3 Task 202608291006-255K66 has an approved plan captured at 36741ce5160d452ca96
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Address PR 5883 review threads 3890385746 and 3890385749: parse NUL-delimited normalized Git paths
-for custom workflow directories, and reserve capacity for the in-flight atomic publication
-candidate. Preserve recovery guards and add focused regressions.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

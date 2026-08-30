@@ -12,8 +12,8 @@ Created: 2026-08-30T18:53:26.210Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Address PR 5883 review threads 3890385746 and 3890385749: parse NUL-delimited normalized Git paths for custom workflow directories, and reserve capacity for the in-flight atomic publication candidate. Preserve recovery guards and add focused regressions.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
