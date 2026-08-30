@@ -15,8 +15,8 @@ M3 Task 202608291006-255K66 has an approved plan captured at 36741ce5160d452ca96
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
