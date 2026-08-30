@@ -1,10 +1,10 @@
 ---
 id: "202608292032-1K47B8"
 title: "Implement the isolated canonical Task kernel"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 42
 origin:
   system: "manual"
 depends_on:
@@ -24,10 +24,10 @@ plan_approval:
   updated_by: "USER"
   note: "Explicit standing user approval in this conversation covers this unchanged plan and its technical scope reconciliation."
 verification:
-  state: "ok"
-  updated_at: "2026-08-29T22:12:18.641Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  state: "pending"
+  updated_at: "2026-08-30T00:18:45.444Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 quality_review:
   state: "pass"
@@ -65,8 +65,6 @@ execution_route:
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
-    - "observed_path_outside_scope:packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
-    - "observed_path_outside_scope:packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
   requested_mode: "branch_pr"
@@ -96,6 +94,7 @@ execution_contract:
       - "security_boundary"
     writable_roots:
       - "depcruise.config.cjs"
+      - "packages/agentplane/src/commands/shared/pr-meta"
       - "packages/core/src/tasks/index.ts"
       - "packages/core/src/tasks/task-centric"
       - "packages/core/src/tasks/task-kernel"
@@ -106,6 +105,7 @@ execution_contract:
     rationale:
       - "Branch isolation and hosted integration are required by repository policy."
       - "The approved M1 plan adds an internal kernel, its tests, and a namespaced core tasks export."
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/shared/pr-meta; repository_effects=source_code,tests"
     repository_effects:
       - "public_api"
       - "repository_write"
@@ -116,13 +116,12 @@ execution_contract:
     schema_version: 2
     scope_roots:
       - "depcruise.config.cjs"
+      - "packages/agentplane/src/commands/shared/pr-meta"
       - "packages/core/src/tasks/index.ts"
       - "packages/core/src/tasks/task-centric"
       - "packages/core/src/tasks/task-kernel"
   observed:
-    authority_violations:
-      - "writable_scope:packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
-      - "writable_scope:packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
+    authority_violations: []
     changed_components:
       - "depcruise.config.cjs"
       - "packages/agentplane"
@@ -144,51 +143,10 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-10"
-        result: "pass"
-      -
-        id: "recorded-check-11"
-        result: "pass"
-      -
-        id: "recorded-check-12"
-        result: "pass"
-      -
-        id: "recorded-check-13"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
-    - "observed_path_outside_scope:packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
-    - "observed_path_outside_scope:packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
   safety:
@@ -203,6 +161,7 @@ execution_contract:
       declared:
         components:
           - "depcruise.config.cjs"
+          - "packages/agentplane/src/commands/shared/pr-meta"
           - "packages/core/src/tasks/index.ts"
           - "packages/core/src/tasks/task-centric"
           - "packages/core/src/tasks/task-kernel"
@@ -223,8 +182,9 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:16a5da5b1add6c31499401c07c51af2b1a5fb6d28836a300eaa847bc758668bf"
+      digest: "sha256:ab952cdd9ef2a2be15e062daa5ecf6926993569b864ee20fe8ca56ecba9583ef"
       escalation_reasons:
+        - "central_component:packages/agentplane/src/commands/shared/pr-meta"
         - "central_component:packages/core/src/tasks/index.ts"
         - "central_component:packages/core/src/tasks/task-centric"
         - "central_component:packages/core/src/tasks/task-kernel"
@@ -298,9 +258,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "f17852a298075c10fcb0d3650d25ec5a456fa34e"
-  message: "🚧 1K47B8 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -335,6 +293,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The selected verification-environment WorkItem requires a repository scope root absent from the task execution contract. Recommended action: Apply a state-bound task scope extension for the already approved pr-meta WorkItem, then resume it with a fresh packet. Requested scope: roots=packages/agentplane/src/commands/shared/pr-meta; repository effects=source_code,tests; request digest=sha256:a65b86b31e953834d498124c2274baf775d6d4ce05199a9d9624d2deb5b8a7d4. Agentplane receipt: external-agent-blocker/tr_c5b78b2440fe67fe629876f5992151c2/sha256:d078d688007a185b74edb86275e6f4c91926dd9d87ff0e0d732830fb24a615d7/sha256:a65b86b31e953834d498124c2274baf775d6d4ce05199a9d9624d2deb5b8a7d4."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/shared/pr-meta; repository effects: source_code, tests."
 events:
   -
     type: "status"
@@ -1075,6 +1036,8 @@ extensions:
     status: "active"
     task_id: "202608292032-1K47B8"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-30T00:18:45.444Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:d078d688007a185b74edb86275e6f4c91926dd9d87ff0e0d732830fb24a615d7"
     kind: "task_scope_extension_request"
     request:
@@ -1087,19 +1050,19 @@ extensions:
         - "packages/agentplane/src/commands/shared/pr-meta"
     request_digest: "sha256:a65b86b31e953834d498124c2274baf775d6d4ce05199a9d9624d2deb5b8a7d4"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_c5b78b2440fe67fe629876f5992151c2"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-08-29T22:00:01.526Z"
-        approved_by: "HOST:codex:USER"
-        approved_digest: "sha256:85acb7144f9bcbe117674626f2bf6aea856368831cc0674a7703cf0427f61a0a"
+        approved_at: "2026-08-30T00:18:45.444Z"
+        approved_by: "USER"
+        approved_digest: "sha256:af8aa2335d16a9ec2f41e65b1ec080febf4a087e568f17f73bbbe2331aeceb14"
         policy_facts:
-          - "host_user_decision"
+          - "state_bound_scope_extension:sha256:a65b86b31e953834d498124c2274baf775d6d4ce05199a9d9624d2deb5b8a7d4"
         state: "approved"
-      created_at: "2026-08-29T21:59:19.546Z"
-      digest: "sha256:85acb7144f9bcbe117674626f2bf6aea856368831cc0674a7703cf0427f61a0a"
+      created_at: "2026-08-30T00:18:45.444Z"
+      digest: "sha256:af8aa2335d16a9ec2f41e65b1ec080febf4a087e568f17f73bbbe2331aeceb14"
       proposal:
         assumptions:
           - "The committed kernel implementation remains the authoritative M1 candidate and does not need to be rebuilt."
@@ -1392,10 +1355,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:723d9562533fea454339c234b89e2d70d835d8b9f87924bafdbc4a83af5491da"
                 schema_version: 1
-      revision: 2
+      revision: 3
       schema_version: 1
       task_id: "202608292032-1K47B8"
-    event_cursor: 0
+    event_cursor: 1
     final_validation: null
     id: "202608292032-1K47B8"
     intent:
@@ -2051,9 +2014,314 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608292032-1K47B8"
-    revision: 30
+      -
+        approval:
+          approved_at: "2026-08-29T22:00:01.526Z"
+          approved_by: "HOST:codex:USER"
+          approved_digest: "sha256:85acb7144f9bcbe117674626f2bf6aea856368831cc0674a7703cf0427f61a0a"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-08-29T21:59:19.546Z"
+        digest: "sha256:85acb7144f9bcbe117674626f2bf6aea856368831cc0674a7703cf0427f61a0a"
+        proposal:
+          assumptions:
+            - "The committed kernel implementation remains the authoritative M1 candidate and does not need to be rebuilt."
+            - "Repository dotenv values are operational inputs for AgentPlane itself but must not implicitly configure declared verification child processes."
+          planning_baseline:
+            captured_at: "2026-08-29T21:55:47.738Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:b896663d64447e1bf063ff264cf4f9ee22b17fec76eff94cce90d3b8bb8f2b96"
+            dirty_paths:
+              - ".agentplane/tasks/202608292032-1K47B8/README.md"
+              - ".agentplane/tasks/202608292032-1K47B8/pr/github-body.md"
+              - ".agentplane/tasks/202608292032-1K47B8/pr/meta.json"
+              - ".agentplane/tasks/202608292032-1K47B8/pr/review.md"
+              - ".agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json"
+              - ".agentplane/tasks/202608292032-1K47B8/supervision/implementation-evidence.json"
+              - ".agentplane/tasks/202608292032-1K47B8/verification/20260829213703792-b4d5487c553f5a17.json"
+              - ".agentplane/tasks/202608292032-1K47B8/verification/20260829214826738-20b5311a327c1579.json"
+              - ".agentplane/tasks/202608292032-1K47B8/verification/20260829215542838-893d49886b2f4a8e.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "2f544c4120b8d5219327404d007b31b09d30af41"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:28"
+          schema_version: 1
+          task_id: "202608292032-1K47B8"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
+                id: "check-verification-env"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts"
+                id: "check-kernel-model"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts"
+                id: "check-kernel-reducer"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/invariants.test.ts"
+                id: "check-kernel-invariants"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run arch:check"
+                id: "check-architecture"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run test:fast"
+                id: "check-fast-suite"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "check-typecheck"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+            criteria:
+              -
+                check_ids:
+                  - "check-verification-env"
+                description: "Supervisor verification children exclude every key loaded only from repository dotenv while preserving explicitly inherited non-dotenv process values."
+                id: "criterion-verification-env-isolation"
+                required: true
+              -
+                check_ids:
+                  - "check-kernel-model"
+                  - "check-kernel-reducer"
+                  - "check-kernel-invariants"
+                  - "check-architecture"
+                description: "The completed canonical kernel model, reducer, authority and effect invariants, transition vectors, and import boundary remain green after the verification harness fix."
+                id: "criterion-kernel-preserved"
+                required: true
+              -
+                check_ids:
+                  - "check-fast-suite"
+                  - "check-typecheck"
+                  - "check-architecture"
+                description: "The exact Supervisor-visible fast suite, repository typecheck, and architecture checks pass from the committed implementation identity."
+                id: "criterion-regression-suite"
+                required: true
+            evidence_fingerprint: "sha256:daec02ec13cd4beb794b37ed53aaf1ef56b0e702c35c8d1ce239bc6c454b5ce8"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-verification-env"
+                    description: "Supervisor verification children exclude every key loaded only from repository dotenv while preserving explicitly inherited non-dotenv process values."
+                    id: "criterion-verification-env-isolation"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 262144
+                  optional_sources:
+                    - "packages/agentplane/src/backends/task-backend.load.test.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
+                    - "packages/agentplane/src/shared/env.ts"
+                    - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+                  symbol_hints:
+                    - "verificationChildEnv"
+                    - "AGENTPLANE_DOTENV_LOADED_KEYS"
+                    - "isDotEnvLoadedKey"
+                depends_on: []
+                expected_outputs:
+                  - "verification-child-environment-isolation"
+                id: "isolate-supervisor-verification-environment"
+                objective: "Remove repository-dotenv-loaded keys from child environments used for declared verification checks while preserving explicit parent environment values, and add focused regression coverage."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared/pr-meta"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/commands/shared/pr-meta"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
+                      id: "check-verification-env"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-verification-env"
+                      description: "Supervisor verification children exclude every key loaded only from repository dotenv while preserving explicitly inherited non-dotenv process values."
+                      id: "criterion-verification-env-isolation"
+                      required: true
+                  evidence_fingerprint: "sha256:07287a0e2760aead7d2da7dd6e5b268656a6e60239379eef51fd96cea81d068b"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-kernel-model"
+                      - "check-kernel-reducer"
+                      - "check-kernel-invariants"
+                      - "check-architecture"
+                    description: "The completed canonical kernel model, reducer, authority and effect invariants, transition vectors, and import boundary remain green after the verification harness fix."
+                    id: "criterion-kernel-preserved"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-fast-suite"
+                      - "check-typecheck"
+                      - "check-architecture"
+                    description: "The exact Supervisor-visible fast suite, repository typecheck, and architecture checks pass from the committed implementation identity."
+                    id: "criterion-regression-suite"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 524288
+                  optional_sources:
+                    - "vitest.workspace.ts"
+                    - "package.json"
+                  required_sources:
+                    - "packages/core/src/tasks/task-kernel"
+                    - "depcruise.config.cjs"
+                    - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
+                  symbol_hints:
+                    - "TASK_TRANSITION_TABLE"
+                    - "compareExecutionAuthority"
+                    - "verificationChildEnv"
+                depends_on:
+                  - "isolate-supervisor-verification-environment"
+                expected_outputs:
+                  - "m1-kernel-qualification-receipt"
+                id: "requalify-isolated-kernel"
+                objective: "Re-run the complete M1 focused, architectural, type, and fast-suite qualification through the sanitized Supervisor verification environment and produce the final M1 receipt."
+                optional: false
+                priority: 2
+                required_inputs:
+                  - "verification-child-environment-isolation"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "read"
+                    resource: "packages/core/src/tasks/task-kernel"
+                  -
+                    kind: "path"
+                    mode: "read"
+                    resource: "depcruise.config.cjs"
+                  -
+                    kind: "path"
+                    mode: "read"
+                    resource: "packages/agentplane/src/commands/shared/pr-meta"
+                risk: "high"
+                scope_roots:
+                  - "packages/core/src/tasks/task-kernel"
+                  - "packages/core/src/tasks/index.ts"
+                  - "depcruise.config.cjs"
+                  - "packages/agentplane/src/commands/shared/pr-meta"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts"
+                      id: "check-kernel-model"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts"
+                      id: "check-kernel-reducer"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/invariants.test.ts"
+                      id: "check-kernel-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run arch:check"
+                      id: "check-architecture"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:fast"
+                      id: "check-fast-suite"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "check-typecheck"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-kernel-model"
+                        - "check-kernel-reducer"
+                        - "check-kernel-invariants"
+                        - "check-architecture"
+                      description: "The completed canonical kernel model, reducer, authority and effect invariants, transition vectors, and import boundary remain green after the verification harness fix."
+                      id: "criterion-kernel-preserved"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-fast-suite"
+                        - "check-typecheck"
+                        - "check-architecture"
+                      description: "The exact Supervisor-visible fast suite, repository typecheck, and architecture checks pass from the committed implementation identity."
+                      id: "criterion-regression-suite"
+                      required: true
+                  evidence_fingerprint: "sha256:723d9562533fea454339c234b89e2d70d835d8b9f87924bafdbc4a83af5491da"
+                  schema_version: 1
+        revision: 2
+        schema_version: 1
+        task_id: "202608292032-1K47B8"
+    revision: 31
     schema_version: 1
-    updated_at: "2026-08-30T00:17:59.885Z"
+    updated_at: "2026-08-30T00:18:45.444Z"
     work_items:
       isolate-supervisor-verification-environment:
         attempt: 0
