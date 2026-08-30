@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 40
+revision: 42
 origin:
   system: "manual"
 depends_on: []
@@ -36,32 +36,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-30T05:12:54.600Z"
+  updated_at: "2026-08-30T08:28:55.539Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 4 typed finding(s)."
-  evaluated_sha: "daf594dbe372635d26bb67af0b9ee83ef6ac3c40"
+  evaluated_sha: "26b69b0fece6e4d9a8dfd013d6cafefadd4acf61"
   blueprint_digest: "1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981"
   evidence_refs:
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-050004792-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-050004792-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/a597eb1798ab2cd428dee0dc2b5e6f32f172e2274082a7d4e407aaccb570b94a.md"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-050004792-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-050004792-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-050004792-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-082609666-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-082609666-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/664fd24ccab5f37a056a6f4a99cf91bd9c3965a1b79376b5a382ee6c8c7ef90c.md"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-082609666-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-082609666-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-082609666-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608251706-V287W1/README.md"
-    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/43494cdabfe487f720eac3a1fe3a861ef33362b300e1cfcc79da19e4b400c606.patch"
-    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/7ca2312b760d558a8b86d6ce40a865b1ba946f1c9120eb392c2d0a9518f41bce.json"
-    - ".agentplane/tasks/202608251706-V287W1/verification/20260830045953524-9f44d9d3b5df9734.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/59372fd7e1eb14ddeee2f0f8a1dd5dc2a6aca5631402b026475a6272cbf93a4b.patch"
+    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/748cd92033b5ef7ccd952b387c265796da22207b471f228e089eb4a916d80ca5.json"
+    - ".agentplane/tasks/202608251706-V287W1/verification/20260830081115015-c2db9bdb55e298d1.json"
     - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/b724ae0edf9bc8c91af145edbf996f54aea38e60d9a39f39c83a0e333a911643.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Reviewed the full runtime boundary and the latest delta. Shared normalization preserves explicit profile PATH precedence, executable permission checks, numeric manager fallback and parent-environment isolation. Node absence under Bun fails with ENOENT instead of selecting Bun."
-    - "Runtime evidence binds selected runner bytes, normalized runtime-selection environment and selected Node/Bun bytes. The prepared-input guard rejects profile/inherited PATH changes, outer executable replacement and toolchain replacement before launch. A separate evaluator run passed 22 resolver/prepared-input tests; the implementation run passed 25 tests across four files."
-    - "The prior evaluator findings are closed by executable regressions. Frozen full local CI, verification identity, actual diff, blueprint and policy evidence are all valid for the evaluated SHA. Runtime infrastructure errors remain distinct from implementation failures; authority and release publication are unchanged."
-    - "Residual risk: The branch predates M1. Preserve its merged verification dotenv isolation during the base update and rerun required exact-head hosted checks. Hosted merge and Task Hosted Close are not yet proven."
+    - "Shared runtime normalization reaches supervised process launch, invocation identity and direct verification. Explicit profile PATH precedence and deterministic supported fallback selection are preserved."
+    - "Executable, Node/Bun toolchain and runtime-selection environment digests bind prepared input and execution receipts. Missing/unexecutable runtime errors remain infrastructure failures."
+    - "Conflict resolution preserves dotenv isolation before runtime selection. No quality receipt or immutable evidence was hand-edited. Historical direct-supervision metadata targets the earlier implementation; the fresh exact-merge verification record is the authoritative check evidence."
+    - "All 48 focused tests passed across five runtime, production propagation, verification environment and prepared-input security suites."
 token_usage:
   agent_runs: 10
   input_tokens: null
@@ -4990,6 +4990,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The five untracked quality files are intended AgentPlane-generated frozen evaluator inputs for implementation 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61. They were produced by the fresh evaluator preparation at 2026-08-30T08:15:35.655Z. Preserve and record these task-owned artifacts. No source changes, manual quality edits or external effects were made. The stale evaluator envelope was retired by AgentPlane; request a fresh evaluator episode after recording the observation."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): All dirty files are intended Task-owned review artifacts. The operator recovery command evaluator apply validated the frozen 08:26:09 work order and recorded PASS for exact implementation 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61. Preserve the README quality-review update and generated quality evidence. No implementation, policy, verification input or provider state was changed. AgentPlane owns recording these artifacts and continuing through fresh pre-merge closure and hosted qualification."
 events:
   -
     type: "status"
@@ -5104,8 +5107,13 @@ events:
     at: "2026-08-30T08:25:53.268Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The five untracked quality files are intended AgentPlane-generated frozen evaluator inputs for implementation 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61. They were produced by the fresh evaluator preparation at 2026-08-30T08:15:35.655Z. Preserve and record these task-owned artifacts. No source changes, manual quality edits or external effects were made. The stale evaluator envelope was retired by AgentPlane; request a fresh evaluator episode after recording the observation."
+  -
+    type: "comment"
+    at: "2026-08-30T08:31:26.308Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): All dirty files are intended Task-owned review artifacts. The operator recovery command evaluator apply validated the frozen 08:26:09 work order and recorded PASS for exact implementation 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61. Preserve the README quality-review update and generated quality evidence. No implementation, policy, verification input or provider state was changed. AgentPlane owns recording these artifacts and continuing through fresh pre-merge closure and hosted qualification."
 doc_version: 3
-doc_updated_at: "2026-08-30T08:25:53.340Z"
+doc_updated_at: "2026-08-30T08:31:26.366Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the observed defect where verification reports `bun: command not found` even though Bun is installed and available on the host. Confirm the root cause across agents, Supervisor, verification, and recovery subprocess production paths instead of assuming it is Supervisor-only. Establish one centralized executable resolver and normalized local runtime environment shared by default across those paths, without user-specific absolute paths and without per-agent PATH configuration by default. Explicit runtime profiles and task or execution overrides must take precedence over normalized defaults. Preserve inherited host PATH entries while resolving supported standard runtime locations deterministically. Distinguish executable-resolution or environment failure from implementation or test failure; if that typed classification requires a separate architectural change beyond this resolver, create a follow-up Task rather than widening this Task. Regression acceptance must exercise the production execution path with a deliberately reduced parent PATH, prove Bun resolution from a supported standard location, and prove fail-closed behavior with an explicit infrastructure-classified result when Bun is genuinely absent."
 sections:
