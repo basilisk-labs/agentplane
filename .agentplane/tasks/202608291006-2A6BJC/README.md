@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 89
+revision: 90
 origin:
   system: "manual"
 depends_on:
@@ -3076,6 +3076,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Read-only workspace inspection complete. The five untracked files are AgentPlane-generated evaluator input artifacts from the retired 20260830-161438999 review attempt. Preserve them as task evidence; no implementation or manual artifact changes were made."
 events:
   -
     type: "status"
@@ -3371,9 +3374,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "comment"
+    at: "2026-08-30T16:21:43.299Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Read-only workspace inspection complete. The five untracked files are AgentPlane-generated evaluator input artifacts from the retired 20260830-161438999 review attempt. Preserve them as task evidence; no implementation or manual artifact changes were made."
 doc_version: 3
-doc_updated_at: "2026-08-30T16:14:25.714Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-30T16:21:43.362Z"
+doc_updated_by: "SUPERVISOR"
 description: "Connect legacy CLI and repository surfaces to the canonical Task kernel through explicit adapters. Add one-time migration, dual-read or shadow execution where needed, exact replay fixtures, state equivalence checks, rollback receipts, and fail-closed handling for unknown legacy layouts."
 sections:
   Summary: |-
