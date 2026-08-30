@@ -29,19 +29,19 @@ Created: 2026-08-29T20:33:30.307Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- depcruise.config.cjs                               |  13 +
- .../src/commands/shared/pr-meta/verify-log.test.ts |  60 ++
- .../src/commands/shared/pr-meta/verify-log.ts      |   4 +
- packages/core/src/tasks/index.ts                   |   2 +
- .../core/src/tasks/task-kernel/M1-QUALIFICATION.md |  83 ++
- packages/core/src/tasks/task-kernel/index.ts       |  23 +
- .../core/src/tasks/task-kernel/invariants.test.ts  | 412 ++++++++++
- packages/core/src/tasks/task-kernel/invariants.ts  | 243 ++++++
- packages/core/src/tasks/task-kernel/kernel.test.ts | 747 +++++++++++++++++
- packages/core/src/tasks/task-kernel/kernel.ts      | 915 +++++++++++++++++++++
- packages/core/src/tasks/task-kernel/model.test.ts  | 108 +++
- packages/core/src/tasks/task-kernel/model.ts       | 367 +++++++++
- 12 files changed, 2977 insertions(+)
+ depcruise.config.cjs                               |   13 +
+ .../src/commands/shared/pr-meta/verify-log.test.ts |   60 ++
+ .../src/commands/shared/pr-meta/verify-log.ts      |    4 +
+ packages/core/src/tasks/index.ts                   |    2 +
+ .../core/src/tasks/task-kernel/M1-QUALIFICATION.md |   91 ++
+ packages/core/src/tasks/task-kernel/index.ts       |   23 +
+ .../core/src/tasks/task-kernel/invariants.test.ts  |  427 ++++++++
+ packages/core/src/tasks/task-kernel/invariants.ts  |  257 +++++
+ packages/core/src/tasks/task-kernel/kernel.test.ts | 1021 +++++++++++++++++++
+ packages/core/src/tasks/task-kernel/kernel.ts      | 1061 ++++++++++++++++++++
+ packages/core/src/tasks/task-kernel/model.test.ts  |  108 ++
+ packages/core/src/tasks/task-kernel/model.ts       |  375 +++++++
+ 12 files changed, 3442 insertions(+)
 ```
 
 </details>

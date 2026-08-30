@@ -1,10 +1,15 @@
 import { createHash } from "node:crypto";
 
-import { authorityBindsCurrentState, validateWorkItemDefinitions } from "./invariants.js";
+import {
+  authorityBindsCurrentState,
+  executionRequirementsAreSubset,
+  validateWorkItemDefinitions,
+} from "./invariants.js";
 import type {
   DomainEvent,
   EffectState,
   ExternalEffect,
+  ExecutionRequirements,
   KernelInput,
   KernelRejectionCode,
   KernelResult,
@@ -152,7 +157,7 @@ function canonicalValue(value: unknown): unknown {
     return Object.fromEntries(
       Object.entries(value)
         .filter(([, item]) => item !== undefined)
-        .toSorted(([left], [right]) => left.localeCompare(right))
+        .toSorted(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
         .map(([key, item]) => [key, canonicalValue(item)]),
     );
   }
@@ -209,6 +214,18 @@ function requiredAuthority(input: KernelInput, workItemId: string | null): Kerne
     return rejected("AUTHORITY_SCOPE_EXCEEDED", [authority.digest]);
   }
   return null;
+}
+
+function requirementsAllowed(
+  input: KernelInput,
+  requirements: ExecutionRequirements | undefined,
+): boolean {
+  return (
+    requirements !== undefined &&
+    input.authority !== null &&
+    executionRequirementsAreSubset(input.authority, requirements) &&
+    requirements.capabilities.every((capability) => input.actor.capabilities.includes(capability))
+  );
 }
 
 function authorityWorkItem(command: TaskCommand): string | null {
@@ -277,6 +294,7 @@ function validationIdentityMatchesResult(
     isSha256Digest(identity.command_digest) &&
     isSha256Digest(identity.toolchain_digest) &&
     isSha256Digest(identity.environment_digest) &&
+    validation.evidence_digests.length > 0 &&
     validation.evidence_digests.every((digest) => isSha256Digest(digest))
   );
 }
@@ -417,8 +435,121 @@ function preconditions(input: KernelInput): KernelResult | null {
     if (runtime && (!definition || kernelDigest(runtime.definition) !== kernelDigest(definition))) {
       return rejected("PLAN_DIGEST_MISMATCH", [workItemId, "runtime_definition_mismatch"]);
     }
+    if (runtime && !requirementsAllowed(input, runtime.definition.execution_requirements)) {
+      return rejected("AUTHORITY_SCOPE_EXCEEDED", [workItemId, "execution_requirements"]);
+    }
   }
   return requiredAuthority(input, workItemId);
+}
+
+function amendPlan(
+  input: KernelInput,
+  command: Extract<TaskCommand, { kind: "amend_plan" }>,
+): KernelResult {
+  const aggregate = input.aggregate;
+  const current = aggregate.current_plan;
+  if (!planMatches(current, command.plan_revision, command.plan_digest)) {
+    return rejected("PLAN_DIGEST_MISMATCH", [command.plan_digest]);
+  }
+  if (current.state !== "APPROVED") return rejected("CURRENT_PLAN_NOT_APPROVED", [current.state]);
+  if (aggregate.state !== "ACTIVE" && aggregate.state !== "FINAL_VALIDATION") {
+    return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, command.kind]);
+  }
+  if (command.authority_delta_digest) {
+    return rejected(
+      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+      [command.authority_delta_digest],
+      "request_authority_delta",
+    );
+  }
+  const proposed = command.amended_plan;
+  if (proposed.revision !== current.revision + 1) {
+    return rejected("PLAN_REVISION_MISMATCH", [String(proposed.revision)]);
+  }
+  if (
+    command.amendment_digest !== kernelDigest(proposed) ||
+    proposed.digest !==
+      kernelDigest({ revision: proposed.revision, work_items: proposed.work_items })
+  ) {
+    return rejected("PLAN_DIGEST_MISMATCH", [proposed.digest]);
+  }
+  const issues = validateWorkItemDefinitions(proposed.work_items);
+  if (issues.length > 0) return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", issues);
+  const originals = new Map(current.work_items.map((item) => [item.id, item]));
+  if (
+    proposed.work_items.length !== current.work_items.length ||
+    proposed.work_items.some((item) => {
+      const original = originals.get(item.id);
+      return (
+        !original ||
+        (!original.optional && item.optional) ||
+        !original.expected_outputs.every((id) => item.expected_outputs.includes(id)) ||
+        !original.required_inputs.every((id) => item.required_inputs.includes(id)) ||
+        !original.depends_on.every((id) => item.depends_on.includes(id)) ||
+        !item.execution_requirements ||
+        !original.execution_requirements ||
+        !executionRequirementsAreSubset(
+          original.execution_requirements,
+          item.execution_requirements,
+        ) ||
+        !input.authority ||
+        !executionRequirementsAreSubset(input.authority, item.execution_requirements)
+      );
+    })
+  ) {
+    return rejected(
+      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+      ["amendment_changes_authority_or_work_item_set"],
+      "request_authority_delta",
+    );
+  }
+  const pending = aggregate.effects.find((effect) =>
+    ["PREPARED", "PENDING", "IN_DOUBT"].includes(effect.state),
+  );
+  if (pending) return rejected("EFFECT_RECONCILIATION_REQUIRED", [pending.id]);
+  const definitions = new Map(proposed.work_items.map((item) => [item.id, item]));
+  const workItems: Record<string, WorkItemRuntime> = {};
+  for (const [id, runtime] of Object.entries(aggregate.work_items)) {
+    const original = originals.get(id);
+    const definition = definitions.get(id);
+    if (!original || !definition || kernelDigest(runtime.definition) !== kernelDigest(original)) {
+      return rejected("PLAN_DIGEST_MISMATCH", [id, "runtime_definition_mismatch"]);
+    }
+    const changed = kernelDigest(definition) !== kernelDigest(original);
+    if (
+      !["PLANNED", "READY", "REWORK_READY", "BLOCKED", "COMPLETED", "CANCELLED"].includes(
+        runtime.state,
+      ) ||
+      (changed && (runtime.state === "COMPLETED" || runtime.state === "CANCELLED"))
+    ) {
+      return rejected(
+        "ILLEGAL_WORK_ITEM_TRANSITION",
+        [id, runtime.state, "amend_plan"],
+        "wait_or_replan",
+      );
+    }
+    workItems[id] = changed
+      ? {
+          ...runtime,
+          definition,
+          state: "PLANNED",
+          revision: runtime.revision + 1,
+          claim_id: null,
+          result_digest: null,
+          output_manifests: [],
+          validation: null,
+        }
+      : runtime;
+  }
+  return accept(input, {
+    ...aggregate,
+    revision: aggregate.revision + 1,
+    state: "ACTIVE",
+    current_plan: { ...current, ...proposed },
+    plan_history: [...aggregate.plan_history, { ...current, state: "SUPERSEDED" }],
+    work_items: refreshReadyItems(workItems),
+    final_validation: null,
+  });
 }
 
 export function reduceTaskCommand(input: KernelInput): KernelResult {
@@ -493,6 +624,18 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       break;
     }
     case "approve_plan": {
+      const provenance = input.authority?.provenance;
+      if (
+        input.actor.kind !== "USER" ||
+        provenance?.kind !== "USER" ||
+        provenance.parent_authority_digest !== null ||
+        provenance.actor_id !== input.actor.id ||
+        provenance.evidence_digest !== command.approval_evidence_digest
+      ) {
+        return rejected("AUTHORITY_PROVENANCE_ESCALATION", [
+          "plan_approval_requires_user_evidence",
+        ]);
+      }
       if (!planMatches(aggregate.current_plan, command.plan_revision, command.plan_digest)) {
         return rejected("PLAN_DIGEST_MISMATCH", [command.plan_digest]);
       }
@@ -670,7 +813,7 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       break;
     }
     case "record_final_validation": {
-      if (command.validation.identity.implementation_identity !== input.repository_fingerprint) {
+      if (!validationIdentityMatchesResult(command.validation, input.repository_fingerprint)) {
         return rejected("VALIDATION_IDENTITY_MISMATCH", ["final_validation"]);
       }
       if (command.validation.status !== "PASSED") {
@@ -678,6 +821,9 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       }
       if (aggregate.state !== "ACTIVE" && aggregate.state !== "FINAL_VALIDATION") {
         return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, "FINAL_VALIDATION"]);
+      }
+      if (!requiredWorkComplete(aggregate)) {
+        return rejected("TASK_COMPLETION_INELIGIBLE", ["required_work_incomplete"]);
       }
       next = {
         ...aggregate,
@@ -691,7 +837,10 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       if (aggregate.state !== "ACTIVE" && aggregate.state !== "FINAL_VALIDATION") {
         return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, command.kind]);
       }
-      if (!input.authority?.external_effects.includes(command.effect.kind)) {
+      if (
+        !input.authority?.external_effects.includes(command.effect.kind) ||
+        !requirementsAllowed(input, command.effect.execution_requirements)
+      ) {
         return rejected("AUTHORITY_SCOPE_EXCEEDED", [command.effect.kind]);
       }
       if (
@@ -791,18 +940,7 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       break;
     }
     case "amend_plan": {
-      if (!planMatches(aggregate.current_plan, command.plan_revision, command.plan_digest)) {
-        return rejected("PLAN_DIGEST_MISMATCH", [command.plan_digest]);
-      }
-      if (command.authority_delta_digest) {
-        return rejected(
-          "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
-          [command.authority_delta_digest],
-          "request_authority_delta",
-        );
-      }
-      next = { ...aggregate, revision: aggregate.revision + 1, final_validation: null };
-      break;
+      return amendPlan(input, command);
     }
     case "request_authority_delta": {
       if (input.authority?.digest !== command.parent_authority_digest) {
@@ -888,24 +1026,32 @@ export function isTaskCompletionEligible(
     aggregate.state !== "FINAL_VALIDATION" ||
     aggregate.current_plan?.state !== "APPROVED" ||
     aggregate.final_validation?.status !== "PASSED" ||
-    aggregate.final_validation.identity.implementation_identity !== repositoryFingerprint
+    !validationIdentityMatchesResult(aggregate.final_validation, repositoryFingerprint)
   ) {
     return false;
   }
   return (
+    requiredWorkComplete(aggregate) &&
+    aggregate.effects.every((effect) =>
+      ["APPLIED", "NOT_APPLIED", "RECONCILED", "SUPERSEDED"].includes(effect.state),
+    )
+  );
+}
+
+function requiredWorkComplete(aggregate: TaskAggregate): boolean {
+  return (
+    aggregate.current_plan?.state === "APPROVED" &&
     aggregate.current_plan.work_items
       .filter((definition) => !definition.optional)
       .every((definition) => {
         const runtime = aggregate.work_items[definition.id];
         return (
           runtime?.state === "COMPLETED" &&
+          kernelDigest(runtime.definition) === kernelDigest(definition) &&
           hasEveryExpectedOutput(runtime, runtime.output_manifests) &&
           validationMatchesResult(runtime.validation, runtime.result_digest)
         );
-      }) &&
-    aggregate.effects.every((effect) =>
-      ["APPLIED", "NOT_APPLIED", "RECONCILED", "SUPERSEDED"].includes(effect.state),
-    )
+      })
   );
 }
 

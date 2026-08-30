@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -11,6 +13,7 @@ import {
 } from "./kernel.js";
 import type {
   ExecutionAuthority,
+  ExecutionRequirements,
   ExternalEffect,
   KernelInput,
   OutputManifest,
@@ -21,11 +24,19 @@ import type {
   TaskState,
   ValidationRecord,
   WorkItemRuntime,
+  WorkItemDefinition,
   WorkItemState,
 } from "./model.js";
 
 const fingerprint = kernelDigest("repository-state");
 const resultDigest = kernelDigest("implementation-result");
+const requirements: ExecutionRequirements = {
+  scope_roots: ["packages/core/src/tasks/task-kernel"],
+  repository_effects: ["source_code"],
+  external_effects: [],
+  capabilities: ["repository_write"],
+  resources: ["kernel-work"],
+};
 
 const plan: PlanRecord = {
   revision: 1,
@@ -39,6 +50,7 @@ const plan: PlanRecord = {
       depends_on: [],
       required_inputs: [],
       expected_outputs: ["kernel-source"],
+      execution_requirements: requirements,
       optional: false,
     },
   ],
@@ -56,7 +68,7 @@ const authority: ExecutionAuthority = {
   repository_effects: ["source_code", "tests"],
   external_effects: [],
   capabilities: ["repository_write"],
-  resources: [],
+  resources: ["kernel-work"],
   validation_requirements: ["focused-tests"],
   policy_digests: [],
   completion_requirements: ["validation"],
@@ -78,6 +90,13 @@ function effect(id: string, state: ExternalEffect["state"]): ExternalEffect {
   return {
     id,
     kind: "pr.merge",
+    execution_requirements: {
+      scope_roots: [],
+      repository_effects: [],
+      external_effects: ["pr.merge"],
+      capabilities: ["provider_write"],
+      resources: ["pull:1"],
+    },
     state,
     idempotency_key: id,
     request_digest: kernelDigest(id),
@@ -126,7 +145,7 @@ function input(state: TaskAggregate, command: TaskCommand, mutationId = "mutatio
       id: "agent-1",
       kind: "AGENT",
       transport: "managed",
-      capabilities: ["repository_write"],
+      capabilities: ["repository_write", "provider_write"],
     },
     authority,
     repository_fingerprint: fingerprint,
@@ -178,7 +197,252 @@ function validation(implementationIdentity: Sha256Digest): ValidationRecord {
   };
 }
 
+function amendmentCommand(
+  state: TaskAggregate,
+  work_items: readonly WorkItemDefinition[],
+): Extract<TaskCommand, { kind: "amend_plan" }> {
+  const revision = state.current_plan!.revision + 1;
+  const amended_plan = { revision, work_items, digest: kernelDigest({ revision, work_items }) };
+  return {
+    kind: "amend_plan",
+    task_id: state.id,
+    expected_task_revision: state.revision,
+    expected_state_fingerprint: fingerprint,
+    plan_revision: state.current_plan!.revision,
+    plan_digest: state.current_plan!.digest,
+    amendment_digest: kernelDigest(amended_plan),
+    amended_plan,
+    authority_delta_digest: null,
+  };
+}
+
 describe("canonical task kernel reducer", () => {
+  it("orders digest keys by code units independent of locale", () => {
+    const expected = createHash("sha256").update('{"Z":2,"a":3,"ä":1}').digest("hex");
+    expect(kernelDigest({ ä: 1, Z: 2, a: 3 })).toBe(`sha256:${expected}`);
+  });
+
+  it("applies a bounded amendment and preserves unchanged completed WorkItems", () => {
+    const later = { ...plan.work_items[0]!, id: "later", expected_outputs: ["later-output"] };
+    const completed = {
+      ...runtime("COMPLETED"),
+      result_digest: resultDigest,
+      output_manifests: [manifest()],
+      validation: validation(resultDigest),
+    };
+    const state = aggregate({
+      current_plan: { ...plan, work_items: [plan.work_items[0]!, later] },
+      work_items: { kernel: completed, later: { ...runtime("READY"), definition: later } },
+    });
+    const replacement = { ...later, expected_outputs: ["later-output", "changed-output"] };
+    const command = amendmentCommand(state, [plan.work_items[0]!, replacement]);
+    const result = reduceTaskCommand(input(state, command));
+    expect(result.kind).toBe("accepted");
+    if (result.kind !== "accepted") return;
+    expect(result.aggregate.current_plan).toEqual({
+      ...state.current_plan,
+      ...command.amended_plan,
+    });
+    expect(result.aggregate.plan_history).toEqual([
+      ...state.plan_history,
+      { ...state.current_plan, state: "SUPERSEDED" },
+    ]);
+    expect(result.aggregate.work_items.kernel).toBe(completed);
+    expect(result.aggregate.work_items.later).toMatchObject({
+      definition: replacement,
+      state: "READY",
+      result_digest: null,
+      validation: null,
+      output_manifests: [],
+    });
+    expect(result.aggregate.final_validation).toBeNull();
+    expect(result.events.map((event) => event.kind)).toEqual(["plan_amended"]);
+    expect(reduceTaskCommand(input(result.aggregate, command))).toMatchObject({
+      kind: "accepted",
+      events: [],
+      receipts: result.receipts,
+    });
+  });
+
+  it("rejects widened, stale or malformed plan amendments", () => {
+    const state = aggregate();
+    const definition = plan.work_items[0]!;
+    const widened = {
+      ...definition,
+      execution_requirements: { ...requirements, scope_roots: ["outside"] },
+    };
+    expect(reduceTaskCommand(input(state, amendmentCommand(state, [widened])))).toMatchObject({
+      kind: "rejected",
+      code: "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+    });
+    const cyclic = { ...definition, depends_on: [definition.id] };
+    expect(reduceTaskCommand(input(state, amendmentCommand(state, [cyclic])))).toMatchObject({
+      kind: "rejected",
+      code: "WORK_ITEM_DEPENDENCY_INCOMPLETE",
+    });
+    const command = amendmentCommand(state, [definition]);
+    for (const weakened of [
+      { ...definition, optional: true },
+      { ...definition, expected_outputs: [] },
+    ]) {
+      expect(reduceTaskCommand(input(state, amendmentCommand(state, [weakened])))).toMatchObject({
+        kind: "rejected",
+        code: "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+      });
+    }
+    expect(
+      reduceTaskCommand(input(state, { ...command, amendment_digest: kernelDigest("wrong") })),
+    ).toMatchObject({ kind: "rejected", code: "PLAN_DIGEST_MISMATCH" });
+    expect(
+      reduceTaskCommand(
+        input(state, { ...command, authority_delta_digest: kernelDigest("delta") }),
+      ),
+    ).toMatchObject({ kind: "rejected", code: "PLAN_SCOPE_EXPANSION_REQUIRES_USER" });
+  });
+
+  it.each([
+    "CLAIMED",
+    "EXECUTING",
+    "RESULT_RECEIVED",
+    "INSPECTING",
+    "VALIDATING",
+    "COMPLETED",
+  ] as const)("does not replace %s work with an amendment", (workState) => {
+    const state = aggregate({ work_items: { kernel: runtime(workState) } });
+    const changed = { ...plan.work_items[0]!, expected_outputs: ["kernel-source", "new-output"] };
+    expect(reduceTaskCommand(input(state, amendmentCommand(state, [changed])))).toMatchObject({
+      kind: "rejected",
+      code: "ILLEGAL_WORK_ITEM_TRANSITION",
+    });
+  });
+
+  it("requires exact USER identity and root decision evidence for plan approval", () => {
+    const state = aggregate({
+      state: "AWAITING_PLAN_APPROVAL",
+      current_plan: {
+        ...plan,
+        state: "PROPOSED",
+        approval_actor_id: null,
+        approval_evidence_digest: null,
+      },
+    });
+    const command: TaskCommand = {
+      kind: "approve_plan",
+      task_id: state.id,
+      expected_task_revision: state.revision,
+      expected_state_fingerprint: fingerprint,
+      plan_revision: plan.revision,
+      plan_digest: plan.digest,
+      approval_evidence_digest: authority.provenance.evidence_digest,
+    };
+    const correct = {
+      ...input(state, command),
+      actor: {
+        ...input(state, command).actor,
+        id: "user-1",
+        kind: "USER" as const,
+        transport: "host" as const,
+      },
+    };
+    expect(reduceTaskCommand(correct)).toMatchObject({
+      kind: "accepted",
+      aggregate: {
+        current_plan: {
+          approval_actor_id: "user-1",
+          approval_evidence_digest: authority.provenance.evidence_digest,
+        },
+      },
+    });
+    for (const invocation of [
+      input(state, command),
+      { ...correct, actor: { ...correct.actor, id: "another-user" } },
+      {
+        ...correct,
+        authority: {
+          ...authority,
+          provenance: {
+            ...authority.provenance,
+            kind: "DELEGATED" as const,
+            parent_authority_digest: kernelDigest("parent"),
+          },
+        },
+      },
+      { ...correct, command: { ...command, approval_evidence_digest: kernelDigest("invented") } },
+    ])
+      expect(reduceTaskCommand(invocation)).toMatchObject({
+        kind: "rejected",
+        code: "AUTHORITY_PROVENANCE_ESCALATION",
+      });
+  });
+
+  it("enforces WorkItem execution requirements and actor capabilities", () => {
+    const state = aggregate();
+    for (const key of ["scope_roots", "repository_effects", "capabilities", "resources"] as const) {
+      const invocation = input(state, transitionCommand(state, "claim"));
+      expect(
+        reduceTaskCommand({ ...invocation, authority: { ...authority, [key]: [] } }),
+      ).toMatchObject({ kind: "rejected", code: "AUTHORITY_SCOPE_EXCEEDED" });
+    }
+    const invocation = input(state, transitionCommand(state, "claim"));
+    expect(
+      reduceTaskCommand({ ...invocation, actor: { ...invocation.actor, capabilities: [] } }),
+    ).toMatchObject({ kind: "rejected", code: "AUTHORITY_SCOPE_EXCEEDED" });
+  });
+
+  it("requires complete work and full validation identity before final validation", () => {
+    const state = aggregate();
+    const command: TaskCommand = {
+      kind: "record_final_validation",
+      task_id: state.id,
+      expected_task_revision: state.revision,
+      expected_state_fingerprint: fingerprint,
+      validation: validation(fingerprint),
+    };
+    expect(reduceTaskCommand(input(state, command))).toMatchObject({
+      kind: "rejected",
+      code: "TASK_COMPLETION_INELIGIBLE",
+    });
+    const completed = aggregate({
+      work_items: {
+        kernel: {
+          ...runtime("COMPLETED"),
+          result_digest: resultDigest,
+          output_manifests: [manifest()],
+          validation: validation(resultDigest),
+        },
+      },
+    });
+    expect(reduceTaskCommand(input(completed, command))).toMatchObject({
+      kind: "accepted",
+      aggregate: { state: "FINAL_VALIDATION" },
+    });
+    expect(
+      reduceTaskCommand(
+        input(completed, {
+          ...command,
+          validation: { ...command.validation, evidence_digests: [] },
+        }),
+      ),
+    ).toMatchObject({ kind: "rejected", code: "VALIDATION_IDENTITY_MISMATCH" });
+    for (const key of [
+      "check_id",
+      "command_digest",
+      "toolchain_digest",
+      "environment_digest",
+    ] as const) {
+      const malformed = {
+        ...command,
+        validation: {
+          ...command.validation,
+          identity: { ...command.validation.identity, [key]: "" },
+        },
+      };
+      expect(reduceTaskCommand(input(completed, malformed))).toMatchObject({
+        kind: "rejected",
+        code: "VALIDATION_IDENTITY_MISMATCH",
+      });
+    }
+  });
   it.each(["2026-08-29T19:00:00.000Z", "2026-08-29T20:00:00.000Z", "not-a-date"])(
     "rejects expired or malformed authority expiry %s",
     (expires_at) => {
@@ -507,7 +771,17 @@ describe("canonical task kernel reducer", () => {
         }),
       ).toMatchObject({ kind: "rejected", code: "AUTHORITY_SCOPE_EXCEEDED" });
     }
-    const granted = { ...authority, external_effects: ["pr.merge"] };
+    const granted = {
+      ...authority,
+      external_effects: ["pr.merge"],
+      capabilities: ["provider_write"],
+      resources: ["pull:1"],
+    };
+    for (const key of ["capabilities", "resources"] as const) {
+      expect(
+        reduceTaskCommand({ ...input(state, command), authority: { ...granted, [key]: [] } }),
+      ).toMatchObject({ kind: "rejected", code: "AUTHORITY_SCOPE_EXCEEDED" });
+    }
     for (const active of ["ACTIVE", "FINAL_VALIDATION"] as const) {
       expect(
         reduceTaskCommand({ ...input({ ...state, state: active }, command), authority: granted })
