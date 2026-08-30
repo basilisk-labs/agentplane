@@ -422,9 +422,9 @@ it("keeps migrated terminal archives read only", async () => {
 it("persists approved plan and materialized WorkItems atomically through kernel commands", async () => {
   const { adapter } = await fixture();
   await adapter.create(task(), input());
-  const plan: taskKernel.PlanRecord = {
+  let plan: taskKernel.PlanRecord = {
     revision: 1,
-    digest: taskKernel.kernelDigest("one-work-item-plan"),
+    digest: taskKernel.kernelDigest("pending-plan-definition"),
     state: "PROPOSED",
     approval_actor_id: null,
     approval_evidence_digest: null,
@@ -444,6 +444,10 @@ it("persists approved plan and materialized WorkItems atomically through kernel 
         },
       },
     ],
+  };
+  plan = {
+    ...plan,
+    digest: taskKernel.kernelDigest({ revision: plan.revision, work_items: plan.work_items }),
   };
   const proposed = await adapter.execute({
     ...input(),

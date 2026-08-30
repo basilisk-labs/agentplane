@@ -486,6 +486,7 @@ function amendPlan(
       const original = originals.get(item.id);
       return (
         !original ||
+        original.contract_digest !== item.contract_digest ||
         (!original.optional && item.optional) ||
         !original.expected_outputs.every((id) => item.expected_outputs.includes(id)) ||
         !original.required_inputs.every((id) => item.required_inputs.includes(id)) ||
@@ -599,6 +600,23 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       if (command.plan.state !== "PROPOSED") {
         return rejected("ILLEGAL_TASK_TRANSITION", ["plan", command.plan.state]);
       }
+      if (command.plan.revision !== (aggregate.current_plan?.revision ?? 0) + 1) {
+        return rejected("PLAN_REVISION_MISMATCH", [String(command.plan.revision)]);
+      }
+      if (
+        // Digest-only staged records retain their frozen replay contract until explicit migration.
+        // Application plans bind every semantic contract and use the canonical definition digest.
+        command.plan.work_items.some((item) => item.contract_digest !== undefined) &&
+        command.plan.digest !==
+          kernelDigest({
+            revision: command.plan.revision,
+            work_items: command.plan.work_items,
+          })
+      ) {
+        return rejected("PLAN_DIGEST_MISMATCH", [command.plan.digest]);
+      }
+      const issues = validateWorkItemDefinitions(command.plan.work_items);
+      if (issues.length > 0) return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", issues);
       next = {
         ...aggregate,
         revision: aggregate.revision + 1,

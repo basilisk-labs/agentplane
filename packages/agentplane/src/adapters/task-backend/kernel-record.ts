@@ -1,4 +1,9 @@
 import { kernelRecordIssues } from "./kernel-record-invariants.js";
+import {
+  kernelDocumentIssues,
+  kernelDocumentsSchema,
+  type KernelDocuments,
+} from "./kernel-documents.js";
 import { taskKernel } from "@agentplaneorg/core/tasks";
 import { z } from "zod";
 
@@ -20,6 +25,7 @@ const requirements = z.strictObject({
 });
 const definition = z.strictObject({
   id: z.string().min(1),
+  contract_digest: digest.optional(),
   depends_on: strings,
   required_inputs: strings,
   expected_outputs: strings,
@@ -155,6 +161,7 @@ const kernelRecordSchema = z.strictObject({
   repository_identity: digest,
   aggregate: kernelAggregateSchema,
   events: z.array(event),
+  documents: kernelDocumentsSchema.optional(),
   digest,
 });
 export type KernelRecord = z.infer<typeof kernelRecordSchema>;
@@ -181,6 +188,7 @@ export function makeKernelRecord(
   repositoryIdentity: taskKernel.Sha256Digest,
   aggregate: taskKernel.TaskAggregate,
   events: readonly taskKernel.DomainEvent[],
+  documents?: KernelDocuments,
 ): KernelRecord {
   const value = {
     schema_version: 1 as const,
@@ -188,6 +196,7 @@ export function makeKernelRecord(
     repository_identity: repositoryIdentity,
     aggregate,
     events,
+    ...(documents ? { documents } : {}),
   };
   return kernelRecordSchema.parse({ ...value, digest: taskKernel.kernelDigest(value) });
 }
@@ -236,7 +245,10 @@ export function readKernelRecord(
     };
   }
   const aggregate = contents.aggregate;
-  const persistedIssues = kernelRecordIssues(aggregate, contents.events);
+  const persistedIssues = [
+    ...kernelRecordIssues(aggregate, contents.events),
+    ...kernelDocumentIssues(aggregate, contents.documents),
+  ];
   const graphIssues = aggregate.current_plan
     ? taskKernel.validateWorkItemDefinitions(aggregate.current_plan.work_items)
     : [];

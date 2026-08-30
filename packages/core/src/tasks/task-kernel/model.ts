@@ -151,6 +151,8 @@ export type ValidationRecord = Readonly<{
 
 export type WorkItemDefinition = Readonly<{
   id: string;
+  /** Immutable semantic contract used to prepare an application WorkOrder. */
+  contract_digest?: Sha256Digest;
   depends_on: readonly string[];
   required_inputs: readonly string[];
   expected_outputs: readonly string[];
@@ -277,6 +279,7 @@ export type TaskCommand =
         plan_digest: Sha256Digest;
         work_item_id: string;
         result_digest: Sha256Digest;
+        binding_digest?: Sha256Digest;
         output_manifests: readonly OutputManifest[];
       }
     >

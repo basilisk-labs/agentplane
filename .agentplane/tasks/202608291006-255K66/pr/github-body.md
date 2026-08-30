@@ -15,8 +15,8 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,21 +27,31 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/harness-dev.mdx                     |  99 +++++++++++++++++
+ docs/developer/harness-dev.mdx                     |  99 +++++
+ .../task-backend/kernel-backend-adapter.test.ts    |   8 +-
+ .../task-backend/kernel-backend-adapter.ts         |  78 +++-
+ .../src/adapters/task-backend/kernel-documents.ts  |  64 +++
  .../adapters/task-backend/kernel-next-action.ts    |  10 +-
- .../run-cli.core.task-status-token-usage.test.ts   |  73 +++++++++++++
- .../agentplane/src/commands/task/active.command.ts | 110 ++++++++++++++-----
- .../src/commands/task/active.command.unit.test.ts  |  51 +++++++++
+ .../src/adapters/task-backend/kernel-record.ts     |  14 +-
+ .../run-cli.core.task-status-token-usage.test.ts   |  73 ++++
+ .../agentplane/src/commands/task/active.command.ts | 110 +++--
+ .../src/commands/task/active.command.unit.test.ts  |  51 +++
  .../agentplane/src/commands/task/brief.command.ts  |   5 +
- .../task/execution-authority-context.test.ts       |  28 ++++-
+ .../task/execution-authority-context.test.ts       |  28 +-
  .../commands/task/execution-authority-context.ts   |   4 +
- .../agentplane/src/commands/task/kernel-read.ts    |  91 ++++++++++++++++
+ .../agentplane/src/commands/task/kernel-read.ts    |  91 ++++
  .../src/commands/task/next-action.command.ts       |   5 +
  packages/agentplane/src/commands/task/ready.ts     |   6 +
- .../src/commands/task/show-kernel.test.ts          | 121 +++++++++++++++++++++
- packages/agentplane/src/commands/task/show.ts      |  15 +--
+ .../src/commands/task/show-kernel.test.ts          | 121 ++++++
+ packages/agentplane/src/commands/task/show.ts      |  15 +-
  .../agentplane/src/commands/task/status.command.ts |   5 +
- 14 files changed, 581 insertions(+), 42 deletions(-)
+ .../runner/usecases/kernel-task-lifecycle.test.ts  | 461 +++++++++++++++++++++
+ .../src/runner/usecases/kernel-task-lifecycle.ts   | 259 ++++++++++++
+ packages/core/src/tasks/task-kernel/invariants.ts  |   6 +
+ packages/core/src/tasks/task-kernel/kernel.test.ts |  50 +++
+ packages/core/src/tasks/task-kernel/kernel.ts      |  18 +
+ packages/core/src/tasks/task-kernel/model.ts       |   3 +
+ 24 files changed, 1531 insertions(+), 53 deletions(-)
 ```
 
 </details>
