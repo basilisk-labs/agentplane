@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608292032-1K47B8/implement-the-isolated-canonical-task-kernel",
   "created_at": "2026-08-29T20:33:30.307Z",
-  "diffstat_sha256": "sha256:60f11aa862e2fe5b194f01bc8c5c87f783c704e90a4c34d4a2ed812dd9131aac",
+  "diffstat_sha256": "sha256:0e590d6e9101ea05524ebd1f8970c6b23d0073ddce569c51b4fc258ebf9e162e",
   "last_verified_at": "2026-08-29T22:12:18.641Z",
   "last_verified_diffstat_sha256": "sha256:621fbc1de5d705a9d3da4f8afa338e70ec7dc0b0d840e8c4dbdaf8b4cef6ede8",
   "pr_number": 5877,
