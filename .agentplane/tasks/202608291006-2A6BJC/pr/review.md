@@ -6,7 +6,7 @@ Created: 2026-08-30T04:09:19.506Z
 
 - Task: `202608291006-2A6BJC`
 - Title: Add compatibility adapters and replay migration
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608291006-2A6BJC/add-compatibility-adapters-and-replay-migration`
 - Canonical task record: `.agentplane/tasks/202608291006-2A6BJC/README.md`
 
