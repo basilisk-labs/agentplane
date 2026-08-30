@@ -4,7 +4,7 @@ title: "Add compatibility adapters and replay migration"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 80
+revision: 81
 origin:
   system: "manual"
 depends_on:
@@ -30,6 +30,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-30T15:01:19.666Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 8 typed finding(s)."
+  evaluated_sha: "2d298871cf8d20ca5b35c3d0a311cdd3be5f83c5"
+  blueprint_digest: "de01a169a7c1ba12da99c26a1e9c03024b28e8ea88f99c10758e30b1a931abc9"
+  evidence_refs:
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-145833922-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-145833922-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/ad4db6fe609ea05d7c37bdf4703f1a726fb223bfb639aba561b5cc45c89f26e8.md"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-145833922-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-145833922-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-145833922-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/README.md"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/bb7ca667de0a6a650c7bb8e78dace169ed03183cbcfadfe286039f71413dac59.patch"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/ff805619e2a2261e933967df1ed6d1f3c66f8523f0f0de372c3b654ed256d7dd.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/verification/20260830141335067-681b24fdea02d27c.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/beedd395f8c752c2788d7739e0c540e8e1fa9200654d224fcd4c08c39aced7d1.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+  findings:
+    - "Migration follows the approved explicit mapping: active legacy records enter PLANNING without invented approval or WorkItems; terminal records become read-only archives. Ambiguous input categories, unsupported schemas and unreconciled runtime state are refused."
+    - "The byte-store boundary preserves exact backups under containment/no-follow checks and guarded transactions. Apply independently reads back the output. Rollback revalidates receipt identity, backup bytes and unchanged canonical output before CAS. It cannot roll back a later Task revision."
+    - "Canonical persistence checks backend capabilities, repository identity and task revisions. Lost-write readback proves durability but never fresh dispatch ownership. The durable begin_effect transition and counted concurrent-start regression prevent duplicate provider dispatch."
+    - "Validation and review adapters bind evidence to Task, approved plan, WorkItem, implementation and repository state. Operational metadata does not invalidate semantic evidence; changed result identity does. These adapters do not complete lifecycle transitions themselves."
+    - "The frozen twelve-family corpus executes saved inputs, checks source and payload digests, and compares exact histories, receipts, projections, effects and route codes. Crash observations retain independent old origins. The isolated driver rejects source leakage, unanchored helpers and incomplete test execution."
+    - "The implementation preserves legacy production authority until the next milestone. It introduces explicit migration and read adapters rather than claiming a production cutover. Changes to immutable effect publication and check-artifact freshness address reproduced recovery defects and retain their negative/concurrency regressions."
+    - "Residual risk: Provider qualification uses explicit fakes. Required hosted exact-head checks, supervised integration and hosted closure remain mandatory before M2 delivery."
+    - "Residual risk: Repository-wide migration, legacy removal,20sequentialself-hostingTasks and3release drills are M3 acceptance and are not satisfied by this review."
 execution_route:
   frozen: true
   reason_codes:
