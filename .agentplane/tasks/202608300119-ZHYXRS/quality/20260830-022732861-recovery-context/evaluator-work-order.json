@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608300119-ZHYXRS-2e7fe3b76fb378fd3b243dbf",
+  "prepared_at": "2026-08-30T02:27:32.861Z",
+  "task": {
+    "id": "202608300119-ZHYXRS",
+    "revision": 22,
+    "objective": "Preserve WorkItem results during plan reapproval and recover evidence-only implementation\n\nUnblock the approved Clean Task Core rebuild M1 task 202608292032-1K47B8. Diagnose repeated plan approval resetting existing WorkItem runtime and evidence-only recovery rejecting already committed valid implementation. Preserve same-plan WorkItem state and output validation without allowing changed plans, stale identities, or unauthorized effects to reuse results. Add bounded regression coverage for both positive recovery and fail-closed behavior. Scope packages/core/src/tasks/task-centric and packages/agentplane/src/commands/task. Do not edit task state by hand or weaken authority checks. Deliver through verified branch PR and hosted close, then resume M1.",
+    "acceptance_criteria": [
+      "bun run test:project core",
+      "bun run ci:local:full",
+      "- In scope: Unblock the approved Clean Task Core rebuild M1 task 202608292032-1K47B8. Diagnose repeated plan approval resetting existing WorkItem runtime and evidence-only recovery rejecting already committed valid implementation. Preserve same-plan WorkItem state and output validation without allowing changed plans, stale identities, or unauthorized effects to reuse results. Add bounded regression coverage for both positive recovery and fail-closed behavior. Scope packages/core/src/tasks/task-centric and packages/agentplane/src/commands/task. Do not edit task state by hand or weaken authority checks. Deliver through verified branch PR and hosted close, then resume M1.\n- Out of scope: unrelated refactors not required for \"Preserve WorkItem results during plan reapproval and recover evidence-only implementation\".",
+      "1. Preserve existing WorkItem runtime when materializing the identical approved current plan. Reject incompatible runtime or plan identity instead of guessing.\n2. Extend existing tests for COMPLETED results, manifests, validation, attempts, active claims, partial runtime and changed-plan rejection.\n3. Audit recorded implementation recovery. Keep exact WorkItem, plan, Git and authority guards. Add missing negative coverage; do not weaken no-change rejection when the recovery contract changed.\n4. Run core and focused recovery suites, typechecking and full local CI. Submit evidence for supervisor evaluation and hosted delivery.\n5. After delivery, resume M1 through an explicit requalification plan if its historical receipt cannot satisfy the current contract. No manual task-state restoration and no cosmetic implementation edits.",
+      "1. Run `bun run test:project core`. Confirm that same-plan reapproval preserves WorkItem state, manifests, validation, and attempts; mismatched plans remain rejected.\n2. Run focused implementation recovery tests. Confirm exact recorded evidence can be reused only for the matching WorkItem and unchanged authority, and stale or ambiguous evidence fails closed.\n3. Run `bun run ci:local:full`. Require all configured checks to pass.\n4. Require exact-head hosted checks, merge, and Task Hosted Close before calling this task delivered."
+    ]
+  },
+  "evaluated_sha": "1f4efb60bc7f9ee558501ec2601afef9eb1c3ef8",
+  "diff_base_sha": "71519a0e675d7d460d27e7c5aea87d1f2363b9e2",
+  "blueprint_digest": "4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-022732861-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:be995555d01a5fc0a41ca9187235a3c084425f5b49898e7a1826a338d579447f",
+    "prompt_path": ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/9ca03923fb3436ecdd936ae66f4ce9710cdb58d8bccf37d570410152ec188918.md",
+    "result_schema_path": ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608300119-ZHYXRS/README.md",
+      "sha256": "sha256:cc6fd3e92bd38f7a917891b58f5e84f0584430ef0c3714c3dc55b179d675336e",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/efec60e7d3b43883689358d77d2278cfa5e0346ad57e5c8695bdc74cecff1470.patch",
+      "sha256": "sha256:efec60e7d3b43883689358d77d2278cfa5e0346ad57e5c8695bdc74cecff1470",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/085818fb482ed6c75bdcd72074d2a06cd54a8963642055db58f4d5f95a5f417c.json",
+      "sha256": "sha256:085818fb482ed6c75bdcd72074d2a06cd54a8963642055db58f4d5f95a5f417c",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608300119-ZHYXRS/verification/20260830022721719-75aba1a0c8379039.json",
+      "sha256": "sha256:0b2fcfbffb9f82a798b159245c9c85ec00c2a8edec4391bf0eb123e22dc6aa10",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/0ae8f7054187226c4378474e61a236b83e14b480899aed7def309c417740ebc8.json",
+      "sha256": "sha256:0ae8f7054187226c4378474e61a236b83e14b480899aed7def309c417740ebc8",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
