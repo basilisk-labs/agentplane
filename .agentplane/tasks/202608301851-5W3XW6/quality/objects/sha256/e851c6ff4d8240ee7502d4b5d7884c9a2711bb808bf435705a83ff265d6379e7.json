@@ -1,0 +1,185 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:local:full",
+    "bun run test:fast",
+    "bun run typecheck"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "documentation",
+        "public_api",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "docs/developer",
+        "docs/reference",
+        "docs/user/cli-reference.generated.mdx",
+        "packages/agentplane/src/cli",
+        "packages/agentplane/src/commands/branch",
+        "packages/agentplane/src/commands/shared",
+        "packages/agentplane/src/runtime/task-execution-context",
+        "scripts/baselines/v0.7-compatibility-candidate.json",
+        "scripts/checks/check-compatibility-contract-baseline.mjs"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "recovery_required"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:documentation",
+        "repository_effect:public_api",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "docs",
+        "packages/agentplane",
+        "scripts"
+      ],
+      "changed_files": [
+        "docs/developer/harness-dev.mdx",
+        "docs/user/cli-reference.generated.mdx",
+        "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "packages/agentplane/src/commands/branch/work-resume-candidate.ts",
+        "packages/agentplane/src/commands/branch/work-resume-planning-base.ts",
+        "packages/agentplane/src/commands/branch/work-resume.command.ts",
+        "scripts/baselines/v0.7-compatibility-candidate.json",
+        "scripts/checks/check-compatibility-contract-baseline.mjs"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:scripts/checks/check-compatibility-contract-baseline.mjs",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+      "central_path:scripts/checks/check-compatibility-contract-baseline.mjs",
+      "effect_public_api",
+      "external_effect_requires_real_e2e",
+      "reversibility_recovery_required",
+      "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": true,
+    "digest": "sha256:5f41826b667cd5a67efe174b209ce7e858caddee50968352b285ca232f62b953"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-30T20:15:30.164Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608301851-5W3XW6/verification/20260830201530164-c13219fe0d49d28e.json",
+      "sha256": "sha256:a7debc98e56260bf10dffd2d2ec5b24776fedd3824761fdcdfac5d894a72117b"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 3b82c7c8088d427ad86721fe6f3a2d7f969f3796..753ed95d1d782fe03e1aec40f72508750ee84c2a",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 3b82c7c8088d427ad86721fe6f3a2d7f969f3796..753ed95d1d782fe03e1aec40f72508750ee84c2a",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608301851-5W3XW6/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608301851-5W3XW6/pr/github-body.md",
+          "M\t.agentplane/tasks/202608301851-5W3XW6/pr/meta.json",
+          "M\t.agentplane/tasks/202608301851-5W3XW6/pr/review.md",
+          "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "3b82c7c8088d427ad86721fe6f3a2d7f969f3796",
+    "implementation_commit": "753ed95d1d782fe03e1aec40f72508750ee84c2a",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608301851-5W3XW6",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608301851-5W3XW6/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

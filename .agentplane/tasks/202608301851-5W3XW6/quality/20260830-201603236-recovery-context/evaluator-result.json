@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "All frozen evaluator evidence digests match. Native persisted checks passed: full CI, fast tests, typecheck, policy routing and doctor.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/88d55613569a9881429b58e16be68aaecc010d82d2de9c0738e6655cc806a926.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The new test uses actual Task records and native route construction. It proves absent dependency and dependency_wait on the creation snapshot, preserved nonempty depends_on, and DONE dependency visibility with no dependency blocker after recovery in all three crash modes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/88d55613569a9881429b58e16be68aaecc010d82d2de9c0738e6655cc806a926.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Implementation preserves the approved plan and WorkItems, rejects explicit pins and started or dirty work, uses native revision locking, preserves verified crash candidates in an audit archive, and leaves default work resume behavior unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/88d55613569a9881429b58e16be68aaecc010d82d2de9c0738e6655cc806a926.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The exact CLI candidate delta adds only the three reviewed recovery options and Task provenance. The immutable compatibility anchor is unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/88d55613569a9881429b58e16be68aaecc010d82d2de9c0738e6655cc806a926.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Explicit recovery remains limited to an unstarted creation-checkout base with a descendant approved planning commit. Unknown artifacts, active work and divergent histories intentionally remain blocked.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/88d55613569a9881429b58e16be68aaecc010d82d2de9c0738e6655cc806a926.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted integration and actual M3 recovery are still pending.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/88d55613569a9881429b58e16be68aaecc010d82d2de9c0738e6655cc806a926.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -1,0 +1,1056 @@
+diff --git a/docs/developer/harness-dev.mdx b/docs/developer/harness-dev.mdx
+index d22bfdb31..6cd526bf1 100644
+--- a/docs/developer/harness-dev.mdx
++++ b/docs/developer/harness-dev.mdx
+@@ -197,3 +197,32 @@ script launchers. Replacing either runtime under an unchanged PATH invalidates p
+ when the outer runner script is unchanged. Runtime digests are computed from bytes for each
+ observation; file metadata alone is not a freshness proof. The Node selector reads the normalized
+ PATH first, so an explicit profile path wins over inherited manager locations.
++
++## Recover an unstarted planning-base worktree
++
++A queued Task can retain a creation commit older than its approved planning snapshot. If native
++workspace preparation then reports already-completed dependencies as missing, inspect both commit
++identities before changing any dependency.
++
++```bash
++agentplane work resume <task-id> --refresh-planning-base --json
++agentplane work resume <task-id> --refresh-planning-base --apply --expect-token <sha256:digest>
++```
++
++The first command only inspects. The second consumes the exact inspection token. Recovery accepts
++only a local, uniquely owned, unstarted Task worktree with an approved structured plan, an implicit
++creation-checkout base, no runner/provider history or active claims, and no source changes. The
++approved snapshot must descend from the original base and remain on the development branch. The
++transported Task README cannot collide with a tracked path in the target snapshot.
++
++AgentPlane holds the native Task revision lock, fast-forwards Git, confirms the new HEAD, and records
++the recovered execution base. It preserves the plan, dependency list and WorkItems. If interrupted
++after Git advancement but before Task publication, inspect again and apply the fresh token to
++reconcile the recorded base without repeating the Git effect. After a process crash, recovery validates
++any orphaned native publication candidate against the same Task revision, plan, repository and Git
++identities. It archives the exact bytes under the common Git directory at
++`agentplane/planning-base-recovery/<task-id>/` before removing that candidate from the worktree.
++Unknown or changed candidates remain untouched and block recovery. Explicit base pins, divergent history,
++started work and unknown artifacts fail closed. The command does not fetch, publish, weaken checks,
++or start a runner. After recovery, bootstrap the framework runtime if its source changed, then request
++a fresh `task advance --agent-json` packet.
+diff --git a/docs/user/cli-reference.generated.mdx b/docs/user/cli-reference.generated.mdx
+index 92e6e8f71..14f3db694 100644
+--- a/docs/user/cli-reference.generated.mdx
++++ b/docs/user/cli-reference.generated.mdx
+@@ -1333,6 +1333,9 @@ agentplane work resume <task-id> [options]
+ Options:
+ 
+ - `--json`: Emit JSON. (default=false)
++- `--refresh-planning-base`: Inspect recovery of an unstarted worktree to its approved planning snapshot. (default=false)
++- `--apply`: Apply the explicitly inspected planning-base recovery. (default=false)
++- `--expect-token <sha256:digest>`: Exact token from planning-base recovery inspection.
+ 
+ Examples:
+ 
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
+index 3cbd9436c..d5e89e567 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
+@@ -1,8 +1,11 @@
+-import { execFile } from "node:child_process";
+-import { mkdir, readFile, realpath, writeFile } from "node:fs/promises";
++import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
++import { LocalBackend } from "../backends/task-backend.js";
++import { recoverWorkPlanningBase } from "../commands/branch/work-resume-planning-base.js";
++import { execFile, spawn } from "node:child_process";
++import { mkdir, readdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { promisify } from "node:util";
+-import { describe, expect, it } from "vitest";
++import { describe, expect, it, vi } from "vitest";
+ import {
+   advanceSupervisorExecutionEpisodeState,
+   completeSupervisorExecutionEpisode,
+@@ -46,14 +49,17 @@ type AgentPacket = {
+   };
+ };
+ 
+-async function createTask(root: string): Promise<string> {
++async function createTask(
++  root: string,
++  title = "External task-worktree resolution",
++): Promise<string> {
+   const io = captureStdIO();
+   try {
+     const code = await runCli([
+       "task",
+       "new",
+       "--title",
+-      "External task-worktree resolution",
++      title,
+       "--description",
+       "Exercise the state-bound worktree resolution protocol.",
+       "--priority",
+@@ -281,7 +287,314 @@ async function approveStructuredPlan(root: string, taskId: string): Promise<void
+   ).toBe(0);
+ }
+ 
++async function readHead(root: string): Promise<string> {
++  const result = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
++  return result.stdout.trim();
++}
++
+ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => {
++  it.each([false, true, "process"] as const)(
++    "recovers an unstarted approved planning base (interrupted=%s)",
++    async (interrupted) => {
++      const root = await mkGitRepoRootWithBranch("main");
++      const config = defaultConfig();
++      config.workflow_mode = "branch_pr";
++      await writeConfig(root, config);
++      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++      await writeFile(
++        path.join(root, ".gitignore"),
++        ".agentplane/bin/\n.agentplane/cache.sqlite-*\nnode_modules\npackages/\nwebsite/\nagentplane-recipes\n",
++      );
++      await execFileAsync("git", ["add", ".agentplane", ".gitignore"], { cwd: root });
++      await execFileAsync("git", ["commit", "-m", "test: initial workflow"], { cwd: root });
++      const taskId = await createTask(root);
++      const initial = await readHead(root);
++      const dependencyId = await createTask(
++        root,
++        "Completed prerequisite for planning-base recovery",
++      );
++      expect(
++        await runCliSilent([
++          "task",
++          "set-status",
++          dependencyId,
++          "DONE",
++          "--force",
++          "--yes",
++          "--root",
++          root,
++        ]),
++      ).toBe(0);
++      expect(
++        await runCliSilent([
++          "task",
++          "update",
++          taskId,
++          "--depends-on",
++          dependencyId,
++          "--root",
++          root,
++        ]),
++      ).toBe(0);
++      await execFileAsync("git", ["add", `.agentplane/tasks/${dependencyId}`], { cwd: root });
++      await writeFile(path.join(root, "prerequisite.txt"), "completed prerequisite\n");
++      await execFileAsync("git", ["add", "prerequisite.txt"], { cwd: root });
++      await execFileAsync("git", ["commit", "-m", "test: prerequisite landed"], { cwd: root });
++      const target = await readHead(root);
++      await approveStructuredPlan(root, taskId);
++      expect(
++        await runCliSilent([
++          "work",
++          "start",
++          taskId,
++          "--agent",
++          "CODER",
++          "--slug",
++          "planning-base",
++          "--worktree",
++          "--root",
++          root,
++        ]),
++      ).toBe(0);
++      const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
++      const inspected = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
++      expect(inspected).toMatchObject({
++        from_sha: initial,
++        observed_head: initial,
++        target_sha: target,
++        status: "ready",
++      });
++      const taskRoot = inspected.worktree;
++      const taskCtx = await loadCommandContext({ cwd: taskRoot, rootOverride: null });
++      const original = (await taskCtx.taskBackend.getTask(taskId))!;
++      expect(original.depends_on).toEqual([dependencyId]);
++      expect(await taskCtx.taskBackend.getTask(dependencyId)).toBeNull();
++      const beforeRoute = await buildTaskRouteDecision({
++        ctx: taskCtx,
++        cwd: taskRoot,
++        taskId,
++        includeRemote: false,
++      });
++      expect(beforeRoute.oracle.phase).toBe("dependency_wait");
++      expect(beforeRoute.blockers).toEqual(
++        expect.arrayContaining([expect.objectContaining({ code: "dependency_not_ready" })]),
++      );
++      await expect(
++        recoverWorkPlanningBase({
++          ctx,
++          taskId,
++          apply: true,
++          expectedToken: "sha256:" + "0".repeat(64),
++        }),
++      ).rejects.toThrow("stale or missing recovery token");
++      await writeFile(path.join(taskRoot, "unrelated.txt"), "preserve");
++      await expect(recoverWorkPlanningBase({ ctx, taskId, apply: false })).rejects.toThrow(
++        "untracked changes",
++      );
++      await rm(path.join(taskRoot, "unrelated.txt"));
++      const priorBase = original.extensions!.task_execution_context as Record<string, unknown>;
++      await taskCtx.taskBackend.writeTask({
++        ...original,
++        extensions: {
++          ...original.extensions,
++          task_execution_context: { ...priorBase, source: "explicit" },
++        },
++      });
++      await expect(recoverWorkPlanningBase({ ctx, taskId, apply: false })).rejects.toThrow(
++        "base provenance",
++      );
++      const pinned = (await taskCtx.taskBackend.getTask(taskId))!;
++      await taskCtx.taskBackend.writeTask({ ...pinned, extensions: original.extensions });
++      const restored = (await taskCtx.taskBackend.getTask(taskId))!;
++      await taskCtx.taskBackend.writeTask({ ...restored, status: "DOING" });
++      await expect(recoverWorkPlanningBase({ ctx, taskId, apply: false })).rejects.toThrow(
++        "already started",
++      );
++      await taskCtx.taskBackend.writeTask({
++        ...(await taskCtx.taskBackend.getTask(taskId))!,
++        status: "TODO",
++      });
++      await execFileAsync(
++        "git",
++        ["commit", "--allow-empty", "-m", "test: started branch history"],
++        { cwd: taskRoot },
++      );
++      await expect(recoverWorkPlanningBase({ ctx, taskId, apply: false })).rejects.toThrow(
++        "commits after creation",
++      );
++      await execFileAsync("git", ["reset", "--hard", initial], { cwd: taskRoot });
++      const io = captureStdIO();
++      try {
++        expect(
++          await runCli([
++            "work",
++            "resume",
++            taskId,
++            "--refresh-planning-base",
++            "--json",
++            "--root",
++            root,
++          ]),
++          io.stderr,
++        ).toBe(0);
++        const result = JSON.parse(io.stdout) as { target_sha: string };
++        expect(result.target_sha).toBe(target);
++      } finally {
++        io.restore();
++      }
++      const ready = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
++      if (!interrupted) {
++        await writeFile(path.join(root, ".git", "info", "exclude"), "prerequisite.txt\n");
++        await writeFile(path.join(taskRoot, "prerequisite.txt"), "preserve ignored local bytes\n");
++        await expect(
++          recoverWorkPlanningBase({ ctx, taskId, apply: true, expectedToken: ready.token }),
++        ).rejects.toThrow();
++        expect(await readFile(path.join(taskRoot, "prerequisite.txt"), "utf8")).toBe(
++          "preserve ignored local bytes\n",
++        );
++        expect(await readHead(taskRoot)).toBe(initial);
++        await rm(path.join(taskRoot, "prerequisite.txt"));
++      }
++      if (interrupted === true) {
++        if (!(taskCtx.taskBackend instanceof LocalBackend))
++          throw new Error("Expected local fixture backend");
++        const originalWrite = LocalBackend.prototype.writeTaskWithReceipt.bind(taskCtx.taskBackend);
++        const spy = vi
++          .spyOn(LocalBackend.prototype, "writeTaskWithReceipt")
++          .mockImplementationOnce((task, options, beforePublication) => {
++            return originalWrite(task, options, async () => {
++              await beforePublication();
++              throw new Error("injected interruption after Git before Task publication");
++            });
++          });
++        try {
++          await expect(
++            recoverWorkPlanningBase({ ctx, taskId, apply: true, expectedToken: ready.token }),
++          ).rejects.toThrow("injected interruption");
++        } finally {
++          spy.mockRestore();
++        }
++        expect(await readHead(taskRoot)).toBe(target);
++        expect(
++          (await taskCtx.taskBackend.getTask(taskId))!.extensions!.task_execution_context,
++        ).toEqual(priorBase);
++      }
++      let orphanBytes: string | null = null;
++      if (interrupted === "process") {
++        const marker = path.join(root, ".git", "recovery-kill-marker.json");
++        const hook = path.join(root, ".git", "hooks", "post-merge");
++        await writeFile(
++          hook,
++          '#!/usr/bin/env node\nrequire("node:fs").writeFileSync(process.env.AGENTPLANE_RECOVERY_TEST_MARKER, JSON.stringify({hookPid:process.pid,gitPid:process.ppid})); setTimeout(() => {}, 10000);\n',
++          { mode: 0o755 },
++        );
++        const child = spawn(
++          process.execPath,
++          [
++            path.join(process.cwd(), "packages/agentplane/dist/cli.js"),
++            "work",
++            "resume",
++            taskId,
++            "--refresh-planning-base",
++            "--apply",
++            "--expect-token",
++            ready.token,
++            "--root",
++            root,
++          ],
++          {
++            cwd: root,
++            env: { ...process.env, AGENTPLANE_RECOVERY_TEST_MARKER: marker },
++            stdio: "ignore",
++          },
++        );
++        const exited = new Promise((resolve) => child.once("exit", resolve));
++        let hookPids: { hookPid: number; gitPid: number } | null = null;
++        try {
++          for (let poll = 0; poll < 200; poll++) {
++            const raw = await readFile(marker, "utf8").catch(() => null);
++            if (raw) {
++              hookPids = JSON.parse(raw) as { hookPid: number; gitPid: number };
++              break;
++            }
++            await new Promise((resolve) => setTimeout(resolve, 50));
++          }
++          expect(hookPids, "isolated CLI must reach the post-merge crash boundary").not.toBeNull();
++          child.kill("SIGKILL");
++          await exited;
++        } finally {
++          if (child.exitCode === null && child.signalCode === null) child.kill("SIGKILL");
++          if (hookPids)
++            for (const pid of [hookPids.hookPid, hookPids.gitPid]) {
++              try {
++                process.kill(pid, "SIGKILL");
++              } catch {
++                // The owned fixture subprocess may already have exited.
++              }
++            }
++          await rm(hook, { force: true });
++        }
++        const directory = path.join(taskRoot, ".agentplane", "tasks", taskId);
++        const entries = await readdir(directory);
++        const orphans = entries.filter((name) => name.startsWith("README.md.tmp-"));
++        expect(orphans).toHaveLength(1);
++        orphanBytes = await readFile(path.join(directory, orphans[0]!), "utf8");
++        expect(await readHead(taskRoot)).toBe(target);
++        expect(
++          (await taskCtx.taskBackend.getTask(taskId))!.extensions!.task_execution_context,
++        ).toEqual(priorBase);
++      }
++      const fresh = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
++      const applied = await recoverWorkPlanningBase({
++        ctx,
++        taskId,
++        apply: true,
++        expectedToken: fresh.token,
++      });
++      expect(applied.status).toBe("applied");
++      if (orphanBytes !== null) {
++        const directory = path.join(taskRoot, ".agentplane", "tasks", taskId);
++        const remainingEntries = await readdir(directory);
++        expect(remainingEntries.filter((name) => name.startsWith("README.md.tmp-"))).toEqual([]);
++        const archiveRoot = path.join(root, ".git", "agentplane", "planning-base-recovery", taskId);
++        const archived = await readdir(archiveRoot);
++        expect(archived).toHaveLength(1);
++        expect(await readFile(path.join(archiveRoot, archived[0]!), "utf8")).toBe(orphanBytes);
++      }
++
++      const after = (await taskCtx.taskBackend.getTask(taskId))!;
++      expect(taskCentricAggregateFromExtensions(after.extensions)).toEqual(
++        taskCentricAggregateFromExtensions(original.extensions),
++      );
++      expect(after.depends_on).toEqual(original.depends_on);
++      const dependencyAfter = await taskCtx.taskBackend.getTask(dependencyId);
++      expect(dependencyAfter?.status).toBe("DONE");
++      const afterRoute = await buildTaskRouteDecision({
++        ctx: taskCtx,
++        cwd: taskRoot,
++        taskId,
++        includeRemote: false,
++      });
++      expect(afterRoute.oracle.phase).not.toBe("dependency_wait");
++      expect(afterRoute.blockers.some((blocker) => blocker.code === "dependency_not_ready")).toBe(
++        false,
++      );
++      expect(after.status).toBe("TODO");
++      expect(after.extensions!.task_execution_context).toMatchObject({
++        ...priorBase,
++        base_sha: target,
++      });
++      expect(await readFile(path.join(taskRoot, "prerequisite.txt"), "utf8")).toBe(
++        "completed prerequisite\n",
++      );
++      const readmePath = path.join(taskRoot, ".agentplane", "tasks", taskId, "README.md");
++      const completedBytes = await readFile(readmePath, "utf8");
++      const repeated = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
++      expect(repeated.status).toBe("already_applied");
++      expect(await readFile(readmePath, "utf8")).toBe(completedBytes);
++    },
++  );
++
+   it("recovers a completed stale journal and replaces prior implementation metadata", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 202107df1..9695f50d8 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -119,7 +119,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+ 
+       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+       expect(candidateFreshness).toMatchObject({ exitCode: 0, stderr: "" });
+-      expect(compatibility.stdout).toContain("265commands/182args/863options");
++      expect(compatibility.stdout).toContain("265commands/182args/866options");
+       expect(compatibility.stdout).toContain(
+         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
+       );
+@@ -222,13 +222,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202608211020-FGAPJC",
+           "202608212244-6XZAYD",
+           "202608291006-2A6BJC",
++          "202608301851-5W3XW6",
+         ],
+         candidate: {
+-          surface_sha256: "e6a4bdd25cb0318efb7364e7ff0c0b69ae739251af1218b81bc7fbf805048bf5",
++          surface_sha256: "a5e491720d1bd3da5f9a50b581e63ebf84d49470b063d80992004023a0b77f56",
+           section_digests: {
+             agent_facing_context_contracts:
+               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+-            cli_topology: "0542e158fad8ed588f23aeea29587f49045d0d9ff8ed667d5f8947f91de91fba",
++            cli_topology: "c36d98412cae805197772c9fb706af33e68b27f32e27c6d8943662ecbafa91ed",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
+diff --git a/packages/agentplane/src/commands/branch/work-resume-candidate.ts b/packages/agentplane/src/commands/branch/work-resume-candidate.ts
+new file mode 100644
+index 000000000..0d453c047
+--- /dev/null
++++ b/packages/agentplane/src/commands/branch/work-resume-candidate.ts
+@@ -0,0 +1,102 @@
++import path from "node:path";
++import { lstat, mkdir, unlink } from "node:fs/promises";
++import { syncDirectory } from "@agentplaneorg/core/fs";
++import { parseTaskReadme, taskCentricDigest } from "@agentplaneorg/core/tasks";
++import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
++import { writeTextIfChanged } from "../../shared/write-if-changed.js";
++
++export async function readPlanningBaseCandidate(
++  root: string,
++  file: string,
++  identity: Record<string, unknown>,
++) {
++  const stat = await lstat(file, { bigint: true });
++  if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1n)
++    throw new Error("Recovery candidate is not an unaliased regular file.");
++  const raw = await readContainedStableTextNoFollow({
++    repository_root: root,
++    file_path: file,
++    label: "Task recovery candidate",
++    max_bytes: 32 * 1024 * 1024,
++    expected_identity: stat,
++  });
++  const parsed = parseTaskReadme(raw);
++  const extensions = parsed.frontmatter.extensions as Record<string, unknown> | undefined;
++  const receipt = extensions?.task_planning_base_recovery as Record<string, unknown> | undefined;
++  if (!receipt || typeof receipt !== "object" || Array.isArray(receipt))
++    throw new Error("Unknown Task recovery candidate.");
++  const { token, state, ...basis } = receipt;
++  const expected = { ...identity, observed_head: basis.observed_head };
++  if (
++    parsed.frontmatter.id !== identity.task_id ||
++    ![identity.from_sha, identity.target_sha].includes(basis.observed_head) ||
++    state !== "applied" ||
++    token !== taskCentricDigest(expected) ||
++    taskCentricDigest(basis) !== taskCentricDigest(expected)
++  ) {
++    throw new Error(
++      "Task recovery candidate does not match the current Task, plan and Git identities.",
++    );
++  }
++  return { file, raw, digest: taskCentricDigest(raw), stat };
++}
++
++/** Preserve a verified orphan before removing its worktree copy, under the native Task lock. */
++export async function archivePlanningBaseCandidate(opts: {
++  root: string;
++  commonDir: string;
++  taskId: string;
++  identity: Record<string, unknown>;
++  candidate: Awaited<ReturnType<typeof readPlanningBaseCandidate>>;
++}) {
++  const current = await readPlanningBaseCandidate(opts.root, opts.candidate.file, opts.identity);
++  if (
++    current.digest !== opts.candidate.digest ||
++    current.stat.dev !== opts.candidate.stat.dev ||
++    current.stat.ino !== opts.candidate.stat.ino
++  )
++    throw new Error("Recovery candidate changed before archival.");
++  let directory = opts.commonDir;
++  for (const segment of ["agentplane", "planning-base-recovery", opts.taskId]) {
++    directory = path.join(directory, segment);
++    await mkdir(directory).catch((error: NodeJS.ErrnoException) => {
++      if (error.code !== "EEXIST") throw error;
++    });
++    const stat = await lstat(directory);
++    if (!stat.isDirectory() || stat.isSymbolicLink())
++      throw new Error("Unsafe recovery archive directory.");
++  }
++  const archive = path.join(directory, `${current.digest.slice(7)}.md`);
++  const previous = await readContainedStableTextNoFollow({
++    repository_root: opts.commonDir,
++    file_path: archive,
++    label: "recovery archive",
++    max_bytes: 32 * 1024 * 1024,
++  }).catch((error: NodeJS.ErrnoException) => {
++    if (error.code === "ENOENT") return null;
++    throw error;
++  });
++  if (previous !== null && previous !== current.raw)
++    throw new Error("Recovery archive digest collision.");
++  await writeTextIfChanged(archive, current.raw, {
++    containedRoot: opts.commonDir,
++    label: "recovery archive",
++  });
++  const archived = await readContainedStableTextNoFollow({
++    repository_root: opts.commonDir,
++    file_path: archive,
++    label: "recovery archive",
++    max_bytes: 32 * 1024 * 1024,
++  });
++  const confirmed = await readPlanningBaseCandidate(opts.root, current.file, opts.identity);
++  if (
++    archived !== current.raw ||
++    confirmed.digest !== current.digest ||
++    confirmed.stat.dev !== current.stat.dev ||
++    confirmed.stat.ino !== current.stat.ino
++  )
++    throw new Error("Recovery archival readback mismatch.");
++  await unlink(current.file);
++  await syncDirectory(path.dirname(current.file));
++  return archive;
++}
+diff --git a/packages/agentplane/src/commands/branch/work-resume-planning-base.ts b/packages/agentplane/src/commands/branch/work-resume-planning-base.ts
+new file mode 100644
+index 000000000..bb0734bda
+--- /dev/null
++++ b/packages/agentplane/src/commands/branch/work-resume-planning-base.ts
+@@ -0,0 +1,249 @@
++import path from "node:path";
++import { lstat, readdir } from "node:fs/promises";
++import { gitEnv, listWorktrees, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
++import { execFileAsync } from "@agentplaneorg/core/process";
++import {
++  createTaskPlanRevision,
++  taskCentricAggregateFromExtensions,
++  taskCentricDigest,
++  taskExecutionBaseFromExtensions,
++} from "@agentplaneorg/core/tasks";
++import { loadTaskRunnerDiagnosticInspection } from "../../runner/usecases/task-run-inspect.js";
++import { runtimeFrom } from "../../adapters/task-backend/task-centric-backend-runtime.js";
++import { LocalBackend } from "../../backends/task-backend.js";
++import {
++  readPlanningBaseCandidate,
++  archivePlanningBaseCandidate,
++} from "./work-resume-candidate.js";
++import { CliError } from "../../shared/errors.js";
++import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
++import { resolveLogicalRepositoryIdentity } from "../task/execution-authority-context.js";
++import { buildTaskResumeContext } from "../task/handoff.shared.js";
++import { type CommandContext } from "../shared/task-backend.js";
++
++function refuse(reason: string): never {
++  throw new CliError({
++    code: "E_VALIDATION",
++    message: `Planning base recovery refused: ${reason}.`,
++  });
++}
++
++async function git(root: string, args: string[]): Promise<string> {
++  const result = await execFileAsync("git", args, { cwd: root, env: gitEnv() });
++  return result.stdout.trim();
++}
++
++/** Explicit recovery only. Normal workspace preparation retains its frozen base. */
++export async function recoverWorkPlanningBase(opts: {
++  ctx: CommandContext;
++  taskId: string;
++  apply: boolean;
++  expectedToken?: string;
++}) {
++  const command = await loadTaskCommandContext({ ctx: opts.ctx, taskIds: [opts.taskId] });
++  const ctx = command.command;
++  const task = command.primary_task;
++  if (!(ctx.taskBackend instanceof LocalBackend)) refuse("local atomic Task storage is required");
++  const backend = ctx.taskBackend;
++  const root = ctx.resolvedProject.gitRoot;
++  const registered = await listWorktrees(root);
++  const owners = registered.filter(
++    (entry) =>
++      entry.branch &&
++      parseTaskIdFromBranch(ctx.config.branch.task_prefix, entry.branch) === task.id,
++  );
++  if (owners.length !== 1 || path.resolve(owners[0]!.path) !== path.resolve(root))
++    refuse("exactly one authoritative Task worktree is required");
++  const primary = registered[0];
++  if (!primary || path.resolve(primary.path) === path.resolve(root))
++    refuse("recovery requires a dedicated Task worktree");
++  const branch = await git(root, ["branch", "--show-current"]);
++  if (parseTaskIdFromBranch(ctx.config.branch.task_prefix, branch) !== task.id)
++    refuse("branch ownership mismatch");
++  const base = taskExecutionBaseFromExtensions(task.extensions);
++  if (base?.source !== "creation_checkout")
++    refuse("explicit or unknown base provenance cannot be changed");
++  if (
++    task.status !== "TODO" ||
++    task.commit ||
++    task.verification?.state === "ok" ||
++    (task.verification?.attempts ?? 0) > 0
++  )
++    refuse("Task has already started");
++  if (!Number.isInteger(task.revision) || (task.revision ?? 0) < 1)
++    refuse("Task revision is unavailable");
++  const aggregate = taskCentricAggregateFromExtensions(task.extensions);
++  if (!aggregate) refuse("an approved structured plan is required");
++  const plan = aggregate.current_plan;
++  if (
++    plan?.approval.state !== "approved" ||
++    plan.approval.approved_digest !== plan.digest ||
++    createTaskPlanRevision({
++      proposal: plan.proposal,
++      revision: plan.revision,
++      created_at: plan.created_at,
++    }).digest !== plan.digest ||
++    task.plan_approval?.state !== "approved"
++  )
++    refuse("an approved structured plan is required");
++  if (
++    Object.values(aggregate.work_items).some(
++      (item) =>
++        !["READY", "PLANNED"].includes(item.state) ||
++        item.revision !== 1 ||
++        item.attempt !== 0 ||
++        item.claim_id !== null ||
++        item.output_manifests.length > 0 ||
++        item.validation_result !== null ||
++        item.last_failure !== null,
++    ) ||
++    aggregate.final_validation
++  )
++    refuse("WorkItem execution or validation already exists");
++  const runtime = runtimeFrom(task);
++  if (runtime.leases.length > 0 || runtime.pending_effects.length > 0)
++    refuse("execution leases or effects already exist");
++  const baseline = plan.proposal.planning_baseline.git;
++  if (baseline.kind !== "commit") refuse("the approved planning snapshot has no commit identity");
++  const target = baseline.sha;
++  const head = await git(root, ["rev-parse", "HEAD"]);
++  if (head !== base.base_sha && head !== target) refuse("worktree contains commits after creation");
++  await git(root, ["merge-base", "--is-ancestor", base.base_sha, target]).catch(() =>
++    refuse("planning base is not a descendant of the creation base"),
++  );
++  await git(root, ["merge-base", "--is-ancestor", target, base.base_ref]).catch(() =>
++    refuse("planning snapshot is not on the development base"),
++  );
++  const repositoryIdentity = await resolveLogicalRepositoryIdentity({ git_root: root, task });
++  if (!base.repository_identity || base.repository_identity !== repositoryIdentity)
++    refuse("repository identity mismatch");
++  const readme = `${ctx.config.paths.workflow_dir}/${task.id}/README.md`;
++  const taskDir = path.dirname(path.join(root, readme));
++  const stat = await lstat(path.join(root, readme));
++  if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1)
++    refuse("Task README must be an ordinary unaliased file");
++  const assertNoRunner = async () => {
++    const inspection = await loadTaskRunnerDiagnosticInspection({
++      ctx,
++      cwd: root,
++      task_id: task.id,
++    });
++    if (
++      inspection.run ||
++      inspection.control.active_claim ||
++      inspection.control.recovery_lease ||
++      inspection.control.task_runner_outcome
++    )
++      refuse("runner authority or history already exists");
++  };
++  await assertNoRunner();
++  const resume = await buildTaskResumeContext({
++    ctx,
++    cwd: root,
++    task_id: task.id,
++    task,
++    fresh_head: true,
++  });
++  if (resume.pr_branch || resume.runner.run_id || resume.runner.status || resume.latest_handoff)
++    refuse("runner, handoff or provider state already exists");
++  const identity = {
++    schema_version: 1,
++    task_id: task.id,
++    revision: task.revision,
++    branch,
++    worktree: root,
++    repository_identity: repositoryIdentity,
++    from_sha: base.base_sha,
++    observed_head: head,
++    target_sha: target,
++    plan_digest: plan.digest,
++  };
++  // A never-started worktree has only its transported README. Reject unknown artifacts.
++  const assertPristine = async () => {
++    const entries = await readdir(taskDir);
++    const temps = entries.filter((name) => /^README\.md\.tmp-[a-f0-9]{32}$/.test(name));
++    if (temps.length > 8 || entries.some((name) => name !== "README.md" && !temps.includes(name)))
++      refuse("Task execution artifacts already exist");
++    const candidates = await Promise.all(
++      temps.map((name) => readPlanningBaseCandidate(root, path.join(taskDir, name), identity)),
++    );
++    const status = await git(root, ["status", "--porcelain=v1", "--untracked-files=all"]);
++    const allowed = new Set([
++      `?? ${readme}`,
++      ...temps.map((name) => `?? ${path.posix.dirname(readme)}/${name}`),
++      `?? ${ctx.config.paths.workflow_dir}/.${task.id}.README.md.lock`,
++    ]);
++    const unexpected = status
++      .split("\n")
++      .filter(Boolean)
++      .filter((line) => !allowed.has(line));
++    if (unexpected.length > 0)
++      refuse(`tracked or unrelated untracked changes exist: ${unexpected.slice(0, 8).join(", ")}`);
++    // Git must not replace the transported Task document during the fast-forward.
++    if ((await git(root, ["ls-tree", "--name-only", target, "--", path.dirname(readme)])) !== "")
++      refuse("target snapshot contains Task-owned paths");
++    return candidates;
++  };
++  const orphans = await assertPristine();
++  const token = taskCentricDigest(identity);
++  if (base.base_sha === target) {
++    const previous = task.extensions?.task_planning_base_recovery;
++    if (
++      !previous ||
++      typeof previous !== "object" ||
++      Array.isArray(previous) ||
++      (previous as Record<string, unknown>).plan_digest !== plan.digest ||
++      (previous as Record<string, unknown>).target_sha !== target
++    )
++      refuse("no planning base advancement is required");
++    return { ...identity, token, status: "already_applied" };
++  }
++  if (!opts.apply)
++    return { ...identity, token, status: head === target ? "ready_to_reconcile" : "ready" };
++  if (opts.expectedToken !== token) refuse("stale or missing recovery token; inspect again");
++  const next = {
++    ...task,
++    extensions: {
++      ...task.extensions,
++      task_execution_context: { ...base, base_sha: target },
++      task_planning_base_recovery: { ...identity, token, state: "applied" },
++    },
++  };
++  // Existing native persistence holds the Task lock and verifies its revision before Git.
++  // If Git lands but publication is interrupted, the original Task and approved plan still
++  // bind both SHAs. A fresh inspection can reconcile HEAD=target without another Git effect.
++  await backend.writeTaskWithReceipt(next, { expectedRevision: task.revision }, async () => {
++    const candidates = await assertPristine();
++    if (candidates.length !== orphans.length + 1) refuse("unexpected Task publication candidates");
++    const commonDir = await git(root, ["rev-parse", "--path-format=absolute", "--git-common-dir"]);
++    for (const candidate of orphans)
++      await archivePlanningBaseCandidate({ root, commonDir, taskId: task.id, identity, candidate });
++    await assertNoRunner();
++    if (
++      (await git(root, ["rev-parse", "HEAD"])) !== head ||
++      (await git(root, ["branch", "--show-current"])) !== branch
++    )
++      refuse("workspace changed before application");
++    const currentResume = await buildTaskResumeContext({
++      ctx,
++      cwd: root,
++      task_id: task.id,
++      task,
++      fresh_head: true,
++    });
++    if (
++      currentResume.pr_branch ||
++      currentResume.runner.run_id ||
++      currentResume.runner.status ||
++      currentResume.latest_handoff
++    )
++      refuse("execution appeared before application");
++    if (head !== target)
++      await git(root, ["merge", "--ff-only", "--no-edit", "--no-overwrite-ignore", target]);
++    if ((await git(root, ["rev-parse", "HEAD"])) !== target)
++      refuse("Git advancement is not confirmed");
++    await assertPristine();
++    await assertNoRunner();
++  });
++  return { ...identity, token, status: "applied" };
++}
+diff --git a/packages/agentplane/src/commands/branch/work-resume.command.ts b/packages/agentplane/src/commands/branch/work-resume.command.ts
+index 4f9e01c85..80987c873 100644
+--- a/packages/agentplane/src/commands/branch/work-resume.command.ts
++++ b/packages/agentplane/src/commands/branch/work-resume.command.ts
+@@ -1,11 +1,16 @@
++import { CliError } from "../../shared/errors.js";
+ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
+ import { createCliEmitter, infoMessage } from "../../cli/output.js";
+ import type { CommandContext } from "../shared/task-backend.js";
++import { recoverWorkPlanningBase } from "./work-resume-planning-base.js";
+ import { buildTaskRouteDecision } from "../shared/route-decision.js";
+ 
+ export type WorkResumeParsed = {
+   taskId: string;
+   json: boolean;
++  refreshPlanningBase: boolean;
++  apply: boolean;
++  expectedToken?: string;
+ };
+ 
+ export const workResumeSpec: CommandSpec<WorkResumeParsed> = {
+@@ -13,18 +18,60 @@ export const workResumeSpec: CommandSpec<WorkResumeParsed> = {
+   group: "Work",
+   summary: "Diagnose how to resume a task in the correct checkout/worktree.",
+   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+-  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
++  options: [
++    { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
++    {
++      kind: "boolean",
++      name: "refresh-planning-base",
++      default: false,
++      description: "Inspect recovery of an unstarted worktree to its approved planning snapshot.",
++    },
++    {
++      kind: "boolean",
++      name: "apply",
++      default: false,
++      description: "Apply the explicitly inspected planning-base recovery.",
++    },
++    {
++      kind: "string",
++      name: "expect-token",
++      valueHint: "<sha256:digest>",
++      description: "Exact token from planning-base recovery inspection.",
++    },
++  ],
+   examples: [
+     {
+       cmd: "agentplane work resume 202602030608-F1Q8AB",
+       why: "Find the correct worktree/branch route after interruption.",
+     },
+   ],
+-  parse: (raw) => ({ taskId: String(raw.args["task-id"]), json: raw.opts.json === true }),
++  parse: (raw) => ({
++    taskId: String(raw.args["task-id"]),
++    json: raw.opts.json === true,
++    refreshPlanningBase: raw.opts["refresh-planning-base"] === true,
++    apply: raw.opts.apply === true,
++    expectedToken:
++      typeof raw.opts["expect-token"] === "string" ? raw.opts["expect-token"] : undefined,
++  }),
+ };
+ 
+ export function makeRunWorkResumeHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+   return async (ctx: CommandCtx, parsed: WorkResumeParsed): Promise<number> => {
++    if (parsed.refreshPlanningBase || parsed.apply || parsed.expectedToken) {
++      if (!parsed.refreshPlanningBase)
++        throw new CliError({
++          code: "E_USAGE",
++          message: "--apply and --expect-token require --refresh-planning-base.",
++        });
++      const recovery = await recoverWorkPlanningBase({
++        ctx: await getCtx("work resume"),
++        taskId: parsed.taskId,
++        apply: parsed.apply,
++        expectedToken: parsed.expectedToken,
++      });
++      createCliEmitter().json(recovery);
++      return 0;
++    }
+     const decision = await buildTaskRouteDecision({
+       ctx: await getCtx("work resume"),
+       cwd: ctx.cwd,
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 10aecdbb5..3ce3682dd 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -8,14 +8,14 @@
+   "candidate": {
+     "section_digests": {
+       "agent_facing_context_contracts": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+-      "cli_topology": "0542e158fad8ed588f23aeea29587f49045d0d9ff8ed667d5f8947f91de91fba",
++      "cli_topology": "c36d98412cae805197772c9fb706af33e68b27f32e27c6d8943662ecbafa91ed",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
+       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
+       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
+     },
+-    "surface_sha256": "e6a4bdd25cb0318efb7364e7ff0c0b69ae739251af1218b81bc7fbf805048bf5"
++    "surface_sha256": "a5e491720d1bd3da5f9a50b581e63ebf84d49470b063d80992004023a0b77f56"
+   },
+   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
+   "contract_artifacts": {
+@@ -1456,6 +1456,26 @@
+             "name": "state-scope-digest",
+             "valueHint": "<sha256:...>"
+           },
++          {
++            "command": "work resume",
++            "default": false,
++            "kind": "boolean",
++            "name": "apply",
++            "valueHint": null
++          },
++          {
++            "command": "work resume",
++            "kind": "string",
++            "name": "expect-token",
++            "valueHint": "<sha256:digest>"
++          },
++          {
++            "command": "work resume",
++            "default": false,
++            "kind": "boolean",
++            "name": "refresh-planning-base",
++            "valueHint": null
++          },
+           {
+             "command": "workflow migrate",
+             "default": false,
+@@ -2124,6 +2144,24 @@
+             "kind": "option",
+             "name": "yes",
+             "source_task": "202608291006-2A6BJC"
++          },
++          {
++            "command": "work resume",
++            "kind": "option",
++            "name": "apply",
++            "source_task": "202608301851-5W3XW6"
++          },
++          {
++            "command": "work resume",
++            "kind": "option",
++            "name": "expect-token",
++            "source_task": "202608301851-5W3XW6"
++          },
++          {
++            "command": "work resume",
++            "kind": "option",
++            "name": "refresh-planning-base",
++            "source_task": "202608301851-5W3XW6"
+           }
+         ],
+         "command_count": { "from": 243, "to": 265 },
+@@ -2323,7 +2361,7 @@
+             "identity": "task plan approve --by"
+           }
+         ],
+-        "option_count": { "from": 767, "to": 863 },
++        "option_count": { "from": 767, "to": 866 },
+         "positional_count": { "from": 165, "to": 182 },
+         "removed_command_descriptors": [],
+         "removed_commands": [],
+@@ -2364,10 +2402,11 @@
+         "202608200903-J459C2",
+         "202608211020-FGAPJC",
+         "202608212244-6XZAYD",
+-        "202608291006-2A6BJC"
++        "202608291006-2A6BJC",
++        "202608301851-5W3XW6"
+       ],
+       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route.",
+-      "to_sha256": "0542e158fad8ed588f23aeea29587f49045d0d9ff8ed667d5f8947f91de91fba"
++      "to_sha256": "c36d98412cae805197772c9fb706af33e68b27f32e27c6d8943662ecbafa91ed"
+     },
+     {
+       "classification": "additive",
+@@ -2575,7 +2614,7 @@
+     "from_version": "0.6.24",
+     "section": "package_manifests",
+     "source_task": "202608082119-P6SHBN",
+-    "surface_sha256": "84a8a3952f39a9ca74380db2ddb193fc8fb6493f479f634909a12424d5712071",
++    "surface_sha256": "84507015d339c4edd22738588848d00507b165eeae76f402636231885aed6dc7",
+     "to_sha256": "d449602b1ca11e75c32b0dbecf50ff0d2729c67ce6ff64a2e4bf1b5f12955ee4",
+     "to_version": "0.7.8-beta.1"
+   },
+@@ -2631,6 +2670,7 @@
+     "202608200903-J459C2",
+     "202608211020-FGAPJC",
+     "202608212244-6XZAYD",
+-    "202608291006-2A6BJC"
++    "202608291006-2A6BJC",
++    "202608301851-5W3XW6"
+   ]
+ }
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index d4ddd0a4b..39a8abba7 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -351,6 +351,7 @@ function validateReviewedCandidate({
+     "202608211020-FGAPJC",
+     "202608212244-6XZAYD",
+     "202608291006-2A6BJC",
++    "202608301851-5W3XW6",
+   ];
+   const expectedSourceTasks = [
+     "202607221846-4VB97J",
+@@ -394,6 +395,7 @@ function validateReviewedCandidate({
+     "202608211020-FGAPJC",
+     "202608212244-6XZAYD",
+     "202608291006-2A6BJC",
++    "202608301851-5W3XW6",
+   ];
+   assert(
+     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+@@ -2182,6 +2184,26 @@ function validateReviewedCandidate({
+       kind: "string",
+       valueHint: "<sha256:...>",
+     },
++    {
++      command: "work resume",
++      name: "apply",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
++    {
++      command: "work resume",
++      name: "expect-token",
++      kind: "string",
++      valueHint: "<sha256:digest>",
++    },
++    {
++      command: "work resume",
++      name: "refresh-planning-base",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
+     {
+       command: "workflow migrate",
+       name: "dry-run",
+@@ -2713,6 +2735,12 @@ function validateReviewedCandidate({
+       name: "yes",
+       source_task: "202608291006-2A6BJC",
+     },
++    ...["apply", "expect-token", "refresh-planning-base"].map((name) => ({
++      kind: "option",
++      command: "work resume",
++      name,
++      source_task: "202608301851-5W3XW6",
++    })),
+   ];
+   const expectedVisibilityMutations = [
+     ["task begin", "user", "advanced", "title", "<title>"],

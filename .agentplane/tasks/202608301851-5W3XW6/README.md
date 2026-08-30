@@ -4,7 +4,7 @@ title: "Recover unstarted task worktrees pinned before the approved planning bas
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -30,34 +30,36 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-30T19:57:28.964Z"
+  updated_at: "2026-08-30T20:21:16.206Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 3 typed finding(s)."
-  evaluated_sha: "d0e1012b750ad2ac8282f618642c79912cc6ea9e"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "753ed95d1d782fe03e1aec40f72508750ee84c2a"
   blueprint_digest: "c4fe4f9395dc1a16d9d0e045fcc7079e8e2b42ab4cd182ea5e32873dbb3bd649"
   evidence_refs:
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/01b55826c06a0ceaab25425b86d9c8cd73549532e2ecc43ec87fab992c071097.md"
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/d4e4f5b282b02ac9eed524824f9226d5d78f724442081ca23a734262cf0fc996.md"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608301851-5W3XW6/README.md"
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/79a86583166eb2ba9dd0fb04e99ea2fc364094c43dfabfd2246a8e66f0e05214.patch"
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/5e0407a494166417db26bb3edff44d2392a6c204a9a36772f548b1f2b4f571b5.json"
-    - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830195451358-0ac34ff3aa90f0d5.json"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/88d55613569a9881429b58e16be68aaecc010d82d2de9c0738e6655cc806a926.patch"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/e851c6ff4d8240ee7502d4b5d7884c9a2711bb808bf435705a83ff265d6379e7.json"
+    - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830201530164-c13219fe0d49d28e.json"
     - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/8bf281feaf0feb2d5a0b350bb465ecb07cd56ed14e2cf893cceb3fe2a7eec36c.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The recovery tests add prerequisite.txt to the new Git snapshot but do not create a completed dependency Task or verify dependency route resolution after recovery. Preserving an empty depends_on array does not cover the original M3 blocker."
-    - "Frozen evidence hashes match. Native full CI, fast tests, typecheck, policy routing and doctor passed for implementation d0e1012b750ad2ac8282f618642c79912cc6ea9e. Existing negative and real SIGKILL coverage is valid."
-    - "Residual risk: Hosted integration and application to real M3 remain pending."
+    - "All frozen evaluator evidence digests match. Native persisted checks passed: full CI, fast tests, typecheck, policy routing and doctor."
+    - "The new test uses actual Task records and native route construction. It proves absent dependency and dependency_wait on the creation snapshot, preserved nonempty depends_on, and DONE dependency visibility with no dependency blocker after recovery in all three crash modes."
+    - "Implementation preserves the approved plan and WorkItems, rejects explicit pins and started or dirty work, uses native revision locking, preserves verified crash candidates in an audit archive, and leaves default work resume behavior unchanged."
+    - "The exact CLI candidate delta adds only the three reviewed recovery options and Task provenance. The immutable compatibility anchor is unchanged."
+    - "Residual risk: Explicit recovery remains limited to an unstarted creation-checkout base with a descendant approved planning commit. Unknown artifacts, active work and divergent histories intentionally remain blocked."
+    - "Residual risk: Hosted integration and actual M3 recovery are still pending."
 execution_route:
   frozen: true
   reason_codes:
