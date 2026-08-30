@@ -1,0 +1,161 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run typecheck",
+    "git diff --check"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "packages/agentplane/src/commands/shared/quality-review-merge.ts",
+        "packages/agentplane/src/commands/shared/quality-review-target.test.ts",
+        "packages/agentplane/src/commands/shared/quality-review-target.ts"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/commands/shared/quality-review-merge.ts",
+        "packages/agentplane/src/commands/shared/quality-review-target.test.ts",
+        "packages/agentplane/src/commands/shared/quality-review-target.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/agentplane/src/commands/shared/quality-review-merge.ts",
+      "central_component:packages/agentplane/src/commands/shared/quality-review-target.test.ts",
+      "central_component:packages/agentplane/src/commands/shared/quality-review-target.ts",
+      "central_path:packages/agentplane/src/commands/shared/quality-review-merge.ts",
+      "central_path:packages/agentplane/src/commands/shared/quality-review-target.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/quality-review-target.ts"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:e4e1f692b33b4fcad549ac6d49026344b8fce8e84d9465fb22add88b7fdcab56"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-30T06:43:24.827Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608300559-3MDRBH/verification/20260830064324827-7aae53f4e1138d7f.json",
+      "sha256": "sha256:649997c8039578e0e0c0f4abcfc5efb87040d95ff99eb3d41d394b912abcbb9a"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 636980965492d4685251a05f9f5e96cdac063eb5..3174c719467932a7d3408465af4960a643bce595",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 636980965492d4685251a05f9f5e96cdac063eb5..3174c719467932a7d3408465af4960a643bce595",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608300559-3MDRBH/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608300559-3MDRBH/pr/github-body.md",
+          "M\t.agentplane/tasks/202608300559-3MDRBH/pr/meta.json",
+          "M\t.agentplane/tasks/202608300559-3MDRBH/pr/review.md",
+          "M\tpackages/agentplane/src/commands/shared/quality-review-target.test.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "636980965492d4685251a05f9f5e96cdac063eb5",
+    "implementation_commit": "3174c719467932a7d3408465af4960a643bce595",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608300559-3MDRBH",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608300559-3MDRBH/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
