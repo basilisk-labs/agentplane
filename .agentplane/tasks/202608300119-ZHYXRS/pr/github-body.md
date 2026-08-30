@@ -15,8 +15,14 @@ Unblock the approved Clean Task Core rebuild M1 task 202608292032-1K47B8. Diagno
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note:
+
+```text
+Hosted review on PR #5879 requires recomputing the canonical persisted plan digest before preserving
+existing WorkItem runtime. Reopen under the approved bootstrap scope; add a stale-digest
+production-approval regression and require fresh verification and evaluator review.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,10 +33,10 @@ Unblock the approved Clean Task Core rebuild M1 task 202608292032-1K47B8. Diagno
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../external-agent-implementation-recovery.test.ts |  17 +++-
- packages/core/src/tasks/task-centric/graph.ts      |  17 ++++
- .../src/tasks/task-centric/task-centric.test.ts    | 107 +++++++++++++++++++++
- 3 files changed, 140 insertions(+), 1 deletion(-)
+ .../external-agent-implementation-recovery.test.ts |  17 ++-
+ packages/core/src/tasks/task-centric/graph.ts      |  31 ++++-
+ .../src/tasks/task-centric/task-centric.test.ts    | 154 +++++++++++++++++++++
+ 3 files changed, 200 insertions(+), 2 deletions(-)
 ```
 
 </details>
