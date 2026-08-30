@@ -15,8 +15,14 @@ Fix the reproduced review-target defect that skips every base-sync merge when an
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note:
+
+```text
+Confirmed P1 review 3888685658: rename detection hides source endpoints in name-only diffs, so
+divergent renames resolved to a parent can reuse stale evaluation. Require both-endpoint proof or
+disable rename detection and add real Git regressions before fresh qualification.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,10 +33,10 @@ Fix the reproduced review-target defect that skips every base-sync merge when an
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/shared/quality-review-merge.ts    |  59 ++++++++
- .../commands/shared/quality-review-target.test.ts  | 160 +++++++++++++++++++++
+ .../src/commands/shared/quality-review-merge.ts    |  82 +++++++++
+ .../commands/shared/quality-review-target.test.ts  | 203 +++++++++++++++++++++
  .../src/commands/shared/quality-review-target.ts   |  21 +++
- 3 files changed, 240 insertions(+)
+ 3 files changed, 306 insertions(+)
 ```
 
 </details>

@@ -709,6 +709,49 @@ describe("quality review target resolver", () => {
     ).resolves.toBe(reviewedSha);
   });
 
+  it.each(["task", "base"])(
+    "reviews conflicting renames resolved to the %s parent",
+    async (selected) => {
+      const root = await mkGitRepoRoot();
+      const taskId = "202608300559-RENAME";
+      await commitPath(
+        root,
+        "src/original file.ts",
+        "export const value = true;\n",
+        "feat: original",
+      );
+      await execFileAsync("git", ["config", "diff.renames", "true"], { cwd: root });
+      const { stdout: branch } = await execFileAsync("git", ["branch", "--show-current"], {
+        cwd: root,
+      });
+      const baseRef = branch.trim();
+      await execFileAsync("git", ["checkout", "-b", "task/rename"], { cwd: root });
+      await execFileAsync("git", ["mv", "src/original file.ts", "src/task.ts"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feat: task rename"], { cwd: root });
+      const { stdout: reviewed } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+      await execFileAsync("git", ["checkout", baseRef], { cwd: root });
+      await execFileAsync("git", ["mv", "src/original file.ts", "src/base.ts"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feat: base rename"], { cwd: root });
+      await execFileAsync("git", ["checkout", "task/rename"], { cwd: root });
+      await expect(
+        execFileAsync("git", ["merge", "--no-commit", "--no-ff", baseRef], { cwd: root }),
+      ).rejects.toThrow();
+      await execFileAsync(
+        "git",
+        ["rm", "-f", selected === "task" ? "src/base.ts" : "src/task.ts"],
+        { cwd: root },
+      );
+      await execFileAsync("git", ["add", "-A"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "merge: resolve divergent rename"], {
+        cwd: root,
+      });
+      const { stdout: head } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+      await expect(
+        resolveTarget({ root, taskId, previousEvaluatedSha: reviewed.trim(), baseRef }),
+      ).resolves.toBe(head.trim());
+    },
+  );
+
   it("requires fresh review for an octopus base merge without creating Git objects", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202608300559-MERGE-OCTOPUS";

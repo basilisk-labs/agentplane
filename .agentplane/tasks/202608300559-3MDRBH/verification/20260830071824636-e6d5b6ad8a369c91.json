@@ -1,0 +1,101 @@
+{
+  "details": null,
+  "digest": "sha256:e6d5b6ad8a369c91f95c9b03c62be445d5612b6fdfa01a92f6b956034bc9caec",
+  "implementation_sha": "3174c719467932a7d3408465af4960a643bce595",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:2e7497ef6017cf210b4149e6369d506b322ec1d3c1a5172e595792818f422020",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "cbc5d79d1510293de3b4c30b61679cdef85d0fdb",
+      "digest": "sha256:d25a0d523157de66f9b4e3d2654065f2407d3dbb8da129381baa1be8cb3db138",
+      "primary_task_id": "202608300559-3MDRBH",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608300559-3MDRBH"
+      ]
+    },
+    "implementation": {
+      "base_sha": "cbc5d79d1510293de3b4c30b61679cdef85d0fdb",
+      "digest": "sha256:d272328f0bed4051e512692b001b0197b00016f959160f9f572d9eb80d060034",
+      "strategy": "branch_diff",
+      "target_sha": "3174c719467932a7d3408465af4960a643bce595"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:e4e1f692b33b4fcad549ac6d49026344b8fce8e84d9465fb22add88b7fdcab56",
+    "verify_steps_digest": "sha256:d5a4f7d337f82861d80a37345238a05a117669c13aa7872d2464ed149fc26aee"
+  },
+  "kind": "task_verification_record",
+  "note": "Confirmed P1 review 3888685658: rename detection hides source endpoints in name-only diffs, so divergent renames resolved to a parent can reuse stale evaluation. Require both-endpoint proof or disable rename detection and add real Git regressions before fresh qualification.",
+  "recorded_at": "2026-08-30T07:18:24.636Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:d5a4f7d337f82861d80a37345238a05a117669c13aa7872d2464ed149fc26aee",
+  "task_id": "202608300559-3MDRBH",
+  "verification_command": "agentplane task verify rework 202608300559-3MDRBH --rework --by REVIEWER",
+  "verifier": "REVIEWER"
+}

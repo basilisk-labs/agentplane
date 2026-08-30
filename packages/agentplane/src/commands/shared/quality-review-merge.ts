@@ -1,4 +1,4 @@
-import { gitDiffNames, gitEnv } from "@agentplaneorg/core/git";
+import { gitEnv } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
 /**
@@ -34,11 +34,34 @@ export async function baseSyncMergeReviewPaths(opts: {
       !baseIds[0]
     )
       return null;
+    // Rename detection can hide the deleted endpoint in --name-only output.
+    // Compare trees as additions/deletions so divergent renames share their source path.
+    const diffPaths = async (from: string, to: string): Promise<string[]> => {
+      const result = await execFileAsync(
+        "git",
+        [
+          "diff",
+          "--name-only",
+          "--no-renames",
+          "--no-ext-diff",
+          "--no-textconv",
+          "-z",
+          from,
+          to,
+          "--",
+        ],
+        {
+          cwd: opts.gitRoot,
+          env: gitEnv(),
+        },
+      );
+      return result.stdout.split("\0").filter(Boolean);
+    };
     const [taskDelta, baseDelta, againstTask, againstBase] = await Promise.all([
-      gitDiffNames(opts.gitRoot, baseIds[0], opts.taskParent),
-      gitDiffNames(opts.gitRoot, baseIds[0], opts.baseParent),
-      gitDiffNames(opts.gitRoot, opts.taskParent, opts.merge),
-      gitDiffNames(opts.gitRoot, opts.baseParent, opts.merge),
+      diffPaths(baseIds[0], opts.taskParent),
+      diffPaths(baseIds[0], opts.baseParent),
+      diffPaths(opts.taskParent, opts.merge),
+      diffPaths(opts.baseParent, opts.merge),
     ]);
     const taskPaths = new Set(taskDelta);
     const basePaths = new Set(baseDelta);
