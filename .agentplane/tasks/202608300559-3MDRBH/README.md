@@ -4,7 +4,7 @@ title: "Preserve semantic conflict resolutions in evaluator target selection"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -166,11 +166,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "ccc578931ad7b4527ab1d9734f899f6b354bd5e4"
+  message: "🔧 3MDRBH verification: retain semantic merge review targets"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed through the routed dirty-worktree recovery after the supervisor commit was blocked by stale build. All 29 focused regression tests, typecheck, lint and diff checks passed. Continue fresh verification from this exact implementation; do not reuse old review evidence."
 events:
   -
     type: "status"
@@ -179,8 +184,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-30T06:21:49.017Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed through the routed dirty-worktree recovery after the supervisor commit was blocked by stale build. All 29 focused regression tests, typecheck, lint and diff checks passed. Continue fresh verification from this exact implementation; do not reuse old review evidence."
+    commit: "ccc578931ad7b4527ab1d9734f899f6b354bd5e4"
 doc_version: 3
-doc_updated_at: "2026-08-30T06:04:21.995Z"
+doc_updated_at: "2026-08-30T06:21:49.017Z"
 doc_updated_by: "CODER"
 description: "Fix the reproduced review-target defect that skips every base-sync merge when an older evaluated SHA exists. Distinguish a clean automatic base synchronization from a semantic conflict resolution, keep semantic merge changes inside the exact reviewed implementation identity, and add a regression using real Git merge parents. This bootstrap blocks fresh qualification of AP-RUNTIME-001 PR #5880 after resolution commit 26b69b0fe. Preserve evidence and task state; never hand-edit quality receipts or weaken freshness checks."
 sections:
