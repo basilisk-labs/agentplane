@@ -15,8 +15,8 @@ Unblock the approved Clean Task Core rebuild M1 task 202608292032-1K47B8. Diagno
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
