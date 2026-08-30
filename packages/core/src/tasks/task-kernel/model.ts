@@ -57,6 +57,7 @@ export const KERNEL_REJECTION_CODES = [
   "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
   "WORK_ITEM_MISSING",
   "WORK_ITEM_DEPENDENCY_INCOMPLETE",
+  "WORK_ITEM_RESOURCE_CONFLICT",
   "WORK_ITEM_RESULT_TARGET_MISMATCH",
   "WORK_ITEM_OUTPUT_MISSING",
   "WORK_ITEM_VALIDATION_MISSING",
@@ -285,6 +286,7 @@ export type TaskCommand =
     >
   | CommandEnvelope<"record_final_validation", { validation: ValidationRecord }>
   | CommandEnvelope<"prepare_effect", { effect: ExternalEffect }>
+  | CommandEnvelope<"begin_effect", { effect_id: string }>
   | CommandEnvelope<
       "observe_effect",
       {
@@ -334,6 +336,7 @@ export type DomainEvent = Readonly<{
     | "work_item_validation_recorded"
     | "final_validation_recorded"
     | "effect_prepared"
+    | "effect_started"
     | "effect_observed"
     | "effect_reconciled"
     | "effect_superseded"

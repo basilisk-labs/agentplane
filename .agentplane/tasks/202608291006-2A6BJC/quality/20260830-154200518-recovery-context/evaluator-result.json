@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The semantic conflict resolution only relocates existing documentation. The complete line multiset is preserved. Its three-way comparison with the frozen merge base and protected main preserves both the Task adapter section and runtime documentation with no conflict.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/aff44745199a43c468c32a725f0f63f664689e6d6e16a8c52558fd260ed3c6d1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Both overlapping verification source/test paths merge without conflict. The combined content retains runtime infrastructure classification and the M2 correction that persists actual rerun observations. No test, threshold, lifecycle rule, or trust boundary is weakened.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/aff44745199a43c468c32a725f0f63f664689e6d6e16a8c52558fd260ed3c6d1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The current implementation differs from the previously reviewed 2d298871 code only in documentation ordering, excluding framework-owned Task artifacts. The adapter durability, migration backup/CAS/rollback, explicit legacy quarantine, effect admission, uncertain dispatch handling and immutable corpus implementations are unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/aff44745199a43c468c32a725f0f63f664689e6d6e16a8c52558fd260ed3c6d1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Re-inspection of effect dispatch confirms that only fresh committed PENDING admission calls the provider. Replayed admission and uncertain responses require observation instead of another dispatch. The current exact-anchor replay qualification covers the frozen negative and concurrent cases.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/aff44745199a43c468c32a725f0f63f664689e6d6e16a8c52558fd260ed3c6d1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The work stays inside M2. Production cutover, repository-wide migration, retirement, twenty real self-hosting Tasks, and three release drills remain M3 gates. Fake provider replay is not evidence of those outcomes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/aff44745199a43c468c32a725f0f63f664689e6d6e16a8c52558fd260ed3c6d1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: M3 must enforce the production writer boundary and complete real self-hosting and release qualification before the root refactoring task can close.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/aff44745199a43c468c32a725f0f63f664689e6d6e16a8c52558fd260ed3c6d1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: The general test suite contains one skipped test. The separate isolated replay qualification completed every reported test.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/aff44745199a43c468c32a725f0f63f664689e6d6e16a8c52558fd260ed3c6d1.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

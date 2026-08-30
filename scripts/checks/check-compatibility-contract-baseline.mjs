@@ -350,6 +350,7 @@ function validateReviewedCandidate({
     "202608200903-J459C2",
     "202608211020-FGAPJC",
     "202608212244-6XZAYD",
+    "202608291006-2A6BJC",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -392,6 +393,7 @@ function validateReviewedCandidate({
     "202608200903-J459C2",
     "202608211020-FGAPJC",
     "202608212244-6XZAYD",
+    "202608291006-2A6BJC",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -1523,6 +1525,43 @@ function validateReviewedCandidate({
       ],
     },
     {
+      args: [
+        {
+          name: "task-id",
+          required: true,
+          valueHint: "<task-id>",
+          variadic: false,
+        },
+      ],
+      group: "Task",
+      id: ["task", "kernel-migrate"],
+      options: [
+        {
+          default: false,
+          kind: "boolean",
+          name: "apply",
+          valueHint: null,
+        },
+        {
+          kind: "string",
+          name: "source-digest",
+          valueHint: "<sha256:digest>",
+        },
+        {
+          kind: "string",
+          name: "rollback",
+          valueHint: "<proof.json>",
+        },
+        {
+          default: false,
+          kind: "boolean",
+          name: "yes",
+          valueHint: null,
+        },
+      ],
+      visibility: "advanced",
+    },
+    {
       id: ["task", "run", "reconcile"],
       visibility: "internal",
       group: "Task",
@@ -2015,6 +2054,32 @@ function validateReviewedCandidate({
       kind: "string",
       valueHint: "<command>",
       repeatable: true,
+    },
+    {
+      command: "task kernel-migrate",
+      default: false,
+      kind: "boolean",
+      name: "apply",
+      valueHint: null,
+    },
+    {
+      command: "task kernel-migrate",
+      kind: "string",
+      name: "rollback",
+      valueHint: "<proof.json>",
+    },
+    {
+      command: "task kernel-migrate",
+      kind: "string",
+      name: "source-digest",
+      valueHint: "<sha256:digest>",
+    },
+    {
+      command: "task kernel-migrate",
+      default: false,
+      kind: "boolean",
+      name: "yes",
+      valueHint: null,
     },
     {
       command: "task new",
@@ -2623,6 +2688,31 @@ function validateReviewedCandidate({
       name: "rollback",
       source_task: "202607221846-4VB97J",
     },
+    { kind: "command", command: "task kernel-migrate", source_task: "202608291006-2A6BJC" },
+    {
+      kind: "option",
+      command: "task kernel-migrate",
+      name: "apply",
+      source_task: "202608291006-2A6BJC",
+    },
+    {
+      kind: "option",
+      command: "task kernel-migrate",
+      name: "rollback",
+      source_task: "202608291006-2A6BJC",
+    },
+    {
+      kind: "option",
+      command: "task kernel-migrate",
+      name: "source-digest",
+      source_task: "202608291006-2A6BJC",
+    },
+    {
+      kind: "option",
+      command: "task kernel-migrate",
+      name: "yes",
+      source_task: "202608291006-2A6BJC",
+    },
   ];
   const expectedVisibilityMutations = [
     ["task begin", "user", "advanced", "title", "<title>"],
@@ -2729,6 +2819,7 @@ function validateReviewedCandidate({
         "task advance",
         "task authority grant",
         "task create",
+        "task kernel-migrate",
         "task run reconcile",
         "task run resolve-effect",
         "task run resume-effect",

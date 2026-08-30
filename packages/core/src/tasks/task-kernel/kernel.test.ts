@@ -29,6 +29,103 @@ import {
 } from "./kernel.test-fixtures.js";
 
 describe("canonical task kernel reducer", () => {
+  it.each(["CLAIMED", "EXECUTING", "BLOCKED", "VALIDATING"] as const)(
+    "does not abandon an optional %s claim at Task completion",
+    (optionalState) => {
+      const optional = {
+        ...plan.work_items[0]!,
+        id: "optional",
+        optional: true,
+        expected_outputs: ["optional-output"],
+      };
+      const state = aggregate({
+        current_plan: { ...plan, work_items: [plan.work_items[0]!, optional] },
+        work_items: {
+          kernel: {
+            ...runtime("COMPLETED"),
+            result_digest: resultDigest,
+            output_manifests: [manifest()],
+            validation: validation(resultDigest),
+          },
+          optional: { ...runtime(optionalState), definition: optional },
+        },
+      });
+      const command: TaskCommand = {
+        kind: "record_final_validation",
+        task_id: state.id,
+        expected_task_revision: state.revision,
+        expected_state_fingerprint: fingerprint,
+        validation: validation(fingerprint),
+      };
+      expect(reduceTaskCommand(input(state, command))).toMatchObject({
+        kind: "rejected",
+        code: "TASK_COMPLETION_INELIGIBLE",
+      });
+      const final = {
+        ...state,
+        state: "FINAL_VALIDATION" as const,
+        final_validation: validation(fingerprint),
+      };
+      expect(isTaskCompletionEligible(final, fingerprint)).toBe(false);
+      expect(
+        reduceTaskCommand(
+          input(final, {
+            kind: "complete_task",
+            task_id: state.id,
+            expected_task_revision: state.revision,
+            expected_state_fingerprint: fingerprint,
+          }),
+        ),
+      ).toMatchObject({ kind: "rejected", code: "TASK_COMPLETION_INELIGIBLE" });
+    },
+  );
+
+  it.each([
+    "CLAIMED",
+    "EXECUTING",
+    "RESULT_RECEIVED",
+    "INSPECTING",
+    "VALIDATING",
+    "BLOCKED",
+    "EFFECT_IN_DOUBT",
+  ] as const)(
+    "refuses a claim while another %s WorkItem holds an overlapping resource",
+    (otherState) => {
+      const other = { ...plan.work_items[0]!, id: "other", expected_outputs: ["other-output"] };
+      const state = aggregate({
+        current_plan: { ...plan, work_items: [plan.work_items[0]!, other] },
+        work_items: {
+          kernel: runtime("READY"),
+          other: { ...runtime(otherState), definition: other },
+        },
+      });
+      const before = JSON.stringify(state);
+      expect(reduceTaskCommand(input(state, transitionCommand(state, "claim")))).toMatchObject({
+        kind: "rejected",
+        code: "WORK_ITEM_RESOURCE_CONFLICT",
+        facts: ["other:kernel-work"],
+      });
+      expect(JSON.stringify(state)).toBe(before);
+    },
+  );
+
+  it.each(["PLANNED", "READY", "REWORK_READY", "COMPLETED", "CANCELLED"] as const)(
+    "does not retain a resource claim for an idle or terminal %s WorkItem",
+    (otherState) => {
+      const other = { ...plan.work_items[0]!, id: "other", expected_outputs: ["other-output"] };
+      const state = aggregate({
+        current_plan: { ...plan, work_items: [plan.work_items[0]!, other] },
+        work_items: {
+          kernel: runtime("READY"),
+          other: { ...runtime(otherState), definition: other },
+        },
+      });
+      expect(reduceTaskCommand(input(state, transitionCommand(state, "claim"))).kind).toBe(
+        "accepted",
+      );
+    },
+  );
+
   it("orders digest keys by code units independent of locale", () => {
     const expected = createHash("sha256").update('{"Z":2,"a":3,"ä":1}').digest("hex");
     expect(kernelDigest({ ä: 1, Z: 2, a: 3 })).toBe(`sha256:${expected}`);
@@ -367,6 +464,36 @@ describe("canonical task kernel reducer", () => {
         expect(result.receipts).toHaveLength(1);
       }
     }
+  });
+
+  it("starts rework with no result or validation inherited from the previous attempt", () => {
+    const state = aggregate({
+      work_items: {
+        kernel: {
+          ...runtime("REWORK_READY"),
+          result_digest: resultDigest,
+          output_manifests: [manifest()],
+          validation: validation(resultDigest),
+        },
+      },
+    });
+    const command = transitionCommand(state, "claim");
+    const result = reduceTaskCommand(input(state, command));
+    expect(result.kind).toBe("accepted");
+    if (result.kind !== "accepted") throw new Error("Rework claim rejected");
+    expect(result.aggregate.work_items.kernel).toMatchObject({
+      state: "CLAIMED",
+      attempt: 2,
+      result_digest: null,
+      output_manifests: [],
+      validation: null,
+    });
+    // A receipt replay does not advance the attempt again.
+    const replay = reduceTaskCommand({ ...input(state, command), aggregate: result.aggregate });
+    expect(replay.kind).toBe("accepted");
+    if (replay.kind !== "accepted") throw new Error("Claim replay rejected");
+    expect(replay.aggregate).toEqual(result.aggregate);
+    expect(replay.events).toEqual([]);
   });
 
   it("rejects every WorkItem edge outside the closed action table", () => {

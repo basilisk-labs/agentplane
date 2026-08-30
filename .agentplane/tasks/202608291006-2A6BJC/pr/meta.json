@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202608291006-2A6BJC/add-compatibility-adapters-and-replay-migration",
+  "created_at": "2026-08-30T04:09:19.506Z",
+  "diffstat_sha256": "sha256:fabf2be7c0a90f308321b8c03b044bfc790dcd99d3d5292df5a19797b585150a",
+  "last_verified_at": "2026-08-30T16:56:46.015Z",
+  "last_verified_diffstat_sha256": "sha256:fabf2be7c0a90f308321b8c03b044bfc790dcd99d3d5292df5a19797b585150a",
+  "pr_number": 5882,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5882",
+  "pre_merge_closure": {
+    "basis_commit": "629373c376f2e7f4567674b54c868d61e94cf232",
+    "branch": "task/202608291006-2A6BJC/add-compatibility-adapters-and-replay-migration",
+    "pr_number": 5882,
+    "recorded_at": "2026-08-30T17:02:15.783Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608291006-2A6BJC",
+  "updated_at": "2026-08-30T14:58:29.973Z",
+  "verify": {
+    "status": "pass"
+  }
+}

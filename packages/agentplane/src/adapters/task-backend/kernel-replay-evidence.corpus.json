@@ -1,0 +1,433 @@
+{
+  "schema_version": 1,
+  "source_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+  "fixtures": [
+    {
+      "identity": {
+        "fixture_id": "validation-focused",
+        "source_digest": "sha256:ed74d7da89a53d9f6066c7242d825c48a3b5ffe0156d5aa2522e594c02760822",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t validation-focused"
+      },
+      "source_bytes": "{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"check\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"focused\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"raw\":{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"validation\":{\"status\":\"PASSED\",\"identity\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"focused\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"evidence_digests\":[\"sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed\"],\"observed_at\":\"2026-08-30T00:00:00.000Z\"}}}",
+      "expected": {
+        "kind": "validation",
+        "validation": {
+          "status": "PASSED",
+          "identity": {
+            "implementation_identity": "sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0",
+            "check_id": "focused",
+            "command_digest": "sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200",
+            "toolchain_digest": "sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3",
+            "environment_digest": "sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7"
+          },
+          "evidence_digests": [
+            "sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed"
+          ],
+          "observed_at": "2026-08-30T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "validation-full",
+        "source_digest": "sha256:e282326efb71e1a3c70719dbe25c16718b8ded771a5693b34fb6110485b3212a",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t validation-full"
+      },
+      "source_bytes": "{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"check\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"full\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"raw\":{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"validation\":{\"status\":\"PASSED\",\"identity\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"full\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"evidence_digests\":[\"sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed\"],\"observed_at\":\"2026-08-30T00:00:00.000Z\"}}}",
+      "expected": {
+        "kind": "validation",
+        "validation": {
+          "status": "PASSED",
+          "identity": {
+            "implementation_identity": "sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0",
+            "check_id": "full",
+            "command_digest": "sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200",
+            "toolchain_digest": "sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3",
+            "environment_digest": "sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7"
+          },
+          "evidence_digests": [
+            "sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed"
+          ],
+          "observed_at": "2026-08-30T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "validation-hosted",
+        "source_digest": "sha256:59ca7bb7b01cf7dc1f98e448aa03b7ef496b30db1337dedb9e856b9656da7923",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t validation-hosted"
+      },
+      "source_bytes": "{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"check\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"hosted\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"raw\":{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"validation\":{\"status\":\"PASSED\",\"identity\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"hosted\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"evidence_digests\":[\"sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed\"],\"observed_at\":\"2026-08-30T00:00:00.000Z\"}}}",
+      "expected": {
+        "kind": "validation",
+        "validation": {
+          "status": "PASSED",
+          "identity": {
+            "implementation_identity": "sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0",
+            "check_id": "hosted",
+            "command_digest": "sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200",
+            "toolchain_digest": "sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3",
+            "environment_digest": "sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7"
+          },
+          "evidence_digests": [
+            "sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed"
+          ],
+          "observed_at": "2026-08-30T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "validation-FAILED",
+        "source_digest": "sha256:1d9c595a3c998844b6753ac45b10fce586bb436f0c357bcbbb219f23d276b724",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t validation-FAILED"
+      },
+      "source_bytes": "{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"check\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"focused\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"raw\":{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"validation\":{\"status\":\"FAILED\",\"identity\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"focused\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"evidence_digests\":[\"sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed\"],\"observed_at\":\"2026-08-30T00:00:00.000Z\"}}}",
+      "expected": {
+        "kind": "validation",
+        "validation": {
+          "status": "FAILED",
+          "identity": {
+            "implementation_identity": "sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0",
+            "check_id": "focused",
+            "command_digest": "sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200",
+            "toolchain_digest": "sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3",
+            "environment_digest": "sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7"
+          },
+          "evidence_digests": [
+            "sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed"
+          ],
+          "observed_at": "2026-08-30T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "validation-BLOCKED",
+        "source_digest": "sha256:a04045fbbbda485c5350368ddfdd99c263515968f3966daed2b3503f921ceaf6",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t validation-BLOCKED"
+      },
+      "source_bytes": "{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"check\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"focused\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"raw\":{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"validation\":{\"status\":\"BLOCKED\",\"identity\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"focused\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"evidence_digests\":[\"sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed\"],\"observed_at\":\"2026-08-30T00:00:00.000Z\"}}}",
+      "expected": {
+        "kind": "validation",
+        "validation": {
+          "status": "BLOCKED",
+          "identity": {
+            "implementation_identity": "sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0",
+            "check_id": "focused",
+            "command_digest": "sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200",
+            "toolchain_digest": "sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3",
+            "environment_digest": "sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7"
+          },
+          "evidence_digests": [
+            "sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed"
+          ],
+          "observed_at": "2026-08-30T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "validation-STALE",
+        "source_digest": "sha256:20efeca0ca676e4f20b9a88caf0859a75e8f7507d611de18daf05642ffca3bce",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t validation-STALE"
+      },
+      "source_bytes": "{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"check\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"focused\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"raw\":{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"validation\":{\"status\":\"STALE\",\"identity\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"focused\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"evidence_digests\":[\"sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed\"],\"observed_at\":\"2026-08-30T00:00:00.000Z\"}}}",
+      "expected": {
+        "kind": "validation",
+        "validation": {
+          "status": "STALE",
+          "identity": {
+            "implementation_identity": "sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0",
+            "check_id": "focused",
+            "command_digest": "sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200",
+            "toolchain_digest": "sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3",
+            "environment_digest": "sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7"
+          },
+          "evidence_digests": [
+            "sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed"
+          ],
+          "observed_at": "2026-08-30T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "validation-focused-cannot-satisfy-full",
+        "source_digest": "sha256:981169414cb163997ef7db52cc081416f431458be0011f53771c4fcdfa2c01a9",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t validation-focused-cannot-satisfy-full"
+      },
+      "source_bytes": "{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"check\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"full\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"raw\":{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"validation\":{\"status\":\"PASSED\",\"identity\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"focused\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"evidence_digests\":[\"sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed\"],\"observed_at\":\"2026-08-30T00:00:00.000Z\"}}}",
+      "expected": {
+        "kind": "rejected",
+        "code": "observation_binding_mismatch"
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "validation-focused-cannot-satisfy-hosted",
+        "source_digest": "sha256:bffb9ae6cd72de49bf09dd769d6f1aa28a5c5f8b51cf2f684517f959ab3b1255",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t validation-focused-cannot-satisfy-hosted"
+      },
+      "source_bytes": "{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"check\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"hosted\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"raw\":{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"validation\":{\"status\":\"PASSED\",\"identity\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"focused\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"evidence_digests\":[\"sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed\"],\"observed_at\":\"2026-08-30T00:00:00.000Z\"}}}",
+      "expected": {
+        "kind": "rejected",
+        "code": "observation_binding_mismatch"
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "validation-changed-toolchain",
+        "source_digest": "sha256:4e059f150e1c78e7ca3a405cf71769ef1ac3d3e0017c6fe2e2ae806a311c1bfc",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t validation-changed-toolchain"
+      },
+      "source_bytes": "{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"check\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"focused\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:82b8405cf8b9d7f00fb2b7e57628937aad0d2ef740afd3e41df21a272663f8e9\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"raw\":{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"validation\":{\"status\":\"PASSED\",\"identity\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"focused\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"evidence_digests\":[\"sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed\"],\"observed_at\":\"2026-08-30T00:00:00.000Z\"}}}",
+      "expected": {
+        "kind": "rejected",
+        "code": "observation_binding_mismatch"
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "validation-stale-implementation",
+        "source_digest": "sha256:ff25b65143a4414720fbea19be73d8f629448e93b7e50ccbd634c99b70fd1c41",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t validation-stale-implementation"
+      },
+      "source_bytes": "{\"kind\":\"validation\",\"check\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"focused\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"raw\":{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"validation\":{\"status\":\"PASSED\",\"identity\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"focused\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"evidence_digests\":[\"sha256:2ce5a984f81a15a3e7ebd1a802998b5a04adab2d853df2bb54e667be77865fed\"],\"observed_at\":\"2026-08-30T00:00:00.000Z\"}},\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:393bce1ce6b05fb334fa36d800eeae5333fde2b3d5d213c1bf45953cdc58ccf2\"}}",
+      "expected": {
+        "kind": "rejected",
+        "code": "observation_binding_mismatch"
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "validation-missing-evidence-shape",
+        "source_digest": "sha256:26bc57c213249a4a51bbdaa75a077d9470db54445cf3269b4c3f62a23c1c8ee9",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t validation-missing-evidence-shape"
+      },
+      "source_bytes": "{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"check\":{\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\",\"check_id\":\"focused\",\"command_digest\":\"sha256:68f05093bc600659c0aecd265fad80c71a658cc857e91cdfeeee782eb670c200\",\"toolchain_digest\":\"sha256:0f61677887e8c665271ec70d4b9e18812f4528206ad3161dc70021a0b1bda2e3\",\"environment_digest\":\"sha256:4147dd2e1fb1e7ca4c039d76925ef97033462ccd4edb15a98b6605b97a2c6dd7\"},\"raw\":{\"kind\":\"validation\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"validation\":{\"status\":\"BLOCKED\"}}}",
+      "expected": {
+        "kind": "rejected",
+        "code": "observation_schema_invalid"
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "review-PASS",
+        "source_digest": "sha256:bbefb46db30d1aa6f72555913ab3e25277331dd4e33bfa55e42539d129a37e66",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t review-PASS"
+      },
+      "source_bytes": "{\"kind\":\"review\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"raw\":{\"kind\":\"review\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"verdict\":\"PASS\",\"evidence_digests\":[\"sha256:fe82cb229e29dfc87a309c8d1679ff9f58be239c8e6f3ff52bc431efb3709b6b\"],\"findings\":[]}}",
+      "expected": {
+        "kind": "review",
+        "binding": {
+          "task_id": "task-1",
+          "plan_revision": 1,
+          "plan_digest": "sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c",
+          "work_item_id": "build",
+          "repository_fingerprint": "sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3",
+          "implementation_identity": "sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0"
+        },
+        "verdict": "PASS",
+        "evidence_digests": [
+          "sha256:fe82cb229e29dfc87a309c8d1679ff9f58be239c8e6f3ff52bc431efb3709b6b"
+        ],
+        "findings": []
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "review-REWORK",
+        "source_digest": "sha256:80b54c2f1c241ee1b7b0a67f2dd13448a0d6e3d4eaa9dcf163973f4f6a142d9c",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t review-REWORK"
+      },
+      "source_bytes": "{\"kind\":\"review\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"raw\":{\"kind\":\"review\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"verdict\":\"REWORK\",\"evidence_digests\":[\"sha256:fe82cb229e29dfc87a309c8d1679ff9f58be239c8e6f3ff52bc431efb3709b6b\"],\"findings\":[]}}",
+      "expected": {
+        "kind": "review",
+        "binding": {
+          "task_id": "task-1",
+          "plan_revision": 1,
+          "plan_digest": "sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c",
+          "work_item_id": "build",
+          "repository_fingerprint": "sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3",
+          "implementation_identity": "sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0"
+        },
+        "verdict": "REWORK",
+        "evidence_digests": [
+          "sha256:fe82cb229e29dfc87a309c8d1679ff9f58be239c8e6f3ff52bc431efb3709b6b"
+        ],
+        "findings": []
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "review-BLOCKED",
+        "source_digest": "sha256:754fcdb98cbac2f7501480ff4a9a280cbd7b15370c74b33ed1d7916e8fe2380b",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t review-BLOCKED"
+      },
+      "source_bytes": "{\"kind\":\"review\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"raw\":{\"kind\":\"review\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"verdict\":\"BLOCKED\",\"evidence_digests\":[\"sha256:fe82cb229e29dfc87a309c8d1679ff9f58be239c8e6f3ff52bc431efb3709b6b\"],\"findings\":[]}}",
+      "expected": {
+        "kind": "review",
+        "binding": {
+          "task_id": "task-1",
+          "plan_revision": 1,
+          "plan_digest": "sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c",
+          "work_item_id": "build",
+          "repository_fingerprint": "sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3",
+          "implementation_identity": "sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0"
+        },
+        "verdict": "BLOCKED",
+        "evidence_digests": [
+          "sha256:fe82cb229e29dfc87a309c8d1679ff9f58be239c8e6f3ff52bc431efb3709b6b"
+        ],
+        "findings": []
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "review-HUMAN_REQUIRED",
+        "source_digest": "sha256:2cf402553bd7bd99fa2faa948d1b09c44cc98cf5fcf404d7be531e82e84163ea",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t review-HUMAN_REQUIRED"
+      },
+      "source_bytes": "{\"kind\":\"review\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"raw\":{\"kind\":\"review\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"verdict\":\"HUMAN_REQUIRED\",\"evidence_digests\":[\"sha256:fe82cb229e29dfc87a309c8d1679ff9f58be239c8e6f3ff52bc431efb3709b6b\"],\"findings\":[]}}",
+      "expected": {
+        "kind": "review",
+        "binding": {
+          "task_id": "task-1",
+          "plan_revision": 1,
+          "plan_digest": "sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c",
+          "work_item_id": "build",
+          "repository_fingerprint": "sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3",
+          "implementation_identity": "sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0"
+        },
+        "verdict": "HUMAN_REQUIRED",
+        "evidence_digests": [
+          "sha256:fe82cb229e29dfc87a309c8d1679ff9f58be239c8e6f3ff52bc431efb3709b6b"
+        ],
+        "findings": []
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "review-semantic-drift",
+        "source_digest": "sha256:a7230fe5b6903292c6cefe7d3aa100d039c269cbfc58cb3d3b0336e8ea18dcff",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t review-semantic-drift"
+      },
+      "source_bytes": "{\"kind\":\"review\",\"raw\":{\"kind\":\"review\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"verdict\":\"PASS\",\"evidence_digests\":[\"sha256:fe82cb229e29dfc87a309c8d1679ff9f58be239c8e6f3ff52bc431efb3709b6b\"],\"findings\":[]},\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:c8ad3815055deb0f16641b622c7bfeae52f66b0a40dac9eaba4384eb8ac07b84\"}}",
+      "expected": {
+        "kind": "rejected",
+        "code": "observation_binding_mismatch"
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "review-other-work-item",
+        "source_digest": "sha256:1feb9d312304c9862dbde53a269e4cc5e5d518ca0a3a1b5b023627bca270267c",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t review-other-work-item"
+      },
+      "source_bytes": "{\"kind\":\"review\",\"raw\":{\"kind\":\"review\",\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"build\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"},\"verdict\":\"PASS\",\"evidence_digests\":[\"sha256:fe82cb229e29dfc87a309c8d1679ff9f58be239c8e6f3ff52bc431efb3709b6b\"],\"findings\":[]},\"binding\":{\"task_id\":\"task-1\",\"plan_revision\":1,\"plan_digest\":\"sha256:dbf9868785714c2519824d5a01bea297a3ef16fa141bec86a4caff8320cdbc4c\",\"work_item_id\":\"other\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"implementation_identity\":\"sha256:2ad47ffa2c44e63f601770d25d4ca879bf9edef3a1ead64bcf60f905f33496f0\"}}",
+      "expected": {
+        "kind": "rejected",
+        "code": "observation_binding_mismatch"
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "provider-APPLIED",
+        "source_digest": "sha256:cbfd6c7a90edf0c6b78dbc39059d80c62f22f1ef985920b78ba26980b1dc42eb",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t provider-APPLIED"
+      },
+      "source_bytes": "{\"kind\":\"provider\",\"raw\":{\"kind\":\"provider\",\"task_id\":\"task-1\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"effect_id\":\"merge\",\"request_digest\":\"sha256:532f53631c5865a58c44aeb6665e3c39eff9fcb1369e4ff3066568c964adf93f\",\"state\":\"APPLIED\",\"receipt_digest\":\"sha256:f8447eb6d244f94fb8be176422d6bb848b7f2236140e3272c9fb9f3157a212ed\"},\"aggregate\":{\"schema_version\":1,\"id\":\"task-1\",\"revision\":7,\"state\":\"ACTIVE\",\"intent_digest\":\"sha256:3a4c15e51a0dff4a561a2966e5bd7d49b6914f42ff3cd950832b476ee6ac25f8\",\"current_plan\":{\"revision\":1,\"digest\":\"sha256:80a6904dad38d3e2f5af3e336c502b09ed384504dc7a68072527709ebd8fab99\",\"state\":\"APPROVED\",\"approval_actor_id\":\"user-1\",\"approval_evidence_digest\":\"sha256:54de280ca0b7d23f2967f7761bd8e1cf87ee68f4fc0ab1db5b80130e2e90c64b\",\"work_items\":[{\"id\":\"kernel\",\"depends_on\":[],\"required_inputs\":[],\"expected_outputs\":[\"kernel-source\"],\"execution_requirements\":{\"scope_roots\":[\"packages/core/src/tasks/task-kernel\"],\"repository_effects\":[\"source_code\"],\"external_effects\":[],\"capabilities\":[\"repository_write\"],\"resources\":[\"kernel-work\"]},\"optional\":false}]},\"plan_history\":[],\"work_items\":{\"kernel\":{\"definition\":{\"id\":\"kernel\",\"depends_on\":[],\"required_inputs\":[],\"expected_outputs\":[\"kernel-source\"],\"execution_requirements\":{\"scope_roots\":[\"packages/core/src/tasks/task-kernel\"],\"repository_effects\":[\"source_code\"],\"external_effects\":[],\"capabilities\":[\"repository_write\"],\"resources\":[\"kernel-work\"]},\"optional\":false},\"state\":\"READY\",\"revision\":1,\"attempt\":1,\"claim_id\":\"claim-1\",\"result_digest\":null,\"output_manifests\":[],\"validation\":null}},\"final_validation\":null,\"effects\":[{\"id\":\"merge\",\"kind\":\"pr.merge\",\"execution_requirements\":{\"scope_roots\":[],\"repository_effects\":[],\"external_effects\":[\"pr.merge\"],\"capabilities\":[\"provider_write\"],\"resources\":[\"pull:1\"]},\"state\":\"PREPARED\",\"idempotency_key\":\"merge\",\"request_digest\":\"sha256:532f53631c5865a58c44aeb6665e3c39eff9fcb1369e4ff3066568c964adf93f\",\"provider_receipt_digest\":null,\"observed_state_digest\":null}],\"mutation_receipts\":{},\"controller_transfer\":null,\"migration_receipts\":[]},\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\"}",
+      "expected": {
+        "kind": "provider",
+        "task_id": "task-1",
+        "repository_fingerprint": "sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3",
+        "effect_id": "merge",
+        "request_digest": "sha256:532f53631c5865a58c44aeb6665e3c39eff9fcb1369e4ff3066568c964adf93f",
+        "state": "APPLIED",
+        "receipt_digest": "sha256:f8447eb6d244f94fb8be176422d6bb848b7f2236140e3272c9fb9f3157a212ed"
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "provider-NOT_APPLIED",
+        "source_digest": "sha256:3d41c4ada9c32a17ce4f5a48db45e914f3ef772aa1cda73964025aa889c84b1c",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t provider-NOT_APPLIED"
+      },
+      "source_bytes": "{\"kind\":\"provider\",\"raw\":{\"kind\":\"provider\",\"task_id\":\"task-1\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"effect_id\":\"merge\",\"request_digest\":\"sha256:532f53631c5865a58c44aeb6665e3c39eff9fcb1369e4ff3066568c964adf93f\",\"state\":\"NOT_APPLIED\",\"receipt_digest\":\"sha256:f8447eb6d244f94fb8be176422d6bb848b7f2236140e3272c9fb9f3157a212ed\"},\"aggregate\":{\"schema_version\":1,\"id\":\"task-1\",\"revision\":7,\"state\":\"ACTIVE\",\"intent_digest\":\"sha256:3a4c15e51a0dff4a561a2966e5bd7d49b6914f42ff3cd950832b476ee6ac25f8\",\"current_plan\":{\"revision\":1,\"digest\":\"sha256:80a6904dad38d3e2f5af3e336c502b09ed384504dc7a68072527709ebd8fab99\",\"state\":\"APPROVED\",\"approval_actor_id\":\"user-1\",\"approval_evidence_digest\":\"sha256:54de280ca0b7d23f2967f7761bd8e1cf87ee68f4fc0ab1db5b80130e2e90c64b\",\"work_items\":[{\"id\":\"kernel\",\"depends_on\":[],\"required_inputs\":[],\"expected_outputs\":[\"kernel-source\"],\"execution_requirements\":{\"scope_roots\":[\"packages/core/src/tasks/task-kernel\"],\"repository_effects\":[\"source_code\"],\"external_effects\":[],\"capabilities\":[\"repository_write\"],\"resources\":[\"kernel-work\"]},\"optional\":false}]},\"plan_history\":[],\"work_items\":{\"kernel\":{\"definition\":{\"id\":\"kernel\",\"depends_on\":[],\"required_inputs\":[],\"expected_outputs\":[\"kernel-source\"],\"execution_requirements\":{\"scope_roots\":[\"packages/core/src/tasks/task-kernel\"],\"repository_effects\":[\"source_code\"],\"external_effects\":[],\"capabilities\":[\"repository_write\"],\"resources\":[\"kernel-work\"]},\"optional\":false},\"state\":\"READY\",\"revision\":1,\"attempt\":1,\"claim_id\":\"claim-1\",\"result_digest\":null,\"output_manifests\":[],\"validation\":null}},\"final_validation\":null,\"effects\":[{\"id\":\"merge\",\"kind\":\"pr.merge\",\"execution_requirements\":{\"scope_roots\":[],\"repository_effects\":[],\"external_effects\":[\"pr.merge\"],\"capabilities\":[\"provider_write\"],\"resources\":[\"pull:1\"]},\"state\":\"PREPARED\",\"idempotency_key\":\"merge\",\"request_digest\":\"sha256:532f53631c5865a58c44aeb6665e3c39eff9fcb1369e4ff3066568c964adf93f\",\"provider_receipt_digest\":null,\"observed_state_digest\":null}],\"mutation_receipts\":{},\"controller_transfer\":null,\"migration_receipts\":[]},\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\"}",
+      "expected": {
+        "kind": "provider",
+        "task_id": "task-1",
+        "repository_fingerprint": "sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3",
+        "effect_id": "merge",
+        "request_digest": "sha256:532f53631c5865a58c44aeb6665e3c39eff9fcb1369e4ff3066568c964adf93f",
+        "state": "NOT_APPLIED",
+        "receipt_digest": "sha256:f8447eb6d244f94fb8be176422d6bb848b7f2236140e3272c9fb9f3157a212ed"
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "provider-IN_DOUBT",
+        "source_digest": "sha256:fd118b0345358e0a998ecd1d2821879d57bc60129a7bc7fa229e0771bd697038",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t provider-IN_DOUBT"
+      },
+      "source_bytes": "{\"kind\":\"provider\",\"raw\":{\"kind\":\"provider\",\"task_id\":\"task-1\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"effect_id\":\"merge\",\"request_digest\":\"sha256:532f53631c5865a58c44aeb6665e3c39eff9fcb1369e4ff3066568c964adf93f\",\"state\":\"IN_DOUBT\",\"receipt_digest\":\"sha256:f8447eb6d244f94fb8be176422d6bb848b7f2236140e3272c9fb9f3157a212ed\"},\"aggregate\":{\"schema_version\":1,\"id\":\"task-1\",\"revision\":7,\"state\":\"ACTIVE\",\"intent_digest\":\"sha256:3a4c15e51a0dff4a561a2966e5bd7d49b6914f42ff3cd950832b476ee6ac25f8\",\"current_plan\":{\"revision\":1,\"digest\":\"sha256:80a6904dad38d3e2f5af3e336c502b09ed384504dc7a68072527709ebd8fab99\",\"state\":\"APPROVED\",\"approval_actor_id\":\"user-1\",\"approval_evidence_digest\":\"sha256:54de280ca0b7d23f2967f7761bd8e1cf87ee68f4fc0ab1db5b80130e2e90c64b\",\"work_items\":[{\"id\":\"kernel\",\"depends_on\":[],\"required_inputs\":[],\"expected_outputs\":[\"kernel-source\"],\"execution_requirements\":{\"scope_roots\":[\"packages/core/src/tasks/task-kernel\"],\"repository_effects\":[\"source_code\"],\"external_effects\":[],\"capabilities\":[\"repository_write\"],\"resources\":[\"kernel-work\"]},\"optional\":false}]},\"plan_history\":[],\"work_items\":{\"kernel\":{\"definition\":{\"id\":\"kernel\",\"depends_on\":[],\"required_inputs\":[],\"expected_outputs\":[\"kernel-source\"],\"execution_requirements\":{\"scope_roots\":[\"packages/core/src/tasks/task-kernel\"],\"repository_effects\":[\"source_code\"],\"external_effects\":[],\"capabilities\":[\"repository_write\"],\"resources\":[\"kernel-work\"]},\"optional\":false},\"state\":\"READY\",\"revision\":1,\"attempt\":1,\"claim_id\":\"claim-1\",\"result_digest\":null,\"output_manifests\":[],\"validation\":null}},\"final_validation\":null,\"effects\":[{\"id\":\"merge\",\"kind\":\"pr.merge\",\"execution_requirements\":{\"scope_roots\":[],\"repository_effects\":[],\"external_effects\":[\"pr.merge\"],\"capabilities\":[\"provider_write\"],\"resources\":[\"pull:1\"]},\"state\":\"PREPARED\",\"idempotency_key\":\"merge\",\"request_digest\":\"sha256:532f53631c5865a58c44aeb6665e3c39eff9fcb1369e4ff3066568c964adf93f\",\"provider_receipt_digest\":null,\"observed_state_digest\":null}],\"mutation_receipts\":{},\"controller_transfer\":null,\"migration_receipts\":[]},\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\"}",
+      "expected": {
+        "kind": "provider",
+        "task_id": "task-1",
+        "repository_fingerprint": "sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3",
+        "effect_id": "merge",
+        "request_digest": "sha256:532f53631c5865a58c44aeb6665e3c39eff9fcb1369e4ff3066568c964adf93f",
+        "state": "IN_DOUBT",
+        "receipt_digest": "sha256:f8447eb6d244f94fb8be176422d6bb848b7f2236140e3272c9fb9f3157a212ed"
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "provider-wrong-request",
+        "source_digest": "sha256:3852615e5d87b82db3dcff766c297ca211aba6dac11f8af9c89b05a01413b664",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t provider-wrong-request"
+      },
+      "source_bytes": "{\"kind\":\"provider\",\"raw\":{\"kind\":\"provider\",\"task_id\":\"task-1\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"effect_id\":\"merge\",\"request_digest\":\"sha256:e0173e3c40f547e6cae92877a1330801f8099a9e4e6d33db071a737bab334ed7\",\"state\":\"APPLIED\",\"receipt_digest\":\"sha256:f8447eb6d244f94fb8be176422d6bb848b7f2236140e3272c9fb9f3157a212ed\"},\"aggregate\":{\"schema_version\":1,\"id\":\"task-1\",\"revision\":7,\"state\":\"ACTIVE\",\"intent_digest\":\"sha256:3a4c15e51a0dff4a561a2966e5bd7d49b6914f42ff3cd950832b476ee6ac25f8\",\"current_plan\":{\"revision\":1,\"digest\":\"sha256:80a6904dad38d3e2f5af3e336c502b09ed384504dc7a68072527709ebd8fab99\",\"state\":\"APPROVED\",\"approval_actor_id\":\"user-1\",\"approval_evidence_digest\":\"sha256:54de280ca0b7d23f2967f7761bd8e1cf87ee68f4fc0ab1db5b80130e2e90c64b\",\"work_items\":[{\"id\":\"kernel\",\"depends_on\":[],\"required_inputs\":[],\"expected_outputs\":[\"kernel-source\"],\"execution_requirements\":{\"scope_roots\":[\"packages/core/src/tasks/task-kernel\"],\"repository_effects\":[\"source_code\"],\"external_effects\":[],\"capabilities\":[\"repository_write\"],\"resources\":[\"kernel-work\"]},\"optional\":false}]},\"plan_history\":[],\"work_items\":{\"kernel\":{\"definition\":{\"id\":\"kernel\",\"depends_on\":[],\"required_inputs\":[],\"expected_outputs\":[\"kernel-source\"],\"execution_requirements\":{\"scope_roots\":[\"packages/core/src/tasks/task-kernel\"],\"repository_effects\":[\"source_code\"],\"external_effects\":[],\"capabilities\":[\"repository_write\"],\"resources\":[\"kernel-work\"]},\"optional\":false},\"state\":\"READY\",\"revision\":1,\"attempt\":1,\"claim_id\":\"claim-1\",\"result_digest\":null,\"output_manifests\":[],\"validation\":null}},\"final_validation\":null,\"effects\":[{\"id\":\"merge\",\"kind\":\"pr.merge\",\"execution_requirements\":{\"scope_roots\":[],\"repository_effects\":[],\"external_effects\":[\"pr.merge\"],\"capabilities\":[\"provider_write\"],\"resources\":[\"pull:1\"]},\"state\":\"PREPARED\",\"idempotency_key\":\"merge\",\"request_digest\":\"sha256:532f53631c5865a58c44aeb6665e3c39eff9fcb1369e4ff3066568c964adf93f\",\"provider_receipt_digest\":null,\"observed_state_digest\":null}],\"mutation_receipts\":{},\"controller_transfer\":null,\"migration_receipts\":[]},\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\"}",
+      "expected": {
+        "kind": "rejected",
+        "code": "observation_effect_mismatch"
+      }
+    },
+    {
+      "identity": {
+        "fixture_id": "provider-wrong-checkout",
+        "source_digest": "sha256:547c7da7ab48f2499d5f3ae1c9ee94b37ef9b66af27cc070187fb746f004611f",
+        "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+        "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts -t provider-wrong-checkout"
+      },
+      "source_bytes": "{\"kind\":\"provider\",\"raw\":{\"kind\":\"provider\",\"task_id\":\"task-1\",\"repository_fingerprint\":\"sha256:2e75c589defc353c25ad1521353238d6646f1f45a170f6f8a239c08d94020ca3\",\"effect_id\":\"merge\",\"request_digest\":\"sha256:532f53631c5865a58c44aeb6665e3c39eff9fcb1369e4ff3066568c964adf93f\",\"state\":\"APPLIED\",\"receipt_digest\":\"sha256:f8447eb6d244f94fb8be176422d6bb848b7f2236140e3272c9fb9f3157a212ed\"},\"aggregate\":{\"schema_version\":1,\"id\":\"task-1\",\"revision\":7,\"state\":\"ACTIVE\",\"intent_digest\":\"sha256:3a4c15e51a0dff4a561a2966e5bd7d49b6914f42ff3cd950832b476ee6ac25f8\",\"current_plan\":{\"revision\":1,\"digest\":\"sha256:80a6904dad38d3e2f5af3e336c502b09ed384504dc7a68072527709ebd8fab99\",\"state\":\"APPROVED\",\"approval_actor_id\":\"user-1\",\"approval_evidence_digest\":\"sha256:54de280ca0b7d23f2967f7761bd8e1cf87ee68f4fc0ab1db5b80130e2e90c64b\",\"work_items\":[{\"id\":\"kernel\",\"depends_on\":[],\"required_inputs\":[],\"expected_outputs\":[\"kernel-source\"],\"execution_requirements\":{\"scope_roots\":[\"packages/core/src/tasks/task-kernel\"],\"repository_effects\":[\"source_code\"],\"external_effects\":[],\"capabilities\":[\"repository_write\"],\"resources\":[\"kernel-work\"]},\"optional\":false}]},\"plan_history\":[],\"work_items\":{\"kernel\":{\"definition\":{\"id\":\"kernel\",\"depends_on\":[],\"required_inputs\":[],\"expected_outputs\":[\"kernel-source\"],\"execution_requirements\":{\"scope_roots\":[\"packages/core/src/tasks/task-kernel\"],\"repository_effects\":[\"source_code\"],\"external_effects\":[],\"capabilities\":[\"repository_write\"],\"resources\":[\"kernel-work\"]},\"optional\":false},\"state\":\"READY\",\"revision\":1,\"attempt\":1,\"claim_id\":\"claim-1\",\"result_digest\":null,\"output_manifests\":[],\"validation\":null}},\"final_validation\":null,\"effects\":[{\"id\":\"merge\",\"kind\":\"pr.merge\",\"execution_requirements\":{\"scope_roots\":[],\"repository_effects\":[],\"external_effects\":[\"pr.merge\"],\"capabilities\":[\"provider_write\"],\"resources\":[\"pull:1\"]},\"state\":\"PREPARED\",\"idempotency_key\":\"merge\",\"request_digest\":\"sha256:532f53631c5865a58c44aeb6665e3c39eff9fcb1369e4ff3066568c964adf93f\",\"provider_receipt_digest\":null,\"observed_state_digest\":null}],\"mutation_receipts\":{},\"controller_transfer\":null,\"migration_receipts\":[]},\"repository_fingerprint\":\"sha256:141330f2d2a59d2e35eb001cb259d51370f6409492d7b7a914c9a364812c9681\"}",
+      "expected": {
+        "kind": "rejected",
+        "code": "observation_binding_mismatch"
+      }
+    }
+  ]
+}

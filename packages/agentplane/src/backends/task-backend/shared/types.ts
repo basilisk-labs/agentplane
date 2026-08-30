@@ -128,6 +128,8 @@ export type TaskBackendProjectionTransitionHooks<T> = {
 };
 
 export type TaskBackendCapabilities = {
+  /** Whole-record atomic persistence, including extensions, under the revision guard. */
+  atomic_task_record?: boolean;
   canonical_source: "local" | "remote";
   projection: "canonical" | "cache";
   projection_read_mode: TaskBackendProjectionReadMode;

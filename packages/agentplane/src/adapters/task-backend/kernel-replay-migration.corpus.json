@@ -1,0 +1,468 @@
+{
+  "schema_version": 1,
+  "source_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+  "repository_identity": "sha256:b696ba4f1b090f3ae7ab4d8b0495e0099cc057bc9c73a6f457e8f9b4d68dd136",
+  "fixtures": [
+    {
+      "id": "legacy-TODO",
+      "task_id": "202608300000-MGR001",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAwMSIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiVE9ETyIKcHJpb3JpdHk6ICJtZWQiCm93bmVyOiAiQ09ERVIiCnJldmlzaW9uOiA0CmRlcGVuZHNfb246IFtdCnRhZ3M6IFtdCnZlcmlmeTogW10KZG9jX3ZlcnNpb246IDMKZG9jX3VwZGF0ZWRfYXQ6ICIyMDI2LTA4LTMwVDAwOjAwOjAwLjAwMFoiCmRvY191cGRhdGVkX2J5OiAiRklYVFVSRSIKZGVzY3JpcHRpb246ICJFeGFjdCBieXRlczog0LTQsNC90L3Ri9C1IgpzY2hlbWFfdmVyc2lvbjogMQotLS0KIyMgTm90ZXMKClByZXNlcnZlIGNvbW1lbnRzIGFuZCBzb3VyY2UgYnl0ZXMuCg==",
+      "source_digest": "sha256:361a188f258f7d318353bcd3a012fa24b1afd6290bcf94e914fdbc5604bfbb6e",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR001",
+        "classification": "legacy_active",
+        "source_digest": "sha256:361a188f258f7d318353bcd3a012fa24b1afd6290bcf94e914fdbc5604bfbb6e",
+        "source_revision": 4,
+        "reason": null,
+        "fields": [],
+        "proposed_canonical_digest": "sha256:e0d6e158d0466629aea359f1c0bbda26a74efe037c47438fa0ee514bc5d0cabe",
+        "proposed_projection_digest": "sha256:b38dbb8def56a6f7da291a092acaf510b73666620feb9387aad8e9ceaf7e67e1",
+        "proposed_output_bytes_digest": "sha256:014c9309e558226e57a047c00237d8c22741a2d9905c06c994b5970f408e2288",
+        "backup_location": "202608300000-MGR001/migration-361a188f258f7d318353bcd3a012fa24b1afd6290bcf94e914fdbc5604bfbb6e.source",
+        "rollback_capability": "exact_bytes_cas",
+        "input_classification": {
+          "context_refs": [],
+          "output_manifest_refs": []
+        }
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t legacy-TODO"
+    },
+    {
+      "id": "legacy-DOING",
+      "task_id": "202608300000-MGR002",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAwMiIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiRE9JTkciCnByaW9yaXR5OiAibWVkIgpvd25lcjogIkNPREVSIgpyZXZpc2lvbjogNApkZXBlbmRzX29uOiBbXQp0YWdzOiBbXQp2ZXJpZnk6IFtdCmRvY192ZXJzaW9uOiAzCmRvY191cGRhdGVkX2F0OiAiMjAyNi0wOC0zMFQwMDowMDowMC4wMDBaIgpkb2NfdXBkYXRlZF9ieTogIkZJWFRVUkUiCmRlc2NyaXB0aW9uOiAiRXhhY3QgYnl0ZXM6INC00LDQvdC90YvQtSIKc2NoZW1hX3ZlcnNpb246IDEKLS0tCiMjIE5vdGVzCgpQcmVzZXJ2ZSBjb21tZW50cyBhbmQgc291cmNlIGJ5dGVzLgo=",
+      "source_digest": "sha256:11d5844d53c97a379ffcd0aacdd7d0ea850440c2ff793f67fc5c06e079735152",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR002",
+        "classification": "legacy_active",
+        "source_digest": "sha256:11d5844d53c97a379ffcd0aacdd7d0ea850440c2ff793f67fc5c06e079735152",
+        "source_revision": 4,
+        "reason": null,
+        "fields": [],
+        "proposed_canonical_digest": "sha256:29e0cfb078afa2e4d01e64cdefeb733ff56059a964c2688851a218bcf7ebce0b",
+        "proposed_projection_digest": "sha256:c90afead9ce94a4f743b56dc0e699e1c5b84e78512103a21330d2042b11003e5",
+        "proposed_output_bytes_digest": "sha256:42ed7ddcc9eae9be796b08e1be6fed3c884de7d0f67a79339348c92ff21f5ef1",
+        "backup_location": "202608300000-MGR002/migration-11d5844d53c97a379ffcd0aacdd7d0ea850440c2ff793f67fc5c06e079735152.source",
+        "rollback_capability": "exact_bytes_cas",
+        "input_classification": {
+          "context_refs": [],
+          "output_manifest_refs": []
+        }
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t legacy-DOING"
+    },
+    {
+      "id": "legacy-BLOCKED",
+      "task_id": "202608300000-MGR003",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAwMyIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiQkxPQ0tFRCIKcHJpb3JpdHk6ICJtZWQiCm93bmVyOiAiQ09ERVIiCnJldmlzaW9uOiA0CmRlcGVuZHNfb246IFtdCnRhZ3M6IFtdCnZlcmlmeTogW10KZG9jX3ZlcnNpb246IDMKZG9jX3VwZGF0ZWRfYXQ6ICIyMDI2LTA4LTMwVDAwOjAwOjAwLjAwMFoiCmRvY191cGRhdGVkX2J5OiAiRklYVFVSRSIKZGVzY3JpcHRpb246ICJFeGFjdCBieXRlczog0LTQsNC90L3Ri9C1IgpzY2hlbWFfdmVyc2lvbjogMQotLS0KIyMgTm90ZXMKClByZXNlcnZlIGNvbW1lbnRzIGFuZCBzb3VyY2UgYnl0ZXMuCg==",
+      "source_digest": "sha256:db8a9e0dca731e1e76188a05794c2b56456fc75898ff66badcd5ca6ff90e7e5b",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR003",
+        "classification": "legacy_active",
+        "source_digest": "sha256:db8a9e0dca731e1e76188a05794c2b56456fc75898ff66badcd5ca6ff90e7e5b",
+        "source_revision": 4,
+        "reason": null,
+        "fields": [],
+        "proposed_canonical_digest": "sha256:71e73ade07b92cefede7b5ade705ece3fb94a56f9dd6490e7f24925b11a1eacf",
+        "proposed_projection_digest": "sha256:4c708c285bdf5ac4458d3894f4ad03dda2dea0e8978022105cd177910c6262f7",
+        "proposed_output_bytes_digest": "sha256:e40198e92e9adb4e6aabf52a15567257ebeb058fac9b992633ee6feea74ca294",
+        "backup_location": "202608300000-MGR003/migration-db8a9e0dca731e1e76188a05794c2b56456fc75898ff66badcd5ca6ff90e7e5b.source",
+        "rollback_capability": "exact_bytes_cas",
+        "input_classification": {
+          "context_refs": [],
+          "output_manifest_refs": []
+        }
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t legacy-BLOCKED"
+    },
+    {
+      "id": "legacy-DONE",
+      "task_id": "202608300000-MGR004",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAwNCIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiRE9ORSIKcHJpb3JpdHk6ICJtZWQiCm93bmVyOiAiQ09ERVIiCnJldmlzaW9uOiA0CmRlcGVuZHNfb246IFtdCnRhZ3M6IFtdCnZlcmlmeTogW10KZG9jX3ZlcnNpb246IDMKZG9jX3VwZGF0ZWRfYXQ6ICIyMDI2LTA4LTMwVDAwOjAwOjAwLjAwMFoiCmRvY191cGRhdGVkX2J5OiAiRklYVFVSRSIKZGVzY3JpcHRpb246ICJFeGFjdCBieXRlczog0LTQsNC90L3Ri9C1IgpzY2hlbWFfdmVyc2lvbjogMQotLS0KIyMgTm90ZXMKClByZXNlcnZlIGNvbW1lbnRzIGFuZCBzb3VyY2UgYnl0ZXMuCg==",
+      "source_digest": "sha256:5f6a18f9640ea15d078ef06c05ff551d61dac4457dbc300431a16ad848712949",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR004",
+        "classification": "legacy_terminal",
+        "source_digest": "sha256:5f6a18f9640ea15d078ef06c05ff551d61dac4457dbc300431a16ad848712949",
+        "source_revision": 4,
+        "reason": null,
+        "fields": [],
+        "proposed_canonical_digest": "sha256:ab3f00153131f143d577da6fb225c78fae782bf4a12893bc2f0751dbf124a2e1",
+        "proposed_projection_digest": "sha256:289bd2e109aa87f957eb3f442cd781c38b7a1715e3d82fd81447bd0321ac371a",
+        "proposed_output_bytes_digest": "sha256:1aa13847707eda5164cec4478efa1ab661ccfcfb94d1cc0ca3c05074f2b46126",
+        "backup_location": "202608300000-MGR004/migration-5f6a18f9640ea15d078ef06c05ff551d61dac4457dbc300431a16ad848712949.source",
+        "rollback_capability": "exact_bytes_cas",
+        "input_classification": {
+          "context_refs": [],
+          "output_manifest_refs": []
+        }
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t legacy-DONE"
+    },
+    {
+      "id": "unknown-status",
+      "task_id": "202608300000-MGR005",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAwNSIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiRlVUVVJFIgpwcmlvcml0eTogIm1lZCIKb3duZXI6ICJDT0RFUiIKcmV2aXNpb246IDQKZGVwZW5kc19vbjogW10KdGFnczogW10KdmVyaWZ5OiBbXQpkb2NfdmVyc2lvbjogMwpkb2NfdXBkYXRlZF9hdDogIjIwMjYtMDgtMzBUMDA6MDA6MDAuMDAwWiIKZG9jX3VwZGF0ZWRfYnk6ICJGSVhUVVJFIgpkZXNjcmlwdGlvbjogIkV4YWN0IGJ5dGVzOiDQtNCw0L3QvdGL0LUiCnNjaGVtYV92ZXJzaW9uOiAxCi0tLQojIyBOb3RlcwoKUHJlc2VydmUgY29tbWVudHMgYW5kIHNvdXJjZSBieXRlcy4K",
+      "source_digest": "sha256:4d19ffb73b28816eaf59758928fdf609c3bf1cd7f85a277d278542bdd62c8328",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR005",
+        "classification": "quarantined",
+        "source_digest": "sha256:4d19ffb73b28816eaf59758928fdf609c3bf1cd7f85a277d278542bdd62c8328",
+        "source_revision": 4,
+        "reason": "malformed_source",
+        "fields": ["frontmatter"],
+        "proposed_canonical_digest": null,
+        "proposed_projection_digest": null,
+        "proposed_output_bytes_digest": null,
+        "backup_location": null,
+        "rollback_capability": "not_applicable",
+        "input_classification": null
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t unknown-status"
+    },
+    {
+      "id": "unknown-schema",
+      "task_id": "202608300000-MGR006",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAwNiIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiVE9ETyIKcHJpb3JpdHk6ICJtZWQiCm93bmVyOiAiQ09ERVIiCnJldmlzaW9uOiA0CmRlcGVuZHNfb246IFtdCnRhZ3M6IFtdCnZlcmlmeTogW10KZG9jX3ZlcnNpb246IDMKZG9jX3VwZGF0ZWRfYXQ6ICIyMDI2LTA4LTMwVDAwOjAwOjAwLjAwMFoiCmRvY191cGRhdGVkX2J5OiAiRklYVFVSRSIKZGVzY3JpcHRpb246ICJFeGFjdCBieXRlczog0LTQsNC90L3Ri9C1IgpzY2hlbWFfdmVyc2lvbjogNDIKLS0tCiMjIE5vdGVzCgpQcmVzZXJ2ZSBjb21tZW50cyBhbmQgc291cmNlIGJ5dGVzLgo=",
+      "source_digest": "sha256:dab49969c0a1bb00828b517d71c810e3aa492e99bc09b8f353b9a2ab67ad9da2",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR006",
+        "classification": "quarantined",
+        "source_digest": "sha256:dab49969c0a1bb00828b517d71c810e3aa492e99bc09b8f353b9a2ab67ad9da2",
+        "source_revision": 4,
+        "reason": "unknown_schema",
+        "fields": ["frontmatter"],
+        "proposed_canonical_digest": null,
+        "proposed_projection_digest": null,
+        "proposed_output_bytes_digest": null,
+        "backup_location": null,
+        "rollback_capability": "not_applicable",
+        "input_classification": null
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t unknown-schema"
+    },
+    {
+      "id": "unknown-document",
+      "task_id": "202608300000-MGR007",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAwNyIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiVE9ETyIKcHJpb3JpdHk6ICJtZWQiCm93bmVyOiAiQ09ERVIiCnJldmlzaW9uOiA0CmRlcGVuZHNfb246IFtdCnRhZ3M6IFtdCnZlcmlmeTogW10KZG9jX3ZlcnNpb246IDQyCmRvY191cGRhdGVkX2F0OiAiMjAyNi0wOC0zMFQwMDowMDowMC4wMDBaIgpkb2NfdXBkYXRlZF9ieTogIkZJWFRVUkUiCmRlc2NyaXB0aW9uOiAiRXhhY3QgYnl0ZXM6INC00LDQvdC90YvQtSIKc2NoZW1hX3ZlcnNpb246IDEKLS0tCiMjIE5vdGVzCgpQcmVzZXJ2ZSBjb21tZW50cyBhbmQgc291cmNlIGJ5dGVzLgo=",
+      "source_digest": "sha256:d3f76c69d5357fb6bb05ecafe5c76e592a62594061ff7b7581b0b7fe853b7965",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR007",
+        "classification": "quarantined",
+        "source_digest": "sha256:d3f76c69d5357fb6bb05ecafe5c76e592a62594061ff7b7581b0b7fe853b7965",
+        "source_revision": 4,
+        "reason": "unknown_schema",
+        "fields": ["frontmatter"],
+        "proposed_canonical_digest": null,
+        "proposed_projection_digest": null,
+        "proposed_output_bytes_digest": null,
+        "backup_location": null,
+        "rollback_capability": "not_applicable",
+        "input_classification": null
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t unknown-document"
+    },
+    {
+      "id": "malformed-canonical",
+      "task_id": "202608300000-MGR008",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAwOCIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiVE9ETyIKcHJpb3JpdHk6ICJtZWQiCm93bmVyOiAiQ09ERVIiCnJldmlzaW9uOiA0CmRlcGVuZHNfb246IFtdCnRhZ3M6IFtdCnZlcmlmeTogW10KZG9jX3ZlcnNpb246IDMKZG9jX3VwZGF0ZWRfYXQ6ICIyMDI2LTA4LTMwVDAwOjAwOjAwLjAwMFoiCmRvY191cGRhdGVkX2J5OiAiRklYVFVSRSIKZGVzY3JpcHRpb246ICJFeGFjdCBieXRlczog0LTQsNC90L3Ri9C1IgpleHRlbnNpb25zOgogIHRhc2tfa2VybmVsOiB7fQpzY2hlbWFfdmVyc2lvbjogMQotLS0KIyMgTm90ZXMKClByZXNlcnZlIGNvbW1lbnRzIGFuZCBzb3VyY2UgYnl0ZXMuCg==",
+      "source_digest": "sha256:a5534000fe5e8c92113071c1b7008e8b58e184d74515db6a50bd113b159e169b",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR008",
+        "classification": "quarantined",
+        "source_digest": "sha256:a5534000fe5e8c92113071c1b7008e8b58e184d74515db6a50bd113b159e169b",
+        "source_revision": 4,
+        "reason": "malformed_canonical",
+        "fields": ["frontmatter"],
+        "proposed_canonical_digest": null,
+        "proposed_projection_digest": null,
+        "proposed_output_bytes_digest": null,
+        "backup_location": null,
+        "rollback_capability": "not_applicable",
+        "input_classification": null
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t malformed-canonical"
+    },
+    {
+      "id": "unknown-runtime",
+      "task_id": "202608300000-MGR009",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAwOSIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiVE9ETyIKcHJpb3JpdHk6ICJtZWQiCm93bmVyOiAiQ09ERVIiCnJldmlzaW9uOiA0CmRlcGVuZHNfb246IFtdCnRhZ3M6IFtdCnZlcmlmeTogW10KZG9jX3ZlcnNpb246IDMKZG9jX3VwZGF0ZWRfYXQ6ICIyMDI2LTA4LTMwVDAwOjAwOjAwLjAwMFoiCmRvY191cGRhdGVkX2J5OiAiRklYVFVSRSIKZGVzY3JpcHRpb246ICJFeGFjdCBieXRlczog0LTQsNC90L3Ri9C1IgpleHRlbnNpb25zOgogIGFnZW50cGxhbmUudGFza19jZW50cmljX3J1bnRpbWU6CiAgICBzY2hlbWFfdmVyc2lvbjogNDIKc2NoZW1hX3ZlcnNpb246IDEKLS0tCiMjIE5vdGVzCgpQcmVzZXJ2ZSBjb21tZW50cyBhbmQgc291cmNlIGJ5dGVzLgo=",
+      "source_digest": "sha256:ce3e4fa1a49bc57a2d777e687e2f3e673cad1c9e8ffc67f61e3aaba530348977",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR009",
+        "classification": "quarantined",
+        "source_digest": "sha256:ce3e4fa1a49bc57a2d777e687e2f3e673cad1c9e8ffc67f61e3aaba530348977",
+        "source_revision": 4,
+        "reason": "unknown_schema",
+        "fields": ["frontmatter"],
+        "proposed_canonical_digest": null,
+        "proposed_projection_digest": null,
+        "proposed_output_bytes_digest": null,
+        "backup_location": null,
+        "rollback_capability": "not_applicable",
+        "input_classification": null
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t unknown-runtime"
+    },
+    {
+      "id": "unreconciled-effect",
+      "task_id": "202608300000-MGR010",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAxMCIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiVE9ETyIKcHJpb3JpdHk6ICJtZWQiCm93bmVyOiAiQ09ERVIiCnJldmlzaW9uOiA0CmRlcGVuZHNfb246IFtdCnRhZ3M6IFtdCnZlcmlmeTogW10KZG9jX3ZlcnNpb246IDMKZG9jX3VwZGF0ZWRfYXQ6ICIyMDI2LTA4LTMwVDAwOjAwOjAwLjAwMFoiCmRvY191cGRhdGVkX2J5OiAiRklYVFVSRSIKZGVzY3JpcHRpb246ICJFeGFjdCBieXRlczog0LTQsNC90L3Ri9C1IgpleHRlbnNpb25zOgogIGFnZW50cGxhbmUudGFza19jZW50cmljX3J1bnRpbWU6CiAgICBjaGVja3BvaW50czogW10KICAgIGxlYXNlczogW10KICAgIG11dGF0aW9uX3JlY2VpcHRzOiB7fQogICAgcGVuZGluZ19lZmZlY3RzOgogICAgICAtCiAgICAgICAgaWQ6ICJ1bmtub3duLW1lcmdlIgogICAgcmV0cnlfYnVkZ2V0czogW10KICAgIHNjaGVtYV92ZXJzaW9uOiAxCnNjaGVtYV92ZXJzaW9uOiAxCi0tLQojIyBOb3RlcwoKUHJlc2VydmUgY29tbWVudHMgYW5kIHNvdXJjZSBieXRlcy4K",
+      "source_digest": "sha256:bbc0a41b608bbd8686d92e70e7a6af078f2e37ed32962a1b8f7627e63d7d6476",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR010",
+        "classification": "quarantined",
+        "source_digest": "sha256:bbc0a41b608bbd8686d92e70e7a6af078f2e37ed32962a1b8f7627e63d7d6476",
+        "source_revision": 4,
+        "reason": "unreconciled_runtime",
+        "fields": ["extensions.agentplane.task_centric_runtime"],
+        "proposed_canonical_digest": null,
+        "proposed_projection_digest": null,
+        "proposed_output_bytes_digest": null,
+        "backup_location": null,
+        "rollback_capability": "not_applicable",
+        "input_classification": null
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t unreconciled-effect"
+    },
+    {
+      "id": "source-path-ambiguous",
+      "task_id": "202608300000-MGR011",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAxMSIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiVE9ETyIKcHJpb3JpdHk6ICJtZWQiCm93bmVyOiAiQ09ERVIiCnJldmlzaW9uOiA0CmRlcGVuZHNfb246IFtdCnRhZ3M6IFtdCnZlcmlmeTogW10KZG9jX3ZlcnNpb246IDMKZG9jX3VwZGF0ZWRfYXQ6ICIyMDI2LTA4LTMwVDAwOjAwOjAwLjAwMFoiCmRvY191cGRhdGVkX2J5OiAiRklYVFVSRSIKZGVzY3JpcHRpb246ICJFeGFjdCBieXRlczog0LTQsNC90L3Ri9C1IgpleHRlbnNpb25zOgogIGZpeHR1cmU6CiAgICByZXF1aXJlZF9pbnB1dHM6CiAgICAgIC0gInNyYy9tYWluLnRzIgpzY2hlbWFfdmVyc2lvbjogMQotLS0KIyMgTm90ZXMKClByZXNlcnZlIGNvbW1lbnRzIGFuZCBzb3VyY2UgYnl0ZXMuCg==",
+      "source_digest": "sha256:2d8dda65b879989e974cfce02332f7393f0ccb421a88ac702734b3b437a78104",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR011",
+        "classification": "quarantined",
+        "source_digest": "sha256:2d8dda65b879989e974cfce02332f7393f0ccb421a88ac702734b3b437a78104",
+        "source_revision": 4,
+        "reason": "ambiguous_required_inputs",
+        "fields": ["frontmatter.extensions.fixture.required_inputs[0]"],
+        "proposed_canonical_digest": null,
+        "proposed_projection_digest": null,
+        "proposed_output_bytes_digest": null,
+        "backup_location": null,
+        "rollback_capability": "not_applicable",
+        "input_classification": null
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t source-path-ambiguous"
+    },
+    {
+      "id": "typed-context",
+      "task_id": "202608300000-MGR012",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAxMiIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiVE9ETyIKcHJpb3JpdHk6ICJtZWQiCm93bmVyOiAiQ09ERVIiCnJldmlzaW9uOiA0CmRlcGVuZHNfb246IFtdCnRhZ3M6IFtdCnZlcmlmeTogW10KZG9jX3ZlcnNpb246IDMKZG9jX3VwZGF0ZWRfYXQ6ICIyMDI2LTA4LTMwVDAwOjAwOjAwLjAwMFoiCmRvY191cGRhdGVkX2J5OiAiRklYVFVSRSIKZGVzY3JpcHRpb246ICJFeGFjdCBieXRlczog0LTQsNC90L3Ri9C1IgpleHRlbnNpb25zOgogIGZpeHR1cmU6CiAgICByZXF1aXJlZF9pbnB1dHM6CiAgICAgIC0KICAgICAgICBpZDogInNyYy9tYWluLnRzIgogICAgICAgIGtpbmQ6ICJjb250ZXh0X3JlZiIKc2NoZW1hX3ZlcnNpb246IDEKLS0tCiMjIE5vdGVzCgpQcmVzZXJ2ZSBjb21tZW50cyBhbmQgc291cmNlIGJ5dGVzLgo=",
+      "source_digest": "sha256:6ff538d061382ea2c23e61e851403ac538c0202a54d61006b418ed4a65ad2ca9",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR012",
+        "classification": "legacy_active",
+        "source_digest": "sha256:6ff538d061382ea2c23e61e851403ac538c0202a54d61006b418ed4a65ad2ca9",
+        "source_revision": 4,
+        "reason": null,
+        "fields": [],
+        "proposed_canonical_digest": "sha256:da149106f42bdd0e6b7e2914379b4aaca9bf3655c92e29644d287ee20390820c",
+        "proposed_projection_digest": "sha256:1604c0b25d79cc26194c3d01af4d4bc3eb59265668c593866119bb89e73787e9",
+        "proposed_output_bytes_digest": "sha256:f7fc6e8d7a11ede30fdc141199d904514ee914e1759b5bfc613bcc6db51055c6",
+        "backup_location": "202608300000-MGR012/migration-6ff538d061382ea2c23e61e851403ac538c0202a54d61006b418ed4a65ad2ca9.source",
+        "rollback_capability": "exact_bytes_cas",
+        "input_classification": {
+          "context_refs": ["src/main.ts"],
+          "output_manifest_refs": []
+        }
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t typed-context"
+    },
+    {
+      "id": "typed-output",
+      "task_id": "202608300000-MGR013",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAxMyIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiVE9ETyIKcHJpb3JpdHk6ICJtZWQiCm93bmVyOiAiQ09ERVIiCnJldmlzaW9uOiA0CmRlcGVuZHNfb246IFtdCnRhZ3M6IFtdCnZlcmlmeTogW10KZG9jX3ZlcnNpb246IDMKZG9jX3VwZGF0ZWRfYXQ6ICIyMDI2LTA4LTMwVDAwOjAwOjAwLjAwMFoiCmRvY191cGRhdGVkX2J5OiAiRklYVFVSRSIKZGVzY3JpcHRpb246ICJFeGFjdCBieXRlczog0LTQsNC90L3Ri9C1IgpleHRlbnNpb25zOgogIGZpeHR1cmU6CiAgICByZXF1aXJlZF9pbnB1dHM6CiAgICAgIC0KICAgICAgICBpZDogInVwc3RyZWFtLWJ1aWxkIgogICAgICAgIGtpbmQ6ICJvdXRwdXRfbWFuaWZlc3QiCnNjaGVtYV92ZXJzaW9uOiAxCi0tLQojIyBOb3RlcwoKUHJlc2VydmUgY29tbWVudHMgYW5kIHNvdXJjZSBieXRlcy4K",
+      "source_digest": "sha256:08baa7670ceb83c18a82a5633ca1530e86c668ea5c75911c57706c15ea075d2b",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR013",
+        "classification": "legacy_active",
+        "source_digest": "sha256:08baa7670ceb83c18a82a5633ca1530e86c668ea5c75911c57706c15ea075d2b",
+        "source_revision": 4,
+        "reason": null,
+        "fields": [],
+        "proposed_canonical_digest": "sha256:3752d1afcab22813912eb797b29a487e00123b0a576f038f749c2d7eade212cd",
+        "proposed_projection_digest": "sha256:72abbc00d130036accce78cf2893bab692383bd9ea4b3786b0bbe0263decd9f2",
+        "proposed_output_bytes_digest": "sha256:fa1d37245714c43397c153d9dd2417dc0924d9480d44db03b60438cbbdfc4c04",
+        "backup_location": "202608300000-MGR013/migration-08baa7670ceb83c18a82a5633ca1530e86c668ea5c75911c57706c15ea075d2b.source",
+        "rollback_capability": "exact_bytes_cas",
+        "input_classification": {
+          "context_refs": [],
+          "output_manifest_refs": ["upstream-build"]
+        }
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t typed-output"
+    },
+    {
+      "id": "declared-output",
+      "task_id": "202608300000-MGR014",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAxNCIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiVE9ETyIKcHJpb3JpdHk6ICJtZWQiCm93bmVyOiAiQ09ERVIiCnJldmlzaW9uOiA0CmRlcGVuZHNfb246IFtdCnRhZ3M6IFtdCnZlcmlmeTogW10KZG9jX3ZlcnNpb246IDMKZG9jX3VwZGF0ZWRfYXQ6ICIyMDI2LTA4LTMwVDAwOjAwOjAwLjAwMFoiCmRvY191cGRhdGVkX2J5OiAiRklYVFVSRSIKZGVzY3JpcHRpb246ICJFeGFjdCBieXRlczog0LTQsNC90L3Ri9C1IgpleHRlbnNpb25zOgogIGZpeHR1cmU6CiAgICBvdXRwdXRfbWFuaWZlc3RzOgogICAgICAtCiAgICAgICAgaWQ6ICJ1cHN0cmVhbS1idWlsZCIKICAgICAgICBraW5kOiAicmVwb3J0IgogICAgcmVxdWlyZWRfaW5wdXRzOgogICAgICAtICJ1cHN0cmVhbS1idWlsZCIKc2NoZW1hX3ZlcnNpb246IDEKLS0tCiMjIE5vdGVzCgpQcmVzZXJ2ZSBjb21tZW50cyBhbmQgc291cmNlIGJ5dGVzLgo=",
+      "source_digest": "sha256:802b005bfbcd95bce0e9d932f91ccb8c9c67a477b6f0f2fbfbce70c771b7b51b",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR014",
+        "classification": "legacy_active",
+        "source_digest": "sha256:802b005bfbcd95bce0e9d932f91ccb8c9c67a477b6f0f2fbfbce70c771b7b51b",
+        "source_revision": 4,
+        "reason": null,
+        "fields": [],
+        "proposed_canonical_digest": "sha256:1f70719b05b6d1446abb4cc5d9af324690e6972e589370a71385f1d0a93e05ef",
+        "proposed_projection_digest": "sha256:acc065402e5c2105d2b9dfa80af321d2d176cd975d961bf550fe0b8119cf00b7",
+        "proposed_output_bytes_digest": "sha256:7618e4488d3f473c02d5c6819e5271d4566259586e0a7e643165314a6ab801de",
+        "backup_location": "202608300000-MGR014/migration-802b005bfbcd95bce0e9d932f91ccb8c9c67a477b6f0f2fbfbce70c771b7b51b.source",
+        "rollback_capability": "exact_bytes_cas",
+        "input_classification": {
+          "context_refs": [],
+          "output_manifest_refs": ["upstream-build"]
+        }
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t declared-output"
+    },
+    {
+      "id": "input-collision",
+      "task_id": "202608300000-MGR015",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAxNSIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiVE9ETyIKcHJpb3JpdHk6ICJtZWQiCm93bmVyOiAiQ09ERVIiCnJldmlzaW9uOiA0CmRlcGVuZHNfb246IFtdCnRhZ3M6IFtdCnZlcmlmeTogW10KZG9jX3ZlcnNpb246IDMKZG9jX3VwZGF0ZWRfYXQ6ICIyMDI2LTA4LTMwVDAwOjAwOjAwLjAwMFoiCmRvY191cGRhdGVkX2J5OiAiRklYVFVSRSIKZGVzY3JpcHRpb246ICJFeGFjdCBieXRlczog0LTQsNC90L3Ri9C1IgpleHRlbnNpb25zOgogIGZpeHR1cmU6CiAgICBjb250ZXh0X3JlZnM6CiAgICAgIC0KICAgICAgICBpZDogInNhbWUiCiAgICAgICAga2luZDogImZpbGUiCiAgICBvdXRwdXRfbWFuaWZlc3RzOgogICAgICAtCiAgICAgICAgaWQ6ICJzYW1lIgogICAgICAgIGtpbmQ6ICJyZXBvcnQiCiAgICByZXF1aXJlZF9pbnB1dHM6CiAgICAgIC0gInNhbWUiCnNjaGVtYV92ZXJzaW9uOiAxCi0tLQojIyBOb3RlcwoKUHJlc2VydmUgY29tbWVudHMgYW5kIHNvdXJjZSBieXRlcy4K",
+      "source_digest": "sha256:b2eff8cef71c411bb3281c0fba285b7dc90d4ccdedd6a5dd7b9a28eeb2022fa7",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR015",
+        "classification": "quarantined",
+        "source_digest": "sha256:b2eff8cef71c411bb3281c0fba285b7dc90d4ccdedd6a5dd7b9a28eeb2022fa7",
+        "source_revision": 4,
+        "reason": "ambiguous_required_inputs",
+        "fields": ["frontmatter.extensions.fixture.required_inputs[0]"],
+        "proposed_canonical_digest": null,
+        "proposed_projection_digest": null,
+        "proposed_output_bytes_digest": null,
+        "backup_location": null,
+        "rollback_capability": "not_applicable",
+        "input_classification": null
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t input-collision"
+    },
+    {
+      "id": "malformed-input-list",
+      "task_id": "202608300000-MGR016",
+      "source_base64": "LS0tCmlkOiAiMjAyNjA4MzAwMDAwLU1HUjAxNiIKdGl0bGU6ICJGcm96ZW4gbWlncmF0aW9uIHNvdXJjZSIKc3RhdHVzOiAiVE9ETyIKcHJpb3JpdHk6ICJtZWQiCm93bmVyOiAiQ09ERVIiCnJldmlzaW9uOiA0CmRlcGVuZHNfb246IFtdCnRhZ3M6IFtdCnZlcmlmeTogW10KZG9jX3ZlcnNpb246IDMKZG9jX3VwZGF0ZWRfYXQ6ICIyMDI2LTA4LTMwVDAwOjAwOjAwLjAwMFoiCmRvY191cGRhdGVkX2J5OiAiRklYVFVSRSIKZGVzY3JpcHRpb246ICJFeGFjdCBieXRlczog0LTQsNC90L3Ri9C1IgpleHRlbnNpb25zOgogIGZpeHR1cmU6CiAgICByZXF1aXJlZF9pbnB1dHM6ICJ1cHN0cmVhbS1idWlsZCIKc2NoZW1hX3ZlcnNpb246IDEKLS0tCiMjIE5vdGVzCgpQcmVzZXJ2ZSBjb21tZW50cyBhbmQgc291cmNlIGJ5dGVzLgo=",
+      "source_digest": "sha256:190f1bc8a003aa8e514dad279519dda368c11e1c112e3b0109e831f4d1f7b02e",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR016",
+        "classification": "quarantined",
+        "source_digest": "sha256:190f1bc8a003aa8e514dad279519dda368c11e1c112e3b0109e831f4d1f7b02e",
+        "source_revision": 4,
+        "reason": "malformed_required_inputs",
+        "fields": ["frontmatter.extensions.fixture.required_inputs"],
+        "proposed_canonical_digest": null,
+        "proposed_projection_digest": null,
+        "proposed_output_bytes_digest": null,
+        "backup_location": null,
+        "rollback_capability": "not_applicable",
+        "input_classification": null
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t malformed-input-list"
+    },
+    {
+      "id": "malformed-yaml",
+      "task_id": "202608300000-MGR017",
+      "source_base64": "LS0tCmlkOiBbCi0tLQo=",
+      "source_digest": "sha256:cc8608d6257422bc641dbad9f26df7f69c21e060c0892491a8163bc5777d144f",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR017",
+        "classification": "quarantined",
+        "source_digest": "sha256:cc8608d6257422bc641dbad9f26df7f69c21e060c0892491a8163bc5777d144f",
+        "source_revision": 0,
+        "reason": "malformed_source",
+        "fields": ["frontmatter"],
+        "proposed_canonical_digest": null,
+        "proposed_projection_digest": null,
+        "proposed_output_bytes_digest": null,
+        "backup_location": null,
+        "rollback_capability": "not_applicable",
+        "input_classification": null
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t malformed-yaml"
+    },
+    {
+      "id": "invalid-encoding",
+      "task_id": "202608300000-MGR018",
+      "source_base64": "//4A",
+      "source_digest": "sha256:ba778c0261008c8f71ae4061ad0162ffcbe63b52c91f89f236738131d1217ec7",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR018",
+        "classification": "quarantined",
+        "source_digest": "sha256:ba778c0261008c8f71ae4061ad0162ffcbe63b52c91f89f236738131d1217ec7",
+        "source_revision": 0,
+        "reason": "unsupported_encoding",
+        "fields": ["frontmatter"],
+        "proposed_canonical_digest": null,
+        "proposed_projection_digest": null,
+        "proposed_output_bytes_digest": null,
+        "backup_location": null,
+        "rollback_capability": "not_applicable",
+        "input_classification": null
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t invalid-encoding"
+    },
+    {
+      "id": "unicode-crlf",
+      "task_id": "202608300000-MGR019",
+      "source_base64": "LS0tDQppZDogIjIwMjYwODMwMDAwMC1NR1IwMTkiDQp0aXRsZTogIkZyb3plbiBtaWdyYXRpb24gc291cmNlIg0Kc3RhdHVzOiAiVE9ETyINCnByaW9yaXR5OiAibWVkIg0Kb3duZXI6ICJDT0RFUiINCnJldmlzaW9uOiA0DQpkZXBlbmRzX29uOiBbXQ0KdGFnczogW10NCnZlcmlmeTogW10NCmRvY192ZXJzaW9uOiAzDQpkb2NfdXBkYXRlZF9hdDogIjIwMjYtMDgtMzBUMDA6MDA6MDAuMDAwWiINCmRvY191cGRhdGVkX2J5OiAiRklYVFVSRSINCmRlc2NyaXB0aW9uOiAiRXhhY3QgYnl0ZXM6INC00LDQvdC90YvQtSINCnNjaGVtYV92ZXJzaW9uOiAxDQotLS0NCiMjIE5vdGVzDQoNClByZXNlcnZlIGNvbW1lbnRzIGFuZCBzb3VyY2UgYnl0ZXMuDQo=",
+      "source_digest": "sha256:94247c1592189c72e16f6fc69f5f24a6736f45b06d803b0a5d99fa140c271ed8",
+      "implementation_anchor": "5ea8af080c331eed2528c34e67c15188a70a6291",
+      "commands": ["dryRun", "apply", "apply-again", "rollback"],
+      "expected": {
+        "task_id": "202608300000-MGR019",
+        "classification": "legacy_active",
+        "source_digest": "sha256:94247c1592189c72e16f6fc69f5f24a6736f45b06d803b0a5d99fa140c271ed8",
+        "source_revision": 4,
+        "reason": null,
+        "fields": [],
+        "proposed_canonical_digest": "sha256:a70c3eb2434591e2cbb5dc238dfb2477298982ad43579359a38968b2ddbf58fe",
+        "proposed_projection_digest": "sha256:dc0311fff79b730f4078e6df6b0de08d357299dd48911f39c3480ea36306c2f2",
+        "proposed_output_bytes_digest": "sha256:07b6e3d465298cfbde302c5ae598164b51fc386197ef4c6fd67201c2f98be5f4",
+        "backup_location": "202608300000-MGR019/migration-94247c1592189c72e16f6fc69f5f24a6736f45b06d803b0a5d99fa140c271ed8.source",
+        "rollback_capability": "exact_bytes_cas",
+        "input_classification": {
+          "context_refs": [],
+          "output_manifest_refs": []
+        }
+      },
+      "reproduction_command": "bun x vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts -t unicode-crlf"
+    }
+  ]
+}

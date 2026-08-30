@@ -11,7 +11,8 @@ import {
   type TransitionReceipt,
 } from "@agentplaneorg/core/tasks";
 
-import type { TaskData } from "../../backends/task-backend.js";
+import { BackendError, type TaskData } from "../../backends/task-backend.js";
+import { TASK_KERNEL_EXTENSION } from "./kernel-record.js";
 
 export const TASK_CENTRIC_RUNTIME_EXTENSION_KEY = "agentplane.task_centric_runtime";
 
@@ -36,6 +37,11 @@ function emptyRuntime(): TaskCentricRuntimeProjection {
 }
 
 export function runtimeFrom(task: TaskData): TaskCentricRuntimeProjection {
+  if (Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION)) {
+    throw new BackendError("Canonical Task records require the kernel adapter.", "E_BACKEND", {
+      reasonCode: "canonical_task_requires_kernel_adapter",
+    });
+  }
   const value = task.extensions?.[TASK_CENTRIC_RUNTIME_EXTENSION_KEY];
   if (value === undefined) return emptyRuntime();
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -61,6 +67,11 @@ function acceptanceDescriptions(task: TaskData): string[] {
 }
 
 export function aggregateFrom(task: TaskData): TaskAggregate {
+  if (Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION)) {
+    throw new BackendError("Canonical Task records require the kernel adapter.", "E_BACKEND", {
+      reasonCode: "canonical_task_requires_kernel_adapter",
+    });
+  }
   const aggregate =
     taskCentricAggregateFromExtensions(task.extensions) ??
     createLegacyTaskAggregate({

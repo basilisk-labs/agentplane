@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
-      "cli_topology": "3c3dca9610705f451cd61e8d36aa15966f6e27c298ec0678aac6de8f371b53e8",
+      "cli_topology": "0542e158fad8ed588f23aeea29587f49045d0d9ff8ed667d5f8947f91de91fba",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "65c10207e1a2c50bbd381de1b9408c5f75790a05de87c51c075159d26144f55f"
+    "surface_sha256": "e6a4bdd25cb0318efb7364e7ff0c0b69ae739251af1218b81bc7fbf805048bf5"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -614,6 +614,20 @@
               { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
             ],
             "group": "Task",
+            "id": ["task", "kernel-migrate"],
+            "options": [
+              { "default": false, "kind": "boolean", "name": "apply", "valueHint": null },
+              { "kind": "string", "name": "source-digest", "valueHint": "<sha256:digest>" },
+              { "kind": "string", "name": "rollback", "valueHint": "<proof.json>" },
+              { "default": false, "kind": "boolean", "name": "yes", "valueHint": null }
+            ],
+            "visibility": "advanced"
+          },
+          {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Task",
             "id": ["task", "run", "reconcile"],
             "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
             "visibility": "internal"
@@ -764,6 +778,7 @@
           "task advance",
           "task authority grant",
           "task create",
+          "task kernel-migrate",
           "task run reconcile",
           "task run resolve-effect",
           "task run resume-effect",
@@ -1202,6 +1217,32 @@
             "name": "verify",
             "repeatable": true,
             "valueHint": "<command>"
+          },
+          {
+            "command": "task kernel-migrate",
+            "default": false,
+            "kind": "boolean",
+            "name": "apply",
+            "valueHint": null
+          },
+          {
+            "command": "task kernel-migrate",
+            "kind": "string",
+            "name": "rollback",
+            "valueHint": "<proof.json>"
+          },
+          {
+            "command": "task kernel-migrate",
+            "kind": "string",
+            "name": "source-digest",
+            "valueHint": "<sha256:digest>"
+          },
+          {
+            "command": "task kernel-migrate",
+            "default": false,
+            "kind": "boolean",
+            "name": "yes",
+            "valueHint": null
           },
           {
             "choices": ["auto", "direct", "branch_pr"],
@@ -2054,9 +2095,38 @@
             "kind": "option",
             "name": "rollback",
             "source_task": "202607221846-4VB97J"
+          },
+          {
+            "command": "task kernel-migrate",
+            "kind": "command",
+            "source_task": "202608291006-2A6BJC"
+          },
+          {
+            "command": "task kernel-migrate",
+            "kind": "option",
+            "name": "apply",
+            "source_task": "202608291006-2A6BJC"
+          },
+          {
+            "command": "task kernel-migrate",
+            "kind": "option",
+            "name": "rollback",
+            "source_task": "202608291006-2A6BJC"
+          },
+          {
+            "command": "task kernel-migrate",
+            "kind": "option",
+            "name": "source-digest",
+            "source_task": "202608291006-2A6BJC"
+          },
+          {
+            "command": "task kernel-migrate",
+            "kind": "option",
+            "name": "yes",
+            "source_task": "202608291006-2A6BJC"
           }
         ],
-        "command_count": { "from": 243, "to": 264 },
+        "command_count": { "from": 243, "to": 265 },
         "mutated_command_shells": [
           {
             "after": {
@@ -2253,8 +2323,8 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 859 },
-        "positional_count": { "from": 165, "to": 181 },
+        "option_count": { "from": 767, "to": 863 },
+        "positional_count": { "from": 165, "to": 182 },
         "removed_command_descriptors": [],
         "removed_commands": [],
         "removed_options": []
@@ -2293,10 +2363,11 @@
         "202608181404-CR1F9W",
         "202608200903-J459C2",
         "202608211020-FGAPJC",
-        "202608212244-6XZAYD"
+        "202608212244-6XZAYD",
+        "202608291006-2A6BJC"
       ],
       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route.",
-      "to_sha256": "3c3dca9610705f451cd61e8d36aa15966f6e27c298ec0678aac6de8f371b53e8"
+      "to_sha256": "0542e158fad8ed588f23aeea29587f49045d0d9ff8ed667d5f8947f91de91fba"
     },
     {
       "classification": "additive",
@@ -2504,7 +2575,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "b80a796dd770c30b2f7325400aa28178c6484f5d58a284b212910c3af611b436",
+    "surface_sha256": "84a8a3952f39a9ca74380db2ddb193fc8fb6493f479f634909a12424d5712071",
     "to_sha256": "d449602b1ca11e75c32b0dbecf50ff0d2729c67ce6ff64a2e4bf1b5f12955ee4",
     "to_version": "0.7.8-beta.1"
   },
@@ -2559,6 +2630,7 @@
     "202608181404-CR1F9W",
     "202608200903-J459C2",
     "202608211020-FGAPJC",
-    "202608212244-6XZAYD"
+    "202608212244-6XZAYD",
+    "202608291006-2A6BJC"
   ]
 }

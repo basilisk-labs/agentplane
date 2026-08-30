@@ -1,0 +1,46 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check b687c6778e841b52f34862c4932744b3f894371b..6de58ebe8753e4edf24647d9075ed4169b22bf30",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB b687c6778e841b52f34862c4932744b3f894371b..6de58ebe8753e4edf24647d9075ed4169b22bf30",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-effect-replay.testkit.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-migration.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-record.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-replay-capture.testkit.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "b687c6778e841b52f34862c4932744b3f894371b",
+  "implementation_commit": "6de58ebe8753e4edf24647d9075ed4169b22bf30",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608291006-2A6BJC"
+}

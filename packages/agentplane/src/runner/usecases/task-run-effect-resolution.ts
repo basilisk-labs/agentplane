@@ -18,8 +18,8 @@ import { ensureStableRunnerArtifactDirectoryChain } from "../run-directory-bound
 import { RunnerRunRepository } from "../run-repository.js";
 import {
   isStableFileReadCollision,
+  publishNewStableRegularFileNoFollow,
   readStableRegularTextNoFollow,
-  writeNewStableRegularFileNoFollow,
 } from "../stable-file.js";
 import { assertSafeRunnerRunId } from "../task-run-paths.js";
 import {
@@ -176,17 +176,11 @@ async function publishOrReadImmutable<T extends { digest: string }>(opts: {
   conflict_reason: string;
   context: Record<string, unknown>;
 }): Promise<{ value: T; created: boolean }> {
-  let created = false;
-  try {
-    await writeNewStableRegularFileNoFollow(
-      opts.file_path,
-      `${JSON.stringify(opts.expected, null, 2)}\n`,
-      opts.label,
-    );
-    created = true;
-  } catch (error) {
-    if (!(error instanceof Error) || !error.message.includes("Refusing pre-existing")) throw error;
-  }
+  const created = await publishNewStableRegularFileNoFollow(
+    opts.file_path,
+    `${JSON.stringify(opts.expected, null, 2)}\n`,
+    opts.label,
+  );
   const observed = await readOptionalImmutable({
     file_path: opts.file_path,
     label: opts.label,

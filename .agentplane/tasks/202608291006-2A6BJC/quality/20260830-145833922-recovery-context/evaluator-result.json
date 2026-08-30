@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Migration follows the approved explicit mapping: active legacy records enter PLANNING without invented approval or WorkItems; terminal records become read-only archives. Ambiguous input categories, unsupported schemas and unreconciled runtime state are refused.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/bb7ca667de0a6a650c7bb8e78dace169ed03183cbcfadfe286039f71413dac59.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The byte-store boundary preserves exact backups under containment/no-follow checks and guarded transactions. Apply independently reads back the output. Rollback revalidates receipt identity, backup bytes and unchanged canonical output before CAS. It cannot roll back a later Task revision.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/bb7ca667de0a6a650c7bb8e78dace169ed03183cbcfadfe286039f71413dac59.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Canonical persistence checks backend capabilities, repository identity and task revisions. Lost-write readback proves durability but never fresh dispatch ownership. The durable begin_effect transition and counted concurrent-start regression prevent duplicate provider dispatch.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/bb7ca667de0a6a650c7bb8e78dace169ed03183cbcfadfe286039f71413dac59.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Validation and review adapters bind evidence to Task, approved plan, WorkItem, implementation and repository state. Operational metadata does not invalidate semantic evidence; changed result identity does. These adapters do not complete lifecycle transitions themselves.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/bb7ca667de0a6a650c7bb8e78dace169ed03183cbcfadfe286039f71413dac59.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The frozen twelve-family corpus executes saved inputs, checks source and payload digests, and compares exact histories, receipts, projections, effects and route codes. Crash observations retain independent old origins. The isolated driver rejects source leakage, unanchored helpers and incomplete test execution.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/bb7ca667de0a6a650c7bb8e78dace169ed03183cbcfadfe286039f71413dac59.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "The implementation preserves legacy production authority until the next milestone. It introduces explicit migration and read adapters rather than claiming a production cutover. Changes to immutable effect publication and check-artifact freshness address reproduced recovery defects and retain their negative/concurrency regressions.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/bb7ca667de0a6a650c7bb8e78dace169ed03183cbcfadfe286039f71413dac59.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Provider qualification uses explicit fakes. Required hosted exact-head checks, supervised integration and hosted closure remain mandatory before M2 delivery.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/bb7ca667de0a6a650c7bb8e78dace169ed03183cbcfadfe286039f71413dac59.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-8",
+      "severity": "medium",
+      "summary": "Residual risk: Repository-wide migration, legacy removal,20sequentialself-hostingTasks and3release drills are M3 acceptance and are not satisfied by this review.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/bb7ca667de0a6a650c7bb8e78dace169ed03183cbcfadfe286039f71413dac59.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Serialized persistence requires every writer to use the same storage-owned fence; the wrapper documents this contract. Production routing must enforce it during M3."
+  ]
+}

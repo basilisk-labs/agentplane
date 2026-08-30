@@ -9,7 +9,14 @@ import {
   validateWorkItemDefinitions,
 } from "./invariants.js";
 import { kernelDigest, reduceTaskCommand } from "./kernel.js";
-import type { ExecutionAuthority, ExternalEffect, PlanRecord, TaskAggregate } from "./model.js";
+import * as dispatchFixtures from "./kernel.test-fixtures.js";
+import type {
+  ExecutionAuthority,
+  ExternalEffect,
+  PlanRecord,
+  TaskAggregate,
+  TaskCommand,
+} from "./model.js";
 
 const fingerprint = kernelDigest("state");
 const policyDigest = kernelDigest("policy");
@@ -423,5 +430,97 @@ describe("canonical task kernel invariants", () => {
     ]) {
       expect(sources).not.toMatch(forbidden);
     }
+  });
+});
+
+describe("durable effect admission invariants", () => {
+  const { aggregate, effect, fingerprint, input, authority, transitionCommand } = dispatchFixtures;
+  it("records a durable effect start before dispatch and replays only its existing receipt", () => {
+    const state = aggregate({ effects: [effect("merge", "PREPARED")] });
+    const command: TaskCommand = {
+      kind: "begin_effect",
+      task_id: state.id,
+      expected_task_revision: state.revision,
+      expected_state_fingerprint: fingerprint,
+      effect_id: "merge",
+    };
+    const start = {
+      ...input(state, command),
+      authority: {
+        ...authority,
+        external_effects: ["pr.merge"],
+        capabilities: ["provider_write"],
+        resources: ["pull:1"],
+      },
+    };
+    const result = reduceTaskCommand(start);
+    expect(result).toMatchObject({
+      kind: "accepted",
+      aggregate: { effects: [{ state: "PENDING" }] },
+    });
+    if (result.kind !== "accepted") throw new Error("Missing durable start");
+    expect(result.events.map((event) => event.kind)).toEqual(["effect_started"]);
+    expect(result.receipts[0]!.effect_ids).toEqual(["merge"]);
+    expect(reduceTaskCommand({ ...start, aggregate: result.aggregate })).toMatchObject({
+      kind: "accepted",
+      events: [],
+      receipts: result.receipts,
+    });
+    expect(
+      reduceTaskCommand({
+        ...start,
+        aggregate: result.aggregate,
+        mutation_id: "another-start",
+        command: { ...command, expected_task_revision: result.aggregate.revision },
+      }),
+    ).toMatchObject({ kind: "rejected", code: "EFFECT_RECONCILIATION_REQUIRED" });
+  });
+
+  it("requires fresh authority for the durable effect start", () => {
+    const state = aggregate({ effects: [effect("merge", "PREPARED")] });
+    const command: TaskCommand = {
+      kind: "begin_effect",
+      task_id: state.id,
+      effect_id: "merge",
+      expected_task_revision: state.revision,
+      expected_state_fingerprint: fingerprint,
+    };
+    const granted = {
+      ...authority,
+      external_effects: ["pr.merge"],
+      capabilities: ["provider_write"],
+      resources: ["pull:1"],
+    };
+    for (const key of ["external_effects", "capabilities", "resources"] as const) {
+      expect(
+        reduceTaskCommand({ ...input(state, command), authority: { ...granted, [key]: [] } }),
+      ).toMatchObject({
+        kind: "rejected",
+        code: "AUTHORITY_SCOPE_EXCEEDED",
+      });
+    }
+    for (const effectState of [
+      "APPLIED",
+      "NOT_APPLIED",
+      "RECONCILED",
+      "SUPERSEDED",
+      "IN_DOUBT",
+      "PENDING",
+    ] as const) {
+      expect(
+        reduceTaskCommand({
+          ...input(aggregate({ effects: [effect("merge", effectState)] }), command),
+          authority: granted,
+        }),
+      ).toMatchObject({
+        kind: "rejected",
+        code: "EFFECT_RECONCILIATION_REQUIRED",
+      });
+    }
+    const pending = aggregate({ effects: [effect("merge", "PENDING")] });
+    expect(reduceTaskCommand(input(pending, transitionCommand(pending, "claim")))).toMatchObject({
+      kind: "rejected",
+      code: "EFFECT_RECONCILIATION_REQUIRED",
+    });
   });
 });

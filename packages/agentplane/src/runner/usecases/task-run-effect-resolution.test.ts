@@ -1,9 +1,31 @@
-import { existsSync } from "node:fs";
+import { constants, existsSync, type PathLike } from "node:fs";
 import { readFile, rm } from "node:fs/promises";
+import type * as NodeFsPromises from "node:fs/promises";
 import path from "node:path";
 
 import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schemas";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
+const publicationRace = vi.hoisted(() => ({
+  afterOpen: null as ((filePath: string, flags: string | number) => Promise<void>) | null,
+}));
+
+vi.mock("node:fs/promises", async (importOriginal) => {
+  const actual = await importOriginal<typeof NodeFsPromises>();
+  return {
+    ...actual,
+    open: async (filePath: PathLike, flags: string | number, mode?: number) => {
+      const handle = await actual.open(filePath, flags, mode);
+      try {
+        await publicationRace.afterOpen?.(String(filePath), flags);
+        return handle;
+      } catch (error) {
+        await handle.close();
+        throw error;
+      }
+    },
+  };
+});
 
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
@@ -34,6 +56,7 @@ import { recordFailedExternalRunnerAnchor } from "./task-run-lifecycle.testkit.j
 const roots: string[] = [];
 
 afterEach(async () => {
+  publicationRace.afterOpen = null;
   await Promise.all(
     roots.splice(0).map(async (root) => await rm(root, { recursive: true, force: true })),
   );
@@ -133,6 +156,51 @@ function resolutionInput(fixture: Awaited<ReturnType<typeof uncertainEffectFixtu
 }
 
 describe("task runner effect resolution", () => {
+  it.each(["resolution-intent.json", "resolution-lease.json", "resolution.json"])(
+    "does not expose a partial %s to a concurrent resolver",
+    async (filename) => {
+      const fixture = await uncertainEffectFixture();
+      const input = resolutionInput(fixture);
+      let signalOpened!: () => void;
+      let releasePublisher!: () => void;
+      const opened = new Promise<void>((resolve) => {
+        signalOpened = resolve;
+      });
+      const released = new Promise<void>((resolve) => {
+        releasePublisher = resolve;
+      });
+      publicationRace.afterOpen = async (filePath, flags) => {
+        if (
+          typeof flags !== "number" ||
+          !(flags & constants.O_EXCL) ||
+          !path.basename(filePath).includes(filename)
+        )
+          return;
+        publicationRace.afterOpen = null;
+        signalOpened();
+        await released;
+      };
+      const first = resolveTaskRunnerEffect(input);
+      // Attach a rejection handler before the competing operation can settle.
+      const firstSettled = Promise.allSettled([first]);
+      let second:
+        | PromiseSettledResult<Awaited<ReturnType<typeof resolveTaskRunnerEffect>>>[]
+        | undefined;
+      try {
+        await opened;
+        second = await Promise.allSettled([resolveTaskRunnerEffect(input)]);
+      } finally {
+        releasePublisher();
+        await firstSettled;
+      }
+      expect(second?.[0].status).toBe("fulfilled");
+      const completed = await first;
+      if (second?.[0].status !== "fulfilled") throw new Error("Concurrent resolution failed");
+      expect(second[0].value.resolution.digest).toBe(completed.resolution.digest);
+      expect(existsSync(fixture.adapterMarker)).toBe(false);
+    },
+  );
+
   it("attaches an operator verdict before exactly-once stale claim retirement without invoking adapter", async () => {
     const fixture = await uncertainEffectFixture();
     const result = await resolveTaskRunnerEffect(resolutionInput(fixture));

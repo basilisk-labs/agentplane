@@ -517,7 +517,7 @@ describe("direct task verification", () => {
     );
   });
 
-  it("keeps passed evidence stable across equivalent reruns but rewrites changed outcomes", async () => {
+  it("persists the actual observations from each rerun, including equivalent pass outcomes", async () => {
     const cwd = await root();
     mocks.runProcess
       .mockResolvedValueOnce({ exitCode: 0, stdout: "first timing: 10ms", stderr: "" })
@@ -547,7 +547,11 @@ describe("direct task verification", () => {
       run_process: mocks.runProcess,
     });
     expect(second.checks[0]?.stdout_tail).toBe("second timing: 20ms");
-    expect(await readFile(artifactPath, "utf8")).toBe(firstArtifact);
+    expect(await readFile(artifactPath, "utf8")).not.toBe(firstArtifact);
+    expect(JSON.parse(await readFile(artifactPath, "utf8"))).toMatchObject({
+      status: "passed",
+      checks: [{ exit_code: 0, stdout_tail: "second timing: 20ms" }],
+    });
 
     const failed = await runDirectTaskVerification({
       command: command(cwd),
