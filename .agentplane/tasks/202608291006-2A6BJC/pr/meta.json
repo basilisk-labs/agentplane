@@ -3,8 +3,8 @@
   "branch": "task/202608291006-2A6BJC/add-compatibility-adapters-and-replay-migration",
   "created_at": "2026-08-30T04:09:19.506Z",
   "diffstat_sha256": "sha256:ccb5d18518ff14ed56539137ddda09e4f0a7414fbfe5996ea05e6d4402564fa2",
-  "last_verified_at": "2026-08-30T08:07:29.919Z",
-  "last_verified_diffstat_sha256": "sha256:731d1533aa909fb0722b5464aea2703ffeda17496b9a99ce4dae426ad3cd6f51",
+  "last_verified_at": "2026-08-30T08:32:18.484Z",
+  "last_verified_diffstat_sha256": "sha256:ccb5d18518ff14ed56539137ddda09e4f0a7414fbfe5996ea05e6d4402564fa2",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -17,6 +17,6 @@
   "task_id": "202608291006-2A6BJC",
   "updated_at": "2026-08-30T04:09:19.506Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }
