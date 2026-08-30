@@ -1,0 +1,16 @@
+ docs/developer/clean-task-core-cutover.mdx         |  95 ++++++++++++++++
+ docs/developer/harness-dev.mdx                     |   1 +
+ .../adapters/task-backend/kernel-next-action.ts    |  10 +-
+ .../run-cli.core.task-status-token-usage.test.ts   |  71 ++++++++++++
+ .../agentplane/src/commands/task/active.command.ts | 110 ++++++++++++++-----
+ .../src/commands/task/active.command.unit.test.ts  |  51 +++++++++
+ .../agentplane/src/commands/task/brief.command.ts  |   5 +
+ .../task/execution-authority-context.test.ts       |  28 ++++-
+ .../commands/task/execution-authority-context.ts   |   4 +
+ .../agentplane/src/commands/task/kernel-read.ts    |  91 ++++++++++++++++
+ .../src/commands/task/next-action.command.ts       |   5 +
+ packages/agentplane/src/commands/task/ready.ts     |   6 +
+ .../src/commands/task/show-kernel.test.ts          | 121 +++++++++++++++++++++
+ packages/agentplane/src/commands/task/show.ts      |  15 +--
+ .../agentplane/src/commands/task/status.command.ts |   5 +
+ 15 files changed, 576 insertions(+), 42 deletions(-)

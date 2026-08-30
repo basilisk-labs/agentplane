@@ -1,10 +1,5 @@
-import type { taskKernel } from "@agentplaneorg/core/tasks";
-import {
-  readKernelRecord,
-  TASK_KERNEL_EXTENSION,
-} from "../../adapters/task-backend/kernel-record.js";
 import { projectKernelTask } from "../../adapters/task-backend/kernel-projector.js";
-import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
+import { readTaskKernel } from "./kernel-read.js";
 import {
   parseTaskReadme,
   taskReadmePath,
@@ -64,12 +59,8 @@ export async function cmdTaskShow(opts: {
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
-    if (Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION)) {
-      const identity = await resolveLogicalRepositoryIdentity({
-        git_root: ctx.resolvedProject.gitRoot,
-        task: {},
-      });
-      const canonical = readKernelRecord(task, identity as taskKernel.Sha256Digest);
+    const canonical = await readTaskKernel(ctx, opts.taskId, task);
+    if (canonical.kind !== "legacy_unmigrated") {
       if (canonical.kind === "archived") {
         process.stdout.write(
           `${JSON.stringify({ id: task.id, title: task.title, source: "task_kernel_archive", archive: canonical.archive }, null, 2)}\n`,

@@ -12,7 +12,7 @@ export type KernelNextAction = Readonly<{
 /** Read projection only. The supervisor must obtain fresh command authority before any effect. */
 export function readKernelNextAction(
   read: KernelRead,
-  repositoryFingerprint: taskKernel.Sha256Digest,
+  repositoryFingerprint: taskKernel.Sha256Digest | null,
 ): KernelNextAction {
   const taskId = "task" in read ? read.task.id : null;
   const action = (
@@ -51,9 +51,11 @@ export function readKernelNextAction(
   if (prepared) return action("kernel_effect_dispatch_required", null, prepared.id);
   if (aggregate.state === "FINAL_VALIDATION")
     return action(
-      taskKernel.isTaskCompletionEligible(aggregate, repositoryFingerprint)
-        ? "kernel_task_completion_required"
-        : "kernel_final_validation_required",
+      repositoryFingerprint === null
+        ? "kernel_repository_fingerprint_required"
+        : taskKernel.isTaskCompletionEligible(aggregate, repositoryFingerprint)
+          ? "kernel_task_completion_required"
+          : "kernel_final_validation_required",
     );
   const definitions = [...aggregate.current_plan.work_items].toSorted(
     (a, b) => Number(a.id > b.id) - Number(a.id < b.id),

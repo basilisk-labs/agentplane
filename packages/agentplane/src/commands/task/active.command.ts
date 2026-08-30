@@ -1,4 +1,7 @@
 import type { TaskSummary } from "../../backends/task-backend.js";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import { CliError } from "../../shared/errors.js";
+import { readTaskKernel, projectTaskKernelRead } from "./kernel-read.js";
 import { mapLimit } from "../../backends/task-backend/shared/concurrency.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
@@ -30,7 +33,7 @@ type ActiveWorkItem = {
     priority: string | null;
   };
   dependency_readiness: {
-    state: "ready" | "waiting" | "missing";
+    state: "ready" | "waiting" | "missing" | "kernel_work_items";
     depends_on: string[];
     missing: string[];
     incomplete: string[];
@@ -49,6 +52,7 @@ type ActiveWorkItem = {
     answer_command: string | null;
   };
   source_freshness: "live_local";
+  kernel?: ReturnType<typeof projectTaskKernelRead>;
   rank: {
     bucket: number;
     priority: number;
@@ -138,24 +142,6 @@ export const taskActiveSpec: CommandSpec<TaskActiveParsed> = {
   }),
 };
 
-function projectionStatuses(filters: TaskListFilters): string[] {
-  const requested = filters.status.length > 0 ? filters.status : [...ACTIVE_SELECTOR_STATUSES];
-  const statuses = new Set<string>();
-  for (const status of requested) {
-    const normalized = status.trim().toUpperCase();
-    if (!normalized || normalized === "DONE") continue;
-    if (normalized === "MERGED_PENDING_CLOSE") {
-      statuses.add("TODO");
-      statuses.add("DOING");
-      statuses.add("BLOCKED");
-      continue;
-    }
-    statuses.add(normalized);
-  }
-  statuses.add("DONE");
-  return [...statuses];
-}
-
 function dependencyReadiness(
   dep: DependencyState | undefined,
 ): ActiveWorkItem["dependency_readiness"] {
@@ -218,6 +204,7 @@ function isActiveSelectorTask(task: TaskSummary): boolean {
 }
 
 function formatDependencyState(dep: ActiveWorkItem["dependency_readiness"]): string {
+  if (dep.state === "kernel_work_items") return "kernel_work_items";
   if (dep.state === "ready") return dep.depends_on.length === 0 ? "none" : "ready";
   if (dep.state === "missing") return `missing:${dep.missing.join(",")}`;
   return `wait:${dep.incomplete.join(",")}`;
@@ -242,18 +229,90 @@ function formatActiveWorkLine(item: ActiveWorkItem): string {
   return `${item.task.id} [${item.task.status}] ${item.task.title || "(untitled task)"} (${extras.join(", ")})`;
 }
 
+function hasKernel(task: TaskSummary): boolean {
+  return Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION);
+}
+
 export async function buildActiveWorkItems(opts: {
   ctx: CommandContext;
   cwd: string;
   rootOverride?: string | null;
   filters: TaskListFilters;
 }): Promise<{ filteredCount: number; items: ActiveWorkItem[] }> {
+  // A contradictory legacy status must not hide a canonical Task before its record is read.
+  const summaries = await listTaskSummariesMemo(opts.ctx);
+  const canonical = await mapLimit(
+    summaries.filter((task) => hasKernel(task)),
+    ACTIVE_ROUTE_CONCURRENCY,
+    async (summary): Promise<ActiveWorkItem | null> => {
+      const read = await readTaskKernel(opts.ctx, summary.id);
+      if (read.kind === "legacy_unmigrated") {
+        throw new CliError({
+          code: "E_VALIDATION",
+          message: "Canonical task list changed; retry the read.",
+        });
+      }
+      const task = "task" in read ? read.task : summary;
+      const state = read.kind === "canonical" ? read.record.aggregate.state : read.kind;
+      if (read.kind === "archived" || state === "COMPLETED" || state === "CANCELLED") return null;
+      if (
+        opts.filters.owner.length > 0 &&
+        !opts.filters.owner.some((owner) => owner.toUpperCase() === task.owner.toUpperCase())
+      )
+        return null;
+      if (opts.filters.tag.length > 0 && !opts.filters.tag.some((tag) => task.tags.includes(tag)))
+        return null;
+      const view = projectTaskKernelRead(read, task.id);
+      if (
+        opts.filters.status.length > 0 &&
+        !opts.filters.status.some(
+          (status) =>
+            status.toUpperCase() === state.toUpperCase() ||
+            ("status" in view.task && status.toUpperCase() === view.task.status),
+        )
+      )
+        return null;
+      const invalid = read.kind !== "canonical";
+      const blocked =
+        invalid ||
+        ["BLOCKED", "HUMAN_REQUIRED", "EFFECT_IN_DOUBT"].includes(state) ||
+        view.next_action.reason_code === "kernel_work_item_dependencies_blocked";
+      const priority = normalizePriority(task.priority);
+      return {
+        task: { id: task.id, title: task.title, status: state, owner: task.owner, priority },
+        // Kernel graph readiness is about WorkItems, not legacy inter-Task dependencies.
+        dependency_readiness: {
+          state: "kernel_work_items",
+          depends_on: [],
+          missing: [],
+          incomplete: [],
+        },
+        next_action: {
+          code: view.next_action.reason_code,
+          command: null,
+          summary: view.next_action.reason_code,
+          requires_approval: view.next_action.reason_code === "kernel_plan_approval_required",
+        },
+        blocker_count: blocked ? 1 : 0,
+        blockers: blocked ? [{ code: view.next_action.reason_code, summary: state }] : [],
+        human_input: {
+          waiting_on_user: state === "HUMAN_REQUIRED",
+          question: null,
+          answer_command: null,
+        },
+        source_freshness: "live_local",
+        kernel: view,
+        rank: {
+          bucket: blocked ? 80 : view.ready ? 0 : 30,
+          priority: priorityRank(priority ?? undefined),
+          status: state,
+        },
+      };
+    },
+  );
   const tasks = await annotateBranchPrTaskListState({
     ctx: opts.ctx,
-    tasks: await listTaskSummariesMemo(opts.ctx, {
-      projectionStatus: projectionStatuses(opts.filters),
-      fallbackToCanonicalOnEmpty: true,
-    }),
+    tasks: summaries.filter((task) => !hasKernel(task)),
   });
   handleTaskListWarnings({ backend: opts.ctx.taskBackend, strictRead: opts.filters.strictRead });
   const { depState, filtered } = queryTaskProjection({
@@ -262,7 +321,7 @@ export async function buildActiveWorkItems(opts: {
     defaultStatuses: [...ACTIVE_SELECTOR_STATUSES],
   });
   const active = filtered.filter((task) => isActiveSelectorTask(task));
-  const items = await mapLimit(active, ACTIVE_ROUTE_CONCURRENCY, async (task) => {
+  const items: ActiveWorkItem[] = await mapLimit(active, ACTIVE_ROUTE_CONCURRENCY, async (task) => {
     const route = await buildTaskRouteDecision({
       ctx: opts.ctx,
       cwd: opts.cwd,
@@ -312,6 +371,7 @@ export async function buildActiveWorkItems(opts: {
       },
     };
   });
+  items.push(...canonical.filter((item): item is ActiveWorkItem => item !== null));
   const sorted = items.toSorted((a, b) => {
     if (a.rank.bucket !== b.rank.bucket) return a.rank.bucket - b.rank.bucket;
     if (a.blocker_count !== b.blocker_count) return a.blocker_count - b.blocker_count;
@@ -321,7 +381,7 @@ export async function buildActiveWorkItems(opts: {
     return a.task.id.localeCompare(b.task.id);
   });
   return {
-    filteredCount: active.length,
+    filteredCount: items.length,
     items:
       opts.filters.limit !== undefined && opts.filters.limit >= 0
         ? sorted.slice(0, opts.filters.limit)

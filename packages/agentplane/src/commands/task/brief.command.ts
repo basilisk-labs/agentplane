@@ -1,3 +1,4 @@
+import { readTaskKernel, reportTaskKernelRead } from "./kernel-read.js";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter } from "../../cli/output.js";
 import type { CommandContext } from "../shared/task-backend.js";
@@ -51,6 +52,10 @@ export function makeRunTaskBriefHandler(session: {
     const commandCtx = await (parsed.remote
       ? session.getRemoteContext("task brief")
       : session.getLocalContext("task brief"));
+    const canonical = await readTaskKernel(commandCtx, parsed.taskId);
+    if (canonical.kind !== "legacy_unmigrated") {
+      return reportTaskKernelRead(canonical, parsed.taskId, parsed.json);
+    }
     const brief = await buildTaskBrief({
       commandCtx,
       cwd: ctx.cwd,

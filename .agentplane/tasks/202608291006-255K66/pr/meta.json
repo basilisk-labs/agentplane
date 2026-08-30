@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608291006-255K66/cut-over-to-the-canonical-task-kernel-and-retire",
+  "created_at": "2026-08-30T21:48:11.941Z",
+  "diffstat_sha256": "sha256:f8319a3da45d42009b04c9cd30d2297a5a8264070233b80a31e362304d66ac63",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608291006-255K66",
+  "updated_at": "2026-08-30T21:48:11.941Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -1,3 +1,4 @@
+import { readTaskKernel, reportTaskKernelRead } from "./kernel-read.js";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import {
@@ -161,6 +162,10 @@ export function makeRunTaskNextActionHandler(session: {
     const commandCtx = await (parsed.remote
       ? session.getRemoteContext("task next-action")
       : session.getLocalContext("task next-action"));
+    const canonical = await readTaskKernel(commandCtx, parsed.taskId);
+    if (canonical.kind !== "legacy_unmigrated") {
+      return reportTaskKernelRead(canonical, parsed.taskId, parsed.json);
+    }
     const preparedWorkOrder = requirePreparedAgentWorkOrder(
       await prepareAgentWorkOrder({
         command_ctx: commandCtx,

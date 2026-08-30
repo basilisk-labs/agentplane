@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdtemp, mkdir, rename, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, rename, rm, writeFile, stat } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -12,6 +12,32 @@ import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.
 const execFileAsync = promisify(execFile);
 
 describe("logical repository authority identity", () => {
+  it("does not create an unborn identity during read-only inspection", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-read-only-id-"));
+    try {
+      await execFileAsync("git", ["init", "-b", "main"], { cwd: root });
+      await expect(
+        resolveLogicalRepositoryIdentity({
+          git_root: root,
+          task: {},
+          create_if_missing: false,
+        }),
+      ).rejects.toThrow("unavailable for read-only inspection");
+      await expect(
+        stat(path.join(root, ".git", "agentplane", "repository-identity.json")),
+      ).rejects.toMatchObject({ code: "ENOENT" });
+      const identity = await resolveLogicalRepositoryIdentity({ git_root: root, task: {} });
+      expect(
+        await resolveLogicalRepositoryIdentity({
+          git_root: root,
+          task: {},
+          create_if_missing: false,
+        }),
+      ).toBe(identity);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
   it("survives long-lived branch changes and repository relocation", async () => {
     const parent = await mkdtemp(path.join(os.tmpdir(), "agentplane-repository-id-"));
     const original = path.join(parent, "before");
