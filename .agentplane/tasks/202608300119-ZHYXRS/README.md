@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "USER"
   note: "Denis explicitly approved all subsequent in-scope Clean Core plans and bootstrap fixes and instructed continuation to completion in this conversation. Apply that standing operator authorization to plan 55b0da86d389ffee572af9276c362405a7b4f98e4af18f479e5f981f175581a4; preserve all enforcement gates."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-30T02:14:28.357Z"
-  updated_by: "USER"
-  note: "Hosted review on PR #5879 requires recomputing the canonical persisted plan digest before preserving existing WorkItem runtime. Reopen under the approved bootstrap scope; add a stale-digest production-approval regression and require fresh verification and evaluator review."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-30T02:27:21.719Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -249,7 +249,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "1f4efb60bc7f9ee558501ec2601afef9eb1c3ef8"
+  message: "🚧 ZHYXRS task: apply external agent result"
 comments:
   -
     author: "PLANNER"
@@ -266,6 +268,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 1f4efb60bc7f. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "comment"
@@ -321,9 +326,23 @@ events:
     author: "USER"
     state: "needs_rework"
     note: "Hosted review on PR #5879 requires recomputing the canonical persisted plan digest before preserving existing WorkItem runtime. Reopen under the approved bootstrap scope; add a stale-digest production-approval regression and require fresh verification and evaluator review."
+  -
+    type: "status"
+    at: "2026-08-30T02:17:12.182Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 1f4efb60bc7f. CLI accepted one state-bound external-agent semantic result."
+    commit: "1f4efb60bc7f9ee558501ec2601afef9eb1c3ef8"
+  -
+    type: "verify"
+    at: "2026-08-30T02:27:21.719Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-30T02:14:32.817Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-30T02:27:23.895Z"
+doc_updated_by: "SUPERVISOR"
 description: "Unblock the approved Clean Task Core rebuild M1 task 202608292032-1K47B8. Diagnose repeated plan approval resetting existing WorkItem runtime and evidence-only recovery rejecting already committed valid implementation. Preserve same-plan WorkItem state and output validation without allowing changed plans, stale identities, or unauthorized effects to reuse results. Add bounded regression coverage for both positive recovery and fail-closed behavior. Scope packages/core/src/tasks/task-centric and packages/agentplane/src/commands/task. Do not edit task state by hand or weaken authority checks. Deliver through verified branch PR and hosted close, then resume M1."
 sections:
   Summary: |-
@@ -482,6 +501,78 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-30T02:27:21.719Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8d97ad7afb16d72981973139859cb991b9aee06b2fd9b467d8e2c81d4e9e6b54, input_digest=sha256:75357d13d3202bf4b88ff64a20fab32fcd63d04ea83c527278fd269a9c3f25d3
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:project core
+    Result: pass
+    Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run test:project core
+    Result: pass
+    Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run test:project core
+    Result: pass
+    Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608300119-ZHYXRS-preserve-workitem-results-during-plan-reapproval/.agentplane/tasks/202608300119-ZHYXRS/blueprint/resolved-snapshot.json
+    - old_digest: 4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd
+    - current_digest: 4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608300119-ZHYXRS
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608300119-ZHYXRS
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -896,6 +987,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "1f4efb60bc7f9ee558501ec2601afef9eb1c3ef8"
   task_execution_context:
     base_ref: "main"
     base_sha: "71519a0e675d7d460d27e7c5aea87d1f2363b9e2"
@@ -1071,6 +1164,78 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-30T02:27:21.719Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8d97ad7afb16d72981973139859cb991b9aee06b2fd9b467d8e2c81d4e9e6b54, input_digest=sha256:75357d13d3202bf4b88ff64a20fab32fcd63d04ea83c527278fd269a9c3f25d3
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:project core
+Result: pass
+Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run test:project core
+Result: pass
+Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run test:project core
+Result: pass
+Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608300119-ZHYXRS-preserve-workitem-results-during-plan-reapproval/.agentplane/tasks/202608300119-ZHYXRS/blueprint/resolved-snapshot.json
+- old_digest: 4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd
+- current_digest: 4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608300119-ZHYXRS
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608300119-ZHYXRS
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

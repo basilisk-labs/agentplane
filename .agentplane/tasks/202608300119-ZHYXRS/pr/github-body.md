@@ -15,14 +15,8 @@ Unblock the approved Clean Task Core rebuild M1 task 202608292032-1K47B8. Diagno
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Hosted review on PR #5879 requires recomputing the canonical persisted plan digest before preserving
-existing WorkItem runtime. Reopen under the approved bootstrap scope; add a stale-digest
-production-approval regression and require fresh verification and evaluator review.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
