@@ -1,4 +1,5 @@
- .../clean-task-core-m2-replay-checkpoint/README.md |   156 +
+ .../clean-task-core-m2-replay-checkpoint/README.md |   213 +
+ .../qualification-capture.json                     | 25356 +++++++++
  docs/developer/harness-dev.mdx                     |    85 +
  .../task-backend/kernel-backend-adapter.test.ts    |   613 +
  .../task-backend/kernel-backend-adapter.ts         |   204 +
@@ -14,16 +15,18 @@
  .../task-backend/kernel-qualification.testkit.ts   |   354 +
  .../task-backend/kernel-record-invariants.ts       |   101 +
  .../src/adapters/task-backend/kernel-record.ts     |   272 +
- .../task-backend/kernel-replay-capture.testkit.ts  |   128 +
+ .../task-backend/kernel-replay-capture.testkit.ts  |   196 +
  .../kernel-replay-evidence.corpus.json             |   433 +
  .../kernel-replay-journey.test-fixtures.ts         |   268 +
  .../kernel-replay-migration.corpus.json            |   468 +
- .../task-backend/kernel-replay-migration.test.ts   |   152 +
+ .../task-backend/kernel-replay-migration.test.ts   |   158 +
  .../kernel-replay-persistence.corpus.json          | 54996 +++++++++++++++++++
- .../task-backend/kernel-replay-persistence.test.ts |   736 +
+ .../task-backend/kernel-replay-persistence.test.ts |   768 +
+ .../kernel-replay-qualification.corpus.json        |    17 +
+ .../kernel-replay-qualification.corpus.json.gz     |   Bin 0 -> 1865695 bytes
  .../task-backend/kernel-replay-storage.testkit.ts  |    48 +
  .../task-backend/kernel-replay.corpus.json         |  8712 +++
- .../adapters/task-backend/kernel-replay.test.ts    |   435 +
+ .../adapters/task-backend/kernel-replay.test.ts    |   475 +
  .../src/adapters/task-backend/kernel-replay.ts     |   174 +
  .../kernel-workspace-replay.testkit.ts             |   202 +
  .../task-backend/task-centric-backend-runtime.ts   |    13 +-
@@ -44,7 +47,8 @@
  .../usecases/task-run-effect-resolution.test.ts    |    70 +-
  .../runner/usecases/task-run-effect-resolution.ts  |    18 +-
  packages/core/src/tasks/task-kernel/index.ts       |     1 +
- packages/core/src/tasks/task-kernel/kernel.test.ts |   216 +
+ .../core/src/tasks/task-kernel/invariants.test.ts  |   101 +-
+ packages/core/src/tasks/task-kernel/kernel.test.ts |   127 +
  packages/core/src/tasks/task-kernel/kernel.ts      |    71 +-
  packages/core/src/tasks/task-kernel/model.ts       |     3 +
  .../baselines/v0.7-compatibility-candidate.json    |    90 +-
@@ -54,6 +58,6 @@
  .../agent-efficiency-dependency-manifest.mjs       |     6 +-
  .../internal/kernel-qualification-manifest.mjs     |   255 +
  scripts/bench/internal/kernel-replay-isolation.mjs |   108 +
- scripts/bench/qualify-kernel-replay.mjs            |   216 +
+ scripts/bench/qualify-kernel-replay.mjs            |   218 +
  .../check-compatibility-contract-baseline.mjs      |    91 +
- 58 files changed, 72450 insertions(+), 77 deletions(-)
+ 62 files changed, 98039 insertions(+), 78 deletions(-)

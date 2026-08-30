@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 88ddc6bbdf36f9172e47a485dbc6dc2da0872b11..2c752885453a6fbeebbb407db859a34454ff63a2",
+      "command": "git diff --check 26f69ff48b8202a9b11f05e2d3193f8b23ad0fd9..646305bc495692c3c6aba2835b66978ed0950a10",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 88ddc6bbdf36f9172e47a485dbc6dc2da0872b11..2c752885453a6fbeebbb407db859a34454ff63a2",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 26f69ff48b8202a9b11f05e2d3193f8b23ad0fd9..646305bc495692c3c6aba2835b66978ed0950a10",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,9 +22,25 @@
         "M\t.agentplane/tasks/202608291006-2A6BJC/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-2A6BJC/pr/review.md",
         "M\tdocs/developer/clean-task-core-m2-replay-checkpoint/README.md",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-effect-dispatch.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-effect-replay.testkit.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-evidence-replay.testkit.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-qualification.testkit.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-record.ts",
         "M\tpackages/agentplane/src/adapters/task-backend/kernel-replay-capture.testkit.ts",
-        "A\tpackages/agentplane/src/adapters/task-backend/kernel-replay-persistence.corpus.json",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts",
         "M\tpackages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-replay.test.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-workspace-replay.testkit.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
+        "M\tpackages/core/src/tasks/task-kernel/kernel.test.ts",
+        "M\tpackages/core/src/tasks/task-kernel/kernel.ts",
+        "M\tpackages/core/src/tasks/task-kernel/model.ts",
+        "A\tscripts/bench/internal/kernel-qualification-manifest.mjs",
+        "M\tscripts/bench/internal/kernel-replay-isolation.mjs",
         "M\tscripts/bench/qualify-kernel-replay.mjs"
       ]
     },
@@ -35,15 +51,144 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "88ddc6bbdf36f9172e47a485dbc6dc2da0872b11",
-  "implementation_commit": "2c752885453a6fbeebbb407db859a34454ff63a2",
+  "execution_base_commit": "26f69ff48b8202a9b11f05e2d3193f8b23ad0fd9",
+  "implementation_commit": "646305bc495692c3c6aba2835b66978ed0950a10",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M docs/developer/clean-task-core-m2-replay-checkpoint/README.md",
+      " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-record.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-replay-capture.testkit.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      " M packages/core/src/tasks/task-kernel/kernel.test.ts",
+      " M packages/core/src/tasks/task-kernel/kernel.ts",
+      " M packages/core/src/tasks/task-kernel/model.ts",
+      " M scripts/bench/internal/kernel-replay-isolation.mjs",
+      " M scripts/bench/qualify-kernel-replay.mjs",
+      "?? packages/agentplane/src/adapters/task-backend/kernel-effect-dispatch.ts",
+      "?? packages/agentplane/src/adapters/task-backend/kernel-effect-replay.testkit.ts",
+      "?? packages/agentplane/src/adapters/task-backend/kernel-evidence-replay.testkit.ts",
+      "?? packages/agentplane/src/adapters/task-backend/kernel-qualification.testkit.ts",
+      "?? packages/agentplane/src/adapters/task-backend/kernel-workspace-replay.testkit.ts",
+      "?? scripts/bench/internal/kernel-qualification-manifest.mjs"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/developer/clean-task-core-m2-replay-checkpoint/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/adapters/task-backend/kernel-record.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/adapters/task-backend/kernel-replay-capture.testkit.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/tasks/task-kernel/kernel.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/tasks/task-kernel/kernel.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/tasks/task-kernel/model.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/bench/internal/kernel-replay-isolation.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/bench/qualify-kernel-replay.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/adapters/task-backend/kernel-effect-dispatch.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/adapters/task-backend/kernel-effect-replay.testkit.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/adapters/task-backend/kernel-evidence-replay.testkit.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/adapters/task-backend/kernel-qualification.testkit.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/adapters/task-backend/kernel-workspace-replay.testkit.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? scripts/bench/internal/kernel-qualification-manifest.mjs"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M docs/developer/clean-task-core-m2-replay-checkpoint/README.md",
+      " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-record.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-replay-capture.testkit.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      " M packages/core/src/tasks/task-kernel/kernel.test.ts",
+      " M packages/core/src/tasks/task-kernel/kernel.ts",
+      " M packages/core/src/tasks/task-kernel/model.ts",
+      " M scripts/bench/internal/kernel-replay-isolation.mjs",
+      " M scripts/bench/qualify-kernel-replay.mjs",
+      "?? packages/agentplane/src/adapters/task-backend/kernel-effect-dispatch.ts",
+      "?? packages/agentplane/src/adapters/task-backend/kernel-effect-replay.testkit.ts",
+      "?? packages/agentplane/src/adapters/task-backend/kernel-evidence-replay.testkit.ts",
+      "?? packages/agentplane/src/adapters/task-backend/kernel-qualification.testkit.ts",
+      "?? packages/agentplane/src/adapters/task-backend/kernel-workspace-replay.testkit.ts",
+      "?? scripts/bench/internal/kernel-qualification-manifest.mjs"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,

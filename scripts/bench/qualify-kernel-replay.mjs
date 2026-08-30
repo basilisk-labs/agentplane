@@ -173,6 +173,8 @@ export default {
     "kernel-replay-migration.corpus.json",
     "kernel-replay-evidence.corpus.json",
     "kernel-replay-persistence.corpus.json",
+    "kernel-replay-qualification.corpus.json",
+    "kernel-replay-qualification.corpus.json.gz",
   ];
   process.stdout.write(
     JSON.stringify(

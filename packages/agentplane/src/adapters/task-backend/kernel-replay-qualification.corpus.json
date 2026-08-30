@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "source_anchor": "646305bc495692c3c6aba2835b66978ed0950a10",
+  "encoding": "gzip",
+  "payload": "kernel-replay-qualification.corpus.json.gz",
+  "payload_digest": "sha256:915a2f99078d64295921b5f93b8636069170a652e5fd7a5bb9e04f63b6fd8e41",
+  "decoded_digest": "sha256:11a22372c0b51e36e663c113b9ffae25b02fd00fbb635dd4d598dda6624d5c5e",
+  "decoded_bytes": 24181476,
+  "collections": {
+    "fixtures": 15,
+    "supplemental_kernel": 19,
+    "effect_replay": 31,
+    "workspace_replay": 4,
+    "evidence_replay": 9,
+    "crash_matrix": 252
+  }
+}

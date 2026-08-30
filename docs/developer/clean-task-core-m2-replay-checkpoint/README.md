@@ -93,6 +93,62 @@ and expectations that differ from the frozen crash origin fail qualification bef
 Normal tests do not regenerate the saved corpus. New capture fixtures still require committed-source
 capture and mandatory frozen replay in `m2-corpus-freeze`; this checkpoint does not complete that gate.
 
+## Complete frozen qualification corpus
+
+The isolated capture at `646305bc495692c3c6aba2835b66978ed0950a10` passed all 747 tests in eight
+suites on Node 24. It validated all twelve families with no unexplained normalized read mismatch.
+The durable report is [qualification-capture.json](./qualification-capture.json). It identifies
+18 transitive harness files, 46 dependency mappings, the dependency manifest, the exact Git tree,
+every original corpus digest and the test-report digest. Provider scenarios use explicit fakes.
+
+| Family                               | Referenced cases |
+| ------------------------------------ | ---------------: |
+| Canonical state/action products      |              177 |
+| Legacy lifecycle                     |                5 |
+| Plans                                |                8 |
+| WorkItems                            |               12 |
+| Required inputs                      |                7 |
+| Validation                           |               14 |
+| Evaluator                            |               11 |
+| Effects                              |               31 |
+| Workspaces                           |                4 |
+| Backend persistence and interruption |              267 |
+| Task classes                         |               15 |
+| Crash points                         |              252 |
+
+Families intentionally share cases. Their counts must not be summed as distinct tests.
+The new payload includes 15 persistence journeys, 19 supplemental kernel scenarios, 31 effect
+scenarios, four workspace layouts, nine evidence scenarios and 252 crash cases. Earlier reviewed
+kernel, migration, evidence and persistence corpora remain unchanged. Crash expectations reference
+and equal the independently frozen persistence prefixes from the earlier capture.
+
+`kernel-replay-qualification.corpus.json` records the source anchor, collection counts and both
+compressed and decoded byte digests. Its adjacent `.json.gz` payload contains the exact original
+24,181,476 capture bytes. Compression reduces repository storage to 1,865,695 bytes without
+reformatting or regenerating observations. The decoded SHA-256 is
+`11a22372c0b51e36e663c113b9ffae25b02fd00fbb635dd4d598dda6624d5c5e`.
+Inspect the payload with `gzip -dc packages/agentplane/src/adapters/task-backend/kernel-replay-qualification.corpus.json.gz`.
+
+Normal replay verifies both byte digests and each fixture source identity before opening storage.
+It then executes frozen source strings, not newly generated expectations. Each comparison reports
+the first divergent field and source/reproduction identity. Real Git workspace cases include canary
+application, repeated migration with unchanged bytes and exact-byte rollback. Missing frozen
+documents do not fall back to base. A divergent HEAD rejects stale commands.
+
+The first full gate at this capture anchor passed `test:fast`, runtime, core and CLI checks but
+failed `docs-schema`: the kernel test file grew above the existing 1,000-line budget. The two new
+durable-effect admission tests now reside in the existing invariant suite. Assertions, test counts
+and size limits are preserved. A complete new supervisor verification remains required after this
+fixture-freeze change; the focused and isolated passes do not replace that gate.
+The changed frozen replay suites passed all 692 tests on Node 24. The complete `docs-schema` group,
+changed-source lint, typecheck and framework bootstrap also passed after the test relocation.
+
+Run the report's reproduction command from its exact source checkout. The driver rejects a
+working copy whose harness differs from that anchor. Subsequent qualification reports identify
+the current replay implementation separately from the immutable capture origin. Final verification,
+review, exact-head hosted checks and closure belong to the supervisor's Task artifacts and PR.
+This capture report does not certify M3 cutover, twenty self-hosting Tasks or release drills.
+
 ## Remaining mandatory acceptance
 
 The initial checkpoint's full `test:fast` run failed 12 tests across seven suites after
@@ -151,6 +207,7 @@ owner prevents a conflicting claim until its claim is resolved or cancelled.
 4. Run full local verification, independent semantic review, exact-head hosted checks,
    supervised integration and hosted closure. None is implied by this checkpoint.
 
-The final qualification report and frozen corpus remain required outputs. No legacy deletion,
+The complete frozen corpus and capture report are present. Final current-source verification and
+supervised hosted delivery remain required. No legacy deletion,
 repository-wide Task migration, twenty-task self-hosting claim or release drill is authorized
 by this checkpoint report.

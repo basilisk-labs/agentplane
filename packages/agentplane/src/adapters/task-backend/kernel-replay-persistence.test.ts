@@ -25,6 +25,7 @@ import { bindKernelWorkItemEvidence, readKernelReview } from "./kernel-observati
 import {
   captureKernelPersistenceFixture,
   observeKernelPersistenceState,
+  readKernelQualificationCorpus,
   replayKernelPersistenceFixture,
   type KernelPersistenceFixture,
 } from "./kernel-replay-capture.testkit.js";
@@ -39,6 +40,8 @@ import {
   replayRepositoryIdentity,
   replayTaskClasses,
 } from "./kernel-replay-journey.test-fixtures.js";
+
+const qualified = await readKernelQualificationCorpus();
 
 const crashCaptures: {
   identity: KernelPersistenceFixture["identity"];
@@ -116,9 +119,15 @@ const frozen = JSON.parse(
 ) as { schema_version: 1; source_anchor: string; fixtures: KernelPersistenceFixture[] };
 
 describe("qualified evidence identities", () => {
-  for (const fixture of kernelEvidenceReplayCases()) {
+  for (const saved of qualified.evidence_replay) {
+    const fixture = kernelEvidenceReplayCases().find(
+      (entry) => entry.id === saved.identity.fixture_id,
+    );
+    if (!fixture) throw new Error(`Unknown frozen evidence case: ${saved.identity.fixture_id}`);
     it(fixture.id, async () => {
-      const observed = await observeKernelEvidenceScenario(fixture.source_bytes);
+      const observed = await observeKernelEvidenceScenario(saved.source_bytes);
+      const comparison = compareReplayObservations(saved.identity, saved.expected, observed);
+      expect(comparison.matched, JSON.stringify(comparison)).toBe(true);
       if (fixture.scenario === "missing-executable") {
         expect(observed).toMatchObject({
           process: { code: "ENOENT" },
@@ -141,9 +150,15 @@ describe("qualified evidence identities", () => {
 });
 
 describe("qualified provider effect scenarios", () => {
-  for (const fixture of kernelEffectReplayCases()) {
+  for (const saved of qualified.effect_replay) {
+    const fixture = kernelEffectReplayCases().find(
+      (entry) => entry.id === saved.identity.fixture_id,
+    );
+    if (!fixture) throw new Error(`Unknown frozen effect case: ${saved.identity.fixture_id}`);
     it(fixture.id, async () => {
-      const observed = await observeKernelEffectReplay(fixture.source_bytes);
+      const observed = await observeKernelEffectReplay(saved.source_bytes);
+      const comparison = compareReplayObservations(saved.identity, saved.expected, observed);
+      expect(comparison.matched, JSON.stringify(comparison)).toBe(true);
       const noDispatch = [
         "not-issued",
         "admission-after-write",
@@ -196,7 +211,7 @@ describe("frozen persistence replay", () => {
       expect(fixture.identity.implementation_anchor).toBe(frozen.source_anchor);
   });
 
-  for (const fixture of frozen.fixtures) {
+  for (const fixture of qualified.fixtures) {
     it(`replays ${fixture.identity.fixture_id} against independently frozen observations`, async () => {
       const comparison = await replayKernelPersistenceFixture(fixture);
       expect(comparison.matched, JSON.stringify(comparison)).toBe(true);
@@ -640,97 +655,114 @@ describe("canonical replay through persistence and restart", () => {
         expect(new Set(events.map((event) => event.id)).size).toBe(steps.length);
       });
     }
-    for (const mode of ["before-write", "after-write", "unknown-readback"] as const) {
-      for (const { journey, step: crashStep, index: crashIndex } of kernelReplayCrashPoints()) {
-        it(`${backendKind} ${mode} at ${crashStep.label} recovers without a duplicate mutation`, async () => {
-          const store = await storage(backendKind);
-          const adapter = new KernelBackendAdapter(store.backend, replayRepositoryIdentity);
-          for (const [index, step] of journey.steps.slice(0, crashIndex).entries()) {
-            const result =
-              index === 0
-                ? await adapter.create(journey.task, step.input)
-                : await adapter.execute(step.input);
-            expect(result.kind).toBe("committed");
-          }
-          const original = store.backend.writeTask.bind(store.backend);
-          const write = vi
-            .spyOn(store.backend, "writeTask")
-            .mockImplementationOnce(async (...args) => {
-              if (mode === "before-write") throw new Error("interrupted before atomic write");
-              await original(...args);
-              if (mode === "unknown-readback")
-                vi.spyOn(store.backend, "getTask").mockRejectedValue(
-                  new Error("readback unavailable"),
-                );
-              throw new Error("interrupted after atomic write");
-            });
-          const interrupted =
-            crashIndex === 0
-              ? await adapter.create(journey.task, crashStep.input)
-              : await adapter.execute(crashStep.input);
-          expect(interrupted.kind).toBe(mode === "after-write" ? "committed" : "unavailable");
-          if (mode === "unknown-readback")
-            expect(interrupted).toMatchObject({ code: "write_in_doubt" });
-          write.mockRestore();
-          const restarted = new KernelBackendAdapter(store.restart(), replayRepositoryIdentity);
-          const resumedWrite = vi.spyOn(restarted.backend, "writeTask");
-          const resumed =
-            crashIndex === 0
-              ? await restarted.create(journey.task, crashStep.input)
-              : await restarted.execute(crashStep.input);
-          expect(resumed.kind).toBe("committed");
-          if (resumed.kind !== "committed") throw new Error(JSON.stringify(resumed));
-          expect(resumed.record.events).toHaveLength(crashIndex + 1);
-          expect(Object.keys(resumed.record.aggregate.mutation_receipts)).toHaveLength(
-            crashIndex + 1,
-          );
-          expect(resumedWrite).toHaveBeenCalledTimes(mode === "before-write" ? 1 : 0);
-          const origin = frozen.fixtures.find(
-            (fixture) =>
-              fixture.backend === backendKind && fixture.source_bytes === JSON.stringify(journey),
-          );
-          if (!origin) throw new Error("Missing independently frozen crash reference");
-          const expected = origin.expected[crashIndex]!;
-          const { read, observation: actual } = await observeKernelPersistenceState(
-            store.restart(),
-            journey.task.id,
-            replayRepositoryIdentity,
-            crashStep.input.repository_fingerprint,
-            crashStep.label,
-            origin.identity,
-          );
-          expect(read.record.digest).toBe(resumed.record.digest);
-          const comparison = compareReplayObservations(origin.identity, expected, actual);
-          expect(comparison.matched, JSON.stringify(comparison)).toBe(true);
-          if (captureOutput) {
-            const sourceBytes = JSON.stringify({
-              backend: backendKind,
-              mode,
-              crash_index: crashIndex,
-              journey,
-            });
-            crashCaptures.push({
-              identity: {
-                fixture_id: `${backendKind}-${mode}-${crashStep.label}`,
-                source_digest: replayBytesDigest(sourceBytes),
-                implementation_anchor: process.env.AGENTPLANE_KERNEL_CAPTURE_ANCHOR!,
-                reproduction_command: `node scripts/bench/qualify-kernel-replay.mjs ${process.env.AGENTPLANE_KERNEL_CAPTURE_ANCHOR!}`,
-              },
-              family: "crash-points",
-              source_bytes: sourceBytes,
-              expected,
-              expected_origin: {
-                fixture_id: origin.identity.fixture_id,
-                implementation_anchor: origin.identity.implementation_anchor,
-                observation_index: crashIndex,
-              },
-            });
-          }
-          expect(
-            await restarted.nextAction(journey.task.id, crashStep.input.repository_fingerprint),
-          ).toMatchObject({ reason_code: crashStep.expected_next_reason, grants_authority: false });
+    for (const saved of qualified.crash_matrix) {
+      const {
+        backend,
+        mode,
+        crash_index: crashIndex,
+        journey,
+      } = JSON.parse(saved.source_bytes) as {
+        backend: ReplayBackendKind;
+        mode: "before-write" | "after-write" | "unknown-readback";
+        crash_index: number;
+        journey: ReturnType<typeof kernelReplayJourney>;
+      };
+      if (backend !== backendKind) continue;
+      const crashStep = journey.steps[crashIndex]!;
+      it(`${backendKind} ${mode} at ${crashStep.label} recovers without a duplicate mutation`, async () => {
+        const store = await storage(backendKind);
+        const adapter = new KernelBackendAdapter(store.backend, replayRepositoryIdentity);
+        for (const [index, step] of journey.steps.slice(0, crashIndex).entries()) {
+          const result =
+            index === 0
+              ? await adapter.create(journey.task, step.input)
+              : await adapter.execute(step.input);
+          expect(result.kind).toBe("committed");
+        }
+        const original = store.backend.writeTask.bind(store.backend);
+        const write = vi
+          .spyOn(store.backend, "writeTask")
+          .mockImplementationOnce(async (...args) => {
+            if (mode === "before-write") throw new Error("interrupted before atomic write");
+            await original(...args);
+            if (mode === "unknown-readback")
+              vi.spyOn(store.backend, "getTask").mockRejectedValue(
+                new Error("readback unavailable"),
+              );
+            throw new Error("interrupted after atomic write");
+          });
+        const interrupted =
+          crashIndex === 0
+            ? await adapter.create(journey.task, crashStep.input)
+            : await adapter.execute(crashStep.input);
+        expect(interrupted.kind).toBe(mode === "after-write" ? "committed" : "unavailable");
+        if (mode === "unknown-readback")
+          expect(interrupted).toMatchObject({ code: "write_in_doubt" });
+        write.mockRestore();
+        const restarted = new KernelBackendAdapter(store.restart(), replayRepositoryIdentity);
+        const resumedWrite = vi.spyOn(restarted.backend, "writeTask");
+        const resumed =
+          crashIndex === 0
+            ? await restarted.create(journey.task, crashStep.input)
+            : await restarted.execute(crashStep.input);
+        expect(resumed.kind).toBe("committed");
+        if (resumed.kind !== "committed") throw new Error(JSON.stringify(resumed));
+        expect(resumed.record.events).toHaveLength(crashIndex + 1);
+        expect(Object.keys(resumed.record.aggregate.mutation_receipts)).toHaveLength(
+          crashIndex + 1,
+        );
+        expect(resumedWrite).toHaveBeenCalledTimes(mode === "before-write" ? 1 : 0);
+        const origin = frozen.fixtures.find(
+          (fixture) =>
+            fixture.backend === backendKind && fixture.source_bytes === JSON.stringify(journey),
+        );
+        if (!origin) throw new Error("Missing independently frozen crash reference");
+        const expected = origin.expected[crashIndex]!;
+        const { read, observation: actual } = await observeKernelPersistenceState(
+          store.restart(),
+          journey.task.id,
+          replayRepositoryIdentity,
+          crashStep.input.repository_fingerprint,
+          crashStep.label,
+          origin.identity,
+        );
+        expect(read.record.digest).toBe(resumed.record.digest);
+        expect(saved.expected_origin).toEqual({
+          fixture_id: origin.identity.fixture_id,
+          implementation_anchor: origin.identity.implementation_anchor,
+          observation_index: crashIndex,
         });
-      }
+        expect(saved.expected).toEqual(expected);
+        const comparison = compareReplayObservations(saved.identity, saved.expected, actual);
+        expect(comparison.matched, JSON.stringify(comparison)).toBe(true);
+        if (captureOutput) {
+          const sourceBytes = JSON.stringify({
+            backend: backendKind,
+            mode,
+            crash_index: crashIndex,
+            journey,
+          });
+          crashCaptures.push({
+            identity: {
+              fixture_id: `${backendKind}-${mode}-${crashStep.label}`,
+              source_digest: replayBytesDigest(sourceBytes),
+              implementation_anchor: process.env.AGENTPLANE_KERNEL_CAPTURE_ANCHOR!,
+              reproduction_command: `node scripts/bench/qualify-kernel-replay.mjs ${process.env.AGENTPLANE_KERNEL_CAPTURE_ANCHOR!}`,
+            },
+            family: "crash-points",
+            source_bytes: sourceBytes,
+            expected,
+            expected_origin: {
+              fixture_id: origin.identity.fixture_id,
+              implementation_anchor: origin.identity.implementation_anchor,
+              observation_index: crashIndex,
+            },
+          });
+        }
+        expect(
+          await restarted.nextAction(journey.task.id, crashStep.input.repository_fingerprint),
+        ).toMatchObject({ reason_code: crashStep.expected_next_reason, grants_authority: false });
+      });
     }
   }
 });

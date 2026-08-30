@@ -1,4 +1,6 @@
-import { rm } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { readFile, rm } from "node:fs/promises";
+import { gunzipSync } from "node:zlib";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import type { TaskBackend } from "../../backends/task-backend.js";
 import { KernelBackendAdapter } from "./kernel-backend-adapter.js";
@@ -125,4 +127,70 @@ export async function replayKernelPersistenceFixture(fixture: KernelPersistenceF
     journey,
   );
   return compareReplayObservations(fixture.identity, fixture.expected, actual.expected);
+}
+
+export type FrozenObservationFixture = {
+  identity: ReplayIdentity;
+  source_bytes: string;
+  expected: unknown;
+};
+export type KernelQualificationCorpus = {
+  schema_version: 1;
+  source_anchor: string;
+  fixtures: KernelPersistenceFixture[];
+  supplemental_kernel: FrozenObservationFixture[];
+  effect_replay: FrozenObservationFixture[];
+  workspace_replay: FrozenObservationFixture[];
+  evidence_replay: FrozenObservationFixture[];
+  crash_matrix: (FrozenObservationFixture & {
+    expected_origin: {
+      fixture_id: string;
+      implementation_anchor: string;
+      observation_index: number;
+    };
+  })[];
+};
+type QualificationIndex = {
+  source_anchor: string;
+  payload_digest: string;
+  decoded_digest: string;
+  decoded_bytes: number;
+  collections: Record<string, number>;
+};
+const byteDigest = (bytes: Uint8Array) =>
+  `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
+
+/** Verify both byte identities before parsing or opening any fixture storage. */
+export function decodeKernelQualificationCorpus(payload: Uint8Array, index: QualificationIndex) {
+  if (byteDigest(payload) !== index.payload_digest)
+    throw new Error("Frozen payload digest mismatch");
+  const decoded = gunzipSync(payload);
+  if (decoded.length !== index.decoded_bytes || byteDigest(decoded) !== index.decoded_digest)
+    throw new Error("Frozen decoded digest mismatch");
+  const corpus = JSON.parse(decoded.toString("utf8")) as KernelQualificationCorpus;
+  if (corpus.schema_version !== 1 || corpus.source_anchor !== index.source_anchor)
+    throw new Error("Frozen corpus identity mismatch");
+  for (const [key, count] of Object.entries(index.collections)) {
+    const fixtures = corpus[key as keyof KernelQualificationCorpus];
+    if (!Array.isArray(fixtures) || fixtures.length !== count || count === 0)
+      throw new Error(`Frozen collection mismatch: ${key}`);
+    for (const fixture of fixtures) {
+      if (
+        fixture.identity.implementation_anchor !== corpus.source_anchor ||
+        replayBytesDigest(fixture.source_bytes) !== fixture.identity.source_digest
+      )
+        throw new Error(`Frozen source identity mismatch: ${fixture.identity.fixture_id}`);
+    }
+  }
+  return corpus;
+}
+
+export async function readKernelQualificationCorpus() {
+  const index = JSON.parse(
+    await readFile(new URL("kernel-replay-qualification.corpus.json", import.meta.url), "utf8"),
+  ) as QualificationIndex;
+  const payload = await readFile(
+    new URL("kernel-replay-qualification.corpus.json.gz", import.meta.url),
+  );
+  return decodeKernelQualificationCorpus(payload, index);
 }

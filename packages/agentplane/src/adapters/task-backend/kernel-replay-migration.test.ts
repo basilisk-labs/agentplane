@@ -8,6 +8,7 @@ import {
   LocalTaskByteStore,
   taskBytesDigest,
 } from "../../backends/task-backend/local-task-byte-store.js";
+import { readKernelQualificationCorpus } from "./kernel-replay-capture.testkit.js";
 import { KernelMigration } from "./kernel-migration.js";
 import { compareReplayObservations } from "./kernel-replay.js";
 import {
@@ -119,11 +120,16 @@ describe("frozen migration corpus", () => {
 });
 
 const workspaceCases = await kernelWorkspaceReplayCases();
+const qualified = await readKernelQualificationCorpus();
 describe("qualified workspace identities", () => {
-  for (const fixture of workspaceCases) {
+  for (const saved of qualified.workspace_replay) {
+    const fixture = workspaceCases.find((entry) => entry.id === saved.identity.fixture_id);
+    if (!fixture) throw new Error(`Unknown frozen workspace case: ${saved.identity.fixture_id}`);
     it(fixture.id, async () => {
-      const observed = await observeKernelWorkspaceReplay(fixture.source_bytes);
-      const source = JSON.parse(fixture.source_bytes) as { source_base64: string };
+      const observed = await observeKernelWorkspaceReplay(saved.source_bytes);
+      const comparison = compareReplayObservations(saved.identity, saved.expected, observed);
+      expect(comparison.matched, JSON.stringify(comparison)).toBe(true);
+      const source = JSON.parse(saved.source_bytes) as { source_base64: string };
       const digest = taskBytesDigest(Buffer.from(source.source_base64, "base64"));
       expect(observed.base_digest).toBe(digest);
       if (fixture.layout === "missing-frozen-document") {

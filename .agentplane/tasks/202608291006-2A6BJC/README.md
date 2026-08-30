@@ -4,7 +4,7 @@ title: "Add compatibility adapters and replay migration"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 72
+revision: 76
 origin:
   system: "manual"
 depends_on:
@@ -448,6 +448,7 @@ execution_contract:
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
   observed:
     authority_violations:
+      - "verification:recorded-check-8:fail"
       - "writable_scope:.agentplane/policy/incidents.md"
       - "writable_scope:.agentplane/tasks/202608290844-7JCQPF/README.md"
       - "writable_scope:.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json"
@@ -1114,12 +1115,16 @@ execution_contract:
       - "packages/agentplane/assets/policy/incidents.md"
       - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-effect-dispatch.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-effect-replay.testkit.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-evidence-replay.testkit.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-migration-source.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-migration.test.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-migration.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-next-action.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-observations.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-projector.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-qualification.testkit.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-replay-capture.testkit.ts"
@@ -1133,6 +1138,7 @@ execution_contract:
       - "packages/agentplane/src/adapters/task-backend/kernel-replay.corpus.json"
       - "packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-replay.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-workspace-replay.testkit.ts"
       - "packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts"
       - "packages/agentplane/src/backends/task-backend/local-backend.ts"
       - "packages/agentplane/src/backends/task-backend/local-task-byte-store.ts"
@@ -1151,6 +1157,8 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
       - "packages/agentplane/src/commands/task/kernel-migrate.command.ts"
@@ -1180,6 +1188,7 @@ execution_contract:
       - "scripts/bench/capture-kernel-migration-replay.ts"
       - "scripts/bench/capture-kernel-replay.ts"
       - "scripts/bench/internal/agent-efficiency-dependency-manifest.mjs"
+      - "scripts/bench/internal/kernel-qualification-manifest.mjs"
       - "scripts/bench/internal/kernel-replay-isolation.mjs"
       - "scripts/bench/qualify-kernel-replay.mjs"
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
@@ -1288,7 +1297,7 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-8"
-        result: "pass"
+        result: "fail"
       -
         id: "recorded-check-9"
         result: "pass"
@@ -1681,7 +1690,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:74b468789e31266949f6d15ee46d6b81503aabe1d48107104d25cf851f863549"
+      digest: "sha256:b0539811e989a0b20b90cbe88d2f1845d7302a52f0c770e2d0f822fa3dd4f48b"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli"
         - "central_component:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
@@ -2306,12 +2315,16 @@ execution_contract:
           - "packages/agentplane/assets/policy/incidents.md"
           - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-effect-dispatch.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-effect-replay.testkit.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-evidence-replay.testkit.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-migration-source.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-migration.test.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-migration.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-next-action.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-observations.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-projector.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-qualification.testkit.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-replay-capture.testkit.ts"
@@ -2325,6 +2338,7 @@ execution_contract:
           - "packages/agentplane/src/adapters/task-backend/kernel-replay.corpus.json"
           - "packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-replay.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-workspace-replay.testkit.ts"
           - "packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts"
           - "packages/agentplane/src/backends/task-backend/local-backend.ts"
           - "packages/agentplane/src/backends/task-backend/local-task-byte-store.ts"
@@ -2343,6 +2357,8 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
           - "packages/agentplane/src/commands/task/kernel-migrate.command.ts"
@@ -2372,6 +2388,7 @@ execution_contract:
           - "scripts/bench/capture-kernel-migration-replay.ts"
           - "scripts/bench/capture-kernel-replay.ts"
           - "scripts/bench/internal/agent-efficiency-dependency-manifest.mjs"
+          - "scripts/bench/internal/kernel-qualification-manifest.mjs"
           - "scripts/bench/internal/kernel-replay-isolation.mjs"
           - "scripts/bench/qualify-kernel-replay.mjs"
           - "scripts/checks/check-compatibility-contract-baseline.mjs"
@@ -2420,6 +2437,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-8"
 commit: null
 comments:
   -
@@ -2479,6 +2497,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 2c752885453a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 646305bc4956. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -2710,8 +2731,22 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-30T13:30:33.229Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 646305bc4956. CLI accepted one state-bound external-agent semantic result."
+    commit: "646305bc495692c3c6aba2835b66978ed0950a10"
+  -
+    type: "verify"
+    at: "2026-08-30T13:45:01.039Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-08-30T12:30:06.105Z"
+doc_updated_at: "2026-08-30T13:45:03.550Z"
 doc_updated_by: "SUPERVISOR"
 description: "Connect legacy CLI and repository surfaces to the canonical Task kernel through explicit adapters. Add one-time migration, dual-read or shadow execution where needed, exact replay fixtures, state equivalence checks, rollback receipts, and fail-closed handling for unknown legacy layouts."
 sections:
@@ -4524,6 +4559,76 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-8
     Scope: branch_pr task 202608291006-2A6BJC Verification Contract check task_outcome (8/8)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291006-2A6BJC-add-compatibility-adapters-and-replay-migration/.agentplane/tasks/202608291006-2A6BJC/blueprint/resolved-snapshot.json
+    - old_digest: de01a169a7c1ba12da99c26a1e9c03024b28e8ea88f99c10758e30b1a931abc9
+    - current_digest: de01a169a7c1ba12da99c26a1e9c03024b28e8ea88f99c10758e30b1a931abc9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608291006-2A6BJC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-30T13:45:01.039Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:14f2d1aa148850434712b287721a7e1a35d4528d09687a0f0ef6b8915e5a7bb6, input_digest=sha256:a70c66206e09cd5793b00edd9ec789ab413aa407a1a05806d68c8252cbbba817
+
+    Details:
+
+    Command: bun run arch:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+    Command: bun run lifecycle:invariants
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+    Command: bun run test:fast
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202608291006-2A6BJC declared verification
 
     BlueprintSnapshotRef:
     - state: current
@@ -7541,9 +7646,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202608291006-2A6BJC"
-    revision: 72
+    revision: 76
     schema_version: 1
-    updated_at: "2026-08-30T12:30:07.727Z"
+    updated_at: "2026-08-30T13:45:05.627Z"
     work_items:
       m2-boundaries:
         attempt: 2
@@ -7792,14 +7897,84 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       m2-replay-qualification:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m2-replay-qualification"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:45b0742fbeab378536964750dcf2b5d1b7c7c93182250f809ffeb726870641da"
+            id: "m2-coverage-implementation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 4
+              task_id: "202608291006-2A6BJC"
+              work_item_id: "m2-replay-qualification"
+            provenance:
+              - "sha256:dda646ef5d3462647e944f394f3d4738b739152ecc6d652db6dd66d6beb7e735"
+              - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:18e2b181552a135181fc072e4985879e3f1452bbebcc68b1cd12f73778058622"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
+              check_id: "m2-architecture"
+              command_identity: "bun run arch:check"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-08-30T13:45:05.596Z"
+              repository_snapshot_digest: "sha256:18e2b181552a135181fc072e4985879e3f1452bbebcc68b1cd12f73778058622"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
+              check_id: "m2-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-08-30T13:45:05.596Z"
+              repository_snapshot_digest: "sha256:18e2b181552a135181fc072e4985879e3f1452bbebcc68b1cd12f73778058622"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
+              check_id: "m2-tests"
+              command_identity: "bun run test:fast"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-08-30T13:45:05.596Z"
+              repository_snapshot_digest: "sha256:18e2b181552a135181fc072e4985879e3f1452bbebcc68b1cd12f73778058622"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
+              check_id: "m2-types"
+              command_identity: "bun run typecheck"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-08-30T13:45:05.596Z"
+              repository_snapshot_digest: "sha256:18e2b181552a135181fc072e4985879e3f1452bbebcc68b1cd12f73778058622"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
+              check_id: "m2-diff"
+              command_identity: "git diff --check"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-08-30T13:45:05.596Z"
+              repository_snapshot_digest: "sha256:18e2b181552a135181fc072e4985879e3f1452bbebcc68b1cd12f73778058622"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
@@ -7965,6 +8140,29 @@ extensions:
         previous_revision: 13
         schema_version: 1
         task_id: "202608291006-2A6BJC"
+      external-result:work-order-202608291006-2A6BJC-executor-b75d7a8db2d828d11ea57d22:
+        aggregate_digest: "sha256:99f4f61c40c950ab6d2fdc4bd054835cc6a4969b2c8fb9128b0eae813954ac24"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-30T13:45:05.627Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_a1e86d9efb4e18cc0046552f"
+          mutation_id: "external-result:work-order-202608291006-2A6BJC-executor-b75d7a8db2d828d11ea57d22"
+          plan_digest: "sha256:8e32060f888533284a0d0235807cc97a6cad53aa4e1f9d48d24ec527928ae634"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-2A6BJC"
+          task_revision: 75
+          to: "COMPLETED"
+          work_item_id: "m2-replay-qualification"
+        mutation_id: "external-result:work-order-202608291006-2A6BJC-executor-b75d7a8db2d828d11ea57d22"
+        next_revision: 76
+        previous_revision: 75
+        schema_version: 1
+        task_id: "202608291006-2A6BJC"
       external-result:work-order-202608291006-2A6BJC-executor-e3f42e6e5024316097195f50:
         aggregate_digest: "sha256:ca31485b8336cff4a1cad738cc1a31c927ef130e686b3775834af1d5c1c87804"
         event:
@@ -8111,8 +8309,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "2c752885453a6fbeebbb407db859a34454ff63a2"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -9942,6 +10138,76 @@ Command: bun run ci:local:full
 Result: pass
 Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-8
 Scope: branch_pr task 202608291006-2A6BJC Verification Contract check task_outcome (8/8)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291006-2A6BJC-add-compatibility-adapters-and-replay-migration/.agentplane/tasks/202608291006-2A6BJC/blueprint/resolved-snapshot.json
+- old_digest: de01a169a7c1ba12da99c26a1e9c03024b28e8ea88f99c10758e30b1a931abc9
+- current_digest: de01a169a7c1ba12da99c26a1e9c03024b28e8ea88f99c10758e30b1a931abc9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608291006-2A6BJC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-30T13:45:01.039Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:14f2d1aa148850434712b287721a7e1a35d4528d09687a0f0ef6b8915e5a7bb6, input_digest=sha256:a70c66206e09cd5793b00edd9ec789ab413aa407a1a05806d68c8252cbbba817
+
+Details:
+
+Command: bun run arch:check
+Result: pass
+Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+Command: bun run lifecycle:invariants
+Result: pass
+Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+Command: bun run test:fast
+Result: pass
+Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202608291006-2A6BJC declared verification
 
 BlueprintSnapshotRef:
 - state: current

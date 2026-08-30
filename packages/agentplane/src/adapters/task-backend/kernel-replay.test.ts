@@ -4,7 +4,11 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import { taskKernel } from "@agentplaneorg/core/tasks";
-import type { KernelPersistenceFixture } from "./kernel-replay-capture.testkit.js";
+import {
+  readKernelQualificationCorpus,
+  decodeKernelQualificationCorpus,
+  type KernelPersistenceFixture,
+} from "./kernel-replay-capture.testkit.js";
 import {
   compareReplayObservations,
   observeKernelEvidenceReplay,
@@ -48,6 +52,7 @@ const dependencyCapture = (await import(
     capture_executable_sha256: string;
   };
 };
+const qualified = await readKernelQualificationCorpus();
 const isolationRoots: string[] = [];
 afterEach(async () => {
   await Promise.all(
@@ -97,6 +102,35 @@ async function readCorpus(name: string): Promise<unknown> {
 }
 
 describe("exact-anchor replay isolation", () => {
+  it("validates the complete frozen capture against all twelve families and old origins", async () => {
+    const result = qualificationManifest.qualifyKernelCorpus({
+      anchor: qualified.source_anchor,
+      captured: qualified,
+      kernel: corpus,
+      migration: await readCorpus("kernel-replay-migration.corpus.json"),
+      evidence: evidenceCorpus,
+      persistence: await readCorpus("kernel-replay-persistence.corpus.json"),
+    }) as { families: unknown[] };
+    expect(result.families).toHaveLength(12);
+  });
+
+  it("rejects changed compressed or decoded bytes before fixture execution", async () => {
+    const payload = await readFile(
+      new URL("kernel-replay-qualification.corpus.json.gz", import.meta.url),
+    );
+    const index = (await readCorpus("kernel-replay-qualification.corpus.json")) as Parameters<
+      typeof decodeKernelQualificationCorpus
+    >[1];
+    const changed = Buffer.from(payload);
+    changed[0] = changed[0]! ^ 1;
+    expect(() => decodeKernelQualificationCorpus(changed, index)).toThrow(
+      "Frozen payload digest mismatch",
+    );
+    expect(() =>
+      decodeKernelQualificationCorpus(payload, { ...index, decoded_digest: "wrong" }),
+    ).toThrow("Frozen decoded digest mismatch");
+  });
+
   it("requires all twelve manifest families and exact frozen crash origins", async () => {
     // These are manifest-validation inputs. Only the isolated driver produces qualification proof.
     const anchor = "0".repeat(40);
@@ -321,9 +355,15 @@ describe("exact-anchor replay isolation", () => {
 
 const qualification = await import("./kernel-qualification.testkit.js");
 describe("supplemental kernel qualification", () => {
-  for (const fixture of qualification.kernelQualificationCases()) {
+  for (const saved of qualified.supplemental_kernel) {
+    const fixture = qualification
+      .kernelQualificationCases()
+      .find((entry) => entry.id === saved.identity.fixture_id);
+    if (!fixture) throw new Error(`Unknown frozen kernel case: ${saved.identity.fixture_id}`);
     it(fixture.id, () => {
-      const observed = qualification.observeKernelQualification(fixture.source_bytes);
+      const observed = qualification.observeKernelQualification(saved.source_bytes);
+      const comparison = compareReplayObservations(saved.identity, saved.expected, observed);
+      expect(comparison.matched, JSON.stringify(comparison)).toBe(true);
       expect(observed.outcome, JSON.stringify(observed.rejection)).toBe(fixture.outcome);
       expect(observed.next_action.reason_code).toBe(fixture.next_reason);
       expect(observed.next_action.grants_authority).toBe(false);
