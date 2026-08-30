@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608300119-ZHYXRS/preserve-workitem-results-during-plan-reapproval",
+  "created_at": "2026-08-30T01:23:12.595Z",
+  "diffstat_sha256": "sha256:52768a9cd85dff369c63d1d15aa809cc73857278e7d46fbea9508666c206b63a",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608300119-ZHYXRS",
+  "updated_at": "2026-08-30T01:23:12.595Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
