@@ -8,10 +8,10 @@
   "pr_number": 5880,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5880",
   "pre_merge_closure": {
-    "basis_commit": "00207fd19a5fa292172b6a09d9affe297a227668",
+    "basis_commit": "644cdd23fa5f4a68eec7ea657c6d1fb2dc7e3a21",
     "branch": "task/202608251706-V287W1/ap-runtime-001-make-local-execution-runtime-dete",
     "pr_number": 5880,
-    "recorded_at": "2026-08-30T05:20:24.339Z",
+    "recorded_at": "2026-08-30T08:38:51.212Z",
     "state": "closed_before_merge"
   },
   "provider": {

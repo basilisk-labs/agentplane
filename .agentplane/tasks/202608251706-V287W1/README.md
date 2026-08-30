@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 44
+revision: 45
 origin:
   system: "manual"
 depends_on: []
@@ -63,9 +63,9 @@ quality_review:
     - "Conflict resolution preserves dotenv isolation before runtime selection. No quality receipt or immutable evidence was hand-edited. Historical direct-supervision metadata targets the earlier implementation; the fresh exact-merge verification record is the authoritative check evidence."
     - "All 48 focused tests passed across five runtime, production propagation, verification environment and prepared-input security suites."
 token_usage:
-  agent_runs: 10
+  agent_runs: 17
   input_tokens: null
-  journal_digest: "sha256:424572f81eb1a5dda819be965735984db1ce3fc543bdad3a5efc410c68528f9b"
+  journal_digest: "sha256:3e77aec96705bedc6e6e028141e8b94e69f78eaec25b71de66b87f10cbe4ee19"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -75,7 +75,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-30T05:20:24.205Z"
+  updated_at: "2026-08-30T08:38:51.059Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -4960,8 +4960,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "00207fd19a5fa292172b6a09d9affe297a227668"
-  message: "🚧 V287W1 task: record external evaluator result"
+  hash: "644cdd23fa5f4a68eec7ea657c6d1fb2dc7e3a21"
+  message: "🚧 V287W1 task: record worktree observation"
 comments:
   -
     author: "CODER"
@@ -4996,6 +4996,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): Preserve all intended Task-owned quality artifacts and the README review update. The 08:31:41 work order is historical retired input. The independent operator-prepared 08:35:31 work order and its evaluator apply PASS are current evidence for exact semantic merge 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61. All nine hashes were verified; implementation, checks and verification bytes are unchanged. No source, policy or provider mutation occurred. AgentPlane should record these artifacts and recompute the normal closeout route."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -5120,9 +5123,17 @@ events:
     at: "2026-08-30T08:37:14.337Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): Preserve all intended Task-owned quality artifacts and the README review update. The 08:31:41 work order is historical retired input. The independent operator-prepared 08:35:31 work order and its evaluator apply PASS are current evidence for exact semantic merge 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61. All nine hashes were verified; implementation, checks and verification bytes are unchanged. No source, policy or provider mutation occurred. AgentPlane should record these artifacts and recompute the normal closeout route."
+  -
+    type: "status"
+    at: "2026-08-30T08:38:51.059Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "644cdd23fa5f4a68eec7ea657c6d1fb2dc7e3a21"
 doc_version: 3
-doc_updated_at: "2026-08-30T08:37:14.397Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-30T08:38:51.100Z"
+doc_updated_by: "CODER"
 description: "Fix the observed defect where verification reports `bun: command not found` even though Bun is installed and available on the host. Confirm the root cause across agents, Supervisor, verification, and recovery subprocess production paths instead of assuming it is Supervisor-only. Establish one centralized executable resolver and normalized local runtime environment shared by default across those paths, without user-specific absolute paths and without per-agent PATH configuration by default. Explicit runtime profiles and task or execution overrides must take precedence over normalized defaults. Preserve inherited host PATH entries while resolving supported standard runtime locations deterministically. Distinguish executable-resolution or environment failure from implementation or test failure; if that typed classification requires a separate architectural change beyond this resolver, create a follow-up Task rather than widening this Task. Regression acceptance must exercise the production execution path with a deliberately reduced parent PATH, prove Bun resolution from a supported standard location, and prove fail-closed behavior with an explicit infrastructure-classified result when Bun is genuinely absent."
 sections:
   Summary: |-
@@ -6292,8 +6303,8 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "daf594dbe372635d26bb67af0b9ee83ef6ac3c40"
-    message: "🚧 V287W1 task: apply external agent result"
+    hash: "26b69b0fece6e4d9a8dfd013d6cafefadd4acf61"
+    message: "🔧 V287W1 verification: reconcile canonical kernel verification changes"
   task_execution_context:
     base_ref: "main"
     base_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
@@ -7049,12 +7060,12 @@ Roadmap intake on 2026-08-25:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/10` agent runs
+- Completeness: `0/17` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:424572f81eb1a5dda819be965735984db1ce3fc543bdad3a5efc410c68528f9b`
+- Journal digest: `sha256:3e77aec96705bedc6e6e028141e8b94e69f78eaec25b71de66b87f10cbe4ee19`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-30T05:20:24.205Z`
+- Updated at: `2026-08-30T08:38:51.059Z`
