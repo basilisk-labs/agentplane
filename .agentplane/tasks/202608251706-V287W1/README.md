@@ -4,7 +4,7 @@ title: "AP-RUNTIME-001 Make local execution runtime deterministic"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 23
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -28,10 +28,10 @@ plan_approval:
   note: "Approved under the user standing authorization for all subsequent in-scope Clean Task Core plans and the explicit instruction to finish the refactoring. This retained runtime prerequisite covers local executable resolution, environment propagation, tests and evidence only; no release, credential or remote-runtime changes."
 verification:
   state: "needs_rework"
-  updated_at: "2026-08-30T04:06:29.644Z"
-  updated_by: "TESTER"
-  note: "Committed diff check failed after ESLint autofix: custom-security.test.ts contains trailing whitespace at lines 337, 342, 347 and 352 in implementation 9ae23e29f. No semantic test failure. Remove whitespace and requalify through a fresh executor packet."
-  attempts: 1
+  updated_at: "2026-08-30T04:15:24.255Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 2
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
@@ -123,6 +123,7 @@ execution_contract:
       - "packages/agentplane/src/shared"
   observed:
     authority_violations:
+      - "verification:recorded-check-1:fail"
       - "verification:verification-record:fail"
     changed_components:
       - "docs"
@@ -133,11 +134,14 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+      - "packages/agentplane/src/runner/adapters/custom-security.test.ts"
+      - "packages/agentplane/src/runner/artifacts.ts"
       - "packages/agentplane/src/runner/execution-receipt.ts"
       - "packages/agentplane/src/runner/process-supervision/result.ts"
       - "packages/agentplane/src/runner/process-supervision/run.ts"
       - "packages/agentplane/src/runner/process-supervision/state.ts"
       - "packages/agentplane/src/runner/runtime-env.integration.test.ts"
+      - "packages/agentplane/src/runner/types/state.ts"
       - "packages/agentplane/src/shared/runtime-env.test.ts"
       - "packages/agentplane/src/shared/runtime-env.ts"
     external_effects: []
@@ -149,7 +153,7 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
+        result: "fail"
       -
         id: "recorded-check-10"
         result: "pass"
@@ -241,7 +245,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:3fb5782b59bee02bd4796e2e31caf958dd39775e3b6f444a3d06ea9db63bff8b"
+      digest: "sha256:46d9f32d322f7fa9527cfcdce93be5264c1b4c6ef44e77a59bafcb0d1bebfe1a"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/pr-meta"
         - "central_path:packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
@@ -261,11 +265,14 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+          - "packages/agentplane/src/runner/adapters/custom-security.test.ts"
+          - "packages/agentplane/src/runner/artifacts.ts"
           - "packages/agentplane/src/runner/execution-receipt.ts"
           - "packages/agentplane/src/runner/process-supervision/result.ts"
           - "packages/agentplane/src/runner/process-supervision/run.ts"
           - "packages/agentplane/src/runner/process-supervision/state.ts"
           - "packages/agentplane/src/runner/runtime-env.integration.test.ts"
+          - "packages/agentplane/src/runner/types/state.ts"
           - "packages/agentplane/src/shared/runtime-env.test.ts"
           - "packages/agentplane/src/shared/runtime-env.ts"
         external_effects: []
@@ -308,6 +315,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-1"
       - "verification_recovery:verification-record"
 commit: null
 comments:
@@ -320,6 +328,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: eaf67c9057bb. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 5819defbabe4. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -362,8 +373,22 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Committed diff check failed after ESLint autofix: custom-security.test.ts contains trailing whitespace at lines 337, 342, 347 and 352 in implementation 9ae23e29f. No semantic test failure. Remove whitespace and requalify through a fresh executor packet."
+  -
+    type: "status"
+    at: "2026-08-30T04:09:09.005Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 5819defbabe4. CLI accepted one state-bound external-agent semantic result."
+    commit: "5819defbabe468507c0f70bee3b9d430530be29c"
+  -
+    type: "verify"
+    at: "2026-08-30T04:15:24.255Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-08-30T04:06:30.810Z"
+doc_updated_at: "2026-08-30T04:15:26.591Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the observed defect where verification reports `bun: command not found` even though Bun is installed and available on the host. Confirm the root cause across agents, Supervisor, verification, and recovery subprocess production paths instead of assuming it is Supervisor-only. Establish one centralized executable resolver and normalized local runtime environment shared by default across those paths, without user-specific absolute paths and without per-agent PATH configuration by default. Explicit runtime profiles and task or execution overrides must take precedence over normalized defaults. Preserve inherited host PATH entries while resolving supported standard runtime locations deterministically. Distinguish executable-resolution or environment failure from implementation or test failure; if that typed classification requires a separate architectural change beyond this resolver, create a follow-up Task rather than widening this Task. Regression acceptance must exercise the production execution path with a deliberately reduced parent PATH, prove Bun resolution from a supported standard location, and prove fail-closed behavior with an explicit infrastructure-classified result when Bun is genuinely absent."
 sections:
@@ -565,6 +590,41 @@ sections:
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656, input_digest=sha256:5e5785f7dbf868f12f3f7ce627af61ab0f610ba934819952bf4c544bdc57ec87
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608251706-V287W1-ap-runtime-001-make-local-execution-runtime-dete/.agentplane/tasks/202608251706-V287W1/blueprint/resolved-snapshot.json
+    - old_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+    - current_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608251706-V287W1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608251706-V287W1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-30T04:15:24.255Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656, input_digest=sha256:243758068152565bb1434d730356746acca7b4a3b87504f3e765431809bd2534
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608251706-V287W1 declared verification
 
     BlueprintSnapshotRef:
     - state: current
@@ -1202,6 +1262,41 @@ Attempts: 1
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656, input_digest=sha256:5e5785f7dbf868f12f3f7ce627af61ab0f610ba934819952bf4c544bdc57ec87
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608251706-V287W1-ap-runtime-001-make-local-execution-runtime-dete/.agentplane/tasks/202608251706-V287W1/blueprint/resolved-snapshot.json
+- old_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+- current_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608251706-V287W1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608251706-V287W1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-30T04:15:24.255Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656, input_digest=sha256:243758068152565bb1434d730356746acca7b4a3b87504f3e765431809bd2534
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608251706-V287W1 declared verification
 
 BlueprintSnapshotRef:
 - state: current

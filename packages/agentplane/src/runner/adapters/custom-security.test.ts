@@ -332,29 +332,29 @@ describe("CustomRunnerAdapter security boundaries", () => {
         invocation,
       });
       switch (failure) {
-      case "digest_mismatch": {
-        await writeFile(invocation.bootstrap_path!, "tampered bootstrap\n", "utf8");
+        case "digest_mismatch": {
+          await writeFile(invocation.bootstrap_path!, "tampered bootstrap\n", "utf8");
 
-      break;
-      }
-      case "read_failure": {
-        await unlink(invocation.bootstrap_path!);
+          break;
+        }
+        case "read_failure": {
+          await unlink(invocation.bootstrap_path!);
 
-      break;
-      }
-      case "profile_path": {
-        invocation.env.PATH = `${path.join(root, "different-bin")}:${invocation.env.PATH}`;
+          break;
+        }
+        case "profile_path": {
+          invocation.env.PATH = `${path.join(root, "different-bin")}:${invocation.env.PATH}`;
 
-      break;
-      }
-      case "inherited_path": {
-        vi.stubEnv("PATH", `${path.join(root, "inherited-bin")}:${process.env.PATH ?? ""}`);
+          break;
+        }
+        case "inherited_path": {
+          vi.stubEnv("PATH", `${path.join(root, "inherited-bin")}:${process.env.PATH ?? ""}`);
 
-      break;
-      }
-      default: {
-        await writeRunnerExecutable(root, "custom-runner", ["#!/bin/sh", "exit 0"]);
-      }
+          break;
+        }
+        default: {
+          await writeRunnerExecutable(root, "custom-runner", ["#!/bin/sh", "exit 0"]);
+        }
       }
 
       await expect(adapter.execute(invocation)).rejects.toMatchObject({

@@ -21,13 +21,7 @@ Confirm the root cause across agents, Supervisor, verification, and recovery sub
 ## Verification
 
 - State: needs_rework
-- Note:
-
-```text
-Committed diff check failed after ESLint autofix: custom-security.test.ts contains trailing
-whitespace at lines 337, 342, 347 and 352 in implementation 9ae23e29f. No semantic test failure.
-Remove whitespace and requalify through a fresh executor packet.
-```
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -42,7 +36,7 @@ Remove whitespace and requalify through a fresh executor packet.
  .../src/commands/shared/pr-meta/verify-log.ts      |  19 ++-
  .../commands/task/direct-task-verification.test.ts |  27 ++++
  .../src/commands/task/direct-task-verification.ts  |  26 +++-
- .../src/runner/adapters/custom-security.test.ts    |  38 ++++-
+ .../src/runner/adapters/custom-security.test.ts    |  42 +++++-
  packages/agentplane/src/runner/artifacts.ts        |   8 +
  .../agentplane/src/runner/execution-receipt.ts     |  17 ++-
  .../src/runner/process-supervision/result.ts       |  42 ++++++
@@ -52,7 +46,7 @@ Remove whitespace and requalify through a fresh executor packet.
  packages/agentplane/src/runner/types/state.ts      |   2 +
  packages/agentplane/src/shared/runtime-env.test.ts |  76 +++++++++-
  packages/agentplane/src/shared/runtime-env.ts      | 151 ++++++++++++++-----
- 14 files changed, 580 insertions(+), 92 deletions(-)
+ 14 files changed, 582 insertions(+), 94 deletions(-)
 ```
 
 </details>
