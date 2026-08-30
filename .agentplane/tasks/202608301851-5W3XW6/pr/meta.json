@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:3e013294e37df3db5af2c27fbb598c3587dcee665994583b4cd6d75c481d70d4",
   "pr_number": 5883,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5883",
+  "pre_merge_closure": {
+    "basis_commit": "bcf2f38f73d05fc2878983c72ca0a4a9e2f066c2",
+    "branch": "task/202608301851-5W3XW6/recover-unstarted-task-worktrees-pinned-before-t",
+    "pr_number": 5883,
+    "recorded_at": "2026-08-30T20:21:54.005Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
