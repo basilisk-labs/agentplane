@@ -16,13 +16,7 @@ Connect legacy CLI and repository surfaces to the canonical Task kernel through 
 ## Verification
 
 - State: needs_rework
-- Note:
-
-```text
-Recover the failed no-change refinement return. Request a fresh bounded implementation episode to
-qualify adapter capability refusal and return the missing compatibility artifact scope refinement.
-Preserve prior implementation.
-```
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -55,6 +49,7 @@ Preserve prior implementation.
  .../src/backends/task-backend/local-backend.ts     |    1 +
  .../backends/task-backend/local-task-byte-store.ts |  128 +
  .../src/backends/task-backend/shared/types.ts      |    2 +
+ ...-cli.critical.agent-efficiency-baseline.test.ts |    7 +-
  .../src/cli/run-cli/command-catalog/task.ts        |    8 +
  .../src/cli/run-cli/command-loaders/task.ts        |    4 +
  .../src/commands/task/kernel-migrate.command.ts    |  134 +
@@ -64,11 +59,13 @@ Preserve prior implementation.
  packages/core/src/tasks/task-kernel/kernel.test.ts |   46 +
  packages/core/src/tasks/task-kernel/kernel.ts      |   25 +
  packages/core/src/tasks/task-kernel/model.ts       |    1 +
+ .../baselines/v0.7-compatibility-candidate.json    |   90 +-
  scripts/bench/capture-kernel-evidence-replay.ts    |  213 +
  scripts/bench/capture-kernel-migration-replay.ts   |  191 +
  scripts/bench/capture-kernel-replay.ts             |  181 +
  scripts/bench/qualify-kernel-replay.mjs            |  146 +
- 35 files changed, 13822 insertions(+), 1 deletion(-)
+ .../check-compatibility-contract-baseline.mjs      |   91 +
+ 38 files changed, 13998 insertions(+), 13 deletions(-)
 ```
 
 </details>
