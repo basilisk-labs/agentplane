@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check dce3aa36d586d327f4a85cbffb5fdabc42288ef8..1e07dd534c782e6ca325623af332e1f0ded85651",
+      "command": "git diff --check b687c6778e841b52f34862c4932744b3f894371b..6de58ebe8753e4edf24647d9075ed4169b22bf30",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,11 +13,14 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB dce3aa36d586d327f4a85cbffb5fdabc42288ef8..1e07dd534c782e6ca325623af332e1f0ded85651",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB b687c6778e841b52f34862c4932744b3f894371b..6de58ebe8753e4edf24647d9075ed4169b22bf30",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\tdocs/developer/harness-dev.mdx"
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-effect-replay.testkit.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-migration.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-record.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-replay-capture.testkit.ts"
       ]
     },
     {
@@ -27,8 +30,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "dce3aa36d586d327f4a85cbffb5fdabc42288ef8",
-  "implementation_commit": "1e07dd534c782e6ca325623af332e1f0ded85651",
+  "execution_base_commit": "b687c6778e841b52f34862c4932744b3f894371b",
+  "implementation_commit": "6de58ebe8753e4edf24647d9075ed4169b22bf30",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
