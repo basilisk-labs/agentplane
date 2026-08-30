@@ -1,10 +1,11 @@
 ---
 id: "202608251706-V287W1"
 title: "AP-RUNTIME-001 Make local execution runtime deterministic"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 34
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -61,6 +62,20 @@ quality_review:
     - "Runtime evidence binds selected runner bytes, normalized runtime-selection environment and selected Node/Bun bytes. The prepared-input guard rejects profile/inherited PATH changes, outer executable replacement and toolchain replacement before launch. A separate evaluator run passed 22 resolver/prepared-input tests; the implementation run passed 25 tests across four files."
     - "The prior evaluator findings are closed by executable regressions. Frozen full local CI, verification identity, actual diff, blueprint and policy evidence are all valid for the evaluated SHA. Runtime infrastructure errors remain distinct from implementation failures; authority and release publication are unchanged."
     - "Residual risk: The branch predates M1. Preserve its merged verification dotenv isolation during the base update and rerun required exact-head hosted checks. Hosted merge and Task Hosted Close are not yet proven."
+token_usage:
+  agent_runs: 10
+  input_tokens: null
+  journal_digest: "sha256:424572f81eb1a5dda819be965735984db1ce3fc543bdad3a5efc410c68528f9b"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-30T05:20:24.205Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -315,8 +330,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "daf594dbe372635d26bb67af0b9ee83ef6ac3c40"
-  message: "🚧 V287W1 task: apply external agent result"
+  hash: "00207fd19a5fa292172b6a09d9affe297a227668"
+  message: "🚧 V287W1 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -336,6 +351,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: daf594dbe372. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -420,9 +438,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-30T05:20:24.205Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "00207fd19a5fa292172b6a09d9affe297a227668"
 doc_version: 3
-doc_updated_at: "2026-08-30T04:59:56.089Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-30T05:20:24.213Z"
+doc_updated_by: "CODER"
 description: "Fix the observed defect where verification reports `bun: command not found` even though Bun is installed and available on the host. Confirm the root cause across agents, Supervisor, verification, and recovery subprocess production paths instead of assuming it is Supervisor-only. Establish one centralized executable resolver and normalized local runtime environment shared by default across those paths, without user-specific absolute paths and without per-agent PATH configuration by default. Explicit runtime profiles and task or execution overrides must take precedence over normalized defaults. Preserve inherited host PATH entries while resolving supported standard runtime locations deterministically. Distinguish executable-resolution or environment failure from implementation or test failure; if that typed classification requires a separate architectural change beyond this resolver, create a follow-up Task rather than widening this Task. Regression acceptance must exercise the production execution path with a deliberately reduced parent PATH, prove Bun resolution from a supported standard location, and prove fail-closed behavior with an explicit infrastructure-classified result when Bun is genuinely absent."
 sections:
   Summary: |-
@@ -1211,7 +1237,34 @@ extensions:
       schema_version: 1
       task_id: "202608251706-V287W1"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608251706-V287W1"
+            - "git:daf594dbe372635d26bb67af0b9ee83ef6ac3c40"
+          check_id: "runtime-full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T04:59:53.524Z"
+          repository_snapshot_digest: "sha256:10c609b10015eff5d6d6be2cbaa459ef852bea880ab76a614433047afc961e21"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608251706-V287W1"
+            - "git:daf594dbe372635d26bb67af0b9ee83ef6ac3c40"
+          check_id: "runtime-diff-check"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T04:59:53.524Z"
+          repository_snapshot_digest: "sha256:10c609b10015eff5d6d6be2cbaa459ef852bea880ab76a614433047afc961e21"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608251706-V287W1"
     intent:
       acceptance_criteria:
@@ -1232,12 +1285,12 @@ extensions:
 
         Fix the observed defect where verification reports `bun: command not found` even though Bun is installed and available on the host. Confirm the root cause across agents, Supervisor, verification, and recovery subprocess production paths instead of assuming it is Supervisor-only. Establish one centralized executable resolver and normalized local runtime environment shared by default across those paths, without user-specific absolute paths and without per-agent PATH configuration by default. Explicit runtime profiles and task or execution overrides must take precedence over normalized defaults. Preserve inherited host PATH entries while resolving supported standard runtime locations deterministically. Distinguish executable-resolution or environment failure from implementation or test failure; if that typed classification requires a separate architectural change beyond this resolver, create a follow-up Task rather than widening this Task. Regression acceptance must exercise the production execution path with a deliberately reduced parent PATH, prove Bun resolution from a supported standard location, and prove fail-closed behavior with an explicit infrastructure-classified result when Bun is genuinely absent.
       task_id: "202608251706-V287W1"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 21
+    revision: 36
     schema_version: 1
-    updated_at: "2026-08-30T03:41:02.880Z"
+    updated_at: "2026-08-30T05:20:24.205Z"
     work_items:
       deterministic-local-runtime:
         attempt: 2
@@ -1338,11 +1391,37 @@ extensions:
         previous_revision: 20
         schema_version: 1
         task_id: "202608251706-V287W1"
+      legacy-finish:202608251706-V287W1:2026-08-30T04:59:53.524Z:daf594dbe372635d26bb67af0b9ee83ef6ac3c40:
+        aggregate_digest: "sha256:2dc9067e764ae0241c129227e4135dd85ff037c6946fd00e7cfac0dcffbec1fe"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-30T05:20:24.205Z"
+          cause_refs:
+            - "task-verification:202608251706-V287W1"
+            - "git:daf594dbe372635d26bb67af0b9ee83ef6ac3c40"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_593a5732b173928a4b6995ce"
+          mutation_id: "legacy-finish:202608251706-V287W1:2026-08-30T04:59:53.524Z:daf594dbe372635d26bb67af0b9ee83ef6ac3c40"
+          plan_digest: "sha256:0a32be0fe48f48a34d82bc81aa1c7b858cb333250aede98c0e3e543061660753"
+          plan_revision: 1
+          repository_fingerprint: "sha256:10c609b10015eff5d6d6be2cbaa459ef852bea880ab76a614433047afc961e21"
+          schema_version: 1
+          task_id: "202608251706-V287W1"
+          task_revision: 21
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608251706-V287W1:2026-08-30T04:59:53.524Z:daf594dbe372635d26bb67af0b9ee83ef6ac3c40"
+        next_revision: 36
+        previous_revision: 35
+        schema_version: 1
+        task_id: "202608251706-V287W1"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "daf594dbe372635d26bb67af0b9ee83ef6ac3c40"
+    message: "🚧 V287W1 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
@@ -1896,3 +1975,16 @@ Roadmap intake on 2026-08-25:
 - AP-CORE-016 already owns environment-bound verification receipts and infrastructure classification for missing toolchain binaries, but it does not own executable discovery or PATH normalization.
 - Placement: depend on AP-CORE-012 and make AP-CORE-013 depend on this Task. This establishes deterministic runtime resolution before canonical verification semantics and leaves AP-CORE-016 downstream to consume the normalized environment and classification evidence.
 - This Task is post-0.7.8 roadmap work and adds no dependency to the live 0.7.8 release chain.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/10` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:424572f81eb1a5dda819be965735984db1ce3fc543bdad3a5efc410c68528f9b`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-30T05:20:24.205Z`
