@@ -2,10 +2,10 @@
 id: "202608300119-ZHYXRS"
 title: "Preserve WorkItem results during plan reapproval and recover evidence-only implementation"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "USER"
   note: "Denis explicitly approved all subsequent in-scope Clean Core plans and bootstrap fixes and instructed continuation to completion in this conversation. Apply that standing operator authorization to plan 55b0da86d389ffee572af9276c362405a7b4f98e4af18f479e5f981f175581a4; preserve all enforcement gates."
 verification:
-  state: "ok"
-  updated_at: "2026-08-30T01:41:06.431Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-30T02:14:28.357Z"
+  updated_by: "USER"
+  note: "Hosted review on PR #5879 requires recomputing the canonical persisted plan digest before preserving existing WorkItem runtime. Reopen under the approved bootstrap scope; add a stale-digest production-approval regression and require fresh verification and evaluator review."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -123,7 +123,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task"
       - "packages/core/src/tasks/task-centric"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
       - "packages/core"
@@ -158,6 +159,9 @@ execution_contract:
       -
         id: "recorded-check-7"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -244,9 +248,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "d24316765b3d9073e4aa876ec90620624b18977c"
-  message: "🚧 ZHYXRS task: record external evaluator result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "PLANNER"
@@ -312,8 +315,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "d24316765b3d9073e4aa876ec90620624b18977c"
+  -
+    type: "verify"
+    at: "2026-08-30T02:14:28.357Z"
+    author: "USER"
+    state: "needs_rework"
+    note: "Hosted review on PR #5879 requires recomputing the canonical persisted plan digest before preserving existing WorkItem runtime. Reopen under the approved bootstrap scope; add a stale-digest production-approval regression and require fresh verification and evaluator review."
 doc_version: 3
-doc_updated_at: "2026-08-30T01:43:10.651Z"
+doc_updated_at: "2026-08-30T02:14:32.817Z"
 doc_updated_by: "CODER"
 description: "Unblock the approved Clean Task Core rebuild M1 task 202608292032-1K47B8. Diagnose repeated plan approval resetting existing WorkItem runtime and evidence-only recovery rejecting already committed valid implementation. Preserve same-plan WorkItem state and output validation without allowing changed plans, stale identities, or unauthorized effects to reuse results. Add bounded regression coverage for both positive recovery and fail-closed behavior. Scope packages/core/src/tasks/task-centric and packages/agentplane/src/commands/task. Do not edit task state by hand or weaken authority checks. Deliver through verified branch PR and hosted close, then resume M1."
 sections:
@@ -429,6 +438,36 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2
     Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608300119-ZHYXRS-preserve-workitem-results-during-plan-reapproval/.agentplane/tasks/202608300119-ZHYXRS/blueprint/resolved-snapshot.json
+    - old_digest: 4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd
+    - current_digest: 4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608300119-ZHYXRS
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-30T02:14:28.357Z — VERIFY — needs_rework
+
+    By: USER
+
+    Note: Hosted review on PR #5879 requires recomputing the canonical persisted plan digest before preserving existing WorkItem runtime. Reopen under the approved bootstrap scope; add a stale-digest production-approval regression and require fresh verification and evaluator review.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8d97ad7afb16d72981973139859cb991b9aee06b2fd9b467d8e2c81d4e9e6b54, input_digest=sha256:fbe7bc1301633e8f0dde630966543732166caae0590b07ef4a9f4bcbed947a80
+
+    Details:
 
     BlueprintSnapshotRef:
     - state: current
@@ -857,9 +896,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "403edee0581fa08fb661c60487dcde7bd2f5bd88"
-    message: "🚧 ZHYXRS task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "71519a0e675d7d460d27e7c5aea87d1f2363b9e2"
@@ -991,6 +1027,36 @@ Command: bun run ci:local:full
 Result: pass
 Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2
 Scope: branch_pr task 202608300119-ZHYXRS Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608300119-ZHYXRS-preserve-workitem-results-during-plan-reapproval/.agentplane/tasks/202608300119-ZHYXRS/blueprint/resolved-snapshot.json
+- old_digest: 4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd
+- current_digest: 4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608300119-ZHYXRS
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-30T02:14:28.357Z — VERIFY — needs_rework
+
+By: USER
+
+Note: Hosted review on PR #5879 requires recomputing the canonical persisted plan digest before preserving existing WorkItem runtime. Reopen under the approved bootstrap scope; add a stale-digest production-approval regression and require fresh verification and evaluator review.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8d97ad7afb16d72981973139859cb991b9aee06b2fd9b467d8e2c81d4e9e6b54, input_digest=sha256:fbe7bc1301633e8f0dde630966543732166caae0590b07ef4a9f4bcbed947a80
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current

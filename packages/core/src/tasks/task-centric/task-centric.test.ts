@@ -332,6 +332,53 @@ describe("task-centric domain", () => {
     ).toBe("READY");
   });
 
+  it.each(["scope", "acceptance"] as const)(
+    "rejects reapproval after persisted %s changes with a stale digest",
+    (field) => {
+      const original = approvedTask([item({ id: "a" })]);
+      const originalPlan = original.current_plan!;
+      const definition = originalPlan.proposal.work_items.work_items[0]!;
+      const changed =
+        field === "scope"
+          ? { ...definition, scope_roots: ["packages/expanded"] }
+          : {
+              ...definition,
+              acceptance_criteria: [
+                { ...definition.acceptance_criteria[0]!, description: "Changed acceptance" },
+              ],
+            };
+      const persistedPlan = {
+        ...originalPlan,
+        proposal: {
+          ...originalPlan.proposal,
+          work_items: { ...originalPlan.proposal.work_items, work_items: [changed] },
+        },
+      };
+      const task = {
+        ...original,
+        current_plan: persistedPlan,
+        work_items: {
+          a: {
+            ...original.work_items.a!,
+            state: "COMPLETED" as const,
+            output_manifests: [manifest({ id: "out-a", work_item_id: "a" })],
+          },
+        },
+      };
+      const before = taskCentricDigest(task);
+      const approved = approveTaskPlan({
+        plan: task.current_plan,
+        expected_digest: task.current_plan.digest,
+        actor: "operator",
+        approved_at: NOW,
+      });
+      expect(() => materializeApprovedWorkItems({ task, plan: approved, now: NOW })).toThrow(
+        /Existing work item runtime/u,
+      );
+      expect(taskCentricDigest(task)).toBe(before);
+    },
+  );
+
   it("rejects malformed plans deterministically before approval", () => {
     const cyclic = proposal([
       item({ id: "a", depends_on: ["b"], capabilities: ["missing"] }),
