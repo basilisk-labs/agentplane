@@ -22,7 +22,7 @@ Connect legacy CLI and repository surfaces to the canonical Task kernel through 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-30T04:09:19.506Z
+- Updated: 2026-08-30T14:58:29.973Z
 - Branch: task/202608291006-2A6BJC/add-compatibility-adapters-and-replay-migration
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
