@@ -4,7 +4,7 @@ title: "Implement the isolated canonical Task kernel"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 53
+revision: 57
 origin:
   system: "manual"
 depends_on:
@@ -20,9 +20,9 @@ verify:
   - "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-30T00:34:43.780Z"
+  updated_at: "2026-08-30T01:32:20.605Z"
   updated_by: "USER"
-  note: "Standing user approval covers the unchanged M1 qualification scope and its required documentation effect."
+  note: "Apply Denis standing approval for subsequent in-scope Clean Core plans to current requalification plan c5237eeab87dd5383649ba7fea824a6d05807e4cad894affc5898ff43037c27a. Preserve completed implementation, require fresh qualification, and do not publish a release."
 verification:
   state: "pending"
   updated_at: "2026-08-30T00:35:52.047Z"
@@ -446,8 +446,8 @@ events:
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved M1 qualification receipt requires the documentation repository effect that is absent from the task execution contract. Recommended action: Apply the state-bound documentation effect extension, then resume the qualification WorkItem. Requested scope: roots=unchanged; repository effects=documentation; request digest=sha256:7d6d7739c8bba23592fe51af54467ae72f9d3f22df9e82b317307c6c74296ba3. Agentplane receipt: external-agent-blocker/tr_233e8b9d1a63dbd74f0064ef65bef111/sha256:1e7af0d9fe2828dbd6084632b1ff868d9898cf61330b1fe2ba247347a727e853/sha256:7d6d7739c8bba23592fe51af54467ae72f9d3f22df9e82b317307c6c74296ba3."
 doc_version: 3
-doc_updated_at: "2026-08-30T00:35:20.414Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-30T01:31:51.856Z"
+doc_updated_by: "USER"
 description: "Implement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged."
 sections:
   Summary: |-
@@ -457,13 +457,18 @@ sections:
   Scope: |-
     - In scope: Implement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged.
     - Out of scope: unrelated refactors not required for "Implement the isolated canonical Task kernel".
-  Plan: "Replanned the remaining M1 work into a bounded verification-environment isolation fix followed by exact kernel requalification."
+  Plan: |-
+    1. Preserve the existing kernel and subprocess isolation implementation. The previous execution WorkItems were reset by plan reapproval; do not describe their historical completion as current state.
+    2. Execute one current-contract qualification WorkItem. Inspect actual kernel boundaries and rerun focused kernel and subprocess tests.
+    3. Correct M1-QUALIFICATION.md with exact implementation SHA, source tree, immutable evidence commit and hashes, and current-versus-historical evidence. Historical evidence is provenance, not authorization to skip fresh checks.
+    4. Require fresh arch:check and full local CI through AgentPlane, then evaluator acceptance.
+    5. Deliver through exact-head hosted checks, merge and Task Hosted Close before starting M2. No release publication, manual runtime restoration, or cosmetic implementation edits.
   Verify Steps: |-
-    PLANNER fallback scaffold for "Implement the isolated canonical Task kernel". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Implement the isolated canonical Task kernel". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run the kernel model, reducer and invariant tests and the real verification-child subprocess isolation regression. Confirm deterministic transitions, rejection behavior, receipt idempotency and unchanged parent environment.
+    2. Run `bun run arch:check`. Confirm the kernel has no filesystem, process, Git, provider, CLI, backend or legacy imports.
+    3. Run `bun run ci:local:full`. Require all checks to pass, including fast tests and typechecking.
+    4. Correct the qualification receipt to reference exact implementation and immutable evidence identities. Distinguish historical completed WorkItems from current requalification and do not reuse obsolete plan authority.
+    5. Require evaluator acceptance, exact-head hosted checks, merge and Task Hosted Close before M2 starts. Do not publish a release.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-08-29T20:43:19.619Z — VERIFY — ok
@@ -1153,12 +1158,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:6aa8d5650f6f74e7a3fef6ce4da5cecc664b9091f566013419b5a54d5295e1b1"
-    digest: "sha256:e638843ebb39ebd1b2e8e67f69191f8b0047dae12a0a8c53c94b1486fb91e3ed"
-    grant_id: "01673c15-4658-43fb-8ac0-13b194d713c7"
-    issued_at: "2026-08-30T00:34:43.780Z"
+    digest: "sha256:4b2d4e72b768b585000bde6550074c186294a7337c7b6d35053cb4b65807576c"
+    grant_id: "f95731cc-9392-4975-a480-89bb981f5aec"
+    issued_at: "2026-08-30T01:32:20.605Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:87855c31accc765b71614fbb29ee30d3e090d41e335dbe7e919e54079669bda1"
-    plan_revision: 49
+    plan_digest: "sha256:7f2fc9e8cb47eb85940365fc14a66e30c161c70684eafbea33e484084e8281ef"
+    plan_revision: 56
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:a294ca95e0d5d41b2dca7577f5d9c04d7a86440d40105cbe63cfedcbaaaac69b"
@@ -1182,118 +1187,63 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-08-30T00:18:45.444Z"
+        approved_at: "2026-08-30T01:32:20.605Z"
         approved_by: "USER"
-        approved_digest: "sha256:af8aa2335d16a9ec2f41e65b1ec080febf4a087e568f17f73bbbe2331aeceb14"
+        approved_digest: "sha256:c5237eeab87dd5383649ba7fea824a6d05807e4cad894affc5898ff43037c27a"
         policy_facts:
-          - "state_bound_scope_extension:sha256:a65b86b31e953834d498124c2274baf775d6d4ce05199a9d9624d2deb5b8a7d4"
+          - "manual_operator"
         state: "approved"
-      created_at: "2026-08-30T00:18:45.444Z"
-      digest: "sha256:af8aa2335d16a9ec2f41e65b1ec080febf4a087e568f17f73bbbe2331aeceb14"
+      created_at: "2026-08-30T01:31:51.820Z"
+      digest: "sha256:c5237eeab87dd5383649ba7fea824a6d05807e4cad894affc5898ff43037c27a"
       proposal:
         assumptions:
-          - "The committed kernel implementation remains the authoritative M1 candidate and does not need to be rebuilt."
-          - "Repository dotenv values are operational inputs for AgentPlane itself but must not implicitly configure declared verification child processes."
+          - "Kernel implementation remains preserved; fresh checks determine current qualification."
+          - "The task execution contract already authorizes documentation in the kernel directory."
         planning_baseline:
-          captured_at: "2026-08-29T21:55:47.738Z"
+          captured_at: "2026-08-30T01:30:47.304Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:b896663d64447e1bf063ff264cf4f9ee22b17fec76eff94cce90d3b8bb8f2b96"
+          digest: "sha256:11878ab063c6557eefa1eb7afd87017215d0084f952d7b81028b31270a8fff0d"
           dirty_paths:
             - ".agentplane/tasks/202608292032-1K47B8/README.md"
-            - ".agentplane/tasks/202608292032-1K47B8/pr/github-body.md"
-            - ".agentplane/tasks/202608292032-1K47B8/pr/meta.json"
-            - ".agentplane/tasks/202608292032-1K47B8/pr/review.md"
-            - ".agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json"
-            - ".agentplane/tasks/202608292032-1K47B8/supervision/implementation-evidence.json"
-            - ".agentplane/tasks/202608292032-1K47B8/verification/20260829213703792-b4d5487c553f5a17.json"
-            - ".agentplane/tasks/202608292032-1K47B8/verification/20260829214826738-20b5311a327c1579.json"
-            - ".agentplane/tasks/202608292032-1K47B8/verification/20260829215542838-893d49886b2f4a8e.json"
           git:
             kind: "commit"
             ref: null
-            sha: "2f544c4120b8d5219327404d007b31b09d30af41"
+            sha: "c35740905de616953e011a8f124029a6a6f81c9a"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:28"
+          task_history_cursor: "task-revision:55"
         schema_version: 1
         task_id: "202608292032-1K47B8"
         top_level_validation:
           checks:
             -
               capability: "task.verify"
-              command: "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
-              id: "check-verification-env"
-              kind: "deterministic"
-              required: true
-              timeout_ms: 600000
-            -
-              capability: "task.verify"
-              command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts"
-              id: "check-kernel-model"
-              kind: "deterministic"
-              required: true
-              timeout_ms: 600000
-            -
-              capability: "task.verify"
-              command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts"
-              id: "check-kernel-reducer"
-              kind: "deterministic"
-              required: true
-              timeout_ms: 600000
-            -
-              capability: "task.verify"
-              command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/invariants.test.ts"
-              id: "check-kernel-invariants"
-              kind: "deterministic"
-              required: true
-              timeout_ms: 600000
-            -
-              capability: "task.verify"
               command: "bun run arch:check"
-              id: "check-architecture"
+              id: "architecture"
               kind: "deterministic"
               required: true
-              timeout_ms: 900000
             -
               capability: "task.verify"
-              command: "bun run test:fast"
-              id: "check-fast-suite"
+              command: "bun run ci:local:full"
+              id: "full"
               kind: "deterministic"
               required: true
-              timeout_ms: 1800000
-            -
-              capability: "task.verify"
-              command: "bun run typecheck"
-              id: "check-typecheck"
-              kind: "deterministic"
-              required: true
-              timeout_ms: 900000
           criteria:
             -
               check_ids:
-                - "check-verification-env"
-              description: "Supervisor verification children exclude every key loaded only from repository dotenv while preserving explicitly inherited non-dotenv process values."
-              id: "criterion-verification-env-isolation"
+                - "architecture"
+                - "full"
+              description: "Current committed kernel passes deterministic model, transition, invariant and authority checks with no forbidden imports. Existing kernel and subprocess environment implementation remain preserved."
+              id: "m1-kernel-contract"
               required: true
             -
               check_ids:
-                - "check-kernel-model"
-                - "check-kernel-reducer"
-                - "check-kernel-invariants"
-                - "check-architecture"
-              description: "The completed canonical kernel model, reducer, authority and effect invariants, transition vectors, and import boundary remain green after the verification harness fix."
-              id: "criterion-kernel-preserved"
+                - "full"
+              description: "Qualification receipt distinguishes historical results from current plan state and binds the source tree, exact implementation and immutable evidence digests. Current supervisor checks pass before evaluator and hosted delivery."
+              id: "m1-current-evidence"
               required: true
-            -
-              check_ids:
-                - "check-fast-suite"
-                - "check-typecheck"
-                - "check-architecture"
-              description: "The exact Supervisor-visible fast suite, repository typecheck, and architecture checks pass from the committed implementation identity."
-              id: "criterion-regression-suite"
-              required: true
-          evidence_fingerprint: "sha256:daec02ec13cd4beb794b37ed53aaf1ef56b0e702c35c8d1ce239bc6c454b5ce8"
+          evidence_fingerprint: "sha256:63eeb48f615ec434ba7a75a0808f896f8eaa11cc0347d8e1c89a1a032d6c2c2b"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -1303,186 +1253,74 @@ extensions:
               acceptance_criteria:
                 -
                   check_ids:
-                    - "check-verification-env"
-                  description: "Supervisor verification children exclude every key loaded only from repository dotenv while preserving explicitly inherited non-dotenv process values."
-                  id: "criterion-verification-env-isolation"
+                    - "architecture"
+                    - "full"
+                  description: "Current committed kernel passes deterministic model, transition, invariant and authority checks with no forbidden imports. Existing kernel and subprocess environment implementation remain preserved."
+                  id: "m1-kernel-contract"
+                  required: true
+                -
+                  check_ids:
+                    - "full"
+                  description: "Qualification receipt distinguishes historical results from current plan state and binds the source tree, exact implementation and immutable evidence digests. Current supervisor checks pass before evaluator and hosted delivery."
+                  id: "m1-current-evidence"
                   required: true
               capabilities:
                 - "task.verify"
               context:
-                max_bytes: 262144
-                optional_sources:
-                  - "packages/agentplane/src/backends/task-backend.load.test.ts"
+                max_bytes: 100000
+                optional_sources: []
                 required_sources:
+                  - "docs/reference/clean-task-core-rebuild-spec.mdx"
+                  - "packages/core/src/tasks/task-kernel"
                   - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
-                  - "packages/agentplane/src/shared/env.ts"
-                  - "packages/agentplane/src/commands/task/direct-task-verification.ts"
-                symbol_hints:
-                  - "verificationChildEnv"
-                  - "AGENTPLANE_DOTENV_LOADED_KEYS"
-                  - "isDotEnvLoadedKey"
+                symbol_hints: []
               depends_on: []
               expected_outputs:
-                - "verification-child-environment-isolation"
-              id: "isolate-supervisor-verification-environment"
-              objective: "Remove repository-dotenv-loaded keys from child environments used for declared verification checks while preserving explicit parent environment values, and add focused regression coverage."
+                - "m1-current-qualification-receipt"
+              id: "qualify-current-m1-contract"
+              objective: "Qualify the already committed isolated Task kernel and verification-child environment fix under the current approved contract. Inspect and test actual code. Correct M1-QUALIFICATION.md with exact source and immutable evidence identities and truthful historical-versus-current status. Preserve implementation unless qualification identifies a real kernel defect. Do not manufacture source changes or restore runtime records by hand."
               optional: false
-              priority: 1
+              priority: 0
               required_inputs: []
               resource_claims:
                 -
                   kind: "path"
                   mode: "write"
-                  resource: "packages/agentplane/src/commands/shared/pr-meta"
+                  resource: "packages/core/src/tasks/task-kernel"
               risk: "medium"
               scope_roots:
-                - "packages/agentplane/src/commands/shared/pr-meta"
-              validation:
-                checks:
-                  -
-                    capability: "task.verify"
-                    command: "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
-                    id: "check-verification-env"
-                    kind: "deterministic"
-                    required: true
-                    timeout_ms: 600000
-                criteria:
-                  -
-                    check_ids:
-                      - "check-verification-env"
-                    description: "Supervisor verification children exclude every key loaded only from repository dotenv while preserving explicitly inherited non-dotenv process values."
-                    id: "criterion-verification-env-isolation"
-                    required: true
-                evidence_fingerprint: "sha256:07287a0e2760aead7d2da7dd6e5b268656a6e60239379eef51fd96cea81d068b"
-                schema_version: 1
-            -
-              acceptance_criteria:
-                -
-                  check_ids:
-                    - "check-kernel-model"
-                    - "check-kernel-reducer"
-                    - "check-kernel-invariants"
-                    - "check-architecture"
-                  description: "The completed canonical kernel model, reducer, authority and effect invariants, transition vectors, and import boundary remain green after the verification harness fix."
-                  id: "criterion-kernel-preserved"
-                  required: true
-                -
-                  check_ids:
-                    - "check-fast-suite"
-                    - "check-typecheck"
-                    - "check-architecture"
-                  description: "The exact Supervisor-visible fast suite, repository typecheck, and architecture checks pass from the committed implementation identity."
-                  id: "criterion-regression-suite"
-                  required: true
-              capabilities:
-                - "task.verify"
-              context:
-                max_bytes: 524288
-                optional_sources:
-                  - "vitest.workspace.ts"
-                  - "package.json"
-                required_sources:
-                  - "packages/core/src/tasks/task-kernel"
-                  - "depcruise.config.cjs"
-                  - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
-                symbol_hints:
-                  - "TASK_TRANSITION_TABLE"
-                  - "compareExecutionAuthority"
-                  - "verificationChildEnv"
-              depends_on:
-                - "isolate-supervisor-verification-environment"
-              expected_outputs:
-                - "m1-kernel-qualification-receipt"
-              id: "requalify-isolated-kernel"
-              objective: "Re-run the complete M1 focused, architectural, type, and fast-suite qualification through the sanitized Supervisor verification environment and produce the final M1 receipt."
-              optional: false
-              priority: 2
-              required_inputs:
-                - "verification-child-environment-isolation"
-              resource_claims:
-                -
-                  kind: "path"
-                  mode: "read"
-                  resource: "packages/core/src/tasks/task-kernel"
-                -
-                  kind: "path"
-                  mode: "read"
-                  resource: "depcruise.config.cjs"
-                -
-                  kind: "path"
-                  mode: "read"
-                  resource: "packages/agentplane/src/commands/shared/pr-meta"
-              risk: "high"
-              scope_roots:
                 - "packages/core/src/tasks/task-kernel"
-                - "packages/core/src/tasks/index.ts"
-                - "depcruise.config.cjs"
-                - "packages/agentplane/src/commands/shared/pr-meta"
               validation:
                 checks:
-                  -
-                    capability: "task.verify"
-                    command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts"
-                    id: "check-kernel-model"
-                    kind: "deterministic"
-                    required: true
-                    timeout_ms: 600000
-                  -
-                    capability: "task.verify"
-                    command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts"
-                    id: "check-kernel-reducer"
-                    kind: "deterministic"
-                    required: true
-                    timeout_ms: 600000
-                  -
-                    capability: "task.verify"
-                    command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/invariants.test.ts"
-                    id: "check-kernel-invariants"
-                    kind: "deterministic"
-                    required: true
-                    timeout_ms: 600000
                   -
                     capability: "task.verify"
                     command: "bun run arch:check"
-                    id: "check-architecture"
+                    id: "architecture"
                     kind: "deterministic"
                     required: true
-                    timeout_ms: 900000
                   -
                     capability: "task.verify"
-                    command: "bun run test:fast"
-                    id: "check-fast-suite"
+                    command: "bun run ci:local:full"
+                    id: "full"
                     kind: "deterministic"
                     required: true
-                    timeout_ms: 1800000
-                  -
-                    capability: "task.verify"
-                    command: "bun run typecheck"
-                    id: "check-typecheck"
-                    kind: "deterministic"
-                    required: true
-                    timeout_ms: 900000
                 criteria:
                   -
                     check_ids:
-                      - "check-kernel-model"
-                      - "check-kernel-reducer"
-                      - "check-kernel-invariants"
-                      - "check-architecture"
-                    description: "The completed canonical kernel model, reducer, authority and effect invariants, transition vectors, and import boundary remain green after the verification harness fix."
-                    id: "criterion-kernel-preserved"
+                      - "architecture"
+                      - "full"
+                    description: "Current committed kernel passes deterministic model, transition, invariant and authority checks with no forbidden imports. Existing kernel and subprocess environment implementation remain preserved."
+                    id: "m1-kernel-contract"
                     required: true
                   -
                     check_ids:
-                      - "check-fast-suite"
-                      - "check-typecheck"
-                      - "check-architecture"
-                    description: "The exact Supervisor-visible fast suite, repository typecheck, and architecture checks pass from the committed implementation identity."
-                    id: "criterion-regression-suite"
+                      - "full"
+                    description: "Qualification receipt distinguishes historical results from current plan state and binds the source tree, exact implementation and immutable evidence digests. Current supervisor checks pass before evaluator and hosted delivery."
+                    id: "m1-current-evidence"
                     required: true
-                evidence_fingerprint: "sha256:723d9562533fea454339c234b89e2d70d835d8b9f87924bafdbc4a83af5491da"
+                evidence_fingerprint: "sha256:63eeb48f615ec434ba7a75a0808f896f8eaa11cc0347d8e1c89a1a032d6c2c2b"
                 schema_version: 1
-      revision: 3
+      revision: 4
       schema_version: 1
       task_id: "202608292032-1K47B8"
     event_cursor: 1
@@ -2446,27 +2284,323 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202608292032-1K47B8"
-    revision: 47
+      -
+        approval:
+          approved_at: "2026-08-30T00:18:45.444Z"
+          approved_by: "USER"
+          approved_digest: "sha256:af8aa2335d16a9ec2f41e65b1ec080febf4a087e568f17f73bbbe2331aeceb14"
+          policy_facts:
+            - "state_bound_scope_extension:sha256:a65b86b31e953834d498124c2274baf775d6d4ce05199a9d9624d2deb5b8a7d4"
+          state: "approved"
+        created_at: "2026-08-30T00:18:45.444Z"
+        digest: "sha256:af8aa2335d16a9ec2f41e65b1ec080febf4a087e568f17f73bbbe2331aeceb14"
+        proposal:
+          assumptions:
+            - "The committed kernel implementation remains the authoritative M1 candidate and does not need to be rebuilt."
+            - "Repository dotenv values are operational inputs for AgentPlane itself but must not implicitly configure declared verification child processes."
+          planning_baseline:
+            captured_at: "2026-08-29T21:55:47.738Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:b896663d64447e1bf063ff264cf4f9ee22b17fec76eff94cce90d3b8bb8f2b96"
+            dirty_paths:
+              - ".agentplane/tasks/202608292032-1K47B8/README.md"
+              - ".agentplane/tasks/202608292032-1K47B8/pr/github-body.md"
+              - ".agentplane/tasks/202608292032-1K47B8/pr/meta.json"
+              - ".agentplane/tasks/202608292032-1K47B8/pr/review.md"
+              - ".agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json"
+              - ".agentplane/tasks/202608292032-1K47B8/supervision/implementation-evidence.json"
+              - ".agentplane/tasks/202608292032-1K47B8/verification/20260829213703792-b4d5487c553f5a17.json"
+              - ".agentplane/tasks/202608292032-1K47B8/verification/20260829214826738-20b5311a327c1579.json"
+              - ".agentplane/tasks/202608292032-1K47B8/verification/20260829215542838-893d49886b2f4a8e.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "2f544c4120b8d5219327404d007b31b09d30af41"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:28"
+          schema_version: 1
+          task_id: "202608292032-1K47B8"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
+                id: "check-verification-env"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts"
+                id: "check-kernel-model"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts"
+                id: "check-kernel-reducer"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/invariants.test.ts"
+                id: "check-kernel-invariants"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run arch:check"
+                id: "check-architecture"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run test:fast"
+                id: "check-fast-suite"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "check-typecheck"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+            criteria:
+              -
+                check_ids:
+                  - "check-verification-env"
+                description: "Supervisor verification children exclude every key loaded only from repository dotenv while preserving explicitly inherited non-dotenv process values."
+                id: "criterion-verification-env-isolation"
+                required: true
+              -
+                check_ids:
+                  - "check-kernel-model"
+                  - "check-kernel-reducer"
+                  - "check-kernel-invariants"
+                  - "check-architecture"
+                description: "The completed canonical kernel model, reducer, authority and effect invariants, transition vectors, and import boundary remain green after the verification harness fix."
+                id: "criterion-kernel-preserved"
+                required: true
+              -
+                check_ids:
+                  - "check-fast-suite"
+                  - "check-typecheck"
+                  - "check-architecture"
+                description: "The exact Supervisor-visible fast suite, repository typecheck, and architecture checks pass from the committed implementation identity."
+                id: "criterion-regression-suite"
+                required: true
+            evidence_fingerprint: "sha256:daec02ec13cd4beb794b37ed53aaf1ef56b0e702c35c8d1ce239bc6c454b5ce8"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-verification-env"
+                    description: "Supervisor verification children exclude every key loaded only from repository dotenv while preserving explicitly inherited non-dotenv process values."
+                    id: "criterion-verification-env-isolation"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 262144
+                  optional_sources:
+                    - "packages/agentplane/src/backends/task-backend.load.test.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
+                    - "packages/agentplane/src/shared/env.ts"
+                    - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+                  symbol_hints:
+                    - "verificationChildEnv"
+                    - "AGENTPLANE_DOTENV_LOADED_KEYS"
+                    - "isDotEnvLoadedKey"
+                depends_on: []
+                expected_outputs:
+                  - "verification-child-environment-isolation"
+                id: "isolate-supervisor-verification-environment"
+                objective: "Remove repository-dotenv-loaded keys from child environments used for declared verification checks while preserving explicit parent environment values, and add focused regression coverage."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared/pr-meta"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/commands/shared/pr-meta"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
+                      id: "check-verification-env"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-verification-env"
+                      description: "Supervisor verification children exclude every key loaded only from repository dotenv while preserving explicitly inherited non-dotenv process values."
+                      id: "criterion-verification-env-isolation"
+                      required: true
+                  evidence_fingerprint: "sha256:07287a0e2760aead7d2da7dd6e5b268656a6e60239379eef51fd96cea81d068b"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-kernel-model"
+                      - "check-kernel-reducer"
+                      - "check-kernel-invariants"
+                      - "check-architecture"
+                    description: "The completed canonical kernel model, reducer, authority and effect invariants, transition vectors, and import boundary remain green after the verification harness fix."
+                    id: "criterion-kernel-preserved"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-fast-suite"
+                      - "check-typecheck"
+                      - "check-architecture"
+                    description: "The exact Supervisor-visible fast suite, repository typecheck, and architecture checks pass from the committed implementation identity."
+                    id: "criterion-regression-suite"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 524288
+                  optional_sources:
+                    - "vitest.workspace.ts"
+                    - "package.json"
+                  required_sources:
+                    - "packages/core/src/tasks/task-kernel"
+                    - "depcruise.config.cjs"
+                    - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
+                  symbol_hints:
+                    - "TASK_TRANSITION_TABLE"
+                    - "compareExecutionAuthority"
+                    - "verificationChildEnv"
+                depends_on:
+                  - "isolate-supervisor-verification-environment"
+                expected_outputs:
+                  - "m1-kernel-qualification-receipt"
+                id: "requalify-isolated-kernel"
+                objective: "Re-run the complete M1 focused, architectural, type, and fast-suite qualification through the sanitized Supervisor verification environment and produce the final M1 receipt."
+                optional: false
+                priority: 2
+                required_inputs:
+                  - "verification-child-environment-isolation"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "read"
+                    resource: "packages/core/src/tasks/task-kernel"
+                  -
+                    kind: "path"
+                    mode: "read"
+                    resource: "depcruise.config.cjs"
+                  -
+                    kind: "path"
+                    mode: "read"
+                    resource: "packages/agentplane/src/commands/shared/pr-meta"
+                risk: "high"
+                scope_roots:
+                  - "packages/core/src/tasks/task-kernel"
+                  - "packages/core/src/tasks/index.ts"
+                  - "depcruise.config.cjs"
+                  - "packages/agentplane/src/commands/shared/pr-meta"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts"
+                      id: "check-kernel-model"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/kernel.test.ts"
+                      id: "check-kernel-reducer"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/invariants.test.ts"
+                      id: "check-kernel-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run arch:check"
+                      id: "check-architecture"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:fast"
+                      id: "check-fast-suite"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "check-typecheck"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-kernel-model"
+                        - "check-kernel-reducer"
+                        - "check-kernel-invariants"
+                        - "check-architecture"
+                      description: "The completed canonical kernel model, reducer, authority and effect invariants, transition vectors, and import boundary remain green after the verification harness fix."
+                      id: "criterion-kernel-preserved"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-fast-suite"
+                        - "check-typecheck"
+                        - "check-architecture"
+                      description: "The exact Supervisor-visible fast suite, repository typecheck, and architecture checks pass from the committed implementation identity."
+                      id: "criterion-regression-suite"
+                      required: true
+                  evidence_fingerprint: "sha256:723d9562533fea454339c234b89e2d70d835d8b9f87924bafdbc4a83af5491da"
+                  schema_version: 1
+        revision: 3
+        schema_version: 1
+        task_id: "202608292032-1K47B8"
+    revision: 48
     schema_version: 1
-    updated_at: "2026-08-30T00:34:43.780Z"
+    updated_at: "2026-08-30T01:32:20.605Z"
     work_items:
-      isolate-supervisor-verification-environment:
+      qualify-current-m1-contract:
         attempt: 0
         claim_id: null
-        id: "isolate-supervisor-verification-environment"
+        id: "qualify-current-m1-contract"
         last_failure: null
         output_manifests: []
         revision: 1
         state: "READY"
-        validation_result: null
-      requalify-isolated-kernel:
-        attempt: 0
-        claim_id: null
-        id: "requalify-isolated-kernel"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
         validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
@@ -2663,15 +2797,19 @@ Implement a pure deterministic Task and WorkItem kernel behind a new internal mo
 
 ## Plan
 
-Replanned the remaining M1 work into a bounded verification-environment isolation fix followed by exact kernel requalification.
+1. Preserve the existing kernel and subprocess isolation implementation. The previous execution WorkItems were reset by plan reapproval; do not describe their historical completion as current state.
+2. Execute one current-contract qualification WorkItem. Inspect actual kernel boundaries and rerun focused kernel and subprocess tests.
+3. Correct M1-QUALIFICATION.md with exact implementation SHA, source tree, immutable evidence commit and hashes, and current-versus-historical evidence. Historical evidence is provenance, not authorization to skip fresh checks.
+4. Require fresh arch:check and full local CI through AgentPlane, then evaluator acceptance.
+5. Deliver through exact-head hosted checks, merge and Task Hosted Close before starting M2. No release publication, manual runtime restoration, or cosmetic implementation edits.
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Implement the isolated canonical Task kernel". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Implement the isolated canonical Task kernel". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run the kernel model, reducer and invariant tests and the real verification-child subprocess isolation regression. Confirm deterministic transitions, rejection behavior, receipt idempotency and unchanged parent environment.
+2. Run `bun run arch:check`. Confirm the kernel has no filesystem, process, Git, provider, CLI, backend or legacy imports.
+3. Run `bun run ci:local:full`. Require all checks to pass, including fast tests and typechecking.
+4. Correct the qualification receipt to reference exact implementation and immutable evidence identities. Distinguish historical completed WorkItems from current requalification and do not reuse obsolete plan authority.
+5. Require evaluator acceptance, exact-head hosted checks, merge and Task Hosted Close before M2 starts. Do not publish a release.
 
 ## Verification
 

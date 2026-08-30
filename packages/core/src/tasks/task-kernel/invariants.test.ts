@@ -201,6 +201,78 @@ describe("canonical task kernel invariants", () => {
     ).toBe(false);
   });
 
+  it.each([
+    "packages/core/../agentplane",
+    "packages/core/src/../../outside",
+    "packages\\core\\..\\agentplane",
+    "packages/core/./src",
+    "packages/core//src",
+    "packages/core/invalid\0path",
+  ])("rejects ambiguous or escaping authority path %s", (scope) => {
+    const parent = parentAuthority();
+    expect(
+      compareExecutionAuthority(parent, childAuthority(parent, { scope_roots: [scope] })),
+    ).toMatchObject({ ok: false, violations: expect.arrayContaining(["scope"]) as unknown });
+    const malformedParent = parentAuthority({ scope_roots: [scope] });
+    expect(
+      compareExecutionAuthority(
+        malformedParent,
+        childAuthority(malformedParent, { scope_roots: [scope] }),
+      ).ok,
+    ).toBe(false);
+  });
+
+  it.each([
+    [".", "packages/core/src", true],
+    [".", "/packages/core/src", false],
+    [".", "C:/packages/core/src", false],
+    ["/", "/packages/core/src", true],
+    ["/", "packages/core/src", false],
+    ["packages/core/", "packages\\core\\src", true],
+    ["packages/core", "packages/core-other", false],
+    ["", "packages/core", false],
+  ] as const)("compares canonical scope %s against %s", (root, scope, allowed) => {
+    const parent = parentAuthority({ scope_roots: [root] });
+    expect(
+      compareExecutionAuthority(parent, childAuthority(parent, { scope_roots: [scope] })).ok,
+    ).toBe(allowed);
+  });
+
+  it("compares expiry instants across offsets and rejects invalid dates", () => {
+    const parent = parentAuthority({ expires_at: "2026-09-01T00:00:00.000Z" });
+    expect(
+      compareExecutionAuthority(
+        parent,
+        childAuthority(parent, { expires_at: "2026-09-01T02:00:00.000+03:00" }),
+      ).ok,
+    ).toBe(true);
+    expect(
+      compareExecutionAuthority(
+        parent,
+        childAuthority(parent, { expires_at: "2026-08-31T23:30:00.000-02:00" }),
+      ),
+    ).toMatchObject({ ok: false, violations: expect.arrayContaining(["expiry"]) as unknown });
+    const unbounded = parentAuthority({ expires_at: null });
+    expect(
+      compareExecutionAuthority(unbounded, childAuthority(unbounded, { expires_at: "not-a-date" }))
+        .ok,
+    ).toBe(false);
+  });
+
+  it("retains the parent user-decision evidence in delegated authority", () => {
+    const parent = parentAuthority();
+    const child = childAuthority(parent);
+    expect(
+      compareExecutionAuthority(parent, {
+        ...child,
+        provenance: {
+          ...child.provenance,
+          evidence_digest: kernelDigest("unrelated-user-decision"),
+        },
+      }),
+    ).toMatchObject({ ok: false, violations: expect.arrayContaining(["provenance"]) as unknown });
+  });
+
   it("rejects duplicate, missing, and cyclic WorkItem graph definitions", () => {
     expect(
       validateWorkItemDefinitions([

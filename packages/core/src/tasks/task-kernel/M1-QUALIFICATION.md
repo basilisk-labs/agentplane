@@ -1,49 +1,69 @@
 # M1 kernel qualification receipt
 
 - Task: `202608292032-1K47B8`.
-- WorkItem: `requalify-isolated-kernel`.
-- Output: `m1-kernel-qualification-receipt`.
-- Qualified implementation: `e381232abf9f5dd613ec048c592a0b4e9ccecdb2`.
-- Supervisor evidence commit: `4f7192396`.
+- Current WorkItem: `qualify-current-m1-contract`.
+- Output: `m1-current-qualification-receipt`.
+- Current plan digest: `sha256:c5237eeab87dd5383649ba7fea824a6d05807e4cad894affc5898ff43037c27a`.
 
-## Result
+## Current qualification
 
-The isolated canonical kernel and the verification environment regression pass
-local qualification. The kernel model, reducer, authority checks, effect
-invariants, transition vectors, and import boundary remain intact.
+The current source preserves the isolated kernel and the verification-child
+subprocess fix. Qualification found and corrected authority defects in the kernel:
 
-The preceding WorkItem, `isolate-supervisor-verification-environment`, is
-recorded as `COMPLETED` with passing deterministic evidence and output manifest
-`verification-child-environment-isolation`.
+1. Scope comparison rejected neither traversal segments nor ambiguous separators.
+2. Expiry subset comparison used text order instead of timestamp instants.
+3. The reducer accepted expired authority and invalid supplied timestamps.
+4. Delegated authority could substitute the original user-decision evidence.
 
-## Supervisor evidence
+New regression tests reproduced these defects before the fixes. After correction,
+the focused kernel and subprocess suite passes 46 tests across four files.
+The kernel still uses only deterministic inputs; it does not read wall-clock time,
+the filesystem, environment, Git, providers, or compatibility projections.
 
-The supervisor ran the following declared checks through the environment used
-by `runShellCommand`. Every command returned exit code zero.
+Current source SHA-256 identities:
 
-| Command                                                                                                           | Result                                                                                                                     |
-| ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `bun run arch:check`                                                                                              | Passed; no dependency violations.                                                                                          |
-| `bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts`                  | Passed.                                                                                                                    |
-| `bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts` | Passed; helper and actual subprocess isolation.                                                                            |
-| `bun run ci:local:full`                                                                                           | Passed; complete local regression, including type, architecture, fast suites, documentation, platform, and coverage gates. |
+| Path                                                                 | SHA-256                                                            |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `packages/core/src/tasks/task-kernel/model.ts`                       | `5fba68db83e0623be556146ddcc0b8dfed1ddd4d6bd74ccaa1338614542472fe` |
+| `packages/core/src/tasks/task-kernel/kernel.ts`                      | `c6d3860dedd5707d25ab5c9115952e0604ffeecc09c6768aa45b2d8b7b0a9ca9` |
+| `packages/core/src/tasks/task-kernel/invariants.ts`                  | `7acc9cf3d5c5217ae0e7f289a36c507dfbd043f42b87656d8080aac3f3af6ba7` |
+| `packages/core/src/tasks/task-kernel/index.ts`                       | `3f69df84a74372f3a28d16a5816414e6abd69980368d0fe74b0d038de0429c10` |
+| `packages/agentplane/src/commands/shared/pr-meta/verify-log.ts`      | `84025fe05b1220f35fa2282246a83b3948a0baf08ea57475bcab3735a187b47a` |
+| `packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts` | `074a3321f71e777650700938c9e7e140355d2c78204c022164094826e0955757` |
 
-Evidence paths, relative to the repository root:
+The supervisor assigns the exact implementation commit when it accepts this
+WorkItem. The current commit identity and fresh check results are recorded in the
+task's `supervision/implementation-evidence.json` and `supervision/declared-checks.json`.
+The source hashes above identify the code qualified by this receipt without a
+self-referential commit hash. Full supervisor verification and evaluator acceptance
+remain mandatory before delivery; focused results alone do not establish completion.
 
-- `.agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json`
-- `.agentplane/tasks/202608292032-1K47B8/supervision/implementation-evidence.json`
-- `.agentplane/tasks/202608292032-1K47B8/README.md`
+## Historical evidence
 
-## Focused requalification
+Historical implementation `e381232abf9f5dd613ec048c592a0b4e9ccecdb2` passed the
+previous local checks at immutable evidence commit
+`4f71923961a191e78f4119fabb6746b79f301c76`.
+The kernel source tree at that implementation was
+`1752301a80c2988aa9e4d4d9245fb824df8748ae`.
+These identities describe the earlier source, before the authority corrections above.
+They do not qualify the new code.
 
-`bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts`
+Read the following artifacts from that exact historical commit:
 
-Result: four files and 26 tests passed. The subprocess regression confirms that
-repository dotenv values, the dotenv marker, and runtime handoff state are not
-forwarded. Explicit inherited values and the parent environment are preserved.
+| Artifact                                                                         | SHA-256                                                            |
+| -------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `.agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json`         | `84868a3dbaff87f16cda2e8f09840e22c19ffe2e5f8e0cede0191b783beff679` |
+| `.agentplane/tasks/202608292032-1K47B8/supervision/implementation-evidence.json` | `2cacba31f5ed4447548e727509bfee092d51852cb032f621ddd1c113af80f4c5` |
 
-## Remaining delivery gates
+Those historical checks passed architecture validation, model tests, verification
+subprocess tests, and full local CI. The earlier environment WorkItem was completed
+at that time, but repeated plan approval subsequently reset its runtime record.
+This receipt does not describe that historical completion as current task state.
+The current qualification WorkItem obtains fresh supervisor evidence under its own
+approved plan instead of restoring old runtime fields by hand.
 
-This receipt establishes local qualification, not hosted delivery. Independent
-evaluation, exact-head hosted checks, merge, and hosted task closure must still
-be completed by AgentPlane. No release or publication readiness is implied.
+## Delivery boundary
+
+AgentPlane must persist fresh checks, obtain evaluator acceptance, publish and
+verify the exact PR head, merge, and observe Task Hosted Close before M2 starts.
+This receipt neither asserts hosted delivery nor authorizes release publication.

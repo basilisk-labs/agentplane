@@ -166,6 +166,33 @@ function validation(implementationIdentity: Sha256Digest): ValidationRecord {
 }
 
 describe("canonical task kernel reducer", () => {
+  it.each(["2026-08-29T19:00:00.000Z", "2026-08-29T20:00:00.000Z", "not-a-date"])(
+    "rejects expired or malformed authority expiry %s",
+    (expires_at) => {
+      const state = aggregate();
+      const invocation = input(state, transitionCommand(state, "claim"));
+      expect(
+        reduceTaskCommand({ ...invocation, authority: { ...authority, expires_at } }),
+      ).toMatchObject({ kind: "rejected", code: "AUTHORITY_SCOPE_EXCEEDED" });
+      expect(state.work_items.kernel?.state).toBe("READY");
+    },
+  );
+
+  it("uses supplied time with offsets to enforce authority expiry", () => {
+    const state = aggregate();
+    const invocation = input(state, transitionCommand(state, "claim"));
+    expect(
+      reduceTaskCommand({
+        ...invocation,
+        authority: { ...authority, expires_at: "2026-08-29T23:01:00.000+03:00" },
+      }).kind,
+    ).toBe("accepted");
+    expect(reduceTaskCommand({ ...invocation, occurred_at: "not-a-date" })).toMatchObject({
+      kind: "rejected",
+      code: "AUTHORITY_SCOPE_EXCEEDED",
+    });
+  });
+
   it("publishes closed task and WorkItem transition policies", () => {
     expect(Object.keys(TASK_TRANSITION_TABLE)).toHaveLength(10);
     expect(TASK_TRANSITION_TABLE.COMPLETED).toEqual([]);
