@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 37
+revision: 38
 origin:
   system: "manual"
 depends_on: []
@@ -354,6 +354,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Read-only inspection completed. Four untracked Task-owned quality artifacts are genuine output from the earlier prepare step. Preserve them as historical evidence. They target daf594dbe372635d26bb67af0b9ee83ef6ac3c40 and cannot qualify semantic merge 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61. No source conflict or unrelated change is present. The supervisor may preserve these exact artifacts through its lifecycle path; fresh exact-merge verification is required after bootstrap 3MDRBH is integrated."
 events:
   -
     type: "status"
@@ -452,9 +455,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: full local CI and 34 control tests passed after semantic conflict resolution at 26b69b0fe; hosted integration remains pending."
+  -
+    type: "comment"
+    at: "2026-08-30T07:49:32.441Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Read-only inspection completed. Four untracked Task-owned quality artifacts are genuine output from the earlier prepare step. Preserve them as historical evidence. They target daf594dbe372635d26bb67af0b9ee83ef6ac3c40 and cannot qualify semantic merge 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61. No source conflict or unrelated change is present. The supervisor may preserve these exact artifacts through its lifecycle path; fresh exact-merge verification is required after bootstrap 3MDRBH is integrated."
 doc_version: 3
-doc_updated_at: "2026-08-30T05:56:57.870Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-30T07:49:32.488Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix the observed defect where verification reports `bun: command not found` even though Bun is installed and available on the host. Confirm the root cause across agents, Supervisor, verification, and recovery subprocess production paths instead of assuming it is Supervisor-only. Establish one centralized executable resolver and normalized local runtime environment shared by default across those paths, without user-specific absolute paths and without per-agent PATH configuration by default. Explicit runtime profiles and task or execution overrides must take precedence over normalized defaults. Preserve inherited host PATH entries while resolving supported standard runtime locations deterministically. Distinguish executable-resolution or environment failure from implementation or test failure; if that typed classification requires a separate architectural change beyond this resolver, create a follow-up Task rather than widening this Task. Regression acceptance must exercise the production execution path with a deliberately reduced parent PATH, prove Bun resolution from a supported standard location, and prove fail-closed behavior with an explicit infrastructure-classified result when Bun is genuinely absent."
 sections:
   Summary: |-
